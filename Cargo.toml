@@ -7,6 +7,8 @@ description = "card backend"
 members = [ 
     "core_enhanced",
     "game_server",
+    "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe",
+    "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/test_parts/runtime001/probe",
 ]
 
 resolver = "2"

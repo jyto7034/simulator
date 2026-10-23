@@ -1,0 +1,503 @@
+[
+  {
+    "category": "값",
+    "description": "숫자 노드 · 0 입력 / 1 출력",
+    "fields": [
+      {
+        "default": 1,
+        "id": "value",
+        "label": "값",
+        "valueType": "number"
+      }
+    ],
+    "height": 104.0,
+    "inputs": [],
+    "kind": "number",
+    "label": "숫자",
+    "outputs": [
+      {
+        "id": "value",
+        "label": "숫자",
+        "multiple": true,
+        "required": false,
+        "valueType": "number"
+      }
+    ],
+    "width": 232.0
+  },
+  {
+    "category": "값",
+    "description": "참 / 거짓 노드 · 0 입력 / 1 출력",
+    "fields": [
+      {
+        "default": true,
+        "id": "value",
+        "label": "값",
+        "valueType": "boolean"
+      }
+    ],
+    "height": 104.0,
+    "inputs": [],
+    "kind": "boolean",
+    "label": "참 / 거짓",
+    "outputs": [
+      {
+        "id": "value",
+        "label": "조건",
+        "multiple": true,
+        "required": false,
+        "valueType": "boolean"
+      }
+    ],
+    "width": 232.0
+  },
+  {
+    "category": "값",
+    "description": "문자열 노드 · 0 입력 / 1 출력",
+    "fields": [
+      {
+        "default": "",
+        "id": "value",
+        "label": "값",
+        "valueType": "text"
+      }
+    ],
+    "height": 104.0,
+    "inputs": [],
+    "kind": "text",
+    "label": "문자열",
+    "outputs": [
+      {
+        "id": "value",
+        "label": "문자열",
+        "multiple": true,
+        "required": false,
+        "valueType": "text"
+      }
+    ],
+    "width": 232.0
+  },
+  {
+    "category": "계산",
+    "description": "더하기 노드 · 2 입력 / 1 출력",
+    "fields": [
+      {
+        "default": 0,
+        "id": "a",
+        "label": "A 기본값",
+        "valueType": "number"
+      },
+      {
+        "default": 0,
+        "id": "b",
+        "label": "B 기본값",
+        "valueType": "number"
+      }
+    ],
+    "height": 162.0,
+    "inputs": [
+      {
+        "id": "a",
+        "label": "A",
+        "multiple": false,
+        "required": false,
+        "valueType": "number"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "multiple": false,
+        "required": false,
+        "valueType": "number"
+      }
+    ],
+    "kind": "add",
+    "label": "더하기",
+    "outputs": [
+      {
+        "id": "value",
+        "label": "결과",
+        "multiple": true,
+        "required": false,
+        "valueType": "number"
+      }
+    ],
+    "width": 232.0
+  },
+  {
+    "category": "계산",
+    "description": "곱하기 노드 · 2 입력 / 1 출력",
+    "fields": [
+      {
+        "default": 1,
+        "id": "a",
+        "label": "A 기본값",
+        "valueType": "number"
+      },
+      {
+        "default": 1,
+        "id": "b",
+        "label": "B 기본값",
+        "valueType": "number"
+      }
+    ],
+    "height": 162.0,
+    "inputs": [
+      {
+        "id": "a",
+        "label": "A",
+        "multiple": false,
+        "required": false,
+        "valueType": "number"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "multiple": false,
+        "required": false,
+        "valueType": "number"
+      }
+    ],
+    "kind": "multiply",
+    "label": "곱하기",
+    "outputs": [
+      {
+        "id": "value",
+        "label": "결과",
+        "multiple": true,
+        "required": false,
+        "valueType": "number"
+      }
+    ],
+    "width": 232.0
+  },
+  {
+    "category": "계산",
+    "description": "보다 큼 노드 · 2 입력 / 1 출력",
+    "fields": [
+      {
+        "default": 0,
+        "id": "a",
+        "label": "A 기본값",
+        "valueType": "number"
+      },
+      {
+        "default": 0,
+        "id": "b",
+        "label": "B 기본값",
+        "valueType": "number"
+      }
+    ],
+    "height": 162.0,
+    "inputs": [
+      {
+        "id": "a",
+        "label": "A",
+        "multiple": false,
+        "required": false,
+        "valueType": "number"
+      },
+      {
+        "id": "b",
+        "label": "B",
+        "multiple": false,
+        "required": false,
+        "valueType": "number"
+      }
+    ],
+    "kind": "greater",
+    "label": "보다 큼",
+    "outputs": [
+      {
+        "id": "value",
+        "label": "A > B",
+        "multiple": true,
+        "required": false,
+        "valueType": "boolean"
+      }
+    ],
+    "width": 232.0
+  },
+  {
+    "category": "실행",
+    "description": "시작 사건 노드 · 0 입력 / 1 출력",
+    "fields": [
+      {
+        "default": "시작",
+        "id": "event",
+        "label": "사건 이름",
+        "valueType": "text"
+      }
+    ],
+    "height": 104.0,
+    "inputs": [],
+    "kind": "event",
+    "label": "시작 사건",
+    "outputs": [
+      {
+        "id": "out",
+        "label": "실행",
+        "multiple": false,
+        "required": false,
+        "valueType": "flow"
+      }
+    ],
+    "width": 232.0
+  },
+  {
+    "category": "실행",
+    "description": "조건 분기 노드 · 2 입력 / 2 출력",
+    "fields": [
+      {
+        "default": true,
+        "id": "condition",
+        "label": "조건 기본값",
+        "valueType": "boolean"
+      }
+    ],
+    "height": 130.0,
+    "inputs": [
+      {
+        "id": "in",
+        "label": "실행",
+        "multiple": true,
+        "required": true,
+        "valueType": "flow"
+      },
+      {
+        "id": "condition",
+        "label": "조건",
+        "multiple": false,
+        "required": false,
+        "valueType": "boolean"
+      }
+    ],
+    "kind": "branch",
+    "label": "조건 분기",
+    "outputs": [
+      {
+        "id": "true",
+        "label": "참",
+        "multiple": false,
+        "required": false,
+        "valueType": "flow"
+      },
+      {
+        "id": "false",
+        "label": "거짓",
+        "multiple": false,
+        "required": false,
+        "valueType": "flow"
+      }
+    ],
+    "width": 232.0
+  },
+  {
+    "category": "실행",
+    "description": "동작 노드 · 2 입력 / 1 출력",
+    "fields": [
+      {
+        "default": "새 동작",
+        "id": "text",
+        "label": "동작 내용",
+        "valueType": "text"
+      }
+    ],
+    "height": 130.0,
+    "inputs": [
+      {
+        "id": "in",
+        "label": "실행",
+        "multiple": true,
+        "required": true,
+        "valueType": "flow"
+      },
+      {
+        "id": "text",
+        "label": "내용",
+        "multiple": false,
+        "required": false,
+        "valueType": "text"
+      }
+    ],
+    "kind": "action",
+    "label": "동작",
+    "outputs": [
+      {
+        "id": "out",
+        "label": "다음",
+        "multiple": false,
+        "required": false,
+        "valueType": "flow"
+      }
+    ],
+    "width": 232.0
+  },
+  {
+    "category": "실행",
+    "description": "대기 노드 · 2 입력 / 1 출력",
+    "fields": [
+      {
+        "default": 1,
+        "id": "seconds",
+        "label": "초 기본값",
+        "valueType": "number"
+      }
+    ],
+    "height": 130.0,
+    "inputs": [
+      {
+        "id": "in",
+        "label": "실행",
+        "multiple": true,
+        "required": true,
+        "valueType": "flow"
+      },
+      {
+        "id": "seconds",
+        "label": "초",
+        "multiple": false,
+        "required": false,
+        "valueType": "number"
+      }
+    ],
+    "kind": "delay",
+    "label": "대기",
+    "outputs": [
+      {
+        "id": "out",
+        "label": "다음",
+        "multiple": false,
+        "required": false,
+        "valueType": "flow"
+      }
+    ],
+    "width": 232.0
+  },
+  {
+    "category": "정리",
+    "description": "메모 노드 · 0 입력 / 0 출력",
+    "fields": [
+      {
+        "default": "설명을 입력하세요",
+        "id": "text",
+        "label": "메모",
+        "valueType": "text"
+      }
+    ],
+    "height": 86.0,
+    "inputs": [],
+    "kind": "note",
+    "label": "메모",
+    "outputs": [],
+    "width": 232.0
+  },
+  {
+    "category": "정리",
+    "description": "숫자 경유 노드 · 1 입력 / 1 출력",
+    "fields": [],
+    "height": 86.0,
+    "inputs": [
+      {
+        "id": "in",
+        "label": "입력",
+        "multiple": false,
+        "required": true,
+        "valueType": "number"
+      }
+    ],
+    "kind": "reroute-number",
+    "label": "숫자 경유",
+    "outputs": [
+      {
+        "id": "out",
+        "label": "출력",
+        "multiple": true,
+        "required": false,
+        "valueType": "number"
+      }
+    ],
+    "width": 232.0
+  },
+  {
+    "category": "정리",
+    "description": "조건 경유 노드 · 1 입력 / 1 출력",
+    "fields": [],
+    "height": 86.0,
+    "inputs": [
+      {
+        "id": "in",
+        "label": "입력",
+        "multiple": false,
+        "required": true,
+        "valueType": "boolean"
+      }
+    ],
+    "kind": "reroute-boolean",
+    "label": "조건 경유",
+    "outputs": [
+      {
+        "id": "out",
+        "label": "출력",
+        "multiple": true,
+        "required": false,
+        "valueType": "boolean"
+      }
+    ],
+    "width": 232.0
+  },
+  {
+    "category": "정리",
+    "description": "문자열 경유 노드 · 1 입력 / 1 출력",
+    "fields": [],
+    "height": 86.0,
+    "inputs": [
+      {
+        "id": "in",
+        "label": "입력",
+        "multiple": false,
+        "required": true,
+        "valueType": "text"
+      }
+    ],
+    "kind": "reroute-text",
+    "label": "문자열 경유",
+    "outputs": [
+      {
+        "id": "out",
+        "label": "출력",
+        "multiple": true,
+        "required": false,
+        "valueType": "text"
+      }
+    ],
+    "width": 232.0
+  },
+  {
+    "category": "정리",
+    "description": "실행 경유 노드 · 1 입력 / 1 출력",
+    "fields": [],
+    "height": 86.0,
+    "inputs": [
+      {
+        "id": "in",
+        "label": "입력",
+        "multiple": true,
+        "required": true,
+        "valueType": "flow"
+      }
+    ],
+    "kind": "reroute-flow",
+    "label": "실행 경유",
+    "outputs": [
+      {
+        "id": "out",
+        "label": "출력",
+        "multiple": false,
+        "required": false,
+        "valueType": "flow"
+      }
+    ],
+    "width": 232.0
+  }
+]

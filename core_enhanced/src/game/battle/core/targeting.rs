@@ -178,6 +178,7 @@ impl BattleCore {
         target_id: UnitInstanceId,
         policy: &BasicAttackRangePolicy<'_>,
     ) -> bool {
+        if !self.approach_taunt_attack_allowed(attacker_instance_id, target_id) { return false; }
         if self.units.get(&target_id).is_some_and(|target| {
             target.role == crate::game::battle::types::BattleUnitRole::IndependentWall
         }) && self.blocked_by(attacker_instance_id) != Some(target_id)
@@ -198,12 +199,16 @@ impl BattleCore {
                         .get(&target_id)
                         .is_some_and(|target| target.owner != attacker.owner)
             })
+            && self.approach_taunt(attacker_instance_id).is_none()
             && (self.blocked_by(attacker_instance_id) == Some(target_id)
                 || self.blocked_by(target_id) == Some(attacker_instance_id))
         {
             return true;
         }
 
+        if let Some(line) = self.basic_line_profile(attacker_instance_id) {
+            return self.line_target_in_range(attacker_instance_id,target_id,line);
+        }
         self.is_target_in_tile_range_policy(
             attacker_instance_id,
             target_id,
@@ -362,7 +367,7 @@ impl BattleCore {
         left_resist.cmp(&right_resist)
     }
 
-    fn compare_default_forward_target(
+    pub(super) fn compare_default_forward_target(
         &self,
         left: UnitInstanceId,
         right: UnitInstanceId,
@@ -381,7 +386,7 @@ impl BattleCore {
         }
     }
 
-    fn compare_enemy_spawn_order(&self, left: UnitInstanceId, right: UnitInstanceId) -> Ordering {
+    pub(super) fn compare_enemy_spawn_order(&self, left: UnitInstanceId, right: UnitInstanceId) -> Ordering {
         let left_spawn_order = self
             .units
             .get(&left)

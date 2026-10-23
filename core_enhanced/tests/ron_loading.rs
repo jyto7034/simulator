@@ -446,7 +446,7 @@ fn every_live_starter_and_recruit_has_its_active_training_set() {
         ("breach_guard", "shield", "last_line"),
         ("records_clerk", "sword", "berserker"),
         ("scout_runner", "gun", "adrenaline"),
-        ("containment_trainee", "greatsword", "breakthrough"),
+        ("containment_trainee", "shield", "last_line"),
         ("maintenance_tech", "area_healing_staff", "area_heal"),
         ("hq_field_medic", "healing_staff", "single_heal"),
         ("hq_security_guard", "shield", "last_line"),
@@ -640,6 +640,7 @@ fn live_skills_pin_explicit_cast_selection_independent_from_weapon_profiles() {
                 SkillTarget::EnemySingle {
                     rule: UnitTargetRule::LowestHealthEnemy,
                 } => "lowest_health_enemy",
+                SkillTarget::EnemySingle { rule: UnitTargetRule::RouteProgress } => "route_progress",
                 SkillTarget::CastTarget => "cast_target",
             };
             (skill.id.to_string(), selection.to_string())
@@ -1045,6 +1046,33 @@ fn live_pve_rewards_use_fixed_current_grant_set() {
             RewardMode::ClaimAll,
             "live combat rewards must be automatically granted"
         );
+        if encounter.encounter_class == PveEncounterClass::StressCombat {
+            assert!(victory_policy(encounter).reward_uuids.is_empty(),
+                "stress rewards belong to the round policy, without a second encounter grant");
+            let policies: Vec<_> = game_data.facility_templates().layouts.iter()
+                .filter_map(|layout| layout.stress_combat.as_ref())
+                .filter(|policy| policy.encounter_id == encounter.id)
+                .collect();
+            assert!(!policies.is_empty(), "live stress encounter requires an authored round reward owner");
+            for policy in policies {
+                assert_eq!(policy.rounds.len(), 5);
+                for round in &policy.rounds {
+                    assert!(!round.rewards.is_empty(), "live stress round must author fixed rewards");
+                    for effect in &round.rewards {
+                        match effect {
+                            RewardEffect::GrantEnkephalin { amount } if *amount > 0 => { observed_effects.insert("enkephalin"); }
+                            other => panic!("unexpected official stress round reward: {other:?}"),
+                        }
+                    }
+                }
+            }
+            continue;
+        }
+        if encounter.id == "suppress_freischutz" {
+            assert!(victory_policy(encounter).reward_uuids.is_empty(),
+                "Der Freischutz is the policy-owned rewardless story encounter");
+            continue;
+        }
         assert!(
             !victory_policy(encounter).reward_uuids.is_empty(),
             "live encounter '{}' must author fixed rewards",
@@ -1173,7 +1201,7 @@ fn live_encounter_sources_resolve_fragments_without_ordinary_reward_bypass() {
         .any(|material| { material.material_id == "equipment_dust" && material.amount == 1 }));
     let enhancement_recipe = game_data
         .equipment_data
-        .get_enhancement_recipe_by_equipment_id("standard_armor")
+        .get_enhancement_recipe_by_equipment_id("standard_training_sword")
         .expect("live equipment enhancement recipe should exist");
     assert_eq!(enhancement_recipe.max_level, 5);
     assert!(enhancement_recipe
@@ -1267,7 +1295,8 @@ fn live_pve_references_resolve() {
             node_type
         );
         match encounter.encounter_class {
-            game_core::game::data::pve_data::PveEncounterClass::Normal => {
+            game_core::game::data::pve_data::PveEncounterClass::Normal
+            | game_core::game::data::pve_data::PveEncounterClass::StressCombat => {
                 assert!(
                     encounter.primary_abnormality_id.is_none(),
                     "normal pve encounter `{}` must not define primary_abnormality_id",
@@ -1711,10 +1740,8 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
         freischutz_source.fragment_id.as_str(),
         "fragment_freischutz_black_round"
     );
-    assert!(matches!(
-        freischutz_source.repeat_reward,
-        RewardEffect::GrantFragmentDust { amount: 10 }
-    ));
+    assert!(freischutz_source.repeat_rewards.is_empty());
+    assert!(freischutz_source.revival.is_none());
 
     let freischutz_preview = CombatPreview::generate_for_node(
         MapNodeId::new(Uuid::from_u128(0xF43)),

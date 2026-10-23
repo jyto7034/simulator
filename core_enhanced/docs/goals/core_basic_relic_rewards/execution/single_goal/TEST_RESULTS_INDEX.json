@@ -1,0 +1,154 @@
+{
+  "default_core_unique": 2196,
+  "raw_logs": [
+    {
+      "path": "runs/core005.log",
+      "passed_names": 2114
+    },
+    {
+      "path": "runs/focused007.log",
+      "passed_names": 22
+    },
+    {
+      "path": "runs/restore008.log",
+      "passed_names": 4
+    },
+    {
+      "path": "runs/default_restore010.log",
+      "passed_names": 4
+    },
+    {
+      "path": "runs/integration009.log",
+      "passed_names": 72
+    }
+  ],
+  "existing_ignored": 6,
+  "known_current_failures": 0,
+  "single_full_green_invocation_claimed": false,
+  "native_g11": {
+    "raw": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/runs/native001.log",
+    "passed": 4,
+    "basis": "unchanged shared profile/clone oracle; no active basic Reward owner in these cases. Current default G11 rerun and72 fresh shared-cost operations cover current common snapshot/restore paths."
+  },
+  "server_persistence": {
+    "raw": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/runs/server001.log",
+    "passed": 31,
+    "unchanged_server_files": 36,
+    "basis": "all server source bytes equal actual baseline; normal prepared build compiles new public result shape; current23fresh host processes8actualOS21 cases exercise producer-consumer with new activities."
+  },
+  "normal_host": {
+    "fresh_processes": 20,
+    "commands": 78,
+    "actual_io_failures_and_retries": 6,
+    "sources": [
+      "runs/host001/RESULT.json",
+      "runs/host_edges001/RESULT.json"
+    ]
+  },
+  "expanded_host": {
+    "passed": true,
+    "rows": [
+      {
+        "name": "complete",
+        "commands": 26,
+        "actual_io": true,
+        "result": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/runs/expanded_host001/complete/RESULT.json"
+      },
+      {
+        "name": "continue",
+        "commands": 1,
+        "actual_io": false,
+        "result": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/runs/expanded_host001/continue/RESULT.json"
+      },
+      {
+        "name": "checkpoint",
+        "commands": 2,
+        "actual_io": true,
+        "result": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/runs/expanded_host001/checkpoint/RESULT.json"
+      }
+    ],
+    "fresh_processes": 3,
+    "commands": 29,
+    "actual_io_failures_and_retries": 2,
+    "runtime_native_limit_bytes": 16777216,
+    "authoring_work_limit": 64000000,
+    "default_authoring_accepted": false,
+    "default_rejection": "runs/expanded_calibration001.stderr.log",
+    "store_archive_sha256": "d88b8d0cd44f6a01ee16048eadb6a30a91e8bc4277a7e8ab6c8b9c49906fe7da"
+  },
+  "authoring": {
+    "valid": 1,
+    "invalid_rejected": 10,
+    "raw": "runs/authoring002/RESULT.json"
+  },
+  "activity_cost": {
+    "passed": true,
+    "rows": [
+      {
+        "case": "normal",
+        "repeat": 0,
+        "commands": 26,
+        "command_stages": 26,
+        "snapshot_stages": 26,
+        "result": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/runs/activity_cost001/normal.0.json",
+        "exact_requested_bytes_recovered": true
+      },
+      {
+        "case": "normal",
+        "repeat": 1,
+        "commands": 26,
+        "command_stages": 26,
+        "snapshot_stages": 26,
+        "result": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/runs/activity_cost001/normal.1.json",
+        "exact_requested_bytes_recovered": true
+      },
+      {
+        "case": "normal",
+        "repeat": 2,
+        "commands": 26,
+        "command_stages": 26,
+        "snapshot_stages": 26,
+        "result": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/runs/activity_cost001/normal.2.json",
+        "exact_requested_bytes_recovered": true
+      },
+      {
+        "case": "expanded",
+        "repeat": 0,
+        "commands": 26,
+        "command_stages": 26,
+        "snapshot_stages": 26,
+        "result": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/runs/activity_cost001/expanded.0.json",
+        "exact_requested_bytes_recovered": true
+      },
+      {
+        "case": "expanded",
+        "repeat": 1,
+        "commands": 26,
+        "command_stages": 26,
+        "snapshot_stages": 26,
+        "result": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/runs/activity_cost001/expanded.1.json",
+        "exact_requested_bytes_recovered": true
+      },
+      {
+        "case": "expanded",
+        "repeat": 2,
+        "commands": 26,
+        "command_stages": 26,
+        "snapshot_stages": 26,
+        "result": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/runs/activity_cost001/expanded.2.json",
+        "exact_requested_bytes_recovered": true
+      }
+    ],
+    "measured_fresh_processes": 6,
+    "preparation_fresh_processes": 6,
+    "limits_changed": false,
+    "profile": "default native/authoring config; public Core loading path, not CMVA authoring admission",
+    "all_exact_requested_bytes_recovered": true
+  },
+  "shared_cost": {
+    "fresh_processes": 6,
+    "operations": 72,
+    "raw": "runs/shared_cost001/RESULT.json",
+    "all_exact_requested_bytes_recovered": true
+  }
+}

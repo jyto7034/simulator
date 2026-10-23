@@ -1,0 +1,13 @@
+{
+  "command": [
+    "python3",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/test_parts/drivers001/normal_route.py",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/artifacts/normal003/normal_host_lifecycle",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/test_parts/normal_inputs003/admission.json",
+    "/tmp/u13-normal-v3-private-lhl_9gw4/route001"
+  ],
+  "exit_code": 1,
+  "seconds": 20.214608664005937,
+  "stdout": "normal_route002.stdout.log",
+  "stderr": "normal_route002.stderr.log"
+}

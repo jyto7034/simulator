@@ -1,0 +1,80 @@
+{
+  "record_ref": "PVR-CRAR-C2-P07-GEX10-001",
+  "captured_date": "2026-08-23",
+  "handoff_ref": "HA-CRAR-P2G60-002",
+  "goal_set_ref": "GS-CRAR-P2G50-002",
+  "goal_id": "GOAL-CRAR-C2-P07-CORE-PUBLIC-PROJECTION",
+  "phase_id": "PHASE-CRAR-C2-07-CORE-PUBLIC-PROJECTION",
+  "work_package": "WP-CRAR-C2-08",
+  "policy_ref": "PER-CRAR-007-R6-CODE-REVIEWED",
+  "decision_ref": "DR-CRAR-007-R2",
+  "realization_decision_ref": "TD-CRAR-017",
+  "invariant_ref": "IVA-C2-08",
+  "result": "GEX-10 exit criteria met",
+  "implemented_contract": {
+    "public_root": "application::CoreApplication",
+    "private_authority_field_count": 1,
+    "public_domain_authority_escape_count": 0,
+    "application_command_kind_count": 58,
+    "domain_action_kind_count": 58,
+    "application_player_result_kind_count": 49,
+    "domain_result_variant_count": 49,
+    "distinct_battle_result_identity_count": 12,
+    "domain_error_mapping_count": 28,
+    "application_local_error_kind_count": 4,
+    "application_snapshot_kind_count": 7,
+    "public_raw_game_core_count": 0,
+    "public_raw_behavior_result_count": 0,
+    "public_rollback_token_count": 0,
+    "public_legacy_result_contract_count": 0,
+    "wildcard_semantic_fallback_count": 0,
+    "external_schema_or_compatibility_claim_count": 0
+  },
+  "semantic_matrix": {
+    "command_bijection": "58/58 exact compiler-exhaustive mapping",
+    "result_parity": "49/49 exact kind, meaning and payload; corrected two omitted Mastered Elite cases",
+    "error_totality": "28/28 domain variants plus four application-local meanings",
+    "snapshot_totality": "7/7 typed and repeated exact",
+    "committed_projection_failure": "AcceptedRecoveryPending and never Err",
+    "read_only_reconnect": "BattleAdvanced payload identity plus ReadOnly disposition; retry exact",
+    "checkpoint_restart": "P06 V5 bytes and metadata continue through a fresh CoreApplication",
+    "legacy_cutover": "hard cut; no dual public raw behavior/result façade"
+  },
+  "validation": [
+    {"command":"cargo fmt --all -- --check","result":"exit 0"},
+    {"command":"git diff --check","result":"exit 0"},
+    {"command":"cargo check -p game_core --release --lib","result":"exit 0; warnings 0"},
+    {"command":"cargo doc -p game_core --release --no-deps","result":"exit 0; public application API only; forbidden raw names 0"},
+    {"command":"focused command/result/error/snapshot/rollback/checkpoint matrix","result":"all selected tests passed"},
+    {"command":"cargo test -p game_core --all-targets","result":"1157 passed; 0 failed; 0 ignored (1106 library + 51 integrations)"},
+    {"command":"P01 feature manifest verifier","result":"57 features; 44 contents; composite 3c57aedd636a7010f0678dc57d4b6d31e819f3b184ef7ac50346785eca39325b; errors 0"},
+    {"command":"P02-P07 actual valid release probes","result":"all five valid probe families exit 0"},
+    {"command":"P02-P07 invalid release probes","result":"all five invalid probe families expected exit 101 with frozen privacy/capability errors"}
+  ],
+  "predecessor_currentness": [
+    "ATR-CRAR-C2-P01-GEX20-007: Complete / High",
+    "ATR-CRAR-C2-P02-GEX20-006: Complete / High",
+    "ATR-CRAR-C2-P03-GEX20-005: Complete / High",
+    "ATR-CRAR-C2-P04-GEX20-004: Complete / High",
+    "ATR-CRAR-C2-P05-GEX20-003: Complete / High",
+    "ATR-CRAR-C2-P06-GEX20-001: Complete / High"
+  ],
+  "validation_dimensions": {
+    "success": "live validated application command/result plus exhaustive command/result/snapshot mapping",
+    "invalid_input": "unknown, malformed and missing command plus typed domain rejection before authority access",
+    "failure_rollback": "domain rejection leaves exact application snapshot; committed publication fault cannot become Err",
+    "retry_idempotency": "repeated rejection, every snapshot and reconnect projection are exact-equal",
+    "ordering_concurrency": "single P03 writer plus stable battle revision/cursor/event ordering corpus",
+    "boundary_empty_max": "explicit null selected event plus existing exact bounded history/result/checkpoint maxima through unchanged producers",
+    "disconnect_restart_persistence": "read-only reconnect and V5 export to fresh application continuation",
+    "live_data": "actual ValidatedGameData::load_live_embedded application and private battle caller",
+    "producer_consumer": "independent Core compile probes call only the public application façade",
+    "legacy_fallback_absence": "release rustdoc and compile-fail audit reject GameCore, raw behavior/result, rollback and inner field"
+  },
+  "known_limitations": [
+    "P08 owns performance comparison, optimization and performance PASS",
+    "external transport schema, game_server, Unity, sibling resources and consumers remain uninspected N/A",
+    "whole-library Clippy retains the pre-existing denied never_loop outside P07"
+  ],
+  "external_scope": "game_server, Unity, sibling resources and external consumers uninspected and unclaimed"
+}

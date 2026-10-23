@@ -1,0 +1,158 @@
+{
+  "schema": "U10_SUCCESSOR_INDEPENDENT_AUDIT_V1",
+  "goal": "GOAL-CRCE-01",
+  "goal_set": "GS-CRCE-001",
+  "auditor": "/root/u09_independent_audit029",
+  "model": "previously confirmed gpt-6-astra/high",
+  "target_manifest": {
+    "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/target/u10_current_002/MANIFEST.json",
+    "bytes": 228308,
+    "sha256": "e9785f69c28ba4bbb5379c5415be69cb6ea13d0309dce39da65be2ae1f48fe1a"
+  },
+  "runtime_source_sha256": "76aba953d84c644d3659b553e50f99f342c5826c709952c1fe808984ebfc340d",
+  "previous_audit": {
+    "path": "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_001_pass001/AUDIT_CLOSURE.json",
+    "bytes": 6445,
+    "sha256": "54982e7f52243c64fd230e20acd5816cf6b1b3af99eedda47cd4f957b00de33f"
+  },
+  "independence": "Prior U09 and first U10 independent audits only; no U10 planning/design/product/test/execution participation. This re-audit reviews the whole Goal using its own prior full review only where exact nonimpact supports reuse. Root/Sol summaries do not supply the verdict. No product/test/tool/old-document/target edits or build/test/collector/restore execution; only this new audit directory is written.",
+  "verdict": "Complete",
+  "confidence": "High",
+  "open_findings": 0,
+  "findings": [],
+  "resolved_prior_findings": [
+    {
+      "id": "U10-AUD-F01",
+      "prior_finding": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_001_pass001/FINDINGS.json",
+        "bytes": 8031,
+        "sha256": "bfeba679448eac5551cb5c049a861f39b0af57d4b2764446353f7b6588469f84",
+        "json_pointer": "/findings/0",
+        "canonical_row_sha256": "a4ef5237fda2f972f02474834aa80e3ccabf599739ad32a6058b7c2ba66d8299"
+      },
+      "prior_status": "open in immutable target001 audit",
+      "successor_status": "closed",
+      "policy": [
+        "PE-CRCE-07.1"
+      ],
+      "evidence_groups": [
+        "audit_basic_counter",
+        "audit_basic_guard",
+        "audit_existing_controls",
+        "audit_joint_provenance"
+      ],
+      "independent_assessment": "The formerly missing combination now exists in one normally published/granted/equipped/deployed relic World. Actual resolve_basic_attack causes basic10, defender equipment flat8 plus50% of original10=5, and queued relic child7. Exact four damage rows, target loss17, actor loss13, total30, equipment instance and child actor/owner/target/copy/rule/root/trigger provenance are asserted. Actor2017 and defender2023 attack intervals plus exactly2 StatChanged markers prove only original attack/hit equipment occurrences. Advancing another100ms adds no damage. Actual released projectile guard proves original10 remains while no counter or child occurs for dead or missing original actor, with one defender hit marker and causal state present.",
+      "execution_binding": [
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_audit_joint_tests002.json",
+          "bytes": 215172,
+          "sha256": "a4dab8ddac50d306f0985944294d11203e06101839e75114e6fc6e45e1e29f34"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_audit_joint_tests002.log",
+          "bytes": 1319,
+          "sha256": "efb9af59e6aa083f6ad8e4f01c371787dd519cabd68fa86656e20d1f6cbe3dbd"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_audit_joint_tests004.json",
+          "bytes": 214741,
+          "sha256": "8f5a052fbfa28836ecc2a71d781240736c514a12bb91f5c7e8edd5ed296419fa"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_audit_joint_tests004.log",
+          "bytes": 500,
+          "sha256": "c5d83561522478ad9f588f4d26dac7ed7450ba5514879dd6fa8da1c37f0adb08"
+        }
+      ],
+      "source_refs": [
+        {
+          "reference": {
+            "path": "core_enhanced/src/game/world/tests/u10_causal/audit_joint_cases.rs",
+            "bytes": 40538,
+            "sha256": "cda686b13dbba0fc14d9f9512e90fa8817b495e0f0835cca751d2cd83de7c4fa"
+          },
+          "first_line": 391
+        },
+        {
+          "reference": {
+            "path": "core_enhanced/src/game/battle/core/relic_causal_tests.rs",
+            "bytes": 16531,
+            "sha256": "197d290b3ca041dbf513c772e790b40e83bcc47635b8c2c882c416a052d0c35a"
+          },
+          "first_line": 176
+        }
+      ],
+      "scope": "Equipment runtime placement, stationary stats and the committed basic producer are explicit native preparation around normal World-published relics; no fabricated causal context/child result. Dead branch uses normal World advance. Explicit removal makes the World deployment mapping invalid, so missing branch uses the original active.execution and normal native timestamp scheduler; this is not public missing-unit support.",
+      "why_test_corrections_are_valid": "C002 skips invalid empty relic definitions and selects actual walkable tiles without changing assertions; C003 corrects world/data speed units to10ms and adds real launch/impact assertions while keeping10damage and100ms; C004 separates a valid World dead actor from explicitly prepared native missing state without changing production invariant. Original failed001/002/003 remain failed; no partial PASS is inferred from003."
+    },
+    {
+      "id": "U10-AUD-F02",
+      "prior_finding": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_001_pass001/FINDINGS.json",
+        "bytes": 8031,
+        "sha256": "bfeba679448eac5551cb5c049a861f39b0af57d4b2764446353f7b6588469f84",
+        "json_pointer": "/findings/1",
+        "canonical_row_sha256": "f6dadfe69aea74c81449939a72f5dd6dacb33087f07e24bddcb7cb1ba1d4989b"
+      },
+      "prior_status": "open in immutable target001 audit",
+      "successor_status": "closed",
+      "policy": [
+        "PE-CRCE-08.2"
+      ],
+      "evidence_groups": [
+        "audit_joint_corrosion",
+        "audit_existing_controls",
+        "audit_joint_provenance"
+      ],
+      "independent_assessment": "The public World fixture now has real active causal state before actual ActivateSkill Corrosion. Same-state ordinary Kill gives equipment3 then delayed relic11 with exact owner/copy/killer/victim/source, proving the relevant subscriber is active. Corrosion consumes100, marks actor corroded/withdrawn/trauma100, records exactly captured special deaths with actual actor and suppress_reactions=true, creates no fictitious HP-loss, and has no optional equipment/relic queue/cast/heal after drain. An unrelated already released living-ally causal DOT still ticks19 twice with suppress=false and the required future wave spawns. A separately labelled native opponent-side comparison retains the World-published immutable plans and establishes otherwise eligible normal Death7/Kill11/AllyDeath13 plus equipment2+3+5 and exact3 casts/source/copy/killer; actual Corrosion of its clone leaves optional queues/casts/heals absent.",
+      "execution_binding": [
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_audit_joint_tests002.json",
+          "bytes": 215172,
+          "sha256": "a4dab8ddac50d306f0985944294d11203e06101839e75114e6fc6e45e1e29f34"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_audit_joint_tests002.log",
+          "bytes": 1319,
+          "sha256": "efb9af59e6aa083f6ad8e4f01c371787dd519cabd68fa86656e20d1f6cbe3dbd"
+        }
+      ],
+      "source_refs": [
+        {
+          "reference": {
+            "path": "core_enhanced/src/game/world/tests/u10_causal/audit_joint_cases.rs",
+            "bytes": 40538,
+            "sha256": "cda686b13dbba0fc14d9f9512e90fa8817b495e0f0835cca751d2cd83de7c4fa"
+          },
+          "first_line": 732
+        },
+        {
+          "reference": {
+            "path": "core_enhanced/src/game/battle/core/corrosion.rs",
+            "bytes": 21561,
+            "sha256": "84723fa12a1d7bc65b9b49d7fbd4f9a7a1244aae1d91b14f45b412530479b484"
+          },
+          "first_line": 154
+        },
+        {
+          "reference": {
+            "path": "core_enhanced/src/game/battle/core/relic_causal.rs",
+            "bytes": 62322,
+            "sha256": "c1e4d678fefcfd7467539d04745e47037e5b2792af3b275480a864140c344677"
+          },
+          "first_line": 1020
+        }
+      ],
+      "scope": "Additional two employee side changes and movement-skipping finite envelope drain are native consumer preparation, not public PvE enemy relic configuration or whole-host scheduler/budget proof. The separate public World test covers actual host/freeze/wave/queue behavior.",
+      "why_no_synthetic_suppressed_child_is_required": "Actual Corrosion calls finalize_prepared_death_with_dispatch(false), and observe_causal_death returns before starting optional payloads. Consequently that producer creates no optional derived child to inspect. Its real suppression-carrying source, absence of optional queue after drain, normal queued positive controls and unrelated derived DOT scope form the reachable proof. Source review confirms causal_root_source preserves/raises suppression and start_causal_payload refuses suppressed ancestry.",
+      "predecessor_scope": "Resolves new suppression extension in12 corrosion-category rows and row-specific PE-CRNV-08.2 subpredicate. Existing forged/stale generation/copy/authority and ordinary numeric predicates retain their prior exact evidence; they are not inferred from this suppression test."
+    }
+  ],
+  "prior_audit_disposition": "Target001/audit001 remains Not Complete/High/open2 at its exact original bytes. Only this successor receives the new judgment.",
+  "limitations_preserved": [
+    "Whole-suite freshness is not claimed or required merely because it was not rerun.",
+    "Native prepared branches are confined to the explicitly stated consumer scope.",
+    "Original PC strict failure and R05 existing peak-only warning are retained.",
+    "No product malfunction was demonstrated by the original two evidence findings."
+  ]
+}

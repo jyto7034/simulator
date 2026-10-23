@@ -1,0 +1,18 @@
+{
+  "record_ref": "ATR-CRAR-C2-P06-GEX20-002",
+  "goal_id": "GOAL-CRAR-C2-P06-CHECKPOINT-MIGRATION",
+  "successor_goal_id": "GOAL-CRAR-C2-P08-PERFORMANCE-FINAL-INTEGRATION",
+  "captured_date": "2026-08-23",
+  "verdict": "Complete / High",
+  "currentness": "current / expected P08 exact V5 export cache",
+  "previous_currentness_ref": "ATR-CRAR-C2-P06-GEX20-001",
+  "changed_members": [
+    {"path":"src/game/world/active_run.rs","sha256":"f8c02ba347d5d6800413cade30a72a4b34b7a4806fcc145854a27acb9bea72a8"},
+    {"path":"src/game/world/node_flow.rs","sha256":"79e61208e0a84a81a2b8571d4a45385d32eb54506cf927518648ac44fc421b08"}
+  ],
+  "checkpoint_guard": "V5 / 17956 bytes / 8344 ns p95 / exact repeatable",
+  "v4_writer_count": 0,
+  "v4_importer_disposition": "retained explicit certified importer required by P06 removal gate",
+  "validation": ["release checkpoint selector 15/15", "public export guard pass", "current Core 1159/1159"],
+  "external_scope": "game_server, Unity, sibling resources and external consumers uninspected and unclaimed"
+}

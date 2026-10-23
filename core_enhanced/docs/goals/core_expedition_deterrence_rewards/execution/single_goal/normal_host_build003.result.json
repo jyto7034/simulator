@@ -1,0 +1,20 @@
+{
+  "command": [
+    "python3",
+    "tools/cmva_build.py",
+    "--mode",
+    "plain",
+    "--kind",
+    "bins",
+    "--probe-bin",
+    "u14_deterrence_host",
+    "--out",
+    "core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/normal_host_build003",
+    "--target-dir",
+    ".cache/u11-mod-validation-target/plain"
+  ],
+  "exit_code": 0,
+  "seconds": 371.9681723380054,
+  "stdout": "normal_host_build003.stdout.log",
+  "stderr": "normal_host_build003.stderr.log"
+}

@@ -1,0 +1,10 @@
+{
+  "command": [
+    "python3",
+    "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/test_parts/drivers001/measure.py"
+  ],
+  "exit_code": 0,
+  "seconds": 7.73572431300272,
+  "stdout": "measurements002.stdout.log",
+  "stderr": "measurements002.stderr.log"
+}

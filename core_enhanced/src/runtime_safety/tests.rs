@@ -7,20 +7,37 @@ fn parse(s: &str) -> Result<RuntimeSafetySettings, RuntimeSafetyError> {
     RuntimeSafetySettings::from_ron("/host/settings.ron", s.as_bytes())
 }
 
+fn legacy_eight_mib_text() -> String {
+    let source = text();
+    assert!(source.contains("max_retained_bytes: 16777216"));
+    source.replacen(
+        "max_retained_bytes: 16777216",
+        "max_retained_bytes: 8388608",
+        1,
+    )
+}
+
 pub(crate) fn cmrp_profile_text(emergency: usize) -> String {
-    let mut source = text();
+    let mut source = legacy_eight_mib_text();
     let end = source.rfind(')').unwrap();
     source.insert_str(end, &format!("development_measurement: Some((revision: 1, emergency_retained_bytes: {emergency})),\n"));
     source
 }
 
 #[test]
-fn cmrp_default_canonical_identity_is_the_exact_u07_identity() {
+fn cmrp_default_and_legacy_eight_mib_canonical_identities_are_distinct() {
     let settings = parse(&text()).unwrap();
+    let legacy = parse(&legacy_eight_mib_text()).unwrap();
+    assert_eq!(legacy.native_runtime().max_retained_bytes, 8 * 1024 * 1024);
     assert_eq!(
-        settings.effective_sha256(),
+        legacy.effective_sha256(),
         "a7b932aa614c11c8adf2b0e43c35c89f841056d877b78800e935d4d0c61f4a49"
     );
+    assert_eq!(
+        settings.native_runtime().max_retained_bytes,
+        16 * 1024 * 1024
+    );
+    assert_ne!(settings.effective_sha256(), legacy.effective_sha256());
     assert!(settings.development_measurement().is_none());
     assert_eq!(settings.native_runtime(), RuntimeFactLimits::ENGINE_MAX);
     let mut explicit_none = text();
@@ -37,7 +54,10 @@ fn cmrp_trusted_profile_selects_actual_sixteen_and_thirty_two_mib() {
         let settings = parse(&cmrp_profile_text(cap)).unwrap();
         assert_eq!(
             settings.nominal_native_runtime(),
-            RuntimeFactLimits::ENGINE_MAX
+            RuntimeFactLimits {
+                max_retained_bytes: 8 * 1024 * 1024,
+                ..RuntimeFactLimits::ENGINE_MAX
+            }
         );
         let mut effective = settings.native_runtime();
         assert_eq!(effective.max_retained_bytes, cap);
@@ -50,11 +70,17 @@ fn cmrp_trusted_profile_selects_actual_sixteen_and_thirty_two_mib() {
             settings.effective_sha256(),
             RuntimeSafetySettings::embedded().effective_sha256()
         );
-        assert!(
-            settings.native_runtime().validate().is_err(),
-            "raw public limits remain strict"
+        assert_eq!(
+            settings.native_runtime().validate().is_ok(),
+            cap == 16 * 1024 * 1024,
+            "raw public limits stop at the new sixteen MiB ceiling"
         );
     }
+    let raw_over = RuntimeFactLimits {
+        max_retained_bytes: 16 * 1024 * 1024 + 1,
+        ..RuntimeFactLimits::ENGINE_MAX
+    };
+    assert!(raw_over.validate().is_err());
 }
 
 #[test]
@@ -91,11 +117,23 @@ fn cmrp_profile_rejects_revision_unknown_duplicate_negative_overflow_and_cap() {
             "emergency_retained_bytes: 16777216",
             "emergency_retained_bytes: 33554433",
         ),
-        valid.replace("max_retained_bytes: 8388608", "max_retained_bytes: 8388609"),
+        valid.replace(
+            "max_retained_bytes: 8388608",
+            "max_retained_bytes: 16777217",
+        ),
     ];
     for source in invalid {
         assert!(parse(&source).is_err(), "{source}");
     }
+    let equal_to_default = cmrp_profile_text(16 * 1024 * 1024).replacen(
+        "max_retained_bytes: 8388608",
+        "max_retained_bytes: 16777216",
+        1,
+    );
+    assert!(
+        parse(&equal_to_default).is_err(),
+        "development cap must exceed its nominal profile"
+    );
 }
 
 #[test]
@@ -137,6 +175,11 @@ fn settings_reject_schema_unknown_duplicate_negative_overflow_zero_and_ceilings(
     for (from, to, field) in [
         ("schema_version: 1", "schema_version: 2", "schema_version"),
         ("schema_version: 1", "schema_version: -1", "schema_version"),
+        (
+            "max_retained_bytes: 16777216",
+            "max_retained_bytes: 16777217",
+            "native_runtime.max_retained_bytes",
+        ),
         (
             "max_work: 10000000",
             "max_work: 0",

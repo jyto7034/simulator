@@ -1,0 +1,11 @@
+{
+  "command": [
+    ".cache/d07-static-explain-product-target/debug/deps/game_core-705cc9514d94a1fe",
+    "u13_room_move_budget",
+    "--nocapture"
+  ],
+  "exit_code": 0,
+  "seconds": 5.079431475998717,
+  "stdout": "test012.stdout.log",
+  "stderr": "test012.stderr.log"
+}

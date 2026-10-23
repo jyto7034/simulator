@@ -1,0 +1,63 @@
+{
+  "format": "node-graph",
+  "version": 1,
+  "id": "G10",
+  "name": "값 연결 순환",
+  "nodes": [
+    {
+      "id": "left",
+      "kind": "add",
+      "title": "더하기",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "values": {
+        "a": 0,
+        "b": 0
+      },
+      "note": "컴파일 계약 검토용. 공식 콘텐츠·밸런스가 아님.",
+      "frame": null
+    },
+    {
+      "id": "right",
+      "kind": "add",
+      "title": "더하기",
+      "position": {
+        "x": 320,
+        "y": 0
+      },
+      "values": {
+        "a": 0,
+        "b": 0
+      },
+      "note": "컴파일 계약 검토용. 공식 콘텐츠·밸런스가 아님.",
+      "frame": null
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "source": {
+        "node": "left",
+        "port": "value"
+      },
+      "target": {
+        "node": "right",
+        "port": "a"
+      }
+    },
+    {
+      "id": "edge-2",
+      "source": {
+        "node": "right",
+        "port": "value"
+      },
+      "target": {
+        "node": "left",
+        "port": "a"
+      }
+    }
+  ],
+  "frames": []
+}

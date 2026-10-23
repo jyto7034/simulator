@@ -728,5 +728,6 @@ async fn detail_select(
     }
 }
 
-#[cfg(test)]
+// Legacy raw-data fixtures require Core fixture APIs in release tests.
+#[cfg(all(test, any(debug_assertions, feature = "test-fixtures")))]
 mod tests;

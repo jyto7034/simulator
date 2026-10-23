@@ -115,11 +115,13 @@ fn app_roots(app: &CoreApplication) -> Value {
 }
 
 fn restore(
+    profile: &crate::game::encounter_compendium::PlayerProfileState,
     document: &Value,
     player: Uuid,
     peak: u64,
 ) -> Result<CoreApplication, crate::application::ApplicationError> {
     let mut app = CoreApplication::new(data(), 0xdead);
+    app.install_authoritative_player_profile(serde_json::to_value(profile).unwrap().into()).unwrap();
     let before = app_roots(&app);
     let checkpoint = ApplicationCheckpoint::new(serde_json::to_vec(document).unwrap(), 0, peak);
     match app.continue_from_active_run_checkpoint(player, &checkpoint) {
@@ -159,7 +161,7 @@ fn relic_event_completed_history_restore_rejects_malformed_order_copy_scene_and_
             {"source_scene_id":"first","copy_uuid":copies[0]}, {"source_scene_id":"second","copy_uuid":copies[1]},
         ])
     );
-    restore(&original, player, exported.run_peak_certified_power).unwrap();
+    restore(&core.state.player_profile, &original, player, exported.run_peak_certified_power).unwrap();
     for case in [
         "some_empty",
         "duplicate_scene",
@@ -220,7 +222,7 @@ fn relic_event_completed_history_restore_rejects_malformed_order_copy_scene_and_
             _ => unreachable!(),
         }
         refresh_active_run_checksum(&mut document);
-        let error = restore(&document, player, exported.run_peak_certified_power)
+        let error = restore(&core.state.player_profile, &document, player, exported.run_peak_certified_power)
             .err()
             .unwrap_or_else(|| panic!("accepted forged {case}"));
         assert_eq!(error.code(), "invalid_static_data", "{case}: {error:?}");
@@ -256,7 +258,7 @@ fn relic_event_restore_uses_the_employee_check_outcome_to_reject_the_untraversed
     advance(&mut core, player, node);
     let exported = core.export_active_run_checkpoint().unwrap().unwrap();
     let original: Value = serde_json::from_slice(&exported.core_payload_json).unwrap();
-    restore(&original, player, exported.run_peak_certified_power).unwrap();
+    restore(&core.state.player_profile, &original, player, exported.run_peak_certified_power).unwrap();
     for case in [
         "branch_only",
         "contradictory_roll_and_path",
@@ -291,7 +293,7 @@ fn relic_event_restore_uses_the_employee_check_outcome_to_reject_the_untraversed
         }
         refresh_active_run_checksum(&mut forged);
         assert_eq!(
-            restore(&forged, player, exported.run_peak_certified_power)
+            restore(&core.state.player_profile, &forged, player, exported.run_peak_certified_power)
                 .err()
                 .unwrap()
                 .code(),
@@ -374,7 +376,7 @@ fn relic_event_history_survives_a_later_legal_dismantle_of_its_selected_copy() {
             ["relic_corruption_selections"][0]["copy_uuid"],
         json!(copies[0])
     );
-    restore(&document, player, saved.run_peak_certified_power).unwrap();
+    restore(&core.state.player_profile, &document, player, saved.run_peak_certified_power).unwrap();
 }
 
 fn core_roots(core: &GameCore) -> Value {
@@ -536,6 +538,7 @@ fn relic_event_decline_only_activates_independent_history_owners_and_admits_befo
 
     let exported = probe.export_active_run_checkpoint().unwrap().unwrap();
     let mut restored = CoreApplication::new(data(), 0xdead);
+    restored.install_authoritative_player_profile(serde_json::to_value(&probe.state.player_profile).unwrap().into()).unwrap();
     let checkpoint = ApplicationCheckpoint::new(
         exported.core_payload_json.to_vec(),
         exported.loads_used,

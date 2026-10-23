@@ -1,0 +1,1486 @@
+{
+  "kind": "CA00 inspection evidence; not a P2G/GEX receipt or independent audit",
+  "work_label": "NEXT-0001",
+  "observed_at_utc": "2026-09-09T04:18:48.989549+00:00",
+  "workspace": "/mnt/f/work/simulator",
+  "branch": "cleanup/simulator-dirty-worktree-20260803",
+  "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+  "baseline": {
+    "git_status_command": "git status --porcelain=v1 -uall -z",
+    "entry_count": 16483,
+    "counts": {
+      " M": 167,
+      " D": 24,
+      "??": 16292
+    },
+    "status_sorted_sha256": "092e8298fad699913bd400650a09422fcd042e05489d59475b713d26a740ea06",
+    "excluded_task_files": [
+      "core_enhanced/docs/roadmaps/content_authoring/records/CA00_NEXT-0001_INTAKE.ko.md"
+    ],
+    "preservation_text_path_count": 1680,
+    "preservation_scope": "Git cached/other nonignored paths in core_enhanced/src, tests, docs; game_resources/data; game_server/src (hash-only preservation, no server implementation review); root Cargo inputs and core Cargo.toml. Text suffix filter rs/ron/md/toml/lock/json/py/mjs. Missing paths retain null. No ignored files or user store."
+  },
+  "selected_inputs": [
+    {
+      "path": "core_enhanced/src/game/data/live_ron.rs",
+      "sha256_at_baseline": "7a89bbfcc8a5f9e2f0da39b2794ce98b1f0b2c8df135c25d9f4c099e3f1d8be0",
+      "git_status_at_baseline": " M",
+      "excerpt_request_ranges": [
+        [
+          90,
+          174
+        ],
+        [
+          255,
+          315
+        ],
+        [
+          1447,
+          1447
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/data/mod.rs",
+      "sha256_at_baseline": "74ed2bcf2bed377d13b4e1442d2c35ee0b83f3e7d86f1f2e26c308b660997270",
+      "git_status_at_baseline": " M",
+      "excerpt_request_ranges": [
+        [
+          1,
+          85
+        ],
+        [
+          227,
+          231
+        ],
+        [
+          790,
+          840
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/data/skill_data.rs",
+      "sha256_at_baseline": "843490305ef8c168db37f20d6bb2b5ab88202e7111248d1c79b63071e6a4517f",
+      "git_status_at_baseline": " M",
+      "excerpt_request_ranges": [
+        [
+          1,
+          310
+        ],
+        [
+          331,
+          385
+        ],
+        [
+          497,
+          576
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/ability.rs",
+      "sha256_at_baseline": "fc4b44d47132e334c308fa9619f62d76dd473ac9b7a51fcb7bfe6358d7488e25",
+      "git_status_at_baseline": " M",
+      "excerpt_request_ranges": [
+        [
+          620,
+          875
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/sim.rs",
+      "sha256_at_baseline": "95f3f22a13d51497e5a4b760cc4dd11203544236f97df62e0870b7c9843462eb",
+      "git_status_at_baseline": " M",
+      "excerpt_request_ranges": [
+        [
+          316,
+          365
+        ],
+        [
+          1975,
+          2125
+        ],
+        [
+          2149,
+          2199
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/commands.rs",
+      "sha256_at_baseline": "84363d71c15c9c3f71a9aba75aacb45a9ecf89425c6c867d5f4c42a10d761149",
+      "git_status_at_baseline": " M",
+      "excerpt_request_ranges": [
+        [
+          573,
+          653
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/types.rs",
+      "sha256_at_baseline": "a23dd6c9fbcbd1af6e63e77500a95ea4ae32976c7314f55c94d19b0ef79d69d9",
+      "git_status_at_baseline": " M",
+      "excerpt_request_ranges": [
+        [
+          190,
+          212
+        ],
+        [
+          352,
+          382
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/build.rs",
+      "sha256_at_baseline": "79d13be1f52c5ad0658986216f10a941248c99116f1018a9f049de2449f8f9f7",
+      "git_status_at_baseline": " M",
+      "excerpt_request_ranges": [
+        [
+          240,
+          282
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/battle/damage.rs",
+      "sha256_at_baseline": "e92d03779bb460e370326559244cd95fd842da78050ec92493005169e5497076",
+      "git_status_at_baseline": " M",
+      "excerpt_request_ranges": [
+        [
+          39,
+          73
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/skill_fragment.rs",
+      "sha256_at_baseline": "b4bb2acf2bda08b3ebcb1d7f740fb7b51a12d4cb3fb588b3ae1d1ad50a13a38d",
+      "git_status_at_baseline": " M",
+      "excerpt_request_ranges": [
+        [
+          1,
+          175
+        ],
+        [
+          577,
+          616
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/maintenance.rs",
+      "sha256_at_baseline": "faa07e016b125dc1df2f8f2d2d11a8e048551a44f3a6e128d847cb3c86959744",
+      "git_status_at_baseline": " M",
+      "excerpt_request_ranges": [
+        [
+          171,
+          243
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/reward.rs",
+      "sha256_at_baseline": "390d2a2a1855fc335322bc5c309012349831d09e43396807ac7d236fa53efc8f",
+      "git_status_at_baseline": " M",
+      "excerpt_request_ranges": [
+        [
+          344,
+          370
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/state.rs",
+      "sha256_at_baseline": "d7328e466eccbdc6616364b5c86a736430a3accf22c823fec5ae7dfa38aebaab",
+      "git_status_at_baseline": " M",
+      "excerpt_request_ranges": [
+        [
+          385,
+          435
+        ],
+        [
+          520,
+          578
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/world/active_run.rs",
+      "sha256_at_baseline": "f8c02ba347d5d6800413cade30a72a4b34b7a4806fcc145854a27acb9bea72a8",
+      "git_status_at_baseline": " M",
+      "excerpt_request_ranges": [
+        [
+          1,
+          185
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/data/boss_runtime_data.rs",
+      "sha256_at_baseline": "5c259a9892c30c5ab3f818370ac3a8f241ffd2b3562a365d0525da4d13c6701d",
+      "git_status_at_baseline": "??",
+      "excerpt_request_ranges": [
+        [
+          164,
+          230
+        ],
+        [
+          255,
+          344
+        ],
+        [
+          1090,
+          1110
+        ],
+        [
+          528,
+          592
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/battle/core/boss_runtime.rs",
+      "sha256_at_baseline": "600fcbad2734539d90dfd55c780a5370d1b8e3109774bc6cc39846baafd29c00",
+      "git_status_at_baseline": "??",
+      "excerpt_request_ranges": [
+        [
+          339,
+          370
+        ],
+        [
+          518,
+          698
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/src/application.rs",
+      "sha256_at_baseline": "631d112435fc48b830cf33a659e8e3d9933cc9ce05f8e87aa845c4a74c77b9a1",
+      "git_status_at_baseline": "??",
+      "excerpt_request_ranges": [
+        [
+          783,
+          794
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/src/lib.rs",
+      "sha256_at_baseline": "c5d2df11bca72fa8f1fb9b3f76d8369aa2b065cd2a9f8fe7d1461efa8807b1f5",
+      "git_status_at_baseline": " M",
+      "excerpt_request_ranges": [
+        [
+          1,
+          2
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/mod.rs",
+      "sha256_at_baseline": "8bfe8d164a9b2ca9339293d3cb4b1162d43b8bb82aa18e23c87ac11e5887be5a",
+      "git_status_at_baseline": " M",
+      "excerpt_request_ranges": [
+        [
+          1,
+          55
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/src/game/battle/mod.rs",
+      "sha256_at_baseline": "2f11e139cf046f16d0438ccc97d22e70cbca58c817ef95fd3e88204fabbeea96",
+      "git_status_at_baseline": " M",
+      "excerpt_request_ranges": [
+        [
+          1,
+          55
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/tests/ron_loading.rs",
+      "sha256_at_baseline": "749f9e718a2b85c7d20d770df0f960ac9b02cfff188901841428687d4b4846db",
+      "git_status_at_baseline": " M",
+      "excerpt_request_ranges": [
+        [
+          1,
+          40
+        ],
+        [
+          469,
+          507
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/tests/skill_runtime_contract.rs",
+      "sha256_at_baseline": "9292bd7175c043073698e724a2265a9a56b107d2a5f4884c3ddcd585e54368ac",
+      "git_status_at_baseline": " M",
+      "excerpt_request_ranges": [
+        [
+          1,
+          48
+        ],
+        [
+          2202,
+          2374
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/docs/skills/run_relic_content_design_notes.ko.md",
+      "sha256_at_baseline": "78aeb97ac30545d2763176cc32ec5c1ae9ecb14015e5a76ba322f96c91d8e1c4",
+      "git_status_at_baseline": "??",
+      "excerpt_request_ranges": [
+        [
+          1,
+          72
+        ],
+        [
+          266,
+          354
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/docs/skills/abnormality_skill_fragments_design_notes.md",
+      "sha256_at_baseline": "a0a0a0c12e67b4241caddd8606c2874249bdbf89cc34ab485ea6636f6cc5424b",
+      "git_status_at_baseline": "??",
+      "excerpt_request_ranges": [
+        [
+          1,
+          42
+        ],
+        [
+          4079,
+          4104
+        ],
+        [
+          1,
+          45
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/docs/skills/abnormality_design_notes.ko.md",
+      "sha256_at_baseline": "9c5f0b709cf5c41225316d7d275404c4091098881cb308ba6f6da8e5fb90d7ea",
+      "git_status_at_baseline": "??",
+      "excerpt_request_ranges": [
+        [
+          1,
+          36
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/docs/tmp/run_relic_system_design_notes_2026-08-21.ko.md",
+      "sha256_at_baseline": "da5665e75101c84d336735342c5521b2510931f137baf0191316ed4461f9c12b",
+      "git_status_at_baseline": "??",
+      "excerpt_request_ranges": [
+        [
+          1,
+          85
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/docs/tmp/ego_corrosion_system_design_notes_2026-08-19.ko.md",
+      "sha256_at_baseline": "76ffa7d2be4b98ab9d2463c31a051f0746d68d8570ee0c5e18063e7a03482626",
+      "git_status_at_baseline": "??",
+      "excerpt_request_ranges": [
+        [
+          1,
+          80
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/docs/data_loading_contract.md",
+      "sha256_at_baseline": "eca05b81d64e20afeb3d327dca7e77a780cb6511308fd9a4587d42c3cfd287ab",
+      "git_status_at_baseline": " M",
+      "excerpt_request_ranges": [
+        [
+          1,
+          125
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/docs/project_map.ko.md",
+      "sha256_at_baseline": "17bb4ca1911e98dfc5c3f57fb6b214ff5a22bb8bf282522c86735248e1025d1f",
+      "git_status_at_baseline": "??",
+      "excerpt_request_ranges": [
+        [
+          1,
+          180
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/docs/policy_to_goal_pipeline_revised_v2.md",
+      "sha256_at_baseline": "e439da72c0b2c792064f6f003940da0dda5fcd87f0b30c0e8ad835457244079b",
+      "git_status_at_baseline": "??",
+      "excerpt_request_ranges": [
+        [
+          1,
+          155
+        ],
+        [
+          2927,
+          2968
+        ],
+        [
+          3389,
+          3445
+        ]
+      ]
+    },
+    {
+      "path": "core_enhanced/docs/goal_execution_pipeline.md",
+      "sha256_at_baseline": "5c19b62ae16943ef58ea2d02446f2fa188fa7bf8c18ad42d8ee79d0b18676c72",
+      "git_status_at_baseline": "??",
+      "excerpt_request_ranges": [
+        [
+          1,
+          95
+        ]
+      ]
+    },
+    {
+      "path": "Cargo.toml",
+      "sha256_at_baseline": "98c9cf4dfefe3eda0ff7c692af94666a491a3460f073b3022c4c360b1a3e849c",
+      "git_status_at_baseline": "  ",
+      "excerpt_request_ranges": []
+    },
+    {
+      "path": "Cargo.lock",
+      "sha256_at_baseline": "2e5f218d4147b915e4af8362835f9b17bd7de3f21b98c89a290abda20921e969",
+      "git_status_at_baseline": " M",
+      "excerpt_request_ranges": []
+    },
+    {
+      "path": "core_enhanced/Cargo.toml",
+      "sha256_at_baseline": "0d118334417380f47461c89b50c550bd3af758f705e1ce2ebf6252ae9ecd368b",
+      "git_status_at_baseline": " M",
+      "excerpt_request_ranges": []
+    },
+    {
+      "path": "core_enhanced/docs/archive/policy_to_goal_pipeline.md",
+      "sha256_at_baseline": "874742806deb79a39b13972d80ea08e5f6340f3b6fe24a9b7b42d2ffb8544c1c",
+      "git_status_at_baseline": "??",
+      "excerpt_request_ranges": []
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/guides/policy_to_goal_pipeline_revised_v2.md",
+      "sha256_at_baseline": "e439da72c0b2c792064f6f003940da0dda5fcd87f0b30c0e8ad835457244079b",
+      "git_status_at_baseline": "??",
+      "excerpt_request_ranges": []
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "sha256_at_baseline": "7b22c812b8f2931582fa299cd080903754641550a1d1e2317c82d7c7f8cec466",
+      "git_status_at_baseline": "??",
+      "excerpt_request_ranges": []
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/OPERATING_RULES.md",
+      "sha256_at_baseline": "7fbaee66fe9ecf4b12527ecb10deee147aa5bbbeb02ef7dbcda3f849f527df6d",
+      "git_status_at_baseline": "??",
+      "excerpt_request_ranges": []
+    }
+  ],
+  "reading_limit": "Source excerpts plus targeted symbol search; long outputs were sometimes truncated. Claims are restricted to visible excerpts and narrower rereads. Empty ranges denote identity/read of small config input, not full source review. No complete content coverage is claimed.",
+  "additional_symbol_searches": {
+    "core_enhanced/src/game/battle/core/boss_runtime.rs": "CompiledBossTask dispatcher reread at 518-698; pending skill cancellation only symbol locators 1979-2016",
+    "core_enhanced/src/application.rs": "public method locators and CoreApplication::new",
+    "core_enhanced/src/game/data/skill_data.rs": "negative validation test names, not executed",
+    "core_enhanced/tests/ron_loading.rs": "test names, not executed"
+  },
+  "guidelines": {
+    "p2g_revision": "2026-09-09-r2",
+    "p2g_root_and_package_identical": true,
+    "p2g_sha256": "e439da72c0b2c792064f6f003940da0dda5fcd87f0b30c0e8ad835457244079b",
+    "historical_p2g_sha256": "874742806deb79a39b13972d80ea08e5f6340f3b6fe24a9b7b42d2ffb8544c1c",
+    "gex_sha256": "5c19b62ae16943ef58ea2d02446f2fa188fa7bf8c18ad42d8ee79d0b18676c72",
+    "missing_historical_link": "core_enhanced/docs/policy_to_goal_pipeline.md",
+    "agents_found": [],
+    "runner_revision_binding": "not verified; no new formal execution"
+  },
+  "prior_audit_hash_checks": [
+    {
+      "path": "core_enhanced/evidence/P08_MASTER_AUDIT_TARGET_002.json",
+      "sha256": "8d858ace7809537a51de5d82c3999ebdc5a61f68f32a416becec818b12f34fe0",
+      "record_ref": "ATR-CRAR-C2-MASTER-GEX30-002",
+      "content_member_count": 32,
+      "path_hash_bindings_checked": 36,
+      "matches": 36,
+      "bindings": [
+        {
+          "path": "Cargo.toml",
+          "expected": "0d118334417380f47461c89b50c550bd3af758f705e1ce2ebf6252ae9ecd368b",
+          "actual": "0d118334417380f47461c89b50c550bd3af758f705e1ce2ebf6252ae9ecd368b",
+          "match": true
+        },
+        {
+          "path": "../Cargo.lock",
+          "expected": "2e5f218d4147b915e4af8362835f9b17bd7de3f21b98c89a290abda20921e969",
+          "actual": "2e5f218d4147b915e4af8362835f9b17bd7de3f21b98c89a290abda20921e969",
+          "match": true
+        },
+        {
+          "path": "evidence/P08_AUDIT_TARGET.json",
+          "expected": "a3486eca50fc9f0f9685ece4e31609fa904eb972afb81bbe5610dfa6d43bed9e",
+          "actual": "a3486eca50fc9f0f9685ece4e31609fa904eb972afb81bbe5610dfa6d43bed9e",
+          "match": true
+        },
+        {
+          "path": "evidence/P08_AUDIT_TARGET_002.json",
+          "expected": "1a0b7c628b581ed5c476b3e6aa26399394575013d5aa30140c6984d9b4d42101",
+          "actual": "1a0b7c628b581ed5c476b3e6aa26399394575013d5aa30140c6984d9b4d42101",
+          "match": true
+        },
+        {
+          "path": "docs/goal_execution_pipeline.md",
+          "expected": "5c19b62ae16943ef58ea2d02446f2fa188fa7bf8c18ad42d8ee79d0b18676c72",
+          "actual": "5c19b62ae16943ef58ea2d02446f2fa188fa7bf8c18ad42d8ee79d0b18676c72",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/P2G_30_CORE_ONLY_FREEZE_002.ko.md",
+          "expected": "c55dbe40a2e5ec40fb3a62ff6d02dbff6d359395a048cb08e795f22e5d25452a",
+          "actual": "c55dbe40a2e5ec40fb3a62ff6d02dbff6d359395a048cb08e795f22e5d25452a",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/P2G_40_CORE_ONLY_PHASE_PLAN_002.ko.md",
+          "expected": "6d2ffd859e833df39b74de4ac93df5d32e01425b3172ebee499fc1b54e83e25b",
+          "actual": "6d2ffd859e833df39b74de4ac93df5d32e01425b3172ebee499fc1b54e83e25b",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/P2G_40_CORE_ONLY_PHASE_PLAN_VALIDATION_RECEIPT_002.json",
+          "expected": "d5d467b8314a5d0e078d29180292985ab92756f931aba100789abdce1557e9fb",
+          "actual": "d5d467b8314a5d0e078d29180292985ab92756f931aba100789abdce1557e9fb",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/P2G_50_CORE_ONLY_GOAL_SET_002.ko.md",
+          "expected": "2fc3730dc9e0024e3ead2a1ae37851799411dc63d5f63614430e37d26b3af08a",
+          "actual": "2fc3730dc9e0024e3ead2a1ae37851799411dc63d5f63614430e37d26b3af08a",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/P2G_60_CORE_ONLY_HANDOFF_002.ko.md",
+          "expected": "40ec840f91be7b600d3edab509715f78d35887b7e4ddb5a3e642cd04abd8e4ff",
+          "actual": "40ec840f91be7b600d3edab509715f78d35887b7e4ddb5a3e642cd04abd8e4ff",
+          "match": true
+        },
+        {
+          "path": "docs/architecture/runtime_feature_manifest.v1.json",
+          "expected": "ed3c4fb81de3fdae080b8f834a8d67edfcb649f1a8f8cf8b17f140a78acf3779",
+          "actual": "ed3c4fb81de3fdae080b8f834a8d67edfcb649f1a8f8cf8b17f140a78acf3779",
+          "match": true
+        },
+        {
+          "path": "Cargo.toml",
+          "expected": "0d118334417380f47461c89b50c550bd3af758f705e1ce2ebf6252ae9ecd368b",
+          "actual": "0d118334417380f47461c89b50c550bd3af758f705e1ce2ebf6252ae9ecd368b",
+          "match": true
+        },
+        {
+          "path": "../Cargo.lock",
+          "expected": "2e5f218d4147b915e4af8362835f9b17bd7de3f21b98c89a290abda20921e969",
+          "actual": "2e5f218d4147b915e4af8362835f9b17bd7de3f21b98c89a290abda20921e969",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/execution/p01_preservation_observability/COMPLETION_AUDIT.md",
+          "expected": "4b02feed4abb1dd3c85af7fd072740fad49b5431b95932964c2711c65dcdcda6",
+          "actual": "4b02feed4abb1dd3c85af7fd072740fad49b5431b95932964c2711c65dcdcda6",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/execution/p02_validated_data/COMPLETION_AUDIT.md",
+          "expected": "7e52ff1bfeab768362a7bdab80802253376721b7a452f20a52f72b8ce7650ce3",
+          "actual": "7e52ff1bfeab768362a7bdab80802253376721b7a452f20a52f72b8ce7650ce3",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/execution/p03_application_authority/COMPLETION_AUDIT.md",
+          "expected": "5ad8314fe3d0ff50fd845ebbe4ece22356b37ce8a34ca9fce7cf2ffc333b3c57",
+          "actual": "5ad8314fe3d0ff50fd845ebbe4ece22356b37ce8a34ca9fce7cf2ffc333b3c57",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/execution/p04_battle_kernel/COMPLETION_AUDIT.md",
+          "expected": "ede79ef4c5d95ac5014bb3f41f03c223a8b1568b789527f7ca56175e98749da7",
+          "actual": "ede79ef4c5d95ac5014bb3f41f03c223a8b1568b789527f7ca56175e98749da7",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/execution/p05_bounded_history_result/COMPLETION_AUDIT.md",
+          "expected": "65b60f99096a6a74f74905105dcbee646bddd5aff128db6f0d03f03e71f190f2",
+          "actual": "65b60f99096a6a74f74905105dcbee646bddd5aff128db6f0d03f03e71f190f2",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/execution/p06_checkpoint_migration/COMPLETION_AUDIT.md",
+          "expected": "7370e3f539b16a10453d4b58f652ad20306c4bc03035f8e55e885380a16081db",
+          "actual": "7370e3f539b16a10453d4b58f652ad20306c4bc03035f8e55e885380a16081db",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/execution/p07_core_public_projection/COMPLETION_AUDIT.md",
+          "expected": "5aa0d9f7deb68fa15fdc03ae87b56967675cb11dac2f931040801450821ec610",
+          "actual": "5aa0d9f7deb68fa15fdc03ae87b56967675cb11dac2f931040801450821ec610",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/execution/p08_performance_final_integration/COMPLETION_AUDIT.md",
+          "expected": "127e1cd52e771f79159fe415f62431fde480d38237343caa14cbbe244a96ca9c",
+          "actual": "127e1cd52e771f79159fe415f62431fde480d38237343caa14cbbe244a96ca9c",
+          "match": true
+        },
+        {
+          "path": "evidence/P01_SUCCESSOR_AUDIT_TARGET_009.json",
+          "expected": "83b75421a54063b8ee67b38bf61527c6078b97685bfb25fbb238889c79701994",
+          "actual": "83b75421a54063b8ee67b38bf61527c6078b97685bfb25fbb238889c79701994",
+          "match": true
+        },
+        {
+          "path": "evidence/P02_SUCCESSOR_AUDIT_TARGET_007.json",
+          "expected": "ae12124d9708dfa576a1fd3924e642a6bfbbd30a1be3ffbbf15c4fd52fc84a25",
+          "actual": "ae12124d9708dfa576a1fd3924e642a6bfbbd30a1be3ffbbf15c4fd52fc84a25",
+          "match": true
+        },
+        {
+          "path": "evidence/P03_SUCCESSOR_AUDIT_TARGET_007.json",
+          "expected": "c8e54d394ec23cb270e636ab79741e0fa9319fadb6062120566cfd3503d24340",
+          "actual": "c8e54d394ec23cb270e636ab79741e0fa9319fadb6062120566cfd3503d24340",
+          "match": true
+        },
+        {
+          "path": "evidence/P04_SUCCESSOR_AUDIT_TARGET_005.json",
+          "expected": "ac2c7d1ade176e9db247c4244c06fc575431f9aa55525e522b936e0bfda7df84",
+          "actual": "ac2c7d1ade176e9db247c4244c06fc575431f9aa55525e522b936e0bfda7df84",
+          "match": true
+        },
+        {
+          "path": "evidence/P05_SUCCESSOR_AUDIT_TARGET_005.json",
+          "expected": "3c8d88e51bab0200997eb59ba3220b5cff161b5e3db618a1b3e9bc268a6b70ae",
+          "actual": "3c8d88e51bab0200997eb59ba3220b5cff161b5e3db618a1b3e9bc268a6b70ae",
+          "match": true
+        },
+        {
+          "path": "evidence/P06_SUCCESSOR_AUDIT_TARGET_003.json",
+          "expected": "33a6c6a77c169346bc1f73541d3d9bbc13521d3d6a1160bc1e1e05bfb61927c5",
+          "actual": "33a6c6a77c169346bc1f73541d3d9bbc13521d3d6a1160bc1e1e05bfb61927c5",
+          "match": true
+        },
+        {
+          "path": "evidence/P07_SUCCESSOR_AUDIT_TARGET_002.json",
+          "expected": "43b98a7a029423e69f965a982de8ee74c7673b83d047a4844a822c7785da7aab",
+          "actual": "43b98a7a029423e69f965a982de8ee74c7673b83d047a4844a822c7785da7aab",
+          "match": true
+        },
+        {
+          "path": "evidence/P08_SUCCESSOR_AUDIT_TARGET_001.json",
+          "expected": "86c72a8bf31e2ec16caa4d6ca2a44bd79b44257f6341b50fd32db028b94046f9",
+          "actual": "86c72a8bf31e2ec16caa4d6ca2a44bd79b44257f6341b50fd32db028b94046f9",
+          "match": true
+        },
+        {
+          "path": "evidence/P07_AUDIT_TARGET_002.json",
+          "expected": "9fc894b57107eaf043e5601e6ff1155f9a73cdf24f8968586e539150d7ae2755",
+          "actual": "9fc894b57107eaf043e5601e6ff1155f9a73cdf24f8968586e539150d7ae2755",
+          "match": true
+        },
+        {
+          "path": "evidence/P08_AUDIT_TARGET_002.json",
+          "expected": "1a0b7c628b581ed5c476b3e6aa26399394575013d5aa30140c6984d9b4d42101",
+          "actual": "1a0b7c628b581ed5c476b3e6aa26399394575013d5aa30140c6984d9b4d42101",
+          "match": true
+        },
+        {
+          "path": "evidence/P07_CORE_PUBLIC_PROJECTION_RECEIPT_002.json",
+          "expected": "a169a85657829dddcfe7406aa03af4aec0095ff162ba6c28149cc62a72632d9d",
+          "actual": "a169a85657829dddcfe7406aa03af4aec0095ff162ba6c28149cc62a72632d9d",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/execution/p07_core_public_projection/SUCCESSOR_CURRENTNESS_AUDIT_002.md",
+          "expected": "2d83082558dc5c40148cc024192766e6a008ea265d93658a98f39dedeb12bcb1",
+          "actual": "2d83082558dc5c40148cc024192766e6a008ea265d93658a98f39dedeb12bcb1",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/execution/p08_performance_final_integration/SUCCESSOR_CURRENTNESS_AUDIT_001.md",
+          "expected": "5a23e2c211c1f5cba7aa6857d4918584386e064847eeb1be8a31beed20182713",
+          "actual": "5a23e2c211c1f5cba7aa6857d4918584386e064847eeb1be8a31beed20182713",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/execution/p08_performance_final_integration/FINAL_EVIDENCE_INDEX.md",
+          "expected": "d8abbe689696e2ea6494d550090647372fccebb092a2353025c50adad2568919",
+          "actual": "d8abbe689696e2ea6494d550090647372fccebb092a2353025c50adad2568919",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/execution/p08_performance_final_integration/STRUCTURAL_AUDIT.md",
+          "expected": "0c39777d6dae5219ce6de034f0615cc71c7bfe19b796484db55967cf4ad3b9cb",
+          "actual": "0c39777d6dae5219ce6de034f0615cc71c7bfe19b796484db55967cf4ad3b9cb",
+          "match": true
+        }
+      ],
+      "meaning": "byte comparison only; prior tests were not rerun; dependencies outside this manifest not attested"
+    },
+    {
+      "path": "core_enhanced/evidence/P08_AUDIT_TARGET_002.json",
+      "sha256": "1a0b7c628b581ed5c476b3e6aa26399394575013d5aa30140c6984d9b4d42101",
+      "record_ref": "ATR-CRAR-C2-P08-GEX20-001",
+      "content_member_count": 16,
+      "path_hash_bindings_checked": 17,
+      "matches": 17,
+      "bindings": [
+        {
+          "path": "evidence/P08_AUDIT_TARGET.json",
+          "expected": "a3486eca50fc9f0f9685ece4e31609fa904eb972afb81bbe5610dfa6d43bed9e",
+          "actual": "a3486eca50fc9f0f9685ece4e31609fa904eb972afb81bbe5610dfa6d43bed9e",
+          "match": true
+        },
+        {
+          "path": "src/game/world/snapshot.rs",
+          "expected": "35759cd8335ef6565b0dabded301d69a7513be125ddbb0014eda29e37294c10e",
+          "actual": "35759cd8335ef6565b0dabded301d69a7513be125ddbb0014eda29e37294c10e",
+          "match": true
+        },
+        {
+          "path": "src/game/world/tests/combat.rs",
+          "expected": "07b0a4c26719e342e46066cd96eb9a9a04f3e349d554ca7fa41c6e3dcf67930b",
+          "actual": "07b0a4c26719e342e46066cd96eb9a9a04f3e349d554ca7fa41c6e3dcf67930b",
+          "match": true
+        },
+        {
+          "path": "evidence/P07_AUDIT_TARGET_002.json",
+          "expected": "9fc894b57107eaf043e5601e6ff1155f9a73cdf24f8968586e539150d7ae2755",
+          "actual": "9fc894b57107eaf043e5601e6ff1155f9a73cdf24f8968586e539150d7ae2755",
+          "match": true
+        },
+        {
+          "path": "evidence/P07_SUCCESSOR_AUDIT_TARGET_002.json",
+          "expected": "43b98a7a029423e69f965a982de8ee74c7673b83d047a4844a822c7785da7aab",
+          "actual": "43b98a7a029423e69f965a982de8ee74c7673b83d047a4844a822c7785da7aab",
+          "match": true
+        },
+        {
+          "path": "evidence/P07_CORE_PUBLIC_PROJECTION_RECEIPT_002.json",
+          "expected": "a169a85657829dddcfe7406aa03af4aec0095ff162ba6c28149cc62a72632d9d",
+          "actual": "a169a85657829dddcfe7406aa03af4aec0095ff162ba6c28149cc62a72632d9d",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/execution/p07_core_public_projection/COMPLETION_AUDIT.md",
+          "expected": "5aa0d9f7deb68fa15fdc03ae87b56967675cb11dac2f931040801450821ec610",
+          "actual": "5aa0d9f7deb68fa15fdc03ae87b56967675cb11dac2f931040801450821ec610",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/execution/p07_core_public_projection/SUCCESSOR_CURRENTNESS_AUDIT_002.md",
+          "expected": "2d83082558dc5c40148cc024192766e6a008ea265d93658a98f39dedeb12bcb1",
+          "actual": "2d83082558dc5c40148cc024192766e6a008ea265d93658a98f39dedeb12bcb1",
+          "match": true
+        },
+        {
+          "path": "evidence/P01_SUCCESSOR_AUDIT_TARGET_009.json",
+          "expected": "83b75421a54063b8ee67b38bf61527c6078b97685bfb25fbb238889c79701994",
+          "actual": "83b75421a54063b8ee67b38bf61527c6078b97685bfb25fbb238889c79701994",
+          "match": true
+        },
+        {
+          "path": "evidence/P02_SUCCESSOR_AUDIT_TARGET_007.json",
+          "expected": "ae12124d9708dfa576a1fd3924e642a6bfbbd30a1be3ffbbf15c4fd52fc84a25",
+          "actual": "ae12124d9708dfa576a1fd3924e642a6bfbbd30a1be3ffbbf15c4fd52fc84a25",
+          "match": true
+        },
+        {
+          "path": "evidence/P03_SUCCESSOR_AUDIT_TARGET_007.json",
+          "expected": "c8e54d394ec23cb270e636ab79741e0fa9319fadb6062120566cfd3503d24340",
+          "actual": "c8e54d394ec23cb270e636ab79741e0fa9319fadb6062120566cfd3503d24340",
+          "match": true
+        },
+        {
+          "path": "evidence/P04_SUCCESSOR_AUDIT_TARGET_005.json",
+          "expected": "ac2c7d1ade176e9db247c4244c06fc575431f9aa55525e522b936e0bfda7df84",
+          "actual": "ac2c7d1ade176e9db247c4244c06fc575431f9aa55525e522b936e0bfda7df84",
+          "match": true
+        },
+        {
+          "path": "evidence/P05_SUCCESSOR_AUDIT_TARGET_005.json",
+          "expected": "3c8d88e51bab0200997eb59ba3220b5cff161b5e3db618a1b3e9bc268a6b70ae",
+          "actual": "3c8d88e51bab0200997eb59ba3220b5cff161b5e3db618a1b3e9bc268a6b70ae",
+          "match": true
+        },
+        {
+          "path": "evidence/P06_SUCCESSOR_AUDIT_TARGET_003.json",
+          "expected": "33a6c6a77c169346bc1f73541d3d9bbc13521d3d6a1160bc1e1e05bfb61927c5",
+          "actual": "33a6c6a77c169346bc1f73541d3d9bbc13521d3d6a1160bc1e1e05bfb61927c5",
+          "match": true
+        },
+        {
+          "path": "docs/architecture/runtime_feature_manifest.v1.json",
+          "expected": "ed3c4fb81de3fdae080b8f834a8d67edfcb649f1a8f8cf8b17f140a78acf3779",
+          "actual": "ed3c4fb81de3fdae080b8f834a8d67edfcb649f1a8f8cf8b17f140a78acf3779",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/P2G_50_CORE_ONLY_GOAL_SET_002.ko.md",
+          "expected": "2fc3730dc9e0024e3ead2a1ae37851799411dc63d5f63614430e37d26b3af08a",
+          "actual": "2fc3730dc9e0024e3ead2a1ae37851799411dc63d5f63614430e37d26b3af08a",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/P2G_60_CORE_ONLY_HANDOFF_002.ko.md",
+          "expected": "40ec840f91be7b600d3edab509715f78d35887b7e4ddb5a3e642cd04abd8e4ff",
+          "actual": "40ec840f91be7b600d3edab509715f78d35887b7e4ddb5a3e642cd04abd8e4ff",
+          "match": true
+        }
+      ],
+      "meaning": "byte comparison only; prior tests were not rerun; dependencies outside this manifest not attested"
+    },
+    {
+      "path": "core_enhanced/evidence/P08_AUDIT_TARGET.json",
+      "sha256": "a3486eca50fc9f0f9685ece4e31609fa904eb972afb81bbe5610dfa6d43bed9e",
+      "record_ref": "ATR-CRAR-C2-P08-GEX10-001",
+      "content_member_count": 95,
+      "path_hash_bindings_checked": 95,
+      "matches": 95,
+      "bindings": [
+        {
+          "path": "Cargo.toml",
+          "expected": "0d118334417380f47461c89b50c550bd3af758f705e1ce2ebf6252ae9ecd368b",
+          "actual": "0d118334417380f47461c89b50c550bd3af758f705e1ce2ebf6252ae9ecd368b",
+          "match": true
+        },
+        {
+          "path": "../Cargo.lock",
+          "expected": "2e5f218d4147b915e4af8362835f9b17bd7de3f21b98c89a290abda20921e969",
+          "actual": "2e5f218d4147b915e4af8362835f9b17bd7de3f21b98c89a290abda20921e969",
+          "match": true
+        },
+        {
+          "path": "src/application.rs",
+          "expected": "631d112435fc48b830cf33a659e8e3d9933cc9ce05f8e87aa845c4a74c77b9a1",
+          "actual": "631d112435fc48b830cf33a659e8e3d9933cc9ce05f8e87aa845c4a74c77b9a1",
+          "match": true
+        },
+        {
+          "path": "src/game/world.rs",
+          "expected": "adfa59201b744ad6873cf1b68e9bf3053f6725ec20dae106103bf0ad70f059e1",
+          "actual": "adfa59201b744ad6873cf1b68e9bf3053f6725ec20dae106103bf0ad70f059e1",
+          "match": true
+        },
+        {
+          "path": "src/game/world/application.rs",
+          "expected": "7d9c8f707a90ff5c32cf3de2355d4188f2906045248445ccdcac336d56e20df1",
+          "actual": "7d9c8f707a90ff5c32cf3de2355d4188f2906045248445ccdcac336d56e20df1",
+          "match": true
+        },
+        {
+          "path": "src/game/world/state.rs",
+          "expected": "d7328e466eccbdc6616364b5c86a736430a3accf22c823fec5ae7dfa38aebaab",
+          "actual": "d7328e466eccbdc6616364b5c86a736430a3accf22c823fec5ae7dfa38aebaab",
+          "match": true
+        },
+        {
+          "path": "src/game/world/active_run.rs",
+          "expected": "f8c02ba347d5d6800413cade30a72a4b34b7a4806fcc145854a27acb9bea72a8",
+          "actual": "f8c02ba347d5d6800413cade30a72a4b34b7a4806fcc145854a27acb9bea72a8",
+          "match": true
+        },
+        {
+          "path": "src/game/world/node_flow.rs",
+          "expected": "79e61208e0a84a81a2b8571d4a45385d32eb54506cf927518648ac44fc421b08",
+          "actual": "79e61208e0a84a81a2b8571d4a45385d32eb54506cf927518648ac44fc421b08",
+          "match": true
+        },
+        {
+          "path": "src/game/battle/event_log.rs",
+          "expected": "3dbd55e505e293bc59bac030086c3863e594cabf837d310ce8aaa92511ffa566",
+          "actual": "3dbd55e505e293bc59bac030086c3863e594cabf837d310ce8aaa92511ffa566",
+          "match": true
+        },
+        {
+          "path": "src/game/battle/result_stats.rs",
+          "expected": "6c75a52b24bf6b610b5f13331bbc0bebfbb70098728639c5e5fb291917be4c70",
+          "actual": "6c75a52b24bf6b610b5f13331bbc0bebfbb70098728639c5e5fb291917be4c70",
+          "match": true
+        },
+        {
+          "path": "src/game/battle/recording.rs",
+          "expected": "d418bac2f711b3ef1df215498707e6c5a7473d1d08ff95bb802b074e2d7d587f",
+          "actual": "d418bac2f711b3ef1df215498707e6c5a7473d1d08ff95bb802b074e2d7d587f",
+          "match": true
+        },
+        {
+          "path": "src/game/battle/core/mod.rs",
+          "expected": "7fa1ef2890ae00aae82aafa48b641f24f9d34aab39941c3343b4bece240b271d",
+          "actual": "7fa1ef2890ae00aae82aafa48b641f24f9d34aab39941c3343b4bece240b271d",
+          "match": true
+        },
+        {
+          "path": "src/game/battle/core/movement/engine.rs",
+          "expected": "89e753f624927d7c4a057777f85d816f189c019001ea6c76227bed3047fa582f",
+          "actual": "89e753f624927d7c4a057777f85d816f189c019001ea6c76227bed3047fa582f",
+          "match": true
+        },
+        {
+          "path": "src/game/battle/core/movement/planner.rs",
+          "expected": "58ee8b3c4de3b4c3fb12c002353063befee12934322324e0a0b162b977e2d82b",
+          "actual": "58ee8b3c4de3b4c3fb12c002353063befee12934322324e0a0b162b977e2d82b",
+          "match": true
+        },
+        {
+          "path": "src/game/battle/core/movement/rapier_backend.rs",
+          "expected": "764124edb49ab1181352f1e9da83b0ef48d2fe517dc64dc32982402fcf153af9",
+          "actual": "764124edb49ab1181352f1e9da83b0ef48d2fe517dc64dc32982402fcf153af9",
+          "match": true
+        },
+        {
+          "path": "src/game/battle/core/movement/blocking.rs",
+          "expected": "1fbc2ce8bd7f51e5dd2fd6edd2b30f41d3318672c133fc1e7169c026e1de0417",
+          "actual": "1fbc2ce8bd7f51e5dd2fd6edd2b30f41d3318672c133fc1e7169c026e1de0417",
+          "match": true
+        },
+        {
+          "path": "src/game/battle/core/targeting.rs",
+          "expected": "0d9308926ce1fe5bea6c5dd0c2da96b42cb66235b10c967597fb2d5287f5457e",
+          "actual": "0d9308926ce1fe5bea6c5dd0c2da96b42cb66235b10c967597fb2d5287f5457e",
+          "match": true
+        },
+        {
+          "path": "src/game/battle/core/target_usefulness.rs",
+          "expected": "f4ad2c6cf6d5de9474e84667204389dc613d79dcaebae63409ee95fd9313ae80",
+          "actual": "f4ad2c6cf6d5de9474e84667204389dc613d79dcaebae63409ee95fd9313ae80",
+          "match": true
+        },
+        {
+          "path": "docs/core_runtime_contract.md",
+          "expected": "09661c54ee37dba4d31671d3f913567a65466858d9a71ba2f8bcf4814195a421",
+          "actual": "09661c54ee37dba4d31671d3f913567a65466858d9a71ba2f8bcf4814195a421",
+          "match": true
+        },
+        {
+          "path": "docs/game_rulebook.md",
+          "expected": "482e964cc7015945dec29cf28293d58d9e315c8db47ef60e0f4765e3f1a36c6d",
+          "actual": "482e964cc7015945dec29cf28293d58d9e315c8db47ef60e0f4765e3f1a36c6d",
+          "match": true
+        },
+        {
+          "path": "docs/architecture/runtime_feature_manifest.v1.json",
+          "expected": "ed3c4fb81de3fdae080b8f834a8d67edfcb649f1a8f8cf8b17f140a78acf3779",
+          "actual": "ed3c4fb81de3fdae080b8f834a8d67edfcb649f1a8f8cf8b17f140a78acf3779",
+          "match": true
+        },
+        {
+          "path": "tools/runtime_architecture_preservation/Cargo.toml",
+          "expected": "70199b62a880bc7924755dd04ddf48c68b82f6096850ee6a320d32854003dda9",
+          "actual": "70199b62a880bc7924755dd04ddf48c68b82f6096850ee6a320d32854003dda9",
+          "match": true
+        },
+        {
+          "path": "tools/runtime_architecture_preservation/Cargo.lock",
+          "expected": "2ffda73f435af0d3fea27376a204e9044c4d6867e66721f34e66a29ac3d7b03c",
+          "actual": "2ffda73f435af0d3fea27376a204e9044c4d6867e66721f34e66a29ac3d7b03c",
+          "match": true
+        },
+        {
+          "path": "tools/runtime_architecture_preservation/src/main.rs",
+          "expected": "64debfd6546afb617636caf520fcb9e8ee49acc1ee2377306cf8a19afbd8c631",
+          "actual": "64debfd6546afb617636caf520fcb9e8ee49acc1ee2377306cf8a19afbd8c631",
+          "match": true
+        },
+        {
+          "path": "tools/runtime_architecture_preservation/src/bin/verify_feature_manifest.rs",
+          "expected": "9ad420948292c592f507a6790e8917b98bce8b25ca523b6e0c9bb20d25c65b37",
+          "actual": "9ad420948292c592f507a6790e8917b98bce8b25ca523b6e0c9bb20d25c65b37",
+          "match": true
+        },
+        {
+          "path": "evidence/P01_PERFORMANCE_BASELINE.json",
+          "expected": "86ccd5c78b0dcdfab502b1c5842a48c8a9df8963557e36cbf49b3ea5ec2b5848",
+          "actual": "86ccd5c78b0dcdfab502b1c5842a48c8a9df8963557e36cbf49b3ea5ec2b5848",
+          "match": true
+        },
+        {
+          "path": "evidence/P07_AUDIT_TARGET.json",
+          "expected": "44d81414fe5c13e143091c9e13085f986428871f01b68359567fda63789859ae",
+          "actual": "44d81414fe5c13e143091c9e13085f986428871f01b68359567fda63789859ae",
+          "match": true
+        },
+        {
+          "path": "tools/runtime_architecture_final_validation/Cargo.toml",
+          "expected": "7a791442a385906a90b9c908ddb0b968695a38f312776fd2ba65d60401749ef3",
+          "actual": "7a791442a385906a90b9c908ddb0b968695a38f312776fd2ba65d60401749ef3",
+          "match": true
+        },
+        {
+          "path": "tools/runtime_architecture_final_validation/Cargo.lock",
+          "expected": "d3936c76d4d1e831506461da803e9194cb5720ae7cca266f43212868eb5549c7",
+          "actual": "d3936c76d4d1e831506461da803e9194cb5720ae7cca266f43212868eb5549c7",
+          "match": true
+        },
+        {
+          "path": "tools/runtime_architecture_final_validation/src/p01_exact_replay.rs",
+          "expected": "fd6fb76fe06d4df36fae45ee945b12a32fc935a6b084cac4dc92dd8760390a72",
+          "actual": "fd6fb76fe06d4df36fae45ee945b12a32fc935a6b084cac4dc92dd8760390a72",
+          "match": true
+        },
+        {
+          "path": "tools/runtime_architecture_final_validation/src/final_performance.rs",
+          "expected": "8a6ca491b6a80b7df34c583e4a1a7879baef5281b4bedf611c9839b7a4025984",
+          "actual": "8a6ca491b6a80b7df34c583e4a1a7879baef5281b4bedf611c9839b7a4025984",
+          "match": true
+        },
+        {
+          "path": "tools/runtime_architecture_final_validation/src/public_guards.rs",
+          "expected": "078f95376522ce698ebf93cc11c59ee3bc5554b0dafe9f903bc12eb7ac07bf9e",
+          "actual": "078f95376522ce698ebf93cc11c59ee3bc5554b0dafe9f903bc12eb7ac07bf9e",
+          "match": true
+        },
+        {
+          "path": "tools/runtime_architecture_final_validation/default_fixture_api_audit/Cargo.toml",
+          "expected": "0befa2f0a9eb70f04f62d924ff8291a820707c8a76821ddadcf9e9dbdcfd615e",
+          "actual": "0befa2f0a9eb70f04f62d924ff8291a820707c8a76821ddadcf9e9dbdcfd615e",
+          "match": true
+        },
+        {
+          "path": "tools/runtime_architecture_final_validation/default_fixture_api_audit/Cargo.lock",
+          "expected": "d8eddb85163ca7305cf7c4418365574ed5cc62c454c9dfda7894ebb48085abee",
+          "actual": "d8eddb85163ca7305cf7c4418365574ed5cc62c454c9dfda7894ebb48085abee",
+          "match": true
+        },
+        {
+          "path": "tools/runtime_architecture_final_validation/default_fixture_api_audit/src/main.rs",
+          "expected": "707b83705646610c9d952b51a88f1bf9c658bf5e86f4fdd1a555a68c829271fa",
+          "actual": "707b83705646610c9d952b51a88f1bf9c658bf5e86f4fdd1a555a68c829271fa",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/execution/p08_performance_final_integration/PLAN.md",
+          "expected": "37b8341079f05ca2ac45a864e99b7a2ff3757b1b12c2973d7f755904988e21a4",
+          "actual": "37b8341079f05ca2ac45a864e99b7a2ff3757b1b12c2973d7f755904988e21a4",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/execution/p08_performance_final_integration/EXPERIMENTS.md",
+          "expected": "6eba96bd5c59fc1ddd1ba45aaf84b285725e84d36dcfd376e2846a48bd9f1df0",
+          "actual": "6eba96bd5c59fc1ddd1ba45aaf84b285725e84d36dcfd376e2846a48bd9f1df0",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/execution/p08_performance_final_integration/EXPERIMENT_NOTES.md",
+          "expected": "81929cabe68943e933200607696c69556908e0ac0c5cfaa2193d39ddb3e1a02a",
+          "actual": "81929cabe68943e933200607696c69556908e0ac0c5cfaa2193d39ddb3e1a02a",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/execution/p08_performance_final_integration/FINAL_EVIDENCE_INDEX.md",
+          "expected": "d8abbe689696e2ea6494d550090647372fccebb092a2353025c50adad2568919",
+          "actual": "d8abbe689696e2ea6494d550090647372fccebb092a2353025c50adad2568919",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/execution/p08_performance_final_integration/STRUCTURAL_AUDIT.md",
+          "expected": "0c39777d6dae5219ce6de034f0615cc71c7bfe19b796484db55967cf4ad3b9cb",
+          "actual": "0c39777d6dae5219ce6de034f0615cc71c7bfe19b796484db55967cf4ad3b9cb",
+          "match": true
+        },
+        {
+          "path": "evidence/P08_INITIAL_PERFORMANCE_LATENCY.json",
+          "expected": "ce358b1b278d628f31e7deaa341bc7ce00e7d3ee50c6414956cfa57fe56efc9c",
+          "actual": "ce358b1b278d628f31e7deaa341bc7ce00e7d3ee50c6414956cfa57fe56efc9c",
+          "match": true
+        },
+        {
+          "path": "evidence/P08_INITIAL_PUBLIC_GUARDS.json",
+          "expected": "d80bf2c75aabc566f622dad12c7a91dc562fc3c05b75632a5827b0a93c0331fa",
+          "actual": "d80bf2c75aabc566f622dad12c7a91dc562fc3c05b75632a5827b0a93c0331fa",
+          "match": true
+        },
+        {
+          "path": "evidence/P08_PRE_COW_PUBLIC_STAGING.json",
+          "expected": "7838bda79a1f92f08887397e6e5ce55d0d7c4b47d9bcacd76d4ae96a6c21fe14",
+          "actual": "7838bda79a1f92f08887397e6e5ce55d0d7c4b47d9bcacd76d4ae96a6c21fe14",
+          "match": true
+        },
+        {
+          "path": "evidence/P08_PROFILE_NO_BLOCKERS.json",
+          "expected": "1b12873d5ca2dfc19d131de11cfa786152483161ee0dd6cca7dbdaba6f55c7df",
+          "actual": "1b12873d5ca2dfc19d131de11cfa786152483161ee0dd6cca7dbdaba6f55c7df",
+          "match": true
+        },
+        {
+          "path": "evidence/P08_PROFILE_SINGLE_SORT.json",
+          "expected": "b06a7793b335d4a9ef2b0422bc39ff26786563008c6e718b67569c51821077c6",
+          "actual": "b06a7793b335d4a9ef2b0422bc39ff26786563008c6e718b67569c51821077c6",
+          "match": true
+        },
+        {
+          "path": "evidence/P08_FINAL_PERFORMANCE_LATENCY.json",
+          "expected": "eb8a25561f3e9ad5040070bacc90279d7966bd7566044e50d932d6d27af11dda",
+          "actual": "eb8a25561f3e9ad5040070bacc90279d7966bd7566044e50d932d6d27af11dda",
+          "match": true
+        },
+        {
+          "path": "evidence/P08_FINAL_PERFORMANCE_ALLOCATION.json",
+          "expected": "71b20b60c0181e372405737fcd20b56d1ab9a4c0f4f28c6aaf381744df1d7fee",
+          "actual": "71b20b60c0181e372405737fcd20b56d1ab9a4c0f4f28c6aaf381744df1d7fee",
+          "match": true
+        },
+        {
+          "path": "evidence/P08_FINAL_P01_EXACT_RESULT.json",
+          "expected": "1c8e69493f3f6065e038fe7041aefbab9888ecec9fa522ce457cdcea0f2c6d9d",
+          "actual": "1c8e69493f3f6065e038fe7041aefbab9888ecec9fa522ce457cdcea0f2c6d9d",
+          "match": true
+        },
+        {
+          "path": "evidence/P08_PUBLIC_PERFORMANCE_GUARDS.json",
+          "expected": "21475b8b52670926f1259e5ac7d8be8119922241b493018c2f1b6de96e9e76a1",
+          "actual": "21475b8b52670926f1259e5ac7d8be8119922241b493018c2f1b6de96e9e76a1",
+          "match": true
+        },
+        {
+          "path": "evidence/P08_PUBLIC_ALLOCATION_GUARDS.json",
+          "expected": "82ece8bc3a3b26d075369076221e71ffe0e3c93d6f477e9a02b7b1ef9d5093f9",
+          "actual": "82ece8bc3a3b26d075369076221e71ffe0e3c93d6f477e9a02b7b1ef9d5093f9",
+          "match": true
+        },
+        {
+          "path": "evidence/P08_PERFORMANCE_FINAL_INTEGRATION_RECEIPT.json",
+          "expected": "b44179c70bb4e815bac4a55d3fb9d7aa7f38f908793ee34a4e5029b34468b13d",
+          "actual": "b44179c70bb4e815bac4a55d3fb9d7aa7f38f908793ee34a4e5029b34468b13d",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/execution/p01_preservation_observability/SUCCESSOR_CURRENTNESS_AUDIT_008.md",
+          "expected": "793c5650730d3286729a3f6f683d14e0ee95646c7a3fc40e72c43e9007599f95",
+          "actual": "793c5650730d3286729a3f6f683d14e0ee95646c7a3fc40e72c43e9007599f95",
+          "match": true
+        },
+        {
+          "path": "evidence/P01_SUCCESSOR_AUDIT_TARGET_008.json",
+          "expected": "fca0d4aaa2ec1aa69adb99d894b192a2d0acaba278da127e2b8bffc14e521739",
+          "actual": "fca0d4aaa2ec1aa69adb99d894b192a2d0acaba278da127e2b8bffc14e521739",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/execution/p02_validated_data/SUCCESSOR_CURRENTNESS_AUDIT_007.md",
+          "expected": "48d9785e94d5924746ec72b59687c56362632c4b15cc87c331926461333449d3",
+          "actual": "48d9785e94d5924746ec72b59687c56362632c4b15cc87c331926461333449d3",
+          "match": true
+        },
+        {
+          "path": "evidence/P02_SUCCESSOR_AUDIT_TARGET_007.json",
+          "expected": "ae12124d9708dfa576a1fd3924e642a6bfbbd30a1be3ffbbf15c4fd52fc84a25",
+          "actual": "ae12124d9708dfa576a1fd3924e642a6bfbbd30a1be3ffbbf15c4fd52fc84a25",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/execution/p03_application_authority/SUCCESSOR_CURRENTNESS_AUDIT_006.md",
+          "expected": "f7fe3cd5aec46bcd873eae5520303e173af56631b212f148d0cd5da976587825",
+          "actual": "f7fe3cd5aec46bcd873eae5520303e173af56631b212f148d0cd5da976587825",
+          "match": true
+        },
+        {
+          "path": "evidence/P03_SUCCESSOR_AUDIT_TARGET_006.json",
+          "expected": "f20abd05aa607b74aa4cb8983c3603aa4ce18bdaafaed168a992ae0bea3076d5",
+          "actual": "f20abd05aa607b74aa4cb8983c3603aa4ce18bdaafaed168a992ae0bea3076d5",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/execution/p04_battle_kernel/SUCCESSOR_CURRENTNESS_AUDIT_005.md",
+          "expected": "e20598bb145fb5fc3dba27616e2c41747468780f9028cc3332d1f4ab0e0d02c9",
+          "actual": "e20598bb145fb5fc3dba27616e2c41747468780f9028cc3332d1f4ab0e0d02c9",
+          "match": true
+        },
+        {
+          "path": "evidence/P04_SUCCESSOR_AUDIT_TARGET_005.json",
+          "expected": "ac2c7d1ade176e9db247c4244c06fc575431f9aa55525e522b936e0bfda7df84",
+          "actual": "ac2c7d1ade176e9db247c4244c06fc575431f9aa55525e522b936e0bfda7df84",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/execution/p05_bounded_history_result/SUCCESSOR_CURRENTNESS_AUDIT_004.md",
+          "expected": "de6b34c724dfee442d66f324944f4a07f2249ba8b8fa0d5de476bff68d348540",
+          "actual": "de6b34c724dfee442d66f324944f4a07f2249ba8b8fa0d5de476bff68d348540",
+          "match": true
+        },
+        {
+          "path": "evidence/P05_SUCCESSOR_AUDIT_TARGET_004.json",
+          "expected": "b17d3a2ce819ffea621f44c4f7a81ed49457c68c04e929217270d606bfbf1cf6",
+          "actual": "b17d3a2ce819ffea621f44c4f7a81ed49457c68c04e929217270d606bfbf1cf6",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/execution/p06_checkpoint_migration/SUCCESSOR_CURRENTNESS_AUDIT_002.md",
+          "expected": "d2d0daf88bd443290054b2b30f065464e90552226c0eb4c09fb2f7e80b0322ea",
+          "actual": "d2d0daf88bd443290054b2b30f065464e90552226c0eb4c09fb2f7e80b0322ea",
+          "match": true
+        },
+        {
+          "path": "evidence/P06_SUCCESSOR_AUDIT_TARGET_002.json",
+          "expected": "581df8a794e7f5ff2358bcd975e576e5613d6f97359cba63d62941fdd79e0497",
+          "actual": "581df8a794e7f5ff2358bcd975e576e5613d6f97359cba63d62941fdd79e0497",
+          "match": true
+        },
+        {
+          "path": "docs/goals/current_runtime_architecture_remediation/execution/p07_core_public_projection/SUCCESSOR_CURRENTNESS_AUDIT_001.md",
+          "expected": "3a1037954433632dedee4881f0b3c599af00ca48bb6377e42271ff9a6e62ba10",
+          "actual": "3a1037954433632dedee4881f0b3c599af00ca48bb6377e42271ff9a6e62ba10",
+          "match": true
+        },
+        {
+          "path": "evidence/P07_SUCCESSOR_AUDIT_TARGET_001.json",
+          "expected": "2d9a91fce9bd9b0086709f188d49004b307f0823d2d71591403d2e29687eee2f",
+          "actual": "2d9a91fce9bd9b0086709f188d49004b307f0823d2d71591403d2e29687eee2f",
+          "match": true
+        },
+        {
+          "path": "tools/application_authority_api_audit/invalid/Cargo.lock",
+          "expected": "cfbb5c5c47057406e95f866fbd4336fe527abf17d1806f774b6e61bd772df8bd",
+          "actual": "cfbb5c5c47057406e95f866fbd4336fe527abf17d1806f774b6e61bd772df8bd",
+          "match": true
+        },
+        {
+          "path": "tools/application_authority_api_audit/invalid/Cargo.toml",
+          "expected": "67726b35db77de81e1088ca5d7ba48a86059157c0109578f02a88443f3aa995f",
+          "actual": "67726b35db77de81e1088ca5d7ba48a86059157c0109578f02a88443f3aa995f",
+          "match": true
+        },
+        {
+          "path": "tools/application_authority_api_audit/invalid/src/main.rs",
+          "expected": "0db03b856fccc7bb2eec626916ff4e0ba9965050106b41d7e18ca2f49d721a17",
+          "actual": "0db03b856fccc7bb2eec626916ff4e0ba9965050106b41d7e18ca2f49d721a17",
+          "match": true
+        },
+        {
+          "path": "tools/application_authority_api_audit/valid/Cargo.lock",
+          "expected": "2961a1c2ad286cfd886eecbb18367e2ca378bc41676cd05ccfd1f70ede4da691",
+          "actual": "2961a1c2ad286cfd886eecbb18367e2ca378bc41676cd05ccfd1f70ede4da691",
+          "match": true
+        },
+        {
+          "path": "tools/application_authority_api_audit/valid/Cargo.toml",
+          "expected": "9210a961d8b30f3ebd02fc6e3ccfaa0d6dce210e9dbf8ff60deaf3129423785d",
+          "actual": "9210a961d8b30f3ebd02fc6e3ccfaa0d6dce210e9dbf8ff60deaf3129423785d",
+          "match": true
+        },
+        {
+          "path": "tools/application_authority_api_audit/valid/src/main.rs",
+          "expected": "77b352fbe43bc7294ad1328e5229c8042bda4f27a5dec08746ffb0c18ce663d2",
+          "actual": "77b352fbe43bc7294ad1328e5229c8042bda4f27a5dec08746ffb0c18ce663d2",
+          "match": true
+        },
+        {
+          "path": "tools/battle_kernel_api_audit/invalid/Cargo.lock",
+          "expected": "22e0c646026f401491ece6739bafe46f295afb9870e032987e8f5ed4a871e0bf",
+          "actual": "22e0c646026f401491ece6739bafe46f295afb9870e032987e8f5ed4a871e0bf",
+          "match": true
+        },
+        {
+          "path": "tools/battle_kernel_api_audit/invalid/Cargo.toml",
+          "expected": "59f50e077f1ac3ec2cf03c96ffe4d50d718efe05e5e8e6264c39d8d54189848d",
+          "actual": "59f50e077f1ac3ec2cf03c96ffe4d50d718efe05e5e8e6264c39d8d54189848d",
+          "match": true
+        },
+        {
+          "path": "tools/battle_kernel_api_audit/invalid/src/main.rs",
+          "expected": "6d85ae97567db3e65bf64c1c5a18bf6135d2e516f0a3af12c72f1d1bec895981",
+          "actual": "6d85ae97567db3e65bf64c1c5a18bf6135d2e516f0a3af12c72f1d1bec895981",
+          "match": true
+        },
+        {
+          "path": "tools/battle_kernel_api_audit/valid/Cargo.lock",
+          "expected": "affe0884d729bc38b0d099b886846d2c1c220a5082dd2f13dd916d70e55734eb",
+          "actual": "affe0884d729bc38b0d099b886846d2c1c220a5082dd2f13dd916d70e55734eb",
+          "match": true
+        },
+        {
+          "path": "tools/battle_kernel_api_audit/valid/Cargo.toml",
+          "expected": "d9452149bd18582b32af196f837fd994b752959df0cad8eb5a608b4cee82eab2",
+          "actual": "d9452149bd18582b32af196f837fd994b752959df0cad8eb5a608b4cee82eab2",
+          "match": true
+        },
+        {
+          "path": "tools/battle_kernel_api_audit/valid/src/main.rs",
+          "expected": "45b3563658dc8d99bcc3607b82e268d58b0d29704d4a97880400d065440837f6",
+          "actual": "45b3563658dc8d99bcc3607b82e268d58b0d29704d4a97880400d065440837f6",
+          "match": true
+        },
+        {
+          "path": "tools/core_public_projection_api_audit/invalid/Cargo.lock",
+          "expected": "76a77315b23a364321cfb45517e7e0090e07215c248d62bd81fd5111e80f1ca1",
+          "actual": "76a77315b23a364321cfb45517e7e0090e07215c248d62bd81fd5111e80f1ca1",
+          "match": true
+        },
+        {
+          "path": "tools/core_public_projection_api_audit/invalid/Cargo.toml",
+          "expected": "a7b271a094bd6e59d6f849a5bfeca4dfce078ab5a7779d938486e670db551470",
+          "actual": "a7b271a094bd6e59d6f849a5bfeca4dfce078ab5a7779d938486e670db551470",
+          "match": true
+        },
+        {
+          "path": "tools/core_public_projection_api_audit/invalid/src/main.rs",
+          "expected": "2e7a06bf4e5ee6e7aaaafa565534d6106d882a703d95fd91e764ed1b7650f416",
+          "actual": "2e7a06bf4e5ee6e7aaaafa565534d6106d882a703d95fd91e764ed1b7650f416",
+          "match": true
+        },
+        {
+          "path": "tools/core_public_projection_api_audit/valid/Cargo.lock",
+          "expected": "82cdb58d10faa196ce2d9b48affd5cc05f042540c349d0f8971cf7208824a695",
+          "actual": "82cdb58d10faa196ce2d9b48affd5cc05f042540c349d0f8971cf7208824a695",
+          "match": true
+        },
+        {
+          "path": "tools/core_public_projection_api_audit/valid/Cargo.toml",
+          "expected": "bd1f0075ca7e53e59181b7d958099238efecc8f24d9769f9138596fa226ad42b",
+          "actual": "bd1f0075ca7e53e59181b7d958099238efecc8f24d9769f9138596fa226ad42b",
+          "match": true
+        },
+        {
+          "path": "tools/core_public_projection_api_audit/valid/src/main.rs",
+          "expected": "6e3b34ceb51701a19ee1e23fe4a25b5a7a1e92ffb6279ff94153fbdcc12984a8",
+          "actual": "6e3b34ceb51701a19ee1e23fe4a25b5a7a1e92ffb6279ff94153fbdcc12984a8",
+          "match": true
+        },
+        {
+          "path": "tools/history_result_api_audit/invalid/Cargo.lock",
+          "expected": "ad4ddb91b2515c60cbf5dceb0209bd0150d2332e34cfb23849580e738d050399",
+          "actual": "ad4ddb91b2515c60cbf5dceb0209bd0150d2332e34cfb23849580e738d050399",
+          "match": true
+        },
+        {
+          "path": "tools/history_result_api_audit/invalid/Cargo.toml",
+          "expected": "269190972fda2e042de95b7eeee457d5dbe024bdb7c92e5168b9ef333bcc5c29",
+          "actual": "269190972fda2e042de95b7eeee457d5dbe024bdb7c92e5168b9ef333bcc5c29",
+          "match": true
+        },
+        {
+          "path": "tools/history_result_api_audit/invalid/src/main.rs",
+          "expected": "3edd820e7c44d0588987f3fb0c05d31a10a44a1a9e3b946fef04b58f320a9b95",
+          "actual": "3edd820e7c44d0588987f3fb0c05d31a10a44a1a9e3b946fef04b58f320a9b95",
+          "match": true
+        },
+        {
+          "path": "tools/history_result_api_audit/valid/Cargo.lock",
+          "expected": "72d97606da0058390d1e41eeb83fee003485f9a45f7d1a71f67c20fdc9567338",
+          "actual": "72d97606da0058390d1e41eeb83fee003485f9a45f7d1a71f67c20fdc9567338",
+          "match": true
+        },
+        {
+          "path": "tools/history_result_api_audit/valid/Cargo.toml",
+          "expected": "93262e38807d9ae8faaa141d3c178e63b7b9bf1d84c7625bd35993bfdb9319d2",
+          "actual": "93262e38807d9ae8faaa141d3c178e63b7b9bf1d84c7625bd35993bfdb9319d2",
+          "match": true
+        },
+        {
+          "path": "tools/history_result_api_audit/valid/src/main.rs",
+          "expected": "031df4c383c441dcb7798bac6fa168d1c0be45f3713f836f42ed6447563b69c2",
+          "actual": "031df4c383c441dcb7798bac6fa168d1c0be45f3713f836f42ed6447563b69c2",
+          "match": true
+        },
+        {
+          "path": "tools/validated_data_api_audit/invalid/Cargo.lock",
+          "expected": "6af2f6b0443e342bf4a77ba7200d6e07fb06aa661e1460348ff2202284e5189c",
+          "actual": "6af2f6b0443e342bf4a77ba7200d6e07fb06aa661e1460348ff2202284e5189c",
+          "match": true
+        },
+        {
+          "path": "tools/validated_data_api_audit/invalid/Cargo.toml",
+          "expected": "b78aceb93fe03bca865878062caf6c28f7186cd8616e7f598f8e84225a7bada8",
+          "actual": "b78aceb93fe03bca865878062caf6c28f7186cd8616e7f598f8e84225a7bada8",
+          "match": true
+        },
+        {
+          "path": "tools/validated_data_api_audit/invalid/src/main.rs",
+          "expected": "645612a0b1125e4e0098712c267b051a7406283f67b772e4770f84dd63b45b46",
+          "actual": "645612a0b1125e4e0098712c267b051a7406283f67b772e4770f84dd63b45b46",
+          "match": true
+        },
+        {
+          "path": "tools/validated_data_api_audit/valid/Cargo.lock",
+          "expected": "cd1d9e35da0894487e4a54538ed8c9aba99169a7e42aeb7a2485ee0df00c5308",
+          "actual": "cd1d9e35da0894487e4a54538ed8c9aba99169a7e42aeb7a2485ee0df00c5308",
+          "match": true
+        },
+        {
+          "path": "tools/validated_data_api_audit/valid/Cargo.toml",
+          "expected": "82dcaa2d15bd8b1c1ec9294b21b1be246caf82b667661ed31be3a91eee33cac4",
+          "actual": "82dcaa2d15bd8b1c1ec9294b21b1be246caf82b667661ed31be3a91eee33cac4",
+          "match": true
+        },
+        {
+          "path": "tools/validated_data_api_audit/valid/src/main.rs",
+          "expected": "0a520996d9d24c5c1f0d1702f84ccccff92e1b984cf8f8e737a882be54969b28",
+          "actual": "0a520996d9d24c5c1f0d1702f84ccccff92e1b984cf8f8e737a882be54969b28",
+          "match": true
+        }
+      ],
+      "meaning": "byte comparison only; prior tests were not rerun; dependencies outside this manifest not attested"
+    }
+  ],
+  "diagnostics": {
+    "game_builds_tests_probes_benchmarks_executed": 0,
+    "p2g_validators_executed": 0,
+    "new_formal_audits": 0,
+    "thread_goal_query": {
+      "goal": null
+    },
+    "initial_full_git_inventory_hash_attempt": "interrupted (exit 130); replaced by bounded 1680-text-path baseline",
+    "process_visibility": "isolated namespace; cannot infer other sessions absent"
+  },
+  "final_checks": {
+    "status": "passed within the recorded inspection scope",
+    "checked_at_utc": "2026-09-09T04:31:48.028119+00:00",
+    "documentation": {
+      "checked_markdown_files": 2,
+      "local_links_checked": 92,
+      "errors": [],
+      "scope": "Only the two task Markdown files. Existing packaged manifests and upstream broken links were not repaired."
+    },
+    "preservation": {
+      "baseline_text_paths_checked": 1680,
+      "unchanged_path_hash_or_absence": 1679,
+      "allowed_changed_paths": [
+        "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md"
+      ],
+      "unexpected_changed_paths": [],
+      "new_git_status_entries": [
+        "?? core_enhanced/docs/roadmaps/content_authoring/records/CA00_NEXT-0001_EVIDENCE.json",
+        "?? core_enhanced/docs/roadmaps/content_authoring/records/CA00_NEXT-0001_INTAKE.ko.md"
+      ],
+      "removed_git_status_entries": [],
+      "status_and_preservation_comparison_exit_code": 0,
+      "method": "Compare SHA-256 or absent marker of each recorded baseline text path and compare exact porcelain -uall rows. The new evidence JSON is outside the baseline."
+    },
+    "final_markdown_sha256": {
+      "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md": "b356d3f15713dcf25ada170691795708e334d9f3024b92279e486e1e367b9e90",
+      "core_enhanced/docs/roadmaps/content_authoring/records/CA00_NEXT-0001_INTAKE.ko.md": "f24fd709460939c75a5086ff61908b8cd15aa4c90753a566cc9e2f941fac6a70"
+    },
+    "json_parse": "passed after final write",
+    "not_performed": [
+      "Rust build/test",
+      "probe/benchmark",
+      "P2G structure validator",
+      "formal P2G-20/40",
+      "GEX independent audit",
+      "full CA00 COV coverage",
+      "NEXT-0002 execution"
+    ],
+    "next_work": "NEXT-0002: remaining CA00 full source requirement/policy tracing; recorded only, not started"
+  }
+}

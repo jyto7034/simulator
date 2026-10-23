@@ -1,0 +1,77 @@
+{
+  "stage": "P2G-30",
+  "status": "complete",
+  "final_policy_freeze_ref": {
+    "Artifact Type": "Final Policy Freeze",
+    "Artifact ID": "FPF-CGMV-001",
+    "Content Digest": "sha256:f09b9497dbcf193859f8ac335b1e0d955a62730acd67024ba85837ddfe183bcc"
+  },
+  "freeze_membership": [
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CGMV-001",
+        "Content Digest": "sha256:f09b9497dbcf193859f8ac335b1e0d955a62730acd67024ba85837ddfe183bcc"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CGMV-AUTHOR-REVIEWED-001",
+        "Content Digest": "sha256:be06b1095d0a5ba0aec771ed9446fb43bf8a4d00eaf0a529679ded0b149c0e23"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CGMV-001",
+        "Content Digest": "sha256:f09b9497dbcf193859f8ac335b1e0d955a62730acd67024ba85837ddfe183bcc"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CGMV-G20-REVIEWED-001",
+        "Content Digest": "sha256:803c5d7bbb939d6046987f209fa9e06ab2233faee8f43bc66d19b905423d7a6b"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CGMV-001",
+        "Content Digest": "sha256:f09b9497dbcf193859f8ac335b1e0d955a62730acd67024ba85837ddfe183bcc"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CGMV-G21-REVIEWED-001",
+        "Content Digest": "sha256:fabfb66bbb3d4ec25944aabf2f7975693aef8a8533fa9221a2ada1033879eae3"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CGMV-001",
+        "Content Digest": "sha256:f09b9497dbcf193859f8ac335b1e0d955a62730acd67024ba85837ddfe183bcc"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CGMV-G22-REVIEWED-001",
+        "Content Digest": "sha256:c0848965a1bdd7026fbd1794a6318d87c2e64b1cfc610ffdcdc3208195fea364"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CGMV-001",
+        "Content Digest": "sha256:f09b9497dbcf193859f8ac335b1e0d955a62730acd67024ba85837ddfe183bcc"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CGMV-STORE-REVIEWED-001",
+        "Content Digest": "sha256:e330a5fa21adea1c5441510cee8da0ce7a362a125603c82f7b2bdb4ffb8c14e8"
+      }
+    }
+  ],
+  "checks": {
+    "members_exact_current_map": true,
+    "acceptance_unchanged": true,
+    "all_bindings_same_working_revision": true,
+    "open_questions": 0
+  }
+}

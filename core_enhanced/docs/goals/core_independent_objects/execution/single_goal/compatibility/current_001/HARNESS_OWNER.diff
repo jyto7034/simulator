@@ -1,0 +1,128 @@
+--- core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/probe.py
++++ core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/probe.py
+@@ -7,7 +7,7 @@
+ import tempfile
+ 
+ C = Path(__file__).resolve().parent
+-D = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics')
++D = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects')
+ R = D.parents[3]
+ sha = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
+ label = sys.argv[1] if len(sys.argv) > 1 else '001'
+@@ -40,7 +40,7 @@
+     assert result.returncode == 0, result.stderr[-2000:]
+     result = subprocess.run([str(binary)], capture_output=True)
+     (out / 'run.log').write_bytes(result.stdout + result.stderr)
+-    fixture = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/inputs') / old['fixture']
++    fixture = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/inputs') / old['fixture']
+     inputs += [source] + [p for p in fixture.rglob('*') if p.is_file()]
+     receipt = dict(command=command, exit_code=result.returncode, source_sha256=sha(source), binary_sha256=sha(binary), input_files=[dict(path=str(p.relative_to(R)), sha256=sha(p)) for p in sorted(inputs)], output_files=[dict(path=p.name, sha256=sha(p)) for p in sorted(out.iterdir())], expectation='failed host publication preserves run and durable checkpoint without battle; retry enters battle with higher persisted peak')
+     (out / 'RESULT.json').write_text(json.dumps(receipt, indent=2) + '\n')
+--- core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/public_probe.py
++++ core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/public_probe.py
+@@ -1,15 +1,15 @@
+ import sys
+ from pathlib import Path
+-sys.path.insert(0, '/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/tools')
++sys.path.insert(0, '/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/tools')
+ import run
+-run.HERE = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001')
++run.HERE = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001')
+ """Re-execute the five frozen public F01 inputs without rewriting old evidence."""
+ import json
+ import subprocess
+ import sys
+ from pathlib import Path
+ import run
+-run.PRIOR = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/inputs') / 'core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001'
++run.PRIOR = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/inputs') / 'core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001'
+ 
+ label = sys.argv[1]
+ assert label in ('before', 'after', 'after_002')
+--- core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/public_trace_probe.py
++++ core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/public_trace_probe.py
+@@ -1,8 +1,8 @@
+ import sys
+ from pathlib import Path
+-sys.path.insert(0, '/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/tools')
++sys.path.insert(0, '/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/tools')
+ import run
+-run.HERE = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001')
++run.HERE = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001')
+ """Check each corrected public cancellation input with diagnostic tracing enabled."""
+ from pathlib import Path
+ import json
+--- core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/public_cli.py
++++ core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/public_cli.py
+@@ -1,10 +1,10 @@
+ """Public release CLI; exact sources and unmodified predecessor packs are retained."""
+ import hashlib,json,subprocess,sys
+ from pathlib import Path
+-H=Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/inputs/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001');E=H.parents[1]/'evidence';R=Path('/mnt/f/work/simulator');B=R/'.cache/d07-runtime-amount-product-target/release/author_content'
++H=Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/inputs/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001');E=H.parents[1]/'evidence';R=Path('/mnt/f/work/simulator');B=R/'.cache/d07-runtime-amount-product-target/release/author_content'
+ OLD=R/'core_enhanced/docs/goals/content_authoring_fragment_copies/execution/single_goal/evidence'
+ PACKS=[('r06',E/'cli_predecessor_current_001/r06','fragment_freischutz_black_round'),('r07_snapshot',E/'cli_predecessor_current_001/r07_snapshot','r07_awakened'),('r07_live',E/'cli_predecessor_current_001/r07_live','r07_awakened'),('r10_snapshot',E/'r10_public_cli_002/snapshot','fragment_freischutz_black_round'),('r10_live',E/'r10_public_cli_002/live','fragment_freischutz_black_round')]+[(f'r12_{name}',E/'r12_public_cli_003'/name,'r08_strike' if name in ['released','effectssettled'] else 'fragment_freischutz_black_round') for name in ['hello','protection','released','effectssettled']]
+-E=Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001')/'evidence'/'cli_current';E.mkdir(exist_ok=False)
++E=Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001')/'evidence'/'cli_current';E.mkdir(exist_ok=False)
+ commands=[];comparisons=[]
+ def run(name,args):
+     log=E/f'{name}.log'
+--- core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/public_profile_probe.py
++++ core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/public_profile_probe.py
+@@ -13,9 +13,9 @@
+ import urllib.request
+ 
+ import sys
+-sys.path.insert(0, '/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/tools')
++sys.path.insert(0, '/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/tools')
+ from initialize import ROOT
+-HERE = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001')
++HERE = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001')
+ 
+ BINS = ROOT / ".cache/d07-runtime-amount-product-target/release"
+ label = sys.argv[1] if len(sys.argv) > 1 else "001"
+@@ -84,7 +84,7 @@
+ assert original[0]["source_receipt"] == selected[0]["source_receipt"]
+ 
+ # The predecessor scenario is unchanged and already exercises real public APIs.
+-fixture = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/inputs') / "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06"
++fixture = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/inputs') / "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06"
+ explain = OUT / "explain.json"
+ explain.write_text(json.dumps({"query": "definition", "key": {"kind": "Skill", "id": "fragment_freischutz_black_round"}}))
+ for operation in ("validate", "describe", "explain", "simulate"):
+--- core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/public_boundary_probe.py
++++ core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/public_boundary_probe.py
+@@ -4,9 +4,9 @@
+ from pathlib import Path
+ import subprocess
+ import sys
+-sys.path.insert(0, '/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/tools')
++sys.path.insert(0, '/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/tools')
+ from initialize import ROOT
+-HERE = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001')
++HERE = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001')
+ 
+ label = sys.argv[1] if len(sys.argv) > 1 else "001"
+ assert label.isdigit()
+--- core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/default_parity.py
++++ core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/default_parity.py
+@@ -109,7 +109,7 @@
+               archive_sha256=hashlib.sha256(archive_path.read_bytes()).hexdigest(),
+               configured_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+               scope="Numeric parity only. Execution/error parity uses current full suites and public predecessor oracles.")
+-with (Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001') / "evidence/DEFAULT_NUMBERS_001.json").open("x") as stream:
++with (Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001') / "evidence/DEFAULT_NUMBERS_001.json").open("x") as stream:
+     json.dump(result, stream, indent=2)
+     stream.write("\n")
+ print(json.dumps(dict(passed=True, compared_defaults=len(rows))))
+--- core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/host_peak_failure_probe.rs
++++ core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/host_peak_failure_probe.rs
+@@ -8,7 +8,7 @@
+ use serde_json::{Value,json};
+ use std::path::Path;
+ fn main(){
+- let root=Path::new("/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/inputs/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06");
++ let root=Path::new("/mnt/f/work/simulator/core_enhanced/docs/goals/core_independent_objects/execution/single_goal/compatibility/current_001/inputs/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06");
+  let selection:ContentSelection=serde_json::from_slice(&std::fs::read(root.join("selection.json")).unwrap()).unwrap();
+  let data=content_pack::load(&root.join("content"),&selection,&InputLimits::default()).unwrap();
+  let scenario:Value=serde_json::from_slice(&std::fs::read(root.join("scenario.json")).unwrap()).unwrap();

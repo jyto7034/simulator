@@ -17,6 +17,7 @@ pub(crate) struct ActiveRunCheckpointExport {
 }
 
 pub(crate) struct ActiveRunTransactionRollback {
+    profile_lifecycle: crate::game::expedition_lifecycle::ExpeditionLifecycle,
     state: GameCoreState,
     run_seed: u64,
     game_data: crate::game::data::ValidatedGameData,
@@ -36,7 +37,7 @@ struct ActiveRunCorePayloadHeader {
     version: u32,
 }
 
-const ACTIVE_RUN_CORE_PAYLOAD_VERSION: u32 = 12;
+const ACTIVE_RUN_CORE_PAYLOAD_VERSION: u32 = 18;
 mod continuation;
 pub(super) use continuation::ContinueState;
 mod v7;
@@ -74,34 +75,35 @@ fn active_run_checkpoint_codec_error(operation: &str, error: impl std::fmt::Disp
     GameError::InvalidStaticData(format!("active-run checkpoint {operation} failed: {error}"))
 }
 
-fn write_canonical_json(value: &Value, output: &mut Vec<u8>) -> Result<(), serde_json::Error> {
+fn write_canonical_json(value: &Value, output: &mut impl std::io::Write) -> Result<(), serde_json::Error> {
     match value {
         Value::Null | Value::Bool(_) | Value::Number(_) | Value::String(_) => {
             serde_json::to_writer(output, value)?;
         }
         Value::Array(values) => {
-            output.push(b'[');
+            output.write_all(b"[").map_err(serde_json::Error::io)?;
             for (index, value) in values.iter().enumerate() {
                 if index > 0 {
-                    output.push(b',');
+                    output.write_all(b",").map_err(serde_json::Error::io)?;
                 }
                 write_canonical_json(value, output)?;
             }
-            output.push(b']');
+            output.write_all(b"]").map_err(serde_json::Error::io)?;
         }
         Value::Object(values) => {
-            output.push(b'{');
-            let mut keys = values.keys().collect::<Vec<_>>();
-            keys.sort_unstable();
-            for (index, key) in keys.into_iter().enumerate() {
+            output.write_all(b"{").map_err(serde_json::Error::io)?;
+            // The supported serde_json graph uses its default BTreeMap.
+            // Its iterator is already canonical; sorting a second key vector
+            // for every object duplicates work and transient allocations.
+            for (index, (key, value)) in values.iter().enumerate() {
                 if index > 0 {
-                    output.push(b',');
+                    output.write_all(b",").map_err(serde_json::Error::io)?;
                 }
                 serde_json::to_writer(&mut *output, key)?;
-                output.push(b':');
-                write_canonical_json(&values[key], output)?;
+                output.write_all(b":").map_err(serde_json::Error::io)?;
+                write_canonical_json(value, output)?;
             }
-            output.push(b'}');
+            output.write_all(b"}").map_err(serde_json::Error::io)?;
         }
     }
     Ok(())
@@ -149,21 +151,21 @@ where
 }
 
 impl GameCore {
+    pub(crate) fn inspect_checkpoint_requirements(bytes: &[u8], max_bytes: usize) -> Result<crate::game::data::content_pack::ContentIdentity, GameError> {
+        continuation::inspect_requirements(bytes, max_bytes)
+    }
     pub fn capture_active_run_transaction_rollback(
         &self,
     ) -> Result<Option<ActiveRunTransactionRollback>, GameError> {
         let authoring_observation =
             crate::authoring::clone_shape::controlled_clone(&self.authoring_observation)?;
-        Ok(self
-            .state
-            .clone_non_battle_transaction_state()?
-            .map(|state| ActiveRunTransactionRollback {
-                state,
-                run_seed: self.run_seed,
-                game_data: self.game_data.clone(),
-                authoring_lifecycle: self.authoring_lifecycle,
-                authoring_observation,
-            }))
+        let Some(state) = self.state.clone_non_battle_transaction_state()? else { return Ok(None); };
+        let profile_lifecycle = crate::authoring::clone_shape::controlled_clone(&self.state.player_profile.lifecycle)?;
+        Ok(Some(ActiveRunTransactionRollback {
+            state, profile_lifecycle, run_seed: self.run_seed,
+            game_data: self.game_data.clone(), authoring_lifecycle: self.authoring_lifecycle,
+            authoring_observation,
+        }))
     }
 
     #[cfg(test)]
@@ -192,7 +194,10 @@ impl GameCore {
         &mut self,
         mut rollback: ActiveRunTransactionRollback,
     ) {
-        let player_profile = self.state.player_profile.clone();
+        // The application token admits exactly one unaccepted transaction. Restore
+        // its assets as well as run roots, retaining only monotonic knowledge.
+        let mut player_profile = std::mem::take(&mut self.state.player_profile);
+        player_profile.lifecycle = rollback.profile_lifecycle;
         rollback
             .state
             .run_power_authority
@@ -201,7 +206,7 @@ impl GameCore {
         // Local-install profile knowledge is a separate monotonic aggregate. An
         // active-run transaction rollback must not rewind registrations committed
         // while that transaction was in flight.
-        self.state.player_profile.merge(player_profile);
+        self.state.player_profile = player_profile;
         self.run_seed = rollback.run_seed;
         self.game_data = rollback.game_data;
         self.authoring_lifecycle = rollback.authoring_lifecycle;
@@ -226,8 +231,9 @@ impl GameCore {
 
     /// Restore a durable active run as a continue operation. This is not an
     /// explicit checkpoint load and therefore does not increment `loads_used`.
-    /// The transport player identity is injected at bootstrap and is not part of
-    /// the local-install active-run payload.
+    /// The root player is initialized from the caller identity. Expedition
+    /// payloads retain their owner player ID and instance binding; restoration
+    /// validates them against that caller and the authoritative profile.
     pub fn continue_from_active_run_checkpoint(
         &mut self,
         player_id: Uuid,

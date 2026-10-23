@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/artifacts/normal002/normal_host_lifecycle",
+    "start",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/test_parts/normal_inputs002/admission.json",
+    "/tmp/u13-normal-v2-private-nrtv_2me/route001/active",
+    "/tmp/u13-normal-v2-private-nrtv_2me/route001/profile",
+    "/tmp/u13-normal-v2-private-nrtv_2me/route001/000_start"
+  ],
+  "exit_code": 1
+}

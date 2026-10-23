@@ -53,6 +53,7 @@ impl PendingAmountEvaluation {
     ) -> Result<Option<Self>, GameError> {
         let RuntimeAmountEvaluation {
             amount,
+            pre_numeric: _,
             evaluated,
             usage,
             observation,

@@ -1,0 +1,12 @@
+{
+  "command": [
+    "core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/correction/u14_correction_001/artifacts/u14_correction_probe",
+    "correction-visited",
+    "/mnt/f/work/simulator/game_resources",
+    "/tmp/u14-correction-public002"
+  ],
+  "exit_code": 101,
+  "seconds": 4.6288282469977275,
+  "stdout": "public002.stdout.log",
+  "stderr": "public002.stderr.log"
+}

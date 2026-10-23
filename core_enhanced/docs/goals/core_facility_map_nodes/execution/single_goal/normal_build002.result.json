@@ -1,0 +1,18 @@
+{
+  "command": [
+    "python3",
+    "tools/cmva_build.py",
+    "--mode",
+    "plain",
+    "--kind",
+    "bins",
+    "--out",
+    "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/artifacts/normal002",
+    "--target-dir",
+    ".cache/u11-mod-validation-target"
+  ],
+  "exit_code": 0,
+  "seconds": 686.419352826997,
+  "stdout": "normal_build002.stdout.log",
+  "stderr": "normal_build002.stderr.log"
+}

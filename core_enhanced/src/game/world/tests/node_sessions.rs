@@ -34,25 +34,6 @@ fn nonblocking_map_visual_novel_session(
     }
 }
 
-fn make_monolith_exchange_available(
-    core: &mut GameCore,
-) -> Vec<crate::game::monolith::MonolithResidual> {
-    let threshold = core.run_policy().monolith.residual_exchange_threshold;
-    let residuals = (0..threshold)
-        .map(|sequence| crate::game::monolith::MonolithResidual {
-            sequence: sequence as u64,
-            source_abnormality_id: format!("exchange_source_{sequence}"),
-        })
-        .collect::<Vec<_>>();
-    let monolith = &mut core.state.run.as_mut().expect("run state").monolith;
-    monolith.residuals = residuals.clone();
-    monolith.next_residual_sequence = threshold as u64;
-    monolith.exchange_state = crate::game::monolith::MonolithExchangeState::Available;
-    monolith.exchange_shop_guarantee_issued = true;
-    monolith.next_floor_shop_guarantee_pending = false;
-    residuals
-}
-
 #[test]
 fn headquarters_contact_enters_safe_choice_state_with_recruitment_candidates() {
     let mut core = GameCore::new(game_data_with_map_content(), 123);
@@ -135,7 +116,7 @@ fn direct_complete_headquarters_rejects_without_mutating_complete_non_battle_sta
 }
 
 #[test]
-fn headquarters_recruit_employee_completes_node_and_adds_roster_member() {
+fn headquarters_recruit_employee_adds_roster_member_and_retains_session_until_exit() {
     let mut core = GameCore::new(game_data_with_map_content(), 123);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
@@ -174,11 +155,11 @@ fn headquarters_recruit_employee_completes_node_and_adds_roster_member() {
             completion,
             ..
         } if id == employee_definition_id
-            && matches!(*completion, BehaviorResult::NodeCompleted { .. })
+            && matches!(*completion, BehaviorResult::HeadquartersContactState { .. })
     ));
     assert_eq!(core.roster().unwrap().len(), initial_roster_size + 1);
-    assert!(matches!(core.get_state(), GameState::ViewingMap));
-    assert!(core.state.node_session.is_none());
+    assert!(matches!(core.get_state(), GameState::InNode { category: MapNodeCategory::HeadquartersContact, .. }));
+    assert_eq!(core.state.run.as_ref().unwrap().recruitment.active_session().unwrap().recruits_used, 1);
     let after = non_battle_state_without_profile_fingerprint(&core);
     let expected_items = core
         .game_data
@@ -231,6 +212,7 @@ fn headquarters_recruit_employee_completes_node_and_adds_roster_member() {
             "uuid_manager",
             "roster",
             "inventory",
+            "enkephalin",
         ],
     );
     assert_run_payload_fingerprint_unchanged_except(
@@ -243,9 +225,13 @@ fn headquarters_recruit_employee_completes_node_and_adds_roster_member() {
             "roster",
             "uuid_manager",
             "inventory",
+            "enkephalin",
         ],
     );
     assert_eq!(core.encounter_compendium_profile(), profile_before);
+    core.execute(player_id, PlayerBehavior::RequestEmergencySupplies).unwrap();
+    assert!(matches!(core.get_state(), GameState::ViewingMap));
+    assert!(core.state.node_session.is_none());
 }
 
 #[test]
@@ -322,6 +308,10 @@ fn headquarters_session_is_fixed_and_recruitment_moves_exactly_one_definition_to
         },
     )
     .unwrap();
+    assert_eq!(recruitment_queue(&core), original_queue[3..]);
+    assert_eq!(core.state.run.as_ref().unwrap().recruitment.active_session().unwrap().employee_definition_ids,
+        vec![offered[0].clone(), offered[2].clone()]);
+    core.execute(player_id, PlayerBehavior::RequestEmergencySupplies).unwrap();
     let expected_queue = original_queue[3..]
         .iter()
         .chain([&offered[0], &offered[2]])
@@ -742,174 +732,6 @@ fn trigger_sessions_append_after_existing_pending_without_interrupting_active_or
 }
 
 #[test]
-fn monolith_exchange_precedes_pending_without_interrupting_active_and_accepts() {
-    let mut core = GameCore::new(live_game_data_from_ron(), 0x2604_C041);
-    let player_id = Uuid::from_u128(0x2604_C041);
-    start_new_game_with_default_starters(&mut core, player_id);
-    let node_id = force_first_available_node(
-        &mut core,
-        MapNodeCategory::Shop,
-        "shop_general",
-        MapNodePayload::Shop {
-            shop_id: Some("unknown_exploration_shop".to_string()),
-            shop_pool_id: None,
-        },
-    );
-    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
-        .unwrap();
-    let residuals = make_monolith_exchange_available(&mut core);
-    let existing_active = nonblocking_map_visual_novel_session("existing_active");
-    let first_pending = nonblocking_map_visual_novel_session("first_pending");
-    let second_pending = nonblocking_map_visual_novel_session("second_pending");
-    core.state.visual_novel.active = Some(existing_active.clone());
-    core.state.visual_novel.queue = vec![first_pending.clone(), second_pending.clone()];
-    let mut expected_uuid_manager = core.state.uuid_manager.clone();
-    let expected_exchange_id = expected_uuid_manager
-        .next_visual_novel_session()
-        .to_string();
-    let expected_next_id = expected_uuid_manager
-        .peek(crate::game::managers::uuid_manager::UuidManager::NS_VISUAL_NOVEL_SESSION);
-
-    let result = core
-        .execute(player_id, PlayerBehavior::ConfirmEnterNode)
-        .unwrap();
-
-    assert!(matches!(result, BehaviorResult::ShopState { .. }));
-    assert_eq!(
-        core.state.visual_novel.active.as_ref(),
-        Some(&existing_active)
-    );
-    assert_eq!(core.state.visual_novel.queue.len(), 3);
-    let exchange = &core.state.visual_novel.queue[0];
-    assert_eq!(
-        exchange,
-        &crate::game::visual_novel::VisualNovelSession {
-            session_id: expected_exchange_id.clone(),
-            source: crate::game::visual_novel::VisualNovelSource::Map,
-            vn_id: VisualNovelId::new("monolith_residual_exchange"),
-            current_scene_id: VisualNovelSceneId::new("offer"),
-            committed_choice_id: None,
-            blocking: true,
-            presentation_mode:
-                crate::game::visual_novel::VisualNovelSessionPresentationMode::Cinematic,
-        }
-    );
-    assert_eq!(core.state.visual_novel.queue[1], first_pending);
-    assert_eq!(core.state.visual_novel.queue[2], second_pending);
-    assert_eq!(
-        core.state.run.as_ref().unwrap().monolith.exchange_state,
-        crate::game::monolith::MonolithExchangeState::Started
-    );
-    assert_eq!(
-        core.state.run.as_ref().unwrap().monolith.residuals,
-        residuals
-    );
-    assert_eq!(
-        core.state
-            .uuid_manager
-            .peek(crate::game::managers::uuid_manager::UuidManager::NS_VISUAL_NOVEL_SESSION,),
-        expected_next_id
-    );
-
-    core.execute(
-        player_id,
-        PlayerBehavior::AdvanceVisualNovel {
-            session_id: existing_active.session_id,
-            current_scene_id: existing_active.current_scene_id,
-        },
-    )
-    .unwrap();
-    assert_eq!(
-        core.state.visual_novel.active.as_ref().unwrap().session_id,
-        expected_exchange_id
-    );
-    core.execute(
-        player_id,
-        PlayerBehavior::SelectVisualNovelChoice {
-            session_id: expected_exchange_id,
-            current_scene_id: VisualNovelSceneId::new("offer"),
-            choice_id: crate::game::data::visual_novel_data::VisualNovelChoiceId::new("accept"),
-        },
-    )
-    .unwrap();
-    let monolith = &core.state.run.as_ref().unwrap().monolith;
-    assert_eq!(
-        monolith.exchange_state,
-        crate::game::monolith::MonolithExchangeState::Accepted
-    );
-    assert!(monolith.corrupted_monolith_acquired);
-    assert!(monolith.residuals.is_empty());
-    assert_eq!(
-        core.state.visual_novel.active.as_ref().unwrap().session_id,
-        "first_pending"
-    );
-}
-
-#[test]
-fn monolith_exchange_activates_when_idle_and_decline_preserves_residuals() {
-    let mut core = GameCore::new(live_game_data_from_ron(), 0x2604_C042);
-    let player_id = Uuid::from_u128(0x2604_C042);
-    start_new_game_with_default_starters(&mut core, player_id);
-    let node_id = force_first_available_node(
-        &mut core,
-        MapNodeCategory::Shop,
-        "shop_general",
-        MapNodePayload::Shop {
-            shop_id: Some("unknown_exploration_shop".to_string()),
-            shop_pool_id: None,
-        },
-    );
-    core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
-        .unwrap();
-    let residuals = make_monolith_exchange_available(&mut core);
-    assert!(core.state.visual_novel.active.is_none());
-    assert!(core.state.visual_novel.queue.is_empty());
-    let expected_exchange_id = core
-        .state
-        .uuid_manager
-        .peek(crate::game::managers::uuid_manager::UuidManager::NS_VISUAL_NOVEL_SESSION)
-        .to_string();
-
-    core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
-        .unwrap();
-
-    let exchange = core.state.visual_novel.active.as_ref().unwrap();
-    assert_eq!(exchange.session_id, expected_exchange_id);
-    assert_eq!(exchange.vn_id.as_str(), "monolith_residual_exchange");
-    assert_eq!(exchange.current_scene_id.as_str(), "offer");
-    assert_eq!(
-        exchange.source,
-        crate::game::visual_novel::VisualNovelSource::Map
-    );
-    assert!(exchange.blocking);
-    assert_eq!(
-        exchange.presentation_mode,
-        crate::game::visual_novel::VisualNovelSessionPresentationMode::Cinematic
-    );
-    assert_eq!(exchange.committed_choice_id, None);
-    assert!(core.state.visual_novel.queue.is_empty());
-
-    core.execute(
-        player_id,
-        PlayerBehavior::SelectVisualNovelChoice {
-            session_id: expected_exchange_id,
-            current_scene_id: VisualNovelSceneId::new("offer"),
-            choice_id: crate::game::data::visual_novel_data::VisualNovelChoiceId::new("decline"),
-        },
-    )
-    .unwrap();
-    let monolith = &core.state.run.as_ref().unwrap().monolith;
-    assert_eq!(
-        monolith.exchange_state,
-        crate::game::monolith::MonolithExchangeState::Declined
-    );
-    assert!(!monolith.corrupted_monolith_acquired);
-    assert_eq!(monolith.residuals, residuals);
-    assert!(core.state.visual_novel.active.is_none());
-    assert!(core.state.visual_novel.queue.is_empty());
-}
-
-#[test]
 fn checkpoint_payload_restores_exact_persisted_shop_session_page_and_purchase_history() {
     let mut core = GameCore::new(game_data_with_map_content(), 123);
     let player_id = Uuid::from_u128(1);
@@ -1040,332 +862,6 @@ fn shop_map_entry_without_run_rejects_before_creating_active_only_session() {
     assert!(core.state.run.is_none());
     assert!(core.state.active_node_content.is_none());
     assert!(matches!(core.get_state(), GameState::NotStarted));
-}
-
-#[test]
-fn live_shop_pool_separates_standard_shop_from_endless_floor_four_wandering_merchant() {
-    let payload = MapNodePayload::Shop {
-        shop_id: None,
-        shop_pool_id: Some("default_shops".to_string()),
-    };
-    let player_id = Uuid::from_u128(1);
-
-    let mut standard = GameCore::new(live_game_data_from_ron(), 123);
-    start_new_game_with_mode_and_default_starters(&mut standard, player_id, GameMode::Standard);
-    let standard_shop = standard
-        .resolve_map_shop(MapNodeId::new(Uuid::from_u128(0x5100)), &payload)
-        .unwrap()
-        .unwrap();
-    assert_eq!(standard_shop.id, "unknown_exploration_shop");
-    assert!(standard_shop
-        .offers
-        .iter()
-        .all(|offer| !matches!(offer.merchandise, ShopMerchandise::Monolith { .. })));
-
-    let mut endless = GameCore::new(live_game_data_from_ron(), 124);
-    start_new_game_with_mode_and_default_starters(&mut endless, player_id, GameMode::Endless);
-    endless
-        .state
-        .run
-        .as_mut()
-        .unwrap()
-        .run_progression
-        .mode_state = crate::game::map::RunProgressionModeState::Endless { floor_index: 3 };
-    let elite_ids = endless
-        .game_data
-        .pve_data
-        .encounters
-        .iter()
-        .filter(|encounter| encounter.encounter_class == PveEncounterClass::Elite)
-        .filter_map(|encounter| encounter.primary_abnormality_id())
-        .take(2)
-        .map(str::to_string)
-        .collect::<Vec<_>>();
-    assert_eq!(elite_ids.len(), 2);
-    for abnormality_id in &elite_ids {
-        endless
-            .state
-            .run
-            .as_mut()
-            .unwrap()
-            .monolith
-            .record_natural_victory(abnormality_id)
-            .unwrap();
-    }
-    let wandering = endless
-        .resolve_map_shop(MapNodeId::new(Uuid::from_u128(0x5101)), &payload)
-        .unwrap()
-        .unwrap();
-    assert_eq!(wandering.id, "wandering_monolith_shop");
-    assert_eq!(wandering.offers.len(), 3);
-    assert_eq!(
-        wandering
-            .offers
-            .iter()
-            .filter(|offer| matches!(offer.merchandise, ShopMerchandise::Monolith { .. }))
-            .count(),
-        2
-    );
-    endless
-        .state
-        .run
-        .as_mut()
-        .unwrap()
-        .monolith
-        .purchase(&elite_ids[0], 3)
-        .unwrap();
-    let saved_monolith = endless.state.run.as_ref().unwrap().monolith.clone();
-    endless.save_run_checkpoint_for_test().unwrap();
-    endless.state.run.as_mut().unwrap().monolith = Default::default();
-
-    endless.handle_load_run_checkpoint().unwrap();
-
-    assert_eq!(endless.state.run.as_ref().unwrap().monolith, saved_monolith);
-}
-
-#[test]
-fn typed_monolith_stage_round_trips_checkpoint_continue_and_transaction_rollback() {
-    let game_data = live_game_data_from_ron();
-    let player_id = Uuid::from_u128(1);
-    let mut source = GameCore::new(game_data.clone(), 125);
-    start_new_game_with_mode_and_default_starters(&mut source, player_id, GameMode::Endless);
-
-    let (encounter_id, abnormality_id) = source
-        .game_data
-        .pve_data
-        .encounters
-        .iter()
-        .find_map(|encounter| {
-            (encounter.encounter_class == PveEncounterClass::Elite)
-                .then(|| {
-                    encounter
-                        .primary_abnormality_id()
-                        .map(|abnormality_id| (encounter.id.clone(), abnormality_id.to_string()))
-                })
-                .flatten()
-        })
-        .expect("live data must contain a monolith-eligible Elite encounter");
-    let node_id = source
-        .state
-        .run
-        .as_ref()
-        .unwrap()
-        .map
-        .nodes
-        .iter()
-        .find(|node| {
-            node.category == MapNodeCategory::Combat
-                && node.combat_difficulty.as_ref().is_some_and(|difficulty| {
-                    matches!(
-                        difficulty.class,
-                        crate::game::map::MapNodeCombatDifficultyClass::Ordinary(_)
-                    )
-                })
-        })
-        .map(|node| node.id)
-        .expect("live Endless map must contain an ordinary Combat node");
-
-    {
-        let run = source.state.run.as_mut().unwrap();
-        run.monolith
-            .record_natural_victory(&abnormality_id)
-            .unwrap();
-        run.monolith.purchase(&abnormality_id, 3).unwrap();
-        let remanifestation = run
-            .monolith
-            .begin_remanifestation(node_id, &abnormality_id, &encounter_id)
-            .unwrap();
-        assert_eq!(remanifestation.stage, 2);
-
-        let node = run.map.node_mut(node_id).unwrap();
-        node.payload = MapNodePayload::Encounter {
-            encounter_id: Some(encounter_id.clone()),
-        };
-        let difficulty = node.combat_difficulty.as_mut().unwrap();
-        difficulty.class = crate::game::map::MapNodeCombatDifficultyClass::Role(
-            crate::game::data::run_policy_data::CombatNodeDifficultyRole::MonolithRemanifestation,
-        );
-        difficulty.monolith_stage = Some(crate::game::map::MonolithRemanifestationStage::Stage2);
-    }
-    let tuning = source
-        .run_policy()
-        .resolved_tuning_for_manifested_node(
-            source
-                .state
-                .run
-                .as_ref()
-                .unwrap()
-                .map
-                .node(node_id)
-                .unwrap()
-                .combat_difficulty
-                .as_ref()
-                .unwrap(),
-        )
-        .unwrap();
-    {
-        let difficulty = source
-            .state
-            .run
-            .as_mut()
-            .unwrap()
-            .map
-            .node_mut(node_id)
-            .unwrap()
-            .combat_difficulty
-            .as_mut()
-            .unwrap();
-        difficulty.target_power = u64::try_from(
-            (u128::from(difficulty.floor_power_anchor) * u128::from(tuning.target_power_percent))
-                .div_ceil(100),
-        )
-        .unwrap();
-    }
-
-    source.save_run_checkpoint_for_test().unwrap();
-    let exported = source
-        .export_active_run_checkpoint()
-        .unwrap()
-        .expect("checkpoint must export");
-    let document: serde_json::Value = serde_json::from_slice(&exported.core_payload_json).unwrap();
-    let node_index = document["continuation"]["current"]["map"]["nodes"]
-        .as_array()
-        .unwrap()
-        .iter()
-        .position(|node| node["id"] == serde_json::json!(node_id))
-        .unwrap();
-    assert_eq!(
-        document["continuation"]["current"]["map"]["nodes"][node_index]["combat_difficulty"]
-            ["monolith_stage"],
-        "Stage2"
-    );
-
-    let mut legacy_missing_stage = document.clone();
-    legacy_missing_stage["continuation"]["current"]["map"]["nodes"][node_index]
-        ["combat_difficulty"]
-        .as_object_mut()
-        .unwrap()
-        .remove("monolith_stage");
-    let mut legacy_core = GameCore::new(game_data.clone(), 126);
-    assert!(matches!(
-        legacy_core.continue_from_active_run_checkpoint(
-            Uuid::from_u128(2),
-            &serde_json::to_vec(&legacy_missing_stage).unwrap(),
-            exported.loads_used,
-            exported.run_peak_certified_power,
-        ),
-        Err(GameError::InvalidStaticData(_))
-    ));
-
-    let mut mismatched_stage = document;
-    mismatched_stage["continuation"]["current"]["map"]["nodes"][node_index]["combat_difficulty"]
-        ["monolith_stage"] = serde_json::json!("Stage3");
-    refresh_active_run_checksum(&mut mismatched_stage);
-    let mut mismatched_core = GameCore::new(game_data.clone(), 127);
-    assert!(matches!(
-        mismatched_core.continue_from_active_run_checkpoint(
-            Uuid::from_u128(3),
-            &serde_json::to_vec(&mismatched_stage).unwrap(),
-            exported.loads_used,
-            exported.run_peak_certified_power,
-        ),
-        Err(GameError::InvalidStaticData(_))
-    ));
-
-    let mut continued = GameCore::new(game_data, 128);
-    continued
-        .continue_from_active_run_checkpoint(
-            Uuid::from_u128(4),
-            &exported.core_payload_json,
-            exported.loads_used,
-            exported.run_peak_certified_power,
-        )
-        .unwrap();
-    assert_eq!(
-        continued
-            .state
-            .run
-            .as_ref()
-            .unwrap()
-            .map
-            .node(node_id)
-            .unwrap()
-            .combat_difficulty
-            .as_ref()
-            .unwrap()
-            .monolith_stage,
-        Some(crate::game::map::MonolithRemanifestationStage::Stage2)
-    );
-
-    source
-        .state
-        .run
-        .as_mut()
-        .unwrap()
-        .map
-        .node_mut(node_id)
-        .unwrap()
-        .combat_difficulty
-        .as_mut()
-        .unwrap()
-        .monolith_stage = Some(crate::game::map::MonolithRemanifestationStage::Stage3);
-    source.handle_load_run_checkpoint().unwrap();
-    assert_eq!(
-        source
-            .state
-            .run
-            .as_ref()
-            .unwrap()
-            .map
-            .node(node_id)
-            .unwrap()
-            .combat_difficulty
-            .as_ref()
-            .unwrap()
-            .monolith_stage,
-        Some(crate::game::map::MonolithRemanifestationStage::Stage2)
-    );
-
-    let rollback = source
-        .capture_active_run_transaction_rollback()
-        .unwrap()
-        .unwrap();
-    {
-        let run = source.state.run.as_mut().unwrap();
-        run.map
-            .node_mut(node_id)
-            .unwrap()
-            .combat_difficulty
-            .as_mut()
-            .unwrap()
-            .monolith_stage = Some(crate::game::map::MonolithRemanifestationStage::Stage3);
-        run.monolith
-            .remanifestation_nodes
-            .get_mut(&node_id)
-            .unwrap()
-            .stage = 3;
-    }
-    source.restore_active_run_transaction_rollback(rollback);
-    let restored_run = source.state.run.as_ref().unwrap();
-    assert_eq!(
-        restored_run
-            .map
-            .node(node_id)
-            .unwrap()
-            .combat_difficulty
-            .as_ref()
-            .unwrap()
-            .monolith_stage,
-        Some(crate::game::map::MonolithRemanifestationStage::Stage2)
-    );
-    assert_eq!(
-        restored_run
-            .monolith
-            .remanifestation(node_id)
-            .unwrap()
-            .stage,
-        2
-    );
 }
 
 #[test]

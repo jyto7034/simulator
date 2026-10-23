@@ -215,12 +215,13 @@ pub(crate) fn certified_combat_profile_for_employee(
         .loadout
         .item_slot
         .iter_with_address()
-        .map(|(slot, equipped)| BattleEquipmentBinding {
+        .map(|(slot, equipped)| Ok(BattleEquipmentBinding {
+            weapon_stage: inventory.equipments.get_item(&equipped.instance_uuid).ok_or(GameError::InventoryItemNotFound)?.weapon_stage,
             base_uuid: equipped.base_uuid,
             persistent_copy_uuid: Some(equipped.instance_uuid),
             slot: Some(slot),
-        })
-        .collect::<Vec<_>>();
+        }))
+        .collect::<Result<Vec<_>, GameError>>()?;
     let equipped_item_enhancements = employee
         .loadout
         .item_slot
@@ -299,12 +300,13 @@ fn battle_unit_draft_for_employee_from_item_slot(
 ) -> Result<BattleUnitDraft, GameError> {
     let equipped_items: Vec<BattleEquipmentBinding> = item_slot
         .iter_with_address()
-        .map(|(slot, equipped)| BattleEquipmentBinding {
+        .map(|(slot, equipped)| Ok(BattleEquipmentBinding {
+            weapon_stage: inventory.equipments.get_item(&equipped.instance_uuid).ok_or(GameError::InventoryItemNotFound)?.weapon_stage,
             base_uuid: equipped.base_uuid,
             persistent_copy_uuid: Some(equipped.instance_uuid),
             slot: Some(slot),
-        })
-        .collect();
+        }))
+        .collect::<Result<Vec<_>, GameError>>()?;
     let equipped_item_enhancements = item_slot
         .iter()
         .map(|equipped| {

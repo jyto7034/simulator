@@ -52,3 +52,10 @@ node --test core_enhanced/docs/tools/p2g_validation.test.mjs
 새 Receipt는 입력 관계 검사가 통과한 경우에만 쓴다. 같은 결과가 이미 있으면 `unchanged`이며 기존 bytes를 바꾸지 않는다. 다른 immutable target이면 successor Ref/path가 필요하다. 기본 검증은 파일을 수정하지 않는다.
 
 회귀 검사는 OS 임시 디렉터리의 fixture와 저장소의 기존 불변 문서를 사용한다. CLI 검사에는 Node 자식 프로세스 실행이 필요하다. 게임 코드/RON/개인 저장 데이터를 작성하거나 게임을 실행하지 않는다. 과거 Goal Set을 이용한 P2G-50 검사는 도구 호환성 검사이며 새 Topic의 Goal 작성이나 P2G-50 단계 실행이 아니다.
+
+## 승인된 모드의 로컬·서버 실행
+
+[CMVA 사용 가이드](cmva_workflow.ko.md)는 matched release worker, 실제 측정과 private criterion 채택,
+`mod_launcher`의 validate/query/apply/run/Continue와 `game_server`의 `mod_admission_path` 준비를 설명한다.
+콘텐츠와 runtime authority 계약은 [Data Loading Contract](../data_loading_contract.md) 및
+[Core Runtime Contract](../core_runtime_contract.md)가 소유한다. P2G 구조 검사의 `passed`는 게임 모드 승인이 아니다.

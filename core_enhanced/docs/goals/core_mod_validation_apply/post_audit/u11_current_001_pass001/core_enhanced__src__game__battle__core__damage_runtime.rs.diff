@@ -1,0 +1,13 @@
+--- core_enhanced/src/game/battle/core/damage_runtime.rs BEFORE
+
++++ core_enhanced/src/game/battle/core/damage_runtime.rs CURRENT
+
+@@ -852,6 +852,7 @@
+
+         {
+             return;
+         }
++        if self.record_lab_source(&fact.source,if fact.actual_hp_loss()>0 {crate::mod_validation::CoverageStage::ConsumedOrEffect}else{crate::mod_validation::CoverageStage::LegalNoop}).is_err(){return;}
+         self.observe_effect_damage_result(
+             fact.source.as_ref(),
+             fact.actual_hp_loss(),

@@ -1,0 +1,132 @@
+[
+  {
+    "name": "game::player_game_actor::handlers::tests::corrupt_local_active_run_requires_explicit_reset",
+    "category": "save_start_fixture_contract_mismatch",
+    "detail": "thread 'game::player_game_actor::handlers::tests::corrupt_local_active_run_requires_explicit_reset' (1201759) panicked at game_server/src/game/player_game_actor/handlers.rs:2871:14:\ncalled `Result::unwrap()` on an `Err` value: PlayerGameActorError { code: \"player_profile_persistence_unavailable\", message: \"Paired active reset requires profile persistence\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+  },
+  {
+    "name": "game::player_game_actor::handlers::tests::application_preintent_write_failure_keeps_core_and_profile_unchanged",
+    "category": "save_start_fixture_contract_mismatch",
+    "detail": "thread 'game::player_game_actor::handlers::tests::application_preintent_write_failure_keeps_core_and_profile_unchanged' (1201753) panicked at game_server/src/game/player_game_actor/handlers.rs:2529:9:\nassertion `left == right` failed\n  left: \"invalid_action\"\n right: \"application_persistence_failed\""
+  },
+  {
+    "name": "game::player_game_actor::handlers::tests::local_active_run_is_projected_and_requires_explicit_new_run_replacement",
+    "category": "save_start_fixture_contract_mismatch",
+    "detail": "thread 'game::player_game_actor::handlers::tests::local_active_run_is_projected_and_requires_explicit_new_run_replacement' (1201779) panicked at game_server/src/game/player_game_actor/handlers.rs:2795:9:\nassertion `left == right` failed\n  left: \"active_run_requires_continue_and_abandon\"\n right: \"active_run_replacement_confirmation_required\""
+  },
+  {
+    "name": "game::player_game_actor::handlers::tests::accepted_application_profile_write_failure_commits_core_and_requires_recovery",
+    "category": "save_start_fixture_contract_mismatch",
+    "detail": "thread 'game::player_game_actor::handlers::tests::accepted_application_profile_write_failure_commits_core_and_requires_recovery' (1201752) panicked at game_server/src/game/player_game_actor/handlers.rs:2616:14:\nprofile failure must not fail the gameplay command: PlayerGameActorError { code: \"invalid_action\", message: \"Action is not allowed in the current state\" }"
+  },
+  {
+    "name": "mod_admission::u12_normal_host_tests::u12_profile_store_current_checksum_positive_then_duplicate_raw_vault_key_rejects",
+    "category": "profile_version_fixture",
+    "detail": "thread 'mod_admission::u12_normal_host_tests::u12_profile_store_current_checksum_positive_then_duplicate_raw_vault_key_rejects' (1201843) panicked at game_server/src/../../core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/test_parts/runtime001/shared/normal_host_tests.rs:142:9:\nassertion `left == right` failed\n  left: Number(6)\n right: 4"
+  },
+  {
+    "name": "game::player_game_actor::handlers::tests::finished_live_battle_tick_pushes_combat_result_snapshot_after_final_update",
+    "category": "defense_fixture_seed_exhausted",
+    "detail": "thread 'game::player_game_actor::handlers::tests::finished_live_battle_tick_pushes_combat_result_snapshot_after_final_update' (1201775) panicked at game_server/src/game/player_game_actor/handlers.rs:1746:9:\nexpected at least one generated run seed to start near a live Defense node"
+  },
+  {
+    "name": "game::player_game_actor::handlers::tests::state_snapshot_overlay_matrix_preserves_old_full_json_order_and_uniqueness",
+    "category": "defense_fixture_seed_exhausted",
+    "detail": "thread 'game::player_game_actor::handlers::tests::state_snapshot_overlay_matrix_preserves_old_full_json_order_and_uniqueness' (1201815) panicked at game_server/src/game/player_game_actor/handlers.rs:1746:9:\nexpected at least one generated run seed to start near a live Defense node"
+  },
+  {
+    "name": "game::player_game_actor::handlers::tests::missing_battle_authority_emits_error_then_current_resync_without_mutation",
+    "category": "defense_fixture_seed_exhausted",
+    "detail": "thread 'game::player_game_actor::handlers::tests::missing_battle_authority_emits_error_then_current_resync_without_mutation' (1201780) panicked at game_server/src/game/player_game_actor/handlers.rs:1746:9:\nexpected at least one generated run seed to start near a live Defense node"
+  },
+  {
+    "name": "game::player_game_actor::handlers::tests::fault::fault_is_per_actor_and_other_player_ticks_commands_and_real_saves_continue",
+    "category": "defense_fixture_seed_exhausted",
+    "detail": "thread 'game::player_game_actor::handlers::tests::fault::fault_is_per_actor_and_other_player_ticks_commands_and_real_saves_continue' (1201771) panicked at game_server/src/game/player_game_actor/handlers.rs:1746:9:\nexpected at least one generated run seed to start near a live Defense node"
+  },
+  {
+    "name": "game::player_game_actor::handlers::tests::durable::u05_paused_accepted_use_survives_same_actor_reconnect_and_spends_once",
+    "category": "defense_fixture_seed_exhausted",
+    "detail": "thread 'game::player_game_actor::handlers::tests::durable::u05_paused_accepted_use_survives_same_actor_reconnect_and_spends_once' (1201766) panicked at game_server/src/game/player_game_actor/handlers.rs:1746:9:\nexpected at least one generated run seed to start near a live Defense node"
+  },
+  {
+    "name": "game::player_game_actor::handlers::tests::prepared_battle_entry_drop_preserves_root_and_commit_matches_direct_execution",
+    "category": "defense_fixture_seed_exhausted",
+    "detail": "thread 'game::player_game_actor::handlers::tests::prepared_battle_entry_drop_preserves_root_and_commit_matches_direct_execution' (1201813) panicked at game_server/src/game/player_game_actor/handlers.rs:1746:9:\nexpected at least one generated run seed to start near a live Defense node"
+  },
+  {
+    "name": "game::player_game_actor::handlers::tests::durable::u07_host_wall_cast_and_object_survive_paused_same_actor_reconnect",
+    "category": "defense_fixture_seed_exhausted",
+    "detail": "thread 'game::player_game_actor::handlers::tests::durable::u07_host_wall_cast_and_object_survive_paused_same_actor_reconnect' (1201767) panicked at game_server/src/game/player_game_actor/handlers.rs:1746:9:\nexpected at least one generated run seed to start near a live Defense node"
+  },
+  {
+    "name": "game::player_game_actor::handlers::tests::live_battle_resync_rejects_future_since_seq",
+    "category": "defense_fixture_seed_exhausted",
+    "detail": "thread 'game::player_game_actor::handlers::tests::live_battle_resync_rejects_future_since_seq' (1201777) panicked at game_server/src/game/player_game_actor/handlers.rs:1746:9:\nexpected at least one generated run seed to start near a live Defense node"
+  },
+  {
+    "name": "game::player_game_actor::handlers::tests::u06::u06_actor_selection_settings_disconnect_and_reconnect_restore_priority",
+    "category": "defense_fixture_seed_exhausted",
+    "detail": "thread 'game::player_game_actor::handlers::tests::u06::u06_actor_selection_settings_disconnect_and_reconnect_restore_priority' (1201816) panicked at game_server/src/game/player_game_actor/handlers.rs:1746:9:\nexpected at least one generated run seed to start near a live Defense node"
+  },
+  {
+    "name": "game::player_game_actor::handlers::tests::detached_live_battle_has_no_ttl_and_reconnects_paused",
+    "category": "defense_fixture_seed_exhausted",
+    "detail": "thread 'game::player_game_actor::handlers::tests::detached_live_battle_has_no_ttl_and_reconnects_paused' (1201761) panicked at game_server/src/game/player_game_actor/handlers.rs:1746:9:\nexpected at least one generated run seed to start near a live Defense node"
+  },
+  {
+    "name": "game::player_game_actor::handlers::tests::first_public_battle_entry_uses_host_work_limit_and_active_battle_has_no_rollback_token",
+    "category": "defense_fixture_seed_exhausted",
+    "detail": "thread 'game::player_game_actor::handlers::tests::first_public_battle_entry_uses_host_work_limit_and_active_battle_has_no_rollback_token' (1201776) panicked at game_server/src/game/player_game_actor/handlers.rs:1746:9:\nexpected at least one generated run seed to start near a live Defense node"
+  },
+  {
+    "name": "game::player_game_actor::handlers::tests::paused_live_battle_tick_does_not_push_delta_until_resumed",
+    "category": "defense_fixture_seed_exhausted",
+    "detail": "thread 'game::player_game_actor::handlers::tests::paused_live_battle_tick_does_not_push_delta_until_resumed' (1201810) panicked at game_server/src/game/player_game_actor/handlers.rs:1746:9:\nexpected at least one generated run seed to start near a live Defense node"
+  },
+  {
+    "name": "game::player_game_actor::handlers::tests::fault::real_manual_retreat_failure_publishes_fault_and_cancels_the_scheduled_timer",
+    "category": "defense_fixture_seed_exhausted",
+    "detail": "thread 'game::player_game_actor::handlers::tests::fault::real_manual_retreat_failure_publishes_fault_and_cancels_the_scheduled_timer' (1201773) panicked at game_server/src/game/player_game_actor/handlers.rs:1746:9:\nexpected at least one generated run seed to start near a live Defense node"
+  },
+  {
+    "name": "game::player_game_actor::handlers::tests::durable::u04_two_restored_actors_cannot_publish_a_stale_terminal_disposition",
+    "category": "defense_fixture_seed_exhausted",
+    "detail": "thread 'game::player_game_actor::handlers::tests::durable::u04_two_restored_actors_cannot_publish_a_stale_terminal_disposition' (1201765) panicked at game_server/src/game/player_game_actor/handlers.rs:1746:9:\nexpected at least one generated run seed to start near a live Defense node"
+  },
+  {
+    "name": "game::player_game_actor::handlers::tests::durable::u04_real_terminal_host_tick_preintent_failure_does_not_publish_end_then_retry_settles_once",
+    "category": "defense_fixture_seed_exhausted",
+    "detail": "thread 'game::player_game_actor::handlers::tests::durable::u04_real_terminal_host_tick_preintent_failure_does_not_publish_end_then_retry_settles_once' (1201764) panicked at game_server/src/game/player_game_actor/handlers.rs:1746:9:\nexpected at least one generated run seed to start near a live Defense node"
+  },
+  {
+    "name": "game::player_game_actor::handlers::tests::second_mutation_using_same_revision_is_stale_after_first_commit",
+    "category": "defense_fixture_seed_exhausted",
+    "detail": "thread 'game::player_game_actor::handlers::tests::second_mutation_using_same_revision_is_stale_after_first_commit' (1201814) panicked at game_server/src/game/player_game_actor/handlers.rs:1746:9:\nexpected at least one generated run seed to start near a live Defense node"
+  },
+  {
+    "name": "game::player_game_actor::handlers::tests::live_battle_tick_pushes_update_without_state_snapshot_after_confirm_enter",
+    "category": "defense_fixture_seed_exhausted",
+    "detail": "thread 'game::player_game_actor::handlers::tests::live_battle_tick_pushes_update_without_state_snapshot_after_confirm_enter' (1201778) panicked at game_server/src/game/player_game_actor/handlers.rs:1746:9:\nexpected at least one generated run seed to start near a live Defense node"
+  },
+  {
+    "name": "game::player_game_actor::handlers::tests::durable::u08_nonempty_relics_and_current_live_battle_survive_real_detach_attach_without_continue",
+    "category": "defense_fixture_seed_exhausted",
+    "detail": "thread 'game::player_game_actor::handlers::tests::durable::u08_nonempty_relics_and_current_live_battle_survive_real_detach_attach_without_continue' (1201768) panicked at game_server/src/game/player_game_actor/handlers.rs:1746:9:\nexpected at least one generated run seed to start near a live Defense node"
+  },
+  {
+    "name": "game::player_game_actor::handlers::tests::durable::u04_admin_prepared_drop_and_io_failures_share_application_acceptance",
+    "category": "defense_fixture_seed_exhausted",
+    "detail": "thread 'game::player_game_actor::handlers::tests::durable::u04_admin_prepared_drop_and_io_failures_share_application_acceptance' (1201762) panicked at game_server/src/game/player_game_actor/handlers.rs:1746:9:\nexpected at least one generated run seed to start near a live Defense node"
+  },
+  {
+    "name": "game::player_game_actor::handlers::tests::attaching_replacement_session_auto_pauses_and_returns_recovery_batch",
+    "category": "defense_fixture_seed_exhausted",
+    "detail": "thread 'game::player_game_actor::handlers::tests::attaching_replacement_session_auto_pauses_and_returns_recovery_batch' (1201756) panicked at game_server/src/game/player_game_actor/handlers.rs:1746:9:\nexpected at least one generated run seed to start near a live Defense node"
+  },
+  {
+    "name": "game::player_game_actor::handlers::tests::fault::real_tick_fault_blocks_late_ticks_management_reconnect_and_stop_writes_then_existing_continue",
+    "category": "defense_fixture_seed_exhausted",
+    "detail": "thread 'game::player_game_actor::handlers::tests::fault::real_tick_fault_blocks_late_ticks_management_reconnect_and_stop_writes_then_existing_continue' (1201774) panicked at game_server/src/game/player_game_actor/handlers.rs:1746:9:\nexpected at least one generated run seed to start near a live Defense node"
+  }
+]

@@ -1,0 +1,36 @@
+{
+  "argv": [
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/product_parts/release_compile014/artifacts/normal_host_lifecycle",
+    "command",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/product_parts/normal_contexts005/standalone.json",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_expedition_lifecycle/post_audit/u12_current_002_pass001/original_protection_probe/unknown_profile_backup/save",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_expedition_lifecycle/post_audit/u12_current_002_pass001/original_protection_probe/unknown_profile_backup/save",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_expedition_lifecycle/post_audit/u12_current_002_pass001/original_protection_probe/unknown_profile_backup/command",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_expedition_lifecycle/post_audit/u12_current_002_pass001/original_protection_probe/unknown_profile_backup/abandon.json"
+  ],
+  "exit_code": 0,
+  "duration_seconds": 2.8249283359982655,
+  "child_reaped": true,
+  "current_files": [
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/post_audit/u12_current_002_pass001/original_protection_probe/unknown_profile_backup/save/player_profile.json",
+      "bytes": 2453,
+      "sha256": "c9081235d885f9cf6614f032ca54773fe063160db4f831249f5b053307a2d732"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/post_audit/u12_current_002_pass001/original_protection_probe/unknown_profile_backup/save/player_profile.backup.json",
+      "bytes": 2453,
+      "sha256": "c9081235d885f9cf6614f032ca54773fe063160db4f831249f5b053307a2d732"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/post_audit/u12_current_002_pass001/original_protection_probe/unknown_profile_backup/save/active_run.json",
+      "bytes": 967,
+      "sha256": "585c2276f7121305c24b603d2424992abc05589a93ed4c1683a7e77df5e78f42"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/post_audit/u12_current_002_pass001/original_protection_probe/unknown_profile_backup/save/active_run.backup.json",
+      "bytes": 967,
+      "sha256": "585c2276f7121305c24b603d2424992abc05589a93ed4c1683a7e77df5e78f42"
+    }
+  ]
+}

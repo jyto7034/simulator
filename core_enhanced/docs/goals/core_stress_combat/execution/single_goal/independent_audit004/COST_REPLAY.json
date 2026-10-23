@@ -1,0 +1,24 @@
+[
+  {
+    "profile": "normal",
+    "argv": [
+      "/mnt/f/work/simulator/.cache/u164-review-dev-target/debug/u164_completion_cost",
+      "/mnt/f/work/simulator/core_enhanced/docs/goals/core_stress_combat/execution/single_goal/test_parts/normal_inputs002/admission.json",
+      "/mnt/f/work/simulator/core_enhanced/docs/goals/core_stress_combat/execution/single_goal/completion001/cost001/normal.trace.jsonl",
+      "/tmp/u164-audit004-cost-vhd__016/normal.json"
+    ],
+    "exit_code": 0,
+    "seconds": 6.483851063996553
+  },
+  {
+    "profile": "expanded",
+    "argv": [
+      "/mnt/f/work/simulator/.cache/u164-review-dev-target/debug/u164_completion_cost",
+      "/mnt/f/work/simulator/core_enhanced/docs/goals/core_stress_combat/execution/single_goal/test_parts/expanded_inputs002/admission.json",
+      "/mnt/f/work/simulator/core_enhanced/docs/goals/core_stress_combat/execution/single_goal/completion001/cost001/expanded.trace.jsonl",
+      "/tmp/u164-audit004-cost-vhd__016/expanded.json"
+    ],
+    "exit_code": 0,
+    "seconds": 6.183010105989524
+  }
+]

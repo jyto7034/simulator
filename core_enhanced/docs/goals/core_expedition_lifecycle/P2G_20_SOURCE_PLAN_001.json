@@ -1,0 +1,813 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Review Scope/Source Requirement Plan",
+        "Artifact ID": "RSP-CEXL-001",
+        "Content Digest": "sha256:2b7a5337a5b8d65a7773b3f7fca423aceb5838f780e81b95852470da9085936f"
+      },
+      "payload": {
+        "Bound Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEXL-005",
+          "Content Digest": "sha256:f6146321f2dde87be6ae595e990d27198bca05fd5576d6bdb3175e9dcecf4fea"
+        },
+        "Requirement Set": [
+          {
+            "Requirement ID": "RQ01",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-01-DECIDED-001",
+                "Content Digest": "sha256:4da9f629609d72fd0cd2eb9acfff1b9e3047d4ace70bf8f394490a10d225747e"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-02-DECIDED-001",
+                "Content Digest": "sha256:f846558cdad97ba3756c3262900d6067fe8bcccf08f8acb008721fa3c530b164"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-03-DECIDED-001",
+                "Content Digest": "sha256:ba4f0ec1ad06f72c5e80a12bfa4b2b53af7a0a2dbbdfaca68f9f649ccba6c5fb"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-06-DECIDED-001",
+                "Content Digest": "sha256:5e59f86ae05ca78354c46e6208e808e01c64b141a91c888da2d15c12232027c4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-08-DECIDED-001",
+                "Content Digest": "sha256:62983f38a76802ac747a34c291f55d68bf509abfb3289dcde07ef99eb6b35138"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-11-DECIDED-001",
+                "Content Digest": "sha256:e5d7c8481b8f4e1fe0afe6100d6f933b06fa6c963d49b97a639ea27eaba38c40"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-12-DECIDED-001",
+                "Content Digest": "sha256:668336c5eb9241a703342b9aeedcfafbcf5771b10d369994162968f178bd55d6"
+              }
+            ],
+            "Required claim/boundary": "Normal command dispatch/start/mode/roster selection and actual terminal/return/story lifetime",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/application.rs",
+                "core_enhanced/src/game/world.rs",
+                "core_enhanced/src/game/world",
+                "core_enhanced/src/game/map",
+                "core_enhanced/src/game/visual_novel.rs"
+              ],
+              "dirty_basis": "Exact current bytes and scoped dirty state; no product/test writers during read-only review. Source observation coverage must follow actual callers rather than assuming every file in these roots was reviewed."
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CEXL-005",
+                "Content Digest": "sha256:f6146321f2dde87be6ae595e990d27198bca05fd5576d6bdb3175e9dcecf4fea"
+              },
+              "basis": "Current approved element acceptance and scope; U11 successor integration"
+            },
+            "Validation requirement": "Trace public command to writer/phase/query; identify existing gate and tutorial termination, successful/failed transaction owner and reusable commit seams."
+          },
+          {
+            "Requirement ID": "RQ02",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-03-DECIDED-001",
+                "Content Digest": "sha256:ba4f0ec1ad06f72c5e80a12bfa4b2b53af7a0a2dbbdfaca68f9f649ccba6c5fb"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-04-DECIDED-001",
+                "Content Digest": "sha256:5adce744c7a57eeca242a0ff73de14ef02d1ccf1f9812745f72182a2b34319b3"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-05-DECIDED-001",
+                "Content Digest": "sha256:33f26467e6e2b4a62336cfb2b64bccd347f5c04958c94e63ab5c188378137d3d"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-06-DECIDED-001",
+                "Content Digest": "sha256:5e59f86ae05ca78354c46e6208e808e01c64b141a91c888da2d15c12232027c4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-10-DECIDED-001",
+                "Content Digest": "sha256:b4653af7477180c8309e3f2a4dbacf39261dc638f4c18201bf75362962104848"
+              }
+            ],
+            "Required claim/boundary": "Employee definition vs instance/profile/condition, recruitment seed queue/offer/roster, basic grants and paid opportunity eligibility",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/game/employee.rs",
+                "core_enhanced/src/game/recruitment.rs",
+                "core_enhanced/src/game/data",
+                "core_enhanced/src/game/world/headquarters.rs",
+                "core_enhanced/src/game/world/combat.rs",
+                "core_enhanced/src/game/combat_setup"
+              ],
+              "dirty_basis": "Exact current bytes and scoped dirty state; no product/test writers during read-only review. Source observation coverage must follow actual callers rather than assuming every file in these roots was reviewed."
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CEXL-005",
+                "Content Digest": "sha256:f6146321f2dde87be6ae595e990d27198bca05fd5576d6bdb3175e9dcecf4fea"
+              },
+              "basis": "Current approved element acceptance and scope; U11 successor integration"
+            },
+            "Validation requirement": "Trace full entry/price/commit/rollback and actual recovery eligibility; distinguish old tested helper assumptions from fresh public start."
+          },
+          {
+            "Requirement ID": "RQ03",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-07-DECIDED-001",
+                "Content Digest": "sha256:7526b45a8d0c2c3aff262d78d518190a16132be20e6c1915b5cd4a54b7f3eacb"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-08-DECIDED-001",
+                "Content Digest": "sha256:62983f38a76802ac747a34c291f55d68bf509abfb3289dcde07ef99eb6b35138"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-09-DECIDED-001",
+                "Content Digest": "sha256:c20d991e10a4973e77833fd02faff2e9d05d9df971f6447da0df34c3f24488b4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-10-DECIDED-001",
+                "Content Digest": "sha256:b4653af7477180c8309e3f2a4dbacf39261dc638f4c18201bf75362962104848"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-11-DECIDED-001",
+                "Content Digest": "sha256:e5d7c8481b8f4e1fe0afe6100d6f933b06fa6c963d49b97a639ea27eaba38c40"
+              }
+            ],
+            "Required claim/boundary": "Equipment copy owner/identity/bloom/strengthening, return eligibility and profile vault delta",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/game/encounter_compendium.rs",
+                "core_enhanced/src/game/resources",
+                "core_enhanced/src/game/skill_fragment",
+                "core_enhanced/src/game/world",
+                "core_enhanced/src/game/map"
+              ],
+              "dirty_basis": "Exact current bytes and scoped dirty state; no product/test writers during read-only review. Source observation coverage must follow actual callers rather than assuming every file in these roots was reviewed."
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CEXL-005",
+                "Content Digest": "sha256:f6146321f2dde87be6ae595e990d27198bca05fd5576d6bdb3175e9dcecf4fea"
+              },
+              "basis": "Current approved element acceptance and scope; U11 successor integration"
+            },
+            "Validation requirement": "Identify authoritative current inventory/copy representation; staged inventory mutation and actual Gate/exhaustion/failure semantics; define strict nonmonotonic profile ownership without silently extending OR/max merge."
+          },
+          {
+            "Requirement ID": "RQ04",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-01-DECIDED-001",
+                "Content Digest": "sha256:4da9f629609d72fd0cd2eb9acfff1b9e3047d4ace70bf8f394490a10d225747e"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-06-DECIDED-001",
+                "Content Digest": "sha256:5e59f86ae05ca78354c46e6208e808e01c64b141a91c888da2d15c12232027c4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-07-DECIDED-001",
+                "Content Digest": "sha256:7526b45a8d0c2c3aff262d78d518190a16132be20e6c1915b5cd4a54b7f3eacb"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-09-DECIDED-001",
+                "Content Digest": "sha256:c20d991e10a4973e77833fd02faff2e9d05d9df971f6447da0df34c3f24488b4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-11-DECIDED-001",
+                "Content Digest": "sha256:e5d7c8481b8f4e1fe0afe6100d6f933b06fa6c963d49b97a639ea27eaba38c40"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-12-DECIDED-001",
+                "Content Digest": "sha256:668336c5eb9241a703342b9aeedcfafbcf5771b10d369994162968f178bd55d6"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-13-DECIDED-001",
+                "Content Digest": "sha256:4225acc360168976d6f9f3c016b7c5c102f611243dca7f6a94ddb3d0b144f640"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-PS01-003",
+                "Content Digest": "sha256:58e70bd8deab1df18ea5ecc7744bb1bf527fb5877f5a3ee8db9aacbc562bd84b"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-PS02-002",
+                "Content Digest": "sha256:d8abb5fdd8b029ee2972af7a710ef84b50538c6ce44ac5fcf4f1218434cf349b"
+              }
+            ],
+            "Required claim/boundary": "Current durable active/profile/Continue/checkpoint/result story and server transport/atomic persistence",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/application.rs",
+                "core_enhanced/src/game/world/active_run",
+                "core_enhanced/src/game/world/state.rs",
+                "core_enhanced/src/ports",
+                "game_server/src/game",
+                "game_server/src/persistence",
+                "game_server/src/bootstrap.rs"
+              ],
+              "dirty_basis": "Exact current bytes and scoped dirty state; no product/test writers during read-only review. Source observation coverage must follow actual callers rather than assuming every file in these roots was reviewed."
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CEXL-005",
+                "Content Digest": "sha256:f6146321f2dde87be6ae595e990d27198bca05fd5576d6bdb3175e9dcecf4fea"
+              },
+              "basis": "Current approved element acceptance and scope; U11 successor integration"
+            },
+            "Validation requirement": "Follow normal save/load versions and explicit V7/V8 conversion paths, profile merge and disk commit/restart errors, server DTO command mapping and fixture consumers. Preserve originals and integrate actual current transaction boundary."
+          },
+          {
+            "Requirement ID": "RQ05",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-05-DECIDED-001",
+                "Content Digest": "sha256:33f26467e6e2b4a62336cfb2b64bccd347f5c04958c94e63ab5c188378137d3d"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-PS01-003",
+                "Content Digest": "sha256:58e70bd8deab1df18ea5ecc7744bb1bf527fb5877f5a3ee8db9aacbc562bd84b"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-PS02-002",
+                "Content Digest": "sha256:d8abb5fdd8b029ee2972af7a710ef84b50538c6ce44ac5fcf4f1218434cf349b"
+              }
+            ],
+            "Required claim/boundary": "Complete psychology removal surface and retained personality/condition/progress boundaries",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/game/employee_psychology.rs",
+                "core_enhanced/src/game/employee.rs",
+                "core_enhanced/src/game/world",
+                "core_enhanced/src/dto",
+                "core_enhanced/src/application.rs",
+                "game_server/src"
+              ],
+              "dirty_basis": "Exact current bytes and scoped dirty state; no product/test writers during read-only review. Source observation coverage must follow actual callers rather than assuming every file in these roots was reviewed."
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CEXL-005",
+                "Content Digest": "sha256:f6146321f2dde87be6ae595e990d27198bca05fd5576d6bdb3175e9dcecf4fea"
+              },
+              "basis": "Current approved element acceptance and scope; U11 successor integration"
+            },
+            "Validation requirement": "Enumerate actual fields/defaults/writers/readers/DTO/capabilities/serde/fixture dependencies; no new memory representation; distinguish unrelated runtime memory/trusted-host terms. Inspect shared state clones so other personal state is retained."
+          },
+          {
+            "Requirement ID": "RQ06",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-01-DECIDED-001",
+                "Content Digest": "sha256:4da9f629609d72fd0cd2eb9acfff1b9e3047d4ace70bf8f394490a10d225747e"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-02-DECIDED-001",
+                "Content Digest": "sha256:f846558cdad97ba3756c3262900d6067fe8bcccf08f8acb008721fa3c530b164"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-03-DECIDED-001",
+                "Content Digest": "sha256:ba4f0ec1ad06f72c5e80a12bfa4b2b53af7a0a2dbbdfaca68f9f649ccba6c5fb"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-04-DECIDED-001",
+                "Content Digest": "sha256:5adce744c7a57eeca242a0ff73de14ef02d1ccf1f9812745f72182a2b34319b3"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-06-DECIDED-001",
+                "Content Digest": "sha256:5e59f86ae05ca78354c46e6208e808e01c64b141a91c888da2d15c12232027c4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-08-DECIDED-001",
+                "Content Digest": "sha256:62983f38a76802ac747a34c291f55d68bf509abfb3289dcde07ef99eb6b35138"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-13-DECIDED-001",
+                "Content Digest": "sha256:4225acc360168976d6f9f3c016b7c5c102f611243dca7f6a94ddb3d0b144f640"
+              }
+            ],
+            "Required claim/boundary": "Authored live mode/tutorial/maps/employees/loadouts/run policy and fixed tuning",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "game_resources/data",
+                "game_resources/config",
+                "core_enhanced/src/game/data",
+                "core_enhanced/src/game/map",
+                "core_enhanced/src/game/combat_setup"
+              ],
+              "dirty_basis": "Exact current bytes and scoped dirty state; no product/test writers during read-only review. Source observation coverage must follow actual callers rather than assuming every file in these roots was reviewed."
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CEXL-005",
+                "Content Digest": "sha256:f6146321f2dde87be6ae595e990d27198bca05fd5576d6bdb3175e9dcecf4fea"
+              },
+              "basis": "Current approved element acceptance and scope; U11 successor integration"
+            },
+            "Validation requirement": "Locate actual loaders and live resources for inherited ST1-NT60 content and approved current state; recognize dormant/legacy references; propose supported development expedition profile, not pretend full U13/unique bosses implemented."
+          },
+          {
+            "Requirement ID": "RQ07",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-13-DECIDED-001",
+                "Content Digest": "sha256:4225acc360168976d6f9f3c016b7c5c102f611243dca7f6a94ddb3d0b144f640"
+              }
+            ],
+            "Required claim/boundary": "Public authoring/Lab/Apply capability identity and normal local/server bootstrap",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/authoring",
+                "core_enhanced/src/application",
+                "core_enhanced/src/game/data",
+                "core_enhanced/src/bin",
+                "game_server/src/bootstrap.rs",
+                "game_server/src/mod_admission"
+              ],
+              "dirty_basis": "Exact current bytes and scoped dirty state; no product/test writers during read-only review. Source observation coverage must follow actual callers rather than assuming every file in these roots was reviewed."
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CEXL-005",
+                "Content Digest": "sha256:f6146321f2dde87be6ae595e990d27198bca05fd5576d6bdb3175e9dcecf4fea"
+              },
+              "basis": "Current approved element acceptance and scope; U11 successor integration"
+            },
+            "Validation requirement": "Reuse U11 actual generation/approval/cache/required-mod contract; identify changed capability fingerprint/schema/fixture selections for U12 without approval bypass."
+          },
+          {
+            "Requirement ID": "RQ08",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-PS01-003",
+                "Content Digest": "sha256:58e70bd8deab1df18ea5ecc7744bb1bf527fb5877f5a3ee8db9aacbc562bd84b"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-PS02-002",
+                "Content Digest": "sha256:d8abb5fdd8b029ee2972af7a710ef84b50538c6ce44ac5fcf4f1218434cf349b"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-01-DECIDED-001",
+                "Content Digest": "sha256:4da9f629609d72fd0cd2eb9acfff1b9e3047d4ace70bf8f394490a10d225747e"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-02-DECIDED-001",
+                "Content Digest": "sha256:f846558cdad97ba3756c3262900d6067fe8bcccf08f8acb008721fa3c530b164"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-03-DECIDED-001",
+                "Content Digest": "sha256:ba4f0ec1ad06f72c5e80a12bfa4b2b53af7a0a2dbbdfaca68f9f649ccba6c5fb"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-04-DECIDED-001",
+                "Content Digest": "sha256:5adce744c7a57eeca242a0ff73de14ef02d1ccf1f9812745f72182a2b34319b3"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-05-DECIDED-001",
+                "Content Digest": "sha256:33f26467e6e2b4a62336cfb2b64bccd347f5c04958c94e63ab5c188378137d3d"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-06-DECIDED-001",
+                "Content Digest": "sha256:5e59f86ae05ca78354c46e6208e808e01c64b141a91c888da2d15c12232027c4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-07-DECIDED-001",
+                "Content Digest": "sha256:7526b45a8d0c2c3aff262d78d518190a16132be20e6c1915b5cd4a54b7f3eacb"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-08-DECIDED-001",
+                "Content Digest": "sha256:62983f38a76802ac747a34c291f55d68bf509abfb3289dcde07ef99eb6b35138"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-09-DECIDED-001",
+                "Content Digest": "sha256:c20d991e10a4973e77833fd02faff2e9d05d9df971f6447da0df34c3f24488b4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-10-DECIDED-001",
+                "Content Digest": "sha256:b4653af7477180c8309e3f2a4dbacf39261dc638f4c18201bf75362962104848"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-11-DECIDED-001",
+                "Content Digest": "sha256:e5d7c8481b8f4e1fe0afe6100d6f933b06fa6c963d49b97a639ea27eaba38c40"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-12-DECIDED-001",
+                "Content Digest": "sha256:668336c5eb9241a703342b9aeedcfafbcf5771b10d369994162968f178bd55d6"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-13-DECIDED-001",
+                "Content Digest": "sha256:4225acc360168976d6f9f3c016b7c5c102f611243dca7f6a94ddb3d0b144f640"
+              }
+            ],
+            "Required claim/boundary": "Independent validation seams and meaningful affected regression selection",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/game/world/tests",
+                "core_enhanced/src/game/recruitment.rs",
+                "core_enhanced/src/game/employee_psychology.rs",
+                "core_enhanced/tests",
+                "game_server/src",
+                "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal"
+              ],
+              "dirty_basis": "Exact current bytes and scoped dirty state; no product/test writers during read-only review. Source observation coverage must follow actual callers rather than assuming every file in these roots was reviewed."
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CEXL-005",
+                "Content Digest": "sha256:f6146321f2dde87be6ae595e990d27198bca05fd5576d6bdb3175e9dcecf4fea"
+              },
+              "basis": "Current approved element acceptance and scope; U11 successor integration"
+            },
+            "Validation requirement": "Read helper/oracle/public runner sources and prior exact accepted claims; expose hidden tutorial/profile setup, strict save and copy identity boundaries. No new run during this static review; stale test assumptions are findings, not passing evidence."
+          },
+          {
+            "Requirement ID": "RQ09",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-PS01-003",
+                "Content Digest": "sha256:58e70bd8deab1df18ea5ecc7744bb1bf527fb5877f5a3ee8db9aacbc562bd84b"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-PS02-002",
+                "Content Digest": "sha256:d8abb5fdd8b029ee2972af7a710ef84b50538c6ce44ac5fcf4f1218434cf349b"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-01-DECIDED-001",
+                "Content Digest": "sha256:4da9f629609d72fd0cd2eb9acfff1b9e3047d4ace70bf8f394490a10d225747e"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-02-DECIDED-001",
+                "Content Digest": "sha256:f846558cdad97ba3756c3262900d6067fe8bcccf08f8acb008721fa3c530b164"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-03-DECIDED-001",
+                "Content Digest": "sha256:ba4f0ec1ad06f72c5e80a12bfa4b2b53af7a0a2dbbdfaca68f9f649ccba6c5fb"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-04-DECIDED-001",
+                "Content Digest": "sha256:5adce744c7a57eeca242a0ff73de14ef02d1ccf1f9812745f72182a2b34319b3"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-05-DECIDED-001",
+                "Content Digest": "sha256:33f26467e6e2b4a62336cfb2b64bccd347f5c04958c94e63ab5c188378137d3d"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-06-DECIDED-001",
+                "Content Digest": "sha256:5e59f86ae05ca78354c46e6208e808e01c64b141a91c888da2d15c12232027c4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-07-DECIDED-001",
+                "Content Digest": "sha256:7526b45a8d0c2c3aff262d78d518190a16132be20e6c1915b5cd4a54b7f3eacb"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-08-DECIDED-001",
+                "Content Digest": "sha256:62983f38a76802ac747a34c291f55d68bf509abfb3289dcde07ef99eb6b35138"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-09-DECIDED-001",
+                "Content Digest": "sha256:c20d991e10a4973e77833fd02faff2e9d05d9df971f6447da0df34c3f24488b4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-10-DECIDED-001",
+                "Content Digest": "sha256:b4653af7477180c8309e3f2a4dbacf39261dc638f4c18201bf75362962104848"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-11-DECIDED-001",
+                "Content Digest": "sha256:e5d7c8481b8f4e1fe0afe6100d6f933b06fa6c963d49b97a639ea27eaba38c40"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-12-DECIDED-001",
+                "Content Digest": "sha256:668336c5eb9241a703342b9aeedcfafbcf5771b10d369994162968f178bd55d6"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-13-DECIDED-001",
+                "Content Digest": "sha256:4225acc360168976d6f9f3c016b7c5c102f611243dca7f6a94ddb3d0b144f640"
+              }
+            ],
+            "Required claim/boundary": "Released build compatibility",
+            "Source type/role": "Released Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": "No identified released distribution; current development workspace only",
+              "dirty_basis": "Exact current bytes and scoped dirty state; no product/test writers during read-only review. Source observation coverage must follow actual callers rather than assuming every file in these roots was reviewed."
+            },
+            "Applicability/Necessity": "not_applicable",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CEXL-005",
+                "Content Digest": "sha256:f6146321f2dde87be6ae595e990d27198bca05fd5576d6bdb3175e9dcecf4fea"
+              },
+              "basis": "Current scope has no released distribution target and explicitly excludes legacy development migration; not a claim no releases exist."
+            },
+            "Validation requirement": "N/A justified by user CF-D01 new-game/development save support; do not claim released compatibility."
+          },
+          {
+            "Requirement ID": "RQ10",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-PS01-003",
+                "Content Digest": "sha256:58e70bd8deab1df18ea5ecc7744bb1bf527fb5877f5a3ee8db9aacbc562bd84b"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-PS02-002",
+                "Content Digest": "sha256:d8abb5fdd8b029ee2972af7a710ef84b50538c6ce44ac5fcf4f1218434cf349b"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-01-DECIDED-001",
+                "Content Digest": "sha256:4da9f629609d72fd0cd2eb9acfff1b9e3047d4ace70bf8f394490a10d225747e"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-02-DECIDED-001",
+                "Content Digest": "sha256:f846558cdad97ba3756c3262900d6067fe8bcccf08f8acb008721fa3c530b164"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-03-DECIDED-001",
+                "Content Digest": "sha256:ba4f0ec1ad06f72c5e80a12bfa4b2b53af7a0a2dbbdfaca68f9f649ccba6c5fb"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-04-DECIDED-001",
+                "Content Digest": "sha256:5adce744c7a57eeca242a0ff73de14ef02d1ccf1f9812745f72182a2b34319b3"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-05-DECIDED-001",
+                "Content Digest": "sha256:33f26467e6e2b4a62336cfb2b64bccd347f5c04958c94e63ab5c188378137d3d"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-06-DECIDED-001",
+                "Content Digest": "sha256:5e59f86ae05ca78354c46e6208e808e01c64b141a91c888da2d15c12232027c4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-07-DECIDED-001",
+                "Content Digest": "sha256:7526b45a8d0c2c3aff262d78d518190a16132be20e6c1915b5cd4a54b7f3eacb"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-08-DECIDED-001",
+                "Content Digest": "sha256:62983f38a76802ac747a34c291f55d68bf509abfb3289dcde07ef99eb6b35138"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-09-DECIDED-001",
+                "Content Digest": "sha256:c20d991e10a4973e77833fd02faff2e9d05d9df971f6447da0df34c3f24488b4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-10-DECIDED-001",
+                "Content Digest": "sha256:b4653af7477180c8309e3f2a4dbacf39261dc638f4c18201bf75362962104848"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-11-DECIDED-001",
+                "Content Digest": "sha256:e5d7c8481b8f4e1fe0afe6100d6f933b06fa6c963d49b97a639ea27eaba38c40"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-12-DECIDED-001",
+                "Content Digest": "sha256:668336c5eb9241a703342b9aeedcfafbcf5771b10d369994162968f178bd55d6"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-13-DECIDED-001",
+                "Content Digest": "sha256:4225acc360168976d6f9f3c016b7c5c102f611243dca7f6a94ddb3d0b144f640"
+              }
+            ],
+            "Required claim/boundary": "Deployed/live external-store rollout",
+            "Source type/role": "Deployed Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": "No identified deployed service or operational save target",
+              "dirty_basis": "Exact current bytes and scoped dirty state; no product/test writers during read-only review. Source observation coverage must follow actual callers rather than assuming every file in these roots was reviewed."
+            },
+            "Applicability/Necessity": "not_applicable",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CEXL-005",
+                "Content Digest": "sha256:f6146321f2dde87be6ae595e990d27198bca05fd5576d6bdb3175e9dcecf4fea"
+              },
+              "basis": "User authorizes local Core-first implementation; no remote deployment/live production environment in target scope."
+            },
+            "Validation requirement": "N/A for deployment claim only; local workspace/server persistence remains required RQ04."
+          },
+          {
+            "Requirement ID": "RQ11",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-PS01-003",
+                "Content Digest": "sha256:58e70bd8deab1df18ea5ecc7744bb1bf527fb5877f5a3ee8db9aacbc562bd84b"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-PS02-002",
+                "Content Digest": "sha256:d8abb5fdd8b029ee2972af7a710ef84b50538c6ce44ac5fcf4f1218434cf349b"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-01-DECIDED-001",
+                "Content Digest": "sha256:4da9f629609d72fd0cd2eb9acfff1b9e3047d4ace70bf8f394490a10d225747e"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-02-DECIDED-001",
+                "Content Digest": "sha256:f846558cdad97ba3756c3262900d6067fe8bcccf08f8acb008721fa3c530b164"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-03-DECIDED-001",
+                "Content Digest": "sha256:ba4f0ec1ad06f72c5e80a12bfa4b2b53af7a0a2dbbdfaca68f9f649ccba6c5fb"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-04-DECIDED-001",
+                "Content Digest": "sha256:5adce744c7a57eeca242a0ff73de14ef02d1ccf1f9812745f72182a2b34319b3"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-05-DECIDED-001",
+                "Content Digest": "sha256:33f26467e6e2b4a62336cfb2b64bccd347f5c04958c94e63ab5c188378137d3d"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-06-DECIDED-001",
+                "Content Digest": "sha256:5e59f86ae05ca78354c46e6208e808e01c64b141a91c888da2d15c12232027c4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-07-DECIDED-001",
+                "Content Digest": "sha256:7526b45a8d0c2c3aff262d78d518190a16132be20e6c1915b5cd4a54b7f3eacb"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-08-DECIDED-001",
+                "Content Digest": "sha256:62983f38a76802ac747a34c291f55d68bf509abfb3289dcde07ef99eb6b35138"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-09-DECIDED-001",
+                "Content Digest": "sha256:c20d991e10a4973e77833fd02faff2e9d05d9df971f6447da0df34c3f24488b4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-10-DECIDED-001",
+                "Content Digest": "sha256:b4653af7477180c8309e3f2a4dbacf39261dc638f4c18201bf75362962104848"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-11-DECIDED-001",
+                "Content Digest": "sha256:e5d7c8481b8f4e1fe0afe6100d6f933b06fa6c963d49b97a639ea27eaba38c40"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-12-DECIDED-001",
+                "Content Digest": "sha256:668336c5eb9241a703342b9aeedcfafbcf5771b10d369994162968f178bd55d6"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CEXL-13-DECIDED-001",
+                "Content Digest": "sha256:4225acc360168976d6f9f3c016b7c5c102f611243dca7f6a94ddb3d0b144f640"
+              }
+            ],
+            "Required claim/boundary": "Actual Unity UI/VN and individual unique final-boss consumers",
+            "Source type/role": "Excluded consumer boundary",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": "Future U26-B and explicitly excluded unique final-boss implementations",
+              "dirty_basis": "Exact current bytes and scoped dirty state; no product/test writers during read-only review. Source observation coverage must follow actual callers rather than assuming every file in these roots was reviewed."
+            },
+            "Applicability/Necessity": "not_applicable",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CEXL-005",
+                "Content Digest": "sha256:f6146321f2dde87be6ae595e990d27198bca05fd5576d6bdb3175e9dcecf4fea"
+              },
+              "basis": "WR005 O01/O03: Unity later and individual unique final-boss implementation excluded."
+            },
+            "Validation requirement": "Record N/A from explicit scope; current Core/server consumer compatibility remains required. Do not claim actual Unity validation."
+          }
+        ],
+        "Review strategy": "Root semantic code/contract review; existing independent Astra read-only removal/testability review. Existing Sol remains sole future executor but no diagnostic runtime execution is needed for current static source review. Current policy basis stays fixed; material meaning changes route to P2G-10."
+      }
+    }
+  ]
+}

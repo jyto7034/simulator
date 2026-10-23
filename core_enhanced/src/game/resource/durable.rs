@@ -60,6 +60,20 @@ impl RunResourceState {
         }
         catalog.validate().map_err(ResourceError::Definition)?;
         crate::authoring::control::charge(self.entries.len() as u64, "resource_run_validation")?;
+        if self.entries.is_empty() { return Ok(()); }
+        // Authored catalog order is not a lookup contract. Build a borrowed
+        // sorted index once instead of scanning every definition per balance.
+        let count = catalog.resources.len();
+        crate::game::battle::runtime_control::admit_retained_growth(
+            0, count.checked_mul(std::mem::size_of::<&super::ResourceDefinition>()),
+            "resource_run_definition_index",
+        )?;
+        crate::authoring::control::charge(
+            count as u64 * (count.max(1).ilog2() as u64 + 1) * 2,
+            "resource_run_definition_sort",
+        )?;
+        let mut definitions: Vec<_> = catalog.resources.iter().collect();
+        definitions.sort_unstable_by(|a, b| a.id.cmp(&b.id));
         let mut previous = None;
         for entry in &self.entries {
             let key = (&entry.resource, entry.owner);
@@ -71,14 +85,12 @@ impl RunResourceState {
                 return Err(ResourceFaultCode::InvalidOwner.into());
             }
             crate::authoring::control::charge(
-                catalog.resources.len() as u64,
+                count.max(1).ilog2() as u64 + 1,
                 "resource_run_definition",
             )?;
-            let definition = catalog
-                .resources
-                .iter()
-                .find(|def| def.id == entry.resource)
-                .ok_or(ResourceFaultCode::UnknownDefinition)?;
+            let index = definitions.binary_search_by(|def| def.id.cmp(&entry.resource))
+                .map_err(|_| ResourceFaultCode::UnknownDefinition)?;
+            let definition = definitions[index];
             if definition.owner != entry.owner.kind() {
                 return Err(ResourceFaultCode::OwnerKindMismatch.into());
             }

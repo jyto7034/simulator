@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/home/blast/.cargo/bin/cargo",
+    "test",
+    "-p",
+    "game_core",
+    "--lib",
+    "--offline",
+    "--locked",
+    "--target-dir",
+    ".cache/u12-vault-cost-target",
+    "--features",
+    "runtime-observation",
+    "u12_vault"
+  ],
+  "exit_code": 0,
+  "seconds": 61.425619268004084,
+  "stdout": "g11_native001.stdout.log",
+  "stderr": "g11_native001.stderr.log"
+}

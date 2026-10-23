@@ -97,7 +97,7 @@ impl RuntimeFactLimits {
         max_control_steps: 4096,
         max_strike_segments: 8192,
         max_predeath_buffs: 4096,
-        max_retained_bytes: 8 * 1024 * 1024,
+        max_retained_bytes: 16 * 1024 * 1024,
     };
     pub(crate) fn validate(&self) -> Result<(), GameError> {
         let ceiling = Self::ENGINE_MAX;
@@ -726,7 +726,13 @@ mod tests {
 
     fn cmrp_settings(cap: usize) -> crate::runtime_safety::RuntimeSafetySettings {
         let mut source =
-            String::from_utf8(crate::runtime_safety::EMBEDDED_RUNTIME_SAFETY_RON.to_vec()).unwrap();
+            String::from_utf8(crate::runtime_safety::EMBEDDED_RUNTIME_SAFETY_RON.to_vec())
+                .unwrap()
+                .replacen(
+                    "max_retained_bytes: 16777216",
+                    "max_retained_bytes: 8388608",
+                    1,
+                );
         let end = source.rfind(')').unwrap();
         source.insert_str(
             end,
@@ -745,11 +751,39 @@ mod tests {
     fn cmrp_native_actual_cap_seed_growth_exact_and_one_over() {
         for cap in [8 * 1024 * 1024, 16 * 1024 * 1024, 32 * 1024 * 1024] {
             let settings = if cap == 8 * 1024 * 1024 {
+                let legacy =
+                    std::str::from_utf8(crate::runtime_safety::EMBEDDED_RUNTIME_SAFETY_RON)
+                        .unwrap()
+                        .replacen(
+                            "max_retained_bytes: 16777216",
+                            "max_retained_bytes: 8388608",
+                            1,
+                        );
+                crate::runtime_safety::RuntimeSafetySettings::from_ron(
+                    "legacy eight MiB host",
+                    legacy.as_bytes(),
+                )
+                .unwrap()
+            } else if cap == 16 * 1024 * 1024 {
                 crate::runtime_safety::RuntimeSafetySettings::embedded().clone()
             } else {
                 cmrp_settings(cap)
             };
+            assert_eq!(settings.native_runtime().max_retained_bytes, cap);
             let limits = settings.native_runtime();
+            if cap <= 16 * 1024 * 1024 {
+                run(limits, || seed_retained_extent(cap)).unwrap();
+            } else {
+                assert!(matches!(
+                    run(limits, || Ok(())).unwrap_err(),
+                    GameError::BattleRuntimeFault(BattleRuntimeFault {
+                        code: RuntimeFaultCode::InvalidLimits,
+                        site: "max_retained_bytes",
+                        limit: Some(16777216),
+                        requested: Some(33554432)
+                    })
+                ));
+            }
             run_with_profile(limits, &settings, || seed_retained_extent(cap)).unwrap();
             let error =
                 run_with_profile(limits, &settings, || seed_retained_extent(cap + 1)).unwrap_err();
@@ -860,9 +894,9 @@ mod tests {
 
     #[test]
     fn cmrp_local_projection_owner_cap_applies_only_without_active_budget() {
-        let settings = cmrp_settings(16 * 1024 * 1024);
+        let settings = cmrp_settings(32 * 1024 * 1024);
         let owner = settings.native_runtime();
-        let extent = 9 * 1024 * 1024;
+        let extent = 17 * 1024 * 1024;
         assert!(!is_active());
         assert!(admit_retained_growth(0, Some(extent), "cmrp_original_fallback").is_err());
         admit_retained_growth_with_owner_limits(0, Some(extent), "cmrp_local_projection", owner)

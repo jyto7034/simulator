@@ -1,0 +1,20 @@
+{
+  "record_ref": "ATR-CRAR-C2-P04-GEX20-005",
+  "goal_id": "GOAL-CRAR-C2-P04-BATTLE-KERNEL",
+  "successor_goal_id": "GOAL-CRAR-C2-P08-PERFORMANCE-FINAL-INTEGRATION",
+  "captured_date": "2026-08-23",
+  "verdict": "Complete / High",
+  "currentness": "current / expected P08 measured kernel optimization",
+  "previous_currentness_ref": "ATR-CRAR-C2-P04-GEX20-004",
+  "changed_members": [
+    {"path":"src/game/battle/core/mod.rs","sha256":"7fa1ef2890ae00aae82aafa48b641f24f9d34aab39941c3343b4bece240b271d"},
+    {"path":"src/game/battle/core/movement/engine.rs","sha256":"89e753f624927d7c4a057777f85d816f189c019001ea6c76227bed3047fa582f"},
+    {"path":"src/game/battle/core/movement/planner.rs","sha256":"58ee8b3c4de3b4c3fb12c002353063befee12934322324e0a0b162b977e2d82b"},
+    {"path":"src/game/battle/core/movement/rapier_backend.rs","sha256":"764124edb49ab1181352f1e9da83b0ef48d2fe517dc64dc32982402fcf153af9"},
+    {"path":"src/game/battle/core/movement/blocking.rs","sha256":"1fbc2ce8bd7f51e5dd2fd6edd2b30f41d3318672c133fc1e7169c026e1de0417"},
+    {"path":"src/game/battle/core/targeting.rs","sha256":"0d9308926ce1fe5bea6c5dd0c2da96b42cb66235b10c967597fb2d5287f5457e"},
+    {"path":"src/game/battle/core/target_usefulness.rs","sha256":"f4ad2c6cf6d5de9474e84667204389dc613d79dcaebae63409ee95fd9313ae80"}
+  ],
+  "validation": ["exact P01 output parity", "release Rapier 17/17", "release event log 8/8", "current Core 1159/1159", "kernel invalid probe expected exit 101"],
+  "external_scope": "game_server, Unity, sibling resources and external consumers uninspected and unclaimed"
+}

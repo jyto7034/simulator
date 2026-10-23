@@ -1,0 +1,70 @@
+{
+  "status": "implementation_and_self_validation_ended_audit_request_pending",
+  "stage": "GEX-10",
+  "goal_set": "GS-CBRR-001",
+  "goal": "GOAL-CBRR-01",
+  "phase": "PHASE-CBRR-01",
+  "recorded_at": "2026-10-15T03:17:51.501771+00:00",
+  "target": "target/u16_2_current_001/AUDIT_TARGET_RECORD.json",
+  "source_sha256": "b3d011f7d2ae5621346188958ba79f1519825778e2d02df599f959a99e94d6d5",
+  "source_members": 953,
+  "evidence_members": 774,
+  "delta_members": 390,
+  "restore_passed": true,
+  "freeze_exit_code": 0,
+  "freeze_log": "/tmp/u162-freeze001.log",
+  "acceptance": 17,
+  "validation_dimensions": 10,
+  "integration_acceptance": 5,
+  "execution_nodes": 2,
+  "default_core_unique_pass_coverage": 2196,
+  "core_reuse": "BASELINE_REUSE.json:2114+9corrected+72integration+1unchangedactualsocket; focused overlaps excluded",
+  "single_full_green_invocation_claimed": false,
+  "existing_ignored": 6,
+  "known_current_failures": 0,
+  "native_g11_reused": 4,
+  "server_persistence_reused": 31,
+  "normal_host": {
+    "fresh_processes": 20,
+    "commands": 78,
+    "actual_io_failures_and_retries": 6,
+    "sources": [
+      "runs/host001/RESULT.json",
+      "runs/host_edges001/RESULT.json"
+    ]
+  },
+  "expanded_measurement_host": {
+    "fresh_processes": 3,
+    "commands": 29,
+    "actual_io_failures_and_retries": 2,
+    "authoring_work_limit": 64000000,
+    "native_retained_bytes": 16777216,
+    "default_authoring_accepted": false
+  },
+  "authoring": {
+    "valid": 1,
+    "invalid_rejected": 10,
+    "raw": "runs/authoring002/RESULT.json"
+  },
+  "cost": {
+    "activity_fresh_processes": 6,
+    "activity_command_and_query_windows": 312,
+    "shared_lifecycle_fresh_processes": 6,
+    "shared_lifecycle_operations": 72,
+    "all_exact_requested_bytes_recovered": true
+  },
+  "production_limits_changed": false,
+  "explicit_measurement_profile": "test_parts/expanded_inputs002/measurement_safety.ron; default300candidate authoring rejection preserved, no default admission claim",
+  "goal_complete": false,
+  "audit_performed": false,
+  "predecessor_continuity": "U16-1 immutable historical Complete/High retained; new reward/layout/shared owner delta and current regression/reuse evidence are assigned to requested U16-2 GEX20. No automatic successor work.",
+  "next": "Separately requested GEX20 on u16_2_current_001; U16-3/4 remain outside this task.",
+  "known_limits": [
+    "U16-2 implementation/self-validation only. Independent GEX20 not performed, Goal not Complete; U16-3/4 and whole U16 remain outside this result.",
+    "Official relic catalog remains empty; supported external authored pack supplies representative effects. Costs3/9/18 and weight1 are initial delegated tuning, not finished balance or U21 content.",
+    "300candidate+64additionalcopy stress input is rejected by default authoring10M GeneratedSetup. Complete measurement/expanded approved-host replay uses explicit finite authoring64M, while native16MiB and deployment defaults remain unchanged. No default-admission claim for stress pack.",
+    "Native counters, requested heap and RSS differ; dev diagnostic and finite release calibration are not deployment/device SLOs. Six inherited ignored tests remain ignored; all-targets was not one fully green invocation.",
+    "One test-only default manifest locator changed after prepared binary build; exact compiled preimage and cfg(test) nonimpact are in BASELINE_REUSE. Current four default manifest tests passed; copied host binaries and actual approvals are bound to their immutable fingerprints.",
+    "Private issuer credentials excluded from frozen evidence. Existing local cache can reproduce current host tests; a fresh environment must calibrate/adopt with its own issuer. External arbitrary save/checksum/memory mutation remains out of scope."
+  ]
+}

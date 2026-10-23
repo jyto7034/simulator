@@ -1,0 +1,64 @@
+{
+  "recorded_at_utc": "2026-10-09T15:37:32.727467+00:00",
+  "owner": "Root Astra planner; independent audit intake and status-document editing only",
+  "audit": {
+    "path": "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_002_pass001/AUDIT_CLOSURE.json",
+    "bytes": 8660,
+    "sha256": "194ca22224e001aaf4bbc3daf8710226dfbd8a18f146b53b4e6735f480db30dd"
+  },
+  "target": {
+    "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/target/u10_current_002/MANIFEST.json",
+    "bytes": 228308,
+    "sha256": "e9785f69c28ba4bbb5379c5415be69cb6ea13d0309dce39da65be2ae1f48fe1a"
+  },
+  "auditor_exit": "2026-10-09T15:35:13.544987+00:00",
+  "audit_exit_checked_refs": 2499,
+  "audit_exit_mismatches": [],
+  "independent_verdict": {
+    "verdict": "Complete",
+    "confidence": "High",
+    "open_findings_count": 0
+  },
+  "documents": [
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+      "before_bytes": 336615,
+      "before_sha256": "a72e5d18d37a71a2487bfb7793bdd9b93ab7b76a5d37800c5423bbb27da0c9c5",
+      "after_bytes": 337285,
+      "after_sha256": "825bdd7d8cc1bcb9227dab4b3da19d629bb80f8e9f3630eaac339d60bc855263"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "before_bytes": 63587,
+      "before_sha256": "9f421aaabee24a4afed463846f9db535e2807e83cce97dc28e50280185f75f51",
+      "after_bytes": 64271,
+      "after_sha256": "ca33b4266a7388a65c54e643e92238fb2eb156a56bdb330934b711a4b272e1b5"
+    }
+  ],
+  "archive": {
+    "path": "core_enhanced/docs/roadmaps/core_first/execution/u10_closure_20261010_001/DOCUMENTS_BEFORE.tar.gz",
+    "bytes": 131965,
+    "sha256": "e9bafe78d4e1d7e93db2c113a04ebc029e3cf99bcf3f367b05704d5b042588ba"
+  },
+  "diff": {
+    "path": "core_enhanced/docs/roadmaps/core_first/execution/u10_closure_20261010_001/DOCUMENTS.diff",
+    "bytes": 3145,
+    "sha256": "73461d8a7d4307234ae63fb27a6ddd843bc176de6c6c68946c08cc108917767d"
+  },
+  "result": {
+    "path": "core_enhanced/docs/roadmaps/core_first/execution/u10_closure_20261010_001/RESULT.ko.md",
+    "bytes": 4461,
+    "sha256": "54b714d80a6a6ce507dae7f3e9ae5e3aa5242263385e48dd0c9a7e8062f4636a"
+  },
+  "frozen_membership": {
+    "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/target/u10_current_002/MEMBERSHIP.json",
+    "bytes": 853686,
+    "sha256": "b5840a6c614b3bb364790352efaaf92e276a6dce6d2f6d451f30cfd8a321fde9"
+  },
+  "status_documents_are_frozen_members": false,
+  "currentness": "Independent exit currentness consumed; status-only publication outside frozen membership. No new independent verdict or repeated whole membership check.",
+  "impact_path": "Only the two roadmap top introductions and this closure directory. Frozen PLAN/NOTES/source/tests/evidence/target/audits unchanged; old target001/open2 and all historical failures/warnings preserved.",
+  "product_source_sha256": "76aba953d84c644d3659b553e50f99f342c5826c709952c1fe808984ebfc340d",
+  "product_or_test_code_by_root": false,
+  "next": "U11 scoped policy/current-code P2G; product after formal handoff and GEX entry. Continuous authorization active."
+}

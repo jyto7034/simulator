@@ -35,11 +35,11 @@ fn save_point_reduces_living_trauma_and_saves_checkpoint() {
         MapNodePayload::SavePoint,
     );
 
-    let psychology_before = core
+    let profile_before = core
         .roster()
         .unwrap()
         .iter()
-        .map(|employee| (employee.uuid, employee.psychology.clone()))
+        .map(|employee| (employee.uuid, employee.profile.clone()))
         .collect::<std::collections::HashMap<_, _>>();
     let preview = core
         .execute(player_id, PlayerBehavior::SelectMapNode { node_id })
@@ -93,9 +93,9 @@ fn save_point_reduces_living_trauma_and_saves_checkpoint() {
     assert_eq!(roster.get(&ids[2]).unwrap().condition.trauma, 50);
     for employee in roster.iter() {
         assert_eq!(
-            &employee.psychology,
-            psychology_before.get(&employee.uuid).unwrap(),
-            "SavePoint recovery must not produce Psychology state"
+            &employee.profile,
+            profile_before.get(&employee.uuid).unwrap(),
+            "SavePoint recovery must preserve authored personality and aptitude"
         );
     }
     assert!(core.state.run_checkpoint.payload.is_some());
@@ -421,7 +421,6 @@ fn load_run_checkpoint_restores_visible_state_and_anchor_but_not_load_count_or_p
         let employee = core.roster_mut().unwrap().get_mut(&employee_uuid).unwrap();
         employee.condition.physical_damage = 4;
         employee.condition.trauma = 80;
-        employee.psychology.trust_score = 7;
     }
     let node_id = force_first_available_node(
         &mut core,
@@ -470,7 +469,7 @@ fn load_run_checkpoint_restores_visible_state_and_anchor_but_not_load_count_or_p
             .unwrap()
             .run_progression
             .game_mode,
-        GameMode::Standard
+        GameMode::Expedition
     );
     assert_eq!(core.state.run_checkpoint.loads_used, 0);
 
@@ -496,7 +495,6 @@ fn load_run_checkpoint_restores_visible_state_and_anchor_but_not_load_count_or_p
         employee.condition.physical_damage = 1;
         employee.condition.trauma = 3;
         employee.profile.event_aptitude = EventAptitude::Analysis;
-        employee.psychology.trust_score = 50;
     }
     core.execute(player_id, PlayerBehavior::LoadRunCheckpoint)
         .unwrap();
@@ -505,12 +503,10 @@ fn load_run_checkpoint_restores_visible_state_and_anchor_but_not_load_count_or_p
     assert_eq!(employee.condition.physical_damage, 4);
     assert_eq!(employee.condition.trauma, checkpoint_trauma);
     assert_eq!(employee.profile.event_aptitude, checkpoint_event_aptitude);
-    assert_eq!(employee.psychology.trust_score, 7);
-    assert!(employee.psychology.memories.is_empty());
     assert_eq!(core.state.enkephalin.amount, 500);
     assert_eq!(
         core.state.run.as_ref().unwrap().run_progression.game_mode,
-        GameMode::Standard
+        GameMode::Expedition
     );
     assert_eq!(core.state.run_checkpoint.loads_used, 1);
     assert_eq!(
@@ -523,7 +519,7 @@ fn load_run_checkpoint_restores_visible_state_and_anchor_but_not_load_count_or_p
         checkpoint_anchor
     );
     let snapshot = core.get_run_snapshot_json().unwrap();
-    assert_eq!(snapshot["run_progression"]["game_mode"], "Standard");
+    assert_eq!(snapshot["run_progression"]["game_mode"], "Expedition");
     assert_eq!(snapshot["run_checkpoint"]["loads_used"], 1);
     assert_eq!(snapshot["run_checkpoint"]["remaining_loads"], 2);
     assert!(snapshot["run_checkpoint"].get("can_load").is_none());
@@ -582,7 +578,7 @@ fn active_run_checkpoint_round_trip_preserves_monotonic_loads_without_local_prof
     assert!(!String::from_utf8_lossy(&exported.core_payload_json).contains("encounter_compendium"));
     let exported_document: serde_json::Value =
         serde_json::from_slice(&exported.core_payload_json).unwrap();
-    assert_eq!(exported_document["version"], 11);
+    assert_eq!(exported_document["version"], 18);
     assert_eq!(
         exported_document["continuation"]["current"]["power_model_version"],
         power_model_version
@@ -695,8 +691,8 @@ fn active_run_checkpoint_round_trip_preserves_monotonic_loads_without_local_prof
         Err(GameError::InvalidStaticData(_))
     ));
 
-    let restored_player_id = Uuid::from_u128(2);
-    let mut restored = GameCore::new(game_data, 999);
+    let restored_player_id = player_id;
+    let mut restored = core_with_profile_for_continue(&source, 999);
     let continued = restored
         .continue_from_active_run_checkpoint(
             restored_player_id,
@@ -769,7 +765,7 @@ fn checkpoint_load_rewinds_run_streak_state_but_never_rolls_back_permanent_recor
         .current_deathless_floor_streak = 9;
     core.state.player_profile.highest_floor_reached = 12;
     core.state.player_profile.longest_deathless_floor_streak = 7;
-    core.state.player_profile.standard_tutorial_completed = true;
+    let active_instance = core.state.player_profile.lifecycle.active_expedition;
     core.execute(player_id, PlayerBehavior::LoadRunCheckpoint)
         .unwrap();
 
@@ -785,7 +781,7 @@ fn checkpoint_load_rewinds_run_streak_state_but_never_rolls_back_permanent_recor
     );
     assert_eq!(core.state.player_profile.highest_floor_reached, 12);
     assert_eq!(core.state.player_profile.longest_deathless_floor_streak, 7);
-    assert!(core.state.player_profile.standard_tutorial_completed);
+    assert_eq!(core.state.player_profile.lifecycle.active_expedition, active_instance);
 }
 
 #[test]
@@ -979,8 +975,8 @@ fn live_maintenance_capabilities_follow_executable_operation_projection() {
         .expect("embedded live gameplay RON must be valid");
     let equipment = game_data
         .equipment_data
-        .get_by_id("standard_armor")
-        .expect("live standard_armor")
+        .get_by_id("standard_training_sword")
+        .expect("live standard_training_sword")
         .clone();
     let fragment = game_data
         .skill_fragment_data
@@ -1009,10 +1005,7 @@ fn live_maintenance_capabilities_follow_executable_operation_projection() {
             Arc::new(equipment),
         ))
         .unwrap();
-    core.inventory_mut()
-        .unwrap()
-        .equipment_materials
-        .add("equipment_dust", 2)
+    core.state.crafting_resources.grant_equipment_dust(2)
         .unwrap();
     let copy_uuid = core
         .state

@@ -573,11 +573,86 @@ impl BattleCore {
             occurrence,
         })
     }
+    /// Withdrawal revokes every side branch of this caster, including a
+    /// death-capable or already control-cancelled cast. Released child payloads
+    /// keep their independent Delivery owners and settlement context.
+    pub(in crate::game::battle::core) fn cancel_structural_side_cast_for_withdrawal(
+        &mut self,
+        cast_seq: u64,
+        now: u64,
+    ) -> Result<bool, GameError> {
+        let Some(cast) = self.active_skill_casts.get(&cast_seq) else {
+            return Ok(false);
+        };
+        if !cast
+            .flow
+            .as_ref()
+            .is_some_and(|flow| !flow.plan.side_branches.is_empty())
+        {
+            // Preserve the existing direct-removal path for legacy/no-side casts.
+            return Ok(false);
+        }
+        control::charge(1, "flow_withdraw_owner")?;
+        crate::game::battle::runtime_control::charge(1, "flow_withdraw_owner")?;
+        let records = cast.step_progress.len() as u64;
+        control::charge(records, "flow_withdraw_started_records")?;
+        crate::game::battle::runtime_control::charge(records, "flow_withdraw_started_records")?;
+        let mut flow = self
+            .active_skill_casts
+            .get_mut(&cast_seq)
+            .expect("selected withdrawal flow owner")
+            .flow
+            .take()
+            .expect("selected structural side flow");
+        let closed = flow.cancel_sides(self, cast_seq, now);
+        if closed.is_ok() {
+            flow.complete = true;
+        }
+        let cast = self
+            .active_skill_casts
+            .get_mut(&cast_seq)
+            .expect("withdrawal flow owner remains while closing sides");
+        // Restore temporary ownership even on a close/admission failure. The
+        // enclosing World/native transaction discards the failed candidate.
+        cast.flow = Some(flow);
+        closed?;
+        cast.control_cancelled = true;
+        cast.deferred_steps.clear();
+        cast.step_progress.retain(|_, progress| progress.started);
+        cast.total_steps = cast.step_progress.len();
+        let action = cast.fact_source.action.clone();
+        if let Some(action) = action.as_ref() {
+            self.runtime_facts.terminal(
+                action,
+                crate::game::battle::runtime_facts::ActionTerminalKind::Cancelled(
+                    crate::game::battle::runtime_facts::ActionCancelReason::Withdrawn,
+                ),
+                now,
+            )?;
+        }
+        // Only completed deliveries permit removal. A strong effective-plan
+        // owner does not grant new control after withdrawal.
+        self.cleanup_finished_skill_cast(cast_seq);
+        control::poll("flow_withdraw_cleanup")?;
+        crate::game::battle::runtime_control::poll()?;
+        Ok(true)
+    }
+
     pub(in crate::game::battle::core) fn cancel_structured_flows(
         &mut self,
         actor: crate::game::battle::ids::UnitInstanceId,
         now: u64,
         reason: crate::game::battle::runtime_facts::ActionCancelReason,
+    ) {
+        self.cancel_structured_flows_selected(actor, now, reason, false);
+    }
+    pub(in crate::game::battle::core) fn cancel_hostile_structured_flows(
+        &mut self, actor: crate::game::battle::ids::UnitInstanceId, now: u64,
+        reason: crate::game::battle::runtime_facts::ActionCancelReason,
+    ) { self.cancel_structured_flows_selected(actor, now, reason, true); }
+    fn cancel_structured_flows_selected(
+        &mut self, actor: crate::game::battle::ids::UnitInstanceId, now: u64,
+        reason: crate::game::battle::runtime_facts::ActionCancelReason, hostile_only: bool,
     ) {
         if control::charge(self.active_skill_casts.len() as u64, "flow_cancel_scan").is_err() {
             return;
@@ -588,6 +663,7 @@ impl BattleCore {
                 .iter()
                 .filter(|(_, cast)| {
                     cast.caster_instance_id == actor
+                        && (!hostile_only || self.game_data.skill_data.get_by_id(cast.skill_id.as_str()).is_some_and(Self::hostile_attack_skill))
                         && !cast.allow_dead_caster
                         && !cast.control_cancelled
                         && cast
@@ -611,11 +687,18 @@ impl BattleCore {
                 .expect("selected flow owner")
                 .flow
                 .take();
-            if let Some(flow) = flow.as_mut() {
+            let closed = if let Some(flow) = flow.as_mut() {
                 flow.complete = true;
-                if flow.cancel_sides(self, now).is_err() {
-                    return;
-                }
+                flow.cancel_sides(self, seq, now)
+            } else {
+                Ok(())
+            };
+            if closed.is_err() {
+                self.active_skill_casts
+                    .get_mut(&seq)
+                    .expect("selected flow owner")
+                    .flow = flow;
+                return;
             }
             let cast = self
                 .active_skill_casts

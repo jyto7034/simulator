@@ -1,0 +1,64 @@
+{
+  "passed": true,
+  "samples": 6,
+  "all_exact_requested_bytes_recovered": true,
+  "summary": {
+    "official": {
+      "load": {
+        "median_seconds": 0.504059963,
+        "max_seconds": 0.513477439
+      },
+      "new": {
+        "median_seconds": 2.565e-06,
+        "max_seconds": 4.419e-06
+      },
+      "start": {
+        "median_seconds": 0.00157768,
+        "max_seconds": 0.001687108
+      },
+      "whole_facility_query": {
+        "median_seconds": 0.001989884,
+        "max_seconds": 0.002272942
+      },
+      "checkpoint_export": {
+        "median_seconds": 2.8094e-05,
+        "max_seconds": 6.1086e-05
+      },
+      "drop_application": {
+        "median_seconds": 1.9827e-05,
+        "max_seconds": 2.65e-05
+      }
+    },
+    "expanded": {
+      "load": {
+        "median_seconds": 0.52302776,
+        "max_seconds": 0.532069035
+      },
+      "new": {
+        "median_seconds": 2.364e-06,
+        "max_seconds": 3.106e-06
+      },
+      "start": {
+        "median_seconds": 0.001566348,
+        "max_seconds": 0.001614871
+      },
+      "whole_facility_query": {
+        "median_seconds": 0.00274574,
+        "max_seconds": 0.002775578
+      },
+      "checkpoint_export": {
+        "median_seconds": 2.3785e-05,
+        "max_seconds": 4.5476e-05
+      },
+      "drop_application": {
+        "median_seconds": 3.154e-05,
+        "max_seconds": 3.5538e-05
+      }
+    }
+  },
+  "binary_sha256": "b4e32b3fda786655305fe48b676875aa032da308a7f9db0af42f053141982095",
+  "input": "test_parts/public_inputs001",
+  "scope": "full authored static graph, initial room manifested; six fresh processes after compilation and host execution finished; not all rooms visited or final performance SLO",
+  "native_counters": "Raw load stage is measured. Unavailable operation counters remain unavailable; do not interpret zero raw counters without coverage as zero cost. Actual movement budget is test012.",
+  "source_currentness": "consumer004 frozen from current Core; no Core edits since focused011. Exact build/source currentness in final evidence binding."
+}

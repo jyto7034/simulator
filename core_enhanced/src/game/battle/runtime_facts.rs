@@ -1,5 +1,5 @@
 //! Immutable battle facts and source identities, independent of event logging.
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use uuid::Uuid;
 
@@ -195,8 +195,71 @@ impl IndependentObjectOriginSnapshot {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct StatusPredecessor {
+    pub activation: u64,
+    pub owner: UnitInstanceId,
+    pub fragment: Arc<crate::game::skill_fragment::FragmentSourceSnapshot>,
+    pub definition: String,
+}
+crate::authoring::clone_shape::struct_shape!(StatusPredecessor {
+    activation,
+    owner,
+    fragment,
+    definition
+});
+impl StatusPredecessor {
+    pub(crate) fn retained_extent(&self) -> Option<usize> {
+        std::mem::size_of::<Self>()
+            .checked_add(self.definition.capacity())?
+            .checked_add(
+                RuntimeFactSource {
+                    fragment: Some(self.fragment.clone()),
+                    ..Default::default()
+                }
+                .retained_extent()?,
+            )
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct StatusTransitionOrigin {
+    pub previous: Vec<StatusPredecessor>,
+}
+crate::authoring::clone_shape::struct_shape!(StatusTransitionOrigin { previous });
+impl StatusTransitionOrigin {
+    pub(crate) fn retained_extent(&self) -> Option<usize> {
+        let mut n = std::mem::size_of::<Self>().checked_add(
+            self.previous
+                .capacity()
+                .checked_mul(std::mem::size_of::<StatusPredecessor>())?,
+        )?;
+        for p in &self.previous {
+            n = n.checked_add(p.retained_extent()?)?;
+        }
+        Some(n)
+    }
+}
 /// Rare observation slots share one optional allocation. Ordinary sources keep
 /// the same inline footprint as before independent objects were introduced.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct MobileEffectOrigin {
+    pub motion: crate::game::ability::mobile_effect::MobileMotion,
+    pub death_origin: Option<Arc<crate::game::ability::mobile_effect::MobileDeathOrigin>>,
+    pub seed_origin: Option<Arc<crate::game::ability::mobile_effect::MobileSeedOrigin>>,
+    pub activation: u64,
+    pub owner: UnitInstanceId,
+    pub copy: Uuid,
+    pub definition: String,
+}
+crate::authoring::clone_shape::struct_shape!(MobileEffectOrigin {
+    motion,
+    death_origin,
+    seed_origin,
+    activation,
+    owner,
+    copy,
+    definition
+});
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct ExtendedSourceObservation {
     independent_object: Option<Arc<IndependentObjectOriginSnapshot>>,
@@ -204,13 +267,21 @@ pub(crate) struct ExtendedSourceObservation {
     relic_numeric: Option<Arc<super::core::relic_numeric::RelicNumericBinding>>,
     relic_effective: Option<Arc<super::core::effective_skill::EffectiveSkillBinding>>,
     regular_support: Option<Arc<super::damage::RegularBasicSupportSnapshot>>,
+    status_transition: Option<Arc<StatusTransitionOrigin>>,
+    guard_release: Option<Arc<crate::game::ability::guard_charge::GuardReleaseOrigin>>,
+    mobile_effect: Option<Arc<MobileEffectOrigin>>,
+    causal: Option<Arc<super::core::relic_causal::CausalSourceData>>,
 }
 crate::authoring::clone_shape::struct_shape!(ExtendedSourceObservation {
     independent_object,
     reinput,
     relic_numeric,
     relic_effective,
-    regular_support
+    regular_support,
+    status_transition,
+    guard_release,
+    mobile_effect,
+    causal
 });
 
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
@@ -263,6 +334,12 @@ impl Serialize for RuntimeFactSource {
             #[serde(skip_serializing_if = "Option::is_none")]
             regular_support: Option<&'a Arc<super::damage::RegularBasicSupportSnapshot>>,
             #[serde(skip_serializing_if = "Option::is_none")]
+            status_transition: Option<&'a Arc<StatusTransitionOrigin>>,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            guard_release: Option<&'a Arc<crate::game::ability::guard_charge::GuardReleaseOrigin>>,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            mobile_effect: Option<&'a Arc<MobileEffectOrigin>>,
+            #[serde(skip_serializing_if = "Option::is_none")]
             flow: &'a Option<Arc<FlowOccurrence>>,
             actor: &'a Option<UnitInstanceId>,
             equipment: &'a Option<EquipmentSourceSnapshot>,
@@ -275,12 +352,19 @@ impl Serialize for RuntimeFactSource {
             relic_numeric: Option<&'a Arc<super::core::relic_numeric::RelicNumericBinding>>,
             #[serde(skip_serializing_if = "Option::is_none")]
             relic_effective: Option<&'a Arc<super::core::effective_skill::EffectiveSkillBinding>>,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            causal: Option<&'a Arc<super::core::relic_causal::CausalContext>>,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            causal_cause: Option<&'a Arc<super::core::relic_causal::CausalCauseObservation>>,
         }
         Observation {
             independent_object: self.independent_object(),
             reaction: self.reaction,
             reinput: self.reinput(),
             regular_support: self.regular_support(),
+            status_transition: self.status_transition(),
+            guard_release: self.guard_release(),
+            mobile_effect: self.mobile_effect(),
             flow: &self.flow,
             actor: &self.actor,
             equipment: &self.equipment,
@@ -290,6 +374,8 @@ impl Serialize for RuntimeFactSource {
             action_ordinal: &self.action,
             relic_numeric: self.relic_numeric(),
             relic_effective: self.relic_effective(),
+            causal: self.causal().and_then(|c| c.context.as_ref()),
+            causal_cause: self.causal().and_then(|c| c.cause.as_ref()),
         }
         .serialize(serializer)
     }
@@ -314,9 +400,92 @@ impl RuntimeFactSource {
             relic_numeric: None,
             relic_effective: None,
             regular_support: None,
+            status_transition: None,
+            guard_release: None,
+            mobile_effect: None,
+            causal: None,
         })))
     }
 
+    pub(crate) fn causal(&self) -> Option<&Arc<super::core::relic_causal::CausalSourceData>> {
+        self.extended_observation
+            .as_ref()
+            .and_then(|s| s.causal.as_ref())
+    }
+    pub(crate) fn causal_program_source(&self) -> Result<Self, crate::game::behavior::GameError> {
+        super::runtime_control::admit_retained_growth(
+            0,
+            Some(std::mem::size_of::<ExtendedSourceObservation>() + 64),
+            "causal_program_observation",
+        )?;
+        let mut source = self.clone();
+        source.extended_observation = Some(Arc::new(ExtendedSourceObservation {
+            independent_object: self.independent_object().cloned(),
+            reinput: None,
+            relic_numeric: None,
+            relic_effective: None,
+            regular_support: None,
+            status_transition: self.status_transition().cloned(),
+            guard_release: self.guard_release().cloned(),
+            mobile_effect: self.mobile_effect().cloned(),
+            causal: self.causal().cloned(),
+        }));
+        Ok(source)
+    }
+    /// Reattribution may select a new native program/provider; only the causal
+    /// path and suppression travel across that boundary, never the old program.
+    pub(crate) fn inherit_causal_context(
+        &self,
+        parent: &Self,
+    ) -> Result<Self, crate::game::behavior::GameError> {
+        let Some(context) = parent.causal().and_then(|c| c.context.clone()) else {
+            return Ok(self.clone());
+        };
+        if self.causal().and_then(|c| c.context.as_ref()).is_some() {
+            return Ok(self.clone());
+        }
+        super::runtime_control::admit_retained_growth(
+            0,
+            Some(std::mem::size_of::<super::core::relic_causal::CausalSourceData>() + 64),
+            "derived_causal_source",
+        )?;
+        self.with_causal(Some(Arc::new(
+            super::core::relic_causal::CausalSourceData {
+                context: Some(context),
+                program: self.causal().and_then(|c| c.program.clone()),
+                // This is the child's already accepted amount capture. The
+                // parent contributes ancestry, never a replacement amount.
+                amount: self.causal().and_then(|c| c.amount.clone()),
+                cause: self
+                    .causal()
+                    .and_then(|c| c.cause.clone())
+                    .or_else(|| parent.causal().and_then(|c| c.cause.clone())),
+            },
+        )))
+    }
+    pub(crate) fn with_causal(
+        &self,
+        causal: Option<Arc<super::core::relic_causal::CausalSourceData>>,
+    ) -> Result<Self, crate::game::behavior::GameError> {
+        super::runtime_control::admit_retained_growth(
+            0,
+            Some(std::mem::size_of::<ExtendedSourceObservation>() + 64),
+            "causal_source_observation",
+        )?;
+        let mut source = self.clone();
+        source.extended_observation = Some(Arc::new(ExtendedSourceObservation {
+            independent_object: self.independent_object().cloned(),
+            reinput: self.reinput().cloned(),
+            relic_numeric: self.relic_numeric().cloned(),
+            relic_effective: self.relic_effective().cloned(),
+            regular_support: self.regular_support().cloned(),
+            status_transition: self.status_transition().cloned(),
+            guard_release: self.guard_release().cloned(),
+            mobile_effect: self.mobile_effect().cloned(),
+            causal,
+        }));
+        Ok(source)
+    }
     pub(crate) fn relic_effective(
         &self,
     ) -> Option<&Arc<super::core::effective_skill::EffectiveSkillBinding>> {
@@ -340,6 +509,97 @@ impl RuntimeFactSource {
             relic_numeric: self.relic_numeric().cloned(),
             relic_effective: Some(binding),
             regular_support: self.regular_support().cloned(),
+            status_transition: self.status_transition().cloned(),
+            guard_release: self.guard_release().cloned(),
+            mobile_effect: self.mobile_effect().cloned(),
+            causal: self.causal().cloned(),
+        }));
+        Ok(value)
+    }
+    pub fn guard_release(&self) -> Option<&Arc<crate::game::ability::guard_charge::GuardReleaseOrigin>> {
+        self.extended_observation.as_ref().and_then(|s| s.guard_release.as_ref())
+    }
+    pub(crate) fn with_guard_release(&self, origin: crate::game::ability::guard_charge::GuardReleaseOrigin) -> Result<Self, crate::game::behavior::GameError> {
+        super::runtime_control::admit_retained_growth(0, std::mem::size_of::<ExtendedSourceObservation>().checked_add(std::mem::size_of_val(&origin)+128).and_then(|n|n.checked_add(origin.definition.capacity())).and_then(|n|n.checked_add(origin.relic_definition.capacity())), "guard_release_origin")?;
+        let mut value=self.clone();
+        value.extended_observation=Some(Arc::new(ExtendedSourceObservation {
+            independent_object:self.independent_object().cloned(),reinput:self.reinput().cloned(),relic_numeric:self.relic_numeric().cloned(),relic_effective:self.relic_effective().cloned(),regular_support:self.regular_support().cloned(),status_transition:self.status_transition().cloned(),mobile_effect:self.mobile_effect().cloned(),guard_release:Some(Arc::new(origin)),causal:self.causal().cloned(),
+        }));
+        Ok(value)
+    }
+    pub fn status_transition(&self) -> Option<&Arc<StatusTransitionOrigin>> {
+        self.extended_observation
+            .as_ref()
+            .and_then(|s| s.status_transition.as_ref())
+    }
+    pub(crate) fn with_status_transition(
+        &self,
+        origin: StatusTransitionOrigin,
+    ) -> Result<Self, crate::game::behavior::GameError> {
+        super::runtime_control::admit_retained_growth(
+            0,
+            origin
+                .retained_extent()
+                .and_then(|n| n.checked_add(std::mem::size_of::<ExtendedSourceObservation>() + 64)),
+            "status_transition_origin",
+        )?;
+        let mut value = crate::authoring::clone_shape::controlled_clone(self)?;
+        value.extended_observation = Some(Arc::new(ExtendedSourceObservation {
+            independent_object: self.independent_object().cloned(),
+            reinput: self.reinput().cloned(),
+            relic_numeric: self.relic_numeric().cloned(),
+            relic_effective: self.relic_effective().cloned(),
+            regular_support: self.regular_support().cloned(),
+            mobile_effect: self.mobile_effect().cloned(),
+            status_transition: Some(Arc::new(origin)),
+            guard_release: self.guard_release().cloned(),
+            causal: self.causal().cloned(),
+        }));
+        Ok(value)
+    }
+    pub fn mobile_effect(&self) -> Option<&Arc<MobileEffectOrigin>> {
+        self.extended_observation
+            .as_ref()
+            .and_then(|s| s.mobile_effect.as_ref())
+    }
+    pub(crate) fn with_mobile_effect(
+        &self,
+        origin: MobileEffectOrigin,
+    ) -> Result<Self, crate::game::behavior::GameError> {
+        super::runtime_control::admit_retained_growth(
+            0,
+            origin
+                .death_origin
+                .as_ref()
+                .map_or(Some(0), |d| d.retained_extent()),
+            "mobile_death_origin",
+        )?;
+        super::runtime_control::admit_retained_growth(
+            0,
+            std::mem::size_of::<ExtendedSourceObservation>()
+                .checked_add(std::mem::size_of::<MobileEffectOrigin>() + 128)
+                .and_then(|n| n.checked_add(origin.definition.capacity()))
+                .and_then(|n| {
+                    n.checked_add(
+                        origin
+                            .seed_origin
+                            .as_ref()
+                            .map_or(Some(0), |s| s.retained_extent())?,
+                    )
+                }),
+            "mobile_effect_origin",
+        )?;
+        let mut value = self.clone();
+        value.extended_observation = Some(Arc::new(ExtendedSourceObservation {
+            independent_object: self.independent_object().cloned(),
+            reinput: self.reinput().cloned(),
+            relic_numeric: self.relic_numeric().cloned(),
+            relic_effective: self.relic_effective().cloned(),
+            regular_support: self.regular_support().cloned(),
+            status_transition: self.status_transition().cloned(),
+            guard_release: self.guard_release().cloned(),
+            mobile_effect: Some(Arc::new(origin)),
+            causal: self.causal().cloned(),
         }));
         Ok(value)
     }
@@ -369,6 +629,10 @@ impl RuntimeFactSource {
             relic_numeric: self.relic_numeric().cloned(),
             relic_effective: self.relic_effective().cloned(),
             regular_support: support,
+            status_transition: self.status_transition().cloned(),
+            guard_release: self.guard_release().cloned(),
+            mobile_effect: self.mobile_effect().cloned(),
+            causal: self.causal().cloned(),
         }));
         Ok(value)
     }
@@ -398,6 +662,10 @@ impl RuntimeFactSource {
             relic_numeric: Some(binding),
             relic_effective: self.relic_effective().cloned(),
             regular_support: self.regular_support().cloned(),
+            status_transition: self.status_transition().cloned(),
+            guard_release: self.guard_release().cloned(),
+            mobile_effect: self.mobile_effect().cloned(),
+            causal: self.causal().cloned(),
         }));
         Ok(value)
     }
@@ -414,21 +682,18 @@ impl RuntimeFactSource {
         if self.relic_numeric().is_none() {
             return Ok(self.clone());
         }
-        // The incoming numeric slot must not grant another effect its binding.
-        // This helper admits any replacement wrapper before allocating it;
-        // clearing the last cold slot allocates nothing.
-        let extended_observation = Self::extended_observation(
-            self.independent_object().cloned(),
-            self.reinput().cloned(),
-        )?;
+        // Replace only numeric ownership; all other observations survive.
         let mut value = self.clone();
-        value.extended_observation = extended_observation;
-        if let Some(binding) = self.relic_effective() {
-            value = value.with_relic_effective(Arc::clone(binding))?;
-        }
-        if let Some(support) = self.regular_support() {
-            value = value.with_regular_support(Some(Arc::clone(support)))?;
-        }
+        let has_other = self.independent_object().is_some() || self.reinput().is_some()
+            || self.relic_effective().is_some() || self.regular_support().is_some()
+            || self.status_transition().is_some() || self.mobile_effect().is_some()
+            || self.guard_release().is_some() || self.causal().is_some();
+        value.extended_observation = if has_other {
+            super::runtime_control::admit_retained_growth(0, Some(std::mem::size_of::<ExtendedSourceObservation>()+64), "extended_source_observation")?;
+            Some(Arc::new(ExtendedSourceObservation {
+                independent_object:self.independent_object().cloned(),reinput:self.reinput().cloned(),relic_numeric:None,relic_effective:self.relic_effective().cloned(),regular_support:self.regular_support().cloned(),status_transition:self.status_transition().cloned(),mobile_effect:self.mobile_effect().cloned(),guard_release:self.guard_release().cloned(),causal:self.causal().cloned(),
+            }))
+        } else { None };
         Ok(value)
     }
 
@@ -443,6 +708,10 @@ impl RuntimeFactSource {
             && self.relic_numeric().is_none()
             && self.relic_effective().is_none()
             && self.regular_support().is_none()
+            && self.status_transition().is_none()
+            && self.mobile_effect().is_none()
+            && self.guard_release().is_none()
+            && self.causal().is_none()
         {
             value.extended_observation = None;
             return Ok(value);
@@ -458,6 +727,10 @@ impl RuntimeFactSource {
             relic_numeric: self.relic_numeric().cloned(),
             relic_effective: self.relic_effective().cloned(),
             regular_support: self.regular_support().cloned(),
+            status_transition: self.status_transition().cloned(),
+            guard_release: self.guard_release().cloned(),
+            mobile_effect: self.mobile_effect().cloned(),
+            causal: self.causal().cloned(),
         }));
         Ok(value)
     }
@@ -516,8 +789,34 @@ impl RuntimeFactSource {
     /// It does not treat an Arc handle as the size of its dynamic payload.
     pub(crate) fn retained_extent(&self) -> Option<usize> {
         let mut bytes = std::mem::size_of::<Self>();
+        if let Some(origin)=self.guard_release() {
+            bytes=bytes.checked_add(std::mem::size_of_val(origin.as_ref())+64)?.checked_add(origin.definition.capacity())?.checked_add(origin.relic_definition.capacity())?;
+        }
+        if let Some(origin) = self.status_transition() {
+            bytes = bytes.checked_add(origin.retained_extent()?)?;
+        }
+        if let Some(origin) = self.mobile_effect() {
+            bytes = bytes.checked_add(
+                origin
+                    .death_origin
+                    .as_ref()
+                    .map_or(Some(0), |d| d.retained_extent())?,
+            )?;
+            bytes = bytes
+                .checked_add(std::mem::size_of::<MobileEffectOrigin>() + 64)?
+                .checked_add(origin.definition.capacity())?
+                .checked_add(
+                    origin
+                        .seed_origin
+                        .as_ref()
+                        .map_or(Some(0), |s| s.retained_extent())?,
+                )?;
+        }
         if self.extended_observation.is_some() {
             bytes = bytes.checked_add(std::mem::size_of::<ExtendedSourceObservation>() + 64)?;
+        }
+        if let Some(causal) = self.causal() {
+            bytes = bytes.checked_add(causal.retained_extent()?)?;
         }
         if let Some(binding) = self.relic_numeric() {
             bytes = bytes.checked_add(binding.retained_extent()?)?;
@@ -684,6 +983,8 @@ pub enum ReflectionOutcome {
 crate::authoring::clone_shape::copy_shape!(ReflectionOutcome);
 #[derive(Debug, Clone, Serialize)]
 pub struct PassiveGuardFact {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub charge: Option<crate::game::ability::guard_charge::GuardChargeReceipt>,
     pub policy: crate::game::data::skill_fragment_data::ParryGuardDef,
     pub reduction_suppressed: bool,
     pub roll_percent: Option<u8>,
@@ -692,6 +993,7 @@ pub struct PassiveGuardFact {
     pub source: Arc<RuntimeFactSource>,
 }
 crate::authoring::clone_shape::struct_shape!(PassiveGuardFact {
+    charge,
     policy,
     reduction_suppressed,
     roll_percent,
@@ -1235,12 +1537,15 @@ pub enum CounterOutcome {
 crate::authoring::clone_shape::copy_shape!(CounterOutcome);
 #[derive(Debug, Clone, Serialize)]
 pub struct DeflectionFact {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub guard_charge: Option<crate::game::ability::guard_charge::GuardChargeReceipt>,
     pub activation: u64,
     pub kind: DeflectionKind,
     pub counter: CounterOutcome,
     pub source: Arc<RuntimeFactSource>,
 }
 crate::authoring::clone_shape::struct_shape!(DeflectionFact {
+    guard_charge,
     activation,
     kind,
     counter,
@@ -1629,5 +1934,31 @@ mod u07_source_storage_tests {
             copy.extended_observation.as_ref().unwrap()
         ));
         assert_eq!(copy.retained_extent(), source.retained_extent());
+    }
+}
+
+#[cfg(test)]
+mod cold_observation_tests {
+    use super::*;
+    #[test]
+    fn runtime_facts_guard_status_mobile_lineage_survives_numeric_clear_and_independent_origin() {
+        use crate::game::{ability::{guard_charge::GuardReleaseOrigin,mobile_effect::MobileMotion},data::content_pack::{ContentIdentity,ContentContract},relic::numeric::RelicNumericTarget};
+        let actor=UnitInstanceId(Uuid::from_u128(41));
+        let source=RuntimeFactSource {extended_observation:RuntimeFactSource::extended_observation(None,Some(Arc::new(CommittedReinputContext{activation:1,committed_at_ms:0,remaining_ms:5}))).unwrap(),..Default::default()};
+        let source=source.with_status_transition(StatusTransitionOrigin{previous:vec![]}).unwrap()
+            .with_mobile_effect(MobileEffectOrigin{motion:MobileMotion::ChaseDelay,death_origin:None,seed_origin:None,activation:7,owner:actor,copy:Uuid::from_u128(42),definition:"mobile".into()}).unwrap()
+            .with_guard_release(GuardReleaseOrigin{relic_copy:Uuid::from_u128(43),relic_definition:"charge-relic".into(),definition:"charge".into(),consumed:30,added_power:60,primary:true}).unwrap();
+        let binding=Arc::new(crate::game::battle::core::relic_numeric::RelicNumericBinding {
+            generation:Arc::new(ContentIdentity{contract:ContentContract::current(),semantic_sha256:"fixture".into()}),employee_uuid:Uuid::from_u128(44),actor,target:RelicNumericTarget::BasicAttackDamage{actor,attack_epoch:1},action_ordinal:None,equipment:None,fragment:None,damage_type:crate::game::battle::damage::DamageType::Magic,basic_profile_fingerprint:None,contributions:vec![],
+        });
+        let bound=source.with_relic_numeric(binding).unwrap();
+        for result in [bound.with_exact_relic_numeric(None).unwrap(),source.without_reinput().unwrap(),source.independent_origin().unwrap()] {
+            assert!(result.relic_numeric().is_none());
+            assert_eq!(result.status_transition(),source.status_transition());
+            assert_eq!(result.mobile_effect(),source.mobile_effect());
+            assert_eq!(result.guard_release(),source.guard_release());
+        }
+        let only=RuntimeFactSource{extended_observation:RuntimeFactSource::extended_observation(None,Some(Arc::new(CommittedReinputContext{activation:2,committed_at_ms:0,remaining_ms:5}))).unwrap(),..Default::default()}.with_guard_release(source.guard_release().unwrap().as_ref().clone()).unwrap();
+        assert_eq!(only.without_reinput().unwrap().guard_release(),source.guard_release());
     }
 }

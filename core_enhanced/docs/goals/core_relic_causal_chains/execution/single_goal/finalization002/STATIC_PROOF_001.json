@@ -1,0 +1,89 @@
+{
+  "schema": "U10_FINALIZATION_SUCCESSOR_STATIC_PROOF_V1",
+  "status": "preparation_only_joint_results_pending",
+  "runtime_inputs_untouched": {
+    "source": {
+      "path": "core_enhanced/src/game/world/tests/u10_causal/audit_joint_cases.rs",
+      "sha256": "d3e934aca40caa388f28afdfd694a421dd80169641089d4659380872622cffda",
+      "bytes": 37501
+    },
+    "correction_bundle": {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/audit_correction002/HANDOFF.json",
+      "sha256": "65f4d120800cb0e2fbb58a9a15cdc548a7698364ff0c251c71dc40779c77d994",
+      "bytes": 1593
+    },
+    "correction_bundle_refs_currently_equal": true,
+    "F001_ten_original_file_refs_currently_equal": true
+  },
+  "execution_boundary": {
+    "F002_outside_scanner_roots": [
+      "core_enhanced/src",
+      "core_enhanced/tests",
+      "game_server/src",
+      "game_server/tests",
+      "game_server/config",
+      "game_server/examples",
+      "config",
+      "game_resources/data",
+      "game_resources/live_data",
+      "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/runtime_validation001/fixtures"
+    ],
+    "F002_outside_runtime001_additional_tool_and_fixture_paths": true,
+    "F002_outside_C002_explicit_files": true
+  },
+  "scripts": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/collect_finalization.py",
+      "sha256": "e22680389a35b37da85c8ab78c840c1880ec43b93579c02c0096838317485acc",
+      "bytes": 22204
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/freeze_target.py",
+      "sha256": "7cb6d927a1a4dba1ba23228d6eb2a18bee0d5733b67d7324e551769163c3a1c4",
+      "bytes": 25787
+    }
+  ],
+  "script_preimages": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/preimages/collect_finalization.py",
+      "sha256": "6def75011b6bd2a55d615d5e79bdf6b6222f49bf52c9af273e083abce9c5ee1b",
+      "bytes": 21802
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/preimages/freeze_target.py",
+      "sha256": "554959468b680b81a3b21b97cf7b89a6a7d16b977f960d3032940e89a36aa37a",
+      "bytes": 22875
+    }
+  ],
+  "script_diffs": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/collect_finalization.py.diff",
+      "sha256": "8ad2543fd8c87fa36b87204509ee6119896554b39d8053d0f57ebd9b56093bfc",
+      "bytes": 2498
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/freeze_target.py.diff",
+      "sha256": "5e9fc69811bbbcfc69d1cb6c71673df0d356ebe1a05c4b40477f3ae8fd47ca75",
+      "bytes": 5816
+    }
+  ],
+  "static_checks": [
+    "Python AST parse without import",
+    "JSON parsing",
+    "original F001 byte refs unchanged",
+    "C002/source bytes unchanged after F002 preparation"
+  ],
+  "not_executed": [
+    "collector",
+    "freeze",
+    "restore",
+    "tests",
+    "build"
+  ],
+  "pending": [
+    "actual corrected joint4",
+    "Root semantic source/currentness review",
+    "Sol current source manifest then collector/freeze",
+    "independent whole-Goal re-audit"
+  ]
+}

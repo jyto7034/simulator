@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/mnt/f/work/simulator/.cache/u12-vault-cost-target/debug/deps/game_core-705cc9514d94a1fe",
+    "--exact",
+    "game::data::content_pack::snapshot::tests::unix::socket_inputs_return_errors",
+    "--nocapture"
+  ],
+  "exit_code": 0,
+  "seconds": 0.046593370992923155,
+  "stdout": "socket_supported_017.stdout.log",
+  "stderr": "socket_supported_017.stderr.log"
+}

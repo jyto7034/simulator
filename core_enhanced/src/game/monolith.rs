@@ -65,7 +65,7 @@ impl MonolithProgress {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-pub struct MonolithRemanifestationNode {
+pub struct RevivalNode {
     pub abnormality_id: String,
     pub encounter_id: String,
     pub stage: u8,
@@ -92,7 +92,7 @@ pub enum MonolithExchangeState {
 #[serde(deny_unknown_fields)]
 pub struct MonolithRunState {
     pub progress_by_abnormality: BTreeMap<String, MonolithProgress>,
-    pub remanifestation_nodes: HashMap<MapNodeId, MonolithRemanifestationNode>,
+    pub remanifestation_nodes: HashMap<MapNodeId, RevivalNode>,
     pub residuals: Vec<MonolithResidual>,
     pub next_residual_sequence: u64,
     pub exchange_state: MonolithExchangeState,
@@ -146,7 +146,7 @@ crate::authoring::clone_shape::struct_shape!(MonolithProgress {
     remanifestation_failed,
     residual_created
 });
-crate::authoring::clone_shape::struct_shape!(MonolithRemanifestationNode {
+crate::authoring::clone_shape::struct_shape!(RevivalNode {
     abnormality_id,
     encounter_id,
     stage
@@ -179,7 +179,7 @@ impl MonolithRunState {
         self.progress_by_abnormality.get(abnormality_id)
     }
 
-    pub fn remanifestation(&self, node_id: MapNodeId) -> Option<&MonolithRemanifestationNode> {
+    pub fn remanifestation(&self, node_id: MapNodeId) -> Option<&RevivalNode> {
         self.remanifestation_nodes.get(&node_id)
     }
 
@@ -221,7 +221,7 @@ impl MonolithRunState {
         node_id: MapNodeId,
         abnormality_id: &str,
         encounter_id: &str,
-    ) -> Result<MonolithRemanifestationNode, MonolithStateError> {
+    ) -> Result<RevivalNode, MonolithStateError> {
         if encounter_id.trim().is_empty() || abnormality_id.trim().is_empty() {
             return Err(MonolithStateError::InvalidAbnormality);
         }
@@ -237,7 +237,7 @@ impl MonolithRunState {
             .ok_or(MonolithStateError::InvalidStage)?;
         progress.uses_remaining = progress.uses_remaining.saturating_sub(1);
         progress.active_node_id = Some(node_id);
-        let node = MonolithRemanifestationNode {
+        let node = RevivalNode {
             abnormality_id: abnormality_id.to_string(),
             encounter_id: encounter_id.to_string(),
             stage,

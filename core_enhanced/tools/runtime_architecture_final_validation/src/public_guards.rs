@@ -204,6 +204,7 @@ struct Receipt {
     latency_gate_applicable: bool,
     allocation_gate_applicable: bool,
     run_snapshot: LatencyGuard,
+    run_snapshot_component_bytes: std::collections::BTreeMap<String, usize>,
     checkpoint_export: LatencyGuard,
     bounded_history_query: HistoryGuard,
     transaction_staging: StagingGuard,
@@ -291,7 +292,7 @@ fn live_run_with_checkpoint() -> (CoreApplication, Uuid) {
             player_id,
             command(json!({
                 "type": "start_new_game",
-                "game_mode": "Standard",
+                "game_mode": game_core::game::map::GameMode::Expedition,
                 "replace_active_run": false,
             })),
             ApplicationExecutionContext::default(),
@@ -323,6 +324,7 @@ fn live_run_with_checkpoint() -> (CoreApplication, Uuid) {
             command(json!({
                 "type": "select_starter_employees",
                 "employee_definition_ids": starter_ids,
+                "loan_copy_ids": [],
             })),
             ApplicationExecutionContext::default(),
         )
@@ -344,6 +346,34 @@ fn live_run_with_checkpoint() -> (CoreApplication, Uuid) {
     (application, player_id)
 }
 
+fn is_combat_entry(node: &Value) -> bool {
+    node["category"] == "Combat"
+        || node["entry_preview"].get("stress_combat").is_some_and(|v| !v.is_null())
+}
+
+// The current official entrance exposes the reserved optional reward before
+// a combat. Traverse that public node once; unexpected content is an error.
+fn complete_initial_reward_if_needed(application: &mut CoreApplication, player_id: Uuid) {
+    let snapshot = application.snapshot(ApplicationSnapshotKind::Run).expect("entrance snapshot");
+    let value = snapshot.read_model().as_value();
+    let selectable = value["map_navigation"]["selectable_node_ids"].as_array().expect("navigation");
+    let nodes = value["map"]["nodes"].as_array().expect("map nodes");
+    let available = nodes.iter().filter(|node| selectable.iter().any(|id| id == &node["id"])).collect::<Vec<_>>();
+    if available.iter().any(|node| is_combat_entry(node)) { return; }
+    let reward = available.iter().find(|node| node["category"] == "Reward"
+        && node["kind_id"] == "reward_treasure" && node["slot_id"] == "2")
+        .expect("current official entrance must expose reserved slot-2 reward");
+    let id = reward["id"].as_str().expect("reward node id");
+    application.execute(player_id, command(json!({"type":"select_map_node", "node_id":id})),
+        ApplicationExecutionContext::default()).expect("select entrance reward");
+    let entered = application.execute(player_id, command(json!({"type":"confirm_enter_node"})),
+        ApplicationExecutionContext::default()).expect("enter entrance reward");
+    assert_eq!(entered.kind(), game_core::application::ApplicationResultKind::RewardState);
+    application.execute(player_id, command(json!({"type":"exit_reward"})),
+        ApplicationExecutionContext::default()).expect("skip optional entrance reward");
+    eprintln!("public guard preparation: completed optional entrance reward {id}");
+}
+
 fn enter_available_combat(
     application: &mut CoreApplication,
     player_id: Uuid,
@@ -360,13 +390,18 @@ fn enter_available_combat(
         .ok_or_else(|| "missing map nodes".to_string())?
         .iter()
         .find(|node| {
-            node["category"] == "Combat"
+            is_combat_entry(node)
                 && selectable
                     .iter()
                     .any(|selectable_id| selectable_id == &node["id"])
         })
         .and_then(|node| node["id"].as_str())
-        .ok_or_else(|| "no selectable combat node".to_string())?
+        .ok_or_else(|| format!("no selectable combat node: {}", json!({
+            "navigation": value["map_navigation"],
+            "selectable": value["map"]["nodes"].as_array().unwrap().iter()
+                .filter(|node| selectable.iter().any(|id| id == &node["id"]))
+                .collect::<Vec<_>>()
+        })))?
         .to_owned();
     application
         .execute(
@@ -493,7 +528,69 @@ fn query_samples(log: &BattleEventLog, after_seq: u64) -> (Vec<u128>, String) {
     (elapsed, sha256(&expected_bytes))
 }
 
+// Explicit diagnostic only: preserve the default guard and its workload/caps.
+// Production builds one DTO and projects it into Value inside snapshot(); this
+// mode separates that public boundary from subsequent compact serialization.
+fn inspect_snapshot(output: PathBuf) {
+    assert!(!cfg!(feature = "allocation-observer"), "use the plain release build");
+    let (application, _) = live_run_with_checkpoint();
+    let reference = application.snapshot(ApplicationSnapshotKind::Run).unwrap();
+    let reference_bytes = serde_json::to_vec(&reference).unwrap();
+    let mut construction = Vec::with_capacity(SAMPLE_COUNT);
+    let mut encoding = Vec::with_capacity(SAMPLE_COUNT);
+    let mut total = Vec::with_capacity(SAMPLE_COUNT);
+    for _ in 0..SAMPLE_COUNT {
+        let started = Instant::now();
+        let snapshot = black_box(application.snapshot(ApplicationSnapshotKind::Run).unwrap());
+        let built = Instant::now();
+        let bytes = black_box(serde_json::to_vec(&snapshot).unwrap());
+        let encoded = Instant::now();
+        construction.push(built.duration_since(started).as_nanos());
+        encoding.push(encoded.duration_since(built).as_nanos());
+        total.push(encoded.duration_since(started).as_nanos());
+        assert_eq!(bytes, reference_bytes);
+    }
+    fn samples(raw: &[u128]) -> Value {
+        let mut sorted = raw.to_vec();
+        sorted.sort_unstable();
+        json!({"sample_count":raw.len(), "median_ns":sorted[sorted.len()/2],
+            "nearest_rank_p95_ns":nearest_rank_p95(raw), "raw_elapsed_ns":raw})
+    }
+    let mut components = serde_json::Map::new();
+    for (key, value) in reference.read_model().as_value().as_object().unwrap() {
+        let expected = serde_json::to_vec(value).unwrap();
+        let mut elapsed = Vec::with_capacity(SAMPLE_COUNT);
+        for _ in 0..SAMPLE_COUNT {
+            let started = Instant::now();
+            let bytes = black_box(serde_json::to_vec(black_box(value)).unwrap());
+            elapsed.push(started.elapsed().as_nanos());
+            assert_eq!(bytes, expected);
+        }
+        components.insert(key.clone(), json!({"encoded_value_bytes":expected.len(),
+            "serialization_only":samples(&elapsed)}));
+    }
+    let receipt = json!({
+        "schema_version":1, "workload_version":"public-guards-snapshot-inspection/1",
+        "tool_source_sha256":sha256(include_bytes!("public_guards.rs")),
+        "allocation_observer_enabled":false, "performance_pass_claimed":false,
+        "baseline_comparison_applicable":false,
+        "scope":"Same live_run_with_checkpoint as default guard, before combat preparation; split timers exclude destruction and equality checks. Component timings serialize existing Value, not field construction. No server/Unity execution.",
+        "encoded_bytes":reference_bytes.len(), "snapshot_sha256":sha256(&reference_bytes),
+        "exact_repeatable":true,
+        "construction_and_value_projection":samples(&construction),
+        "compact_serialization":samples(&encoding), "split_total":samples(&total),
+        "components":components,
+        "reference_snapshot":reference,
+    });
+    fs::write(output, serde_json::to_vec_pretty(&receipt).unwrap()).unwrap();
+}
+
 fn main() {
+    if std::env::args().nth(1).as_deref() == Some("--inspect-snapshot") {
+        inspect_snapshot(PathBuf::from(std::env::args().nth(2)
+            .expect("usage: public_guards --inspect-snapshot <output-receipt.json>")));
+        return;
+    }
     let output = std::env::args()
         .nth(1)
         .map(PathBuf::from)
@@ -547,7 +644,9 @@ fn main() {
     let large_p95 = nearest_rank_p95(&large_elapsed);
     let scaling_pass = large_p95 <= small_p95.saturating_mul(4).saturating_add(10_000);
 
+    complete_initial_reward_if_needed(&mut application, player_id);
     enter_available_combat(&mut application, player_id).expect("enter public guard combat");
+    assert!(application.has_active_battle(), "staging measurement requires a live battle");
     assert_eq!(
         application
             .replace_active_battle_event_log_fixture(128)
@@ -585,7 +684,7 @@ fn main() {
     let checkpoint_p95 = nearest_rank_p95(&checkpoint_elapsed);
     let receipt = Receipt {
         schema_version: 2,
-        workload_version: "crar-public-performance-guards/2",
+        workload_version: "crar-public-performance-guards/3",
         generated_at_unix_ms: SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap()
@@ -594,6 +693,10 @@ fn main() {
         allocation_observer_enabled: cfg!(feature = "allocation-observer"),
         latency_gate_applicable: !cfg!(feature = "allocation-observer"),
         allocation_gate_applicable: cfg!(feature = "allocation-observer"),
+        run_snapshot_component_bytes: reference_snapshot.read_model().as_value().as_object()
+            .expect("Run read model object").iter().map(|(name, value)|
+                (name.clone(), serde_json::to_vec(value).expect("component encoding").len()))
+            .collect(),
         run_snapshot: LatencyGuard {
             sample_count: SAMPLE_COUNT,
             nearest_rank_p95_ns: snapshot_p95,

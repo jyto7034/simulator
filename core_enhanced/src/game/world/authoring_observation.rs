@@ -47,11 +47,15 @@ pub(super) struct TrialObservation {
     pub(super) trace_options: TraceOptions,
     pub(super) amount_observation_enabled: bool,
     last_terminal: Option<Arc<TerminalCapsule>>,
+    pub(super) coverage_plan:Option<Arc<crate::mod_validation::CoveragePlan>>,
+    coverage_total:Option<crate::mod_validation::CoverageReport>,
 }
 crate::authoring::clone_shape::struct_shape!(TrialObservation {
     trace_options,
     amount_observation_enabled,
-    last_terminal
+    last_terminal,
+    coverage_plan,
+    coverage_total
 });
 
 pub(crate) struct TrialTraceView<'a> {
@@ -85,6 +89,22 @@ fn invalid() -> GameError {
 }
 
 impl GameCore {
+    pub(super) fn record_lab_definition(&mut self, kind:&str,id:&str,family:&str)->Result<(),GameError>{
+        if let Some(report)=self.authoring_observation.as_mut().and_then(|o|o.coverage_total.as_mut()) { report.record_definition(kind,id,family,crate::mod_validation::CoverageStage::ConsumedOrEffect)?; }
+        Ok(())
+    }
+    pub(crate) fn set_lab_coverage(&mut self,plan:Option<Arc<crate::mod_validation::CoveragePlan>>)->Result<(),GameError>{
+        let owner=self.authoring_observation.as_mut().ok_or_else(invalid)?;
+        owner.coverage_total=plan.as_ref().map(|p|controlled_clone(&p.report)).transpose()?;
+        owner.coverage_plan=plan;Ok(())
+    }
+    pub(crate) fn lab_coverage(&self)->Result<Option<crate::mod_validation::CoverageReport>,GameError>{
+        let owner=self.authoring_observation.as_ref().ok_or_else(invalid)?;
+        let Some(total)=&owner.coverage_total else{return Ok(None)};
+        let mut report=controlled_clone(total)?;
+        if let Some(active)=self.state.active_battle.as_ref() {if let Some(coverage)=active.battle.authoring_observation()?.and_then(|m|m.coverage.as_ref()) {report.merge(&coverage.report)?;}}
+        Ok(Some(report))
+    }
     pub(crate) fn set_authoring_trace_options(&mut self, options: TraceOptions) {
         self.authoring_observation
             .as_mut()
@@ -253,6 +273,7 @@ impl GameCore {
         let mandatory = battle.take_authoring_observation()?;
         let trace = std::mem::take(&mut battle.authoring_trace);
         let unpublished = Arc::get_mut(&mut capsule).expect("unpublished terminal owner");
+        if let Some(coverage)=&mandatory.coverage {self.authoring_observation.as_mut().and_then(|o|o.coverage_total.as_mut()).ok_or_else(invalid)?.merge(&coverage.report)?;}
         unpublished.mandatory = mandatory;
         unpublished.trace = trace;
         self.authoring_observation

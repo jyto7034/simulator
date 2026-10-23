@@ -1,0 +1,14 @@
+--- core_enhanced/src/game/world/admin/fixtures.rs BEFORE
+
++++ core_enhanced/src/game/world/admin/fixtures.rs CURRENT
+
+@@ -71,7 +71,7 @@
+
+         MapNodeId::new(self.state.uuid_manager.peek(ADMIN_NODE_NS))
+     }
+ 
+-    fn admin_prepare_fixture_node_with_id(
++    pub(super) fn admin_prepare_fixture_node_with_id(
+         &mut self,
+         node_id: MapNodeId,
+         category: MapNodeCategory,

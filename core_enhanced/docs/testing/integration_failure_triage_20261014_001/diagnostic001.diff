@@ -1,0 +1,69 @@
+--- original/tests/ron_loading.rs
++++ isolated/tests/ron_loading.rs
+@@ -446,7 +446,7 @@
+         ("breach_guard", "shield", "last_line"),
+         ("records_clerk", "sword", "berserker"),
+         ("scout_runner", "gun", "adrenaline"),
+-        ("containment_trainee", "greatsword", "breakthrough"),
++        ("containment_trainee", "shield", "last_line"),
+         ("maintenance_tech", "area_healing_staff", "area_heal"),
+         ("hq_field_medic", "healing_staff", "single_heal"),
+         ("hq_security_guard", "shield", "last_line"),
+--- original/tests/u08_relic_public/lifecycle.rs
++++ isolated/tests/u08_relic_public/lifecycle.rs
+@@ -71,7 +71,7 @@
+                 .collect();
+             command(
+                 app,
+-                json!({"type":"select_starter_employees", "employee_definition_ids":ids}),
++                json!({"type":"select_starter_employees", "employee_definition_ids":ids,"loan_copy_ids":[]}),
+             );
+             continue;
+         }
+@@ -192,7 +192,7 @@
+     let before_rejected_start = public_roots(&app);
+     assert!(execute(
+         &mut app,
+-        json!({"type":"start_new_game", "game_mode":"Standard", "replace_active_run":true})
++        json!({"type":"start_new_game", "game_mode":"Expedition", "replace_active_run":true})
+     )
+     .is_err());
+     assert_eq!(public_roots(&app), before_rejected_start);
+@@ -201,7 +201,7 @@
+     assert!(app.export_active_run_checkpoint().unwrap().is_none());
+     command(
+         &mut app,
+-        json!({"type":"start_new_game", "game_mode":"Standard", "replace_active_run":true}),
++        json!({"type":"start_new_game", "game_mode":"Expedition", "replace_active_run":true}),
+     );
+     let new_employees = finish_start(&mut app);
+     let reset = relic_state(&mut app);
+@@ -317,7 +317,7 @@
+     let mut app = CoreApplication::new(fixture.data.clone(), 0xa508d1);
+     command(
+         &mut app,
+-        json!({"type":"start_new_game", "game_mode":"Standard", "replace_active_run":false}),
++        json!({"type":"start_new_game", "game_mode":"Expedition", "replace_active_run":false}),
+     );
+     let employees = finish_start(&mut app);
+     for employee in &employees[..2] {
+--- original/tests/u08_relic_public/support.rs
++++ isolated/tests/u08_relic_public/support.rs
+@@ -183,7 +183,7 @@
+     let mut app = CoreApplication::new(content().data.clone(), 0xa508);
+     command(
+         &mut app,
+-        json!({"type":"start_new_game", "game_mode":"Standard", "replace_active_run":false}),
++        json!({"type":"start_new_game", "game_mode":"Expedition", "replace_active_run":false}),
+     );
+     for _ in 0..128 {
+         let run: RunSnapshotDto =
+@@ -209,7 +209,7 @@
+                 .collect();
+             command(
+                 &mut app,
+-                json!({"type":"select_starter_employees", "employee_definition_ids":ids}),
++                json!({"type":"select_starter_employees", "employee_definition_ids":ids,"loan_copy_ids":[]}),
+             );
+             continue;
+         }

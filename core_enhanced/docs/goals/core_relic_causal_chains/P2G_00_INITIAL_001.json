@@ -1,0 +1,417 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Policy Intake Snapshot",
+        "Artifact ID": "PIS-CRCE-001",
+        "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+      },
+      "payload": {
+        "Working Policy Document ID": "WPD-CRCE-20261009",
+        "Snapshot Kind": "initial",
+        "Predecessor Policy Intake Snapshot Ref": null,
+        "Created By Stage": "P2G-00",
+        "Intake Rows": [
+          {
+            "Intake Item ID": "IN-001",
+            "Intake Kind": "current user request exact excerpt",
+            "Exact Content or Content Reference": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 을 읽고 마저 진행해줘.",
+            "User-Provided Locator": "Current conversation explicit instruction 2026-10-08; earlier continuous roadmap request remains active",
+            "User-Stated Constraint": "Resume approved Core-first roadmap through planning, product correction, impact-selected validation, independent whole-Goal audit and next approved work; Astra/high review and tests, Sol/xhigh product and prepared execution; Unity later, individual final bosses excluded.",
+            "Capture Limitation": "Exact selected request sentence only; full invoked instructions and stored continuous request are separately captured. This raw snapshot does not claim later-stage policy or code review."
+          },
+          {
+            "Intake Item ID": "IN-002",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+              "bytes": 336615,
+              "sha256": "a72e5d18d37a71a2487bfb7793bdd9b93ab7b76a5d37800c5423bbb27da0c9c5"
+            },
+            "User-Provided Locator": "Active Core-first roadmap U10/C07/C08 and its identified policy, workflow and predecessor references",
+            "User-Stated Constraint": "Existing continuous authorization and latest game_rulebook/game_rules take precedence over historical stage-stop/full-suite instructions; preserve predecessor evidence and no implementation before its required handoff.",
+            "Capture Limitation": "Exact raw bootstrap bytes captured; policy necessity/meaning and source-level claims belong to P2G-10/20."
+          },
+          {
+            "Intake Item ID": "IN-003",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md",
+              "bytes": 46649,
+              "sha256": "3d5c84fa21c4de7e719e1068408f51b700ec91f4218dcefa56a58d46dbd60208"
+            },
+            "User-Provided Locator": "Active Core-first roadmap U10/C07/C08 and its identified policy, workflow and predecessor references",
+            "User-Stated Constraint": "Existing continuous authorization and latest game_rulebook/game_rules take precedence over historical stage-stop/full-suite instructions; preserve predecessor evidence and no implementation before its required handoff.",
+            "Capture Limitation": "Exact raw bootstrap bytes captured; policy necessity/meaning and source-level claims belong to P2G-10/20."
+          },
+          {
+            "Intake Item ID": "IN-004",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_REQUEST_20261004.ko.md",
+              "bytes": 7931,
+              "sha256": "e2afeffab42bd9be4fd4b7a3e97afe63c3e1b2377b319adf19b49b4456a4ca93"
+            },
+            "User-Provided Locator": "Active Core-first roadmap U10/C07/C08 and its identified policy, workflow and predecessor references",
+            "User-Stated Constraint": "Existing continuous authorization and latest game_rulebook/game_rules take precedence over historical stage-stop/full-suite instructions; preserve predecessor evidence and no implementation before its required handoff.",
+            "Capture Limitation": "Exact raw bootstrap bytes captured; policy necessity/meaning and source-level claims belong to P2G-10/20."
+          },
+          {
+            "Intake Item ID": "IN-005",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/game_rulebook.md",
+              "bytes": 27782,
+              "sha256": "7130e2bdece951828524c2a71af500f331315e041cd5e6ae238e749ac67acbbb"
+            },
+            "User-Provided Locator": "Active Core-first roadmap U10/C07/C08 and its identified policy, workflow and predecessor references",
+            "User-Stated Constraint": "Existing continuous authorization and latest game_rulebook/game_rules take precedence over historical stage-stop/full-suite instructions; preserve predecessor evidence and no implementation before its required handoff.",
+            "Capture Limitation": "Exact raw bootstrap bytes captured; policy necessity/meaning and source-level claims belong to P2G-10/20."
+          },
+          {
+            "Intake Item ID": "IN-006",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/game_rules/relics.md",
+              "bytes": 24767,
+              "sha256": "a766d1bc233df3095bf2e9a8721eba119f15a27565da9ed88cb49a1f2612af89"
+            },
+            "User-Provided Locator": "Active Core-first roadmap U10/C07/C08 and its identified policy, workflow and predecessor references",
+            "User-Stated Constraint": "Existing continuous authorization and latest game_rulebook/game_rules take precedence over historical stage-stop/full-suite instructions; preserve predecessor evidence and no implementation before its required handoff.",
+            "Capture Limitation": "Exact raw bootstrap bytes captured; policy necessity/meaning and source-level claims belong to P2G-10/20."
+          },
+          {
+            "Intake Item ID": "IN-007",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/game_rules/equipment-and-fragments.md",
+              "bytes": 15589,
+              "sha256": "4e8e0ad573216d008ff2978801bc9bc7f571cc996752ecd17f7a6a08cb1fe8f0"
+            },
+            "User-Provided Locator": "Active Core-first roadmap U10/C07/C08 and its identified policy, workflow and predecessor references",
+            "User-Stated Constraint": "Existing continuous authorization and latest game_rulebook/game_rules take precedence over historical stage-stop/full-suite instructions; preserve predecessor evidence and no implementation before its required handoff.",
+            "Capture Limitation": "Exact raw bootstrap bytes captured; policy necessity/meaning and source-level claims belong to P2G-10/20."
+          },
+          {
+            "Intake Item ID": "IN-008",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/game_rules/combat.md",
+              "bytes": 20125,
+              "sha256": "f7fd43b1b629b6da82ca548f8c5da9472b47c680a8753c56e75510863b3a5fbc"
+            },
+            "User-Provided Locator": "Active Core-first roadmap U10/C07/C08 and its identified policy, workflow and predecessor references",
+            "User-Stated Constraint": "Existing continuous authorization and latest game_rulebook/game_rules take precedence over historical stage-stop/full-suite instructions; preserve predecessor evidence and no implementation before its required handoff.",
+            "Capture Limitation": "Exact raw bootstrap bytes captured; policy necessity/meaning and source-level claims belong to P2G-10/20."
+          },
+          {
+            "Intake Item ID": "IN-009",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/game_rules/results-and-save.md",
+              "bytes": 42320,
+              "sha256": "178fe8bc441d8e5c81076d7643d2e190a647184f4d540b823ce876df52f7bfaf"
+            },
+            "User-Provided Locator": "Active Core-first roadmap U10/C07/C08 and its identified policy, workflow and predecessor references",
+            "User-Stated Constraint": "Existing continuous authorization and latest game_rulebook/game_rules take precedence over historical stage-stop/full-suite instructions; preserve predecessor evidence and no implementation before its required handoff.",
+            "Capture Limitation": "Exact raw bootstrap bytes captured; policy necessity/meaning and source-level claims belong to P2G-10/20."
+          },
+          {
+            "Intake Item ID": "IN-010",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/game_rules/open-decisions.md",
+              "bytes": 40393,
+              "sha256": "9770d922b3efc0141ee1a543ecc151f907f4184f512d20e03c17830dad03fc7b"
+            },
+            "User-Provided Locator": "Active Core-first roadmap U10/C07/C08 and its identified policy, workflow and predecessor references",
+            "User-Stated Constraint": "Existing continuous authorization and latest game_rulebook/game_rules take precedence over historical stage-stop/full-suite instructions; preserve predecessor evidence and no implementation before its required handoff.",
+            "Capture Limitation": "Exact raw bootstrap bytes captured; policy necessity/meaning and source-level claims belong to P2G-10/20."
+          },
+          {
+            "Intake Item ID": "IN-011",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/handoffs/R13_R16_CONTINUOUS_IMPLEMENTATION_REQUEST_20261002.ko.md",
+              "bytes": 24883,
+              "sha256": "2574adc5041ac71b3569737fc55d947737e3f2f97513af6bd38544590454a081"
+            },
+            "User-Provided Locator": "Active Core-first roadmap U10/C07/C08 and its identified policy, workflow and predecessor references",
+            "User-Stated Constraint": "Existing continuous authorization and latest game_rulebook/game_rules take precedence over historical stage-stop/full-suite instructions; preserve predecessor evidence and no implementation before its required handoff.",
+            "Capture Limitation": "Exact raw bootstrap bytes captured; policy necessity/meaning and source-level claims belong to P2G-10/20."
+          },
+          {
+            "Intake Item ID": "IN-012",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/reviews/2026-09-09-dependency-review-v2.2/roadmap_v2.2-review/goals/R16.ko.md",
+              "bytes": 3800,
+              "sha256": "52d296972e3fd14247169664f660d484f02d7523d79aa19f9e31040112b6da87"
+            },
+            "User-Provided Locator": "Active Core-first roadmap U10/C07/C08 and its identified policy, workflow and predecessor references",
+            "User-Stated Constraint": "Existing continuous authorization and latest game_rulebook/game_rules take precedence over historical stage-stop/full-suite instructions; preserve predecessor evidence and no implementation before its required handoff.",
+            "Capture Limitation": "Exact raw bootstrap bytes captured; policy necessity/meaning and source-level claims belong to P2G-10/20."
+          },
+          {
+            "Intake Item ID": "IN-013",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/AUTHORING_SYSTEM_CONTENT_REVIEW_20260927.ko.md",
+              "bytes": 30413,
+              "sha256": "795ea5e0b24ff08474ab77651ea354b1c32bb456d48876589032cf08fbea3bb3"
+            },
+            "User-Provided Locator": "Active Core-first roadmap U10/C07/C08 and its identified policy, workflow and predecessor references",
+            "User-Stated Constraint": "Existing continuous authorization and latest game_rulebook/game_rules take precedence over historical stage-stop/full-suite instructions; preserve predecessor evidence and no implementation before its required handoff.",
+            "Capture Limitation": "Exact raw bootstrap bytes captured; policy necessity/meaning and source-level claims belong to P2G-10/20."
+          },
+          {
+            "Intake Item ID": "IN-014",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/core_runtime_contract.md",
+              "bytes": 198171,
+              "sha256": "0f736c26b5b70763fb37efa81a4f1e282ac2e9a2b0c632a6323e06f9f08293f2"
+            },
+            "User-Provided Locator": "Active Core-first roadmap U10/C07/C08 and its identified policy, workflow and predecessor references",
+            "User-Stated Constraint": "Existing continuous authorization and latest game_rulebook/game_rules take precedence over historical stage-stop/full-suite instructions; preserve predecessor evidence and no implementation before its required handoff.",
+            "Capture Limitation": "Exact raw bootstrap bytes captured; policy necessity/meaning and source-level claims belong to P2G-10/20."
+          },
+          {
+            "Intake Item ID": "IN-015",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/skills/skill_authoring_model.ko.md",
+              "bytes": 77017,
+              "sha256": "6b138e757e6be657f2f8b3336516ada95c75cc208c53d11afa8db92d87bf93de"
+            },
+            "User-Provided Locator": "Active Core-first roadmap U10/C07/C08 and its identified policy, workflow and predecessor references",
+            "User-Stated Constraint": "Existing continuous authorization and latest game_rulebook/game_rules take precedence over historical stage-stop/full-suite instructions; preserve predecessor evidence and no implementation before its required handoff.",
+            "Capture Limitation": "Exact raw bootstrap bytes captured; policy necessity/meaning and source-level claims belong to P2G-10/20."
+          },
+          {
+            "Intake Item ID": "IN-016",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_038_pass002/AUDIT_CLOSURE.json",
+              "bytes": 8346,
+              "sha256": "edb2b94bb4bf89ab1d372767320a888ef4125c1f3d609986cccccfb3839c7559"
+            },
+            "User-Provided Locator": "Active Core-first roadmap U10/C07/C08 and its identified policy, workflow and predecessor references",
+            "User-Stated Constraint": "Existing continuous authorization and latest game_rulebook/game_rules take precedence over historical stage-stop/full-suite instructions; preserve predecessor evidence and no implementation before its required handoff.",
+            "Capture Limitation": "Exact raw bootstrap bytes captured; policy necessity/meaning and source-level claims belong to P2G-10/20."
+          },
+          {
+            "Intake Item ID": "IN-017",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/target/u09_current_038/MANIFEST.json",
+              "bytes": 195403,
+              "sha256": "b37c0b39bd3b03cf393b7fed80ae72d16552f4459f929a7ea5dde65fae468d18"
+            },
+            "User-Provided Locator": "Active Core-first roadmap U10/C07/C08 and its identified policy, workflow and predecessor references",
+            "User-Stated Constraint": "Existing continuous authorization and latest game_rulebook/game_rules take precedence over historical stage-stop/full-suite instructions; preserve predecessor evidence and no implementation before its required handoff.",
+            "Capture Limitation": "Exact raw bootstrap bytes captured; policy necessity/meaning and source-level claims belong to P2G-10/20."
+          },
+          {
+            "Intake Item ID": "IN-018",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/u09_closure_20261009_001/RESULT.ko.md",
+              "bytes": 5416,
+              "sha256": "0e4e5c4eb88797a179726bf7cf80a69aa6976a04367e876aa8c417ca45b15e31"
+            },
+            "User-Provided Locator": "Active Core-first roadmap U10/C07/C08 and its identified policy, workflow and predecessor references",
+            "User-Stated Constraint": "Existing continuous authorization and latest game_rulebook/game_rules take precedence over historical stage-stop/full-suite instructions; preserve predecessor evidence and no implementation before its required handoff.",
+            "Capture Limitation": "Exact raw bootstrap bytes captured; policy necessity/meaning and source-level claims belong to P2G-10/20."
+          },
+          {
+            "Intake Item ID": "IN-019",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/u09_closure_20261009_001/PUBLICATION_RECORD.json",
+              "bytes": 3356,
+              "sha256": "b54c8ed3778edf17712ed165cfa900723fe50392bea1d333942d9f515b1a4c25"
+            },
+            "User-Provided Locator": "Active Core-first roadmap U10/C07/C08 and its identified policy, workflow and predecessor references",
+            "User-Stated Constraint": "Existing continuous authorization and latest game_rulebook/game_rules take precedence over historical stage-stop/full-suite instructions; preserve predecessor evidence and no implementation before its required handoff.",
+            "Capture Limitation": "Exact raw bootstrap bytes captured; policy necessity/meaning and source-level claims belong to P2G-10/20."
+          },
+          {
+            "Intake Item ID": "IN-020",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/policy_to_goal_pipeline_revised_v2.md",
+              "bytes": 324407,
+              "sha256": "e070cc60b1b1225e8260bf463b98bcebfec3a16608f73de3a6d45f9b219d0ca7"
+            },
+            "User-Provided Locator": "Active Core-first roadmap U10/C07/C08 and its identified policy, workflow and predecessor references",
+            "User-Stated Constraint": "Existing continuous authorization and latest game_rulebook/game_rules take precedence over historical stage-stop/full-suite instructions; preserve predecessor evidence and no implementation before its required handoff.",
+            "Capture Limitation": "Exact raw bootstrap bytes captured; policy necessity/meaning and source-level claims belong to P2G-10/20."
+          },
+          {
+            "Intake Item ID": "IN-021",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/goal_execution_pipeline(1).md",
+              "bytes": 132649,
+              "sha256": "9ae04d15909bfe07652b58805a416adfd402e43ce1045405eb396b3094db79cc"
+            },
+            "User-Provided Locator": "Active Core-first roadmap U10/C07/C08 and its identified policy, workflow and predecessor references",
+            "User-Stated Constraint": "Existing continuous authorization and latest game_rulebook/game_rules take precedence over historical stage-stop/full-suite instructions; preserve predecessor evidence and no implementation before its required handoff.",
+            "Capture Limitation": "Exact raw bootstrap bytes captured; policy necessity/meaning and source-level claims belong to P2G-10/20."
+          },
+          {
+            "Intake Item ID": "IN-022",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/content_authoring/guides/policy_to_goal_pipeline_roadmap_usage_v2_1.ko.md",
+              "bytes": 21895,
+              "sha256": "9626f374f6523f63dc89a9ea0a940f94733223c59a51144c420a5632fe74342c"
+            },
+            "User-Provided Locator": "Active Core-first roadmap U10/C07/C08 and its identified policy, workflow and predecessor references",
+            "User-Stated Constraint": "Existing continuous authorization and latest game_rulebook/game_rules take precedence over historical stage-stop/full-suite instructions; preserve predecessor evidence and no implementation before its required handoff.",
+            "Capture Limitation": "Exact raw bootstrap bytes captured; policy necessity/meaning and source-level claims belong to P2G-10/20."
+          }
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CRCE-001",
+        "Content Digest": "sha256:ed1c57b5421abb93ad5e86b22ea9215cb136d2498f488726c86747d304cf57f0"
+      },
+      "payload": {
+        "Predecessor Working Revision Ref": null,
+        "Predecessor Final Policy Freeze Ref": null,
+        "Approved Metadata and Scope": {
+          "Working Policy Document ID": "WPD-CRCE-20261009",
+          "Policy Topic": "U10 실제 사건 기반 유물 연쇄와 장비 효과 통합",
+          "Requested Result": "bounded_pipeline P2G-00 through P2G-60; then authorized GEX implementation, independent tests/execution, whole-Goal independent audit/correction and roadmap continuation",
+          "Target Project/Repository": {
+            "project": "simulator",
+            "workspace": "/mnt/f/work/simulator",
+            "head_at_intake": "2f725172edbffd27c5078d29000a1a2ba6ddc4d9"
+          },
+          "Approval Reference": {
+            "user_request": "IN-001 explicit instruction invoking IN-003 revised continuous instructions; IN-004 stored continuous authorization",
+            "scope": "IN-002 active ROADMAP U10/C07/C08 responsibility, implementation, exclusions and acceptance columns",
+            "boundary": "U09 independent Complete/High/open0 consumed from IN-016, exact target IN-017 and Root publication IN-018/019; next authorized roadmap P2G through handoff and subsequent separately staged GEX."
+          },
+          "Scope Items": [
+            {
+              "Scope Item ID": "I01",
+              "Approved Disposition": "in",
+              "Statement": "Actual-event producer, relic effect subscription and normal queued child execution through source/copy/effect context, modifiers/resources and public query",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 explicit instruction invoking IN-003 revised continuous instructions; IN-004 stored continuous authorization",
+                "scope": "IN-002 active ROADMAP U10/C07/C08 responsibility, implementation, exclusions and acceptance columns",
+                "boundary": "U09 independent Complete/High/open0 consumed from IN-016, exact target IN-017 and Root publication IN-018/019; next authorized roadmap P2G through handoff and subsequent separately staged GEX.",
+                "specific_locator": "ROADMAP U10 together-transition/output columns; C07"
+              }
+            },
+            {
+              "Scope Item ID": "I02",
+              "Approved Disposition": "in",
+              "Statement": "Same copy+effect path revisit prevention, independent forks, actual participant-union joins, independent periodic roots and inherited derived delay/projectile/area causality with log-independent lifetime",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 explicit instruction invoking IN-003 revised continuous instructions; IN-004 stored continuous authorization",
+                "scope": "IN-002 active ROADMAP U10/C07/C08 responsibility, implementation, exclusions and acceptance columns",
+                "boundary": "U09 independent Complete/High/open0 consumed from IN-016, exact target IN-017 and Root publication IN-018/019; next authorized roadmap P2G through handoff and subsequent separately staged GEX.",
+                "specific_locator": "ROADMAP U10 implementation/completion; C07"
+              }
+            },
+            {
+              "Scope Item ID": "I03",
+              "Approved Disposition": "in",
+              "Statement": "Deep Wedge actual strike consumption and existing equipment counter/death integration, positive resonance-gain lock and suppression preservation",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 explicit instruction invoking IN-003 revised continuous instructions; IN-004 stored continuous authorization",
+                "scope": "IN-002 active ROADMAP U10/C07/C08 responsibility, implementation, exclusions and acceptance columns",
+                "boundary": "U09 independent Complete/High/open0 consumed from IN-016, exact target IN-017 and Root publication IN-018/019; next authorized roadmap P2G through handoff and subsequent separately staged GEX.",
+                "specific_locator": "ROADMAP U10 implementation/completion; C08"
+              }
+            },
+            {
+              "Scope Item ID": "I04",
+              "Approved Disposition": "in",
+              "Statement": "Normal external RON, failure/resource/queue/clone/reclamation/restore contracts, affected predecessor regressions and whole-Goal independent completion",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 explicit instruction invoking IN-003 revised continuous instructions; IN-004 stored continuous authorization",
+                "scope": "IN-002 active ROADMAP U10/C07/C08 responsibility, implementation, exclusions and acceptance columns",
+                "boundary": "U09 independent Complete/High/open0 consumed from IN-016, exact target IN-017 and Root publication IN-018/019; next authorized roadmap P2G through handoff and subsequent separately staged GEX.",
+                "specific_locator": "ROADMAP U10 together-transition/completion and continuous instructions validation rules"
+              }
+            },
+            {
+              "Scope Item ID": "O01",
+              "Approved Disposition": "out",
+              "Statement": "Presentation logs as authority, blanket suppression of all equipment death chains, common gameplay activation cap and automatic causal join by time coincidence",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 explicit instruction invoking IN-003 revised continuous instructions; IN-004 stored continuous authorization",
+                "scope": "IN-002 active ROADMAP U10/C07/C08 responsibility, implementation, exclusions and acceptance columns",
+                "boundary": "U09 independent Complete/High/open0 consumed from IN-016, exact target IN-017 and Root publication IN-018/019; next authorized roadmap P2G through handoff and subsequent separately staged GEX.",
+                "specific_locator": "ROADMAP U10 explicit exclusions"
+              }
+            },
+            {
+              "Scope Item ID": "O02",
+              "Approved Disposition": "out",
+              "Statement": "Unity-first work, individual final-boss unique implementations, full future-card/roster/shop/activity implementation and whole-roadmap detailed design",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 explicit instruction invoking IN-003 revised continuous instructions; IN-004 stored continuous authorization",
+                "scope": "IN-002 active ROADMAP U10/C07/C08 responsibility, implementation, exclusions and acceptance columns",
+                "boundary": "U09 independent Complete/High/open0 consumed from IN-016, exact target IN-017 and Root publication IN-018/019; next authorized roadmap P2G through handoff and subsequent separately staged GEX.",
+                "specific_locator": "Current continuous instructions and ROADMAP global scope/U11 onward owners"
+              }
+            },
+            {
+              "Scope Item ID": "O03",
+              "Approved Disposition": "out",
+              "Statement": "Retroactive rewriting of frozen predecessor evidence or unrelated cleanup; treating fixture numbers as new formal balance",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 explicit instruction invoking IN-003 revised continuous instructions; IN-004 stored continuous authorization",
+                "scope": "IN-002 active ROADMAP U10/C07/C08 responsibility, implementation, exclusions and acceptance columns",
+                "boundary": "U09 independent Complete/High/open0 consumed from IN-016, exact target IN-017 and Root publication IN-018/019; next authorized roadmap P2G through handoff and subsequent separately staged GEX.",
+                "specific_locator": "Current continuous instructions preservation/scope and latest policy authority"
+              }
+            }
+          ]
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CRCE-001",
+          "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+        },
+        "Current Policy Element Revision Map": {},
+        "Decision Revision Ref Set": [],
+        "Open Policy Question Ref Set": [],
+        "Post-Freeze Change/Closure Basis": {
+          "Post-Freeze Change Record Ref Set": [],
+          "Authoritative Change Obligation Declaration Ref Set": []
+        }
+      }
+    }
+  ]
+}

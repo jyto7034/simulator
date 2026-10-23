@@ -106,6 +106,7 @@ impl BattleCore {
                 )?,
             ..Default::default()
         };
+        source = source.inherit_causal_context(&object.source)?;
         crate::game::battle::runtime_control::admit_retained_growth(
             0,
             Some(32),
@@ -125,6 +126,12 @@ impl BattleCore {
                 fact_source: source.clone(),
                 skill_cast_source: source.cast.clone(),
                 value_expr_capture: None,
+            prepared_basic: None,
+            weapon_growth: None,
+            presence_capture: None,
+            reactive_capture: None,
+            mobile_capture: None,
+            weapon_mark_capture: None,
                 source_id: id,
                 source_side: object.side,
                 source_attack: object.source_attack,

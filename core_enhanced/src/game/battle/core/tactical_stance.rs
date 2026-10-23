@@ -1543,6 +1543,7 @@ mod tests {
             skill_id: crate::game::ability::SkillId::from("relocation_busy_fixture"),
             cast_target: None,
             accepted_target_tile: None,
+            accepted_facing: None,
             start_seq: 77,
         });
         assert_eq!(
@@ -1913,6 +1914,7 @@ mod tests {
             skill_id: crate::game::ability::SkillId::from("swap_busy_fixture"),
             cast_target: None,
             accepted_target_tile: None,
+            accepted_facing: None,
             start_seq: 88,
         });
         assert!(matches!(

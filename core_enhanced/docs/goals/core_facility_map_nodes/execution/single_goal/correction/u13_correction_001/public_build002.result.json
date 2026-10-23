@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/home/blast/.cargo/bin/cargo",
+    "build",
+    "--release",
+    "--offline",
+    "--locked",
+    "--manifest-path",
+    "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/correction/u13_correction_001/probe/Cargo.toml"
+  ],
+  "exit_code": 0,
+  "seconds": 80.42411193699809,
+  "stdout": "public_build002.stdout.log",
+  "stderr": "public_build002.stderr.log"
+}

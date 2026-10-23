@@ -290,6 +290,8 @@ mod tests {
 
     fn encounter(binding: Option<PveBossRuntimeBindingData>) -> PveEncounter {
         PveEncounter {
+            deterrence_tuning: Default::default(),
+            bonus_objectives: Vec::new(),
             id: "fixture_encounter".to_string(),
             encounter_class: PveEncounterClass::NormalBoss,
             primary_abnormality_id: None,

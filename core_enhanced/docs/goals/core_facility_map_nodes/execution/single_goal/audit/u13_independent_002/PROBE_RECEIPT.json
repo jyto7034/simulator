@@ -1,0 +1,119 @@
+{
+  "command": [
+    "/mnt/f/work/simulator/.cache/u12-vault-cost-target/release/u13_successor_audit_probe",
+    "/tmp/u13-independent002-public-2tha6kss"
+  ],
+  "exit_code": 0,
+  "seconds": 4.829606507002609,
+  "binary_sha256": "f2114ed2023db8b35282d3aa7ac380c99948a884b737060ca9f90aca8ec8dd6e",
+  "output": "/tmp/u13-independent002-public-2tha6kss",
+  "preserved_binary": "artifacts/u13_successor_audit_probe",
+  "cases_executed": 7,
+  "cases_passed": 7,
+  "cases_failed": 0,
+  "expected_loader_rejections": 3,
+  "valid_loaded_public_cases": 4,
+  "classification": "범위 안 — 지원 경로: authored RON -> official packaging/loader -> public commands/query",
+  "copied_observations": [
+    {
+      "path": "observations/RESULT.json",
+      "sha256": "f52c9be34c3fa34ba1f2415b781db57fb484e416ed6eec7af040f6a9c276310f",
+      "bytes": 4170
+    },
+    {
+      "path": "observations/valid_support_alias/map_query.json",
+      "sha256": "9cf93044c0295a47eff4f1d8a5d995f93672bb980b3dcf5cb884bead34ceda95",
+      "bytes": 4169
+    },
+    {
+      "path": "observations/valid_support_alias/run.json",
+      "sha256": "2a5d41b4dfef013fe3b00b475853a2a094eedadcd432ae0ee8b0abacd25e5cdf",
+      "bytes": 190980
+    },
+    {
+      "path": "observations/valid_normal_concrete/map_query.json",
+      "sha256": "31449a252d068741745ca5233f22df1a1082f918329c633ff00a4d5cc8a8505a",
+      "bytes": 4169
+    },
+    {
+      "path": "observations/valid_normal_concrete/run.json",
+      "sha256": "0a608850c646ee92eb8e4e8ba8e0a6e87bb6f0a88e6bde4c181fe47285646921",
+      "bytes": 190980
+    },
+    {
+      "path": "observations/hidden_concrete/map_query.json",
+      "sha256": "b1bb0b7f5175f8c6c742ce6896020785d2c0253ef4e0d4dd75e9ee32df15355d",
+      "bytes": 4238
+    },
+    {
+      "path": "observations/hidden_concrete/run.json",
+      "sha256": "f36183b0cb4bcc0b3536d4148b52e99557c749139fe653d5cda2f06a6c8974bb",
+      "bytes": 191267
+    },
+    {
+      "path": "observations/hidden_official/map_query.json",
+      "sha256": "b1bb0b7f5175f8c6c742ce6896020785d2c0253ef4e0d4dd75e9ee32df15355d",
+      "bytes": 4238
+    },
+    {
+      "path": "observations/hidden_official/run.json",
+      "sha256": "f36183b0cb4bcc0b3536d4148b52e99557c749139fe653d5cda2f06a6c8974bb",
+      "bytes": 191267
+    },
+    {
+      "path": "observations/hidden_official/source/data/map/facility_templates.ron",
+      "sha256": "30953977ea42fff96a5138190b67950624756b74a67ef9ed405ca0342bfdb897",
+      "bytes": 168154
+    },
+    {
+      "path": "observations/hidden_official/content/official/data/map/facility_templates.ron",
+      "sha256": "30953977ea42fff96a5138190b67950624756b74a67ef9ed405ca0342bfdb897",
+      "bytes": 168154
+    },
+    {
+      "path": "observations/hidden_concrete/source/data/map/facility_templates.ron",
+      "sha256": "8149d65a8d00e751e6355414f4db5eb0e35034aa34777cf4732b1a3c878a3487",
+      "bytes": 168177
+    },
+    {
+      "path": "observations/hidden_concrete/content/official/data/map/facility_templates.ron",
+      "sha256": "8149d65a8d00e751e6355414f4db5eb0e35034aa34777cf4732b1a3c878a3487",
+      "bytes": 168177
+    },
+    {
+      "path": "observations/wrong_normal_role/source/data/map/facility_templates.ron",
+      "sha256": "07ab55ac708dc9da8de5c080e961c0b03ab01802235f0025bfc8df12a7950907",
+      "bytes": 168168
+    },
+    {
+      "path": "observations/wrong_normal_class/source/data/map/facility_templates.ron",
+      "sha256": "b7a4c789a221909bcce42649cb955ba93a855cf51bc809c7bdfa18976426e374",
+      "bytes": 168188
+    },
+    {
+      "path": "observations/wrong_elite_class/source/data/map/facility_templates.ron",
+      "sha256": "ee8615090abf90216f2320e55e76e97eef8fa46b03bc2bb7e2d219bfac8f8129",
+      "bytes": 168191
+    },
+    {
+      "path": "observations/valid_normal_concrete/source/data/map/facility_templates.ron",
+      "sha256": "36dbd3b3101a4cc63861e83c7f69780bc227c266d9b2041be8e0218051acafea",
+      "bytes": 168191
+    },
+    {
+      "path": "observations/valid_normal_concrete/content/official/data/map/facility_templates.ron",
+      "sha256": "36dbd3b3101a4cc63861e83c7f69780bc227c266d9b2041be8e0218051acafea",
+      "bytes": 168191
+    },
+    {
+      "path": "observations/valid_support_alias/source/data/map/facility_templates.ron",
+      "sha256": "a03e7c9a53c7038e62d8af14175a3b3dc64017bee4d9e28ed25b81d5b55f057a",
+      "bytes": 168320
+    },
+    {
+      "path": "observations/valid_support_alias/content/official/data/map/facility_templates.ron",
+      "sha256": "a03e7c9a53c7038e62d8af14175a3b3dc64017bee4d9e28ed25b81d5b55f057a",
+      "bytes": 168320
+    }
+  ]
+}

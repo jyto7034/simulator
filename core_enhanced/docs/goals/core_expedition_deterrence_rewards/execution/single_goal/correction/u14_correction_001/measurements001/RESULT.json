@@ -1,0 +1,64 @@
+{
+  "passed": true,
+  "samples": 6,
+  "all_exact_requested_bytes_recovered": true,
+  "summary": {
+    "official": {
+      "load": {
+        "median_seconds": 0.478025939,
+        "max_seconds": 0.48466878
+      },
+      "new": {
+        "median_seconds": 2.305e-06,
+        "max_seconds": 2.665e-06
+      },
+      "start": {
+        "median_seconds": 0.001474724,
+        "max_seconds": 0.001492939
+      },
+      "whole_facility_query": {
+        "median_seconds": 0.00177736,
+        "max_seconds": 0.001936562
+      },
+      "checkpoint_export": {
+        "median_seconds": 9.3939e-05,
+        "max_seconds": 9.3978e-05
+      },
+      "drop_application": {
+        "median_seconds": 2.0559e-05,
+        "max_seconds": 2.092e-05
+      }
+    },
+    "expanded": {
+      "load": {
+        "median_seconds": 0.487450659,
+        "max_seconds": 0.491276124
+      },
+      "new": {
+        "median_seconds": 2.585e-06,
+        "max_seconds": 2.885e-06
+      },
+      "start": {
+        "median_seconds": 0.001501926,
+        "max_seconds": 0.001541401
+      },
+      "whole_facility_query": {
+        "median_seconds": 0.002259897,
+        "max_seconds": 0.002502048
+      },
+      "checkpoint_export": {
+        "median_seconds": 9.5582e-05,
+        "max_seconds": 0.000109759
+      },
+      "drop_application": {
+        "median_seconds": 2.5439e-05,
+        "max_seconds": 5.0276e-05
+      }
+    }
+  },
+  "binary_sha256": "fb3c58119245bc54b08f4fef8b512e40e75a1db88ff877b1fdf490a7945eaf5a",
+  "input": "test_parts/public_inputs001",
+  "scope": "full authored static graph, initial room manifested; six fresh processes after compilation and host execution finished; not all rooms visited or final performance SLO",
+  "native_counters": "Raw load stage is measured. Unavailable operation counters remain unavailable; do not interpret zero raw counters without coverage as zero cost. Actual movement-budget regression is in correction core002; G11 default and runtime-observation cases are rerun in correction.",
+  "source_currentness": "Correction consumer compiled after room-context fix; runtime inputs fixed through this run. Exact successor source and build receipt retained."
+}

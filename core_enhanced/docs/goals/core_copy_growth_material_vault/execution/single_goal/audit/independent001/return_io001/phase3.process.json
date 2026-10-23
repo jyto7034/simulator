@@ -1,0 +1,14 @@
+{
+  "phase": 3,
+  "argv": [
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/artifacts/normal001/u15_economy_host",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/test_parts/normal_inputs003/admission.json",
+    "/tmp/u15-audit-return-io-lxx3qcvz/active",
+    "/tmp/u15-audit-return-io-lxx3qcvz/profile",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/audit/independent001/return_io001/phase3",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/test_parts/host_replays001/phase3.json"
+  ],
+  "input_sha256": "87a1fbec896fe13d1d70dd95cec92719ea7a8e092311b787e076611bbbd5cf84",
+  "exit_code": 0,
+  "seconds": 3.1281778529955773
+}

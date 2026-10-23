@@ -1,0 +1,22 @@
+--- core_enhanced/src/game/battle/core/independent_objects.rs BEFORE
+
++++ core_enhanced/src/game/battle/core/independent_objects.rs CURRENT
+
+@@ -415,6 +415,7 @@
+
+             "independent_object_owner",
+         )?;
+         let key = crate::authoring::clone_shape::controlled_clone(&object.family)?;
++        self.record_lab_object(&object.definition.0,false)?;
+         self.independent_objects.counters.insert(key, new);
+         self.independent_objects.objects.insert(object.id, object);
+         Ok(())
+@@ -461,6 +462,7 @@
+
+         let creator = object.family.creator;
+         let definition = crate::authoring::clone_shape::controlled_clone(&object.definition)?;
+         let family = crate::authoring::clone_shape::controlled_clone(&object.family)?;
++        self.record_lab_object(&definition.0,true)?;
+         self.independent_objects.objects.remove(&id);
+         self.independent_objects
+             .counters

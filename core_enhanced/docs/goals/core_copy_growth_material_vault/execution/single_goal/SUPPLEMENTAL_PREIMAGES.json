@@ -1,0 +1,26 @@
+[
+  {
+    "path": "tools/cmva_build.py",
+    "preimage": "supplemental_preimages001/tools__cmva_build.py",
+    "sha256": "fcf4060b4f235dcb40e6d764ad6aee09d40c89608e4cdf4449deddc59dd062bf",
+    "provenance": "core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/target/u14_current_001/SOURCE.tar.gz",
+    "archive_member": "tools/cmva_build.py",
+    "comparison": "Actual historical archive bytes, verified against current bytes excluding only the declared U15 addition; not synthesized preimage. build.rs unchanged."
+  },
+  {
+    "path": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/test_parts/runtime001/probe/Cargo.toml",
+    "preimage": "supplemental_preimages001/core_enhanced__docs__goals__core_expedition_lifecycle__execution__single_goal__test_parts__runtime001__probe__Cargo.toml",
+    "sha256": "fdaeb179d938640e9ec46506697dec8f5965baeba70878a721fb2afc35a8d916",
+    "provenance": "core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/target/u14_current_001/SOURCE.tar.gz",
+    "archive_member": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/test_parts/runtime001/probe/Cargo.toml",
+    "comparison": "Actual historical archive bytes, verified against current bytes excluding only the declared U15 addition; not synthesized preimage. build.rs unchanged."
+  },
+  {
+    "path": "core_enhanced/build.rs",
+    "preimage": "supplemental_preimages001/core_enhanced__build.rs",
+    "sha256": "b7483b0be8d34a781bfbdd06567201e94313aeda831a7da942b8cfc1aebf8138",
+    "provenance": "core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/target/u14_current_001/SOURCE.tar.gz",
+    "archive_member": "core_enhanced/build.rs",
+    "comparison": "Actual historical archive bytes, verified against current bytes excluding only the declared U15 addition; not synthesized preimage. build.rs unchanged."
+  }
+]

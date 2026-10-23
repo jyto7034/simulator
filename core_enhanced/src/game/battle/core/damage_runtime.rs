@@ -24,6 +24,7 @@ pub(in crate::game::battle::core) enum CommittedDamagePolicy {
         occurrence_time_ms: u64,
     },
     GeneralCommand,
+    BypassShields,
 }
 
 #[derive(Debug, Clone)]
@@ -307,6 +308,12 @@ impl BattleCore {
             fact_source,
             skill_cast_source: None,
             value_expr_capture: None,
+            prepared_basic: None,
+            weapon_growth: None,
+            presence_capture: None,
+            reactive_capture: None,
+            mobile_capture: None,
+            weapon_mark_capture: None,
             source_id,
             source_side,
             source_attack,
@@ -339,6 +346,12 @@ impl BattleCore {
         &mut self,
         input: CommittedDamageInput,
     ) -> Option<CommandExecutionSummary> {
+        let mut input = input;
+        input.source_snapshot.fact_source = input
+            .source_snapshot
+            .fact_source
+            .inherit_causal_context(&self.runtime_fact_source)
+            .ok()?;
         let prior = std::mem::replace(
             &mut self.runtime_fact_source,
             input.source_snapshot.fact_source.clone(),
@@ -354,10 +367,11 @@ impl BattleCore {
     ) -> Option<CommandExecutionSummary> {
         let CommittedDamageInput {
             target_id,
-            source_snapshot,
+            mut source_snapshot,
             committed_at_ms,
             policy,
         } = input;
+        self.reconcile_sustained(committed_at_ms).ok()?;
         let (
             target_owner,
             target_defense,
@@ -380,7 +394,13 @@ impl BattleCore {
                 )
             })?;
 
-        self.reconcile_sustained(committed_at_ms).ok()?;
+        let taunt_eligible = source_snapshot.source != DamageSource::Environment && !source_snapshot.fact_source.reaction
+            && !self.units.get(&source_snapshot.source_id).is_some_and(|u| u.corroded)
+            && !self.units.get(&target_id).is_some_and(|u| u.corroded);
+        let (taunt_reduction, taunt_bonus) = if taunt_eligible { self.approach_taunt_damage(source_snapshot.source_id, target_id, source_snapshot.source == DamageSource::BasicAttack) } else { (0, 0) };
+        target_incoming_modifiers.damage_reduction_percent = target_incoming_modifiers.damage_reduction_percent.saturating_add(taunt_reduction);
+        target_incoming_modifiers.damage_amp_percent = target_incoming_modifiers.damage_amp_percent.saturating_add(taunt_bonus).saturating_add(self.shot_cohort_damage_bonus(target_id,&source_snapshot).ok()?);
+        target_incoming_modifiers.damage_amp_percent = target_incoming_modifiers.damage_amp_percent.saturating_add(self.ground_status_totals(target_id).ok()?.1).saturating_add(self.hit_damage_taken_percent(target_id).ok()?);
         target_incoming_modifiers.damage_reduction_percent = target_incoming_modifiers
             .damage_reduction_percent
             .saturating_add(
@@ -388,8 +408,9 @@ impl BattleCore {
                     .ok()?,
             )
             .saturating_add(self.parry_reduction(target_id, committed_at_ms).ok()?);
+        let without_passive_guard = target_incoming_modifiers;
         let mut passive_guard = self
-            .passive_parry_guard(target_id, &source_snapshot, committed_at_ms)
+            .passive_parry_guard(target_id, committed_at_ms)
             .ok()?;
         if let Some(guard) = &passive_guard {
             if !guard.reduction_suppressed {
@@ -403,6 +424,9 @@ impl BattleCore {
             Err(_) => return None,
         };
 
+        self.apply_weapon_growth_damage(&mut source_snapshot, target_id).ok()?;
+        self.apply_wedge(&mut source_snapshot, target_id, strike.ordinal())
+            .ok()?;
         let mut deflection = self
             .deflect_direct_strike(target_id, &source_snapshot, committed_at_ms)
             .ok()?;
@@ -421,6 +445,8 @@ impl BattleCore {
                 };
             }
         }
+        let accepted_hit = deflection.is_none() && !self.sustained_invulnerable(target_id, committed_at_ms).ok()?;
+        if accepted_hit { self.mobile_accepted_hit(&source_snapshot, target_id, committed_at_ms).ok()?; }
         let mut pending_counter = deflection.clone();
         let snapshot_on_attack_effects =
             Self::damage_effects_from_source_snapshot(&source_snapshot);
@@ -528,6 +554,13 @@ impl BattleCore {
                 Err(_) => return None,
             };
         let mut result = calculate_damage(&request, &ctx);
+        if accepted_hit && !source_snapshot.fact_source.reaction && source_snapshot.fact_source.guard_release().is_none() && source_snapshot.source_id != target_id && source_snapshot.source_side != target_owner && matches!(source_snapshot.source,DamageSource::BasicAttack | DamageSource::Ability) {
+            if let Some(guard)=passive_guard.as_mut().filter(|g|!g.reduction_suppressed) {
+                crate::authoring::control::charge(result.breakdown.len() as u64, "guard_reduction_credit").ok()?;
+                let blocked=crate::game::battle::damage::reduction_credit(&request,&ctx,&result,without_passive_guard);
+                guard.charge=self.accumulate_guard_charge(target_id,blocked).ok()?;
+            }
+        }
         let mut protection = if let Some(fact) = deflection {
             result.triggered_commands.clear();
             let mut receipt = crate::game::battle::runtime_facts::ProtectionReceipt {
@@ -538,7 +571,7 @@ impl BattleCore {
             receipt.details_mut().ok()?.deflection = Some(Box::new(fact));
             receipt
         } else {
-            self.absorb_sustained_shields(target_id, result.final_damage, committed_at_ms)
+            self.absorb_sustained_shields_policy(target_id, result.final_damage, committed_at_ms, matches!(policy, CommittedDamagePolicy::BypassShields))
                 .ok()?
         };
         result.final_damage = result
@@ -552,10 +585,11 @@ impl BattleCore {
         let mut reflection_snapshot = None;
         if let Some(guard) = &mut passive_guard {
             use crate::game::battle::runtime_facts::ReflectionOutcome;
-            if let Some(key) = strike
-                .first_positive_roll_key()
-                .filter(|_| result.target_remaining_hp < target_current_hp)
-            {
+            let eligible = !source_snapshot.fact_source.reaction && source_snapshot.fact_source.guard_release().is_none()
+                && source_snapshot.source_id != target_id
+                && source_snapshot.source_side != target_owner
+                && matches!(source_snapshot.source, DamageSource::BasicAttack | DamageSource::Ability);
+            if let Some(key) = strike.first_positive_roll_key().filter(|_| eligible && result.target_remaining_hp < target_current_hp) {
                 let roll = (determinism::uuid_v4_from_seed(
                     self.seed ^ Self::unit_tag(target_id),
                     0x7061727279677561,
@@ -603,6 +637,13 @@ impl BattleCore {
         if let Some(guard) = passive_guard {
             protection.details_mut().ok()?.passive_guard = Some(Box::new(guard));
         }
+        let effective_hit = target_current_hp > result.target_remaining_hp || protection.absorbed > 0;
+        // The canonical component order is base, OnAttack, OnHit. Shields
+        // consume that order; an appended bonus cannot claim the prepared kill.
+        let prepared_direct_kill = target_current_hp > 0 && result.target_remaining_hp == 0
+            && result.breakdown.first().is_some_and(|base|
+                base.final_damage.saturating_sub(protection.absorbed) >= target_current_hp);
+
         let damage_fact = match self.prepare_damage_fact(
             &result,
             protection,
@@ -618,6 +659,10 @@ impl BattleCore {
         };
         self.runtime_facts.release_fact_storage(formula_storage);
         let actual_damage = target_current_hp.saturating_sub(result.target_remaining_hp);
+        if actual_damage > 0 {
+            self.commit_wedge(&source_snapshot, target_id, damage_fact.0.strike)
+                .ok()?;
+        }
         let killed_target = target_current_hp > 0 && result.target_remaining_hp == 0;
 
         if matches!(policy, CommittedDamagePolicy::BasicAttack { .. }) {
@@ -627,6 +672,9 @@ impl BattleCore {
                 committed_at_ms,
             );
         }
+        if effective_hit { self.weapon_mark_hit(&source_snapshot, target_id).ok()?; }
+        if effective_hit { self.presence_hit(&source_snapshot, target_id, killed_target, committed_at_ms).ok()?; }
+        self.volley_damage_mark(&source_snapshot,target_id,actual_damage,committed_at_ms).ok()?;
         self.apply_damage_result_and_record(
             Some(source_snapshot.source_id),
             &result,
@@ -634,10 +682,22 @@ impl BattleCore {
             committed_at_ms,
             match policy {
                 CommittedDamagePolicy::BasicAttack { .. } => HpChangeReason::BasicAttack,
-                CommittedDamagePolicy::GeneralCommand => HpChangeReason::Command,
+                CommittedDamagePolicy::GeneralCommand | CommittedDamagePolicy::BypassShields => HpChangeReason::Command,
             },
         );
 
+        if killed_target && self.units.get(&target_id).is_some_and(|u| u.lifecycle.is_dead()) {
+            self.shot_cohort_death(target_id, source_snapshot.source_side, committed_at_ms).ok()?;
+        }
+        self.relation_shields_after_damage(target_id, committed_at_ms).ok()?;
+        if prepared_direct_kill && matches!(policy, CommittedDamagePolicy::BasicAttack { .. }) {
+            self.prepared_basic_kill(&source_snapshot, committed_at_ms).ok()?;
+            self.weapon_growth_kill(&source_snapshot, target_id, committed_at_ms).ok()?;
+        }
+        if actual_damage > 0 && !killed_target {
+            self.owned_damage_status(&source_snapshot,target_id,committed_at_ms).ok()?;
+            self.reactive_heal_after_damage(target_id, &source_snapshot, committed_at_ms).ok()?;
+        }
         if let Some(fact) = &mut pending_counter {
             self.execute_parry_counter(fact, source_snapshot.source_id, committed_at_ms)
                 .ok()?;
@@ -669,8 +729,10 @@ impl BattleCore {
         }
 
         Some(CommandExecutionSummary {
+            accepted_hit_count: usize::from(accepted_hit),
             actual_hp_loss: u64::from(actual_damage),
             actual_damage_target_count: usize::from(actual_damage > 0),
+            effective_hit_count: usize::from(effective_hit),
             killed_target_count: usize::from(killed_target),
         })
     }
@@ -821,12 +883,18 @@ impl BattleCore {
             Ok(reservation) => reservation,
             Err(_) => return,
         };
+        let player_attack = source_instance_id.and_then(|id|self.units.get(&id))
+            .is_some_and(|source|source.owner == crate::game::enums::Side::Player);
         let Some(target) = self.units.get_mut(&target_instance_id) else {
             return;
         };
 
         apply_damage_to_unit(&mut target.stats, result.final_damage);
         let hp_after = target.stats.current_health;
+        self.performance_bonus.observe(
+            player_attack && target.owner == crate::game::enums::Side::Opponent
+                && Some(target.base_uuid) == self.performance_bonus.primary,
+            result.damage_source, hp_before.saturating_sub(hp_after), target.stats.max_health);
         let (fact, first, first_positive) = damage_fact;
         let extent = fact.retained_extent;
         if self
@@ -840,12 +908,19 @@ impl BattleCore {
         {
             return;
         }
+        if self.record_lab_source(&fact.source,if fact.actual_hp_loss()>0 {crate::mod_validation::CoverageStage::ConsumedOrEffect}else{crate::mod_validation::CoverageStage::LegalNoop}).is_err(){return;}
         self.observe_effect_damage_result(
             fact.source.as_ref(),
             fact.actual_hp_loss(),
             first,
             first_positive,
         );
+        if self
+            .observe_causal_damage(&fact, result.damage_source, result.damage_type)
+            .is_err()
+        {
+            return;
+        }
         self.runtime_facts.release_fact_storage(extent);
         let delta = hp_after as i32 - hp_before as i32;
         self.commit_authoring_observation(

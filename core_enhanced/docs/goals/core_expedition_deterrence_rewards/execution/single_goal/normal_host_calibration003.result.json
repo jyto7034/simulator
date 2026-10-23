@@ -1,0 +1,12 @@
+{
+  "command": [
+    "core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/artifacts/normal001/u13_facility_host",
+    "--cmva-calibrate",
+    "core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/test_parts/normal_inputs001/admission.json",
+    "/tmp/u14-normal-private-qwvoj42o/host_calibration003"
+  ],
+  "exit_code": 0,
+  "seconds": 10.289535625001008,
+  "stdout": "normal_host_calibration003.stdout.log",
+  "stderr": "normal_host_calibration003.stderr.log"
+}

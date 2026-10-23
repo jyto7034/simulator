@@ -1,0 +1,22 @@
+{
+  "default_core_tests_passed": 2169,
+  "unit_tests_passed": 2097,
+  "integration_tests_passed": 72,
+  "failed": 0,
+  "existing_ignored": 6,
+  "doc_test_count": 0,
+  "doc_command_exit_code": 0,
+  "all_target_command_exit_code": 0,
+  "supported_environment_socket_exit_code": 0,
+  "g11_environment_overrides": false,
+  "source_delta": "test DEFAULT_INPUTS locator only; product behavior unchanged",
+  "feature_scope": "default features, all targets plus doc",
+  "ignored_tests": [
+    "game::data::content_pack::tests::u11_issuer_lifetime::u11_actual_issuer_approval_host_trial_last_pins_release_independently",
+    "mod_validation::u11_cache_tests::u11_actual_accepted_pending_stale_and_restart",
+    "mod_validation::u11_cache_tests::u11_actual_accepted_pending_then_current_recovery",
+    "mod_validation::u11_cache_tests::u11_actual_cache_calibration_administration",
+    "mod_validation::u11_cache_tests::u11_actual_lab_cancel_before_publication",
+    "mod_validation::u11_cache_tests::u11_actual_lab_stale_before_publication"
+  ]
+}

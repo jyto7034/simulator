@@ -1,0 +1,9 @@
+{
+  "command": {
+    "type": "confirm_relic_fusion"
+  },
+  "error": "player profile filesystem error: Is a directory (os error 21)",
+  "index": 3,
+  "memory_and_disk_unchanged": true,
+  "passed": true
+}

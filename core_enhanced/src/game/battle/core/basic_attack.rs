@@ -9,7 +9,7 @@ use crate::game::{
     enums::Side,
 };
 
-use super::{movement::ActionState, BattleCore};
+use super::BattleCore;
 
 impl BattleCore {
     fn start_ranged_reposition_after_attack_release(
@@ -127,7 +127,7 @@ impl BattleCore {
         unit_ids.sort_by(|a, b| a.as_bytes().cmp(b.as_bytes()));
 
         for unit_id in unit_ids {
-            if self.channel_active(unit_id) || !self.boss_runtime_allows_combat_action(unit_id) {
+            if self.channel_pauses_basic(unit_id) || !self.boss_runtime_allows_combat_action(unit_id) {
                 if let Some(unit) = self.units.get_mut(&unit_id) {
                     unit.pending_basic_attack = false;
                 }
@@ -224,7 +224,7 @@ impl BattleCore {
         if !self.use_attack_can_execute(&self.runtime_fact_source) {
             return false;
         }
-        if self.channel_active(attacker_instance_id)
+        if self.channel_pauses_basic(attacker_instance_id)
             || !self.boss_runtime_allows_combat_action(attacker_instance_id)
         {
             if let Some(attacker) = self.units.get_mut(&attacker_instance_id) {
@@ -384,6 +384,15 @@ impl BattleCore {
                 actor: Some(attacker_instance_id),
                 ..Default::default()
             };
+            let parent = self
+                .independent_objects
+                .objects
+                .get(&attacker_instance_id)
+                .map_or(&self.runtime_fact_source, |o| &o.source);
+            let source = match source.inherit_causal_context(parent) {
+                Ok(source) => source,
+                Err(_) => return false,
+            };
             let Ok(action) = self.runtime_facts.accept(
                 attacker_instance_id,
                 None,
@@ -392,6 +401,19 @@ impl BattleCore {
                 false,
             ) else {
                 return false;
+            };
+            let source = if let Some(causal) = self
+                .runtime_facts
+                .accepted_source(&action)
+                .ok()
+                .and_then(|s| s.causal().cloned())
+            {
+                match source.with_causal(Some(causal)) {
+                    Ok(source) => source,
+                    Err(_) => return false,
+                }
+            } else {
+                source
             };
             self.runtime_fact_source = crate::game::battle::runtime_facts::RuntimeFactSource {
                 actor: Some(attacker_instance_id),
@@ -406,19 +428,10 @@ impl BattleCore {
                 };
         }
 
-        let stopped_movement = self.interrupt_movement(
-            time_ms,
-            attacker_instance_id,
-            crate::game::battle::event_log::MovementStopReason::AttackStarted,
-            None,
-            ActionState::Idle,
-        );
         if let Some(attacker) = self.units.get_mut(&attacker_instance_id) {
             attacker.current_target = Some(target_id);
             attacker.pending_basic_attack = false;
         }
-
-        let _ = stopped_movement;
 
         let windup_ms = self
             .units
@@ -460,7 +473,7 @@ impl BattleCore {
         {
             None
         } else {
-            let Some(source_snapshot) = self.damage_source_snapshot_for_regular_occurrence(
+            let Some(mut source_snapshot) = self.damage_source_snapshot_for_regular_occurrence(
                 attacker_instance_id,
                 target_id,
                 DamageSource::BasicAttack,
@@ -474,6 +487,11 @@ impl BattleCore {
             ) else {
                 return false;
             };
+            if schedule_next && self.bind_relation_basic(&source_snapshot, attack_epoch).is_err() { return false; }
+            if schedule_next && self.bind_prepared_basic(&mut source_snapshot, attack_epoch, time_ms).is_err() { return false; }
+            if schedule_next && self.bind_weapon_marks(&mut source_snapshot).is_err() { return false; }
+            if schedule_next && self.bind_presence(&mut source_snapshot).is_err() { return false; }
+            if schedule_next && self.bind_weapon_growth(&mut source_snapshot, target_id).is_err() { return false; }
             Some(source_snapshot)
         };
 
@@ -600,7 +618,7 @@ impl BattleCore {
         if !self.use_attack_can_execute(&self.runtime_fact_source) {
             return false;
         }
-        if self.channel_active(attacker_instance_id) {
+        if self.channel_pauses_basic(attacker_instance_id) {
             return false;
         }
         if self.units.get(&attacker_instance_id).is_some_and(|unit| {

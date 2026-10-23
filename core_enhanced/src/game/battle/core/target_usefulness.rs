@@ -52,6 +52,9 @@ impl BattleCore {
             return false;
         }
         step.effects.iter().any(|effect| match &effect.op {
+            SkillEffectDef::Sustained { definition: crate::game::ability::sustained::SustainedEffectDef::ReactiveHeal { .. } } => {
+                self.normal_player_employee(caster) && self.normal_player_employee(target)
+            }
             SkillEffectDef::Heal { amount } => {
                 *amount > 0
                     && unit.role != crate::game::battle::types::BattleUnitRole::IndependentWall
@@ -77,6 +80,21 @@ impl BattleCore {
         step: &SkillStepDef,
         target_id: UnitInstanceId,
     ) -> bool {
+        self.is_skill_step_useful_hostile_target_for_origin(
+            caster_instance_id,
+            step,
+            target_id,
+            false,
+        )
+    }
+
+    fn is_skill_step_useful_hostile_target_for_origin(
+        &self,
+        caster_instance_id: UnitInstanceId,
+        step: &SkillStepDef,
+        target_id: UnitInstanceId,
+        allow_dead_caster: bool,
+    ) -> bool {
         if control::poll("skill_target_usefulness").is_err() {
             return false;
         }
@@ -88,15 +106,19 @@ impl BattleCore {
         if target_owner == caster_owner {
             return false;
         }
-        self.preview_skill_step_future_damage(caster_instance_id, step, target_id)
-            .is_some_and(|damage| match damage {
-                FutureDamageUsefulness::Known(value) => value > 0,
-                // A future occurrence has no selected release/consume frame.
-                // Eligibility remains true without borrowing a past record or
-                // folding only the legacy portion of a mixed step.
-                FutureDamageUsefulness::Indeterminate { .. } => true,
-            })
-            || Self::skill_step_has_hostile_target_applied_effect(step)
+        self.preview_skill_step_future_damage(
+            caster_instance_id,
+            step,
+            target_id,
+            allow_dead_caster,
+        )
+        .is_some_and(|damage| match damage {
+            FutureDamageUsefulness::Known(value) => value > 0,
+            // A future occurrence has no selected release/consume frame.
+            // Eligibility remains true without borrowing a past record or
+            // folding only the legacy portion of a mixed step.
+            FutureDamageUsefulness::Indeterminate { .. } => true,
+        }) || Self::skill_step_has_hostile_target_applied_effect(step)
             || self.skill_step_has_interruptible_cast_effect(step, target_id)
             || self.skill_step_schedules_useful_extra_attack(caster_instance_id, step, target_id)
     }
@@ -123,6 +145,7 @@ impl BattleCore {
         _targets: &[UnitInstanceId],
     ) -> bool {
         !matches!(hit_targets, SkillHitTargetFilter::Allies)
+            && !matches!(&step.delivery, DeliveryDef::TileArea { area, .. } if area.mode == crate::game::ability::SkillTileAreaMode::ReleaseQuery)
             && Self::skill_step_has_hostile_payload(step)
     }
 
@@ -140,8 +163,45 @@ impl BattleCore {
         step: &SkillStepDef,
         step_target: Option<SkillCastTarget>,
     ) -> bool {
+        self.skill_step_has_useful_actual_delivery_target_for_origin(
+            time_ms,
+            step_index,
+            caster_instance_id,
+            step,
+            step_target,
+            false,
+        )
+    }
+
+    pub(in crate::game::battle::core) fn skill_step_has_useful_actual_delivery_target_for_origin(
+        &self,
+        time_ms: u64,
+        step_index: usize,
+        caster_instance_id: UnitInstanceId,
+        step: &SkillStepDef,
+        step_target: Option<SkillCastTarget>,
+        allow_dead_caster: bool,
+    ) -> bool {
         if !Self::skill_step_has_hostile_payload(step) {
             return false;
+        }
+        // Independent selected ground is useful as a placement even before any
+        // recipient enters, including with an effective replacement footprint.
+        if let DeliveryDef::TileArea { footprint, area } = &step.delivery {
+            if matches!(area.mode, crate::game::ability::SkillTileAreaMode::ChannelGround { .. }) {
+                return matches!(step_target,Some(SkillCastTarget::Unit{unit_instance_id}) if unit_instance_id==caster_instance_id)
+                    && self.units.get(&caster_instance_id).is_some_and(|u| u.is_active())
+                    && self.live_unit_projected_tile(caster_instance_id).zip(self.tile_area_facing(caster_instance_id,footprint,area)).is_some_and(|(tile,facing)|self.valid_tile_area_tiles(footprint,tile,facing).is_some());
+            }
+            if area.mode == crate::game::ability::SkillTileAreaMode::ReleaseQuery {
+                return self.units.get(&caster_instance_id).is_some_and(|u| u.is_active())
+                    && matches!(step_target,Some(SkillCastTarget::Unit { unit_instance_id }) if unit_instance_id == caster_instance_id);
+            }
+            if area.mode == crate::game::ability::SkillTileAreaMode::SelectedGround {
+                let Some(SkillCastTarget::Tile { position }) = step_target else { return false; };
+                return self.valid_tile_area_tiles(footprint, position,
+                    crate::game::battle::tile_range::FacingDirection::Up).is_some();
+            }
         }
         if let Some(useful) = self
             .effective_footprint_usefulness(
@@ -179,17 +239,23 @@ impl BattleCore {
         }
 
         if let DeliveryDef::TileArea { footprint, area } = &step.delivery {
+            // A candidate has not been admitted yet. Preview its current tile;
+            // only the later cast may read an accepted anchor from live state.
+            let mut preview_area = area.clone();
+            if preview_area.anchor == crate::game::ability::SkillAreaAnchorSource::AcceptedCastTarget {
+                preview_area.anchor = crate::game::ability::SkillAreaAnchorSource::CastTarget;
+            }
             let Some((caster_owner, _, _, _, anchor_tile)) = self.resolve_tile_area_geometry(
                 time_ms,
                 0,
                 step_index,
                 caster_instance_id,
                 step_target,
-                area,
+                &preview_area,
             ) else {
                 return false;
             };
-            let Some(facing) = self.tile_area_projection_facing(caster_instance_id, footprint)
+            let Some(facing) = self.tile_area_facing(caster_instance_id, footprint, area)
             else {
                 return false;
             };
@@ -211,11 +277,17 @@ impl BattleCore {
                 area.hit_targets,
                 &targets,
             ) {
-                return self.skill_step_has_useful_hostile_target(
-                    caster_instance_id,
-                    step,
-                    &targets,
-                );
+                if control::charge(targets.len() as u64 + 1, "skill_useful_targets").is_err() {
+                    return false;
+                }
+                return targets.into_iter().any(|target| {
+                    self.is_skill_step_useful_hostile_target_for_origin(
+                        caster_instance_id,
+                        step,
+                        target,
+                        allow_dead_caster,
+                    )
+                });
             }
             return !targets.is_empty();
         }
@@ -223,7 +295,12 @@ impl BattleCore {
         let Some(SkillCastTarget::Unit { unit_instance_id }) = step_target else {
             return false;
         };
-        self.is_skill_step_useful_hostile_target(caster_instance_id, step, unit_instance_id)
+        self.is_skill_step_useful_hostile_target_for_origin(
+            caster_instance_id,
+            step,
+            unit_instance_id,
+            allow_dead_caster,
+        )
     }
 
     /// New footprint rows resolve independently. Untransformed sibling payloads
@@ -281,13 +358,17 @@ impl BattleCore {
                     false,
                 ),
                 DeliveryDef::TileArea { area, .. } => {
+                    let mut preview_area = area.clone();
+                    if source.cast.is_none() && preview_area.anchor == crate::game::ability::SkillAreaAnchorSource::AcceptedCastTarget {
+                        preview_area.anchor = crate::game::ability::SkillAreaAnchorSource::CastTarget;
+                    }
                     let Some((_, _, _, _, tile)) = self.resolve_tile_area_geometry(
                         time_ms,
                         source.cast.as_ref().map_or(0, |cast| cast.cast_seq),
                         step_index,
                         caster,
                         target,
-                        area,
+                        &preview_area,
                     ) else {
                         continue;
                     };
@@ -355,7 +436,7 @@ impl BattleCore {
                 let request = DamageRequest {
                     source: DamageSource::Ability,
                     damage_type,
-                    modifiers: Self::skill_step_damage_modifiers(step),
+                    modifiers: super::skill_runtime::skill_step_damage_modifiers(step),
                     crit_roll_percent: None,
                     attacker_id: caster,
                     target_id: target,
@@ -375,12 +456,173 @@ impl BattleCore {
         })
     }
 
+    /// Selected structural consumers use the accepted recipient separately
+    /// from their original delivery carrier. Every consumer must qualify;
+    /// another useful sibling cannot rescue a rejected typed recipient.
+    fn typed_selected_recipient_usefulness(
+        &self,
+        skill: &SkillDef,
+        caster: UnitInstanceId,
+        recipient: UnitInstanceId,
+    ) -> Result<Option<bool>, crate::game::behavior::GameError> {
+        use crate::game::{
+            ability::{sustained::SustainedEffectDef, SkillCastSelection},
+            behavior::GameError,
+            relic::structural::authoring::{PersonalShieldRecipientsDef, StructuralRecipeDef},
+        };
+
+        let source = &self.runtime_fact_source;
+        let execution = if let Some(binding) = source.relic_effective() {
+            binding.validate(
+                self.content_identity
+                    .as_deref()
+                    .ok_or(GameError::InvalidAction)?,
+                source,
+            )?;
+            if binding.actor != caster || binding.execution().skill.id != skill.id {
+                return Err(GameError::InvalidAction);
+            }
+            Some(binding.execution())
+        } else {
+            let execution = self.current_effective_skill(&skill.id, caster, source);
+            control::poll("selected_recipient_provider")?;
+            if execution.is_some() {
+                let unit = self.units.get(&caster).ok_or(GameError::UnitNotFound)?;
+                let plan = self
+                    .effective_owner
+                    .as_ref()
+                    .and_then(|owner| owner.plans.get(&unit.source_owned_uuid))
+                    .ok_or(GameError::InvalidAction)?;
+                if self.content_identity.as_deref() != Some(plan.generation.identity())
+                    || source.actor.is_some_and(|actor| actor != caster)
+                    || source.cast.as_ref().is_some_and(|cast| {
+                        cast.caster_instance_id != caster || cast.skill_id != skill.id
+                    })
+                {
+                    return Err(GameError::InvalidAction);
+                }
+            }
+            execution
+        };
+        let mut selected_consumer = false;
+        for step in &skill.steps {
+            control::charge(1, "selected_recipient_step")?;
+            for effect in &step.effects {
+                control::charge(1, "selected_recipient_effect")?;
+                match &effect.op {
+                    SkillEffectDef::PersonalShieldGrant { definition } => {
+                        let PersonalShieldRecipientsDef::SelectedPlayerEmployeeAtRelease {
+                            authored_reach_units: _,
+                        } = definition.recipients
+                        else {
+                            continue;
+                        };
+                        selected_consumer = true;
+                        let carrier_valid = match step.target {
+                            SkillTarget::AllySingle => true,
+                            SkillTarget::SelfUnit => {
+                                let Some(site) = effect.source().map(|source| &source.site) else {
+                                    return Ok(Some(false));
+                                };
+                                let descriptor =
+                                    self.effective_effect_view(site, caster, source)?;
+                                if let Some(descriptor) = descriptor {
+                                    control::charge(
+                                        descriptor.recipes.len() as u64,
+                                        "selected_recipient_recipes",
+                                    )?;
+                                }
+                                descriptor.is_some_and(|descriptor| {
+                                    descriptor.recipes.iter().any(|recipe| {
+                                        matches!(
+                                            recipe,
+                                            StructuralRecipeDef::PersonalShieldSingle { .. }
+                                        )
+                                    })
+                                })
+                            }
+                            _ => false,
+                        };
+                        if skill.cast_selection() != SkillCastSelection::PlayerUnit
+                            || !matches!(step.delivery, DeliveryDef::Instant)
+                            || !carrier_valid
+                            || !self.selected_support_in_reach(
+                                caster,
+                                recipient,
+                                &crate::game::relic::structural::support::shield_reach(definition),
+                            )
+                        {
+                            return Ok(Some(false));
+                        }
+                    }
+                    SkillEffectDef::Sustained {
+                        definition: SustainedEffectDef::ChannelAura { .. },
+                    } if execution.is_some() => {
+                        let Some(site) = effect.source().map(|source| &source.site) else {
+                            continue;
+                        };
+                        let Some(descriptor) = self.effective_effect_view(site, caster, source)?
+                        else {
+                            continue;
+                        };
+                        control::charge(
+                            descriptor.recipes.len() as u64,
+                            "selected_recipient_recipes",
+                        )?;
+                        if !descriptor.recipes.iter().any(|recipe| {
+                            matches!(recipe, StructuralRecipeDef::FixedRecipientSupport)
+                        }) {
+                            continue;
+                        }
+                        selected_consumer = true;
+                        let Some(reach) = execution.and_then(|plan| plan.selected_recipient_reach.as_ref())
+                        else {
+                            return Ok(Some(false));
+                        };
+                        if skill.cast_selection() != SkillCastSelection::PlayerUnit
+                            || caster == recipient
+                            || !self.selected_support_in_reach(caster, recipient, reach)
+                        {
+                            return Ok(Some(false));
+                        }
+                    }
+                    _ => {}
+                }
+            }
+        }
+        Ok(if selected_consumer {
+            Some(true)
+        } else if execution.is_some_and(|plan| plan.selected_recipient_reach.is_some()) {
+            // Metadata alone is not an executable selected-recipient consumer.
+            Some(false)
+        } else {
+            None
+        })
+    }
+
     pub(in crate::game::battle::core) fn skill_has_useful_automatic_cast_target(
         &self,
         time_ms: u64,
         skill: &SkillDef,
         caster_instance_id: UnitInstanceId,
         cast_target: Option<SkillCastTarget>,
+    ) -> bool {
+        self.skill_has_useful_automatic_cast_target_for_origin(
+            time_ms,
+            skill,
+            caster_instance_id,
+            cast_target,
+            false,
+        )
+    }
+
+    pub(in crate::game::battle::core) fn skill_has_useful_automatic_cast_target_for_origin(
+        &self,
+        time_ms: u64,
+        skill: &SkillDef,
+        caster_instance_id: UnitInstanceId,
+        cast_target: Option<SkillCastTarget>,
+        allow_dead_caster: bool,
     ) -> bool {
         if control::charge(skill.steps.len() as u64 + 1, "skill_useful_steps").is_err() {
             return false;
@@ -405,14 +647,23 @@ impl BattleCore {
             let Some(SkillCastTarget::Unit { unit_instance_id }) = cast_target else {
                 return false;
             };
-            if !skill.steps.iter().any(|step| {
-                matches!(step.target, SkillTarget::AllySingle)
-                    && self.is_skill_step_useful_ally_target(
-                        caster_instance_id,
-                        step,
-                        unit_instance_id,
-                    )
-            }) {
+            let useful = match self.typed_selected_recipient_usefulness(
+                skill,
+                caster_instance_id,
+                unit_instance_id,
+            ) {
+                Ok(Some(useful)) => useful,
+                Ok(None) => skill.steps.iter().any(|step| {
+                    matches!(step.target, SkillTarget::AllySingle)
+                        && self.is_skill_step_useful_ally_target(
+                            caster_instance_id,
+                            step,
+                            unit_instance_id,
+                        )
+                }),
+                Err(_) => false,
+            };
+            if !useful {
                 return false;
             }
         }
@@ -422,6 +673,9 @@ impl BattleCore {
         for (step_index, step) in skill.steps.iter().enumerate() {
             if control::poll("skill_useful_step").is_err() {
                 return false;
+            }
+            if matches!(&step.delivery, DeliveryDef::TileArea { area, .. } if area.emission.is_some()) {
+                return true;
             }
             if Self::skill_step_targets_enemies(step) {
                 has_hostile_targeting_step = true;
@@ -443,7 +697,7 @@ impl BattleCore {
                         unit_instance_id: caster_instance_id,
                     }),
                     SkillTarget::EnemySingle { rule } => self
-                        .resolve_cast_origin_context(None, caster_instance_id, false)
+                        .resolve_cast_origin_context(None, caster_instance_id, allow_dead_caster)
                         .and_then(|(caster_owner, caster_pos)| {
                             let (_, reach, target_range, air_capable) =
                                 skill.cast_target_definition()?;
@@ -462,10 +716,10 @@ impl BattleCore {
                                 target_range,
                                 *rule,
                                 air_capable,
-                                super::skill_runtime::cast::SkillTargetUsefulness::DeliveryStep {
-                                    time_ms,
-                                    step_index,
-                                    step,
+                                if allow_dead_caster {
+                                    super::skill_runtime::cast::SkillTargetUsefulness::AllowedDeadCasterDeliveryStep { time_ms, step_index, step }
+                                } else {
+                                    super::skill_runtime::cast::SkillTargetUsefulness::DeliveryStep { time_ms, step_index, step }
                                 },
                             )
                             .map(|unit_instance_id| SkillCastTarget::Unit { unit_instance_id })
@@ -473,19 +727,24 @@ impl BattleCore {
                     SkillTarget::AllySingle => {
                         let (_, reach, range, air_capable) = skill.cast_target_definition().expect("validated skill targeting");
                         self.choose_ally_skill_target(caster_instance_id, reach, range, air_capable,
-                            super::skill_runtime::cast::SkillTargetUsefulness::DeliveryStep { time_ms, step_index, step })
+                            if allow_dead_caster {
+                                super::skill_runtime::cast::SkillTargetUsefulness::AllowedDeadCasterDeliveryStep { time_ms, step_index, step }
+                            } else {
+                                super::skill_runtime::cast::SkillTargetUsefulness::DeliveryStep { time_ms, step_index, step }
+                            })
                             .map(|unit_instance_id| SkillCastTarget::Unit { unit_instance_id })
                     }
                     SkillTarget::CastTarget => None,
                 },
             };
 
-            if self.skill_step_has_useful_actual_delivery_target(
+            if self.skill_step_has_useful_actual_delivery_target_for_origin(
                 time_ms,
                 step_index,
                 caster_instance_id,
                 step,
                 step_target,
+                allow_dead_caster,
             ) {
                 return true;
             }
@@ -550,6 +809,7 @@ impl BattleCore {
         caster_instance_id: UnitInstanceId,
         step: &SkillStepDef,
         target_id: UnitInstanceId,
+        allow_dead_caster: bool,
     ) -> Option<FutureDamageUsefulness> {
         control::charge(
             (step.effects.len() as u64)
@@ -560,8 +820,25 @@ impl BattleCore {
         .ok()?;
         let caster = self.units.get(&caster_instance_id)?;
         let target = self.units.get(&target_id)?;
-        if !caster.is_active() || !target.is_active() || caster.owner == target.owner {
+        if !target.is_active() || caster.owner == target.owner {
             return None;
+        }
+        if !caster.is_active() && !allow_dead_caster {
+            // Late delivery reads the exact live cast's existing permission.
+            // An observed cast ID or a dead unit by itself grants nothing.
+            control::charge(1, "dead_cast_usefulness_owner").ok()?;
+            let origin = self.runtime_fact_source.cast.as_ref()?;
+            let cast = self.active_skill_casts.get(&origin.cast_seq)?;
+            if origin.caster_instance_id != caster_instance_id
+                || cast.caster_instance_id != caster_instance_id
+                || !cast.allow_dead_caster
+                || !cast
+                    .execution_source
+                    .as_ref()
+                    .is_some_and(|bound| std::sync::Arc::ptr_eq(bound, origin))
+            {
+                return None;
+            }
         }
 
         let expression_effects = step
@@ -573,7 +850,7 @@ impl BattleCore {
             return Some(FutureDamageUsefulness::Indeterminate { expression_effects });
         }
 
-        let modifiers = Self::skill_step_damage_modifiers(step);
+        let modifiers = super::skill_runtime::skill_step_damage_modifiers(step);
         let ctx = DamageContext {
             attacker_side: caster.owner,
             target_side: target.owner,
@@ -661,21 +938,11 @@ impl BattleCore {
         }
     }
 
-    fn skill_step_damage_modifiers(step: &SkillStepDef) -> DamageModifiers {
-        step.effects
-            .iter()
-            .filter_map(|effect| match &effect.op {
-                SkillEffectDef::ModifyDamage { modifiers } => Some(*modifiers),
-                _ => None,
-            })
-            .fold(DamageModifiers::default(), DamageModifiers::merge)
-    }
-
     fn skill_step_has_hostile_payload(step: &SkillStepDef) -> bool {
         if control::charge(step.effects.len() as u64 + 1, "skill_hostile_payload").is_err() {
             return false;
         }
-        step.effects.iter().any(|effect| match &effect.op {
+        matches!(&step.delivery, DeliveryDef::TileArea {area,..} if area.ground_status.is_some()) || step.effects.iter().any(|effect| match &effect.op {
             SkillEffectDef::Damage { amount, .. } => *amount != 0,
             SkillEffectDef::DamageExpr { .. } => true,
             SkillEffectDef::Sustained { definition } => definition.is_hostile(),
@@ -691,6 +958,7 @@ impl BattleCore {
             SkillEffectDef::HealExpr { .. }
             | SkillEffectDef::PersonalShieldGrant { .. }
             | SkillEffectDef::ShieldExpr { .. }
+            | SkillEffectDef::GuardCounter { .. } | SkillEffectDef::StatusStrike { .. } | SkillEffectDef::FusionPlacement { .. } | SkillEffectDef::PairedAreas { .. } | SkillEffectDef::PreparedVolley { .. } | SkillEffectDef::InputPlan { .. } | SkillEffectDef::RelationAction { .. } | SkillEffectDef::CounterChannel { .. } | SkillEffectDef::TileBurst { .. } | SkillEffectDef::PresenceBurst { .. }
             | SkillEffectDef::CreateObject { .. }
             | SkillEffectDef::HealthCost { .. }
             | SkillEffectDef::RechargeShield { .. } => false,
@@ -726,6 +994,7 @@ impl BattleCore {
             SkillEffectDef::HealExpr { .. }
             | SkillEffectDef::PersonalShieldGrant { .. }
             | SkillEffectDef::ShieldExpr { .. }
+            | SkillEffectDef::GuardCounter { .. } | SkillEffectDef::StatusStrike { .. } | SkillEffectDef::FusionPlacement { .. } | SkillEffectDef::PairedAreas { .. } | SkillEffectDef::PreparedVolley { .. } | SkillEffectDef::InputPlan { .. } | SkillEffectDef::RelationAction { .. } | SkillEffectDef::CounterChannel { .. } | SkillEffectDef::TileBurst { .. } | SkillEffectDef::PresenceBurst { .. }
             | SkillEffectDef::CreateObject { .. }
             | SkillEffectDef::HealthCost { .. }
             | SkillEffectDef::RechargeShield { .. } => false,

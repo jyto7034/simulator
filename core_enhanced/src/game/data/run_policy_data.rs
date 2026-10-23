@@ -10,9 +10,11 @@ use crate::game::{
 #[serde(deny_unknown_fields)]
 pub struct RunPolicyData {
     pub setup: RunSetupPolicy,
+    pub tutorial_employee_definition_ids: Vec<String>,
+    pub expedition_deterrence_initial: u32,
+    pub expedition_first_entry_cost: u32,
     pub growth: GrowthPolicy,
     pub encounter_repeat_weighting: EncounterRepeatWeightingPolicy,
-    pub monolith: MonolithPolicy,
     pub battle_runtime: BattleRuntimePolicy,
     pub corrosion: CorrosionPolicy,
     pub combat_difficulty: CombatDifficultyPolicy,
@@ -57,24 +59,6 @@ pub enum EmptyEncounterCandidateFallbackPolicy {
     ResetSoftRepeatConstraints,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct MonolithPolicy {
-    pub wandering_merchant_min_floor: u32,
-    pub wandering_merchant_shop_id: String,
-    pub first_page_offer_count: usize,
-    pub paid_refresh_uses: u8,
-    pub initial_uses: u8,
-    pub remanifestation_max_attempts: u8,
-    pub residual_exchange_threshold: usize,
-    pub monolith_price: u32,
-    pub monolith_offer_weight: u32,
-    pub stage_2_stat_multiplier_percent: u32,
-    pub stage_3_stat_multiplier_percent: u32,
-    pub stage_2_reward_multiplier_percent: u32,
-    pub stage_3_reward_multiplier_percent: u32,
-    pub exchange_visual_novel_id: String,
-}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -92,10 +76,14 @@ pub struct BattleRuntimePolicy {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct CorrosionPolicy {
+    #[serde(default = "default_corrosion_boss_damage_percent")]
+    pub boss_max_health_damage_percent: u32,
     pub trauma_threshold: u32,
     pub presentation_duration_ms: u64,
-    pub breakdown_collapse_node_limit: u32,
+    pub breakdown_collapse_cost_limit: u32,
 }
+
+fn default_corrosion_boss_damage_percent() -> u32 { 25 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -184,7 +172,7 @@ pub enum CombatNodeDifficultyRole {
     NormalBoss,
     FinalBoss,
     BossOmen,
-    MonolithRemanifestation,
+    Revival,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -309,6 +297,9 @@ impl TraumaRecovery {
 #[serde(deny_unknown_fields)]
 pub struct HeadquartersPolicy {
     pub emergency_enkephalin: u32,
+    pub recruit_price: u32,
+    pub recruit_limit_per_session: u8,
+    pub recruit_max_depth: u32,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -360,10 +351,11 @@ impl RunPolicyData {
     }
 
     pub fn validate_contract(&self) -> Result<(), String> {
-        if !(1..100).contains(&self.corrosion.trauma_threshold)
+        if !(1..=100).contains(&self.corrosion.boss_max_health_damage_percent)
+            || !(1..100).contains(&self.corrosion.trauma_threshold)
             || self.corrosion.presentation_duration_ms == 0
             || self.corrosion.presentation_duration_ms > u32::MAX as u64
-            || self.corrosion.breakdown_collapse_node_limit == 0
+            || self.corrosion.breakdown_collapse_cost_limit == 0
         {
             return Err("invalid corrosion threshold/duration/Breakdown node limit".into());
         }
@@ -371,7 +363,17 @@ impl RunPolicyData {
         if self.setup.standard_floor_count == 0 {
             return Err("run policy setup.standard_floor_count must be greater than 0".to_string());
         }
-        if self.setup.starter_employee_count == 0 {
+        if self.headquarters.recruit_price == 0 || self.headquarters.recruit_limit_per_session != 2 || self.headquarters.recruit_max_depth != 4 {
+            return Err("headquarters recruitment policy requires positive price, two offers and depth four".into());
+        }
+        if self.expedition_deterrence_initial == 0 || self.expedition_first_entry_cost == 0 {
+            return Err("expedition deterrence tuning must be positive".into());
+        }
+        if self.tutorial_employee_definition_ids.len() != 3
+            || self.tutorial_employee_definition_ids.iter().collect::<HashSet<_>>().len() != 3 {
+            return Err("tutorial preset must contain three distinct employee definitions".into());
+        }
+        if self.setup.starter_employee_count != 3 {
             return Err(
                 "run policy setup.starter_employee_count must be greater than 0".to_string(),
             );
@@ -435,7 +437,6 @@ impl RunPolicyData {
             );
         }
         self.validate_combat_difficulty()?;
-        self.validate_monolith()?;
         if self.battle_result_stats.mvp.metric_weights.is_empty() {
             return Err(
                 "run policy battle_result_stats.mvp.metric_weights must not be empty".to_string(),
@@ -497,130 +498,6 @@ impl RunPolicyData {
         Ok(())
     }
 
-    fn validate_monolith(&self) -> Result<(), String> {
-        let policy = &self.monolith;
-        if policy.wandering_merchant_min_floor < 4 {
-            return Err(
-                "run policy monolith.wandering_merchant_min_floor must be at least 4".to_string(),
-            );
-        }
-        if policy.wandering_merchant_shop_id.trim().is_empty()
-            || policy.exchange_visual_novel_id.trim().is_empty()
-        {
-            return Err(
-                "run policy monolith shop and visual-novel ids must not be empty".to_string(),
-            );
-        }
-        if policy.first_page_offer_count != 3 || policy.paid_refresh_uses != 1 {
-            return Err(
-                "run policy monolith requires exactly three first-page offers and one paid refresh"
-                    .to_string(),
-            );
-        }
-        for (field, value) in [
-            ("initial_uses", usize::from(policy.initial_uses)),
-            (
-                "remanifestation_max_attempts",
-                usize::from(policy.remanifestation_max_attempts),
-            ),
-            (
-                "residual_exchange_threshold",
-                policy.residual_exchange_threshold,
-            ),
-            ("monolith_price", policy.monolith_price as usize),
-            (
-                "monolith_offer_weight",
-                policy.monolith_offer_weight as usize,
-            ),
-            (
-                "stage_2_stat_multiplier_percent",
-                policy.stage_2_stat_multiplier_percent as usize,
-            ),
-            (
-                "stage_3_stat_multiplier_percent",
-                policy.stage_3_stat_multiplier_percent as usize,
-            ),
-            (
-                "stage_2_reward_multiplier_percent",
-                policy.stage_2_reward_multiplier_percent as usize,
-            ),
-            (
-                "stage_3_reward_multiplier_percent",
-                policy.stage_3_reward_multiplier_percent as usize,
-            ),
-        ] {
-            if value == 0 {
-                return Err(format!(
-                    "run policy monolith.{field} must be greater than 0"
-                ));
-            }
-        }
-        if policy.initial_uses < 2 || policy.remanifestation_max_attempts != 2 {
-            return Err(
-                "run policy monolith requires at least two uses and exactly two remanifestation attempts"
-                    .to_string(),
-            );
-        }
-        if policy.stage_3_reward_multiplier_percent <= policy.stage_2_reward_multiplier_percent {
-            return Err(
-                "run policy monolith stage 3 reward multiplier must exceed stage 2".to_string(),
-            );
-        }
-        if policy.stage_3_stat_multiplier_percent <= policy.stage_2_stat_multiplier_percent {
-            return Err(
-                "run policy monolith stage 3 stat multiplier must exceed stage 2".to_string(),
-            );
-        }
-        for profile in &self.combat_difficulty.profiles {
-            let monolith_tuning = profile
-                .role_tuning
-                .iter()
-                .find(|entry| entry.role == CombatNodeDifficultyRole::MonolithRemanifestation)
-                .ok_or_else(|| {
-                    format!(
-                        "run policy combat_difficulty profile '{}' is missing MonolithRemanifestation tuning",
-                        profile.id
-                    )
-                })?;
-            for (multiplier_field, multiplier) in [
-                (
-                    "stage_2_stat_multiplier_percent",
-                    policy.stage_2_stat_multiplier_percent,
-                ),
-                (
-                    "stage_3_stat_multiplier_percent",
-                    policy.stage_3_stat_multiplier_percent,
-                ),
-            ] {
-                for (tuning_field, value) in [
-                    (
-                        "target_power_percent",
-                        monolith_tuning.tuning.target_power_percent,
-                    ),
-                    (
-                        "max_health_multiplier_percent",
-                        monolith_tuning.tuning.max_health_multiplier_percent,
-                    ),
-                    (
-                        "attack_multiplier_percent",
-                        monolith_tuning.tuning.attack_multiplier_percent,
-                    ),
-                    (
-                        "defense_multiplier_percent",
-                        monolith_tuning.tuning.defense_multiplier_percent,
-                    ),
-                ] {
-                    if checked_percent_product_ceil(value, multiplier).is_none() {
-                        return Err(format!(
-                            "run policy monolith.{multiplier_field} cannot compose combat_difficulty profile '{}' MonolithRemanifestation {tuning_field} into u32",
-                            profile.id
-                        ));
-                    }
-                }
-            }
-        }
-        Ok(())
-    }
 
     fn validate_combat_difficulty(&self) -> Result<(), String> {
         let policy = &self.combat_difficulty;
@@ -749,7 +626,7 @@ impl RunPolicyData {
             CombatNodeDifficultyRole::NormalBoss,
             CombatNodeDifficultyRole::FinalBoss,
             CombatNodeDifficultyRole::BossOmen,
-            CombatNodeDifficultyRole::MonolithRemanifestation,
+            CombatNodeDifficultyRole::Revival,
         ]);
         let mut profile_ids = HashSet::new();
         for profile in &policy.profiles {
@@ -901,41 +778,16 @@ impl RunPolicyData {
                 .find(|entry| entry.role == role)
                 .map(|entry| entry.tuning.clone()),
         }?;
-        let is_monolith_role = matches!(
-            difficulty.class,
-            crate::game::map::MapNodeCombatDifficultyClass::Role(
-                CombatNodeDifficultyRole::MonolithRemanifestation
-            )
-        );
-        match (is_monolith_role, difficulty.monolith_stage) {
+        let is_revival_role = matches!(difficulty.class, crate::game::map::MapNodeCombatDifficultyClass::Role(CombatNodeDifficultyRole::Revival));
+        match (is_revival_role, difficulty.revival) {
             (false, None) => Some(tuning),
-            (true, Some(stage)) => {
-                let (stat_multiplier, reward_multiplier) = match stage {
-                    crate::game::map::MonolithRemanifestationStage::Stage2 => (
-                        self.monolith.stage_2_stat_multiplier_percent,
-                        self.monolith.stage_2_reward_multiplier_percent,
-                    ),
-                    crate::game::map::MonolithRemanifestationStage::Stage3 => (
-                        self.monolith.stage_3_stat_multiplier_percent,
-                        self.monolith.stage_3_reward_multiplier_percent,
-                    ),
-                };
-                tuning.target_power_percent =
-                    checked_percent_product_ceil(tuning.target_power_percent, stat_multiplier)?;
-                tuning.max_health_multiplier_percent = checked_percent_product_ceil(
-                    tuning.max_health_multiplier_percent,
-                    stat_multiplier,
-                )?;
-                tuning.attack_multiplier_percent = checked_percent_product_ceil(
-                    tuning.attack_multiplier_percent,
-                    stat_multiplier,
-                )?;
-                tuning.defense_multiplier_percent = checked_percent_product_ceil(
-                    tuning.defense_multiplier_percent,
-                    stat_multiplier,
-                )?;
-                tuning.reward_multiplier_percent =
-                    percent_product_ceil(tuning.reward_multiplier_percent, reward_multiplier);
+            (true, Some(revival)) if revival.stat_multiplier_percent > 100 => {
+                let scale = revival.stat_multiplier_percent;
+                tuning.target_power_percent = checked_percent_product_ceil(tuning.target_power_percent, scale)?;
+                tuning.max_health_multiplier_percent = checked_percent_product_ceil(tuning.max_health_multiplier_percent, scale)?;
+                tuning.attack_multiplier_percent = checked_percent_product_ceil(tuning.attack_multiplier_percent, scale)?;
+                tuning.defense_multiplier_percent = checked_percent_product_ceil(tuning.defense_multiplier_percent, scale)?;
+                // Stage rewards are explicit authored quantities, not a second multiplier.
                 Some(tuning)
             }
             _ => None,
@@ -949,7 +801,7 @@ impl RunPolicyData {
     ) -> Option<ResolvedFloorPowerAnchorPolicy> {
         let authored_floor = floor_index.checked_add(1)?;
         match mode {
-            crate::game::map::GameMode::Standard => self
+            crate::game::map::GameMode::Tutorial => self
                 .combat_difficulty
                 .standard_floor_anchors
                 .iter()
@@ -958,7 +810,7 @@ impl RunPolicyData {
                     authored_minimum_power: entry.authored_minimum_power,
                     minimum_rise: entry.minimum_rise,
                 }),
-            crate::game::map::GameMode::Endless => self
+            crate::game::map::GameMode::Expedition => self
                 .combat_difficulty
                 .endless_floor_anchor_stages
                 .iter()
@@ -1002,11 +854,6 @@ impl RunPolicyData {
             .map(|entry| entry.tier)
             .expect("validated growth policy must contain at least one battle tier")
     }
-}
-
-fn percent_product_ceil(left_percent: u32, right_percent: u32) -> u32 {
-    let product = u64::from(left_percent).saturating_mul(u64::from(right_percent));
-    u32::try_from(product.saturating_add(99) / 100).unwrap_or(u32::MAX)
 }
 
 fn checked_percent_product_ceil(left_percent: u32, right_percent: u32) -> Option<u32> {
@@ -1105,8 +952,6 @@ mod tests {
         assert_eq!(policy.tactical_resource.initial, 20);
         assert_eq!(policy.tactical_resource.maximum, 99);
         assert_eq!(policy.tactical_resource.recovery_per_second, 1);
-        assert_eq!(policy.monolith.stage_2_stat_multiplier_percent, 150);
-        assert_eq!(policy.monolith.stage_3_stat_multiplier_percent, 200);
         assert_eq!(
             policy.save_point_trauma_recovery,
             TraumaRecovery::CurrentPercent { percent: 15 }
@@ -1118,37 +963,7 @@ mod tests {
     }
 
     #[test]
-    fn monolith_stage_three_stat_multiplier_must_exceed_stage_two() {
-        for stage_three in [150, 149] {
-            let mut policy = RunPolicyData::builtin();
-            policy.monolith.stage_2_stat_multiplier_percent = 150;
-            policy.monolith.stage_3_stat_multiplier_percent = stage_three;
-
-            assert!(policy
-                .validate_contract()
-                .unwrap_err()
-                .contains("stage 3 stat multiplier must exceed stage 2"));
-        }
-    }
-
-    #[test]
-    fn monolith_stat_multipliers_must_be_positive() {
-        for stage in [2, 3] {
-            let mut policy = RunPolicyData::builtin();
-            if stage == 2 {
-                policy.monolith.stage_2_stat_multiplier_percent = 0;
-            } else {
-                policy.monolith.stage_3_stat_multiplier_percent = 0;
-            }
-
-            let err = policy.validate_contract().unwrap_err();
-            assert!(err.contains(&format!("stage_{stage}_stat_multiplier_percent")));
-            assert!(err.contains("greater than 0"));
-        }
-    }
-
-    #[test]
-    fn monolith_stat_composition_must_fit_u32() {
+    fn revival_stat_composition_must_fit_u32() {
         let cases: [(&str, fn(&mut CombatDifficultyTuning)); 4] = [
             ("target_power_percent", |tuning| {
                 tuning.target_power_percent = u32::MAX;
@@ -1163,40 +978,32 @@ mod tests {
                 tuning.defense_multiplier_percent = u32::MAX;
             }),
         ];
-        for (stage, multiplier_field) in [
+        for (stage, _multiplier_field) in [
             (
-                crate::game::map::MonolithRemanifestationStage::Stage2,
+                crate::game::map::RevivalStage::Stage2,
                 "stage_2_stat_multiplier_percent",
             ),
             (
-                crate::game::map::MonolithRemanifestationStage::Stage3,
+                crate::game::map::RevivalStage::Stage3,
                 "stage_3_stat_multiplier_percent",
             ),
         ] {
-            for (tuning_field, make_unrepresentable) in cases {
+            for (_tuning_field, make_unrepresentable) in cases {
                 let mut policy = RunPolicyData::builtin();
-                if stage == crate::game::map::MonolithRemanifestationStage::Stage3 {
-                    policy.monolith.stage_2_stat_multiplier_percent = 1;
-                }
                 let tuning = default_profile_mut(&mut policy)
                     .role_tuning
                     .iter_mut()
-                    .find(|entry| entry.role == CombatNodeDifficultyRole::MonolithRemanifestation)
+                    .find(|entry| entry.role == CombatNodeDifficultyRole::Revival)
                     .expect("built-in profile has Monolith tuning");
                 make_unrepresentable(&mut tuning.tuning);
-
-                let err = policy.validate_contract().unwrap_err();
-                assert!(err.contains(multiplier_field));
-                assert!(err.contains(tuning_field));
-                assert!(err.contains("u32"));
 
                 let difficulty = crate::game::map::MapNodeCombatDifficulty {
                     power_model_version: policy.combat_difficulty.power_model_version,
                     difficulty_profile_id: default_profile(&policy).id.clone(),
                     class: crate::game::map::MapNodeCombatDifficultyClass::Role(
-                        CombatNodeDifficultyRole::MonolithRemanifestation,
+                        CombatNodeDifficultyRole::Revival,
                     ),
-                    monolith_stage: Some(stage),
+                    revival: Some(crate::game::revival::RevivalNodeTuning { stage, stat_multiplier_percent: if stage == crate::game::map::RevivalStage::Stage2 { 150 } else { 200 } }),
                     floor_power_anchor: 100,
                     target_power: 0,
                 };
@@ -1208,27 +1015,27 @@ mod tests {
     }
 
     #[test]
-    fn monolith_stage_resolver_composes_stats_and_reward_but_not_waves() {
+    fn revival_resolver_composes_stats_but_preserves_authored_rewards_and_waves() {
         let policy = RunPolicyData::builtin();
         let difficulty = |stage| crate::game::map::MapNodeCombatDifficulty {
             power_model_version: policy.combat_difficulty.power_model_version,
             difficulty_profile_id: default_profile(&policy).id.clone(),
             class: crate::game::map::MapNodeCombatDifficultyClass::Role(
-                CombatNodeDifficultyRole::MonolithRemanifestation,
+                CombatNodeDifficultyRole::Revival,
             ),
-            monolith_stage: Some(stage),
+            revival: Some(crate::game::revival::RevivalNodeTuning { stage, stat_multiplier_percent: if stage == crate::game::map::RevivalStage::Stage2 { 150 } else { 200 } }),
             floor_power_anchor: 100,
             target_power: 0,
         };
 
         let stage_two = policy
             .resolved_tuning_for_manifested_node(&difficulty(
-                crate::game::map::MonolithRemanifestationStage::Stage2,
+                crate::game::map::RevivalStage::Stage2,
             ))
             .unwrap();
         let stage_three = policy
             .resolved_tuning_for_manifested_node(&difficulty(
-                crate::game::map::MonolithRemanifestationStage::Stage3,
+                crate::game::map::RevivalStage::Stage3,
             ))
             .unwrap();
 
@@ -1243,20 +1050,20 @@ mod tests {
         assert_eq!(stage_three.attack_multiplier_percent, 290);
         assert_eq!(stage_three.defense_multiplier_percent, 290);
         assert_eq!(stage_three.generated_wave_budget_multiplier_percent, 200);
-        assert_eq!(stage_three.reward_multiplier_percent, 313);
+        assert_eq!(stage_three.reward_multiplier_percent, 250);
         assert_eq!(stage_three.extra_waves, stage_two.extra_waves);
     }
 
     #[test]
-    fn monolith_stage_and_role_must_be_present_together() {
+    fn revival_and_role_must_be_present_together() {
         let policy = RunPolicyData::builtin();
         let mut difficulty = crate::game::map::MapNodeCombatDifficulty {
             power_model_version: policy.combat_difficulty.power_model_version,
             difficulty_profile_id: default_profile(&policy).id.clone(),
             class: crate::game::map::MapNodeCombatDifficultyClass::Role(
-                CombatNodeDifficultyRole::MonolithRemanifestation,
+                CombatNodeDifficultyRole::Revival,
             ),
-            monolith_stage: None,
+            revival: None,
             floor_power_anchor: 100,
             target_power: 220,
         };
@@ -1267,7 +1074,7 @@ mod tests {
         difficulty.class = crate::game::map::MapNodeCombatDifficultyClass::Ordinary(
             OrdinaryCombatDifficultyBand::Standard,
         );
-        difficulty.monolith_stage = Some(crate::game::map::MonolithRemanifestationStage::Stage2);
+        difficulty.revival = Some(crate::game::revival::RevivalNodeTuning { stage: crate::game::map::RevivalStage::Stage2, stat_multiplier_percent: 150 });
         assert!(policy
             .resolved_tuning_for_manifested_node(&difficulty)
             .is_none());
@@ -1278,25 +1085,25 @@ mod tests {
         let policy = RunPolicyData::builtin();
 
         assert_eq!(
-            policy.floor_power_anchor_policy(crate::game::map::GameMode::Standard, 0),
+            policy.floor_power_anchor_policy(crate::game::map::GameMode::Tutorial, 0),
             Some(ResolvedFloorPowerAnchorPolicy {
                 authored_minimum_power: 100,
                 minimum_rise: 0,
             })
         );
         assert_eq!(
-            policy.floor_power_anchor_policy(crate::game::map::GameMode::Standard, 2),
+            policy.floor_power_anchor_policy(crate::game::map::GameMode::Tutorial, 2),
             Some(ResolvedFloorPowerAnchorPolicy {
                 authored_minimum_power: 150,
                 minimum_rise: 25,
             })
         );
         assert_eq!(
-            policy.floor_power_anchor_policy(crate::game::map::GameMode::Standard, 3),
+            policy.floor_power_anchor_policy(crate::game::map::GameMode::Tutorial, 3),
             None
         );
         assert_eq!(
-            policy.floor_power_anchor_policy(crate::game::map::GameMode::Endless, 6),
+            policy.floor_power_anchor_policy(crate::game::map::GameMode::Expedition, 6),
             Some(ResolvedFloorPowerAnchorPolicy {
                 authored_minimum_power: 265,
                 minimum_rise: 30,
@@ -1389,66 +1196,12 @@ mod tests {
 
     #[test]
     fn run_policy_rejects_legacy_or_unknown_fields() {
-        let err = RunPolicyData::from_ron_str(
-            r#"(
-                setup: (standard_floor_count: 3, starter_employee_count: 3, starter_enkephalin: 500),
-                growth: (
-                    xp_required_per_level: [100],
-                    post_battle_survival_xp: 10,
-                    battle_tier_by_level: [
-                        (min_level: 1, tier: I),
-                        (min_level: 3, tier: II),
-                        (min_level: 6, tier: III),
-                    ],
-                ),
-                encounter_repeat_weighting: (
-                    recent_floor_exclusion_window: 1,
-                    response_complete_weight_multiplier_percent: 25,
-                    incomplete_weight_multiplier_percent: 100,
-                    empty_pool_fallback: ResetSoftRepeatConstraints,
-                ),
-                corrosion: (trauma_threshold: 80, presentation_duration_ms: 1000, breakdown_collapse_node_limit: 2),
-                battle_runtime: (
-                    movement_tick_ms: 50,
-                ),
-                tactical_stance: (
-                    stance_change_cooldown_ms: 1500,
-                    rest_tick_interval_ms: 1000,
-                ),
-                tactical_relocation: (
-                    cost: 5,
-                    cooldown_ms: 10000,
-                ),
-                battle_result_stats: (
-                    mvp: (
-                        metric_weights: [
-                            (metric: DamageDealt, weight: 1, title: "Top Damage"),
-                        ],
-                        tiebreakers: [Score, DamageDealt, EmployeeUuid],
-                    ),
-                ),
-                tactical_resource: (
-                    initial: 20,
-                    maximum: 99,
-                    recovery_per_second: 1,
-                    base_deploy_cost: 10,
-                    redeploy_cost_multiplier_pct: 150,
-                ),
-                live_deployment: (
-                    withdraw_redeploy_cooldown_ms: 30000,
-                    defeat_redeploy_cooldown_ms: 90000,
-                    first_instance_salt: 10000,
-                ),
-                post_battle: (
-                    incapacitation_trauma: 40,
-                ),
-                save_point_trauma_recovery: CurrentPercent(percent: 15),
-                gate_trauma_recovery: CurrentPercent(percent: 10),
-                headquarters: (emergency_enkephalin: 120),
-                legacy_fallback: true,
-            )"#,
-        )
-        .expect_err("unknown fields must fail validation");
+        let current = include_str!("../../../../game_resources/data/run/policy.ron");
+        RunPolicyData::from_ron_str(current).expect("positive current policy");
+        let mut unknown = current.to_owned();
+        unknown.insert_str(unknown.rfind(')').unwrap(), "legacy_fallback: true,\n");
+        let err = RunPolicyData::from_ron_str(&unknown)
+            .expect_err("one unknown field must reject the otherwise valid policy");
 
         assert!(err.contains("legacy_fallback"));
     }

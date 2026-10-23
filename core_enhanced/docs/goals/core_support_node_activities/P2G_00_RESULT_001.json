@@ -1,0 +1,21 @@
+{
+  "stage": "P2G-00",
+  "status": "complete",
+  "working_revision_ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CSNA-001",
+    "Content Digest": "sha256:313dfb94a5dd62f6e842e080a93179938e6b797e1410a607c9c105000ee2c900"
+  },
+  "intake_snapshot_ref": {
+    "Artifact Type": "Policy Intake Snapshot",
+    "Artifact ID": "PIS-CSNA-001",
+    "Content Digest": "sha256:42cf92da5c2fd1141c065fce2743f4a19a1a20dad4b68981edc88336ca5e59fa"
+  },
+  "checks": {
+    "new_unique_path": true,
+    "empty_initial_policy_map": true,
+    "raw_capture_members_verified": 11,
+    "scope_authorized_by_user_U16-1_request": true
+  },
+  "next": "P2G-10 policy closure; not product implementation"
+}

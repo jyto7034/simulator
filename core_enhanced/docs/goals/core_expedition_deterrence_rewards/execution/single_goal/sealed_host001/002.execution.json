@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/artifacts/normal_host003/u14_deterrence_host",
+    "facility-node",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/test_parts/sealed_inputs002/admission.json",
+    "/tmp/u14-sealed-host001/active",
+    "/tmp/u14-sealed-host001/profile",
+    "/tmp/u14-sealed-host001/001_facility-node",
+    "/tmp/u14-sealed-host001/002_command.json"
+  ],
+  "exit_code": 0
+}

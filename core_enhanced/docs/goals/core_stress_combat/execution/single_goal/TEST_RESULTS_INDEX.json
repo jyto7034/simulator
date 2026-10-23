@@ -1,0 +1,39 @@
+{
+  "new_execution": {
+    "aggregation": "completion001/RESULT.json",
+    "successful_host_processes": 17,
+    "host_operations": 192,
+    "native_boundary_tests": {
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "exit_code": 0,
+      "log": "runs/completion-probes005.log"
+    },
+    "cost_replays": {
+      "passed": 6,
+      "index": "completion001/cost001/RESULT.json"
+    },
+    "normal_build": "normal_build002/prepared-build.json",
+    "instrumented_build": "instrumented_build002/prepared-build.json",
+    "normal_admission": [
+      "runs/completion-package002.result.json",
+      "runs/completion-calibration001.result.json",
+      "runs/completion-adoption001.result.json"
+    ],
+    "limits": [
+      "NORMAL_LIMIT_REVIEW_002.json",
+      "EXPANDED_LIMIT_REVIEW_002.json"
+    ]
+  },
+  "reused": [
+    "RE_REVIEW_RESULTS_001.json",
+    "correction001/RESULT.json",
+    "correction002/RESULT.json",
+    "independent_audit003/RESULT.json",
+    "BASELINE_REUSE.json"
+  ],
+  "failure_history": "EXPERIMENTS.md and immutable runs, including original preparation and losing expanded gameplay attempts; not counted as success",
+  "counting": "host process/operation counts, Rust tests and replay processes have distinct units; do not sum",
+  "independent_final_audit_performed": false
+}

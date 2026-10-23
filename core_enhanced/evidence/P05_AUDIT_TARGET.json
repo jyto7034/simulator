@@ -1,0 +1,88 @@
+{
+  "record_ref": "ATR-CRAR-C2-P05-GEX10-001",
+  "captured_at_utc": "2026-08-22T17:27:59Z",
+  "handoff_ref": "HA-CRAR-P2G60-002",
+  "goal_set_ref": "GS-CRAR-P2G50-002",
+  "goal_id": "GOAL-CRAR-C2-P05-BOUNDED-HISTORY-RESULT",
+  "phase_id": "PHASE-CRAR-C2-05-BOUNDED-HISTORY-RESULT",
+  "execution_node": "WP-CRAR-C2-06",
+  "policy_ref": "PER-CRAR-009-R6-CODE-REVIEWED",
+  "decision_ref": "DR-CRAR-008-R2",
+  "realization_decision_ref": "TD-CRAR-018",
+  "invariant_ref": "IVA-C2-06",
+  "repository": {
+    "workspace_locator": "/mnt/f/work/simulator/core_enhanced",
+    "revision": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+    "branch": "cleanup/simulator-dirty-worktree-20260803"
+  },
+  "predecessor_currentness": [
+    {"record_ref": "ATR-CRAR-C2-P01-GEX20-005", "verdict": "Complete / High", "currentness": "current / expected P05 locator delta", "evidence_path": "evidence/P01_SUCCESSOR_AUDIT_TARGET_005.json"},
+    {"record_ref": "ATR-CRAR-C2-P03-GEX20-003", "verdict": "Complete / High", "currentness": "current / proven non-impacting P05 subordinate transaction delta", "evidence_path": "evidence/P03_SUCCESSOR_AUDIT_TARGET_003.json"},
+    {"record_ref": "ATR-CRAR-C2-P04-GEX20-002", "verdict": "Complete / High", "currentness": "current / expected P05 private-kernel lifetime delta", "evidence_path": "evidence/P04_SUCCESSOR_AUDIT_TARGET_002.json"}
+  ],
+  "content_members": [
+    {"path": "src/game/battle/event_log.rs", "kind": "tracked_dirty_mixed_attribution", "sha256": "ac5dd0795048b146fd344657300c12db888fa098b168bc71920ca703ea8e6d09"},
+    {"path": "src/game/battle/recording.rs", "kind": "tracked_dirty_mixed_attribution", "sha256": "46649615d0aed902cf9813dd4a695ac01979aa4f6adfadad835eddb734312329"},
+    {"path": "src/game/battle/result_stats.rs", "kind": "tracked_dirty_mixed_attribution", "sha256": "50688f689601cdb9609e96640b9181e11e130cb26470bd7bbbf0c7e809e7788b"},
+    {"path": "src/game/battle/types.rs", "kind": "tracked_dirty_mixed_attribution", "sha256": "e388e9eb7d882dbcbd81eb9291a3cf77f1b8841fc060201da7735c750666075f"},
+    {"path": "src/game/battle/core/mod.rs", "kind": "tracked_dirty_mixed_attribution", "sha256": "776d8aed121a2f46d3cb1924ac443fc4989bbf372034dec0893e03bea5de84fe"},
+    {"path": "src/game/battle/core/sim.rs", "kind": "tracked_dirty_mixed_attribution", "sha256": "95f3f22a13d51497e5a4b760cc4dd11203544236f97df62e0870b7c9843462eb"},
+    {"path": "src/game/behavior.rs", "kind": "tracked_dirty_mixed_attribution", "sha256": "620cca3a12c5be93553ecaa294ca8d8819cf045ff3a2b1a0d19f9e9ac8ad11ed"},
+    {"path": "src/game/resources/selection.rs", "kind": "tracked_dirty_mixed_attribution", "sha256": "8c01853213e60a5773234fa557a6e97174220f755c77df2b98dd15e03caee7a3"},
+    {"path": "src/game/world.rs", "kind": "tracked_dirty_mixed_attribution", "sha256": "4821030666dbf7b0b0e40ac05b2a527659dc54a7b4728e638dc4e0e8698cc82e"},
+    {"path": "src/game/world/state.rs", "kind": "tracked_dirty_mixed_attribution", "sha256": "66b50f568571935e82f708becea67e033ecf2322a1243e4b7971193b52541b52"},
+    {"path": "src/game/world/combat.rs", "kind": "tracked_dirty_mixed_attribution", "sha256": "d9d65b3316adf3b70d25d2f95a3292563f727750830373f58b2215d0ebef4b6a"},
+    {"path": "src/game/world/snapshot.rs", "kind": "tracked_dirty_mixed_attribution", "sha256": "704ad2dc9baa8b7ffe1f5f2c16fb94418faf46bc8c1d432145870b3ef58aa0b6"},
+    {"path": "src/game/world/visual_novel_flow.rs", "kind": "tracked_dirty_mixed_attribution", "sha256": "c2a44c5a2def17c1a264c8746047c5bd6100735e876a51a318dc44193d7a19ac"},
+    {"path": "src/game/world/tests/combat.rs", "kind": "tracked_dirty_mixed_attribution", "sha256": "2cf0a54684af1cc8397e379608ed9c29c7bd4c5177f7375f2ad58ce327e68cc5"},
+    {"path": "docs/core_runtime_contract.md", "kind": "tracked_dirty_mixed_attribution", "sha256": "e5951267d4affdc14ea08b617305cb4ad701b6ccc5a2e0b6532ddfc95bf312b2"},
+    {"path": "docs/goals/current_runtime_architecture_remediation/execution/p05_bounded_history_result/PLAN.md", "kind": "untracked_p05_execution_evidence", "sha256": "de35075a45a8381e1700e580a55aaa57242498fadc000aced7bf0422eaf60c87"},
+    {"path": "docs/goals/current_runtime_architecture_remediation/execution/p05_bounded_history_result/EXPERIMENTS.md", "kind": "untracked_p05_execution_evidence", "sha256": "f72bca88374ef14de6f794d9dc50964735367f7ff90e7a10389385f29b421150"},
+    {"path": "docs/goals/current_runtime_architecture_remediation/execution/p05_bounded_history_result/EXPERIMENT_NOTES.md", "kind": "untracked_p05_execution_evidence", "sha256": "ca65b981a6438788d6e2665f881aa909c386c98d22153f16d5a3b73eaadc3b92"},
+    {"path": "evidence/P05_BOUNDED_HISTORY_RESULT_RECEIPT.json", "kind": "untracked_p05_validation_evidence", "sha256": "e02b15173dd5e8adce7beb7ce6bbfd2f70ce5cee2f9ba7f6f09462202631c755"},
+    {"path": "tools/history_result_api_audit/valid/Cargo.toml", "kind": "untracked_p05_release_probe", "sha256": "25431647e362ff3ae341c132bb18319c6feda0fe0515e8f575707f42a95d92e0"},
+    {"path": "tools/history_result_api_audit/valid/Cargo.lock", "kind": "untracked_p05_release_probe", "sha256": "4ba383ac9f6d98c7d6dddc7f552df870e4b5389afc0132b7461cadd3f4b1f288"},
+    {"path": "tools/history_result_api_audit/valid/src/main.rs", "kind": "untracked_p05_release_probe", "sha256": "031df4c383c441dcb7798bac6fa168d1c0be45f3713f836f42ed6447563b69c2"},
+    {"path": "tools/history_result_api_audit/invalid/Cargo.toml", "kind": "untracked_p05_compile_fail_probe", "sha256": "269190972fda2e042de95b7eeee457d5dbe024bdb7c92e5168b9ef333bcc5c29"},
+    {"path": "tools/history_result_api_audit/invalid/Cargo.lock", "kind": "untracked_p05_compile_fail_probe", "sha256": "4a8dfe160a47bc5bd1b2a9c4adfd73723bc47a80cfc80cb256441f39108f1d4d"},
+    {"path": "tools/history_result_api_audit/invalid/src/main.rs", "kind": "untracked_p05_compile_fail_probe", "sha256": "3edd820e7c44d0588987f3fb0c05d31a10a44a1a9e3b946fef04b58f320a9b95"},
+    {"path": "tools/battle_kernel_api_audit/valid/src/main.rs", "kind": "untracked_p05_probe_dependency", "sha256": "babff46233133a2198fdbcf080874ef9ee5b3634fb95b66de82e7f5dc038fcb5"},
+    {"path": "evidence/P01_SUCCESSOR_AUDIT_TARGET_005.json", "kind": "untracked_predecessor_currentness_evidence", "sha256": "61c603150290179bdec87dc95d95423f7710061cf84aa7e30f11b0c9d179d1b2"},
+    {"path": "docs/goals/current_runtime_architecture_remediation/execution/p01_preservation_observability/SUCCESSOR_CURRENTNESS_AUDIT_005.md", "kind": "untracked_predecessor_currentness_evidence", "sha256": "07dbbd196b3ab7133990e7049d2d6e213c614649de7fff0d1d242ad6000a5174"},
+    {"path": "evidence/P03_SUCCESSOR_AUDIT_TARGET_003.json", "kind": "untracked_predecessor_currentness_evidence", "sha256": "86e2f2a22765316152345dbc51d3c7b2fddfa69f83503cd66c2d9fa05911ece2"},
+    {"path": "docs/goals/current_runtime_architecture_remediation/execution/p03_application_authority/SUCCESSOR_CURRENTNESS_AUDIT_003.md", "kind": "untracked_predecessor_currentness_evidence", "sha256": "9b975ac4519e5099964ec7b3aab81dd3fc4010946d572b70eb7b3f86edabaf28"},
+    {"path": "evidence/P04_SUCCESSOR_AUDIT_TARGET_002.json", "kind": "untracked_predecessor_currentness_evidence", "sha256": "bfba73ae726a6856d0ab5eb8c71db1d5eaf60fc1566f32b88bc5fe17bf9513ea"},
+    {"path": "docs/goals/current_runtime_architecture_remediation/execution/p04_battle_kernel/SUCCESSOR_CURRENTNESS_AUDIT_002.md", "kind": "untracked_predecessor_currentness_evidence", "sha256": "7c95426eb588fbfdddc63096739110ed1ce7025aaa62041dda89629dfe643b03"}
+  ],
+  "content_member_count": 32,
+  "validation": [
+    {"command": "cargo fmt --all -- --check", "result": "exit 0"},
+    {"command": "cargo check --release --lib", "result": "exit 0; warnings 0"},
+    {"command": "focused cap/cursor/result/sequence/resync matrix", "result": "all focused tests passed"},
+    {"command": "cargo test -p game_core", "result": "1143 passed; 0 failed; 0 ignored"},
+    {"command": "valid history/result release probe", "result": "exit 0; live validated publication to GameCore combat"},
+    {"command": "invalid history/result release probe", "result": "expected exit 101; E0432 gated DTO and E0599 gated method"},
+    {"command": "P01 feature manifest verifier", "result": "exit 0; 57 features; 42 contents; composite c0306c0536eb93f8b41b27714ae33d8d0ddcafbe582d26d0d1b7a2c5063de095; errors 0"},
+    {"command": "P03 frozen-member comparison", "result": "26 unchanged; seven expected P05 deltas"},
+    {"command": "P04 frozen-member comparison and probes", "result": "28 unchanged; three expected P05 deltas; probes pass as expected"}
+  ],
+  "unrelated_core_dirty_baseline": {
+    "scope": "core_enhanced paths only; game_server, Unity, sibling resources and external consumers excluded without inspection",
+    "exclusions": "32 target content members, P05 target/completion docs, cumulative prior frozen evidence members, probe target directories and all generated target directories",
+    "modified": 113,
+    "deleted": 23,
+    "untracked": 724,
+    "total": 860,
+    "porcelain_sha256": "90c131a49b786b7ba780de28b9c9ab68bb84cd98c9f9c7493462a3f45c8f2f7f"
+  },
+  "known_limitations": [
+    "whole-library Clippy retains a pre-existing denied never_loop outside P05; release checking is warning-free",
+    "P06 owns checkpoint codec/version; P07 owns public projection architecture; P08 owns measurement and performance PASS",
+    "external reconnect/archive/receipt/store/client compatibility is not claimed"
+  ],
+  "explicit_exclusions": [
+    "COMPLETION_AUDIT.md",
+    "generated target directories",
+    "game_server, Unity, sibling resources and external consumers"
+  ]
+}

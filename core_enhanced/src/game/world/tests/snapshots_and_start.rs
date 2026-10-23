@@ -49,7 +49,7 @@ fn start_new_game_opens_pre_run_hq_visual_novel_without_run_or_map() {
         .execute(
             player_id,
             PlayerBehavior::StartNewGame {
-                game_mode: GameMode::Standard,
+                game_mode: GameMode::Expedition,
                 replace_active_run: false,
             },
         )
@@ -62,7 +62,7 @@ fn start_new_game_opens_pre_run_hq_visual_novel_without_run_or_map() {
         panic!("start new game should return pre-run VN state");
     };
 
-    assert_eq!(game_mode, GameMode::Standard);
+    assert_eq!(game_mode, GameMode::Expedition);
     assert_eq!(
         visual_novel.source,
         crate::game::behavior::VisualNovelSourceDto::HqBriefing
@@ -76,14 +76,14 @@ fn start_new_game_opens_pre_run_hq_visual_novel_without_run_or_map() {
     assert!(matches!(
         core.get_state(),
         GameState::PreRunBriefing {
-            game_mode: GameMode::Standard
+            game_mode: GameMode::Expedition
         }
     ));
 
     let snapshot = core.get_run_snapshot_json().unwrap();
     assert_eq!(snapshot["game_state"], "pre_run_briefing");
     assert_eq!(snapshot["game_state_context"]["type"], "pre_run_briefing");
-    assert_eq!(snapshot["game_state_context"]["game_mode"], "Standard");
+    assert_eq!(snapshot["game_state_context"]["game_mode"], "Expedition");
     assert!(snapshot["run_progression"].is_null());
     assert!(snapshot["map"].is_null());
     assert_eq!(snapshot["visual_novel"]["source"]["type"], "hq_briefing");
@@ -100,7 +100,8 @@ fn start_new_game_opens_pre_run_hq_visual_novel_without_run_or_map() {
         core.execute(
             player_id,
             PlayerBehavior::SelectStarterEmployees {
-                employee_definition_ids: vec![]
+                employee_definition_ids: vec![],
+                loan_copy_ids: vec![],
             }
         )
         .unwrap_err(),
@@ -121,7 +122,7 @@ fn run_start_session_blocking_is_owned_only_by_the_matching_trigger() {
             matches!(
                 trigger.source,
                 VisualNovelTriggerSource::RunStart {
-                    game_mode: GameMode::Standard
+                    game_mode: GameMode::Expedition
                 }
             )
         })
@@ -131,7 +132,7 @@ fn run_start_session_blocking_is_owned_only_by_the_matching_trigger() {
         .with_employee_definitions(test_employee_definition_database())
         .with_visual_novels(test_hq_briefing_visual_novel_database())
         .with_visual_novel_triggers(triggers)
-        .with_equipment(vec![starter_weapon_meta(), starter_equipment_meta()])
+        .with_equipment(equipment_with_starter_assets(Vec::new()))
         .with_skill_fragment_data(Arc::new(SkillFragmentDatabase::new(vec![
             SkillFragmentMetadata::starter_basic_attack(),
         ])))
@@ -142,7 +143,7 @@ fn run_start_session_blocking_is_owned_only_by_the_matching_trigger() {
         .execute(
             Uuid::from_u128(1),
             PlayerBehavior::StartNewGame {
-                game_mode: GameMode::Standard,
+                game_mode: GameMode::Expedition,
                 replace_active_run: false,
             },
         )
@@ -164,7 +165,7 @@ fn missing_run_start_visual_novel_trigger_fails_start_new_game() {
     let game_data = GameDataBuilder::empty()
         .with_employee_definitions(test_employee_definition_database())
         .with_visual_novels(test_hq_briefing_visual_novel_database())
-        .with_equipment(vec![starter_weapon_meta(), starter_equipment_meta()])
+        .with_equipment(equipment_with_starter_assets(Vec::new()))
         .with_skill_fragment_data(Arc::new(SkillFragmentDatabase::new(vec![
             SkillFragmentMetadata::starter_basic_attack(),
         ])))
@@ -179,7 +180,7 @@ fn missing_run_start_visual_novel_trigger_fails_start_new_game() {
         .execute(
             player_id,
             PlayerBehavior::StartNewGame {
-                game_mode: GameMode::Standard,
+                game_mode: GameMode::Expedition,
                 replace_active_run: false,
             },
         )
@@ -196,7 +197,7 @@ fn missing_run_start_visual_novel_trigger_fails_start_new_game() {
         .execute(
             player_id,
             PlayerBehavior::StartNewGame {
-                game_mode: GameMode::Standard,
+                game_mode: GameMode::Expedition,
                 replace_active_run: false,
             },
         )
@@ -246,7 +247,7 @@ fn pre_run_visual_novel_choice_works_without_run_state_and_opens_starter_selecti
         .execute(
             player_id,
             PlayerBehavior::StartNewGame {
-                game_mode: GameMode::Standard,
+                game_mode: GameMode::Expedition,
                 replace_active_run: false,
             },
         )
@@ -286,7 +287,7 @@ fn pre_run_visual_novel_choice_works_without_run_state_and_opens_starter_selecti
 fn run_snapshot_projects_active_visual_novel_session() {
     let mut core = GameCore::new(live_game_data_from_ron(), 123);
     let player_id = Uuid::from_u128(1);
-    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Standard);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
     core.state.visual_novel.active = Some(crate::game::visual_novel::VisualNovelSession {
         session_id: "vn_session_1".to_string(),
         source: crate::game::visual_novel::VisualNovelSource::Map,
@@ -327,7 +328,7 @@ fn run_snapshot_projects_active_visual_novel_session() {
 fn blocking_visual_novel_gates_background_actions_and_advances_to_end() {
     let mut core = GameCore::new(live_game_data_from_ron(), 123);
     let player_id = Uuid::from_u128(1);
-    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Standard);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
     core.state.visual_novel.active = Some(crate::game::visual_novel::VisualNovelSession {
         session_id: "vn_session_advance".to_string(),
         source: crate::game::visual_novel::VisualNovelSource::Map,
@@ -446,7 +447,7 @@ fn visual_novel_choice_command_advances_global_session() {
         .build_arc();
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
-    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Standard);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
     core.state.visual_novel.active = Some(crate::game::visual_novel::VisualNovelSession {
         session_id: "vn_session_choice".to_string(),
         source: crate::game::visual_novel::VisualNovelSource::Map,
@@ -561,7 +562,7 @@ fn game_core_projects_context_capabilities_and_revalidates_on_state_transition()
         .execute(
             player_id,
             PlayerBehavior::StartNewGame {
-                game_mode: GameMode::Standard,
+                game_mode: GameMode::Expedition,
                 replace_active_run: false,
             },
         )
@@ -573,11 +574,11 @@ fn game_core_projects_context_capabilities_and_revalidates_on_state_transition()
     else {
         panic!("start should expose pre-run VN");
     };
-    assert_eq!(game_mode, GameMode::Standard);
+    assert_eq!(game_mode, GameMode::Expedition);
     assert!(matches!(
         core.get_state(),
         GameState::PreRunBriefing {
-            game_mode: GameMode::Standard
+            game_mode: GameMode::Expedition
         }
     ));
     assert!(action_capability_enabled(
@@ -626,6 +627,7 @@ fn game_core_projects_context_capabilities_and_revalidates_on_state_transition()
             player_id,
             PlayerBehavior::SelectStarterEmployees {
                 employee_definition_ids: selected_ids,
+                loan_copy_ids: vec![],
             },
         )
         .unwrap();
@@ -645,43 +647,25 @@ fn game_core_projects_context_capabilities_and_revalidates_on_state_transition()
 }
 
 #[test]
-fn endless_start_requires_completed_standard_tutorial_without_mutating_run_state() {
+fn fresh_profile_can_start_expedition_without_tutorial_unlock() {
     let mut core = GameCore::new(empty_game_data(), 123);
     let player_id = Uuid::from_u128(1);
-
-    let error = core
-        .execute(
-            player_id,
-            PlayerBehavior::StartNewGame {
-                game_mode: GameMode::Endless,
-                replace_active_run: false,
-            },
-        )
-        .unwrap_err();
-
-    assert!(matches!(
-        error,
-        GameError::TutorialCompletionRequired {
-            game_mode: GameMode::Endless
-        }
-    ));
-    assert_eq!(error.code(), "standard_tutorial_completion_required");
-    assert!(core.state.run.is_none());
-    assert!(core.state.pending_game_mode.is_none());
-    assert!(matches!(core.get_state(), GameState::NotStarted));
+    start_new_game_with_default_starters(&mut core, player_id);
+    assert!(matches!(core.get_state(), GameState::ViewingMap));
+    assert_eq!(core.state.run.as_ref().unwrap().run_progression.game_mode, GameMode::Expedition);
+    assert!(serde_json::to_value(&core.state.player_profile).unwrap().get("standard_tutorial_completed").is_none());
 }
 
 #[test]
 fn start_new_game_uses_requested_game_mode_when_run_is_created() {
     let mut core = GameCore::new(empty_game_data(), 123);
-    core.state.player_profile.standard_tutorial_completed = true;
     let player_id = Uuid::from_u128(1);
 
     let start = core
         .execute(
             player_id,
             PlayerBehavior::StartNewGame {
-                game_mode: GameMode::Endless,
+                game_mode: GameMode::Expedition,
                 replace_active_run: false,
             },
         )
@@ -693,11 +677,11 @@ fn start_new_game_uses_requested_game_mode_when_run_is_created() {
     else {
         panic!("start should expose pre-run VN");
     };
-    assert_eq!(game_mode, GameMode::Endless);
+    assert_eq!(game_mode, GameMode::Expedition);
     assert!(matches!(
         core.get_state(),
         GameState::PreRunBriefing {
-            game_mode: GameMode::Endless
+            game_mode: GameMode::Expedition
         }
     ));
 
@@ -723,15 +707,16 @@ fn start_new_game_uses_requested_game_mode_when_run_is_created() {
         player_id,
         PlayerBehavior::SelectStarterEmployees {
             employee_definition_ids,
+            loan_copy_ids: vec![],
         },
     )
     .unwrap();
 
     let run = core.state.run.as_ref().expect("run should be created");
-    assert_eq!(run.run_progression.game_mode, GameMode::Endless);
+    assert_eq!(run.run_progression.game_mode, GameMode::Expedition);
 
     let snapshot = core.get_run_snapshot_json().unwrap();
-    assert_eq!(snapshot["run_progression"]["game_mode"], "Endless");
+    assert_eq!(snapshot["run_progression"]["game_mode"], "Expedition");
 }
 
 #[test]
@@ -742,7 +727,7 @@ fn employee_definition_profile_json_preserves_authored_and_run_identities() {
         .execute(
             player_id,
             PlayerBehavior::StartNewGame {
-                game_mode: GameMode::Standard,
+                game_mode: GameMode::Expedition,
                 replace_active_run: false,
             },
         )
@@ -786,6 +771,7 @@ fn employee_definition_profile_json_preserves_authored_and_run_identities() {
         .collect::<Vec<_>>();
     let command = serde_json::to_value(PlayerBehavior::SelectStarterEmployees {
         employee_definition_ids: employee_definition_ids.clone(),
+        loan_copy_ids: vec![],
     })
     .unwrap();
     assert_eq!(
@@ -798,6 +784,7 @@ fn employee_definition_profile_json_preserves_authored_and_run_identities() {
         player_id,
         PlayerBehavior::SelectStarterEmployees {
             employee_definition_ids,
+            loan_copy_ids: vec![],
         },
     )
     .unwrap();
@@ -807,8 +794,8 @@ fn employee_definition_profile_json_preserves_authored_and_run_identities() {
     assert_eq!(employee["employee_definition_id"], "candidate_0");
     assert_eq!(employee["profile"], candidate["profile"]);
     assert!(employee.get("trust").is_none());
-    assert_eq!(employee["psychology"]["trust_score"], 0);
-    assert_eq!(employee["psychology"]["trust_band"], "Neutral");
+    assert!(employee.get("psychology").is_none());
+    assert_eq!(employee["role"], candidate["role"]);
 }
 
 #[test]
@@ -817,7 +804,7 @@ fn start_new_game_omits_removed_abnormality_research_snapshot() {
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
 
-    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Endless);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
 
     let snapshot = core.get_run_snapshot_json().unwrap();
     assert!(snapshot.get("abnormality_research").is_none());
@@ -827,7 +814,7 @@ fn start_new_game_omits_removed_abnormality_research_snapshot() {
 fn run_checkpoint_preserves_encounter_progression_graph() {
     let mut core = GameCore::new(live_game_data_from_ron(), 123);
     let player_id = Uuid::from_u128(1);
-    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Endless);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
     let reward_source_id = core.game_data.pve_data.reward_sources[0]
         .reward_source_id
         .clone();
@@ -836,14 +823,13 @@ fn run_checkpoint_preserves_encounter_progression_graph() {
         progression
             .completed_reward_source_ids
             .insert(reward_source_id.clone());
-        progression
-            .mastered_elite_cycle
-            .remaining_source_ids
-            .push(reward_source_id.clone());
     }
-    let event_node_id = MapNodeId::new(Uuid::from_u128(0xC0FFEE));
+    let event_node_id = force_first_available_node(&mut core, MapNodeCategory::Event, "event_story",
+        MapNodePayload::Event {event_id:Some(crate::game::data::event_data::EventId::new("white_night_confession_01"))});
     {
         let run = core.state.run.as_mut().unwrap();
+        run.boss_omen.cycle_index = 1;
+        run.boss_omen.remaining_chain_ids = core.game_data.boss_omen_data.chains.iter().map(|chain|chain.id.clone()).collect();
         run.boss_omen.active = Some(crate::game::boss_omen::ActiveBossOmenState {
             chain_id: crate::game::data::boss_omen_data::BossOmenChainId::new("white_night"),
             boss_abnormality_id: "o-01-45_white_night".to_string(),
@@ -862,7 +848,7 @@ fn run_checkpoint_preserves_encounter_progression_graph() {
                 committed_check: Some(crate::game::resources::EventCommittedCheckState {
                     source_scene_id: crate::game::data::event_data::EventSceneId::new("choice"),
                     choice_id: crate::game::data::event_data::EventChoiceId::new("listen"),
-                    employee_uuid: Uuid::from_u128(1),
+                    employee_uuid: core.state.roster.iter().next().unwrap().uuid,
                     raw_roll: 14,
                     aptitude: crate::game::employee::EventAptitude::Analysis,
                     dc: 12,
@@ -893,13 +879,10 @@ fn run_checkpoint_preserves_encounter_progression_graph() {
         presentation_mode: crate::game::visual_novel::VisualNovelSessionPresentationMode::Cinematic,
     });
     core.save_run_checkpoint_for_test().unwrap();
+    core.validate_run_checkpoint_payload(core.state.run_checkpoint.payload.as_ref().unwrap()).unwrap();
     {
         let progression = &mut core.state.run.as_mut().unwrap().encounter_progression;
         progression.completed_reward_source_ids.clear();
-        progression
-            .mastered_elite_cycle
-            .remaining_source_ids
-            .clear();
     }
     core.state.run.as_mut().unwrap().boss_omen.active = None;
     core.state.run.as_mut().unwrap().event_sessions.clear();
@@ -924,10 +907,7 @@ fn run_checkpoint_preserves_encounter_progression_graph() {
     assert!(restored_run
         .completed_reward_source_ids
         .contains(&reward_source_id));
-    assert_eq!(
-        restored_run.mastered_elite_cycle.remaining_source_ids,
-        vec![reward_source_id]
-    );
+    assert!(restored_run.revival.eggs.is_empty());
     let restored_omen = restored_run
         .boss_omen
         .active
@@ -997,7 +977,7 @@ fn run_checkpoint_rewinds_only_checkpoint_scoped_visual_novel_trigger_history() 
         123,
     );
     let player_id = Uuid::from_u128(1);
-    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Endless);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
 
     let persistent_before = VisualNovelTriggerConsumedKey {
         trigger_id: VisualNovelTriggerId::new("persistent_before_checkpoint"),
@@ -1042,7 +1022,7 @@ fn run_checkpoint_rewinds_only_checkpoint_scoped_visual_novel_trigger_history() 
     let current_history = core.state.visual_novel_triggers.clone();
     for _ in 0..3 {
         let export = core.export_active_run_checkpoint().unwrap().unwrap();
-        let mut restarted = GameCore::new(core.game_data.clone(), 999);
+        let mut restarted = core_with_profile_for_continue(&core, 999);
         restarted
             .continue_from_active_run_checkpoint(
                 player_id,
@@ -1085,58 +1065,6 @@ fn run_checkpoint_rewinds_only_checkpoint_scoped_visual_novel_trigger_history() 
             .collect::<Vec<_>>(),
         vec![rewind_before],
         "checkpoint-scoped trigger history should rewind to the saved payload"
-    );
-}
-
-#[test]
-fn start_new_game_creates_starter_employee_roster_and_equipment() {
-    let mut core = GameCore::new(empty_game_data(), 123);
-    let player_id = Uuid::from_u128(1);
-
-    start_new_game_with_default_starters(&mut core, player_id);
-
-    let roster = core.roster().expect("employee roster exists");
-    assert_eq!(roster.len(), run_policy().setup.starter_employee_count);
-
-    let employee_ids = roster.combat_eligible_employee_ids();
-    assert_eq!(
-        employee_ids.len(),
-        run_policy().setup.starter_employee_count
-    );
-    for employee_id in employee_ids {
-        let employee = roster.get(&employee_id).unwrap();
-        let equipped: Vec<_> = employee.loadout.item_slot.iter().collect();
-        assert_eq!(equipped.len(), 2);
-        let equipped_ids = equipped
-            .iter()
-            .map(|equipped_ref| {
-                let owned = core
-                    .inventory()
-                    .unwrap()
-                    .equipments
-                    .get_item(&equipped_ref.instance_uuid)
-                    .expect("starter equipment should exist in inventory");
-                assert_eq!(owned.equipped_to, Some(employee_id));
-                owned.meta.id.as_str()
-            })
-            .collect::<Vec<_>>();
-        assert_eq!(
-            equipped_ids,
-            vec!["standard_training_sword", "standard_armor"]
-        );
-    }
-    assert!(
-        core.state
-            .inventory
-            .validate_checkpoint_state(&core.state.roster)
-            .is_ok(),
-        "starter assignment must leave both equipment ledgers consistent"
-    );
-
-    let snapshot = core.get_run_snapshot_json().unwrap();
-    assert!(
-        snapshot.get("roster_order").is_none(),
-        "display order is not part of the authoritative run snapshot"
     );
 }
 
@@ -1350,14 +1278,11 @@ fn run_snapshot_exposes_current_flow_after_start() {
 
     assert_eq!(snapshot["game_state"], "viewing_map");
     assert_eq!(snapshot["game_state_context"]["type"], "viewing_map");
-    assert_eq!(snapshot["run_progression"]["game_mode"], "Standard");
+    assert_eq!(snapshot["run_progression"]["game_mode"], "Expedition");
     assert_eq!(snapshot["run_progression"]["floor_index"], 0);
-    assert_eq!(
-        snapshot["run_progression"]["max_floors"],
-        run_policy().setup.standard_floor_count
-    );
+    assert!(snapshot["run_progression"]["max_floors"].is_null());
     assert!(snapshot["run_progression"]["current_floor_seed"].is_u64());
-    assert_eq!(snapshot["map"]["map_template_id"], "standard_intro_a");
+    assert_eq!(snapshot["map"]["map_template_id"], "expedition_development_v1");
     assert!(
         snapshot["action_capabilities"]
             .as_array()
@@ -1418,7 +1343,7 @@ fn run_snapshot_exposes_current_node_session_after_node_entry() {
 
     assert_eq!(snapshot["game_state"], "node_confirm");
     assert_eq!(snapshot["game_state_context"]["node_id"], json!(node_id));
-    assert_eq!(snapshot["map"]["map_template_id"], "standard_branching_a");
+    assert_eq!(snapshot["map"]["map_template_id"], "expedition_development_v1");
     assert_eq!(
         snapshot["map_navigation"]["current_node_id"],
         core.state

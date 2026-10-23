@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {spawn} from 'node:child_process';
+const here=path.dirname(new URL(import.meta.url).pathname);
+const [tag,filter]=process.argv.slice(2);
+const cwd='/tmp/r06-prefix-review.WcaQXG';
+const args=['test','--offline','--locked','-p','game_core','--release','--lib',filter,'--','--nocapture','--test-threads=1',...process.argv.slice(4)];
+const log=fs.createWriteStream(here+'/'+tag+'.log',{flags:'wx'});
+const child=spawn('cargo',args,{cwd,env:{...process.env,CARGO_BUILD_JOBS:'4',CARGO_TARGET_DIR:cwd+'/target'}});
+for(const s of [child.stdout,child.stderr])s.on('data',b=>{log.write(b);process.stdout.write(b)});
+child.on('close',code=>log.end(()=>{fs.writeFileSync(here+'/'+tag+'.json',JSON.stringify({cwd,command:['cargo',...args],exit_code:code},null,2)+'\n',{flag:'wx'});process.exitCode=code;}));

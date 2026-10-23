@@ -129,20 +129,20 @@ fn properties(
             if let PersonalShieldRecipientsDef::PlayerEmployeesAtRelease { radius_units } =
                 definition.recipients
             {
-                p.push(literal(
+                if definition.support.is_none() { p.push(literal(
                     RelicProperty::SupportAreaRadius,
                     TypedRelicValue::DataUnits(i64::from(radius_units)),
-                ));
+                )); }
             }
             (EffectOperation::PersonalShieldGrant, p)
         }
         SkillEffectDef::Sustained {
             definition: SustainedEffectDef::ChannelAura { aura, .. },
         } => {
-            let mut p = vec![literal(
+            let mut p = if aura.support.is_none() { vec![literal(
                 RelicProperty::SupportAreaRadius,
                 TypedRelicValue::DataUnits(i64::from(aura.radius_units)),
-            )];
+            )] } else { Vec::new() };
             if aura.basic_scope == SupportCoefficientScope::RegularOnly {
                 p.push(literal(
                     RelicProperty::RegularBasicDamagePercent,
@@ -167,6 +167,149 @@ fn properties(
         });
     }
     (operation, values)
+}
+
+fn publication_effect_growth(
+    effects: &mut Vec<EffectiveEffect>,
+    work: &mut Work,
+) -> Result<(), RelicPlanError> {
+    if effects.len() == effects.capacity() {
+        let capacity = effects
+            .capacity()
+            .checked_mul(2)
+            .ok_or_else(overflow)?
+            .max(4);
+        // Previous reservations still include the old buffer during growth.
+        work.reserve(
+            capacity
+                .checked_mul(size_of::<EffectiveEffect>())
+                .and_then(|n| n.checked_add(64)),
+            "relic_publication_effect_capacity",
+        )?;
+        effects.reserve_exact(capacity - effects.len());
+    }
+    Ok(())
+}
+
+fn admit_publication_original_effect(
+    effects: &mut Vec<EffectiveEffect>,
+    skill: &crate::game::ability::SkillDef,
+    step: &crate::game::ability::SkillStepDef,
+    effect: &crate::game::ability::authoring::AuthoredSkillEffect,
+    work: &mut Work,
+) -> Result<(), RelicPlanError> {
+    work.charge(effect.tags.len(), "relic_publication_original_tags")?;
+    let site_bytes = skill
+        .id
+        .as_str()
+        .len()
+        .checked_add(step.id.len())
+        .and_then(|n| n.checked_add(effect.id.len()))
+        .ok_or_else(overflow)?;
+    // One fresh site, its key clone, and the body's separate skill ID. The
+    // original site's action moves into anchor; its effect ID is temporary.
+    let mut text = site_bytes
+        .checked_mul(2)
+        .and_then(|n| n.checked_add(skill.id.as_str().len()))
+        .ok_or_else(overflow)?;
+    let mut strings = effect.tags.len().checked_add(7).ok_or_else(overflow)?;
+    for tag in &effect.tags {
+        text = text.checked_add(tag.len()).ok_or_else(overflow)?;
+    }
+    if let Some(expression) = source_expr(&effect.op) {
+        // The amount proof really constructs an owned compiled graph. Keep its
+        // existing closed-expression upper bound; do not price the unrelated
+        // whole authored effect as if it were cloned into EffectBody::Original.
+        admit_serialized_copy(expression, work)?;
+        text = text
+            .checked_add(site_bytes)
+            .and_then(|n| n.checked_add(skill.id.as_str().len()))
+            .and_then(|n| n.checked_add("typed:effective_plan".len() + "amount".len()))
+            .ok_or_else(overflow)?;
+        strings = strings.checked_add(6).ok_or_else(overflow)?;
+    }
+    // properties() starts with one inline value. A second/third push can
+    // replace that allocation with capacity four; include both at that instant.
+    // Default NumericProgram/contribution Vecs own no buffers initially.
+    let property_slots = match &effect.op {
+        SkillEffectDef::Damage { .. } | SkillEffectDef::DamageExpr { .. } => {
+            if matches!(step.delivery, DeliveryDef::TileArea { .. }) {
+                5
+            } else {
+                1
+            }
+        }
+        SkillEffectDef::PersonalShieldGrant { definition } => {
+            if matches!(
+                definition.recipients,
+                PersonalShieldRecipientsDef::PlayerEmployeesAtRelease { .. }
+            ) {
+                5
+            } else {
+                1
+            }
+        }
+        SkillEffectDef::Sustained {
+            definition: SustainedEffectDef::ChannelAura { aura, .. },
+        } => {
+            if aura.basic_scope == SupportCoefficientScope::RegularOnly {
+                5
+            } else {
+                1
+            }
+        }
+        _ => 0usize,
+    };
+    let allocations = strings
+        .checked_add(usize::from(!effect.tags.is_empty()))
+        .and_then(|n| {
+            n.checked_add(match property_slots {
+                0 => 0,
+                1 => 1,
+                _ => 2,
+            })
+        })
+        .and_then(|n| n.checked_mul(64))
+        .ok_or_else(overflow)?;
+    work.reserve(
+        effect
+            .tags
+            .len()
+            .checked_mul(size_of::<String>())
+            .and_then(|n| n.checked_add(text))
+            .and_then(|n| {
+                property_slots
+                    .checked_mul(size_of::<EffectiveProperty>())
+                    .and_then(|p| n.checked_add(p))
+            })
+            .and_then(|n| n.checked_add(allocations)),
+        "relic_publication_original_payload",
+    )?;
+    let clone_slots = text
+        .checked_add(strings)
+        .and_then(|n| n.checked_add(1))
+        .ok_or_else(overflow)?;
+    crate::authoring::control::admit(
+        crate::authoring::control::Resource::CloneSlots,
+        0,
+        clone_slots,
+        "relic_publication_original_copy",
+    )
+    .map_err(RelicPlanError::control)?;
+    work.charge(
+        clone_slots
+            .checked_add(property_slots)
+            .ok_or_else(overflow)?,
+        "relic_publication_original_copy",
+    )?;
+    crate::game::battle::runtime_control::charge_clone(
+        clone_slots,
+        "relic_publication_original_copy",
+    )
+    .map_err(RelicPlanError::control)?;
+    // Every record owns its inline fields, but its step delivery is an Arc
+    // clone of the one separately admitted delivery, not another deep copy.
+    publication_effect_growth(effects, work)
 }
 pub(super) fn primitive(g: &GrantPrimitiveDef) -> SkillEffectDef {
     match g {
@@ -431,6 +574,23 @@ pub(crate) fn compile_effective_plan(
 pub(crate) fn compile_components(
     input: UnpublishedPlanInput<'_>,
 ) -> Result<Option<EffectivePlanComponents>, RelicPlanError> {
+    compile_components_with_basis(input, 0, false)
+}
+
+pub(super) fn compile_publication_components(
+    input: UnpublishedPlanInput<'_>,
+    retained_basis: usize,
+) -> Result<(), RelicPlanError> {
+    // Publication may use a nonsemantic fingerprint placeholder. Its proof
+    // graph is discarded here and cannot enter a runtime plan or public DTO.
+    compile_components_with_basis(input, retained_basis, true).map(|_| ())
+}
+
+fn compile_components_with_basis(
+    input: UnpublishedPlanInput<'_>,
+    retained_basis: usize,
+    publication: bool,
+) -> Result<Option<EffectivePlanComponents>, RelicPlanError> {
     if input.employee_uuid.is_nil() {
         return Err(RelicPlanError::new(
             FaultCode::InvalidReference,
@@ -438,11 +598,23 @@ pub(crate) fn compile_components(
         ));
     }
     let data = input.data;
+    let limit = data.runtime_safety().expression().max_compile_work;
+    let mut work = if publication {
+        Work::for_publication(limit, retained_basis)
+    } else {
+        Work::new(limit)
+    };
     let slots = input.inventory.employee_slots(input.employee_uuid);
     input
         .inventory
         .validate_employee_slots(&slots, &data.relic_data)
         .map_err(RelicPlanError::control)?;
+    if publication {
+        work.reserve(
+            Some(4 * size_of::<(&super::super::OwnedRelic, &RelicDefinition)>() + 64),
+            "relic_publication_borrowed_copies",
+        )?;
+    }
     let mut borrowed = Vec::new();
     for id in slots.into_iter().flatten() {
         let copy = input.inventory.get(id).ok_or_else(|| {
@@ -457,13 +629,15 @@ pub(crate) fn compile_components(
         borrowed.push((copy, definition));
     }
     // U08-only loadouts keep the existing numeric/original consumer path.
-    if !borrowed
-        .iter()
-        .any(|(c, d)| !validation::rules_for(d, c.variant).is_empty())
-    {
+    let mut structural = false;
+    for (copy, definition) in &borrowed {
+        structural |= !validation::rules_for(definition, copy.variant).is_empty()
+            || super::support::declares_conversion_for(data, &copy.definition_id, copy.variant)?
+            || super::action::declares(data, &copy.definition_id, copy.variant)?;
+    }
+    if !structural {
         return Ok(None);
     }
-    let mut work = Work::new(data.runtime_safety().expression().max_compile_work);
     work.charge(9, "relic_structural_copy_order")?;
     borrowed.sort_by_key(|(c, _)| c.copy_uuid);
     for (c, d) in &borrowed {
@@ -514,7 +688,11 @@ pub(crate) fn compile_components(
             let amount_capabilities =
                 amount_caps(data, skill, &step.target, &step.delivery, &mut work)?;
             for (ei, e) in step.effects.iter().enumerate() {
-                admit_serialized_copy(e, &mut work)?;
+                if publication {
+                    admit_publication_original_effect(&mut effects, skill, step, e, &mut work)?;
+                } else {
+                    admit_serialized_copy(e, &mut work)?;
+                }
                 let site = validation::effect_site(&skill.id, &step.id, &e.id);
                 let (operation, mut properties) = properties(&e.op, &step.delivery);
                 if let Some(expr) = source_expr(&e.op) {
@@ -551,6 +729,7 @@ pub(crate) fn compile_components(
             }
         }
     }
+    let conversion_rules = super::support::apply_conversions(data, &borrowed, &mut effects, &mut work)?;
     let mut bindings = Vec::new();
     for (copy, d) in &borrowed {
         for rule in validation::rules_for(d, copy.variant) {
@@ -605,6 +784,7 @@ pub(crate) fn compile_components(
                                     &contribution,
                                     data,
                                     &mut work,
+                                    publication,
                                 )?;
                             }
                         }
@@ -634,6 +814,7 @@ pub(crate) fn compile_components(
                                         &contribution,
                                         data,
                                         &mut work,
+                                        publication,
                                     )?;
                                 }
                             }
@@ -660,7 +841,12 @@ pub(crate) fn compile_components(
     // Non-grant bindings use the fixed universe, including dormant generated sites.
     for (copy, d) in &borrowed {
         for rule in validation::rules_for(d, copy.variant) {
-            if matches!(rule.apply, RelicRuleActionDef::Grant(_)) {
+            if matches!(
+                rule.apply,
+                RelicRuleActionDef::Grant(_)
+                    | RelicRuleActionDef::Subscribe(_)
+                    | RelicRuleActionDef::Periodic { .. }
+            ) {
                 continue;
             }
             for (i, e) in effects.iter().enumerate() {
@@ -789,7 +975,7 @@ pub(crate) fn compile_components(
             }
         }
     }
-    let mut rules = Vec::new();
+    let mut rules = conversion_rules;
     for (copy, d) in &borrowed {
         for rule in validation::rules_for(d, copy.variant) {
             let mut targets = Vec::new();
@@ -831,7 +1017,12 @@ pub(crate) fn compile_components(
                     variant: copy.variant,
                     rule_id: rule.id.clone(),
                 },
-                state: if targets.is_empty() {
+                state: if matches!(
+                    rule.apply,
+                    RelicRuleActionDef::Subscribe(_) | RelicRuleActionDef::Periodic { .. }
+                ) {
+                    super::causal::rule_state(rule, &effects, &providers, &mut work)?
+                } else if targets.is_empty() {
                     RelicRuleState::Dormant {
                         reason: if matched {
                             RelicDormantReason::ConditionUnmet
@@ -867,6 +1058,59 @@ pub(crate) fn compile_components(
         }
     }
     let binding_count = bindings.len();
+    let mut causal_rules = Vec::new();
+    let mut wedge_rules = Vec::new();
+    for (copy, definition) in &borrowed {
+        for rule in validation::rules_for(definition, copy.variant) {
+            let contribution = PlanContribution {
+                copy_uuid: copy.copy_uuid,
+                definition_id: definition.id.clone(),
+                variant: copy.variant,
+                rule_id: rule.id.clone(),
+            };
+            match &rule.apply {
+                RelicRuleActionDef::Subscribe(_) | RelicRuleActionDef::Periodic { .. } => {
+                    causal_rules.push(
+                        super::causal::compile_rule(rule, contribution, data, &mut work)
+                            .map_err(|e| e.at(&definition.id, &rule.id, "causal"))?,
+                    );
+                }
+                RelicRuleActionDef::Wedge { increment_percent } => {
+                    let sites = bindings
+                        .iter()
+                        .filter(|b| {
+                            b.active
+                                && b.contribution.copy_uuid == copy.copy_uuid
+                                && b.rule.id == rule.id
+                        })
+                        .filter_map(|b| b.target)
+                        .filter_map(|index| match &effects[index].key {
+                            EffectiveEffectKey::Original { site }
+                                if effects[index].operation == EffectOperation::Damage =>
+                            {
+                                Some(site.clone())
+                            }
+                            _ => None,
+                        })
+                        .collect::<Vec<_>>();
+                    admit_serialized_copy(&sites, &mut work)?;
+                    work.reserve(
+                        Some(size_of::<super::causal::EffectiveWedgeRule>()),
+                        "wedge_rule_owner",
+                    )?;
+                    wedge_rules.push(super::causal::EffectiveWedgeRule {
+                        contribution,
+                        selector: rule.selector.clone(),
+                        condition: rule.when.clone(),
+                        increment_percent: *increment_percent,
+                        cap_percent: None,
+                        effect_sites: sites,
+                    });
+                }
+                _ => {}
+            }
+        }
+    }
     let mut plan = EffectivePlanComponents {
         employee_uuid: input.employee_uuid,
         providers,
@@ -874,6 +1118,9 @@ pub(crate) fn compile_components(
         effects,
         grants,
         execution: Vec::new(),
+        causal_rules,
+        wedge_rules,
+        action_modifiers: Vec::new(),
         rules,
         fingerprint: String::new(),
         usage: CompileUsage {
@@ -882,49 +1129,66 @@ pub(crate) fn compile_components(
             candidate_count,
             binding_count,
         },
+        retained_bytes: 0,
     };
-    #[derive(Serialize)]
-    struct Fingerprint<'a> {
-        generation: &'a crate::game::data::content_pack::ContentIdentity,
-        employee_uuid: uuid::Uuid,
-        providers: &'a [ProspectiveProvider],
-        copies: &'a [super::super::OwnedRelic],
-        effects: Vec<&'a EffectiveEffect>,
-        rules: &'a [RelicRuleStateDto],
-        grants: &'a [super::EffectiveGrant],
+    super::action::resolve(&mut plan,data,&mut work)?;
+    if publication {
+        // Keep the final runtime fingerprint's owned 64-byte extent in this
+        // proof's storage bound, without encoding/hashing a discarded document.
+        work.reserve(Some(64 + 64), "relic_publication_fingerprint")?;
+        work.charge(64, "relic_publication_fingerprint")?;
+        plan.fingerprint = "0".repeat(64);
+    } else {
+        #[derive(Serialize)]
+        struct Fingerprint<'a> {
+            generation: &'a crate::game::data::content_pack::ContentIdentity,
+            employee_uuid: uuid::Uuid,
+            providers: &'a [ProspectiveProvider],
+            copies: &'a [super::super::OwnedRelic],
+            effects: Vec<&'a EffectiveEffect>,
+            rules: &'a [RelicRuleStateDto],
+            grants: &'a [super::EffectiveGrant],
+            causal_rules: &'a [super::causal::EffectiveCausalRule],
+            wedge_rules: &'a [super::causal::EffectiveWedgeRule],
+            action_modifiers: &'a [super::action::EffectiveActionModifier],
+        }
+        work.reserve(
+            plan.effects
+                .len()
+                .checked_mul(size_of::<&EffectiveEffect>()),
+            "relic_structural_fingerprint_order",
+        )?;
+        work.charge(
+            plan.effects
+                .len()
+                .checked_mul(plan.effects.len())
+                .ok_or_else(overflow)?,
+            "relic_structural_fingerprint_order",
+        )?;
+        let mut selected: Vec<_> = plan.effects.iter().filter(|e| e.present).collect();
+        selected.sort_by(|a, b| (a.provider, &a.key).cmp(&(b.provider, &b.key)));
+        let fingerprint = Fingerprint {
+            generation: input.generation,
+            employee_uuid: plan.employee_uuid,
+            providers: &plan.providers,
+            copies: &plan.copies,
+            effects: selected,
+            rules: &plan.rules,
+            grants: &plan.grants,
+            causal_rules: &plan.causal_rules,
+            wedge_rules: &plan.wedge_rules,
+            action_modifiers: &plan.action_modifiers,
+        };
+        let bytes = serialized_size(&fingerprint, &mut work)?;
+        work.reserve(Some(bytes), "relic_structural_fingerprint")?;
+        work.charge(bytes, "relic_structural_fingerprint_copy")?;
+        let encoded = serde_json::to_vec(&fingerprint)
+            .map_err(|e| RelicPlanError::new(FaultCode::InvalidReference, e.to_string()))?;
+        work.charge(bytes.div_ceil(32), "relic_structural_fingerprint_hash")?;
+        plan.fingerprint = format!("{:x}", Sha256::digest(&encoded));
     }
-    work.reserve(
-        plan.effects
-            .len()
-            .checked_mul(size_of::<&EffectiveEffect>()),
-        "relic_structural_fingerprint_order",
-    )?;
-    work.charge(
-        plan.effects
-            .len()
-            .checked_mul(plan.effects.len())
-            .ok_or_else(overflow)?,
-        "relic_structural_fingerprint_order",
-    )?;
-    let mut selected: Vec<_> = plan.effects.iter().filter(|e| e.present).collect();
-    selected.sort_by(|a, b| (a.provider, &a.key).cmp(&(b.provider, &b.key)));
-    let fingerprint = Fingerprint {
-        generation: input.generation,
-        employee_uuid: plan.employee_uuid,
-        providers: &plan.providers,
-        copies: &plan.copies,
-        effects: selected,
-        rules: &plan.rules,
-        grants: &plan.grants,
-    };
-    let bytes = serialized_size(&fingerprint, &mut work)?;
-    work.reserve(Some(bytes), "relic_structural_fingerprint")?;
-    work.charge(bytes, "relic_structural_fingerprint_copy")?;
-    let encoded = serde_json::to_vec(&fingerprint)
-        .map_err(|e| RelicPlanError::new(FaultCode::InvalidReference, e.to_string()))?;
-    work.charge(bytes.div_ceil(32), "relic_structural_fingerprint_hash")?;
-    plan.fingerprint = format!("{:x}", Sha256::digest(&encoded));
     plan.execution = super::execution::lower(&plan, data, &mut work)?;
+    plan.retained_bytes = super::storage::measure(&plan, input.generation, &mut work)?;
     plan.usage.work = work.work;
     plan.usage.reserved_bytes = work.reserved;
     crate::authoring::control::poll("relic_structural_plan_complete")
@@ -945,6 +1209,7 @@ fn add_granted(
     c: &PlanContribution,
     data: &GameDataBase,
     work: &mut Work,
+    publication: bool,
 ) -> Result<(), RelicPlanError> {
     admit_serialized_copy(e, work)?;
     admit_serialized_copy(delivery, work)?;
@@ -981,6 +1246,9 @@ fn add_granted(
         Some(size_of::<EffectiveEffect>()),
         "relic_structural_candidate",
     )?;
+    if publication {
+        publication_effect_growth(nodes, work)?;
+    }
     indices.push(nodes.len());
     nodes.push(EffectiveEffect {
         key,
@@ -1012,6 +1280,7 @@ impl EffectiveEffect {
     ) -> Result<(), RelicPlanError> {
         admit_serialized_copy(r, work)?;
         let kind = |r: &StructuralRecipeDef| match r {
+            StructuralRecipeDef::SupportSelectionPattern { .. } => 4,
             StructuralRecipeDef::DamageFootprint { .. } => 0,
             StructuralRecipeDef::FixedRecipientSupport => 1,
             StructuralRecipeDef::RegularBasicSupport { .. } => 2,
@@ -1026,6 +1295,11 @@ impl EffectiveEffect {
             }
         } else {
             match r {
+                StructuralRecipeDef::SupportSelectionPattern { .. } => {
+                    if !matches!(self.operation, EffectOperation::PersonalShieldGrant | EffectOperation::ChannelAura) {
+                        return Err(unsupported("support selection pattern requires a support effect"));
+                    }
+                }
                 StructuralRecipeDef::DamageFootprint { .. } => {
                     if self.operation != EffectOperation::Damage
                         || matches!(&*self.delivery, DeliveryDef::Projectile { .. })
@@ -1195,6 +1469,10 @@ pub(crate) fn validate_publication(
     data: &GameDataBase,
 ) -> Result<(), crate::game::data::live_ron::LiveRonError> {
     use crate::game::data::live_ron::{LiveRonError, LiveRonPhase};
+    super::action::validate_references(data).map_err(|error| LiveRonError::validation("data/skills/base.ron", "skills", None::<String>, Some("action_policy"), error.to_string()))?;
+    super::support::validate_references(data).map_err(|error| LiveRonError::validation(
+        "data/skills/base.ron", "skills", None::<String>, Some("support.conversion".to_string()), error.to_string()
+    ).with_phase(LiveRonPhase::Compile).with_code(error.code.producer_code()))?;
     for (i, definition) in data.relic_data.relics.iter().enumerate() {
         for (corrupt, rules) in [
             (false, &definition.rules),

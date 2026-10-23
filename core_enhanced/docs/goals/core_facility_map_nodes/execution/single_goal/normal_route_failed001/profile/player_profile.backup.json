@@ -1,0 +1,21 @@
+{
+  "version": 5,
+  "profile": {
+    "encounter_compendium": {
+      "registered_ids": []
+    },
+    "highest_floor_reached": 0,
+    "longest_deathless_floor_streak": 0,
+    "all_live_final_bosses_defeated": false,
+    "lifecycle": {
+      "expedition_sequence": 0,
+      "active_expedition": null,
+      "vault": {
+        "equipment": {},
+        "fragments": {}
+      },
+      "first_return_story": "Never"
+    }
+  },
+  "checksum_sha256": "05335c7c1a5b3204b7777fdd83135ef1fa9f98687638f6b193aca3a4d7c1a933"
+}

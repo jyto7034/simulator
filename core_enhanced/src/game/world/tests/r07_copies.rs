@@ -902,7 +902,7 @@ fn r07_f08_run_owner_follows_copy_through_transfer_and_atomic_dismantle() {
 }
 
 #[test]
-fn r09_completed_node_collapse_recovers_assets_and_bypasses_death_prevent_once() {
+fn u14_entry_cost_collapse_recovers_assets_and_bypasses_death_prevent_once() {
     let (mut core, player, meta, owners) = setup();
     let copy = grant(&mut core, &meta);
     core.execute(
@@ -923,7 +923,7 @@ fn r09_completed_node_collapse_recovers_assets_and_bypasses_death_prevent_once()
     employee.apply_consumable_modifier(Uuid::from_u128(0x90999), &prevent);
     employee.condition.trauma = 100;
     employee.breakdown = crate::game::employee::BreakdownCounter::Active {
-        remaining_nodes: 1,
+        remaining_cost: 1,
         entered_node: None,
     };
     assert!(!employee.loadout.item_slot.is_empty());
@@ -944,12 +944,12 @@ fn r09_completed_node_collapse_recovers_assets_and_bypasses_death_prevent_once()
 }
 
 #[test]
-fn r09_savepoint_recovery_precedes_counter_expiry() {
+fn u14_entry_cost_death_precedes_savepoint_recovery() {
     let (mut core, player, _, owners) = setup();
     let employee = core.state.roster.get_mut(&owners[0]).unwrap();
     employee.condition.trauma = 100;
     employee.breakdown = crate::game::employee::BreakdownCounter::Active {
-        remaining_nodes: 1,
+        remaining_cost: 1,
         entered_node: None,
     };
     let node = force_first_available_node(
@@ -964,8 +964,7 @@ fn r09_savepoint_recovery_precedes_counter_expiry() {
         .unwrap();
     core.execute(player, PlayerBehavior::CompleteNode).unwrap();
     let employee = core.state.roster.get(&owners[0]).unwrap();
-    assert!(employee.is_alive());
-    assert!(employee.condition.trauma < 100);
+    assert!(employee.condition.is_dead());
     assert_eq!(
         employee.breakdown,
         crate::game::employee::BreakdownCounter::Inactive

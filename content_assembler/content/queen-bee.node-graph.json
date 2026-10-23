@@ -1,0 +1,418 @@
+{
+  "format": "node-graph",
+  "version": 1,
+  "id": "6bca03eb-6de5-4c9d-8e06-638b4328b44a",
+  "name": "여왕벌 · 일벌의 가호",
+  "nodes": [
+    {
+      "id": "370415d3-851b-4ab1-a660-ccc31a6c91cc",
+      "kind": "skill-resonance-amount",
+      "title": "최대 공명 · 미정",
+      "position": {
+        "x": 480,
+        "y": 850.9380952380952
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "1e66f4e7-9644-4621-a045-bd18d795d8ed"
+    },
+    {
+      "id": "37703e27-d75a-4c28-9813-1a415f2d92d6",
+      "kind": "skill-resonance-read",
+      "title": "이번 요청의 공명 조회",
+      "position": {
+        "x": 1360,
+        "y": 861.2714285714286
+      },
+      "values": {},
+      "note": "",
+      "frame": "1e66f4e7-9644-4621-a045-bd18d795d8ed"
+    },
+    {
+      "id": "3fd71017-4cda-450b-84a3-5f40406b75d1",
+      "kind": "skill-request",
+      "title": "파편 시전 입력",
+      "position": {
+        "x": 920,
+        "y": 1410.2
+      },
+      "values": {},
+      "note": "",
+      "frame": "1e66f4e7-9644-4621-a045-bd18d795d8ed"
+    },
+    {
+      "id": "551e2373-3ee3-4437-b995-977fdaf947ee",
+      "kind": "skill-reactive-heal-plan",
+      "title": "왕실의 벌집 · 횟수·10~20% 회복 미정",
+      "position": {
+        "x": 480,
+        "y": 80
+      },
+      "values": {
+        "charges": "",
+        "percent": ""
+      },
+      "note": "",
+      "frame": "b6390660-cab3-49bd-8803-e850648cf3c9"
+    },
+    {
+      "id": "6a85771a-ce93-4ece-ba11-c9a65f1331a5",
+      "kind": "skill-run-action",
+      "title": "접수한 행동 실행·종료",
+      "position": {
+        "x": 3120,
+        "y": 442
+      },
+      "values": {},
+      "note": "",
+      "frame": "1e66f4e7-9644-4621-a045-bd18d795d8ed"
+    },
+    {
+      "id": "70929bbf-e46e-4f37-a31a-206693251d8d",
+      "kind": "skill-action-entry",
+      "title": "접수할 행동 정의",
+      "position": {
+        "x": 1800,
+        "y": 1037.2
+      },
+      "values": {
+        "interruption": "standard",
+        "start": "immediate"
+      },
+      "note": "",
+      "frame": "1e66f4e7-9644-4621-a045-bd18d795d8ed"
+    },
+    {
+      "id": "8c379a3c-9b07-429b-bd97-16def1bf85e6",
+      "kind": "skill-range",
+      "title": "아군 선택 범위 · 미정",
+      "position": {
+        "x": 40,
+        "y": 1396.2
+      },
+      "values": {
+        "includeAnchor": false,
+        "pattern": ""
+      },
+      "note": "",
+      "frame": "1e66f4e7-9644-4621-a045-bd18d795d8ed"
+    },
+    {
+      "id": "98dd6414-f455-4439-9877-3ea7cfd6aa9e",
+      "kind": "skill-target-selection",
+      "title": "입력 대상 선택",
+      "position": {
+        "x": 480,
+        "y": 1414.2
+      },
+      "values": {
+        "mode": "player-ally"
+      },
+      "note": "",
+      "frame": "1e66f4e7-9644-4621-a045-bd18d795d8ed"
+    },
+    {
+      "id": "9d2975fd-d010-4d60-99e4-a269dab8d007",
+      "kind": "skill-resonance-settings",
+      "title": "사본 공명 저장 설정",
+      "position": {
+        "x": 920,
+        "y": 868.9380952380952
+      },
+      "values": {},
+      "note": "",
+      "frame": "1e66f4e7-9644-4621-a045-bd18d795d8ed"
+    },
+    {
+      "id": "b1e7b976-87de-4149-9670-9d2853f098fc",
+      "kind": "skill-seconds",
+      "title": "벌집 지속 시간 · 미정",
+      "position": {
+        "x": 40,
+        "y": 98
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "b6390660-cab3-49bd-8803-e850648cf3c9"
+    },
+    {
+      "id": "bfe2bc9f-6e50-46b9-b7a8-5ecd27b06439",
+      "kind": "skill-resonance-requirement",
+      "title": "수동 · 공명 만충",
+      "position": {
+        "x": 1800,
+        "y": 1339.2
+      },
+      "values": {
+        "mode": "full"
+      },
+      "note": "",
+      "frame": "1e66f4e7-9644-4621-a045-bd18d795d8ed"
+    },
+    {
+      "id": "c0fc4f71-5d9e-48c4-baa1-91bd345afa1d",
+      "kind": "skill-resonance-admit",
+      "title": "원자적 접수·비용 확정",
+      "position": {
+        "x": 2680,
+        "y": 620.5
+      },
+      "values": {},
+      "note": "",
+      "frame": "1e66f4e7-9644-4621-a045-bd18d795d8ed"
+    },
+    {
+      "id": "c4a45c8b-4393-4989-bf0d-607f6daa0c73",
+      "kind": "skill-resonance-qualify",
+      "title": "대상·공명·자원 자격 검사",
+      "position": {
+        "x": 2240,
+        "y": 704
+      },
+      "values": {},
+      "note": "",
+      "frame": "1e66f4e7-9644-4621-a045-bd18d795d8ed"
+    },
+    {
+      "id": "ed24e7ec-3586-4f5b-89f6-f5508ff89c7b",
+      "kind": "skill-resonance-cost",
+      "title": "수동 · 공명 전량 소비",
+      "position": {
+        "x": 1800,
+        "y": 523.2
+      },
+      "values": {
+        "minimumCost": "",
+        "mode": "all",
+        "percent": ""
+      },
+      "note": "",
+      "frame": "1e66f4e7-9644-4621-a045-bd18d795d8ed"
+    }
+  ],
+  "edges": [
+    {
+      "id": "4d84214a-7cd7-4e7d-af1e-a01deb517d1a",
+      "source": {
+        "node": "bfe2bc9f-6e50-46b9-b7a8-5ecd27b06439",
+        "port": "requirement"
+      },
+      "target": {
+        "node": "c4a45c8b-4393-4989-bf0d-607f6daa0c73",
+        "port": "requirement"
+      }
+    },
+    {
+      "id": "528dd638-1155-470d-9906-5e9b130538cd",
+      "source": {
+        "node": "c0fc4f71-5d9e-48c4-baa1-91bd345afa1d",
+        "port": "out"
+      },
+      "target": {
+        "node": "6a85771a-ce93-4ece-ba11-c9a65f1331a5",
+        "port": "in"
+      }
+    },
+    {
+      "id": "643fcbcc-4fb8-4129-b51b-7d652dd8850b",
+      "source": {
+        "node": "9d2975fd-d010-4d60-99e4-a269dab8d007",
+        "port": "settings"
+      },
+      "target": {
+        "node": "37703e27-d75a-4c28-9813-1a415f2d92d6",
+        "port": "settings"
+      }
+    },
+    {
+      "id": "6ca497c5-b5b3-4829-b664-3ca8719c8b90",
+      "source": {
+        "node": "3fd71017-4cda-450b-84a3-5f40406b75d1",
+        "port": "request"
+      },
+      "target": {
+        "node": "c4a45c8b-4393-4989-bf0d-607f6daa0c73",
+        "port": "request"
+      }
+    },
+    {
+      "id": "70a1483b-4829-45dd-a7e4-65166ae9a0e1",
+      "source": {
+        "node": "37703e27-d75a-4c28-9813-1a415f2d92d6",
+        "port": "snapshot"
+      },
+      "target": {
+        "node": "c4a45c8b-4393-4989-bf0d-607f6daa0c73",
+        "port": "snapshot"
+      }
+    },
+    {
+      "id": "787dc6cb-e0cc-4b53-9bf1-c4b4f3286af5",
+      "source": {
+        "node": "98dd6414-f455-4439-9877-3ea7cfd6aa9e",
+        "port": "selection"
+      },
+      "target": {
+        "node": "3fd71017-4cda-450b-84a3-5f40406b75d1",
+        "port": "selection"
+      }
+    },
+    {
+      "id": "7ad28be1-04ff-45c5-95e7-0970da9b0036",
+      "source": {
+        "node": "c0fc4f71-5d9e-48c4-baa1-91bd345afa1d",
+        "port": "use"
+      },
+      "target": {
+        "node": "6a85771a-ce93-4ece-ba11-c9a65f1331a5",
+        "port": "use"
+      }
+    },
+    {
+      "id": "7f76ec99-7a62-48a5-868f-db5e6cfb411f",
+      "source": {
+        "node": "370415d3-851b-4ab1-a660-ccc31a6c91cc",
+        "port": "value"
+      },
+      "target": {
+        "node": "9d2975fd-d010-4d60-99e4-a269dab8d007",
+        "port": "capacity"
+      }
+    },
+    {
+      "id": "7fdc15f1-f369-42f4-8219-42aad6729ca0",
+      "source": {
+        "node": "551e2373-3ee3-4437-b995-977fdaf947ee",
+        "port": "plan"
+      },
+      "target": {
+        "node": "70929bbf-e46e-4f37-a31a-206693251d8d",
+        "port": "plan"
+      }
+    },
+    {
+      "id": "82ddf0e8-7451-4d88-a407-5a8f3e3ddb91",
+      "source": {
+        "node": "37703e27-d75a-4c28-9813-1a415f2d92d6",
+        "port": "snapshot"
+      },
+      "target": {
+        "node": "ed24e7ec-3586-4f5b-89f6-f5508ff89c7b",
+        "port": "snapshot"
+      }
+    },
+    {
+      "id": "8b9fd288-a896-472b-9901-3c4a1db99e8e",
+      "source": {
+        "node": "70929bbf-e46e-4f37-a31a-206693251d8d",
+        "port": "program"
+      },
+      "target": {
+        "node": "c4a45c8b-4393-4989-bf0d-607f6daa0c73",
+        "port": "program"
+      }
+    },
+    {
+      "id": "a742bd4d-bd35-406d-9a96-bc071b378a54",
+      "source": {
+        "node": "b1e7b976-87de-4149-9670-9d2853f098fc",
+        "port": "value"
+      },
+      "target": {
+        "node": "551e2373-3ee3-4437-b995-977fdaf947ee",
+        "port": "duration"
+      }
+    },
+    {
+      "id": "c189d8e5-6c1b-4fa2-915a-1b681241fd81",
+      "source": {
+        "node": "c4a45c8b-4393-4989-bf0d-607f6daa0c73",
+        "port": "out"
+      },
+      "target": {
+        "node": "c0fc4f71-5d9e-48c4-baa1-91bd345afa1d",
+        "port": "in"
+      }
+    },
+    {
+      "id": "cc549330-6c08-4aad-80b5-2261cd4246ca",
+      "source": {
+        "node": "8c379a3c-9b07-429b-bd97-16def1bf85e6",
+        "port": "range"
+      },
+      "target": {
+        "node": "98dd6414-f455-4439-9877-3ea7cfd6aa9e",
+        "port": "range"
+      }
+    },
+    {
+      "id": "cc6958ff-4f5a-4181-a870-5e2e39d47a70",
+      "source": {
+        "node": "70929bbf-e46e-4f37-a31a-206693251d8d",
+        "port": "program"
+      },
+      "target": {
+        "node": "6a85771a-ce93-4ece-ba11-c9a65f1331a5",
+        "port": "program"
+      }
+    },
+    {
+      "id": "d11b0ecd-7579-4a35-8f1a-786ae28df496",
+      "source": {
+        "node": "3fd71017-4cda-450b-84a3-5f40406b75d1",
+        "port": "out"
+      },
+      "target": {
+        "node": "c4a45c8b-4393-4989-bf0d-607f6daa0c73",
+        "port": "in"
+      }
+    },
+    {
+      "id": "d7bef448-51c4-4240-937f-637f597a4115",
+      "source": {
+        "node": "ed24e7ec-3586-4f5b-89f6-f5508ff89c7b",
+        "port": "cost"
+      },
+      "target": {
+        "node": "c4a45c8b-4393-4989-bf0d-607f6daa0c73",
+        "port": "cost"
+      }
+    },
+    {
+      "id": "de90ce29-d77f-4088-b8b2-cb061ee8cf7b",
+      "source": {
+        "node": "3fd71017-4cda-450b-84a3-5f40406b75d1",
+        "port": "request"
+      },
+      "target": {
+        "node": "37703e27-d75a-4c28-9813-1a415f2d92d6",
+        "port": "request"
+      }
+    },
+    {
+      "id": "f26a76f5-b0da-49fc-891a-dd845ec1c2f7",
+      "source": {
+        "node": "c4a45c8b-4393-4989-bf0d-607f6daa0c73",
+        "port": "permit"
+      },
+      "target": {
+        "node": "c0fc4f71-5d9e-48c4-baa1-91bd345afa1d",
+        "port": "permit"
+      }
+    }
+  ],
+  "frames": [
+    {
+      "id": "1e66f4e7-9644-4621-a045-bd18d795d8ed",
+      "title": "시작 → 대상·공명 자격 → 비용 확정 → 행동 → 종료"
+    },
+    {
+      "id": "b6390660-cab3-49bd-8803-e850648cf3c9",
+      "title": "선택한 아군 · 공격당 반응 1회 · 횟수 소비 후 회복"
+    }
+  ]
+}

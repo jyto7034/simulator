@@ -1,5 +1,6 @@
 pub mod active_run_store;
 pub mod player_profile_store;
+pub(crate) mod mod_requirements;
 
 use std::{io, path::Path};
 

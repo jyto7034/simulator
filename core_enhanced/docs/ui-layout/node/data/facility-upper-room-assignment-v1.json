@@ -1,0 +1,6061 @@
+{
+  "status": "review_proposal_not_canonical",
+  "date": "2026-10-09",
+  "scope": "1–3F room assignment overlay; source facility connections preserved",
+  "source_map": "facility-map-review-v2-data.json",
+  "source_templates": "facility-room-route-variations-v5-data.json",
+  "allocation_basis": "facility-room-activity-allocation-v1.json",
+  "summary": {
+    "room_count": 33,
+    "old_activity_slots": 258,
+    "activity_slots": 300,
+    "reserved_slots": 12,
+    "size_counts": {
+      "6": 11,
+      "9": 14,
+      "12": 5,
+      "15": 2,
+      "18": 1
+    },
+    "template_counts": {
+      "12A": 1,
+      "12B": 2,
+      "12C": 2,
+      "15A": 1,
+      "15B": 1,
+      "18B": 1,
+      "6A": 5,
+      "6B": 2,
+      "6C": 4,
+      "9A": 4,
+      "9B": 6,
+      "9C": 4
+    },
+    "normal_mean_before_omen_wolf_active": 210.52754187594752,
+    "position_compositions_checked": 1351,
+    "by_floor": {
+      "1": {
+        "room_count": 9,
+        "old_slots": 57,
+        "new_slots": 63,
+        "sizes": {
+          "6": 6,
+          "9": 3
+        }
+      },
+      "2": {
+        "room_count": 12,
+        "old_slots": 99,
+        "new_slots": 111,
+        "sizes": {
+          "6": 2,
+          "9": 7,
+          "12": 3
+        }
+      },
+      "3": {
+        "room_count": 12,
+        "old_slots": 102,
+        "new_slots": 126,
+        "sizes": {
+          "6": 3,
+          "9": 4,
+          "12": 2,
+          "15": 2,
+          "18": 1
+        }
+      }
+    }
+  },
+  "rooms": [
+    {
+      "id": "A1-01",
+      "name": "접수분소",
+      "wing": "A",
+      "depth": 1,
+      "role": "짧은 진입과 방향 선택",
+      "previous_size": 6,
+      "size": 6,
+      "template_id": "6A",
+      "template_title": "짧은 두 경로와 연결문",
+      "reservations": [],
+      "omen_node": null,
+      "omen_access_path": null,
+      "elite_candidates": [],
+      "safe_access_nodes": [
+        "1",
+        "2",
+        "3"
+      ],
+      "quick_path": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "G"
+      ],
+      "quick_activity_count": 3,
+      "full_activity_count": 6,
+      "additional_full_activity_count": 3,
+      "reachable_activities_without_fixed_encounter": 6,
+      "full_walk": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "2",
+        "5",
+        "4",
+        "5",
+        "6",
+        "5",
+        "2",
+        "1",
+        "S",
+        "1",
+        "2",
+        "3",
+        "G"
+      ],
+      "composition": {
+        "size": 6,
+        "depth": 1,
+        "profile": "A1-01",
+        "profile_label": "접수분소",
+        "reserved_non_support": 0,
+        "reserved_support": 0,
+        "reserved_total": 0,
+        "min_normal_before_omen": 2,
+        "omen_compatible": false,
+        "normal_range": [
+          2,
+          6
+        ],
+        "normal_mean_if_omen": null,
+        "expected": {
+          "support": 0.75,
+          "event": 0.45,
+          "reward_extra": 0.3,
+          "elite": 0.0,
+          "normal": 4.5
+        },
+        "expected_exact": {
+          "support": "3/4",
+          "event": "9/20",
+          "reward_extra": "3/10",
+          "elite": "0",
+          "normal": "9/2"
+        },
+        "reward_total_mean": 0.3,
+        "presence": {
+          "event": 0.45,
+          "reward_extra": 0.3,
+          "elite": 0.0
+        },
+        "count_probabilities": {
+          "support": {
+            "0": 0.4,
+            "1": 0.45,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.55,
+            "1": 0.45
+          },
+          "reward_extra": {
+            "0": 0.7,
+            "1": 0.3
+          },
+          "elite": {
+            "0": 1.0
+          },
+          "normal": {
+            "2": 0.02025,
+            "3": 0.13275,
+            "4": 0.32775,
+            "5": 0.36525,
+            "6": 0.154
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "0": "2/5",
+            "1": "9/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "11/20",
+            "1": "9/20"
+          },
+          "reward_extra": {
+            "0": "7/10",
+            "1": "3/10"
+          },
+          "elite": {
+            "0": "1"
+          },
+          "normal": {
+            "2": "81/4000",
+            "3": "531/4000",
+            "4": "1311/4000",
+            "5": "1461/4000",
+            "6": "77/500"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 12
+      },
+      "diagram_svg": "../svg/upper-room-assignment/A1-01.svg",
+      "validated_position_compositions": 12,
+      "entry_access_activities": 6,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "A1-03",
+        "A1-01"
+      ]
+    },
+    {
+      "id": "A1-02",
+      "name": "서류분류실",
+      "wing": "A",
+      "depth": 1,
+      "role": "첫 곁방 탐사",
+      "previous_size": 6,
+      "size": 9,
+      "template_id": "9A",
+      "template_title": "두 복도와 작은 곁방",
+      "reservations": [],
+      "omen_node": null,
+      "omen_access_path": null,
+      "elite_candidates": [],
+      "safe_access_nodes": [
+        "1",
+        "4",
+        "7"
+      ],
+      "quick_path": [
+        "S",
+        "1",
+        "4",
+        "7",
+        "G"
+      ],
+      "quick_activity_count": 3,
+      "full_activity_count": 9,
+      "additional_full_activity_count": 6,
+      "reachable_activities_without_fixed_encounter": 9,
+      "full_walk": [
+        "S",
+        "1",
+        "4",
+        "5",
+        "6",
+        "3",
+        "2",
+        "3",
+        "6",
+        "9",
+        "6",
+        "5",
+        "8",
+        "5",
+        "4",
+        "7",
+        "4",
+        "1",
+        "S",
+        "1",
+        "4",
+        "7",
+        "G"
+      ],
+      "composition": {
+        "size": 9,
+        "depth": 1,
+        "profile": "A1-02",
+        "profile_label": "서류분류실",
+        "reserved_non_support": 0,
+        "reserved_support": 0,
+        "reserved_total": 0,
+        "min_normal_before_omen": 2,
+        "omen_compatible": false,
+        "normal_range": [
+          3,
+          9
+        ],
+        "normal_mean_if_omen": null,
+        "expected": {
+          "support": 0.75,
+          "event": 0.8,
+          "reward_extra": 0.6,
+          "elite": 0.0,
+          "normal": 6.85
+        },
+        "expected_exact": {
+          "support": "3/4",
+          "event": "4/5",
+          "reward_extra": "3/5",
+          "elite": "0",
+          "normal": "137/20"
+        },
+        "reward_total_mean": 0.6,
+        "presence": {
+          "event": 0.7,
+          "reward_extra": 0.55,
+          "elite": 0.0
+        },
+        "count_probabilities": {
+          "support": {
+            "0": 0.4,
+            "1": 0.45,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.3,
+            "1": 0.6,
+            "2": 0.1
+          },
+          "reward_extra": {
+            "0": 0.45,
+            "1": 0.5,
+            "2": 0.05
+          },
+          "elite": {
+            "0": 1.0
+          },
+          "normal": {
+            "3": 0.00075,
+            "4": 0.01425,
+            "5": 0.092,
+            "6": 0.257,
+            "7": 0.35325,
+            "8": 0.22875,
+            "9": 0.054
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "0": "2/5",
+            "1": "9/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "3/10",
+            "1": "3/5",
+            "2": "1/10"
+          },
+          "reward_extra": {
+            "0": "9/20",
+            "1": "1/2",
+            "2": "1/20"
+          },
+          "elite": {
+            "0": "1"
+          },
+          "normal": {
+            "3": "3/4000",
+            "4": "57/4000",
+            "5": "23/250",
+            "6": "257/1000",
+            "7": "1413/4000",
+            "8": "183/800",
+            "9": "27/500"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 27
+      },
+      "diagram_svg": "../svg/upper-room-assignment/A1-02.svg",
+      "validated_position_compositions": 27,
+      "entry_access_activities": 6,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "A1-03",
+        "A1-02"
+      ]
+    },
+    {
+      "id": "A1-03",
+      "name": "반출대기실",
+      "wing": "A",
+      "depth": 1,
+      "role": "짧은 순환과 하강 연결",
+      "previous_size": 6,
+      "size": 6,
+      "template_id": "6C",
+      "template_title": "작은 순환 회랑",
+      "reservations": [],
+      "omen_node": null,
+      "omen_access_path": null,
+      "elite_candidates": [],
+      "safe_access_nodes": [
+        "1",
+        "2",
+        "3"
+      ],
+      "quick_path": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "G"
+      ],
+      "quick_activity_count": 3,
+      "full_activity_count": 6,
+      "additional_full_activity_count": 3,
+      "reachable_activities_without_fixed_encounter": 6,
+      "full_walk": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "6",
+        "5",
+        "4",
+        "5",
+        "6",
+        "3",
+        "2",
+        "1",
+        "S",
+        "1",
+        "2",
+        "3",
+        "G"
+      ],
+      "composition": {
+        "size": 6,
+        "depth": 1,
+        "profile": "A1-03",
+        "profile_label": "반출대기실",
+        "reserved_non_support": 0,
+        "reserved_support": 0,
+        "reserved_total": 0,
+        "min_normal_before_omen": 2,
+        "omen_compatible": false,
+        "normal_range": [
+          2,
+          6
+        ],
+        "normal_mean_if_omen": null,
+        "expected": {
+          "support": 0.75,
+          "event": 0.45,
+          "reward_extra": 0.3,
+          "elite": 0.0,
+          "normal": 4.5
+        },
+        "expected_exact": {
+          "support": "3/4",
+          "event": "9/20",
+          "reward_extra": "3/10",
+          "elite": "0",
+          "normal": "9/2"
+        },
+        "reward_total_mean": 0.3,
+        "presence": {
+          "event": 0.45,
+          "reward_extra": 0.3,
+          "elite": 0.0
+        },
+        "count_probabilities": {
+          "support": {
+            "0": 0.4,
+            "1": 0.45,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.55,
+            "1": 0.45
+          },
+          "reward_extra": {
+            "0": 0.7,
+            "1": 0.3
+          },
+          "elite": {
+            "0": 1.0
+          },
+          "normal": {
+            "2": 0.02025,
+            "3": 0.13275,
+            "4": 0.32775,
+            "5": 0.36525,
+            "6": 0.154
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "0": "2/5",
+            "1": "9/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "11/20",
+            "1": "9/20"
+          },
+          "reward_extra": {
+            "0": "7/10",
+            "1": "3/10"
+          },
+          "elite": {
+            "0": "1"
+          },
+          "normal": {
+            "2": "81/4000",
+            "3": "531/4000",
+            "4": "1311/4000",
+            "5": "1461/4000",
+            "6": "77/500"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 12
+      },
+      "diagram_svg": "../svg/upper-room-assignment/A1-03.svg",
+      "validated_position_compositions": 12,
+      "entry_access_activities": 3,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "A1-03"
+      ]
+    },
+    {
+      "id": "B1-01",
+      "name": "중앙접수홀",
+      "wing": "B",
+      "depth": 1,
+      "role": "첫 분기 전 유물 기회",
+      "previous_size": 9,
+      "size": 9,
+      "template_id": "9C",
+      "template_title": "중앙 복귀와 단일 출구",
+      "reservations": [
+        {
+          "node": "2",
+          "label": "초반 유물 보상",
+          "short_label": "유물 보상",
+          "category": "reward",
+          "condition": null,
+          "access_path": [
+            "S",
+            "2"
+          ],
+          "access_activities": 1,
+          "position": {
+            "x": 900,
+            "y": 445
+          },
+          "from_facility_entry_activities": 1
+        }
+      ],
+      "omen_node": null,
+      "omen_access_path": null,
+      "elite_candidates": [],
+      "safe_access_nodes": [
+        "2",
+        "5",
+        "8"
+      ],
+      "quick_path": [
+        "S",
+        "2",
+        "5",
+        "8",
+        "G"
+      ],
+      "quick_activity_count": 3,
+      "full_activity_count": 9,
+      "additional_full_activity_count": 6,
+      "reachable_activities_without_fixed_encounter": 9,
+      "full_walk": [
+        "S",
+        "2",
+        "1",
+        "4",
+        "7",
+        "8",
+        "5",
+        "6",
+        "3",
+        "6",
+        "9",
+        "6",
+        "5",
+        "8",
+        "7",
+        "4",
+        "1",
+        "2",
+        "S",
+        "2",
+        "5",
+        "8",
+        "G"
+      ],
+      "composition": {
+        "size": 9,
+        "depth": 1,
+        "profile": "B1-01",
+        "profile_label": "중앙접수홀",
+        "reserved_non_support": 1,
+        "reserved_support": 0,
+        "reserved_total": 1,
+        "min_normal_before_omen": 2,
+        "omen_compatible": false,
+        "normal_range": [
+          2,
+          8
+        ],
+        "normal_mean_if_omen": null,
+        "expected": {
+          "support": 0.75,
+          "event": 0.8,
+          "reward_extra": 0.6,
+          "elite": 0.0,
+          "normal": 5.85
+        },
+        "expected_exact": {
+          "support": "3/4",
+          "event": "4/5",
+          "reward_extra": "3/5",
+          "elite": "0",
+          "normal": "117/20"
+        },
+        "reward_total_mean": 1.6,
+        "presence": {
+          "event": 0.7,
+          "reward_extra": 0.55,
+          "elite": 0.0
+        },
+        "count_probabilities": {
+          "support": {
+            "0": 0.4,
+            "1": 0.45,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.3,
+            "1": 0.6,
+            "2": 0.1
+          },
+          "reward_extra": {
+            "0": 0.45,
+            "1": 0.5,
+            "2": 0.05
+          },
+          "elite": {
+            "0": 1.0
+          },
+          "normal": {
+            "2": 0.00075,
+            "3": 0.01425,
+            "4": 0.092,
+            "5": 0.257,
+            "6": 0.35325,
+            "7": 0.22875,
+            "8": 0.054
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "0": "2/5",
+            "1": "9/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "3/10",
+            "1": "3/5",
+            "2": "1/10"
+          },
+          "reward_extra": {
+            "0": "9/20",
+            "1": "1/2",
+            "2": "1/20"
+          },
+          "elite": {
+            "0": "1"
+          },
+          "normal": {
+            "2": "3/4000",
+            "3": "57/4000",
+            "4": "23/250",
+            "5": "257/1000",
+            "6": "1413/4000",
+            "7": "183/800",
+            "8": "27/500"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 27
+      },
+      "diagram_svg": "../svg/upper-room-assignment/B1-01.svg",
+      "validated_position_compositions": 27,
+      "entry_access_activities": 0,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01"
+      ]
+    },
+    {
+      "id": "B1-02",
+      "name": "본사연락실",
+      "wing": "B",
+      "depth": 1,
+      "role": "초반 유료 채용 거점",
+      "previous_size": 6,
+      "size": 6,
+      "template_id": "6B",
+      "template_title": "주경로와 안쪽 곁방",
+      "reservations": [
+        {
+          "node": "2",
+          "label": "본사 연락",
+          "short_label": "본사 연락",
+          "category": "support",
+          "condition": null,
+          "access_path": [
+            "S",
+            "1",
+            "2"
+          ],
+          "access_activities": 2,
+          "position": {
+            "x": 650,
+            "y": 610
+          },
+          "from_facility_entry_activities": 5
+        }
+      ],
+      "omen_node": null,
+      "omen_access_path": null,
+      "elite_candidates": [],
+      "safe_access_nodes": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "quick_path": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "4",
+        "G"
+      ],
+      "quick_activity_count": 4,
+      "full_activity_count": 6,
+      "additional_full_activity_count": 2,
+      "reachable_activities_without_fixed_encounter": 6,
+      "full_walk": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "4",
+        "3",
+        "2",
+        "5",
+        "6",
+        "5",
+        "2",
+        "1",
+        "S",
+        "1",
+        "2",
+        "3",
+        "4",
+        "G"
+      ],
+      "composition": {
+        "size": 6,
+        "depth": 1,
+        "profile": "B1-02",
+        "profile_label": "본사연락실",
+        "reserved_non_support": 0,
+        "reserved_support": 1,
+        "reserved_total": 1,
+        "min_normal_before_omen": 2,
+        "omen_compatible": false,
+        "normal_range": [
+          2,
+          5
+        ],
+        "normal_mean_if_omen": null,
+        "expected": {
+          "support": 1.15,
+          "event": 0.45,
+          "reward_extra": 0.3,
+          "elite": 0.0,
+          "normal": 4.1
+        },
+        "expected_exact": {
+          "support": "23/20",
+          "event": "9/20",
+          "reward_extra": "3/10",
+          "elite": "0",
+          "normal": "41/10"
+        },
+        "reward_total_mean": 0.3,
+        "presence": {
+          "event": 0.45,
+          "reward_extra": 0.3,
+          "elite": 0.0
+        },
+        "count_probabilities": {
+          "support": {
+            "1": 0.85,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.55,
+            "1": 0.45
+          },
+          "reward_extra": {
+            "0": 0.7,
+            "1": 0.3
+          },
+          "elite": {
+            "0": 1.0
+          },
+          "normal": {
+            "2": 0.02025,
+            "3": 0.18675,
+            "4": 0.46575,
+            "5": 0.32725
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "1": "17/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "11/20",
+            "1": "9/20"
+          },
+          "reward_extra": {
+            "0": "7/10",
+            "1": "3/10"
+          },
+          "elite": {
+            "0": "1"
+          },
+          "normal": {
+            "2": "81/4000",
+            "3": "747/4000",
+            "4": "1863/4000",
+            "5": "1309/4000"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 8
+      },
+      "diagram_svg": "../svg/upper-room-assignment/B1-02.svg",
+      "validated_position_compositions": 8,
+      "entry_access_activities": 3,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "B1-02"
+      ]
+    },
+    {
+      "id": "B1-03",
+      "name": "배급대기실",
+      "wing": "B",
+      "depth": 1,
+      "role": "동측 이동 전 짧은 탐사",
+      "previous_size": 6,
+      "size": 6,
+      "template_id": "6C",
+      "template_title": "작은 순환 회랑",
+      "reservations": [],
+      "omen_node": null,
+      "omen_access_path": null,
+      "elite_candidates": [],
+      "safe_access_nodes": [
+        "1",
+        "2",
+        "3"
+      ],
+      "quick_path": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "G"
+      ],
+      "quick_activity_count": 3,
+      "full_activity_count": 6,
+      "additional_full_activity_count": 3,
+      "reachable_activities_without_fixed_encounter": 6,
+      "full_walk": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "6",
+        "5",
+        "4",
+        "5",
+        "6",
+        "3",
+        "2",
+        "1",
+        "S",
+        "1",
+        "2",
+        "3",
+        "G"
+      ],
+      "composition": {
+        "size": 6,
+        "depth": 1,
+        "profile": "B1-03",
+        "profile_label": "배급대기실",
+        "reserved_non_support": 0,
+        "reserved_support": 0,
+        "reserved_total": 0,
+        "min_normal_before_omen": 2,
+        "omen_compatible": false,
+        "normal_range": [
+          2,
+          6
+        ],
+        "normal_mean_if_omen": null,
+        "expected": {
+          "support": 0.75,
+          "event": 0.45,
+          "reward_extra": 0.3,
+          "elite": 0.0,
+          "normal": 4.5
+        },
+        "expected_exact": {
+          "support": "3/4",
+          "event": "9/20",
+          "reward_extra": "3/10",
+          "elite": "0",
+          "normal": "9/2"
+        },
+        "reward_total_mean": 0.3,
+        "presence": {
+          "event": 0.45,
+          "reward_extra": 0.3,
+          "elite": 0.0
+        },
+        "count_probabilities": {
+          "support": {
+            "0": 0.4,
+            "1": 0.45,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.55,
+            "1": 0.45
+          },
+          "reward_extra": {
+            "0": 0.7,
+            "1": 0.3
+          },
+          "elite": {
+            "0": 1.0
+          },
+          "normal": {
+            "2": 0.02025,
+            "3": 0.13275,
+            "4": 0.32775,
+            "5": 0.36525,
+            "6": 0.154
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "0": "2/5",
+            "1": "9/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "11/20",
+            "1": "9/20"
+          },
+          "reward_extra": {
+            "0": "7/10",
+            "1": "3/10"
+          },
+          "elite": {
+            "0": "1"
+          },
+          "normal": {
+            "2": "81/4000",
+            "3": "531/4000",
+            "4": "1311/4000",
+            "5": "1461/4000",
+            "6": "77/500"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 12
+      },
+      "diagram_svg": "../svg/upper-room-assignment/B1-03.svg",
+      "validated_position_compositions": 12,
+      "entry_access_activities": 3,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "B1-03"
+      ]
+    },
+    {
+      "id": "C1-01",
+      "name": "출입검사실",
+      "wing": "C",
+      "depth": 1,
+      "role": "짧은 진입과 방향 선택",
+      "previous_size": 6,
+      "size": 6,
+      "template_id": "6A",
+      "template_title": "짧은 두 경로와 연결문",
+      "reservations": [],
+      "omen_node": null,
+      "omen_access_path": null,
+      "elite_candidates": [],
+      "safe_access_nodes": [
+        "1",
+        "2",
+        "3"
+      ],
+      "quick_path": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "G"
+      ],
+      "quick_activity_count": 3,
+      "full_activity_count": 6,
+      "additional_full_activity_count": 3,
+      "reachable_activities_without_fixed_encounter": 6,
+      "full_walk": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "2",
+        "5",
+        "4",
+        "5",
+        "6",
+        "5",
+        "2",
+        "1",
+        "S",
+        "1",
+        "2",
+        "3",
+        "G"
+      ],
+      "composition": {
+        "size": 6,
+        "depth": 1,
+        "profile": "C1-01",
+        "profile_label": "출입검사실",
+        "reserved_non_support": 0,
+        "reserved_support": 0,
+        "reserved_total": 0,
+        "min_normal_before_omen": 2,
+        "omen_compatible": false,
+        "normal_range": [
+          2,
+          6
+        ],
+        "normal_mean_if_omen": null,
+        "expected": {
+          "support": 0.75,
+          "event": 0.45,
+          "reward_extra": 0.3,
+          "elite": 0.0,
+          "normal": 4.5
+        },
+        "expected_exact": {
+          "support": "3/4",
+          "event": "9/20",
+          "reward_extra": "3/10",
+          "elite": "0",
+          "normal": "9/2"
+        },
+        "reward_total_mean": 0.3,
+        "presence": {
+          "event": 0.45,
+          "reward_extra": 0.3,
+          "elite": 0.0
+        },
+        "count_probabilities": {
+          "support": {
+            "0": 0.4,
+            "1": 0.45,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.55,
+            "1": 0.45
+          },
+          "reward_extra": {
+            "0": 0.7,
+            "1": 0.3
+          },
+          "elite": {
+            "0": 1.0
+          },
+          "normal": {
+            "2": 0.02025,
+            "3": 0.13275,
+            "4": 0.32775,
+            "5": 0.36525,
+            "6": 0.154
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "0": "2/5",
+            "1": "9/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "11/20",
+            "1": "9/20"
+          },
+          "reward_extra": {
+            "0": "7/10",
+            "1": "3/10"
+          },
+          "elite": {
+            "0": "1"
+          },
+          "normal": {
+            "2": "81/4000",
+            "3": "531/4000",
+            "4": "1311/4000",
+            "5": "1461/4000",
+            "6": "77/500"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 12
+      },
+      "diagram_svg": "../svg/upper-room-assignment/C1-01.svg",
+      "validated_position_compositions": 12,
+      "entry_access_activities": 6,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "B1-03",
+        "C1-01"
+      ]
+    },
+    {
+      "id": "C1-02",
+      "name": "의료대기실",
+      "wing": "C",
+      "depth": 1,
+      "role": "작은 곁방 탐사",
+      "previous_size": 6,
+      "size": 6,
+      "template_id": "6B",
+      "template_title": "주경로와 안쪽 곁방",
+      "reservations": [],
+      "omen_node": null,
+      "omen_access_path": null,
+      "elite_candidates": [],
+      "safe_access_nodes": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "quick_path": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "4",
+        "G"
+      ],
+      "quick_activity_count": 4,
+      "full_activity_count": 6,
+      "additional_full_activity_count": 2,
+      "reachable_activities_without_fixed_encounter": 6,
+      "full_walk": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "4",
+        "3",
+        "2",
+        "5",
+        "6",
+        "5",
+        "2",
+        "1",
+        "S",
+        "1",
+        "2",
+        "3",
+        "4",
+        "G"
+      ],
+      "composition": {
+        "size": 6,
+        "depth": 1,
+        "profile": "C1-02",
+        "profile_label": "의료대기실",
+        "reserved_non_support": 0,
+        "reserved_support": 0,
+        "reserved_total": 0,
+        "min_normal_before_omen": 2,
+        "omen_compatible": false,
+        "normal_range": [
+          2,
+          6
+        ],
+        "normal_mean_if_omen": null,
+        "expected": {
+          "support": 0.75,
+          "event": 0.45,
+          "reward_extra": 0.3,
+          "elite": 0.0,
+          "normal": 4.5
+        },
+        "expected_exact": {
+          "support": "3/4",
+          "event": "9/20",
+          "reward_extra": "3/10",
+          "elite": "0",
+          "normal": "9/2"
+        },
+        "reward_total_mean": 0.3,
+        "presence": {
+          "event": 0.45,
+          "reward_extra": 0.3,
+          "elite": 0.0
+        },
+        "count_probabilities": {
+          "support": {
+            "0": 0.4,
+            "1": 0.45,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.55,
+            "1": 0.45
+          },
+          "reward_extra": {
+            "0": 0.7,
+            "1": 0.3
+          },
+          "elite": {
+            "0": 1.0
+          },
+          "normal": {
+            "2": 0.02025,
+            "3": 0.13275,
+            "4": 0.32775,
+            "5": 0.36525,
+            "6": 0.154
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "0": "2/5",
+            "1": "9/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "11/20",
+            "1": "9/20"
+          },
+          "reward_extra": {
+            "0": "7/10",
+            "1": "3/10"
+          },
+          "elite": {
+            "0": "1"
+          },
+          "normal": {
+            "2": "81/4000",
+            "3": "531/4000",
+            "4": "1311/4000",
+            "5": "1461/4000",
+            "6": "77/500"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 12
+      },
+      "diagram_svg": "../svg/upper-room-assignment/C1-02.svg",
+      "validated_position_compositions": 12,
+      "entry_access_activities": 9,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "B1-03",
+        "C1-01",
+        "C1-02"
+      ]
+    },
+    {
+      "id": "C1-03",
+      "name": "장비검수실",
+      "wing": "C",
+      "depth": 1,
+      "role": "작은 순환 구역 탐사",
+      "previous_size": 6,
+      "size": 9,
+      "template_id": "9B",
+      "template_title": "외곽 고리와 안쪽 방",
+      "reservations": [],
+      "omen_node": null,
+      "omen_access_path": null,
+      "elite_candidates": [],
+      "safe_access_nodes": [
+        "1",
+        "4",
+        "7"
+      ],
+      "quick_path": [
+        "S",
+        "1",
+        "4",
+        "7",
+        "G"
+      ],
+      "quick_activity_count": 3,
+      "full_activity_count": 9,
+      "additional_full_activity_count": 6,
+      "reachable_activities_without_fixed_encounter": 9,
+      "full_walk": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "6",
+        "9",
+        "8",
+        "7",
+        "4",
+        "5",
+        "4",
+        "7",
+        "8",
+        "9",
+        "6",
+        "3",
+        "2",
+        "1",
+        "S",
+        "1",
+        "4",
+        "7",
+        "G"
+      ],
+      "composition": {
+        "size": 9,
+        "depth": 1,
+        "profile": "C1-03",
+        "profile_label": "장비검수실",
+        "reserved_non_support": 0,
+        "reserved_support": 0,
+        "reserved_total": 0,
+        "min_normal_before_omen": 2,
+        "omen_compatible": false,
+        "normal_range": [
+          3,
+          9
+        ],
+        "normal_mean_if_omen": null,
+        "expected": {
+          "support": 0.75,
+          "event": 0.8,
+          "reward_extra": 0.6,
+          "elite": 0.0,
+          "normal": 6.85
+        },
+        "expected_exact": {
+          "support": "3/4",
+          "event": "4/5",
+          "reward_extra": "3/5",
+          "elite": "0",
+          "normal": "137/20"
+        },
+        "reward_total_mean": 0.6,
+        "presence": {
+          "event": 0.7,
+          "reward_extra": 0.55,
+          "elite": 0.0
+        },
+        "count_probabilities": {
+          "support": {
+            "0": 0.4,
+            "1": 0.45,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.3,
+            "1": 0.6,
+            "2": 0.1
+          },
+          "reward_extra": {
+            "0": 0.45,
+            "1": 0.5,
+            "2": 0.05
+          },
+          "elite": {
+            "0": 1.0
+          },
+          "normal": {
+            "3": 0.00075,
+            "4": 0.01425,
+            "5": 0.092,
+            "6": 0.257,
+            "7": 0.35325,
+            "8": 0.22875,
+            "9": 0.054
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "0": "2/5",
+            "1": "9/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "3/10",
+            "1": "3/5",
+            "2": "1/10"
+          },
+          "reward_extra": {
+            "0": "9/20",
+            "1": "1/2",
+            "2": "1/20"
+          },
+          "elite": {
+            "0": "1"
+          },
+          "normal": {
+            "3": "3/4000",
+            "4": "57/4000",
+            "5": "23/250",
+            "6": "257/1000",
+            "7": "1413/4000",
+            "8": "183/800",
+            "9": "27/500"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 27
+      },
+      "diagram_svg": "../svg/upper-room-assignment/C1-03.svg",
+      "validated_position_compositions": 27,
+      "entry_access_activities": 9,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "B1-03",
+        "C1-01",
+        "C1-03"
+      ]
+    },
+    {
+      "id": "A2-01",
+      "name": "기록연결실",
+      "wing": "A",
+      "depth": 2,
+      "role": "기록동 연결과 선택 탐사",
+      "previous_size": 9,
+      "size": 9,
+      "template_id": "9A",
+      "template_title": "두 복도와 작은 곁방",
+      "reservations": [],
+      "omen_node": null,
+      "omen_access_path": null,
+      "elite_candidates": [
+        "2",
+        "3",
+        "5",
+        "6",
+        "8",
+        "9"
+      ],
+      "safe_access_nodes": [
+        "1",
+        "4",
+        "7"
+      ],
+      "quick_path": [
+        "S",
+        "1",
+        "4",
+        "7",
+        "G"
+      ],
+      "quick_activity_count": 3,
+      "full_activity_count": 9,
+      "additional_full_activity_count": 6,
+      "reachable_activities_without_fixed_encounter": 9,
+      "full_walk": [
+        "S",
+        "1",
+        "4",
+        "5",
+        "6",
+        "3",
+        "2",
+        "3",
+        "6",
+        "9",
+        "6",
+        "5",
+        "8",
+        "5",
+        "4",
+        "7",
+        "4",
+        "1",
+        "S",
+        "1",
+        "4",
+        "7",
+        "G"
+      ],
+      "composition": {
+        "size": 9,
+        "depth": 2,
+        "profile": "A2-01",
+        "profile_label": "기록연결실",
+        "reserved_non_support": 0,
+        "reserved_support": 0,
+        "reserved_total": 0,
+        "min_normal_before_omen": 2,
+        "omen_compatible": false,
+        "normal_range": [
+          2,
+          9
+        ],
+        "normal_mean_if_omen": null,
+        "expected": {
+          "support": 0.75,
+          "event": 0.8,
+          "reward_extra": 0.6,
+          "elite": 0.25,
+          "normal": 6.6
+        },
+        "expected_exact": {
+          "support": "3/4",
+          "event": "4/5",
+          "reward_extra": "3/5",
+          "elite": "1/4",
+          "normal": "33/5"
+        },
+        "reward_total_mean": 0.6,
+        "presence": {
+          "event": 0.7,
+          "reward_extra": 0.55,
+          "elite": 0.25
+        },
+        "count_probabilities": {
+          "support": {
+            "0": 0.4,
+            "1": 0.45,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.3,
+            "1": 0.6,
+            "2": 0.1
+          },
+          "reward_extra": {
+            "0": 0.45,
+            "1": 0.5,
+            "2": 0.05
+          },
+          "elite": {
+            "0": 0.75,
+            "1": 0.25
+          },
+          "normal": {
+            "2": 0.0001875,
+            "3": 0.004125,
+            "4": 0.0336875,
+            "5": 0.13325,
+            "6": 0.2810625,
+            "7": 0.322125,
+            "8": 0.1850625,
+            "9": 0.0405
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "0": "2/5",
+            "1": "9/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "3/10",
+            "1": "3/5",
+            "2": "1/10"
+          },
+          "reward_extra": {
+            "0": "9/20",
+            "1": "1/2",
+            "2": "1/20"
+          },
+          "elite": {
+            "0": "3/4",
+            "1": "1/4"
+          },
+          "normal": {
+            "2": "3/16000",
+            "3": "33/8000",
+            "4": "539/16000",
+            "5": "533/4000",
+            "6": "4497/16000",
+            "7": "2577/8000",
+            "8": "2961/16000",
+            "9": "81/2000"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 54
+      },
+      "diagram_svg": "../svg/upper-room-assignment/A2-01.svg",
+      "validated_position_compositions": 54,
+      "entry_access_activities": 9,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "A1-03",
+        "A1-01",
+        "A2-01"
+      ]
+    },
+    {
+      "id": "A2-02",
+      "name": "용병대기실",
+      "wing": "A",
+      "depth": 2,
+      "role": "두건 선행을 선택하는 곁방",
+      "previous_size": 9,
+      "size": 9,
+      "template_id": "9B",
+      "template_title": "외곽 고리와 안쪽 방",
+      "reservations": [
+        {
+          "node": "5",
+          "label": "붉은 두건의 용병",
+          "short_label": "두건 선행",
+          "category": "encounter",
+          "condition": null,
+          "access_path": [
+            "S",
+            "1",
+            "4",
+            "5"
+          ],
+          "access_activities": 3,
+          "position": {
+            "x": 900,
+            "y": 715
+          }
+        }
+      ],
+      "omen_node": null,
+      "omen_access_path": null,
+      "elite_candidates": [
+        "2",
+        "3",
+        "6",
+        "8",
+        "9"
+      ],
+      "safe_access_nodes": [
+        "1",
+        "4",
+        "5",
+        "7"
+      ],
+      "quick_path": [
+        "S",
+        "1",
+        "4",
+        "7",
+        "G"
+      ],
+      "quick_activity_count": 3,
+      "full_activity_count": 9,
+      "additional_full_activity_count": 6,
+      "reachable_activities_without_fixed_encounter": 8,
+      "full_walk": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "6",
+        "9",
+        "8",
+        "7",
+        "4",
+        "5",
+        "4",
+        "7",
+        "8",
+        "9",
+        "6",
+        "3",
+        "2",
+        "1",
+        "S",
+        "1",
+        "4",
+        "7",
+        "G"
+      ],
+      "composition": {
+        "size": 9,
+        "depth": 2,
+        "profile": "A2-02",
+        "profile_label": "용병대기실",
+        "reserved_non_support": 1,
+        "reserved_support": 0,
+        "reserved_total": 1,
+        "min_normal_before_omen": 2,
+        "omen_compatible": false,
+        "normal_range": [
+          2,
+          8
+        ],
+        "normal_mean_if_omen": null,
+        "expected": {
+          "support": 0.75,
+          "event": 0.7997747183979975,
+          "reward_extra": 0.5997371714643304,
+          "elite": 0.24985919899874842,
+          "normal": 5.600628911138924
+        },
+        "expected_exact": {
+          "support": "3/4",
+          "event": "31951/39950",
+          "reward_extra": "47919/79900",
+          "elite": "15971/63920",
+          "normal": "1789961/319600"
+        },
+        "reward_total_mean": 0.5997371714643304,
+        "presence": {
+          "event": 0.6999436795994993,
+          "reward_extra": 0.5499155193992491,
+          "elite": 0.24985919899874842
+        },
+        "count_probabilities": {
+          "support": {
+            "0": 0.4,
+            "1": 0.45,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.3000563204005006,
+            "1": 0.6001126408010012,
+            "2": 0.09983103879849813
+          },
+          "reward_extra": {
+            "0": 0.45008448060075096,
+            "1": 0.5000938673341677,
+            "2": 0.04982165206508135
+          },
+          "elite": {
+            "0": 0.7501408010012516,
+            "1": 0.24985919899874842
+          },
+          "normal": {
+            "2": 0.004129458698372966,
+            "3": 0.03371566020025031,
+            "4": 0.13332040050062577,
+            "5": 0.28112797246558197,
+            "6": 0.32214400813516897,
+            "7": 0.1850625,
+            "8": 0.0405
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "0": "2/5",
+            "1": "9/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "47949/159800",
+            "1": "47949/79900",
+            "2": "15953/159800"
+          },
+          "reward_extra": {
+            "0": "143847/319600",
+            "1": "15983/31960",
+            "2": "15923/319600"
+          },
+          "elite": {
+            "0": "47949/63920",
+            "1": "15971/63920"
+          },
+          "normal": {
+            "2": "52791/12784000",
+            "3": "431021/12784000",
+            "4": "106523/799000",
+            "5": "179697/639200",
+            "6": "4118289/12784000",
+            "7": "2961/16000",
+            "8": "81/2000"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 53
+      },
+      "diagram_svg": "../svg/upper-room-assignment/A2-02.svg",
+      "validated_position_compositions": 53,
+      "entry_access_activities": 10,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "A1-03",
+        "A2-04",
+        "A2-02"
+      ]
+    },
+    {
+      "id": "A2-03",
+      "name": "문서정비실",
+      "wing": "A",
+      "depth": 2,
+      "role": "짧은 정비 거점",
+      "previous_size": 6,
+      "size": 6,
+      "template_id": "6A",
+      "template_title": "짧은 두 경로와 연결문",
+      "reservations": [
+        {
+          "node": "2",
+          "label": "정비",
+          "short_label": "정비",
+          "category": "support",
+          "condition": null,
+          "access_path": [
+            "S",
+            "1",
+            "2"
+          ],
+          "access_activities": 2,
+          "position": {
+            "x": 550,
+            "y": 715
+          },
+          "from_facility_entry_activities": 12
+        }
+      ],
+      "omen_node": null,
+      "omen_access_path": null,
+      "elite_candidates": [
+        "4",
+        "5",
+        "6"
+      ],
+      "safe_access_nodes": [
+        "1",
+        "2",
+        "3"
+      ],
+      "quick_path": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "G"
+      ],
+      "quick_activity_count": 3,
+      "full_activity_count": 6,
+      "additional_full_activity_count": 3,
+      "reachable_activities_without_fixed_encounter": 6,
+      "full_walk": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "2",
+        "5",
+        "4",
+        "5",
+        "6",
+        "5",
+        "2",
+        "1",
+        "S",
+        "1",
+        "2",
+        "3",
+        "G"
+      ],
+      "composition": {
+        "size": 6,
+        "depth": 2,
+        "profile": "A2-03",
+        "profile_label": "문서정비실",
+        "reserved_non_support": 0,
+        "reserved_support": 1,
+        "reserved_total": 1,
+        "min_normal_before_omen": 2,
+        "omen_compatible": false,
+        "normal_range": [
+          2,
+          5
+        ],
+        "normal_mean_if_omen": null,
+        "expected": {
+          "support": 1.15,
+          "event": 0.44829484562388366,
+          "reward_extra": 0.29782980352130645,
+          "elite": 0.14736476141872926,
+          "normal": 3.9565105894360806
+        },
+        "expected_exact": {
+          "support": "23/20",
+          "event": "702747/1567600",
+          "reward_extra": "233439/783800",
+          "elite": "231009/1567600",
+          "normal": "3101113/783800"
+        },
+        "reward_total_mean": 0.29782980352130645,
+        "presence": {
+          "event": 0.44829484562388366,
+          "reward_extra": 0.29782980352130645,
+          "elite": 0.14736476141872926
+        },
+        "count_probabilities": {
+          "support": {
+            "1": 0.85,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.5517051543761163,
+            "1": 0.44829484562388366
+          },
+          "reward_extra": {
+            "0": 0.7021701964786935,
+            "1": 0.29782980352130645
+          },
+          "elite": {
+            "0": 0.8526352385812708,
+            "1": 0.14736476141872926
+          },
+          "normal": {
+            "2": 0.0458039774177086,
+            "3": 0.23004395572850217,
+            "4": 0.4459895668537892,
+            "5": 0.2781625
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "1": "17/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "864853/1567600",
+            "1": "702747/1567600"
+          },
+          "reward_extra": {
+            "0": "550361/783800",
+            "1": "233439/783800"
+          },
+          "elite": {
+            "0": "1336591/1567600",
+            "1": "231009/1567600"
+          },
+          "normal": {
+            "2": "14360463/313520000",
+            "3": "72123381/313520000",
+            "4": "139826649/313520000",
+            "5": "22253/80000"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 15
+      },
+      "diagram_svg": "../svg/upper-room-assignment/A2-03.svg",
+      "validated_position_compositions": 15,
+      "entry_access_activities": 10,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "A1-03",
+        "A2-04",
+        "A2-03"
+      ]
+    },
+    {
+      "id": "A2-04",
+      "name": "운송기록실",
+      "wing": "A",
+      "depth": 2,
+      "role": "기록 회랑의 추가 탐사",
+      "previous_size": 9,
+      "size": 12,
+      "template_id": "12C",
+      "template_title": "외곽 회랑과 내부 횡단로",
+      "reservations": [],
+      "omen_node": null,
+      "omen_access_path": null,
+      "elite_candidates": [
+        "2",
+        "3",
+        "4",
+        "6",
+        "7",
+        "8",
+        "11",
+        "12"
+      ],
+      "safe_access_nodes": [
+        "1",
+        "5",
+        "9",
+        "10"
+      ],
+      "quick_path": [
+        "S",
+        "1",
+        "5",
+        "9",
+        "10",
+        "G"
+      ],
+      "quick_activity_count": 4,
+      "full_activity_count": 12,
+      "additional_full_activity_count": 8,
+      "reachable_activities_without_fixed_encounter": 12,
+      "full_walk": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "4",
+        "8",
+        "7",
+        "6",
+        "5",
+        "9",
+        "10",
+        "11",
+        "12",
+        "11",
+        "10",
+        "9",
+        "5",
+        "6",
+        "7",
+        "8",
+        "4",
+        "3",
+        "2",
+        "1",
+        "S",
+        "1",
+        "5",
+        "9",
+        "10",
+        "G"
+      ],
+      "composition": {
+        "size": 12,
+        "depth": 2,
+        "profile": "A2-04",
+        "profile_label": "운송기록실",
+        "reserved_non_support": 0,
+        "reserved_support": 0,
+        "reserved_total": 0,
+        "min_normal_before_omen": 2,
+        "omen_compatible": false,
+        "normal_range": [
+          5,
+          12
+        ],
+        "normal_mean_if_omen": null,
+        "expected": {
+          "support": 0.75,
+          "event": 1.05,
+          "reward_extra": 0.85,
+          "elite": 0.35,
+          "normal": 9.0
+        },
+        "expected_exact": {
+          "support": "3/4",
+          "event": "21/20",
+          "reward_extra": "17/20",
+          "elite": "7/20",
+          "normal": "9"
+        },
+        "reward_total_mean": 0.85,
+        "presence": {
+          "event": 0.8,
+          "reward_extra": 0.7,
+          "elite": 0.35
+        },
+        "count_probabilities": {
+          "support": {
+            "0": 0.4,
+            "1": 0.45,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.2,
+            "1": 0.55,
+            "2": 0.25
+          },
+          "reward_extra": {
+            "0": 0.3,
+            "1": 0.55,
+            "2": 0.15
+          },
+          "elite": {
+            "0": 0.65,
+            "1": 0.35
+          },
+          "normal": {
+            "5": 0.00196875,
+            "6": 0.0211125,
+            "7": 0.0937125,
+            "8": 0.22325,
+            "9": 0.30671875,
+            "10": 0.2401875,
+            "11": 0.09745,
+            "12": 0.0156
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "0": "2/5",
+            "1": "9/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "1/5",
+            "1": "11/20",
+            "2": "1/4"
+          },
+          "reward_extra": {
+            "0": "3/10",
+            "1": "11/20",
+            "2": "3/20"
+          },
+          "elite": {
+            "0": "13/20",
+            "1": "7/20"
+          },
+          "normal": {
+            "5": "63/32000",
+            "6": "1689/80000",
+            "7": "7497/80000",
+            "8": "893/4000",
+            "9": "1963/6400",
+            "10": "3843/16000",
+            "11": "1949/20000",
+            "12": "39/2500"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 54
+      },
+      "diagram_svg": "../svg/upper-room-assignment/A2-04.svg",
+      "validated_position_compositions": 54,
+      "entry_access_activities": 6,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "A1-03",
+        "A2-04"
+      ]
+    },
+    {
+      "id": "B2-01",
+      "name": "중앙연결실",
+      "wing": "B",
+      "depth": 2,
+      "role": "본부동 순환 연결",
+      "previous_size": 9,
+      "size": 9,
+      "template_id": "9B",
+      "template_title": "외곽 고리와 안쪽 방",
+      "reservations": [],
+      "omen_node": null,
+      "omen_access_path": null,
+      "elite_candidates": [
+        "2",
+        "3",
+        "5",
+        "6",
+        "8",
+        "9"
+      ],
+      "safe_access_nodes": [
+        "1",
+        "4",
+        "7"
+      ],
+      "quick_path": [
+        "S",
+        "1",
+        "4",
+        "7",
+        "G"
+      ],
+      "quick_activity_count": 3,
+      "full_activity_count": 9,
+      "additional_full_activity_count": 6,
+      "reachable_activities_without_fixed_encounter": 9,
+      "full_walk": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "6",
+        "9",
+        "8",
+        "7",
+        "4",
+        "5",
+        "4",
+        "7",
+        "8",
+        "9",
+        "6",
+        "3",
+        "2",
+        "1",
+        "S",
+        "1",
+        "4",
+        "7",
+        "G"
+      ],
+      "composition": {
+        "size": 9,
+        "depth": 2,
+        "profile": "B2-01",
+        "profile_label": "중앙연결실",
+        "reserved_non_support": 0,
+        "reserved_support": 0,
+        "reserved_total": 0,
+        "min_normal_before_omen": 2,
+        "omen_compatible": false,
+        "normal_range": [
+          2,
+          9
+        ],
+        "normal_mean_if_omen": null,
+        "expected": {
+          "support": 0.75,
+          "event": 0.8,
+          "reward_extra": 0.6,
+          "elite": 0.25,
+          "normal": 6.6
+        },
+        "expected_exact": {
+          "support": "3/4",
+          "event": "4/5",
+          "reward_extra": "3/5",
+          "elite": "1/4",
+          "normal": "33/5"
+        },
+        "reward_total_mean": 0.6,
+        "presence": {
+          "event": 0.7,
+          "reward_extra": 0.55,
+          "elite": 0.25
+        },
+        "count_probabilities": {
+          "support": {
+            "0": 0.4,
+            "1": 0.45,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.3,
+            "1": 0.6,
+            "2": 0.1
+          },
+          "reward_extra": {
+            "0": 0.45,
+            "1": 0.5,
+            "2": 0.05
+          },
+          "elite": {
+            "0": 0.75,
+            "1": 0.25
+          },
+          "normal": {
+            "2": 0.0001875,
+            "3": 0.004125,
+            "4": 0.0336875,
+            "5": 0.13325,
+            "6": 0.2810625,
+            "7": 0.322125,
+            "8": 0.1850625,
+            "9": 0.0405
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "0": "2/5",
+            "1": "9/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "3/10",
+            "1": "3/5",
+            "2": "1/10"
+          },
+          "reward_extra": {
+            "0": "9/20",
+            "1": "1/2",
+            "2": "1/20"
+          },
+          "elite": {
+            "0": "3/4",
+            "1": "1/4"
+          },
+          "normal": {
+            "2": "3/16000",
+            "3": "33/8000",
+            "4": "539/16000",
+            "5": "533/4000",
+            "6": "4497/16000",
+            "7": "2577/8000",
+            "8": "2961/16000",
+            "9": "81/2000"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 54
+      },
+      "diagram_svg": "../svg/upper-room-assignment/B2-01.svg",
+      "validated_position_compositions": 54,
+      "entry_access_activities": 3,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "B2-01"
+      ]
+    },
+    {
+      "id": "B2-02",
+      "name": "배전관리실",
+      "wing": "B",
+      "depth": 2,
+      "role": "초기에 접근하는 기사 계약",
+      "previous_size": 9,
+      "size": 9,
+      "template_id": "9A",
+      "template_title": "두 복도와 작은 곁방",
+      "reservations": [
+        {
+          "node": "2",
+          "label": "절망의 기사",
+          "short_label": "기사 계약",
+          "category": "encounter",
+          "condition": null,
+          "access_path": [
+            "S",
+            "3",
+            "2"
+          ],
+          "access_activities": 2,
+          "position": {
+            "x": 900,
+            "y": 445
+          }
+        }
+      ],
+      "omen_node": null,
+      "omen_access_path": null,
+      "elite_candidates": [
+        "5",
+        "6",
+        "8",
+        "9"
+      ],
+      "safe_access_nodes": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "7"
+      ],
+      "quick_path": [
+        "S",
+        "1",
+        "4",
+        "7",
+        "G"
+      ],
+      "quick_activity_count": 3,
+      "full_activity_count": 9,
+      "additional_full_activity_count": 6,
+      "reachable_activities_without_fixed_encounter": 8,
+      "full_walk": [
+        "S",
+        "1",
+        "4",
+        "5",
+        "6",
+        "3",
+        "2",
+        "3",
+        "6",
+        "9",
+        "6",
+        "5",
+        "8",
+        "5",
+        "4",
+        "7",
+        "4",
+        "1",
+        "S",
+        "1",
+        "4",
+        "7",
+        "G"
+      ],
+      "composition": {
+        "size": 9,
+        "depth": 2,
+        "profile": "B2-02",
+        "profile_label": "배전관리실",
+        "reserved_non_support": 1,
+        "reserved_support": 0,
+        "reserved_total": 1,
+        "min_normal_before_omen": 2,
+        "omen_compatible": false,
+        "normal_range": [
+          2,
+          8
+        ],
+        "normal_mean_if_omen": null,
+        "expected": {
+          "support": 0.75,
+          "event": 0.7997747183979975,
+          "reward_extra": 0.5997371714643304,
+          "elite": 0.24985919899874842,
+          "normal": 5.600628911138924
+        },
+        "expected_exact": {
+          "support": "3/4",
+          "event": "31951/39950",
+          "reward_extra": "47919/79900",
+          "elite": "15971/63920",
+          "normal": "1789961/319600"
+        },
+        "reward_total_mean": 0.5997371714643304,
+        "presence": {
+          "event": 0.6999436795994993,
+          "reward_extra": 0.5499155193992491,
+          "elite": 0.24985919899874842
+        },
+        "count_probabilities": {
+          "support": {
+            "0": 0.4,
+            "1": 0.45,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.3000563204005006,
+            "1": 0.6001126408010012,
+            "2": 0.09983103879849813
+          },
+          "reward_extra": {
+            "0": 0.45008448060075096,
+            "1": 0.5000938673341677,
+            "2": 0.04982165206508135
+          },
+          "elite": {
+            "0": 0.7501408010012516,
+            "1": 0.24985919899874842
+          },
+          "normal": {
+            "2": 0.004129458698372966,
+            "3": 0.03371566020025031,
+            "4": 0.13332040050062577,
+            "5": 0.28112797246558197,
+            "6": 0.32214400813516897,
+            "7": 0.1850625,
+            "8": 0.0405
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "0": "2/5",
+            "1": "9/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "47949/159800",
+            "1": "47949/79900",
+            "2": "15953/159800"
+          },
+          "reward_extra": {
+            "0": "143847/319600",
+            "1": "15983/31960",
+            "2": "15923/319600"
+          },
+          "elite": {
+            "0": "47949/63920",
+            "1": "15971/63920"
+          },
+          "normal": {
+            "2": "52791/12784000",
+            "3": "431021/12784000",
+            "4": "106523/799000",
+            "5": "179697/639200",
+            "6": "4118289/12784000",
+            "7": "2961/16000",
+            "8": "81/2000"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 53
+      },
+      "diagram_svg": "../svg/upper-room-assignment/B2-02.svg",
+      "validated_position_compositions": 53,
+      "entry_access_activities": 6,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "B2-01",
+        "B2-02"
+      ]
+    },
+    {
+      "id": "B2-03",
+      "name": "장비정비실",
+      "wing": "B",
+      "depth": 2,
+      "role": "정비와 다른 활동을 담는 거점",
+      "previous_size": 6,
+      "size": 9,
+      "template_id": "9C",
+      "template_title": "중앙 복귀와 단일 출구",
+      "reservations": [
+        {
+          "node": "5",
+          "label": "정비",
+          "short_label": "정비",
+          "category": "support",
+          "condition": null,
+          "access_path": [
+            "S",
+            "2",
+            "5"
+          ],
+          "access_activities": 2,
+          "position": {
+            "x": 900,
+            "y": 715
+          },
+          "from_facility_entry_activities": 8
+        }
+      ],
+      "omen_node": null,
+      "omen_access_path": null,
+      "elite_candidates": [
+        "1",
+        "3",
+        "4",
+        "6",
+        "7",
+        "9"
+      ],
+      "safe_access_nodes": [
+        "2",
+        "5",
+        "8"
+      ],
+      "quick_path": [
+        "S",
+        "2",
+        "5",
+        "8",
+        "G"
+      ],
+      "quick_activity_count": 3,
+      "full_activity_count": 9,
+      "additional_full_activity_count": 6,
+      "reachable_activities_without_fixed_encounter": 9,
+      "full_walk": [
+        "S",
+        "2",
+        "1",
+        "4",
+        "7",
+        "8",
+        "5",
+        "6",
+        "3",
+        "6",
+        "9",
+        "6",
+        "5",
+        "8",
+        "7",
+        "4",
+        "1",
+        "2",
+        "S",
+        "2",
+        "5",
+        "8",
+        "G"
+      ],
+      "composition": {
+        "size": 9,
+        "depth": 2,
+        "profile": "B2-03",
+        "profile_label": "장비정비실",
+        "reserved_non_support": 0,
+        "reserved_support": 1,
+        "reserved_total": 1,
+        "min_normal_before_omen": 2,
+        "omen_compatible": false,
+        "normal_range": [
+          2,
+          8
+        ],
+        "normal_mean_if_omen": null,
+        "expected": {
+          "support": 1.15,
+          "event": 0.8,
+          "reward_extra": 0.6,
+          "elite": 0.25,
+          "normal": 6.2
+        },
+        "expected_exact": {
+          "support": "23/20",
+          "event": "4/5",
+          "reward_extra": "3/5",
+          "elite": "1/4",
+          "normal": "31/5"
+        },
+        "reward_total_mean": 0.6,
+        "presence": {
+          "event": 0.7,
+          "reward_extra": 0.55,
+          "elite": 0.25
+        },
+        "count_probabilities": {
+          "support": {
+            "1": 0.85,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.3,
+            "1": 0.6,
+            "2": 0.1
+          },
+          "reward_extra": {
+            "0": 0.45,
+            "1": 0.5,
+            "2": 0.05
+          },
+          "elite": {
+            "0": 0.75,
+            "1": 0.25
+          },
+          "normal": {
+            "2": 0.0001875,
+            "3": 0.004625,
+            "4": 0.0426875,
+            "5": 0.18375,
+            "6": 0.3710625,
+            "7": 0.311625,
+            "8": 0.0860625
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "1": "17/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "3/10",
+            "1": "3/5",
+            "2": "1/10"
+          },
+          "reward_extra": {
+            "0": "9/20",
+            "1": "1/2",
+            "2": "1/20"
+          },
+          "elite": {
+            "0": "3/4",
+            "1": "1/4"
+          },
+          "normal": {
+            "2": "3/16000",
+            "3": "37/8000",
+            "4": "683/16000",
+            "5": "147/800",
+            "6": "5937/16000",
+            "7": "2493/8000",
+            "8": "1377/16000"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 36
+      },
+      "diagram_svg": "../svg/upper-room-assignment/B2-03.svg",
+      "validated_position_compositions": 36,
+      "entry_access_activities": 6,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "B2-01",
+        "B2-03"
+      ]
+    },
+    {
+      "id": "B2-04",
+      "name": "통제보조실",
+      "wing": "B",
+      "depth": 2,
+      "role": "두 구역을 선택 탐사",
+      "previous_size": 9,
+      "size": 12,
+      "template_id": "12B",
+      "template_title": "두 순환 구역과 연결문",
+      "reservations": [],
+      "omen_node": null,
+      "omen_access_path": null,
+      "elite_candidates": [
+        "2",
+        "3",
+        "4",
+        "6",
+        "7",
+        "8",
+        "10",
+        "11",
+        "12"
+      ],
+      "safe_access_nodes": [
+        "1",
+        "5",
+        "9"
+      ],
+      "quick_path": [
+        "S",
+        "1",
+        "5",
+        "9",
+        "G"
+      ],
+      "quick_activity_count": 3,
+      "full_activity_count": 12,
+      "additional_full_activity_count": 9,
+      "reachable_activities_without_fixed_encounter": 12,
+      "full_walk": [
+        "S",
+        "1",
+        "2",
+        "6",
+        "7",
+        "3",
+        "4",
+        "8",
+        "12",
+        "11",
+        "12",
+        "8",
+        "4",
+        "3",
+        "7",
+        "6",
+        "10",
+        "9",
+        "5",
+        "9",
+        "10",
+        "6",
+        "2",
+        "1",
+        "S",
+        "1",
+        "5",
+        "9",
+        "G"
+      ],
+      "composition": {
+        "size": 12,
+        "depth": 2,
+        "profile": "B2-04",
+        "profile_label": "통제보조실",
+        "reserved_non_support": 0,
+        "reserved_support": 0,
+        "reserved_total": 0,
+        "min_normal_before_omen": 2,
+        "omen_compatible": false,
+        "normal_range": [
+          5,
+          12
+        ],
+        "normal_mean_if_omen": null,
+        "expected": {
+          "support": 0.75,
+          "event": 1.05,
+          "reward_extra": 0.85,
+          "elite": 0.35,
+          "normal": 9.0
+        },
+        "expected_exact": {
+          "support": "3/4",
+          "event": "21/20",
+          "reward_extra": "17/20",
+          "elite": "7/20",
+          "normal": "9"
+        },
+        "reward_total_mean": 0.85,
+        "presence": {
+          "event": 0.8,
+          "reward_extra": 0.7,
+          "elite": 0.35
+        },
+        "count_probabilities": {
+          "support": {
+            "0": 0.4,
+            "1": 0.45,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.2,
+            "1": 0.55,
+            "2": 0.25
+          },
+          "reward_extra": {
+            "0": 0.3,
+            "1": 0.55,
+            "2": 0.15
+          },
+          "elite": {
+            "0": 0.65,
+            "1": 0.35
+          },
+          "normal": {
+            "5": 0.00196875,
+            "6": 0.0211125,
+            "7": 0.0937125,
+            "8": 0.22325,
+            "9": 0.30671875,
+            "10": 0.2401875,
+            "11": 0.09745,
+            "12": 0.0156
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "0": "2/5",
+            "1": "9/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "1/5",
+            "1": "11/20",
+            "2": "1/4"
+          },
+          "reward_extra": {
+            "0": "3/10",
+            "1": "11/20",
+            "2": "3/20"
+          },
+          "elite": {
+            "0": "13/20",
+            "1": "7/20"
+          },
+          "normal": {
+            "5": "63/32000",
+            "6": "1689/80000",
+            "7": "7497/80000",
+            "8": "893/4000",
+            "9": "1963/6400",
+            "10": "3843/16000",
+            "11": "1949/20000",
+            "12": "39/2500"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 54
+      },
+      "diagram_svg": "../svg/upper-room-assignment/B2-04.svg",
+      "validated_position_compositions": 54,
+      "entry_access_activities": 6,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "B1-03",
+        "B2-04"
+      ]
+    },
+    {
+      "id": "C2-01",
+      "name": "전처리접수실",
+      "wing": "C",
+      "depth": 2,
+      "role": "중앙 복귀형 연결 방",
+      "previous_size": 9,
+      "size": 9,
+      "template_id": "9C",
+      "template_title": "중앙 복귀와 단일 출구",
+      "reservations": [],
+      "omen_node": null,
+      "omen_access_path": null,
+      "elite_candidates": [
+        "1",
+        "3",
+        "4",
+        "6",
+        "7",
+        "9"
+      ],
+      "safe_access_nodes": [
+        "2",
+        "5",
+        "8"
+      ],
+      "quick_path": [
+        "S",
+        "2",
+        "5",
+        "8",
+        "G"
+      ],
+      "quick_activity_count": 3,
+      "full_activity_count": 9,
+      "additional_full_activity_count": 6,
+      "reachable_activities_without_fixed_encounter": 9,
+      "full_walk": [
+        "S",
+        "2",
+        "1",
+        "4",
+        "7",
+        "8",
+        "5",
+        "6",
+        "3",
+        "6",
+        "9",
+        "6",
+        "5",
+        "8",
+        "7",
+        "4",
+        "1",
+        "2",
+        "S",
+        "2",
+        "5",
+        "8",
+        "G"
+      ],
+      "composition": {
+        "size": 9,
+        "depth": 2,
+        "profile": "C2-01",
+        "profile_label": "전처리접수실",
+        "reserved_non_support": 0,
+        "reserved_support": 0,
+        "reserved_total": 0,
+        "min_normal_before_omen": 2,
+        "omen_compatible": false,
+        "normal_range": [
+          2,
+          9
+        ],
+        "normal_mean_if_omen": null,
+        "expected": {
+          "support": 0.75,
+          "event": 0.8,
+          "reward_extra": 0.6,
+          "elite": 0.25,
+          "normal": 6.6
+        },
+        "expected_exact": {
+          "support": "3/4",
+          "event": "4/5",
+          "reward_extra": "3/5",
+          "elite": "1/4",
+          "normal": "33/5"
+        },
+        "reward_total_mean": 0.6,
+        "presence": {
+          "event": 0.7,
+          "reward_extra": 0.55,
+          "elite": 0.25
+        },
+        "count_probabilities": {
+          "support": {
+            "0": 0.4,
+            "1": 0.45,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.3,
+            "1": 0.6,
+            "2": 0.1
+          },
+          "reward_extra": {
+            "0": 0.45,
+            "1": 0.5,
+            "2": 0.05
+          },
+          "elite": {
+            "0": 0.75,
+            "1": 0.25
+          },
+          "normal": {
+            "2": 0.0001875,
+            "3": 0.004125,
+            "4": 0.0336875,
+            "5": 0.13325,
+            "6": 0.2810625,
+            "7": 0.322125,
+            "8": 0.1850625,
+            "9": 0.0405
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "0": "2/5",
+            "1": "9/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "3/10",
+            "1": "3/5",
+            "2": "1/10"
+          },
+          "reward_extra": {
+            "0": "9/20",
+            "1": "1/2",
+            "2": "1/20"
+          },
+          "elite": {
+            "0": "3/4",
+            "1": "1/4"
+          },
+          "normal": {
+            "2": "3/16000",
+            "3": "33/8000",
+            "4": "539/16000",
+            "5": "533/4000",
+            "6": "4497/16000",
+            "7": "2577/8000",
+            "8": "2961/16000",
+            "9": "81/2000"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 54
+      },
+      "diagram_svg": "../svg/upper-room-assignment/C2-01.svg",
+      "validated_position_compositions": 54,
+      "entry_access_activities": 9,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "B1-03",
+        "B2-04",
+        "C2-01"
+      ]
+    },
+    {
+      "id": "C2-02",
+      "name": "폐쇄휴게실",
+      "wing": "C",
+      "depth": 2,
+      "role": "여왕 동행을 선택하는 곁방",
+      "previous_size": 9,
+      "size": 9,
+      "template_id": "9B",
+      "template_title": "외곽 고리와 안쪽 방",
+      "reservations": [
+        {
+          "node": "5",
+          "label": "증오의 여왕",
+          "short_label": "여왕 동행",
+          "category": "encounter",
+          "condition": null,
+          "access_path": [
+            "S",
+            "1",
+            "4",
+            "5"
+          ],
+          "access_activities": 3,
+          "position": {
+            "x": 900,
+            "y": 715
+          }
+        }
+      ],
+      "omen_node": null,
+      "omen_access_path": null,
+      "elite_candidates": [
+        "2",
+        "3",
+        "6",
+        "8",
+        "9"
+      ],
+      "safe_access_nodes": [
+        "1",
+        "4",
+        "5",
+        "7"
+      ],
+      "quick_path": [
+        "S",
+        "1",
+        "4",
+        "7",
+        "G"
+      ],
+      "quick_activity_count": 3,
+      "full_activity_count": 9,
+      "additional_full_activity_count": 6,
+      "reachable_activities_without_fixed_encounter": 8,
+      "full_walk": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "6",
+        "9",
+        "8",
+        "7",
+        "4",
+        "5",
+        "4",
+        "7",
+        "8",
+        "9",
+        "6",
+        "3",
+        "2",
+        "1",
+        "S",
+        "1",
+        "4",
+        "7",
+        "G"
+      ],
+      "composition": {
+        "size": 9,
+        "depth": 2,
+        "profile": "C2-02",
+        "profile_label": "폐쇄휴게실",
+        "reserved_non_support": 1,
+        "reserved_support": 0,
+        "reserved_total": 1,
+        "min_normal_before_omen": 2,
+        "omen_compatible": false,
+        "normal_range": [
+          2,
+          8
+        ],
+        "normal_mean_if_omen": null,
+        "expected": {
+          "support": 0.75,
+          "event": 0.7997747183979975,
+          "reward_extra": 0.5997371714643304,
+          "elite": 0.24985919899874842,
+          "normal": 5.600628911138924
+        },
+        "expected_exact": {
+          "support": "3/4",
+          "event": "31951/39950",
+          "reward_extra": "47919/79900",
+          "elite": "15971/63920",
+          "normal": "1789961/319600"
+        },
+        "reward_total_mean": 0.5997371714643304,
+        "presence": {
+          "event": 0.6999436795994993,
+          "reward_extra": 0.5499155193992491,
+          "elite": 0.24985919899874842
+        },
+        "count_probabilities": {
+          "support": {
+            "0": 0.4,
+            "1": 0.45,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.3000563204005006,
+            "1": 0.6001126408010012,
+            "2": 0.09983103879849813
+          },
+          "reward_extra": {
+            "0": 0.45008448060075096,
+            "1": 0.5000938673341677,
+            "2": 0.04982165206508135
+          },
+          "elite": {
+            "0": 0.7501408010012516,
+            "1": 0.24985919899874842
+          },
+          "normal": {
+            "2": 0.004129458698372966,
+            "3": 0.03371566020025031,
+            "4": 0.13332040050062577,
+            "5": 0.28112797246558197,
+            "6": 0.32214400813516897,
+            "7": 0.1850625,
+            "8": 0.0405
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "0": "2/5",
+            "1": "9/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "47949/159800",
+            "1": "47949/79900",
+            "2": "15953/159800"
+          },
+          "reward_extra": {
+            "0": "143847/319600",
+            "1": "15983/31960",
+            "2": "15923/319600"
+          },
+          "elite": {
+            "0": "47949/63920",
+            "1": "15971/63920"
+          },
+          "normal": {
+            "2": "52791/12784000",
+            "3": "431021/12784000",
+            "4": "106523/799000",
+            "5": "179697/639200",
+            "6": "4118289/12784000",
+            "7": "2961/16000",
+            "8": "81/2000"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 53
+      },
+      "diagram_svg": "../svg/upper-room-assignment/C2-02.svg",
+      "validated_position_compositions": 53,
+      "entry_access_activities": 12,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "B1-03",
+        "B2-04",
+        "C2-01",
+        "C2-02"
+      ]
+    },
+    {
+      "id": "C2-03",
+      "name": "장비정비실",
+      "wing": "C",
+      "depth": 2,
+      "role": "순환 통로의 짧은 정비 거점",
+      "previous_size": 6,
+      "size": 6,
+      "template_id": "6C",
+      "template_title": "작은 순환 회랑",
+      "reservations": [
+        {
+          "node": "2",
+          "label": "정비",
+          "short_label": "정비",
+          "category": "support",
+          "condition": null,
+          "access_path": [
+            "S",
+            "1",
+            "2"
+          ],
+          "access_activities": 2,
+          "position": {
+            "x": 550,
+            "y": 715
+          },
+          "from_facility_entry_activities": 14
+        }
+      ],
+      "omen_node": null,
+      "omen_access_path": null,
+      "elite_candidates": [
+        "4",
+        "5",
+        "6"
+      ],
+      "safe_access_nodes": [
+        "1",
+        "2",
+        "3"
+      ],
+      "quick_path": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "G"
+      ],
+      "quick_activity_count": 3,
+      "full_activity_count": 6,
+      "additional_full_activity_count": 3,
+      "reachable_activities_without_fixed_encounter": 6,
+      "full_walk": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "6",
+        "5",
+        "4",
+        "5",
+        "6",
+        "3",
+        "2",
+        "1",
+        "S",
+        "1",
+        "2",
+        "3",
+        "G"
+      ],
+      "composition": {
+        "size": 6,
+        "depth": 2,
+        "profile": "C2-03",
+        "profile_label": "장비정비실",
+        "reserved_non_support": 0,
+        "reserved_support": 1,
+        "reserved_total": 1,
+        "min_normal_before_omen": 2,
+        "omen_compatible": false,
+        "normal_range": [
+          2,
+          5
+        ],
+        "normal_mean_if_omen": null,
+        "expected": {
+          "support": 1.15,
+          "event": 0.44829484562388366,
+          "reward_extra": 0.29782980352130645,
+          "elite": 0.14736476141872926,
+          "normal": 3.9565105894360806
+        },
+        "expected_exact": {
+          "support": "23/20",
+          "event": "702747/1567600",
+          "reward_extra": "233439/783800",
+          "elite": "231009/1567600",
+          "normal": "3101113/783800"
+        },
+        "reward_total_mean": 0.29782980352130645,
+        "presence": {
+          "event": 0.44829484562388366,
+          "reward_extra": 0.29782980352130645,
+          "elite": 0.14736476141872926
+        },
+        "count_probabilities": {
+          "support": {
+            "1": 0.85,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.5517051543761163,
+            "1": 0.44829484562388366
+          },
+          "reward_extra": {
+            "0": 0.7021701964786935,
+            "1": 0.29782980352130645
+          },
+          "elite": {
+            "0": 0.8526352385812708,
+            "1": 0.14736476141872926
+          },
+          "normal": {
+            "2": 0.0458039774177086,
+            "3": 0.23004395572850217,
+            "4": 0.4459895668537892,
+            "5": 0.2781625
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "1": "17/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "864853/1567600",
+            "1": "702747/1567600"
+          },
+          "reward_extra": {
+            "0": "550361/783800",
+            "1": "233439/783800"
+          },
+          "elite": {
+            "0": "1336591/1567600",
+            "1": "231009/1567600"
+          },
+          "normal": {
+            "2": "14360463/313520000",
+            "3": "72123381/313520000",
+            "4": "139826649/313520000",
+            "5": "22253/80000"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 15
+      },
+      "diagram_svg": "../svg/upper-room-assignment/C2-03.svg",
+      "validated_position_compositions": 15,
+      "entry_access_activities": 12,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "B1-03",
+        "B2-04",
+        "C2-01",
+        "C2-03"
+      ]
+    },
+    {
+      "id": "C2-04",
+      "name": "시료대기실",
+      "wing": "C",
+      "depth": 2,
+      "role": "여러 곁방의 선택 탐사",
+      "previous_size": 9,
+      "size": 12,
+      "template_id": "12A",
+      "template_title": "횡단 복도와 네 곁방",
+      "reservations": [],
+      "omen_node": null,
+      "omen_access_path": null,
+      "elite_candidates": [
+        "2",
+        "3",
+        "4",
+        "6",
+        "7",
+        "8",
+        "10",
+        "11",
+        "12"
+      ],
+      "safe_access_nodes": [
+        "1",
+        "5",
+        "9"
+      ],
+      "quick_path": [
+        "S",
+        "1",
+        "5",
+        "9",
+        "G"
+      ],
+      "quick_activity_count": 3,
+      "full_activity_count": 12,
+      "additional_full_activity_count": 9,
+      "reachable_activities_without_fixed_encounter": 12,
+      "full_walk": [
+        "S",
+        "1",
+        "2",
+        "1",
+        "5",
+        "6",
+        "7",
+        "8",
+        "4",
+        "3",
+        "4",
+        "8",
+        "12",
+        "11",
+        "12",
+        "8",
+        "7",
+        "6",
+        "5",
+        "9",
+        "10",
+        "9",
+        "5",
+        "1",
+        "S",
+        "1",
+        "5",
+        "9",
+        "G"
+      ],
+      "composition": {
+        "size": 12,
+        "depth": 2,
+        "profile": "C2-04",
+        "profile_label": "시료대기실",
+        "reserved_non_support": 0,
+        "reserved_support": 0,
+        "reserved_total": 0,
+        "min_normal_before_omen": 2,
+        "omen_compatible": false,
+        "normal_range": [
+          5,
+          12
+        ],
+        "normal_mean_if_omen": null,
+        "expected": {
+          "support": 0.75,
+          "event": 1.05,
+          "reward_extra": 0.85,
+          "elite": 0.35,
+          "normal": 9.0
+        },
+        "expected_exact": {
+          "support": "3/4",
+          "event": "21/20",
+          "reward_extra": "17/20",
+          "elite": "7/20",
+          "normal": "9"
+        },
+        "reward_total_mean": 0.85,
+        "presence": {
+          "event": 0.8,
+          "reward_extra": 0.7,
+          "elite": 0.35
+        },
+        "count_probabilities": {
+          "support": {
+            "0": 0.4,
+            "1": 0.45,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.2,
+            "1": 0.55,
+            "2": 0.25
+          },
+          "reward_extra": {
+            "0": 0.3,
+            "1": 0.55,
+            "2": 0.15
+          },
+          "elite": {
+            "0": 0.65,
+            "1": 0.35
+          },
+          "normal": {
+            "5": 0.00196875,
+            "6": 0.0211125,
+            "7": 0.0937125,
+            "8": 0.22325,
+            "9": 0.30671875,
+            "10": 0.2401875,
+            "11": 0.09745,
+            "12": 0.0156
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "0": "2/5",
+            "1": "9/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "1/5",
+            "1": "11/20",
+            "2": "1/4"
+          },
+          "reward_extra": {
+            "0": "3/10",
+            "1": "11/20",
+            "2": "3/20"
+          },
+          "elite": {
+            "0": "13/20",
+            "1": "7/20"
+          },
+          "normal": {
+            "5": "63/32000",
+            "6": "1689/80000",
+            "7": "7497/80000",
+            "8": "893/4000",
+            "9": "1963/6400",
+            "10": "3843/16000",
+            "11": "1949/20000",
+            "12": "39/2500"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 54
+      },
+      "diagram_svg": "../svg/upper-room-assignment/C2-04.svg",
+      "validated_position_compositions": 54,
+      "entry_access_activities": 12,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "B1-03",
+        "C1-01",
+        "C1-03",
+        "C2-04"
+      ]
+    },
+    {
+      "id": "A3-01",
+      "name": "분실물보관실",
+      "wing": "A",
+      "depth": 3,
+      "role": "두 기록 구역을 선택 탐사",
+      "previous_size": 9,
+      "size": 12,
+      "template_id": "12B",
+      "template_title": "두 순환 구역과 연결문",
+      "reservations": [],
+      "omen_node": "6",
+      "omen_access_path": [
+        "S",
+        "1",
+        "2",
+        "6"
+      ],
+      "elite_candidates": [
+        "3",
+        "4",
+        "7",
+        "8",
+        "10",
+        "11",
+        "12"
+      ],
+      "safe_access_nodes": [
+        "1",
+        "2",
+        "5",
+        "6",
+        "9"
+      ],
+      "quick_path": [
+        "S",
+        "1",
+        "5",
+        "9",
+        "G"
+      ],
+      "quick_activity_count": 3,
+      "full_activity_count": 12,
+      "additional_full_activity_count": 9,
+      "reachable_activities_without_fixed_encounter": 12,
+      "full_walk": [
+        "S",
+        "1",
+        "2",
+        "6",
+        "7",
+        "3",
+        "4",
+        "8",
+        "12",
+        "11",
+        "12",
+        "8",
+        "4",
+        "3",
+        "7",
+        "6",
+        "10",
+        "9",
+        "5",
+        "9",
+        "10",
+        "6",
+        "2",
+        "1",
+        "S",
+        "1",
+        "5",
+        "9",
+        "G"
+      ],
+      "composition": {
+        "size": 12,
+        "depth": 3,
+        "profile": "A3-01",
+        "profile_label": "분실물보관실",
+        "reserved_non_support": 0,
+        "reserved_support": 0,
+        "reserved_total": 0,
+        "min_normal_before_omen": 3,
+        "omen_compatible": true,
+        "normal_range": [
+          5,
+          12
+        ],
+        "normal_mean_if_omen": 7.85,
+        "expected": {
+          "support": 0.75,
+          "event": 1.05,
+          "reward_extra": 0.85,
+          "elite": 0.5,
+          "normal": 8.85
+        },
+        "expected_exact": {
+          "support": "3/4",
+          "event": "21/20",
+          "reward_extra": "17/20",
+          "elite": "1/2",
+          "normal": "177/20"
+        },
+        "reward_total_mean": 0.85,
+        "presence": {
+          "event": 0.8,
+          "reward_extra": 0.7,
+          "elite": 0.5
+        },
+        "count_probabilities": {
+          "support": {
+            "0": 0.4,
+            "1": 0.45,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.2,
+            "1": 0.55,
+            "2": 0.25
+          },
+          "reward_extra": {
+            "0": 0.3,
+            "1": 0.55,
+            "2": 0.15
+          },
+          "elite": {
+            "0": 0.5,
+            "1": 0.5
+          },
+          "normal": {
+            "5": 0.0028125,
+            "6": 0.02775,
+            "7": 0.1125,
+            "8": 0.243875,
+            "9": 0.3041875,
+            "10": 0.216375,
+            "11": 0.0805,
+            "12": 0.012
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "0": "2/5",
+            "1": "9/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "1/5",
+            "1": "11/20",
+            "2": "1/4"
+          },
+          "reward_extra": {
+            "0": "3/10",
+            "1": "11/20",
+            "2": "3/20"
+          },
+          "elite": {
+            "0": "1/2",
+            "1": "1/2"
+          },
+          "normal": {
+            "5": "9/3200",
+            "6": "111/4000",
+            "7": "9/80",
+            "8": "1951/8000",
+            "9": "4867/16000",
+            "10": "1731/8000",
+            "11": "161/2000",
+            "12": "3/250"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 54
+      },
+      "diagram_svg": "../svg/upper-room-assignment/A3-01.svg",
+      "validated_position_compositions": 54,
+      "entry_access_activities": 12,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "A1-03",
+        "A1-01",
+        "A2-01",
+        "A3-01"
+      ]
+    },
+    {
+      "id": "A3-02",
+      "name": "폐쇄사육실",
+      "wing": "A",
+      "depth": 3,
+      "role": "조건부 늑대와 깊은 곁방",
+      "previous_size": 12,
+      "size": 15,
+      "template_id": "15B",
+      "template_title": "외곽 고리와 깊은 곁방",
+      "reservations": [
+        {
+          "node": "9",
+          "label": "커다랗고 나쁠 늑대",
+          "short_label": "늑대 조우",
+          "category": "encounter",
+          "condition": "이번 원정의 A2-02 용병 선행 Event/Story 완료. 호출권 구매는 필수 조건이 아님.",
+          "access_path": [
+            "S",
+            "1",
+            "6",
+            "7",
+            "8",
+            "9"
+          ],
+          "access_activities": 5,
+          "position": {
+            "x": 1235,
+            "y": 715
+          }
+        }
+      ],
+      "omen_node": "14",
+      "omen_access_path": [
+        "S",
+        "5",
+        "10",
+        "15",
+        "14"
+      ],
+      "elite_candidates": [
+        "2",
+        "3",
+        "4",
+        "12",
+        "13"
+      ],
+      "safe_access_nodes": [
+        "1",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "14",
+        "15"
+      ],
+      "quick_path": [
+        "S",
+        "1",
+        "6",
+        "11",
+        "G"
+      ],
+      "quick_activity_count": 3,
+      "full_activity_count": 15,
+      "additional_full_activity_count": 12,
+      "reachable_activities_without_fixed_encounter": 14,
+      "full_walk": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "10",
+        "15",
+        "14",
+        "13",
+        "12",
+        "11",
+        "6",
+        "7",
+        "8",
+        "9",
+        "8",
+        "7",
+        "6",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "10",
+        "5",
+        "4",
+        "3",
+        "2",
+        "1",
+        "S",
+        "1",
+        "6",
+        "11",
+        "G"
+      ],
+      "composition": {
+        "size": 15,
+        "depth": 3,
+        "profile": "A3-02",
+        "profile_label": "폐쇄사육실",
+        "reserved_non_support": 1,
+        "reserved_support": 0,
+        "reserved_total": 1,
+        "min_normal_before_omen": 3,
+        "omen_compatible": true,
+        "normal_range": [
+          5,
+          14
+        ],
+        "normal_mean_if_omen": 8.6,
+        "expected": {
+          "support": 0.75,
+          "event": 1.65,
+          "reward_extra": 1.45,
+          "elite": 0.55,
+          "normal": 9.6
+        },
+        "expected_exact": {
+          "support": "3/4",
+          "event": "33/20",
+          "reward_extra": "29/20",
+          "elite": "11/20",
+          "normal": "48/5"
+        },
+        "reward_total_mean": 1.45,
+        "presence": {
+          "event": 0.9,
+          "reward_extra": 0.85,
+          "elite": 0.55
+        },
+        "count_probabilities": {
+          "support": {
+            "0": 0.4,
+            "1": 0.45,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.1,
+            "1": 0.3,
+            "2": 0.45,
+            "3": 0.15
+          },
+          "reward_extra": {
+            "0": 0.15,
+            "1": 0.35,
+            "2": 0.4,
+            "3": 0.1
+          },
+          "elite": {
+            "0": 0.45,
+            "1": 0.55
+          },
+          "normal": {
+            "5": 0.0012375,
+            "6": 0.0133875,
+            "7": 0.06106875,
+            "8": 0.155325,
+            "9": 0.2449875,
+            "10": 0.2517625,
+            "11": 0.17201875,
+            "12": 0.076775,
+            "13": 0.0207375,
+            "14": 0.0027
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "0": "2/5",
+            "1": "9/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "1/10",
+            "1": "3/10",
+            "2": "9/20",
+            "3": "3/20"
+          },
+          "reward_extra": {
+            "0": "3/20",
+            "1": "7/20",
+            "2": "2/5",
+            "3": "1/10"
+          },
+          "elite": {
+            "0": "9/20",
+            "1": "11/20"
+          },
+          "normal": {
+            "5": "99/80000",
+            "6": "1071/80000",
+            "7": "9771/160000",
+            "8": "6213/40000",
+            "9": "19599/80000",
+            "10": "20141/80000",
+            "11": "27523/160000",
+            "12": "3071/40000",
+            "13": "1659/80000",
+            "14": "27/10000"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 96
+      },
+      "diagram_svg": "../svg/upper-room-assignment/A3-02.svg",
+      "validated_position_compositions": 96,
+      "entry_access_activities": 12,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "B2-01",
+        "B3-01",
+        "A3-04",
+        "A3-02"
+      ]
+    },
+    {
+      "id": "A3-03",
+      "name": "탐사기록실",
+      "wing": "A",
+      "depth": 3,
+      "role": "저장과 선택 활동을 함께 배치",
+      "previous_size": 6,
+      "size": 9,
+      "template_id": "9A",
+      "template_title": "두 복도와 작은 곁방",
+      "reservations": [
+        {
+          "node": "4",
+          "label": "SavePoint",
+          "short_label": "저장",
+          "category": "save",
+          "condition": null,
+          "access_path": [
+            "S",
+            "1",
+            "4"
+          ],
+          "access_activities": 2,
+          "position": {
+            "x": 400,
+            "y": 715
+          },
+          "from_facility_entry_activities": 14
+        }
+      ],
+      "omen_node": "8",
+      "omen_access_path": [
+        "S",
+        "1",
+        "4",
+        "5",
+        "8"
+      ],
+      "elite_candidates": [
+        "2",
+        "3",
+        "6",
+        "9"
+      ],
+      "safe_access_nodes": [
+        "1",
+        "4",
+        "5",
+        "7",
+        "8"
+      ],
+      "quick_path": [
+        "S",
+        "1",
+        "4",
+        "7",
+        "G"
+      ],
+      "quick_activity_count": 3,
+      "full_activity_count": 9,
+      "additional_full_activity_count": 6,
+      "reachable_activities_without_fixed_encounter": 9,
+      "full_walk": [
+        "S",
+        "1",
+        "4",
+        "5",
+        "6",
+        "3",
+        "2",
+        "3",
+        "6",
+        "9",
+        "6",
+        "5",
+        "8",
+        "5",
+        "4",
+        "7",
+        "4",
+        "1",
+        "S",
+        "1",
+        "4",
+        "7",
+        "G"
+      ],
+      "composition": {
+        "size": 9,
+        "depth": 3,
+        "profile": "A3-03",
+        "profile_label": "탐사기록실",
+        "reserved_non_support": 1,
+        "reserved_support": 0,
+        "reserved_total": 1,
+        "min_normal_before_omen": 3,
+        "omen_compatible": true,
+        "normal_range": [
+          3,
+          8
+        ],
+        "normal_mean_if_omen": 4.514352900020745,
+        "expected": {
+          "support": 0.75,
+          "event": 0.7945393826476582,
+          "reward_extra": 0.5944436541092724,
+          "elite": 0.3466640632223247,
+          "normal": 5.514352900020745
+        },
+        "expected_exact": {
+          "support": "3/4",
+          "event": "204526673/257415400",
+          "reward_extra": "153018951/257415400",
+          "elite": "178473337/514830800",
+          "normal": "567791743/102966160"
+        },
+        "reward_total_mean": 0.5944436541092724,
+        "presence": {
+          "event": 0.698227658485079,
+          "reward_extra": 0.5473414877276185,
+          "elite": 0.3466640632223247
+        },
+        "count_probabilities": {
+          "support": {
+            "0": 0.4,
+            "1": 0.45,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.301772341514921,
+            "1": 0.6019159343224998,
+            "2": 0.09631172416257924
+          },
+          "reward_extra": {
+            "0": 0.4526585122723815,
+            "1": 0.5002393213459645,
+            "2": 0.04710216638165393
+          },
+          "elite": {
+            "0": 0.6533359367776753,
+            "1": 0.3466640632223247
+          },
+          "normal": {
+            "3": 0.04239832107946922,
+            "4": 0.15184073097413753,
+            "5": 0.2926273990600407,
+            "6": 0.3103768246188845,
+            "7": 0.16765672426746808,
+            "8": 0.0351
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "0": "2/5",
+            "1": "9/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "9710106/32176925",
+            "1": "154942431/257415400",
+            "2": "24792121/257415400"
+          },
+          "reward_extra": {
+            "0": "14565159/32176925",
+            "1": "25753861/51483080",
+            "2": "12124823/257415400"
+          },
+          "elite": {
+            "0": "336357463/514830800",
+            "1": "178473337/514830800"
+          },
+          "normal": {
+            "3": "545699039/12870770000",
+            "4": "15634457/102966160",
+            "5": "3766339949/12870770000",
+            "6": "3994788723/12870770000",
+            "7": "2231511/13310000",
+            "8": "351/10000"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 49
+      },
+      "diagram_svg": "../svg/upper-room-assignment/A3-03.svg",
+      "validated_position_compositions": 49,
+      "entry_access_activities": 12,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "B2-01",
+        "B3-01",
+        "A3-04",
+        "A3-03"
+      ]
+    },
+    {
+      "id": "A3-04",
+      "name": "동간연결실",
+      "wing": "A",
+      "depth": 3,
+      "role": "하강 전 짧은 연결 방",
+      "previous_size": 9,
+      "size": 6,
+      "template_id": "6A",
+      "template_title": "짧은 두 경로와 연결문",
+      "reservations": [],
+      "omen_node": "5",
+      "omen_access_path": [
+        "S",
+        "4",
+        "5"
+      ],
+      "elite_candidates": [
+        "6"
+      ],
+      "safe_access_nodes": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "quick_path": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "G"
+      ],
+      "quick_activity_count": 3,
+      "full_activity_count": 6,
+      "additional_full_activity_count": 3,
+      "reachable_activities_without_fixed_encounter": 6,
+      "full_walk": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "2",
+        "5",
+        "4",
+        "5",
+        "6",
+        "5",
+        "2",
+        "1",
+        "S",
+        "1",
+        "2",
+        "3",
+        "G"
+      ],
+      "composition": {
+        "size": 6,
+        "depth": 3,
+        "profile": "A3-04",
+        "profile_label": "동간연결실",
+        "reserved_non_support": 0,
+        "reserved_support": 0,
+        "reserved_total": 0,
+        "min_normal_before_omen": 3,
+        "omen_compatible": true,
+        "normal_range": [
+          3,
+          6
+        ],
+        "normal_mean_if_omen": 3.3395735476701076,
+        "expected": {
+          "support": 0.75,
+          "event": 0.4214222240551499,
+          "reward_extra": 0.26891352006042873,
+          "elite": 0.22009070821431362,
+          "normal": 4.339573547670108
+        },
+        "expected_exact": {
+          "support": "3/4",
+          "event": "19415259/46070800",
+          "reward_extra": "12389061/46070800",
+          "elite": "2027951/9214160",
+          "normal": "7997105/1842832"
+        },
+        "reward_total_mean": 0.26891352006042873,
+        "presence": {
+          "event": 0.4214222240551499,
+          "reward_extra": 0.26891352006042873,
+          "elite": 0.22009070821431362
+        },
+        "count_probabilities": {
+          "support": {
+            "0": 0.4,
+            "1": 0.45,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.57857777594485,
+            "1": 0.4214222240551499
+          },
+          "reward_extra": {
+            "0": 0.7310864799395713,
+            "1": 0.26891352006042873
+          },
+          "elite": {
+            "0": 0.7799092917856864,
+            "1": 0.22009070821431362
+          },
+          "normal": {
+            "3": 0.20840251960026743,
+            "4": 0.3591214131293574,
+            "5": 0.31697606727037514,
+            "6": 0.1155
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "0": "2/5",
+            "1": "9/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "26655541/46070800",
+            "1": "19415259/46070800"
+          },
+          "reward_extra": {
+            "0": "33681739/46070800",
+            "1": "12389061/46070800"
+          },
+          "elite": {
+            "0": "7186209/9214160",
+            "1": "2027951/9214160"
+          },
+          "normal": {
+            "3": "24003177/115177000",
+            "4": "41362527/115177000",
+            "5": "98009/309200",
+            "6": "231/2000"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 19
+      },
+      "diagram_svg": "../svg/upper-room-assignment/A3-04.svg",
+      "validated_position_compositions": 19,
+      "entry_access_activities": 9,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "B2-01",
+        "B3-01",
+        "A3-04"
+      ]
+    },
+    {
+      "id": "B3-01",
+      "name": "통제접수실",
+      "wing": "B",
+      "depth": 3,
+      "role": "본부동 순환 연결",
+      "previous_size": 9,
+      "size": 9,
+      "template_id": "9B",
+      "template_title": "외곽 고리와 안쪽 방",
+      "reservations": [],
+      "omen_node": "5",
+      "omen_access_path": [
+        "S",
+        "1",
+        "4",
+        "5"
+      ],
+      "elite_candidates": [
+        "2",
+        "3",
+        "6",
+        "8",
+        "9"
+      ],
+      "safe_access_nodes": [
+        "1",
+        "4",
+        "5",
+        "7"
+      ],
+      "quick_path": [
+        "S",
+        "1",
+        "4",
+        "7",
+        "G"
+      ],
+      "quick_activity_count": 3,
+      "full_activity_count": 9,
+      "additional_full_activity_count": 6,
+      "reachable_activities_without_fixed_encounter": 9,
+      "full_walk": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "6",
+        "9",
+        "8",
+        "7",
+        "4",
+        "5",
+        "4",
+        "7",
+        "8",
+        "9",
+        "6",
+        "3",
+        "2",
+        "1",
+        "S",
+        "1",
+        "4",
+        "7",
+        "G"
+      ],
+      "composition": {
+        "size": 9,
+        "depth": 3,
+        "profile": "B3-01",
+        "profile_label": "통제접수실",
+        "reserved_non_support": 0,
+        "reserved_support": 0,
+        "reserved_total": 0,
+        "min_normal_before_omen": 3,
+        "omen_compatible": true,
+        "normal_range": [
+          3,
+          9
+        ],
+        "normal_mean_if_omen": 5.500854620586026,
+        "expected": {
+          "support": 0.75,
+          "event": 0.7996844477836214,
+          "reward_extra": 0.5996318557475582,
+          "elite": 0.3498290758827949,
+          "normal": 6.500854620586026
+        },
+        "expected_exact": {
+          "support": "3/4",
+          "event": "53219/66550",
+          "reward_extra": "79811/133100",
+          "elite": "186249/532400",
+          "normal": "692211/106480"
+        },
+        "reward_total_mean": 0.5996318557475582,
+        "presence": {
+          "event": 0.6999211119459053,
+          "reward_extra": 0.549881667918858,
+          "elite": 0.3498290758827949
+        },
+        "count_probabilities": {
+          "support": {
+            "0": 0.4,
+            "1": 0.45,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.30007888805409466,
+            "1": 0.6001577761081893,
+            "2": 0.099763335837716
+          },
+          "reward_extra": {
+            "0": 0.450118332081142,
+            "1": 0.5001314800901577,
+            "2": 0.04975018782870023
+          },
+          "elite": {
+            "0": 0.6501709241172051,
+            "1": 0.3498290758827949
+          },
+          "normal": {
+            "3": 0.005483217505634861,
+            "4": 0.041509306912096165,
+            "5": 0.14985018782870022,
+            "6": 0.29077171299774607,
+            "7": 0.30969807475582267,
+            "8": 0.1675875,
+            "9": 0.0351
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "0": "2/5",
+            "1": "9/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "79881/266200",
+            "1": "79881/133100",
+            "2": "26557/266200"
+          },
+          "reward_extra": {
+            "0": "239643/532400",
+            "1": "26627/53240",
+            "2": "26487/532400"
+          },
+          "elite": {
+            "0": "346151/532400",
+            "1": "186249/532400"
+          },
+          "normal": {
+            "3": "583853/106480000",
+            "4": "4419911/106480000",
+            "5": "997253/6655000",
+            "6": "7740343/26620000",
+            "7": "32976651/106480000",
+            "8": "13407/80000",
+            "9": "351/10000"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 53
+      },
+      "diagram_svg": "../svg/upper-room-assignment/B3-01.svg",
+      "validated_position_compositions": 53,
+      "entry_access_activities": 6,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "B2-01",
+        "B3-01"
+      ]
+    },
+    {
+      "id": "B3-02",
+      "name": "옛회의실",
+      "wing": "B",
+      "depth": 3,
+      "role": "중앙 통로와 부속 구역 탐사",
+      "previous_size": 9,
+      "size": 18,
+      "template_id": "18B",
+      "template_title": "중앙 통로와 양쪽 탐사동",
+      "reservations": [],
+      "omen_node": "8",
+      "omen_access_path": [
+        "S",
+        "3",
+        "2",
+        "8"
+      ],
+      "elite_candidates": [
+        "1",
+        "4",
+        "5",
+        "6",
+        "7",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "16",
+        "17",
+        "18"
+      ],
+      "safe_access_nodes": [
+        "2",
+        "3",
+        "8",
+        "9",
+        "15"
+      ],
+      "quick_path": [
+        "S",
+        "3",
+        "9",
+        "15",
+        "G"
+      ],
+      "quick_activity_count": 3,
+      "full_activity_count": 18,
+      "additional_full_activity_count": 15,
+      "reachable_activities_without_fixed_encounter": 18,
+      "full_walk": [
+        "S",
+        "3",
+        "2",
+        "1",
+        "7",
+        "13",
+        "14",
+        "8",
+        "14",
+        "15",
+        "9",
+        "10",
+        "4",
+        "5",
+        "6",
+        "12",
+        "18",
+        "17",
+        "11",
+        "17",
+        "16",
+        "17",
+        "18",
+        "12",
+        "6",
+        "5",
+        "4",
+        "10",
+        "9",
+        "15",
+        "14",
+        "13",
+        "7",
+        "1",
+        "2",
+        "3",
+        "S",
+        "3",
+        "9",
+        "15",
+        "G"
+      ],
+      "composition": {
+        "size": 18,
+        "depth": 3,
+        "profile": "B3-02",
+        "profile_label": "옛회의실",
+        "reserved_non_support": 0,
+        "reserved_support": 0,
+        "reserved_total": 0,
+        "min_normal_before_omen": 3,
+        "omen_compatible": true,
+        "normal_range": [
+          9,
+          18
+        ],
+        "normal_mean_if_omen": 11.7,
+        "expected": {
+          "support": 0.75,
+          "event": 2.1,
+          "reward_extra": 1.85,
+          "elite": 0.6,
+          "normal": 12.7
+        },
+        "expected_exact": {
+          "support": "3/4",
+          "event": "21/10",
+          "reward_extra": "37/20",
+          "elite": "3/5",
+          "normal": "127/10"
+        },
+        "reward_total_mean": 1.85,
+        "presence": {
+          "event": 0.95,
+          "reward_extra": 0.9,
+          "elite": 0.6
+        },
+        "count_probabilities": {
+          "support": {
+            "0": 0.4,
+            "1": 0.45,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.05,
+            "1": 0.15,
+            "2": 0.45,
+            "3": 0.35
+          },
+          "reward_extra": {
+            "0": 0.1,
+            "1": 0.2,
+            "2": 0.45,
+            "3": 0.25
+          },
+          "elite": {
+            "0": 0.4,
+            "1": 0.6
+          },
+          "normal": {
+            "9": 0.007875,
+            "10": 0.053175,
+            "11": 0.15375,
+            "12": 0.24815,
+            "13": 0.249825,
+            "14": 0.170125,
+            "15": 0.08245,
+            "16": 0.02775,
+            "17": 0.0061,
+            "18": 0.0008
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "0": "2/5",
+            "1": "9/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "1/20",
+            "1": "3/20",
+            "2": "9/20",
+            "3": "7/20"
+          },
+          "reward_extra": {
+            "0": "1/10",
+            "1": "1/5",
+            "2": "9/20",
+            "3": "1/4"
+          },
+          "elite": {
+            "0": "2/5",
+            "1": "3/5"
+          },
+          "normal": {
+            "9": "63/8000",
+            "10": "2127/40000",
+            "11": "123/800",
+            "12": "4963/20000",
+            "13": "9993/40000",
+            "14": "1361/8000",
+            "15": "1649/20000",
+            "16": "111/4000",
+            "17": "61/10000",
+            "18": "1/1250"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 96
+      },
+      "diagram_svg": "../svg/upper-room-assignment/B3-02.svg",
+      "validated_position_compositions": 96,
+      "entry_access_activities": 9,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "B2-01",
+        "B3-01",
+        "B3-02"
+      ]
+    },
+    {
+      "id": "B3-03",
+      "name": "중앙기록실",
+      "wing": "B",
+      "depth": 3,
+      "role": "중앙 통로의 저장 거점",
+      "previous_size": 6,
+      "size": 9,
+      "template_id": "9C",
+      "template_title": "중앙 복귀와 단일 출구",
+      "reservations": [
+        {
+          "node": "5",
+          "label": "SavePoint",
+          "short_label": "저장",
+          "category": "save",
+          "condition": null,
+          "access_path": [
+            "S",
+            "2",
+            "5"
+          ],
+          "access_activities": 2,
+          "position": {
+            "x": 900,
+            "y": 715
+          },
+          "from_facility_entry_activities": 11
+        }
+      ],
+      "omen_node": "3",
+      "omen_access_path": [
+        "S",
+        "2",
+        "5",
+        "6",
+        "3"
+      ],
+      "elite_candidates": [
+        "1",
+        "4",
+        "7",
+        "9"
+      ],
+      "safe_access_nodes": [
+        "2",
+        "3",
+        "5",
+        "6",
+        "8"
+      ],
+      "quick_path": [
+        "S",
+        "2",
+        "5",
+        "8",
+        "G"
+      ],
+      "quick_activity_count": 3,
+      "full_activity_count": 9,
+      "additional_full_activity_count": 6,
+      "reachable_activities_without_fixed_encounter": 9,
+      "full_walk": [
+        "S",
+        "2",
+        "1",
+        "4",
+        "7",
+        "8",
+        "5",
+        "6",
+        "3",
+        "6",
+        "9",
+        "6",
+        "5",
+        "8",
+        "7",
+        "4",
+        "1",
+        "2",
+        "S",
+        "2",
+        "5",
+        "8",
+        "G"
+      ],
+      "composition": {
+        "size": 9,
+        "depth": 3,
+        "profile": "B3-03",
+        "profile_label": "중앙기록실",
+        "reserved_non_support": 1,
+        "reserved_support": 0,
+        "reserved_total": 1,
+        "min_normal_before_omen": 3,
+        "omen_compatible": true,
+        "normal_range": [
+          3,
+          8
+        ],
+        "normal_mean_if_omen": 4.514352900020745,
+        "expected": {
+          "support": 0.75,
+          "event": 0.7945393826476582,
+          "reward_extra": 0.5944436541092724,
+          "elite": 0.3466640632223247,
+          "normal": 5.514352900020745
+        },
+        "expected_exact": {
+          "support": "3/4",
+          "event": "204526673/257415400",
+          "reward_extra": "153018951/257415400",
+          "elite": "178473337/514830800",
+          "normal": "567791743/102966160"
+        },
+        "reward_total_mean": 0.5944436541092724,
+        "presence": {
+          "event": 0.698227658485079,
+          "reward_extra": 0.5473414877276185,
+          "elite": 0.3466640632223247
+        },
+        "count_probabilities": {
+          "support": {
+            "0": 0.4,
+            "1": 0.45,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.301772341514921,
+            "1": 0.6019159343224998,
+            "2": 0.09631172416257924
+          },
+          "reward_extra": {
+            "0": 0.4526585122723815,
+            "1": 0.5002393213459645,
+            "2": 0.04710216638165393
+          },
+          "elite": {
+            "0": 0.6533359367776753,
+            "1": 0.3466640632223247
+          },
+          "normal": {
+            "3": 0.04239832107946922,
+            "4": 0.15184073097413753,
+            "5": 0.2926273990600407,
+            "6": 0.3103768246188845,
+            "7": 0.16765672426746808,
+            "8": 0.0351
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "0": "2/5",
+            "1": "9/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "9710106/32176925",
+            "1": "154942431/257415400",
+            "2": "24792121/257415400"
+          },
+          "reward_extra": {
+            "0": "14565159/32176925",
+            "1": "25753861/51483080",
+            "2": "12124823/257415400"
+          },
+          "elite": {
+            "0": "336357463/514830800",
+            "1": "178473337/514830800"
+          },
+          "normal": {
+            "3": "545699039/12870770000",
+            "4": "15634457/102966160",
+            "5": "3766339949/12870770000",
+            "6": "3994788723/12870770000",
+            "7": "2231511/13310000",
+            "8": "351/10000"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 49
+      },
+      "diagram_svg": "../svg/upper-room-assignment/B3-03.svg",
+      "validated_position_compositions": 49,
+      "entry_access_activities": 9,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "B2-01",
+        "B3-01",
+        "B3-03"
+      ]
+    },
+    {
+      "id": "B3-04",
+      "name": "동간연결실",
+      "wing": "B",
+      "depth": 3,
+      "role": "하강 전 짧은 순환 연결",
+      "previous_size": 9,
+      "size": 6,
+      "template_id": "6C",
+      "template_title": "작은 순환 회랑",
+      "reservations": [],
+      "omen_node": "5",
+      "omen_access_path": [
+        "S",
+        "4",
+        "5"
+      ],
+      "elite_candidates": [
+        "6"
+      ],
+      "safe_access_nodes": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "quick_path": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "G"
+      ],
+      "quick_activity_count": 3,
+      "full_activity_count": 6,
+      "additional_full_activity_count": 3,
+      "reachable_activities_without_fixed_encounter": 6,
+      "full_walk": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "6",
+        "5",
+        "4",
+        "5",
+        "6",
+        "3",
+        "2",
+        "1",
+        "S",
+        "1",
+        "2",
+        "3",
+        "G"
+      ],
+      "composition": {
+        "size": 6,
+        "depth": 3,
+        "profile": "B3-04",
+        "profile_label": "동간연결실",
+        "reserved_non_support": 0,
+        "reserved_support": 0,
+        "reserved_total": 0,
+        "min_normal_before_omen": 3,
+        "omen_compatible": true,
+        "normal_range": [
+          3,
+          6
+        ],
+        "normal_mean_if_omen": 3.3395735476701076,
+        "expected": {
+          "support": 0.75,
+          "event": 0.4214222240551499,
+          "reward_extra": 0.26891352006042873,
+          "elite": 0.22009070821431362,
+          "normal": 4.339573547670108
+        },
+        "expected_exact": {
+          "support": "3/4",
+          "event": "19415259/46070800",
+          "reward_extra": "12389061/46070800",
+          "elite": "2027951/9214160",
+          "normal": "7997105/1842832"
+        },
+        "reward_total_mean": 0.26891352006042873,
+        "presence": {
+          "event": 0.4214222240551499,
+          "reward_extra": 0.26891352006042873,
+          "elite": 0.22009070821431362
+        },
+        "count_probabilities": {
+          "support": {
+            "0": 0.4,
+            "1": 0.45,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.57857777594485,
+            "1": 0.4214222240551499
+          },
+          "reward_extra": {
+            "0": 0.7310864799395713,
+            "1": 0.26891352006042873
+          },
+          "elite": {
+            "0": 0.7799092917856864,
+            "1": 0.22009070821431362
+          },
+          "normal": {
+            "3": 0.20840251960026743,
+            "4": 0.3591214131293574,
+            "5": 0.31697606727037514,
+            "6": 0.1155
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "0": "2/5",
+            "1": "9/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "26655541/46070800",
+            "1": "19415259/46070800"
+          },
+          "reward_extra": {
+            "0": "33681739/46070800",
+            "1": "12389061/46070800"
+          },
+          "elite": {
+            "0": "7186209/9214160",
+            "1": "2027951/9214160"
+          },
+          "normal": {
+            "3": "24003177/115177000",
+            "4": "41362527/115177000",
+            "5": "98009/309200",
+            "6": "231/2000"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 19
+      },
+      "diagram_svg": "../svg/upper-room-assignment/B3-04.svg",
+      "validated_position_compositions": 19,
+      "entry_access_activities": 9,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "B1-03",
+        "B2-04",
+        "B3-04"
+      ]
+    },
+    {
+      "id": "C3-01",
+      "name": "추출연결실",
+      "wing": "C",
+      "depth": 3,
+      "role": "추출동 회랑 연결",
+      "previous_size": 9,
+      "size": 12,
+      "template_id": "12C",
+      "template_title": "외곽 회랑과 내부 횡단로",
+      "reservations": [],
+      "omen_node": "7",
+      "omen_access_path": [
+        "S",
+        "4",
+        "8",
+        "7"
+      ],
+      "elite_candidates": [
+        "2",
+        "3",
+        "6",
+        "11",
+        "12"
+      ],
+      "safe_access_nodes": [
+        "1",
+        "4",
+        "5",
+        "7",
+        "8",
+        "9",
+        "10"
+      ],
+      "quick_path": [
+        "S",
+        "1",
+        "5",
+        "9",
+        "10",
+        "G"
+      ],
+      "quick_activity_count": 4,
+      "full_activity_count": 12,
+      "additional_full_activity_count": 8,
+      "reachable_activities_without_fixed_encounter": 12,
+      "full_walk": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "4",
+        "8",
+        "7",
+        "6",
+        "5",
+        "9",
+        "10",
+        "11",
+        "12",
+        "11",
+        "10",
+        "9",
+        "5",
+        "6",
+        "7",
+        "8",
+        "4",
+        "3",
+        "2",
+        "1",
+        "S",
+        "1",
+        "5",
+        "9",
+        "10",
+        "G"
+      ],
+      "composition": {
+        "size": 12,
+        "depth": 3,
+        "profile": "C3-01",
+        "profile_label": "추출연결실",
+        "reserved_non_support": 0,
+        "reserved_support": 0,
+        "reserved_total": 0,
+        "min_normal_before_omen": 3,
+        "omen_compatible": true,
+        "normal_range": [
+          5,
+          12
+        ],
+        "normal_mean_if_omen": 7.85,
+        "expected": {
+          "support": 0.75,
+          "event": 1.05,
+          "reward_extra": 0.85,
+          "elite": 0.5,
+          "normal": 8.85
+        },
+        "expected_exact": {
+          "support": "3/4",
+          "event": "21/20",
+          "reward_extra": "17/20",
+          "elite": "1/2",
+          "normal": "177/20"
+        },
+        "reward_total_mean": 0.85,
+        "presence": {
+          "event": 0.8,
+          "reward_extra": 0.7,
+          "elite": 0.5
+        },
+        "count_probabilities": {
+          "support": {
+            "0": 0.4,
+            "1": 0.45,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.2,
+            "1": 0.55,
+            "2": 0.25
+          },
+          "reward_extra": {
+            "0": 0.3,
+            "1": 0.55,
+            "2": 0.15
+          },
+          "elite": {
+            "0": 0.5,
+            "1": 0.5
+          },
+          "normal": {
+            "5": 0.0028125,
+            "6": 0.02775,
+            "7": 0.1125,
+            "8": 0.243875,
+            "9": 0.3041875,
+            "10": 0.216375,
+            "11": 0.0805,
+            "12": 0.012
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "0": "2/5",
+            "1": "9/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "1/5",
+            "1": "11/20",
+            "2": "1/4"
+          },
+          "reward_extra": {
+            "0": "3/10",
+            "1": "11/20",
+            "2": "3/20"
+          },
+          "elite": {
+            "0": "1/2",
+            "1": "1/2"
+          },
+          "normal": {
+            "5": "9/3200",
+            "6": "111/4000",
+            "7": "9/80",
+            "8": "1951/8000",
+            "9": "4867/16000",
+            "10": "1731/8000",
+            "11": "161/2000",
+            "12": "3/250"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 54
+      },
+      "diagram_svg": "../svg/upper-room-assignment/C3-01.svg",
+      "validated_position_compositions": 54,
+      "entry_access_activities": 12,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "B1-03",
+        "B2-04",
+        "B3-04",
+        "C3-01"
+      ]
+    },
+    {
+      "id": "C3-02",
+      "name": "보호계약실",
+      "wing": "C",
+      "depth": 3,
+      "role": "중앙 홀과 부속 구역 탐사",
+      "previous_size": 9,
+      "size": 15,
+      "template_id": "15A",
+      "template_title": "중앙 홀과 두 순환 구역",
+      "reservations": [],
+      "omen_node": "4",
+      "omen_access_path": [
+        "S",
+        "3",
+        "8",
+        "9",
+        "4"
+      ],
+      "elite_candidates": [
+        "1",
+        "2",
+        "5",
+        "6",
+        "10",
+        "13",
+        "14",
+        "15"
+      ],
+      "safe_access_nodes": [
+        "3",
+        "4",
+        "7",
+        "8",
+        "9",
+        "11",
+        "12"
+      ],
+      "quick_path": [
+        "S",
+        "3",
+        "8",
+        "7",
+        "12",
+        "11",
+        "G"
+      ],
+      "quick_activity_count": 5,
+      "full_activity_count": 15,
+      "additional_full_activity_count": 10,
+      "reachable_activities_without_fixed_encounter": 15,
+      "full_walk": [
+        "S",
+        "3",
+        "8",
+        "7",
+        "2",
+        "1",
+        "6",
+        "11",
+        "12",
+        "13",
+        "14",
+        "9",
+        "4",
+        "5",
+        "10",
+        "15",
+        "10",
+        "5",
+        "4",
+        "9",
+        "14",
+        "13",
+        "12",
+        "11",
+        "6",
+        "1",
+        "2",
+        "7",
+        "8",
+        "3",
+        "S",
+        "3",
+        "8",
+        "7",
+        "12",
+        "11",
+        "G"
+      ],
+      "composition": {
+        "size": 15,
+        "depth": 3,
+        "profile": "C3-02",
+        "profile_label": "보호계약실",
+        "reserved_non_support": 0,
+        "reserved_support": 0,
+        "reserved_total": 0,
+        "min_normal_before_omen": 3,
+        "omen_compatible": true,
+        "normal_range": [
+          6,
+          15
+        ],
+        "normal_mean_if_omen": 9.6,
+        "expected": {
+          "support": 0.75,
+          "event": 1.65,
+          "reward_extra": 1.45,
+          "elite": 0.55,
+          "normal": 10.6
+        },
+        "expected_exact": {
+          "support": "3/4",
+          "event": "33/20",
+          "reward_extra": "29/20",
+          "elite": "11/20",
+          "normal": "53/5"
+        },
+        "reward_total_mean": 1.45,
+        "presence": {
+          "event": 0.9,
+          "reward_extra": 0.85,
+          "elite": 0.55
+        },
+        "count_probabilities": {
+          "support": {
+            "0": 0.4,
+            "1": 0.45,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.1,
+            "1": 0.3,
+            "2": 0.45,
+            "3": 0.15
+          },
+          "reward_extra": {
+            "0": 0.15,
+            "1": 0.35,
+            "2": 0.4,
+            "3": 0.1
+          },
+          "elite": {
+            "0": 0.45,
+            "1": 0.55
+          },
+          "normal": {
+            "6": 0.0012375,
+            "7": 0.0133875,
+            "8": 0.06106875,
+            "9": 0.155325,
+            "10": 0.2449875,
+            "11": 0.2517625,
+            "12": 0.17201875,
+            "13": 0.076775,
+            "14": 0.0207375,
+            "15": 0.0027
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "0": "2/5",
+            "1": "9/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "1/10",
+            "1": "3/10",
+            "2": "9/20",
+            "3": "3/20"
+          },
+          "reward_extra": {
+            "0": "3/20",
+            "1": "7/20",
+            "2": "2/5",
+            "3": "1/10"
+          },
+          "elite": {
+            "0": "9/20",
+            "1": "11/20"
+          },
+          "normal": {
+            "6": "99/80000",
+            "7": "1071/80000",
+            "8": "9771/160000",
+            "9": "6213/40000",
+            "10": "19599/80000",
+            "11": "20141/80000",
+            "12": "27523/160000",
+            "13": "3071/40000",
+            "14": "1659/80000",
+            "15": "27/10000"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 96
+      },
+      "diagram_svg": "../svg/upper-room-assignment/C3-02.svg",
+      "validated_position_compositions": 96,
+      "entry_access_activities": 16,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "B1-03",
+        "B2-04",
+        "B3-04",
+        "C3-01",
+        "C3-02"
+      ]
+    },
+    {
+      "id": "C3-03",
+      "name": "작업기록실",
+      "wing": "C",
+      "depth": 3,
+      "role": "순환 통로의 저장 거점",
+      "previous_size": 6,
+      "size": 9,
+      "template_id": "9B",
+      "template_title": "외곽 고리와 안쪽 방",
+      "reservations": [
+        {
+          "node": "4",
+          "label": "SavePoint",
+          "short_label": "저장",
+          "category": "save",
+          "condition": null,
+          "access_path": [
+            "S",
+            "1",
+            "4"
+          ],
+          "access_activities": 2,
+          "position": {
+            "x": 400,
+            "y": 715
+          },
+          "from_facility_entry_activities": 18
+        }
+      ],
+      "omen_node": "5",
+      "omen_access_path": [
+        "S",
+        "1",
+        "4",
+        "5"
+      ],
+      "elite_candidates": [
+        "2",
+        "3",
+        "6",
+        "8",
+        "9"
+      ],
+      "safe_access_nodes": [
+        "1",
+        "4",
+        "5",
+        "7"
+      ],
+      "quick_path": [
+        "S",
+        "1",
+        "4",
+        "7",
+        "G"
+      ],
+      "quick_activity_count": 3,
+      "full_activity_count": 9,
+      "additional_full_activity_count": 6,
+      "reachable_activities_without_fixed_encounter": 9,
+      "full_walk": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "6",
+        "9",
+        "8",
+        "7",
+        "4",
+        "5",
+        "4",
+        "7",
+        "8",
+        "9",
+        "6",
+        "3",
+        "2",
+        "1",
+        "S",
+        "1",
+        "4",
+        "7",
+        "G"
+      ],
+      "composition": {
+        "size": 9,
+        "depth": 3,
+        "profile": "C3-03",
+        "profile_label": "작업기록실",
+        "reserved_non_support": 1,
+        "reserved_support": 0,
+        "reserved_total": 1,
+        "min_normal_before_omen": 3,
+        "omen_compatible": true,
+        "normal_range": [
+          3,
+          8
+        ],
+        "normal_mean_if_omen": 4.514352900020745,
+        "expected": {
+          "support": 0.75,
+          "event": 0.7945393826476582,
+          "reward_extra": 0.5944436541092724,
+          "elite": 0.3466640632223247,
+          "normal": 5.514352900020745
+        },
+        "expected_exact": {
+          "support": "3/4",
+          "event": "204526673/257415400",
+          "reward_extra": "153018951/257415400",
+          "elite": "178473337/514830800",
+          "normal": "567791743/102966160"
+        },
+        "reward_total_mean": 0.5944436541092724,
+        "presence": {
+          "event": 0.698227658485079,
+          "reward_extra": 0.5473414877276185,
+          "elite": 0.3466640632223247
+        },
+        "count_probabilities": {
+          "support": {
+            "0": 0.4,
+            "1": 0.45,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.301772341514921,
+            "1": 0.6019159343224998,
+            "2": 0.09631172416257924
+          },
+          "reward_extra": {
+            "0": 0.4526585122723815,
+            "1": 0.5002393213459645,
+            "2": 0.04710216638165393
+          },
+          "elite": {
+            "0": 0.6533359367776753,
+            "1": 0.3466640632223247
+          },
+          "normal": {
+            "3": 0.04239832107946922,
+            "4": 0.15184073097413753,
+            "5": 0.2926273990600407,
+            "6": 0.3103768246188845,
+            "7": 0.16765672426746808,
+            "8": 0.0351
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "0": "2/5",
+            "1": "9/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "9710106/32176925",
+            "1": "154942431/257415400",
+            "2": "24792121/257415400"
+          },
+          "reward_extra": {
+            "0": "14565159/32176925",
+            "1": "25753861/51483080",
+            "2": "12124823/257415400"
+          },
+          "elite": {
+            "0": "336357463/514830800",
+            "1": "178473337/514830800"
+          },
+          "normal": {
+            "3": "545699039/12870770000",
+            "4": "15634457/102966160",
+            "5": "3766339949/12870770000",
+            "6": "3994788723/12870770000",
+            "7": "2231511/13310000",
+            "8": "351/10000"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 49
+      },
+      "diagram_svg": "../svg/upper-room-assignment/C3-03.svg",
+      "validated_position_compositions": 49,
+      "entry_access_activities": 16,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "B1-03",
+        "B2-04",
+        "B3-04",
+        "C3-01",
+        "C3-03"
+      ]
+    },
+    {
+      "id": "C3-04",
+      "name": "동간연결실",
+      "wing": "C",
+      "depth": 3,
+      "role": "하강 전 짧은 연결 방",
+      "previous_size": 9,
+      "size": 6,
+      "template_id": "6A",
+      "template_title": "짧은 두 경로와 연결문",
+      "reservations": [],
+      "omen_node": "5",
+      "omen_access_path": [
+        "S",
+        "4",
+        "5"
+      ],
+      "elite_candidates": [
+        "6"
+      ],
+      "safe_access_nodes": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "quick_path": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "G"
+      ],
+      "quick_activity_count": 3,
+      "full_activity_count": 6,
+      "additional_full_activity_count": 3,
+      "reachable_activities_without_fixed_encounter": 6,
+      "full_walk": [
+        "S",
+        "1",
+        "2",
+        "3",
+        "2",
+        "5",
+        "4",
+        "5",
+        "6",
+        "5",
+        "2",
+        "1",
+        "S",
+        "1",
+        "2",
+        "3",
+        "G"
+      ],
+      "composition": {
+        "size": 6,
+        "depth": 3,
+        "profile": "C3-04",
+        "profile_label": "동간연결실",
+        "reserved_non_support": 0,
+        "reserved_support": 0,
+        "reserved_total": 0,
+        "min_normal_before_omen": 3,
+        "omen_compatible": true,
+        "normal_range": [
+          3,
+          6
+        ],
+        "normal_mean_if_omen": 3.3395735476701076,
+        "expected": {
+          "support": 0.75,
+          "event": 0.4214222240551499,
+          "reward_extra": 0.26891352006042873,
+          "elite": 0.22009070821431362,
+          "normal": 4.339573547670108
+        },
+        "expected_exact": {
+          "support": "3/4",
+          "event": "19415259/46070800",
+          "reward_extra": "12389061/46070800",
+          "elite": "2027951/9214160",
+          "normal": "7997105/1842832"
+        },
+        "reward_total_mean": 0.26891352006042873,
+        "presence": {
+          "event": 0.4214222240551499,
+          "reward_extra": 0.26891352006042873,
+          "elite": 0.22009070821431362
+        },
+        "count_probabilities": {
+          "support": {
+            "0": 0.4,
+            "1": 0.45,
+            "2": 0.15
+          },
+          "event": {
+            "0": 0.57857777594485,
+            "1": 0.4214222240551499
+          },
+          "reward_extra": {
+            "0": 0.7310864799395713,
+            "1": 0.26891352006042873
+          },
+          "elite": {
+            "0": 0.7799092917856864,
+            "1": 0.22009070821431362
+          },
+          "normal": {
+            "3": 0.20840251960026743,
+            "4": 0.3591214131293574,
+            "5": 0.31697606727037514,
+            "6": 0.1155
+          }
+        },
+        "count_probabilities_exact": {
+          "support": {
+            "0": "2/5",
+            "1": "9/20",
+            "2": "3/20"
+          },
+          "event": {
+            "0": "26655541/46070800",
+            "1": "19415259/46070800"
+          },
+          "reward_extra": {
+            "0": "33681739/46070800",
+            "1": "12389061/46070800"
+          },
+          "elite": {
+            "0": "7186209/9214160",
+            "1": "2027951/9214160"
+          },
+          "normal": {
+            "3": "24003177/115177000",
+            "4": "41362527/115177000",
+            "5": "98009/309200",
+            "6": "231/2000"
+          }
+        },
+        "probability_sum_exact": "1",
+        "composition_count": 19
+      },
+      "diagram_svg": "../svg/upper-room-assignment/C3-04.svg",
+      "validated_position_compositions": 19,
+      "entry_access_activities": 15,
+      "entry_room_path": [
+        "ENTRY",
+        "B1-01",
+        "B1-03",
+        "C1-01",
+        "C1-03",
+        "C2-04",
+        "C3-04"
+      ]
+    }
+  ],
+  "facility_access": {
+    "services": [
+      {
+        "room": "B1-01",
+        "name": "중앙접수홀",
+        "label": "초반 유물 보상",
+        "node": "2",
+        "local_activities": 1,
+        "entry_activities": 1,
+        "room_path": [
+          "ENTRY",
+          "B1-01"
+        ],
+        "local_path": [
+          "S",
+          "2"
+        ]
+      },
+      {
+        "room": "B1-02",
+        "name": "본사연락실",
+        "label": "본사 연락",
+        "node": "2",
+        "local_activities": 2,
+        "entry_activities": 5,
+        "room_path": [
+          "ENTRY",
+          "B1-01",
+          "B1-02"
+        ],
+        "local_path": [
+          "S",
+          "1",
+          "2"
+        ]
+      },
+      {
+        "room": "A2-03",
+        "name": "문서정비실",
+        "label": "정비",
+        "node": "2",
+        "local_activities": 2,
+        "entry_activities": 12,
+        "room_path": [
+          "ENTRY",
+          "B1-01",
+          "A1-03",
+          "A2-04",
+          "A2-03"
+        ],
+        "local_path": [
+          "S",
+          "1",
+          "2"
+        ]
+      },
+      {
+        "room": "B2-03",
+        "name": "장비정비실",
+        "label": "정비",
+        "node": "5",
+        "local_activities": 2,
+        "entry_activities": 8,
+        "room_path": [
+          "ENTRY",
+          "B1-01",
+          "B2-01",
+          "B2-03"
+        ],
+        "local_path": [
+          "S",
+          "2",
+          "5"
+        ]
+      },
+      {
+        "room": "C2-03",
+        "name": "장비정비실",
+        "label": "정비",
+        "node": "2",
+        "local_activities": 2,
+        "entry_activities": 14,
+        "room_path": [
+          "ENTRY",
+          "B1-01",
+          "B1-03",
+          "B2-04",
+          "C2-01",
+          "C2-03"
+        ],
+        "local_path": [
+          "S",
+          "1",
+          "2"
+        ]
+      },
+      {
+        "room": "A3-03",
+        "name": "탐사기록실",
+        "label": "SavePoint",
+        "node": "4",
+        "local_activities": 2,
+        "entry_activities": 14,
+        "room_path": [
+          "ENTRY",
+          "B1-01",
+          "B2-01",
+          "B3-01",
+          "A3-04",
+          "A3-03"
+        ],
+        "local_path": [
+          "S",
+          "1",
+          "4"
+        ]
+      },
+      {
+        "room": "B3-03",
+        "name": "중앙기록실",
+        "label": "SavePoint",
+        "node": "5",
+        "local_activities": 2,
+        "entry_activities": 11,
+        "room_path": [
+          "ENTRY",
+          "B1-01",
+          "B2-01",
+          "B3-01",
+          "B3-03"
+        ],
+        "local_path": [
+          "S",
+          "2",
+          "5"
+        ]
+      },
+      {
+        "room": "C3-03",
+        "name": "작업기록실",
+        "label": "SavePoint",
+        "node": "4",
+        "local_activities": 2,
+        "entry_activities": 18,
+        "room_path": [
+          "ENTRY",
+          "B1-01",
+          "B1-03",
+          "B2-04",
+          "B3-04",
+          "C3-01",
+          "C3-03"
+        ],
+        "local_path": [
+          "S",
+          "1",
+          "4"
+        ]
+      }
+    ],
+    "first_3f_gate_activities": 9,
+    "first_3f_gate_room": "B3-01",
+    "first_3f_gate_room_path": [
+      "ENTRY",
+      "B1-01",
+      "B2-01",
+      "B3-01"
+    ],
+    "all_upper_rooms_reachable": true,
+    "scope": "Shortest structural access from facility Entry, using boss-bypassing room routes. Counts include destination activity, exclude Start/Gate, and are not battle counts or deterrence costs."
+  }
+}

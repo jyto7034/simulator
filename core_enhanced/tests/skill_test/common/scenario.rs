@@ -324,6 +324,7 @@ fn build_battle_scenario(
 
     BattleScenario {
         battlefield: BattleFieldSpec {
+            walkable_paths: Vec::new(),
             object_placement: None,
             width: crate::common::BOARD_SIZE.0,
             height: crate::common::BOARD_SIZE.1,

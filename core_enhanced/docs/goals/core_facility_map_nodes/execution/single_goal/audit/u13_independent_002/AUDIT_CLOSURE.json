@@ -1,0 +1,479 @@
+{
+  "audit": "u13_independent_002",
+  "closed_at": "2026-10-14T06:03:53.057324+00:00",
+  "authorization": "User: core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 을 읽은 뒤 u13 최종 독립 감사 작업에 착수해줘.",
+  "mode": "GEX-20 stage-run",
+  "goal_set": "GS-CFMN-001",
+  "goal": "GOAL-CFMN-01",
+  "phase": "PHASE-CFMN-01",
+  "target": "u13_current_002",
+  "target_record_sha256": "582cdbb1e696c4ca25b2b102fa2dcf8c388ccfb54be0bab9b489f9b6e5589d2b",
+  "source_archive_sha256": "b60142fe59f70e58fa0c345690dfa6970a9d6319224f5545e4b0f9bfcb82317b",
+  "verdict": "Complete / High",
+  "closed_findings": [
+    "F-U13-001",
+    "F-U13-002"
+  ],
+  "open_completion_blocking": 0,
+  "acceptance": 30,
+  "integration": 10,
+  "validation_dimensions": 10,
+  "leaf_execution_nodes": 5,
+  "currentness": "current / unchanged at entry and exit",
+  "counts": {
+    "SOURCE_MANIFEST.json": 701,
+    "EVIDENCE_MANIFEST.json": 169,
+    "predecessor_evidence": 1082
+  },
+  "new_execution": {
+    "public_contract_cases": {
+      "executed": 7,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    },
+    "current_public_route": {
+      "executed": 1,
+      "passed": 1,
+      "includes": "Gate roundtrip, prepared discard, child-process Continue, SavePoint, Gate Return"
+    },
+    "current_bounded_measurements": {
+      "executed": 6,
+      "passed": 6,
+      "exact_requested_heap_recovered": 6
+    }
+  },
+  "reuse": {
+    "core_current_correction_tests": {
+      "executed_by_correction": 121,
+      "passed": 121,
+      "failed": 0,
+      "ignored": 0,
+      "audit_rerun": false,
+      "prior119_all_in_current121": true
+    },
+    "predecessor_normal_host_steps": 30,
+    "named_baseline_refs_verified": 17,
+    "scope": "byte-unchanged mechanisms; old approval and measurement identity retained"
+  },
+  "independence": "Current reviewer did not implement/design/correct U13 in this conversation; read-only audit plus local probes, no delegation. No unverifiable runtime-model claim.",
+  "source_mutations": 0,
+  "separate_GEX30_required": false,
+  "U14_started": false,
+  "canonical_report": {
+    "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/COMPLETION_AUDIT.md",
+    "sha256": "7684e3732d340fd7cf815d25d9b319a8d861754f491f7aa7a2604646ca995f2c"
+  },
+  "scope_limits": [
+    "U16 reward execution",
+    "U20 omen/condition producer",
+    "unique final bosses",
+    "full official playthrough",
+    "FacilityLayout mod add/replace witness",
+    "Unity/deployment/final SLO",
+    "no current-binary Normal approval issued",
+    "no whole-repository suite green claim"
+  ],
+  "audit_artifacts": [
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/AUDIT_TOOL_NOTES.json",
+      "bytes": 495,
+      "sha256": "752ebd841221b16562d1802498bf13f472370896c48a669dbcaa9b3f4845b0f8"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/BASELINE_REFERENCE_REVIEW.json",
+      "bytes": 227,
+      "sha256": "9a07b8a4f8bdd1bbe9d23eb5a1004e24056da924399c3584efdc5de3773bd5cd"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/BUILD_RECEIPT.json",
+      "bytes": 458,
+      "sha256": "5c9d1a27690ee42a52ea9cf517489ee6f8fc118669d2945749a4086694628bb0"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/CONDITION_REVIEW.json",
+      "bytes": 58958,
+      "sha256": "3a99def7adb9a78fa47321009576174b3de746eb9e395ff592f8263ac46bc7a1"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/CONSUMER_BUILD_RECEIPT.json",
+      "bytes": 452,
+      "sha256": "1a6f50afa1e7f2037680f12feccdb6628a9f8a5cc72a114d3e296039c2874bb0"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/CONSUMER_RECEIPT.json",
+      "bytes": 7266,
+      "sha256": "bd68bda863380eeea9bf3b066b5ac115e236491d6984f444f73b56a0be44d975"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/CORRECTION_REVIEW.json",
+      "bytes": 2858,
+      "sha256": "c2fd66daad6aa8e5cae8239dd273638339983c3be86e700e6388bc731d10d260"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/CURRENTNESS_ENTRY.json",
+      "bytes": 515,
+      "sha256": "ba369904ffeff900446fe3183e0ea2d28042122d100cf6ab43034d66e929eae0"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/CURRENTNESS_EXIT.json",
+      "bytes": 515,
+      "sha256": "ffe840e66a84772f8962d39a34221caaae2d1091025708e532069a1981169cd8"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/FINDINGS.json",
+      "bytes": 772,
+      "sha256": "bcf9af035f31d4c04ab57748d232192eead067b936c96fd592ffc02820557b74"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/LOCATOR_UPDATE.json",
+      "bytes": 1134,
+      "sha256": "ce516f2d5cba0fc586e86087011f2dda53b3d8d880f191952b4222c006d98b33"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/PREDECESSOR_COMPLETION_AUDIT.md",
+      "bytes": 12781,
+      "sha256": "eb75936b3509cbd685ef39eb9cd09816584afd30e1e631b6d5205c2ec811ecb2"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/PROBE_PLAN.md",
+      "bytes": 3078,
+      "sha256": "aee736b1fcaa5e54790278d92f266cbcd5225b6458bf52f8cf13836c678d1d93"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/PROBE_RECEIPT.json",
+      "bytes": 4597,
+      "sha256": "465822d308787e7d4686763feda4dd4e14006ff08d958884f9c3698ea196d263"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/RAW_REVIEW.json",
+      "bytes": 1984,
+      "sha256": "66f8a2b24a8f7bafb990e028f9ce241e400e56ad509a9f01c0adef69212eff1e"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/SOURCE_REVIEW.json",
+      "bytes": 3696,
+      "sha256": "48427484dcc80360dbe536c0bd77c911989d206b6b26d150636fa2df8f3d9872"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/artifacts/u13_facility_consumer",
+      "bytes": 36372448,
+      "sha256": "5dfcb0fe432a5dc84ab9816537d4724b1732e7d4a354c9ad60e8efeeb9378e07"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/artifacts/u13_successor_audit_probe",
+      "bytes": 29275288,
+      "sha256": "f2114ed2023db8b35282d3aa7ac380c99948a884b737060ca9f90aca8ec8dd6e"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/build.stderr.log",
+      "bytes": 18209,
+      "sha256": "777102467cedc955fbe876353fe9cb54ab7ca888d013d97d7ec69a276c66f553"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/build.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/RESULT.json",
+      "bytes": 4229,
+      "sha256": "f52887a699c98e492f692ef027531bc1588c9737f21560d380bfbcc39b394e3d"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/expanded_1.json",
+      "bytes": 16411,
+      "sha256": "f233ba1154cd5dba0d148d1773c423dc2ffb38f8fbd1fc07d45bfdcccc80a8dc"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/expanded_1.receipt.json",
+      "bytes": 256,
+      "sha256": "22ed77d539734d7439cf15d57d727c001c3700aaf3a6506d031123fecf9492bb"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/expanded_1.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/expanded_1.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/expanded_2.json",
+      "bytes": 16411,
+      "sha256": "9c9b55cf0cf8b32ac2c07c6e2a36ef300fbb50f259b361f40d4aba15158fd782"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/expanded_2.receipt.json",
+      "bytes": 256,
+      "sha256": "9f158346da8435075eb8124ef59006a6956c10ec842f4980e1eb4346a6145d76"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/expanded_2.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/expanded_2.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/expanded_3.json",
+      "bytes": 16409,
+      "sha256": "d1e9566b6f0cccbc7ed3ad324e07de85e0202441d4ca4e36fea36ea3daebf40f"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/expanded_3.receipt.json",
+      "bytes": 256,
+      "sha256": "d399ed51c7ee0810429546972a3b5d23972de802c1b3ea8197726effeae3cc21"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/expanded_3.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/expanded_3.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/official_1.json",
+      "bytes": 16387,
+      "sha256": "1b043d6a36b778596f07c24f62aedd066a3b19011fd60d349172d006bfb63ec8"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/official_1.receipt.json",
+      "bytes": 257,
+      "sha256": "2a97bfa4042730d43819a96a24f038e0a5bcdbccd3baac917cc2632227850f4e"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/official_1.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/official_1.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/official_2.json",
+      "bytes": 16389,
+      "sha256": "cf3b8743828732ff6831aae1475fc1318cf0a64024b78a0109b5b5edb6202de1"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/official_2.receipt.json",
+      "bytes": 257,
+      "sha256": "94ca9e3899d1ae2ec58409b78f7ddb2a953766706c6acabcead632bf02b4fac7"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/official_2.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/official_2.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/official_3.json",
+      "bytes": 16389,
+      "sha256": "2080d20f43fc16ce2c5744fcfc4d9dd51d21b9bc9a4e55a4d467b4287551b0d0"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/official_3.receipt.json",
+      "bytes": 257,
+      "sha256": "91ff7e8850ff6606cf89b568c3627e978a342e17702d848dccd350861c985857"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/official_3.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/official_3.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/route/RESULT.json",
+      "bytes": 179197,
+      "sha256": "220e018df90a8808f41b3a20baa5127f40f92ecf464d8db6c2fec34344ceba40"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/route/resumed.json",
+      "bytes": 907869,
+      "sha256": "fdf8bf146d165bfcc1a8fc08a25690a0f3153e8facf6f0474af0426d94b219ab"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/route/saved.json",
+      "bytes": 1481756,
+      "sha256": "7c67dbe3164364b160faec1ac758be997cbdebe4485ea662ae9a99e6d10eaf6d"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/route.receipt.json",
+      "bytes": 229,
+      "sha256": "9acc325b175aa7a15a1f9646419e9cd980e54bc3af557e6f344cab1db9edede3"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/route.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer/route.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer_build.stderr.log",
+      "bytes": 18199,
+      "sha256": "32141865ce4cd65ae572affddcc6dd672bf9c5bc696f0af0302274fe3acb91db"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/consumer_build.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/observations/RESULT.json",
+      "bytes": 4170,
+      "sha256": "f52c9be34c3fa34ba1f2415b781db57fb484e416ed6eec7af040f6a9c276310f"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/observations/hidden_concrete/content/official/data/map/facility_templates.ron",
+      "bytes": 168177,
+      "sha256": "8149d65a8d00e751e6355414f4db5eb0e35034aa34777cf4732b1a3c878a3487"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/observations/hidden_concrete/map_query.json",
+      "bytes": 4238,
+      "sha256": "b1bb0b7f5175f8c6c742ce6896020785d2c0253ef4e0d4dd75e9ee32df15355d"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/observations/hidden_concrete/run.json",
+      "bytes": 191267,
+      "sha256": "f36183b0cb4bcc0b3536d4148b52e99557c749139fe653d5cda2f06a6c8974bb"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/observations/hidden_concrete/source/data/map/facility_templates.ron",
+      "bytes": 168177,
+      "sha256": "8149d65a8d00e751e6355414f4db5eb0e35034aa34777cf4732b1a3c878a3487"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/observations/hidden_official/content/official/data/map/facility_templates.ron",
+      "bytes": 168154,
+      "sha256": "30953977ea42fff96a5138190b67950624756b74a67ef9ed405ca0342bfdb897"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/observations/hidden_official/map_query.json",
+      "bytes": 4238,
+      "sha256": "b1bb0b7f5175f8c6c742ce6896020785d2c0253ef4e0d4dd75e9ee32df15355d"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/observations/hidden_official/run.json",
+      "bytes": 191267,
+      "sha256": "f36183b0cb4bcc0b3536d4148b52e99557c749139fe653d5cda2f06a6c8974bb"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/observations/hidden_official/source/data/map/facility_templates.ron",
+      "bytes": 168154,
+      "sha256": "30953977ea42fff96a5138190b67950624756b74a67ef9ed405ca0342bfdb897"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/observations/valid_normal_concrete/content/official/data/map/facility_templates.ron",
+      "bytes": 168191,
+      "sha256": "36dbd3b3101a4cc63861e83c7f69780bc227c266d9b2041be8e0218051acafea"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/observations/valid_normal_concrete/map_query.json",
+      "bytes": 4169,
+      "sha256": "31449a252d068741745ca5233f22df1a1082f918329c633ff00a4d5cc8a8505a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/observations/valid_normal_concrete/run.json",
+      "bytes": 190980,
+      "sha256": "0a608850c646ee92eb8e4e8ba8e0a6e87bb6f0a88e6bde4c181fe47285646921"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/observations/valid_normal_concrete/source/data/map/facility_templates.ron",
+      "bytes": 168191,
+      "sha256": "36dbd3b3101a4cc63861e83c7f69780bc227c266d9b2041be8e0218051acafea"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/observations/valid_support_alias/content/official/data/map/facility_templates.ron",
+      "bytes": 168320,
+      "sha256": "a03e7c9a53c7038e62d8af14175a3b3dc64017bee4d9e28ed25b81d5b55f057a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/observations/valid_support_alias/map_query.json",
+      "bytes": 4169,
+      "sha256": "9cf93044c0295a47eff4f1d8a5d995f93672bb980b3dcf5cb884bead34ceda95"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/observations/valid_support_alias/run.json",
+      "bytes": 190980,
+      "sha256": "2a5d41b4dfef013fe3b00b475853a2a094eedadcd432ae0ee8b0abacd25e5cdf"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/observations/valid_support_alias/source/data/map/facility_templates.ron",
+      "bytes": 168320,
+      "sha256": "a03e7c9a53c7038e62d8af14175a3b3dc64017bee4d9e28ed25b81d5b55f057a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/observations/wrong_elite_class/source/data/map/facility_templates.ron",
+      "bytes": 168191,
+      "sha256": "ee8615090abf90216f2320e55e76e97eef8fa46b03bc2bb7e2d219bfac8f8129"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/observations/wrong_normal_class/source/data/map/facility_templates.ron",
+      "bytes": 168188,
+      "sha256": "b7a4c789a221909bcce42649cb955ba93a855cf51bc809c7bdfa18976426e374"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/observations/wrong_normal_role/source/data/map/facility_templates.ron",
+      "bytes": 168168,
+      "sha256": "07ab55ac708dc9da8de5c080e961c0b03ab01802235f0025bfc8df12a7950907"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/probe/Cargo.lock",
+      "bytes": 73883,
+      "sha256": "bcfed088c88f71a115f7e6560ef0c56f4a00f0668f081be5e8306d0002630a73"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/probe/Cargo.toml",
+      "bytes": 627,
+      "sha256": "47c5c4de228bf76def605325911b4966ee472694c14d8d70a3d3de75db27fbff"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/probe/src/main.rs",
+      "bytes": 8977,
+      "sha256": "830b7d5d3f0adec41c10e01847cf98095688da824307652ee7720033997bd436"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/probe.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/probe.stdout.log",
+      "bytes": 3809,
+      "sha256": "a7815eead2848c59ca822868c44e2e77d0d053f27b6d4a75773c9f8281298ab5"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/review_evidence.py",
+      "bytes": 6242,
+      "sha256": "4d6bc22e30024e78142c30c82debdf7cbbcf44d195bff735312cb6b97fdeb822"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/verify_currentness.py",
+      "bytes": 2671,
+      "sha256": "5e1a5a10ff125ab462b4c28efaf38eeb3614a951d9b16d8093244620b9b63e76"
+    }
+  ]
+}

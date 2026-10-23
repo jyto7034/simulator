@@ -1,0 +1,30 @@
+[
+  {
+    "path": "game_server/src/game/player_game_actor/handlers.rs",
+    "sha256": "8aa8abbb54ac6fbb596017839f4fccb130b2690b1bb6985505648d20cb1cbb0a"
+  },
+  {
+    "path": "game_server/src/game/player_game_actor/handlers/tests/durable.rs",
+    "sha256": "b29ef6d01786e00e740df6e0108a0783193062fd6b087dda37ae6e8ec2dbc355"
+  },
+  {
+    "path": "game_server/src/game/player_game_actor/handlers/tests/fault.rs",
+    "sha256": "a7434bf8dc4267bf54812ca5a86ee3244cb898a142618bd364a4e0e93c52b70d"
+  },
+  {
+    "path": "game_server/src/game/player_game_actor/handlers/tests/u06.rs",
+    "sha256": "74ec1ec06b82a93d7b31b1efa9559f5bb9fe0ebcb5e9da5a9a7779864df2d846"
+  },
+  {
+    "path": "game_server/src/runtime_measurement/playback.rs",
+    "sha256": "d58d031dfb18134536db8484b94ad1ec2e1603c20d867c413002b5c562e93175"
+  },
+  {
+    "path": "core_enhanced/src/application/fault_tests.rs",
+    "sha256": "8fbf8738d7e3bf8cb092f9e631246d9dd9bb6eaebf8212a908a77b37c1ebccce"
+  },
+  {
+    "path": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/test_parts/runtime001/shared/normal_host_tests.rs",
+    "sha256": "2e8b751791898edb549dad73732a5f79a01e4844e2590e97ef56fc3584b4458d"
+  }
+]

@@ -1,0 +1,10 @@
+{
+  "contract": {
+    "pack_format": 1,
+    "catalog_schema": 6,
+    "authoring": 1,
+    "execution": 3,
+    "fingerprint": 1
+  },
+  "semantic_sha256": "e317edb9faa07bd9960a4138884f44f1a6e7e1cabcb8bbe746ffdbd5731c410f"
+}

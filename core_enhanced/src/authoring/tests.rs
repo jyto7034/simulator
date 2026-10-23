@@ -244,7 +244,7 @@ fn describe_uses_current_support_and_immutable_source_with_exact_output_limit() 
     let first = describe(&content, &ExecutionLimits::default(), &cancellation).unwrap();
     let value: serde_json::Value = serde_json::from_str(first.document()).unwrap();
     assert_eq!(value["catalog_kinds"].as_array().unwrap().len(), 26);
-    assert_eq!(value["definition_kinds"].as_array().unwrap().len(), 45);
+    assert_eq!(value["definition_kinds"].as_array().unwrap().len(), 46);
     assert!(value["catalog_kinds"]
         .as_array()
         .unwrap()

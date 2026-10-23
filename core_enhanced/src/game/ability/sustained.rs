@@ -5,6 +5,18 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub enum SustainedEffectDef {
+    HitStatus { duration_ms: u32, profile: HitStatusProfile },
+    PreparedBasic {
+        profile: PreparedBasicProfile,
+    },
+    ReactiveHeal {
+        duration_ms: u32,
+        profile: ReactiveHealProfile,
+    },
+    TargetState {
+        duration_ms: u32,
+        profile: TargetStateProfile,
+    },
     Parry {
         duration_ms: u32,
         window_ms: u32,
@@ -12,6 +24,12 @@ pub enum SustainedEffectDef {
         miss_recovery_ms: u32,
         reduction_percent: u32,
         counter_skill: super::SkillId,
+        #[serde(default)]
+        end_on_resolution: bool,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        fragment_guard: Option<crate::game::data::skill_fragment_data::ParryGuardDef>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        guard_charge: Option<std::sync::Arc<super::guard_charge::GuardChargeDef>>,
     },
     Control {
         duration_ms: u32,
@@ -25,6 +43,7 @@ pub enum SustainedEffectDef {
         duration_ms: u32,
         pool: SegmentedShieldDef,
     },
+    IndependentShield { duration_ms:u32, amount:u32, priority:i32 },
     Shield {
         duration_ms: u32,
         amount: u32,
@@ -50,6 +69,128 @@ pub enum SustainedEffectDef {
         duration_ms: u32,
         modifiers: CombatModifierProfile,
     },
+}
+
+/// A landed status owns its deadline independently from the caster or action.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct HitStatusProfile {
+    pub definition: String,
+    pub kind: HitStatusKind,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub modifier_source: Option<HitModifierSource>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub vulnerability: Option<HitVulnerability>,
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum HitStatusKind { Slow { percent:u32 }, Freeze, Stun, Root, BasicLock, DamageTaken { percent: u32 }, StackDamageTaken { per_stack: super::marks::MarkRatio, stacks:u32 } }
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct HitVulnerability { pub definition: String, pub percent: u32, pub duration_ms: u32,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub modifier_source: Option<HitModifierSource>,
+}
+/// Observation of the real equipped contribution captured by the effective plan.
+/// It confers no ability to execute a relic rule or attach another copy.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct HitModifierSource { pub copy_uuid: uuid::Uuid, pub definition: String, pub rule: String }
+crate::authoring::clone_shape::struct_shape!(HitModifierSource { copy_uuid, definition, rule });
+crate::authoring::clone_shape::struct_shape!(HitStatusProfile { definition, kind, modifier_source, vulnerability });
+crate::authoring::clone_shape::copy_shape!(HitStatusKind);
+crate::authoring::clone_shape::struct_shape!(HitVulnerability { definition, percent, duration_ms, modifier_source });
+impl HitStatusProfile {
+    pub(crate) fn retained_extent(&self)->Option<usize> {
+        let source=|s:&Option<HitModifierSource>|s.as_ref().map_or(Some(0),|s|s.definition.capacity().checked_add(s.rule.capacity()));
+        self.definition.capacity().checked_add(source(&self.modifier_source)?)?.checked_add(self.vulnerability.as_ref().map_or(Some(0),|v|v.definition.capacity().checked_add(source(&v.modifier_source)?))?)
+    }
+    pub fn validate(&self)->Result<(),String> {
+        let identity=|id:&str| !id.is_empty() && id.trim()==id && id.len()<=256;
+        for s in [self.modifier_source.as_ref(), self.vulnerability.as_ref().and_then(|v|v.modifier_source.as_ref())].into_iter().flatten() { if s.copy_uuid.is_nil() || !identity(&s.definition) || !identity(&s.rule) {return Err("Invalid hit modifier source observation".into());} }
+        if !identity(&self.definition) || matches!(self.kind,HitStatusKind::DamageTaken{percent} if percent==0||percent>i32::MAX as u32) {return Err("Invalid hit status identity or percentage".into());}
+        if matches!(self.kind, HitStatusKind::Slow{percent} if percent==0||percent>100) { return Err("Invalid hit slow percentage".into()); }
+        if let HitStatusKind::StackDamageTaken{per_stack,stacks}=self.kind { if per_stack.denominator==0||stacks==0 {return Err("Invalid stacked damage status".into());} }
+        if let Some(v)=&self.vulnerability {
+            if !self.kind.is_hard_control() || !identity(&v.definition)||v.duration_ms==0||v.percent==0||v.percent>i32::MAX as u32 {return Err("Vulnerability requires a stun and bounded positive duration/percentage".into());}
+        }
+        Ok(())
+    }
+}
+
+/// A finite recipient-owned charge store, independent of the source's presence.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ReactiveHealProfile {
+    pub definition: String,
+    pub charges: u32,
+    pub max_health_percent: u32,
+}
+crate::authoring::clone_shape::struct_shape!(ReactiveHealProfile {
+    definition,
+    charges,
+    max_health_percent
+});
+impl ReactiveHealProfile {
+    pub fn validate(&self) -> Result<(), String> {
+        if self.definition.trim().is_empty()
+            || self.definition.len() > 256
+            || self.charges == 0
+            || !(1..=100).contains(&self.max_health_percent)
+        {
+            return Err("ReactiveHeal requires a bounded definition, positive charges and HP percent in 1..100".into());
+        }
+        Ok(())
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ReactiveHealView {
+    pub definition: String,
+    pub initial_charges: u32,
+    pub remaining_charges: u32,
+    pub max_health_percent: u32,
+    pub consumed_actions: u32,
+}
+
+/// One atomic, finite state. The definition key groups contributions from copies;
+/// expiry removes only that activation, so weaker surviving copies can take over.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct TargetStateProfile {
+    pub definition: String,
+    pub attack_percent: u32,
+    pub defense_percent: u32,
+    pub attack_speed_points: u32,
+    pub hp_floor_one: bool,
+    pub end_on_source_exit: bool,
+}
+crate::authoring::clone_shape::struct_shape!(TargetStateProfile {
+    definition,
+    attack_percent,
+    defense_percent,
+    attack_speed_points,
+    hp_floor_one,
+    end_on_source_exit
+});
+impl TargetStateProfile {
+    pub fn validate(&self) -> Result<(), String> {
+        if self.definition.trim().is_empty()
+            || self.definition.len() > 256
+            || [
+                self.attack_percent,
+                self.defense_percent,
+                self.attack_speed_points,
+            ]
+            .into_iter()
+            .any(|v| v > 10000)
+            || (self.attack_percent == 0
+                && self.defense_percent == 0
+                && self.attack_speed_points == 0
+                && !self.hp_floor_one)
+        {
+            return Err("TargetState requires a bounded definition and a nonempty positive profile in 0..10000".into());
+        }
+        Ok(())
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -161,18 +302,68 @@ pub struct BasicAttackOverlayProfile {
     pub range_policy: crate::game::battle::tile_range::TileRangePolicy,
     pub defense_tile_range: Option<crate::game::battle::tile_range::TileRangePattern>,
     pub delivery: super::DeliveryDef,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub line: Option<BasicLineProfile>,
+    #[serde(default)]
+    pub followup_on_input: bool,
+}
+
+/// An instantaneous weapon attack. Dimensions use one million units per tile;
+/// each release owns its ordered hit list and resets its penetration count.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct BasicLineProfile {
+    pub length_units: u32,
+    pub width_units: u32,
+    pub power: u32,
+    pub weapon_effects: bool,
+    pub piercing_relics: bool,
+    pub piercing: Option<BasicPiercingRule>,
+}
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct BasicPiercingRule {
+    pub relic_definition: String,
+    pub increment_percent: u32,
+    pub cap_percent: u32,
+}
+impl BasicLineProfile {
+    pub fn validate(&self) -> Result<(), String> {
+        if !self.weapon_effects { return Err("Direct weapon line attacks preserve weapon effects; disabling them is unsupported.".into()); }
+        if self.length_units == 0 || self.width_units == 0 {
+            return Err("Line dimensions must be positive.".into());
+        }
+        if let Some(p) = &self.piercing {
+            if (u128::from(self.power)*(100+u128::from(p.cap_percent))).div_ceil(100)>u32::MAX.into() {
+                return Err("Piercing power exceeds native magnitude.".into());
+            }
+            if p.relic_definition.is_empty() || p.relic_definition.len() > 256
+                || p.increment_percent == 0 || p.cap_percent == 0 {
+                return Err("Piercing requires an equipped relic definition and positive rate/cap.".into());
+            }
+        }
+        Ok(())
+    }
 }
 impl BasicAttackOverlayProfile {
     pub(crate) fn supports_action(
         &self,
         action: &crate::game::data::abnormality_data::BasicAttackAction,
     ) -> bool {
-        !action.is_heal() || matches!(self.delivery, super::DeliveryDef::Instant)
+        !action.is_heal() || (self.line.is_none() && matches!(self.delivery, super::DeliveryDef::Instant))
     }
 
     pub fn validate(&self) -> Result<(), String> {
         use super::*;
         use crate::game::battle::tile_range::TileRangePolicy;
+        if let Some(line) = &self.line {
+            line.validate()?;
+            if !matches!(self.delivery, DeliveryDef::Instant)
+                || self.range_policy != TileRangePolicy::WholeFieldValidTiles
+                || self.defense_tile_range.is_some() {
+                return Err("Line overlay owns its exact acquisition geometry and instant delivery.".into());
+            }
+        }
         match (self.range_policy, &self.defense_tile_range) {
             (TileRangePolicy::Pattern, Some(pattern)) => pattern.validate()?,
             (TileRangePolicy::WholeFieldValidTiles, None) => {}
@@ -212,7 +403,8 @@ impl BasicAttackOverlayProfile {
             DeliveryDef::TileArea { footprint, area } => {
                 footprint.validate()?;
                 area.try_validate_runtime_contract()?;
-                if area.duration_ms != 0
+                if area.is_independent()
+                    || area.on_hit_caster_heal_percent.is_some()
                     || area.tick_interval_ms.is_some()
                     || area.tracking != SkillAreaTracking::GroundFixed
                     || area.tick_policy != SkillAreaTickPolicy::EveryTick
@@ -242,7 +434,11 @@ impl BasicAttackOverlayProfile {
 pub struct ChannelAuraDef {
     pub family: String,
     pub priority: i32,
+    #[serde(default)]
+    pub prefer_strongest: bool,
     pub radius_units: u32,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub support: Option<crate::game::relic::structural::support::SupportPolicyDef>,
     pub basic_damage_percent: u32,
     pub basic_speed_points: u32,
     #[serde(default, skip_serializing_if = "SupportCoefficientScope::is_legacy")]
@@ -263,14 +459,45 @@ crate::authoring::clone_shape::copy_shape!(SupportCoefficientScope);
 crate::authoring::clone_shape::struct_shape!(ChannelAuraDef {
     family,
     priority,
+    prefer_strongest,
     radius_units,
+    support,
     basic_damage_percent,
     basic_speed_points,
     basic_scope
 });
+impl ChannelAuraDef {
+    pub(crate) fn precedes(&self, activation: u64, other: &Self, other_activation: u64) -> bool {
+        let strength = if self.prefer_strongest && other.prefer_strongest {
+            (self.basic_damage_percent, self.basic_speed_points).cmp(&(other.basic_damage_percent, other.basic_speed_points))
+        } else { std::cmp::Ordering::Equal };
+        self.priority > other.priority || (self.priority == other.priority
+            && (strength.is_gt() || (strength.is_eq() && activation < other_activation)))
+    }
+}
 impl SustainedEffectDef {
     pub fn validate(&self) -> Result<(), String> {
         match self {
+            Self::HitStatus { duration_ms, profile } => { if *duration_ms==0 {return Err("Hit status requires positive duration".into());} profile.validate() },
+            Self::PreparedBasic { profile } => profile.validate(),
+            Self::ReactiveHeal {
+                duration_ms,
+                profile,
+            } => {
+                if *duration_ms == 0 {
+                    return Err("ReactiveHeal requires positive duration".into());
+                }
+                profile.validate()
+            }
+            Self::TargetState {
+                duration_ms,
+                profile,
+            } => {
+                if *duration_ms == 0 {
+                    return Err("TargetState requires positive duration".into());
+                }
+                profile.validate()
+            }
             Self::SegmentedShield { duration_ms, pool } => {
                 if *duration_ms == 0 {
                     return Err("SegmentedShield requires positive duration".into());
@@ -301,7 +528,15 @@ impl SustainedEffectDef {
                 miss_recovery_ms,
                 reduction_percent,
                 counter_skill,
+                fragment_guard,
+                guard_charge,
+                ..
             } => {
+                if let Some(charge) = guard_charge { charge.validate()?; if fragment_guard.is_none() { return Err("Guard charge requires its passive guard".into()); } }
+                if let Some(guard) = fragment_guard {
+                    guard.validate()?;
+                    if *reduction_percent != 0 { return Err("fragment guard cannot duplicate finite parry reduction".into()); }
+                }
                 if *window_ms == 0
                     || *invulnerable_ms == 0
                     || *miss_recovery_ms == 0
@@ -316,6 +551,7 @@ impl SustainedEffectDef {
                 Ok(())
             }
             Self::Control { duration_ms, kind } => {
+                if let ControlKind::ApproachTaunt { profile } = kind { profile.validate()?; }
                 if *duration_ms == 0
                     || matches!(kind, ControlKind::Slow { percent } if *percent == 0 || *percent > 99)
                 {
@@ -331,6 +567,7 @@ impl SustainedEffectDef {
                 }
                 Ok(())
             }
+            Self::IndependentShield {duration_ms,amount,..} => { if *duration_ms==0||*amount==0 {return Err("Independent shield requires positive duration and capacity".into());} Ok(()) },
             Self::Shield {
                 duration_ms,
                 amount,
@@ -348,8 +585,12 @@ impl SustainedEffectDef {
             Self::BasicAttackOverlay {
                 duration_ms,
                 profile,
+                goodbye_skill,
                 ..
             } => {
+                if profile.followup_on_input && goodbye_skill.is_none() {
+                    return Err("Followup input requires an explicit finishing skill.".into());
+                }
                 if *duration_ms == 0 {
                     return Err("overlay requires positive duration".into());
                 }
@@ -359,11 +600,14 @@ impl SustainedEffectDef {
                 if *duration_ms == 0
                     || aura.family.trim().is_empty()
                     || aura.family.len() > 128
-                    || aura.radius_units == 0
+                    || (aura.support.is_none() && aura.radius_units == 0)
                     || aura.basic_damage_percent > 10000
                     || aura.basic_speed_points > 10000
                 {
                     return Err("ChannelAura requires positive duration/radius, a bounded family, and damage/speed in 0..10000".into());
+                }
+                if let Some(support) = &aura.support {
+                    support.validate(false)?;
                 }
                 Ok(())
             }
@@ -387,9 +631,13 @@ impl SustainedEffectDef {
     }
     pub(crate) fn is_hostile(&self) -> bool {
         match self {
-            Self::Control { .. } => true,
+            Self::Control { .. } | Self::HitStatus { .. } => true,
             Self::Parry { .. }
+            | Self::TargetState { .. }
+            | Self::PreparedBasic { .. }
+            | Self::ReactiveHeal { .. }
             | Self::Survival { .. }
+            | Self::IndependentShield { .. }
             | Self::Shield { .. }
             | Self::SegmentedShield { .. }
             | Self::ChannelAura { .. }
@@ -483,14 +731,18 @@ pub enum FixedSupportConnectionState {
     OutOfRange,
     TerminalInvalid,
 }
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct FixedSupportConnectionView {
     pub recipient: crate::game::battle::ids::UnitInstanceId,
     pub authored_reach_units: u32,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub selection_pattern: Option<std::sync::Arc<crate::game::battle::tile_range::TileRangePattern>>,
     pub state: FixedSupportConnectionState,
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SustainedEffectView {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub status_transition:Option<std::sync::Arc<crate::game::battle::runtime_facts::StatusTransitionOrigin>>,
     pub activation: u64,
     pub caster: crate::game::battle::ids::UnitInstanceId,
     pub target: crate::game::battle::ids::UnitInstanceId,
@@ -504,6 +756,8 @@ pub struct SustainedEffectView {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub segmented: Option<SegmentedShieldView>,
     pub survival: Option<SurvivalPolicy>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub hit_status: Option<HitStatusProfile>,
     pub control: Option<ControlKind>,
     pub parry: Option<ParryView>,
     pub overlay: Option<BasicAttackOverlayProfile>,
@@ -511,6 +765,10 @@ pub struct SustainedEffectView {
     pub goodbye_skill: Option<super::SkillId>,
     pub modifiers: Vec<StatModifier>,
     pub combat_modifiers: Option<CombatModifierProfile>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub target_state: Option<TargetStateProfile>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub reactive_heal: Option<ReactiveHealView>,
     pub members: Vec<crate::game::battle::ids::UnitInstanceId>,
     pub authored_site: Option<super::authoring::EffectSite>,
     pub skill_id: Option<super::SkillId>,
@@ -527,6 +785,8 @@ pub struct SustainedEffectsSnapshot {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub latest_detachment: Option<SegmentDetachReceipt>,
     pub active: Vec<SustainedEffectView>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub prepared_basics: Vec<PreparedBasicView>,
     #[serde(default)]
     pub passive_guards: Vec<PassiveGuardView>,
 }
@@ -567,8 +827,34 @@ pub enum ControlKind {
     Slow { percent: u32 },
     Root,
     Taunt { priority: i32 },
+    /// One replaceable control instance owns approach speed and attack distance.
+    ApproachTaunt { profile: ApproachTauntProfile },
 }
 crate::authoring::clone_shape::copy_shape!(ControlKind);
+impl ControlKind {
+    pub fn is_taunt(self) -> bool { matches!(self, Self::Taunt { .. } | Self::ApproachTaunt { .. }) }
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ApproachTauntProfile {
+    pub speed_percent: u32,
+    pub attack_range_units: u32,
+    #[serde(default)]
+    pub damage_reduction_percent: u32,
+    #[serde(default)]
+    pub basic_damage_bonus_percent: u32,
+}
+crate::authoring::clone_shape::copy_shape!(ApproachTauntProfile);
+impl ApproachTauntProfile {
+    pub fn validate(self) -> Result<(), String> {
+        if self.speed_percent == 0 || self.speed_percent > i32::MAX as u32
+            || self.attack_range_units == 0 || self.attack_range_units > 1_000_000_000
+            || self.damage_reduction_percent > 100 || self.basic_damage_bonus_percent > i32::MAX as u32 {
+            return Err("Approach taunt requires positive bounded speed/range and bounded damage modifiers".into());
+        }
+        Ok(())
+    }
+}
 
 /// Absolute boundaries are half-open. A miss disables only this activation's
 /// reduction during [window_until, recovery_at); success does not rearm.
@@ -580,6 +866,8 @@ pub struct ParryView {
     pub invulnerable_until_ms: Option<u64>,
     pub reduction_percent: u32,
     pub counter_skill: super::SkillId,
+    #[serde(default)]
+    pub end_on_resolution: bool,
 }
 crate::authoring::clone_shape::struct_shape!(ParryView {
     window_until_ms,
@@ -587,11 +875,14 @@ crate::authoring::clone_shape::struct_shape!(ParryView {
     invulnerable_ms,
     invulnerable_until_ms,
     reduction_percent,
-    counter_skill
+    counter_skill,
+    end_on_resolution
 });
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct PassiveGuardView {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub charge: Option<super::guard_charge::GuardChargeView>,
     pub unit: crate::game::battle::ids::UnitInstanceId,
     pub fragment: crate::game::skill_fragment::FragmentSourceSnapshot,
     pub policy: crate::game::data::skill_fragment_data::ParryGuardDef,
@@ -599,3 +890,64 @@ pub struct PassiveGuardView {
     /// success removes it. Queries do not advance the battle clock.
     pub reduction_suppressed_intervals_ms: Vec<(u64, u64)>,
 }
+
+/// Event-owned preparation: no timer is substituted for its one release.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PreparedBasicProfile {
+    pub definition: String,
+    pub numerator: u64,
+    pub denominator: u64,
+    pub kill_reward: Option<PreparedBasicReward>,
+}
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PreparedBasicReward {
+    pub duration_ms: u32,
+    pub profile: TargetStateProfile,
+}
+crate::authoring::clone_shape::struct_shape!(PreparedBasicProfile {
+    definition,
+    numerator,
+    denominator,
+    kill_reward
+});
+crate::authoring::clone_shape::struct_shape!(PreparedBasicReward {
+    duration_ms,
+    profile
+});
+impl PreparedBasicProfile {
+    pub fn validate(&self) -> Result<(), String> {
+        if self.definition.is_empty()
+            || self.definition.len() > 256
+            || self.numerator == 0
+            || self.denominator == 0
+            || self.numerator > 9_007_199_254_740_991
+            || self.denominator > 9_007_199_254_740_991
+        {
+            return Err(
+                "PreparedBasic requires a bounded definition and positive exact ratio".into(),
+            );
+        }
+        if let Some(reward) = &self.kill_reward {
+            if reward.duration_ms == 0 {
+                return Err("PreparedBasic reward requires positive duration".into());
+            }
+            reward.profile.validate()?;
+        }
+        Ok(())
+    }
+}
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PreparedBasicView {
+    pub activation: u64,
+    pub caster: crate::game::battle::ids::UnitInstanceId,
+    pub profile: PreparedBasicProfile,
+    pub bound_action: Option<u64>,
+    pub released: bool,
+    pub rewarded: bool,
+    pub superseded: bool,
+    pub fragment_copy_uuid: Option<uuid::Uuid>,
+}
+
+impl HitStatusKind { pub fn is_hard_control(self)->bool {matches!(self,Self::Stun|Self::Freeze)} }

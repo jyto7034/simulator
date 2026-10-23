@@ -286,6 +286,7 @@ fn battle_scenario(
     let enemy_group_id = "enemy_initial";
     BattleScenario {
         battlefield: BattleFieldSpec {
+            walkable_paths: Vec::new(),
             object_placement: None,
             width: common::BOARD_SIZE.0,
             height: common::BOARD_SIZE.1,
@@ -560,6 +561,8 @@ fn mixed_target_skill_records_enemy_damage_then_self_buff() {
     let enemy_base_uuid = Uuid::from_u128(0xAA12);
 
     let skill = SkillDef {
+        action_policy: None,
+        resonance_admission: None,
         use_lifetime: game_core::game::ability::SkillUseLifetime::Action,
         flow: None,
         id: SkillId::from("enemy_then_self"),
@@ -692,6 +695,8 @@ fn self_then_retargeted_enemy_skill_resolves_second_step_at_execution_time() {
     let enemy_base_uuid = Uuid::from_u128(0xBC12);
 
     let skill = SkillDef {
+        action_policy: None,
+        resonance_admission: None,
         use_lifetime: game_core::game::ability::SkillUseLifetime::Action,
         flow: None,
         id: SkillId::from("self_then_retarget"),
@@ -826,6 +831,8 @@ fn conditional_followup_waits_for_projectile_damage_resolution() {
     let enemy_base_uuid = Uuid::from_u128(0xBC22);
 
     let skill = SkillDef {
+        action_policy: None,
+        resonance_admission: None,
         use_lifetime: game_core::game::ability::SkillUseLifetime::Action,
         flow: None,
         id: SkillId::from("conditional_projectile_followup"),
@@ -1006,6 +1013,8 @@ fn explicit_cast_targeting_separates_cast_context_from_step_execution_targets() 
     let enemy_base_uuid = Uuid::from_u128(0xBC22);
 
     let skill = SkillDef {
+        action_policy: None,
+        resonance_admission: None,
         use_lifetime: game_core::game::ability::SkillUseLifetime::Action,
         flow: None,
         id: SkillId::from("self_charge_then_locked_shot"),
@@ -1170,6 +1179,8 @@ fn ability_step_event_log_includes_presentation_metadata() {
     let enemy_base_uuid = Uuid::from_u128(0xCA52);
 
     let skill = SkillDef {
+        action_policy: None,
+        resonance_admission: None,
         use_lifetime: game_core::game::ability::SkillUseLifetime::Action,
         flow: None,
         id: SkillId::from("presentation_skill"),
@@ -1345,6 +1356,8 @@ fn untargeted_projectile_miss_finalizes_step_and_cleans_up_damage_gated_followup
     let enemy_base_uuid = Uuid::from_u128(0xCC22);
 
     let skill = SkillDef {
+        action_policy: None,
+        resonance_admission: None,
         use_lifetime: game_core::game::ability::SkillUseLifetime::Action,
         flow: None,
         id: SkillId::from("untargeted_miss_then_check"),
@@ -1494,6 +1507,8 @@ fn untargeted_projectile_still_hits_later_unit_after_cast_target_dies() {
     let charge_target_base_uuid = Uuid::from_u128(0xCC27);
 
     let skill = SkillDef {
+        action_policy: None,
+        resonance_admission: None,
         use_lifetime: game_core::game::ability::SkillUseLifetime::Action,
         flow: None,
         id: SkillId::from("untargeted_death_through_shot"),
@@ -1741,6 +1756,8 @@ fn untargeted_piercing_projectile_respects_max_hits() {
     let third_base_uuid = Uuid::from_u128(0xCC44);
 
     let skill = SkillDef {
+        action_policy: None,
+        resonance_admission: None,
         use_lifetime: game_core::game::ability::SkillUseLifetime::Action,
         flow: None,
         id: SkillId::from("piercing_skillshot"),
@@ -1896,6 +1913,8 @@ fn targetless_directional_collision_projectile_fires_along_caster_facing() {
         rows: vec![".@.".to_string(), ".X.".to_string()],
     };
     let skill = SkillDef {
+        action_policy: None,
+        resonance_admission: None,
         use_lifetime: game_core::game::ability::SkillUseLifetime::Action,
         flow: None,
         id: SkillId::from("targetless_line_shot"),
@@ -2063,6 +2082,8 @@ fn directional_collision_projectile_respects_max_kills_stop_policy() {
     let second_base_uuid = Uuid::from_u128(0xCC63);
 
     let skill = SkillDef {
+        action_policy: None,
+        resonance_admission: None,
         use_lifetime: game_core::game::ability::SkillUseLifetime::Action,
         flow: None,
         id: SkillId::from("kill_limited_line_shot"),
@@ -2221,6 +2242,8 @@ fn directional_projectile_combines_same_time_kill_hit_and_expiry_stops_once() {
     let second_base_uuid = Uuid::from_u128(0xCC73);
 
     let skill = SkillDef {
+        action_policy: None,
+        resonance_admission: None,
         use_lifetime: game_core::game::ability::SkillUseLifetime::Action,
         flow: None,
         id: SkillId::from("combined_stop_line_shot"),
@@ -2400,6 +2423,8 @@ fn hit_gated_self_heal_and_buff_stack_repeat_attack_work_together() {
     let enemy_base_uuid = Uuid::from_u128(0xBD12);
 
     let skill = SkillDef {
+        action_policy: None,
+        resonance_admission: None,
         use_lifetime: game_core::game::ability::SkillUseLifetime::Action,
         flow: None,
         id: SkillId::from("predation_cycle"),

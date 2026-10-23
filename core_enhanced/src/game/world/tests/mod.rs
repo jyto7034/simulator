@@ -55,7 +55,7 @@ use crate::game::data::{
 };
 use crate::game::employee::{
     CombatAptitude, EmployeeBaseCombatStats, EmployeeCondition, EmployeeDefinition,
-    EmployeeInitialLoadout, EmployeePersonality, EmployeeProfile, EmployeeRiskDisposition,
+    EmployeeInitialLoadout, EmployeePersonality, EmployeeProfile, EmployeeRiskDisposition, EmployeeRole,
     EmployeeSocialDisposition, EventAptitude, MAX_PHYSICAL_DAMAGE,
 };
 use crate::game::enums::RewardMode;
@@ -75,7 +75,7 @@ use std::sync::Arc;
 
 fn refresh_active_run_checksum(document: &mut Value) {
     use sha2::{Digest, Sha256};
-    let (payload, checksum) = if document["version"] == 11 {
+    let (payload, checksum) = if document.get("continuation").is_some() {
         ("continuation", "continuation_sha256")
     } else {
         ("checkpoint", "checkpoint_sha256")
@@ -318,12 +318,36 @@ fn empty_game_data() -> Arc<GameDataBase> {
     test_game_data_builder().build_arc()
 }
 
+// Continue consumes a separately accepted profile. Never infer permanent
+// ownership from the active-run bytes under test.
+fn core_with_profile_for_continue(source: &GameCore, seed: u64) -> GameCore {
+    let mut destination = GameCore::new(source.game_data.clone(), seed);
+    destination.install_authoritative_player_profile(source.state.player_profile.clone()).unwrap();
+    destination
+}
+
+fn install_application_profile_for_continue(
+    destination: &mut crate::application::CoreApplication,
+    source: &crate::application::CoreApplication,
+) {
+    let profile = source.snapshot(crate::application::ApplicationSnapshotKind::PlayerProfile)
+        .unwrap().read_model().clone();
+    destination.install_authoritative_player_profile(profile).unwrap();
+}
+
 fn test_game_data_builder() -> GameDataBuilder {
-    GameDataBuilder::empty()
+    let mut policy = run_policy();
+    policy.tutorial_employee_definition_ids = vec!["candidate_0".into(), "candidate_2".into(), "candidate_4".into()];
+    // These owner fixtures synthesize legacy floor indices and nodes. U13's
+    // authored room routes are separately loaded and traversed in u13_facility.
+    let mut catalogs=crate::game::data::live_ron::embedded_map_catalogs_for_fixtures();
+    std::sync::Arc::make_mut(&mut catalogs.facility_templates).layouts.clear();
+    GameDataBuilder::empty_with_map_catalogs(catalogs)
+        .with_run_policy(policy)
         .with_employee_definitions(test_employee_definition_database())
         .with_visual_novels(test_hq_briefing_visual_novel_database())
         .with_visual_novel_triggers(test_hq_briefing_visual_novel_trigger_database())
-        .with_equipment(vec![starter_weapon_meta(), starter_equipment_meta()])
+        .with_equipment(equipment_with_starter_assets(Vec::new()))
         .with_skill_fragment_data(Arc::new(SkillFragmentDatabase::new(vec![
             SkillFragmentMetadata::starter_basic_attack(),
         ])))
@@ -364,15 +388,15 @@ fn test_hq_briefing_visual_novel_database() -> VisualNovelDatabase {
 
 fn test_hq_briefing_visual_novel_trigger_database() -> VisualNovelTriggerDatabase {
     VisualNovelTriggerDatabase::new(vec![
-        test_hq_briefing_visual_novel_trigger("run_start_standard_hq_briefing", GameMode::Standard),
-        test_hq_briefing_visual_novel_trigger("run_start_endless_hq_briefing", GameMode::Endless),
+        test_hq_briefing_visual_novel_trigger("run_start_standard_hq_briefing", GameMode::Expedition),
+        test_hq_briefing_visual_novel_trigger("run_start_endless_hq_briefing", GameMode::Tutorial),
     ])
 }
 
 fn test_hq_briefing_visual_novel_trigger(id: &str, game_mode: GameMode) -> VisualNovelTrigger {
     let vn_id = match game_mode {
-        GameMode::Standard => "hq_briefing_standard_intro",
-        GameMode::Endless => "hq_briefing_endless_intro",
+        GameMode::Expedition => "hq_briefing_standard_intro",
+        GameMode::Tutorial => "hq_briefing_endless_intro",
     };
     VisualNovelTrigger {
         id: VisualNovelTriggerId::new(id),
@@ -430,9 +454,14 @@ fn test_employee_definition_database() -> EmployeeDefinitionDatabase {
         employee_definition_id: format!("candidate_{index}"),
         name: format!("Candidate {index}"),
         starter_eligible: true,
+        role: match index / 2 { 0 => EmployeeRole::Dealer, 1 => EmployeeRole::Tank, _ => EmployeeRole::Healer },
         initial_loadout: EmployeeInitialLoadout {
             equipment_ids: vec![
-                "standard_training_sword".to_string(),
+                match index / 2 {
+                    0 => "standard_training_sword",
+                    1 => "test_starter_shield",
+                    _ => "test_starter_healing_staff",
+                }.to_string(),
                 "standard_armor".to_string(),
             ],
             baseline_skill_fragment_ids: vec![starter_basic_attack_fragment_id()],
@@ -444,7 +473,16 @@ fn test_employee_definition_database() -> EmployeeDefinitionDatabase {
         employee_definition_id: format!("recruit_{index}"),
         name: format!("Recruit {index}"),
         starter_eligible: false,
-        initial_loadout: EmployeeInitialLoadout::default(),
+        role: match index / 2 { 0 => EmployeeRole::Dealer, 1 => EmployeeRole::Tank, _ => EmployeeRole::Healer },
+        initial_loadout: EmployeeInitialLoadout {
+            equipment_ids: vec![match index / 2 {
+                0 => "standard_training_sword",
+                1 => "test_starter_shield",
+                _ => "test_starter_healing_staff",
+            }.into(), "standard_armor".into()],
+            baseline_skill_fragment_ids: vec![starter_basic_attack_fragment_id()],
+            active_skill_fragment_id: None,
+        },
         profile: profile("테스트 채용 후보", "테스트용 런 중 채용 후보"),
     });
     EmployeeDefinitionDatabase::new(starters.chain(recruits).collect())
@@ -455,9 +493,6 @@ fn start_new_game_with_mode_and_default_starters(
     player_id: Uuid,
     game_mode: GameMode,
 ) -> BehaviorResult {
-    if game_mode == GameMode::Endless {
-        core.state.player_profile.standard_tutorial_completed = true;
-    }
     let start = core
         .execute(
             player_id,
@@ -490,6 +525,11 @@ fn start_new_game_with_mode_and_default_starters(
     let BehaviorResult::VisualNovelState { visual_novel: None } = advance else {
         panic!("ending pre-run briefing should close the VN overlay");
     };
+    if game_mode == GameMode::Tutorial {
+        assert!(matches!(core.get_state(), GameState::ViewingMap));
+        assert_eq!(core.state.roster.len(), 3, "tutorial must install its authored preset");
+        return advance;
+    }
     let employee_definition_ids = core
         .state
         .starter_candidates
@@ -501,13 +541,14 @@ fn start_new_game_with_mode_and_default_starters(
         player_id,
         PlayerBehavior::SelectStarterEmployees {
             employee_definition_ids,
+            loan_copy_ids: vec![],
         },
     )
     .expect("default starter employee selection should start the run")
 }
 
 fn start_new_game_with_default_starters(core: &mut GameCore, player_id: Uuid) -> BehaviorResult {
-    start_new_game_with_mode_and_default_starters(core, player_id, GameMode::Standard)
+    start_new_game_with_mode_and_default_starters(core, player_id, GameMode::Expedition)
 }
 
 fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
@@ -549,6 +590,15 @@ fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
         })
         .collect::<Vec<_>>();
     test_game_data_builder()
+        .with_equipment_data(Arc::new(EquipmentDatabase::with_materials(
+            equipment_with_starter_assets(Vec::new()),
+            [("revival_catalyst", crate::game::data::equipment_data::EquipmentMaterialType::RevivalCatalyst),
+             ("part_big_bad_wolf", crate::game::data::equipment_data::EquipmentMaterialType::AbnormalityPart)]
+                .into_iter().enumerate().map(|(i, (id, material_type))| EquipmentMaterialMetadata {
+                    id: id.into(), uuid: Uuid::from_u128(171700 + i as u128), name: id.into(), description: id.into(),
+                    material_type, rarity: crate::game::enums::RiskLevel::WAW, equipment_type: None,
+                }).collect(),
+        )))
         .with_buff_data(test_control_buff_database())
         .with_abnormalities(abnormalities)
         .with_skill_fragments(SkillFragmentDatabase::with_builtin_starter(fragments))
@@ -569,6 +619,8 @@ fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
         .with_pve(PveEncounterDatabase::new_with_reward_sources(
             vec![
                 PveEncounter {
+                    deterrence_tuning: Default::default(),
+                    bonus_objectives: Vec::new(),
                     id: "normal_corroded_encounter".to_string(),
                     encounter_class: PveEncounterClass::Normal,
                     primary_abnormality_id: None,
@@ -592,6 +644,8 @@ fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
                     static_obstacles: vec![],
                 },
                 PveEncounter {
+                    deterrence_tuning: Default::default(),
+                    bonus_objectives: Vec::new(),
                     id: "low_risk_encounter".to_string(),
                     encounter_class: PveEncounterClass::Elite,
                     primary_abnormality_id: Some("low_risk_abno".to_string()),
@@ -615,6 +669,8 @@ fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
                     static_obstacles: vec![],
                 },
                 PveEncounter {
+                    deterrence_tuning: Default::default(),
+                    bonus_objectives: Vec::new(),
                     id: "boss_risk_encounter".to_string(),
                     encounter_class: PveEncounterClass::NormalBoss,
                     primary_abnormality_id: Some("boss_risk_abno".to_string()),
@@ -633,6 +689,8 @@ fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
                     static_obstacles: vec![],
                 },
                 PveEncounter {
+                    deterrence_tuning: Default::default(),
+                    bonus_objectives: Vec::new(),
                     id: "final_boss_risk_encounter".to_string(),
                     encounter_class: PveEncounterClass::FinalBoss,
                     primary_abnormality_id: Some("final_boss_risk_abno".to_string()),
@@ -651,6 +709,8 @@ fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
                     static_obstacles: vec![],
                 },
                 PveEncounter {
+                    deterrence_tuning: Default::default(),
+                    bonus_objectives: Vec::new(),
                     id: "elite_risk_encounter".to_string(),
                     encounter_class: PveEncounterClass::Elite,
                     primary_abnormality_id: Some("elite_risk_abno".to_string()),
@@ -669,6 +729,8 @@ fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
                     static_obstacles: vec![],
                 },
                 PveEncounter {
+                    deterrence_tuning: Default::default(),
+                    bonus_objectives: Vec::new(),
                     id: "elite_survival_timer_encounter".to_string(),
                     encounter_class: PveEncounterClass::Elite,
                     primary_abnormality_id: Some("ambush_risk_abno".to_string()),
@@ -690,6 +752,8 @@ fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
                     static_obstacles: vec![],
                 },
                 PveEncounter {
+                    deterrence_tuning: Default::default(),
+                    bonus_objectives: Vec::new(),
                     id: "defense_encounter".to_string(),
                     encounter_class: PveEncounterClass::Elite,
                     primary_abnormality_id: Some("defense_risk_abno".to_string()),
@@ -716,6 +780,8 @@ fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
                     static_obstacles: vec![],
                 },
                 PveEncounter {
+                    deterrence_tuning: Default::default(),
+                    bonus_objectives: Vec::new(),
                     id: "defense_route_encounter".to_string(),
                     encounter_class: PveEncounterClass::Elite,
                     primary_abnormality_id: Some("defense_route_abno".to_string()),
@@ -739,6 +805,8 @@ fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
                     static_obstacles: vec![],
                 },
                 PveEncounter {
+                    deterrence_tuning: Default::default(),
+                    bonus_objectives: Vec::new(),
                     id: "defense_corridor_encounter".to_string(),
                     encounter_class: PveEncounterClass::Elite,
                     primary_abnormality_id: Some("defense_corridor_abno".to_string()),
@@ -767,78 +835,119 @@ fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
                     reward_source_id: "source_low_risk".to_string(),
                     encounter_id: "low_risk_encounter".to_string(),
                     fragment_id: SkillFragmentId::from("fragment_low_risk_abno"),
-                    repeat_reward: RewardEffect::GrantFragmentDust { amount: 5 },
+                    first_equipment_ids: vec!["standard_armor".to_owned()],
+                    repeat_rewards: vec![RewardEffect::GrantEquipmentDust { amount: 5 }],
+                    revival: None,
                 },
                 PveEncounterRewardSource {
                     reward_source_id: "source_boss_risk".to_string(),
                     encounter_id: "boss_risk_encounter".to_string(),
                     fragment_id: SkillFragmentId::from("fragment_boss_risk_abno"),
-                    repeat_reward: RewardEffect::GrantFragmentDust { amount: 10 },
+                    first_equipment_ids: vec!["standard_armor".to_owned()],
+                    repeat_rewards: vec![RewardEffect::GrantEquipmentDust { amount: 10 }],
+                    revival: Some(crate::game::revival::BossRevivalPolicy {
+                        catalyst_material_id: "revival_catalyst".into(), catalyst_amount: 1, part_material_id: "part_big_bad_wolf".into(),
+                        stage_2: fixture_revival_stage("boss_risk_encounter", 140, 2),
+                        stage_3: fixture_revival_stage("boss_risk_encounter", 180, 4),
+                    }),
                 },
                 PveEncounterRewardSource {
                     reward_source_id: "source_final_boss_risk".to_string(),
                     encounter_id: "final_boss_risk_encounter".to_string(),
                     fragment_id: SkillFragmentId::from("fragment_final_boss_risk_abno"),
-                    repeat_reward: RewardEffect::GrantFragmentDust { amount: 20 },
+                    first_equipment_ids: vec!["standard_armor".to_owned()],
+                    repeat_rewards: vec![RewardEffect::GrantEquipmentDust { amount: 20 }],
+                    revival: None,
                 },
                 PveEncounterRewardSource {
                     reward_source_id: "source_elite_risk".to_string(),
                     encounter_id: "elite_risk_encounter".to_string(),
                     fragment_id: SkillFragmentId::from("fragment_elite_risk_abno"),
-                    repeat_reward: RewardEffect::GrantFragmentDust { amount: 5 },
+                    first_equipment_ids: vec!["standard_armor".to_owned()],
+                    repeat_rewards: vec![RewardEffect::GrantEquipmentDust { amount: 5 }],
+                    revival: None,
                 },
                 PveEncounterRewardSource {
                     reward_source_id: "source_elite_survival".to_string(),
                     encounter_id: "elite_survival_timer_encounter".to_string(),
                     fragment_id: SkillFragmentId::from("fragment_ambush_risk_abno"),
-                    repeat_reward: RewardEffect::GrantFragmentDust { amount: 5 },
+                    first_equipment_ids: vec!["standard_armor".to_owned()],
+                    repeat_rewards: vec![RewardEffect::GrantEquipmentDust { amount: 5 }],
+                    revival: None,
                 },
                 PveEncounterRewardSource {
                     reward_source_id: "source_defense".to_string(),
                     encounter_id: "defense_encounter".to_string(),
                     fragment_id: SkillFragmentId::from("fragment_defense_risk_abno"),
-                    repeat_reward: RewardEffect::GrantFragmentDust { amount: 5 },
+                    first_equipment_ids: vec!["standard_armor".to_owned()],
+                    repeat_rewards: vec![RewardEffect::GrantEquipmentDust { amount: 5 }],
+                    revival: None,
                 },
                 PveEncounterRewardSource {
                     reward_source_id: "source_defense_route".to_string(),
                     encounter_id: "defense_route_encounter".to_string(),
                     fragment_id: SkillFragmentId::from("fragment_defense_route_abno"),
-                    repeat_reward: RewardEffect::GrantFragmentDust { amount: 5 },
+                    first_equipment_ids: vec!["standard_armor".to_owned()],
+                    repeat_rewards: vec![RewardEffect::GrantEquipmentDust { amount: 5 }],
+                    revival: None,
                 },
                 PveEncounterRewardSource {
                     reward_source_id: "source_defense_corridor".to_string(),
                     encounter_id: "defense_corridor_encounter".to_string(),
                     fragment_id: SkillFragmentId::from("fragment_defense_corridor_abno"),
-                    repeat_reward: RewardEffect::GrantFragmentDust { amount: 5 },
+                    first_equipment_ids: vec!["standard_armor".to_owned()],
+                    repeat_rewards: vec![RewardEffect::GrantEquipmentDust { amount: 5 }],
+                    revival: None,
                 },
             ],
         ))
         .build_arc()
 }
 
-// Explicit pre-U06 sword/baseline inputs for inherited battle numerical oracles.
-// U06 official loadout acceptance tests use live_game_data_from_ron unchanged.
-fn legacy_sword_live_game_data_from_ron() -> Arc<GameDataBase> {
-    let live = crate::game::data::ValidatedGameData::load_live_embedded().unwrap();
-    let mut definitions = live.employee_definition_data.definitions.clone();
-    for definition in &mut definitions {
-        definition.initial_loadout = if definition.starter_eligible {
-            let mut equipment_ids = vec!["standard_training_sword".into(), "standard_armor".into()];
-            if definition.employee_definition_id == "maintenance_tech" {
-                equipment_ids.push("archive_scanner".into());
-            }
-            EmployeeInitialLoadout {
-                equipment_ids,
-                baseline_skill_fragment_ids: vec!["starter_basic_attack_enhancement".into()],
-                active_skill_fragment_id: None,
-            }
-        } else {
-            EmployeeInitialLoadout::default()
-        };
+// Explicit pre-U06 Sword/baseline numerical inputs are applied AFTER a valid
+// role-compatible departure. Official definitions and starter validation stay
+// intact; ordinary live-data and U06/U12 loadout tests never call this helper.
+fn apply_legacy_sword_numerical_fixture(core: &mut GameCore, player: Uuid) {
+    assert!(matches!(core.get_state(), GameState::ViewingMap));
+    let mut employees: Vec<_> = core.state.roster.iter().map(|employee| employee.uuid).collect();
+    // Fixture-owned UUID allocation must not depend on HashMap iteration.
+    employees.sort_by_key(|uuid| uuid.as_u128());
+    let sword = core.game_data.equipment_data.get_by_id("standard_training_sword").unwrap().clone();
+    for employee_uuid in employees {
+        if let Some(copy_uuid) = core.state.roster.get(&employee_uuid).unwrap().skill_fragments.active_copy_uuid() {
+            core.execute(player, PlayerBehavior::UnequipSkillFragment { employee_uuid, copy_uuid }).unwrap();
+            // I: discard the now-unbound training skill rather than granting
+            // dismantle currency or retaining an unrequested numerical input.
+            core.state.skill_fragments.remove(copy_uuid).unwrap();
+        }
+        let weapon = core.state.inventory.equipments.iter().find(|copy|
+            copy.equipped_to == Some(employee_uuid) && copy.meta.equipment_type == EquipmentType::Weapon)
+            .expect("normal starter role has its authored weapon");
+        let old_copy = weapon.instance_uuid;
+        if weapon.meta.id != "standard_training_sword" {
+            core.execute(player, PlayerBehavior::UnEquipItem { item_uuid: old_copy, target_unit: employee_uuid }).unwrap();
+            core.state.inventory.equipments.remove_item(old_copy).unwrap();
+            let item_uuid = core.state.uuid_manager.next_owned_equipment();
+            core.state.inventory.equipments.add_item(OwnedEquipment::new(item_uuid, Arc::new(sword.clone()))).unwrap();
+            core.execute(player, PlayerBehavior::EquipItem { item_uuid, target_unit: employee_uuid }).unwrap();
+        }
+        // I: preserve the inherited baseline damage input without changing the
+        // catalog's authored starter roles, prices, effects or validators.
+        core.state.roster.get_mut(&employee_uuid).unwrap().skill_fragments =
+            crate::game::skill_fragment::SkillFragmentLoadout::with_baseline_ids(vec![starter_basic_attack_fragment_id()]);
     }
-    GameDataBuilder::from_validated(&live)
-        .with_employee_definitions(EmployeeDefinitionDatabase::new(definitions))
-        .build_arc()
+    core.refresh_continue_after_operation(super::application::ApplicationRoute::Behavior(ActionKind::EquipItem)).unwrap();
+}
+
+fn start_new_game_with_legacy_sword_fixture(core: &mut GameCore, player: Uuid) {
+    start_new_game_with_default_starters(core, player);
+    apply_legacy_sword_numerical_fixture(core, player);
+}
+
+fn legacy_pool_game_data_from_ron() -> Arc<GameDataBase> {
+    let mut data=live_game_data_from_ron();
+    Arc::make_mut(&mut Arc::get_mut(&mut data).unwrap().map_catalogs.facility_templates).layouts.clear();
+    data
 }
 
 fn live_game_data_from_ron() -> Arc<GameDataBase> {
@@ -1012,6 +1121,7 @@ fn abnormality_meta(uuid: u128) -> Arc<AbnormalityMetadata> {
 
 fn equipment_meta(uuid: u128, id: &str, equipment_type: EquipmentType) -> EquipmentMetadata {
     EquipmentMetadata {
+        content_family: None,
         id: id.to_string(),
         uuid: Uuid::from_u128(uuid),
         name: id.to_string(),
@@ -1059,6 +1169,21 @@ fn starter_weapon_meta() -> EquipmentMetadata {
     equipment
 }
 
+fn starter_role_weapon_meta(healer: bool) -> EquipmentMetadata {
+    let mut equipment = starter_weapon_meta();
+    equipment.id = if healer { "test_starter_healing_staff" } else { "test_starter_shield" }.into();
+    equipment.uuid = Uuid::from_u128(if healer { 0x650e_8400_e29b_41d4_a716_4466_5544_0033 } else { 0x650e_8400_e29b_41d4_a716_4466_5544_0032 });
+    let profile = equipment.weapon_profile.as_mut().unwrap();
+    profile.weapon_archetype = if healer { WeaponArchetype::Staff } else { WeaponArchetype::Shield };
+    if healer {
+        profile.range_role = WeaponRangeRole::Ranged;
+        profile.action = crate::game::data::abnormality_data::BasicAttackAction::Heal {
+            flat: 8, spell_power_percent: 100, footprint: None,
+        };
+    }
+    equipment
+}
+
 fn test_shop_metadata(id: &str, uuid: Uuid, context: ShopContext) -> ShopMetadata {
     ShopMetadata {
         id: id.to_string(),
@@ -1073,6 +1198,8 @@ fn test_shop_metadata(id: &str, uuid: Uuid, context: ShopContext) -> ShopMetadat
                 equipment_id: "standard_armor".to_string(),
             },
             quantity: 1,
+            base_price: None,
+            guaranteed: false,
             weight: 1,
             repeatable: false,
             buy_percent: None,
@@ -1095,6 +1222,12 @@ fn equipment_with_starter_assets(mut equipment: Vec<EquipmentMetadata>) -> Vec<E
     }
     if !equipment.iter().any(|item| item.id == "standard_armor") {
         equipment.push(starter_equipment_meta());
+    }
+    for healer in [false, true] {
+        let weapon = starter_role_weapon_meta(healer);
+        if !equipment.iter().any(|item| item.id == weapon.id) {
+            equipment.push(weapon);
+        }
     }
     equipment
 }
@@ -1242,6 +1375,8 @@ fn game_data_with_skill_fragments(fragments: Vec<SkillFragmentMetadata>) -> Arc<
         .iter()
         .filter_map(|fragment| match &fragment.effect {
             SkillFragmentEffectDef::ActiveSkill { forms, .. } => Some(SkillDef {
+                action_policy: None,
+                resonance_admission: None,
                 use_lifetime: crate::game::ability::SkillUseLifetime::Action,
                 flow: None,
                 id: forms["base"].skill_id.clone(),
@@ -1285,6 +1420,8 @@ fn game_data_with_equipment_and_skill_fragments(
         .iter()
         .filter_map(|fragment| match &fragment.effect {
             SkillFragmentEffectDef::ActiveSkill { forms, .. } => Some(SkillDef {
+                action_policy: None,
+                resonance_admission: None,
                 use_lifetime: crate::game::ability::SkillUseLifetime::Action,
                 flow: None,
                 id: forms["base"].skill_id.clone(),
@@ -1335,8 +1472,8 @@ fn game_data_with_pve_equipment_and_active_skill_fragments(
         .with_corroded_employee_data(base.corroded_employee_data.clone())
         .with_corroded_wave_data(base.corroded_wave_data.clone())
         .with_employee_definition_data(base.employee_definition_data.clone())
-        .with_equipment_data(Arc::new(EquipmentDatabase::new(
-            equipment_with_starter_assets(equipment),
+        .with_equipment_data(Arc::new(EquipmentDatabase::with_materials(
+            equipment_with_starter_assets(equipment), base.equipment_data.materials.clone(),
         )))
         .with_shop_data(base.shop_data.clone())
         .with_reward_data(base.reward_data.clone())
@@ -1455,19 +1592,31 @@ fn force_first_available_node(
                 .any(|slot| slot.allowed_categories.contains(&category))
         });
 
+    let current_template_supports_category = current_template_supports_category && {
+        let run = core.state.run.as_ref().unwrap();
+        run.facility_run_state.rooms.is_none() || run.map.nodes.iter().any(|node|
+            node.category == category && core.facility_node_support(node.id).map_or(true, |support| support.is_supported()))
+    };
+
     if !current_template_supports_category {
-        let floor_index = match category {
-            MapNodeCategory::SavePoint
-            | MapNodeCategory::Maintenance
-            | MapNodeCategory::HeadquartersContact
-            | MapNodeCategory::Shop => 1,
-            MapNodeCategory::Boss => 2,
-            MapNodeCategory::Gate => 0,
-            MapNodeCategory::Start
-            | MapNodeCategory::Combat
-            | MapNodeCategory::Event
-            | MapNodeCategory::Reward => 0,
-        };
+        // I: install an actual authored graph that supports the requested
+        // category. The current Expedition development floors intentionally
+        // have no Event/Boss slots, so advancing an assumed floor index cannot
+        // supply this input. Tutorial is only the generator's schedule selector;
+        // the run's mode, lifecycle identity and depth remain unchanged.
+        let catalogs = &core.game_data.map_catalogs;
+        let schedule = catalogs.node_assignment_profiles.standard_schedule.iter()
+            .filter(|entry| catalogs.facility_templates.pool(&entry.pool_id).is_some_and(|pool|
+                !pool.template_ids.is_empty() && pool.template_ids.iter().all(|id|
+                    catalogs.facility_templates.template(id).is_some_and(|template|
+                        template.slots.iter().any(|slot| slot.allowed_categories.contains(&category))))))
+            // Prefer a graph that also supports SavePoint: history fixtures
+            // must be able to save without replacing their completed Event.
+            .max_by_key(|entry| catalogs.facility_templates.pool(&entry.pool_id).unwrap()
+                .template_ids.iter().all(|id| catalogs.facility_templates.template(id).unwrap()
+                    .slots.iter().any(|slot| slot.allowed_categories.contains(&MapNodeCategory::SavePoint))))
+            .expect("a current authored schedule must contain the requested test category");
+        let floor_index = u32::from(schedule.floor).checked_sub(1).expect("authored floor is one-based");
         let run_seed = core
             .state
             .run
@@ -1478,7 +1627,7 @@ fn force_first_available_node(
         let floor_power_anchor = core.state.run_power_authority.current_floor_power_anchor;
         let generated = crate::game::map::FacilityMapGenerator::generate(
             run_seed,
-            GameMode::Standard,
+            GameMode::Tutorial,
             floor_index,
             &crate::game::map::FacilityRunState::default(),
             &core.game_data.map_catalogs,
@@ -1486,10 +1635,27 @@ fn force_first_available_node(
             floor_power_anchor,
         )
         .expect("test category must resolve to an authored facility template");
+        assert!(core.state.active_battle.is_none(), "location fixture cannot discard a live battle");
         let run = core.state.run.as_mut().expect("run state");
+        // Historical event/shop receipts belong to their original node graph.
+        // Tests needing them must choose their supported map before creating
+        // those receipts; never erase history to make a checkpoint validate.
+        assert!(run.event_sessions.is_empty(), "choose the fixture graph before event history exists");
+        assert!(run.shop_sessions.is_empty(), "choose the fixture graph before shop history exists");
+        if run.recruitment.active_session().is_some() {
+            run.recruitment.return_active_session_to_tail().unwrap();
+        }
         run.map = generated.map;
         run.map_progression = crate::game::map::MapProgression::from_map(&run.map);
         run.facility_run_state = generated.facility_run_state;
+        run.run_progression.entry_receipts.clear();
+        run.run_progression.pending_continuation = None;
+        run.combat_previews.clear();
+        run.abnormality_attempts.clear();
+        run.combat_recovery_restriction = None;
+        core.state.node_session = None;
+        core.state.active_node_content = None;
+        core.transition_to(GameState::ViewingMap).unwrap();
     }
 
     let run = core.state.run.as_ref().expect("run state");
@@ -1503,7 +1669,16 @@ fn force_first_available_node(
     let target_slot_id = template
         .slots
         .iter()
-        .find(|slot| slot.allowed_categories.contains(&category))
+        .filter(|slot| slot.allowed_categories.contains(&category))
+        .filter(|slot| run.map.nodes.iter().find(|node| node.slot_id == slot.id)
+            .is_some_and(|node| !run.event_sessions.contains_key(&node.id)))
+        .min_by_key(|slot| {
+            let node = run.map.nodes.iter().find(|node| node.slot_id == slot.id).unwrap();
+            // Preserve an existing authored difficulty when preparing a battle.
+            if matches!(category, MapNodeCategory::Combat | MapNodeCategory::Boss) {
+                (node.category != category, node.combat_difficulty.is_none())
+            } else { (node.category != category, false) }
+        })
         .expect("authored slot for forced category")
         .id
         .clone();
@@ -1594,6 +1769,8 @@ fn force_first_available_node(
         available_node_ids: vec![node_id],
         completed_node_ids,
     };
+    run.map.validate_facility_template_contract(&template)
+        .expect("explicit category fixture preserves the authored graph and slot contract");
     node_id
 }
 
@@ -1663,6 +1840,7 @@ mod u07_objects;
 mod equipment;
 
 mod combat;
+mod combat_reward_quantity;
 
 mod mastered_elite_sweep;
 
@@ -1678,3 +1856,28 @@ mod u08_event_owner;
 mod u08_lifecycle;
 
 mod u09_structural;
+mod u10_causal;
+
+mod u12_lifecycle;
+
+mod u13_facility;
+mod u14_deterrence;
+
+mod u15_economy;
+mod u16_support;
+
+mod u162_relic_rewards;
+
+mod u163_dealer;
+mod u164_stress;
+
+fn fixture_revival_stage(encounter_id: &str, percent: u32, parts: u32) -> crate::game::revival::RevivalStagePolicy {
+    crate::game::revival::RevivalStagePolicy { encounter_id: encounter_id.into(), stat_multiplier_percent: percent,
+        rewards: vec![RewardEffect::GrantEquipmentMaterial { material_id: "part_big_bad_wolf".into(), amount: parts }],
+        equipment_choices: vec!["standard_armor".into(), "standard_training_sword".into()] }
+}
+
+mod u17_revival;
+mod u17_public;
+
+mod continuation_contract;

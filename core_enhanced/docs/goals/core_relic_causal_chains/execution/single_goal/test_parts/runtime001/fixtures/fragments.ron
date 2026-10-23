@@ -1,0 +1,6 @@
+(fragments: [(
+ id: "u10_public_fragment", uuid: "a510e100-0000-0000-0000-000000000101",
+ name: "Independent causal provider", description: "Normal reward provider", rarity: Rare,
+ equip_limit: OwnedCopies, sources: [RareReward],
+ effect: ActiveSkill(forms: {"base": (skill_id: "u10_public_strike", resonance_max: 1)}),
+)])

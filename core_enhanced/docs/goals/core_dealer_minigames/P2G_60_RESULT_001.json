@@ -1,0 +1,9 @@
+{
+  "stage": "P2G-60",
+  "status": "complete",
+  "handoff_ref": {
+    "Artifact Type": "Handoff Artifact",
+    "Artifact ID": "HA-CDMG-001",
+    "Content Digest": "sha256:7afe6e713b124365d0c6f5d4c55f98a9a9d39e7c6e8c21858d90693492082f49"
+  }
+}

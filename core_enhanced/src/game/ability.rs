@@ -1,4 +1,18 @@
+pub mod relation_action;
+pub mod input_plan;
+pub mod prepared_volley;
+pub mod status_strike;
+pub mod guard_charge;
+pub mod mobile_effect;
+pub mod paired_areas;
+pub mod counter_channel;
 pub mod flow;
+pub mod ground;
+pub mod marks;
+pub mod weapon_marks;
+pub mod tile_burst;
+pub mod action;
+pub mod resonance;
 pub mod objects;
 pub mod sustained;
 use std::{borrow::Borrow, fmt, ops::Deref};
@@ -20,6 +34,10 @@ impl SkillId {
 
     pub fn as_str(&self) -> &str {
         &self.0
+    }
+
+    pub(crate) fn retained_text_capacity(&self) -> usize {
+        self.0.capacity()
     }
 }
 
@@ -109,6 +127,7 @@ pub enum UnitTargetRule {
     Nearest,
     CurrentTarget,
     LowestHealthEnemy,
+    RouteProgress,
 }
 
 /// Unit-target acquisition reach for skills.
@@ -134,6 +153,9 @@ pub enum SkillCastSelection {
     AutomaticUnit,
     PlayerUnit,
     PlayerTile,
+    /// Ordered, atomically admitted tile pair; equal centers are valid.
+    PlayerTilePair,
+    PlayerDirection,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -480,6 +502,8 @@ impl SkillProjectileCollisionDef {
 pub enum SkillAreaAnchorSource {
     #[default]
     CastTarget,
+    /// The target tile captured at action admission, even if that unit later leaves.
+    AcceptedCastTarget,
     ImpactContext,
     Caster,
     // Use the cast target as the presentation origin instead of the caster.
@@ -516,8 +540,35 @@ pub enum SkillTileAreaOrigin {
 /// `DeliveryDef::TileArea.footprint` owns actual hit tiles independently from
 /// cast acquisition reach. This policy defines where that footprint is projected,
 /// how units inside it are filtered, and whether the area persists across ticks.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+pub enum SkillTileAreaMode {
+    /// One release-time query. Empty recipients still complete the admitted use.
+    ReleaseQuery,
+    /// Caster admission position/facing, owned until this concentration ends.
+    ChannelGround { pause_basic: bool },
+    #[default]
+    Legacy,
+    /// Fixed selected tile, world-aligned pattern, lifetime from creation.
+    /// May be created without recipients; periodic events re-query membership.
+    SelectedGround,
+}
+
+crate::authoring::clone_shape::copy_shape!(SkillTileAreaMode);
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
 pub struct SkillTileAreaDeliveryDef {
+    #[serde(default)]
+    pub ground_status: Option<ground::GroundStatusProgram>,
+    #[serde(default)]
+    pub mode: SkillTileAreaMode,
+    #[serde(default)]
+    pub emission: Option<SkillAreaEmissionDef>,
+    /// Time between release and the first independent impact.
+    #[serde(default)]
+    pub first_tick_delay_ms: u32,
+    /// A single delivery can heal its living caster once after effective damage.
+    #[serde(default)]
+    pub on_hit_caster_heal_percent: Option<u32>,
     #[serde(default)]
     pub anchor: SkillAreaAnchorSource,
     #[serde(default)]
@@ -536,17 +587,79 @@ pub struct SkillTileAreaDeliveryDef {
     pub tick_interval_ms: Option<u32>,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct SkillAreaEmissionDef {
+    pub footprint: TileRangePattern,
+    pub delay_ms: u32,
+    pub include_air: bool,
+}
+crate::authoring::clone_shape::struct_shape!(SkillAreaEmissionDef { footprint, delay_ms, include_air });
+
 impl SkillTileAreaDeliveryDef {
     pub fn validate_runtime_contract(&self) {
         self.try_validate_runtime_contract()
             .expect("invalid SkillTileAreaDeliveryDef");
     }
 
+    pub fn is_independent(&self) -> bool {
+        self.duration_ms > 0 || self.first_tick_delay_ms > 0
+    }
+
     pub fn try_validate_runtime_contract(&self) -> Result<(), String> {
+        if self.mode == SkillTileAreaMode::ReleaseQuery
+            && (self.anchor != SkillAreaAnchorSource::Caster || self.tile_origin != SkillTileAreaOrigin::Caster
+                || self.tracking != SkillAreaTracking::GroundFixed || self.duration_ms != 0
+                || self.tick_interval_ms.is_some() || self.first_tick_delay_ms != 0
+                || self.ground_status.is_some() || self.emission.is_some() || self.on_hit_caster_heal_percent.is_some()) {
+            return Err("release query requires an immediate one-time caster footprint".into());
+        }
+        if matches!(self.mode, SkillTileAreaMode::SelectedGround | SkillTileAreaMode::ChannelGround { .. })
+            && (self.anchor != SkillAreaAnchorSource::AcceptedCastTarget
+                || self.tile_origin != SkillTileAreaOrigin::Anchor
+                || self.tracking != SkillAreaTracking::GroundFixed
+                || self.duration_ms == 0 || (self.tick_interval_ms.is_none() && self.ground_status.is_none())
+                || self.tick_policy != SkillAreaTickPolicy::EveryTick
+                || self.emission.is_some() || self.on_hit_caster_heal_percent.is_some()) {
+            return Err("selected ground requires a finite world-aligned periodic area at the accepted tile".into());
+        }
+        if let Some(program) = &self.ground_status {
+            program.validate()?;
+            if !matches!(self.mode, SkillTileAreaMode::SelectedGround | SkillTileAreaMode::ChannelGround { .. }) || self.tick_interval_ms.is_some() || self.first_tick_delay_ms != 0 {
+                return Err("ground status subscriptions require selected ground without periodic damage ticks".into());
+            }
+        }
+        if let Some(emission) = &self.emission {
+            emission.footprint.validate()?;
+            let interval = self.tick_interval_ms.filter(|n| *n > 0).ok_or("emission interval must be positive")?;
+            let span = self.duration_ms.checked_sub(1).ok_or("emission duration must be positive")?;
+            if span % interval != 0 || span / interval >= 10_000 {
+                return Err("emission requires an exact finite schedule of at most 10000 opportunities".into());
+            }
+            if self.duration_ms == 0 || self.tick_interval_ms.is_none()
+                || self.first_tick_delay_ms != 0 || self.on_hit_caster_heal_percent.is_some()
+                || self.tracking != SkillAreaTracking::GroundFixed
+                || self.anchor != SkillAreaAnchorSource::AcceptedCastTarget
+                || self.tile_origin != SkillTileAreaOrigin::Anchor
+                || self.hit_targets != SkillHitTargetFilter::Enemies
+                || self.tick_policy != SkillAreaTickPolicy::EveryTick {
+                return Err("area emission requires a finite fixed admission anchor and periodic enemy opportunities".into());
+            }
+        }
+        if self.on_hit_caster_heal_percent.is_some_and(|p| p == 0 || p > 100)
+            || (self.on_hit_caster_heal_percent.is_some() && (self.duration_ms != 0 || self.tick_interval_ms.is_some())) {
+            return Err("on-hit caster healing requires one impact and a percent in 1..100".into());
+        }
+        if self.first_tick_delay_ms > 0 && self.tracking != SkillAreaTracking::GroundFixed {
+            return Err("delayed release requires fixed ground geometry".into());
+        }
+        if self.anchor == SkillAreaAnchorSource::AcceptedCastTarget && self.tracking != SkillAreaTracking::GroundFixed {
+            return Err("accepted target anchors require fixed ground geometry".into());
+        }
         if self.tick_interval_ms == Some(0) {
             return Err("tick_interval_ms must be non-zero".to_string());
         }
-        if self.duration_ms > 0 && self.tick_interval_ms.is_none() {
+        if self.duration_ms > 0 && self.tick_interval_ms.is_none() && self.ground_status.is_none() {
             return Err("persistent tile skill area requires tick_interval_ms".to_string());
         }
         if self.duration_ms > 0 {
@@ -784,6 +897,10 @@ impl SkillUseLifetime {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SkillDef {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub action_policy: Option<std::sync::Arc<action::ActionPolicy>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub resonance_admission: Option<resonance::ResonanceAdmission>,
     pub use_lifetime: SkillUseLifetime,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub flow: Option<std::sync::Arc<flow::SkillFlowDef>>,
@@ -805,6 +922,16 @@ pub struct SkillDef {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub enum SkillEffectDef {
+    GuardCounter { program: std::sync::Arc<guard_charge::GuardCounterDef> },
+    StatusStrike { program: std::sync::Arc<status_strike::StatusStrikeDef> },
+    FusionPlacement { program: std::sync::Arc<mobile_effect::FusionPlacementDef> },
+    PairedAreas { program: std::sync::Arc<paired_areas::PairedAreasDef> },
+    PreparedVolley { program: std::sync::Arc<prepared_volley::PreparedVolleyDef> },
+    InputPlan { program: std::sync::Arc<input_plan::InputPlanDef> },
+    RelationAction { program: std::sync::Arc<relation_action::RelationActionDef> },
+    CounterChannel { program: std::sync::Arc<counter_channel::CounterChannelDef>, root: SkillId, entry: usize },
+    TileBurst { program: std::sync::Arc<tile_burst::TileBurstDef> },
+    PresenceBurst { program: std::sync::Arc<marks::PresenceBurstProgram> },
     PersonalShieldGrant {
         definition: crate::game::relic::structural::authoring::PersonalShieldGrantDef,
     },
@@ -884,6 +1011,13 @@ impl crate::authoring::clone_shape::CloneShape for SkillTarget {
 }
 
 impl SkillDef {
+    /// Compiled passive declaration belongs to the equipped fragment form.
+    pub fn fragment_guard(&self) -> Option<crate::game::data::skill_fragment_data::ParryGuardDef> {
+        self.steps.iter().flat_map(|step| &step.effects).find_map(|effect| match &effect.op {
+            SkillEffectDef::Sustained { definition: sustained::SustainedEffectDef::Parry { fragment_guard, .. } } => *fragment_guard,
+            _ => None,
+        })
+    }
     pub fn first_step(&self) -> Option<&SkillStepDef> {
         self.steps.first()
     }
@@ -1300,6 +1434,10 @@ mod tests {
                     rows: vec![".@.".to_string()],
                 },
                 area: SkillTileAreaDeliveryDef {
+                    ground_status: None,
+                    mode: Default::default(),
+                    emission: None, first_tick_delay_ms: 0,
+                    on_hit_caster_heal_percent: None,
                     anchor: SkillAreaAnchorSource::CastTarget,
                     tile_origin: SkillTileAreaOrigin::Anchor,
                     tracking: SkillAreaTracking::GroundFixed,

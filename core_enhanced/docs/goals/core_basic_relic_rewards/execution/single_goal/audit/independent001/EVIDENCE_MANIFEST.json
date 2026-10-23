@@ -1,0 +1,296 @@
+{
+  "target": "u16_2_current_001",
+  "role": "audit-only evidence; implementation manifests unchanged",
+  "files": [
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/COMPLETION_AUDIT.md",
+      "bytes": 13673,
+      "sha256": "dfbf7a5fac036c95fb27d14e4822729e2eff5f07c289eb579661d9cf8c45532e"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/AUDIT_EXECUTION_NOTES.json",
+      "bytes": 1525,
+      "sha256": "819284419575e169edda71de1f440d2c9c0bfb3140817a3798e22728c92dc9ee"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/AUTHORING_DIAGNOSTICS.json",
+      "bytes": 2771,
+      "sha256": "f2a0ee5560300fdcc22b5ae4d17fdbca20efe537949dd9775bd3bcbc93d89025"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/ENTRY_CURRENTNESS.json",
+      "bytes": 366,
+      "sha256": "c055ac9ebca480951ecd2f8c3c58372bc32aeb7b18da79574f6f7ffa707f7857"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/ENTRY_MEMBERSHIP.json",
+      "bytes": 303,
+      "sha256": "ca3f7762e3ee7201711d24e481c7b8913ccea6908d2e7ac1945635e8a1687b62"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/EVIDENCE_RECHECK.json",
+      "bytes": 15292,
+      "sha256": "6bc3012e395eeaebf1b5b6e5acc7f4ba768c0f1b6974598f4e68c9ef41a67d1a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/EVIDENCE_RECHECK_002.json",
+      "bytes": 16468,
+      "sha256": "717fd9409e77735f055ba5ba2768745e055543e25205298f73425225c1d2836a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/EXIT_CURRENTNESS.json",
+      "bytes": 303,
+      "sha256": "b598f53a13d910a6c4eed7405b54870f017d3bff5fd5c8a28ddc2c24bf999a10"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/FINDINGS.json",
+      "bytes": 476,
+      "sha256": "0ff5ef28ab87b7e52985a7c2995666c104e2aa16b78cf7bf05ec7125a69b7d99"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/GEX_20_RESULT.json",
+      "bytes": 1148,
+      "sha256": "e82e59b054848f199e83d023a9771cd48a3641278bb72f6d2104be9b1faa9155"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/HOST_PROGRESS.json",
+      "bytes": 4578,
+      "sha256": "592b95122aa48fd64a8eebe8e15d5037a0a78c8b9fb456fdcd9b16269fa60889"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/HOST_REPLAY.json",
+      "bytes": 5098,
+      "sha256": "9207530e5cc8e83a2f15ded82312370315fa8d94b58dcaf279ab4d61c00d5a39"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/currentness.py",
+      "bytes": 2139,
+      "sha256": "16ec7ccbd95e8aef7921a2e998c223300de8e37c68e20bf1da47bfeeb3029708"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/evidence-recheck001.log",
+      "bytes": 330,
+      "sha256": "3ae10714a37cd17da733f305dfb8132ae28181f0496cf5c3c968842eeb46dd81"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/evidence-recheck002.log",
+      "bytes": 2747,
+      "sha256": "a68a6a8560cc3893d46e7d8d47d623d98c9b46597987b591af3cf17b13354b34"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/evidence-recheck003.log",
+      "bytes": 3859,
+      "sha256": "b35cb5a09c7a4d507ef300caca9f47f37bc79731f4c0673295efb2db9830d580"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/focused001.log",
+      "bytes": 11838,
+      "sha256": "030f275a32ada358d6f51c92d54a85c4898615981057ce71708657376c4f69ab"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host-choice_complete.stderr.log",
+      "bytes": 76,
+      "sha256": "4a4d3759cbff626df0fa07f9349b9a7de58ccfaa96fbbffbbffc939d55a4d5c8"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host-choice_complete.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002/choice_checkpoint/IO_FAILURE.json",
+      "bytes": 202,
+      "sha256": "4e7f3ea7e568e785365dbd03a649463a37d643269f04cbadf383b4a92b5cfb75"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002/choice_checkpoint/RESULT.json",
+      "bytes": 650631,
+      "sha256": "51681029b30f3e6f7d314b03d280e7571ba39f28d4253e2db907f972e5a1e08e"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002/choice_checkpoint/admission.json",
+      "bytes": 125867,
+      "sha256": "db475c5b7ec3baf0ffc58b910daf8bcd6f3e41a9f4535ec5991d58bf030fc5ac"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002/choice_checkpoint/before.json",
+      "bytes": 602087,
+      "sha256": "f28b37e5d220051e03c3da45a72f85327cecf53135f2eb2f47194710090df6b0"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002/choice_checkpoint/commands.json",
+      "bytes": 10418,
+      "sha256": "e984a5852e194d01ed592f3f43423778730bf90b2709dd9ff1b963169d8a1b58"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002/choice_complete/IO_FAILURE.json",
+      "bytes": 195,
+      "sha256": "9c1cbf1b43a19efd4b7bfc2911d4424ce82640d20801fc6a851bb60696e554d3"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002/choice_complete/RESULT.json",
+      "bytes": 877284,
+      "sha256": "1ef6d856ff0daf254b9fe5de37b0b851995822e32a0236c14f4610efc82e25d9"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002/choice_complete/admission.json",
+      "bytes": 125867,
+      "sha256": "68212bcc0a9d33df45e700e94ed02ca933a931aba3c48939e0307713cebed1b2"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002/choice_complete/before.json",
+      "bytes": 418613,
+      "sha256": "9d93f7a2cdacc42912426191f1daa0260a7a9a569364277451a7db048ae6f89b"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002/choice_complete/commands.json",
+      "bytes": 15747,
+      "sha256": "b654fecdeb76238cadca8e7b3187a54a3562674c5cc662d3778e484c0c2344d4"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002/dust_complete002/IO_FAILURE.json",
+      "bytes": 195,
+      "sha256": "52aa00b3f051d66df6f89544071193a8a02efdd729a8c462dd62f6c94caf0b72"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002/dust_complete002/RESULT.json",
+      "bytes": 875363,
+      "sha256": "cb5256e959cb74076e935af5b7bf6b0f989438c7d2ff9d9eb4e3dd626f7a9ae0"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002/dust_complete002/admission.json",
+      "bytes": 125867,
+      "sha256": "8070209b2189e78cf73361d921082d2b6f5c343af350c37c3d03dff4195cbe2b"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002/dust_complete002/before.json",
+      "bytes": 418613,
+      "sha256": "9d93f7a2cdacc42912426191f1daa0260a7a9a569364277451a7db048ae6f89b"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002/dust_complete002/commands.json",
+      "bytes": 18840,
+      "sha256": "c6c34578b8433be7420a02a6e26ac787345d7a3fc82244e133109848d9130a3d"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002/dust_skip/IO_FAILURE.json",
+      "bytes": 194,
+      "sha256": "f67ae67022d3e27f148f6c59af49a236f4666cc04dd4b1e820f918c70f602de4"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002/dust_skip/RESULT.json",
+      "bytes": 875362,
+      "sha256": "6786e9e87a66ee82df5ecec8858e2c78405d01c39be4de40e5ca851b3d77ccf3"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002/dust_skip/admission.json",
+      "bytes": 125867,
+      "sha256": "bdc8e4598abb43487ec0dcc144866b2e9dd5c4b3267dc833ad4bf37edf6a34ab"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002/dust_skip/before.json",
+      "bytes": 418613,
+      "sha256": "9d93f7a2cdacc42912426191f1daa0260a7a9a569364277451a7db048ae6f89b"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002/dust_skip/commands.json",
+      "bytes": 22274,
+      "sha256": "5e065292bbd63ed9a27afd0efe40c4772d3b5d2ea5875a15dd303778dfff694c"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002/fusion_complete/IO_FAILURE.json",
+      "bytes": 203,
+      "sha256": "ab51f798ad812d676c1a0c928847d33d65cb8e1cec2af8655d08323e7c2d897e"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002/fusion_complete/RESULT.json",
+      "bytes": 874639,
+      "sha256": "e23daf8dab950a0d99ca3452596780594152bd8f5dd75479c4f3518fbc0151e7"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002/fusion_complete/admission.json",
+      "bytes": 125867,
+      "sha256": "7f5ae6259557ecc12a7cc6e37b733f51abdcaf84db6326c1b264653700c5a75c"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002/fusion_complete/before.json",
+      "bytes": 600912,
+      "sha256": "cf9559ac710eb187323dd8056ec86f178e0dd6cd99a4bd4572108fcd832bef92"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002/fusion_complete/commands.json",
+      "bytes": 12994,
+      "sha256": "7aee819391a8767b8fe87b21b778681f141e2ad280eee77c6a1fa3c65d51f796"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002-choice_checkpoint.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002-choice_checkpoint.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002-choice_complete.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002-choice_complete.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002-dust_complete002.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002-dust_complete002.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002-dust_skip.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002-dust_skip.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002-fusion_complete.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/host002-fusion_complete.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/recheck_evidence.before_ignore_reason.py.txt",
+      "bytes": 7377,
+      "sha256": "415ea35172f138d765374b3481ceb145c47d9e8f03f5f6a9f4849b513c04cfc7"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/recheck_evidence.py",
+      "bytes": 9564,
+      "sha256": "05c09b030c9d7c459879ce87117f31f3eed52e32c98996ebd9edac25f9fe1d5a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/replay_host.before_output_parent.py.txt",
+      "bytes": 2953,
+      "sha256": "eaa55a6a4756ddf9dcf1be9194f908898bc43d478c274d200b0b7c163b8b5a6a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/audit/independent001/replay_host.py",
+      "bytes": 2984,
+      "sha256": "b56b7049c7aadfa2243440822b53e8d6f51efbab01117203b7a2aab41a2aa839"
+    }
+  ]
+}

@@ -1,0 +1,2705 @@
+{
+  "checkpoint": {
+    "continuation": {
+      "current": {
+        "abnormality_attempts": {},
+        "combat_previews": {
+          "48006277-0e96-4ffe-b632-2e2c14a62d45": {
+            "archetype": "Surrounded",
+            "battlefield_template_id": "surrounded_breach_ring_01",
+            "deployment_zones": [
+              {
+                "cells": [
+                  {
+                    "x": 3,
+                    "y": 4
+                  },
+                  {
+                    "x": 4,
+                    "y": 4
+                  },
+                  {
+                    "x": 5,
+                    "y": 4
+                  },
+                  {
+                    "x": 3,
+                    "y": 5
+                  },
+                  {
+                    "x": 4,
+                    "y": 5
+                  },
+                  {
+                    "x": 5,
+                    "y": 5
+                  }
+                ],
+                "id": "ground_deployment",
+                "kind": "Ground",
+                "label": "Ground Deployment"
+              },
+              {
+                "cells": [
+                  {
+                    "x": 2,
+                    "y": 2
+                  },
+                  {
+                    "x": 3,
+                    "y": 2
+                  },
+                  {
+                    "x": 4,
+                    "y": 2
+                  },
+                  {
+                    "x": 5,
+                    "y": 2
+                  },
+                  {
+                    "x": 6,
+                    "y": 2
+                  }
+                ],
+                "id": "platform_deployment",
+                "kind": "Platform",
+                "label": "Platform Deployment"
+              }
+            ],
+            "deterrence": {
+              "enemy_attack_percent": 100,
+              "enemy_health_percent": 100,
+              "seal_released": false,
+              "unrestrained": false,
+              "victory_quantity_multiplier": 1
+            },
+            "encounter_id": "normal_corroded_patrol",
+            "enemy_briefing": [
+              {
+                "abnormality_id": "",
+                "count_hint": 2,
+                "display_name": "Corroded Employees",
+                "kind": "CorrodedEmployee",
+                "risk_level": "ZAYIN",
+                "role": "PrimaryThreat"
+              }
+            ],
+            "height": 9,
+            "mission_risk": "Controlled",
+            "mission_variant": "Defense",
+            "node_id": "48006277-0e96-4ffe-b632-2e2c14a62d45",
+            "node_type": "Defense",
+            "obstacles": [
+              {
+                "x": 3,
+                "y": 3
+              },
+              {
+                "x": 5,
+                "y": 3
+              },
+              {
+                "x": 3,
+                "y": 6
+              },
+              {
+                "x": 5,
+                "y": 6
+              }
+            ],
+            "routes": [
+              {
+                "cells": [
+                  {
+                    "x": 1,
+                    "y": 0
+                  },
+                  {
+                    "x": 1,
+                    "y": 1
+                  },
+                  {
+                    "x": 1,
+                    "y": 2
+                  },
+                  {
+                    "x": 1,
+                    "y": 3
+                  },
+                  {
+                    "x": 1,
+                    "y": 4
+                  },
+                  {
+                    "x": 2,
+                    "y": 4
+                  },
+                  {
+                    "x": 3,
+                    "y": 4
+                  }
+                ],
+                "end": {
+                  "x": 3,
+                  "y": 4
+                },
+                "id": "defense_main",
+                "start": {
+                  "x": 1,
+                  "y": 0
+                }
+              }
+            ],
+            "size_class": "Medium",
+            "spawn_waves": [
+              {
+                "activation": {
+                  "primary": {
+                    "AtTimeMs": {
+                      "time_ms": 5000
+                    }
+                  },
+                  "priority": 0,
+                  "trigger_id": "archive_sentries"
+                },
+                "enemy_entries": [
+                  {
+                    "abnormality_id": "",
+                    "appearance_seeds": [
+                      16259954687444079407
+                    ],
+                    "count": 1,
+                    "kind": "CorrodedEmployee",
+                    "profile_id": "corroded_guard",
+                    "tier": "I"
+                  },
+                  {
+                    "abnormality_id": "",
+                    "appearance_seeds": [
+                      486721828182708891
+                    ],
+                    "count": 1,
+                    "kind": "CorrodedEmployee",
+                    "profile_id": "corroded_marksman",
+                    "tier": "I"
+                  }
+                ],
+                "id": "archive_sentries",
+                "required_for_victory": true,
+                "route_id": "defense_main",
+                "spawn_zone_ids": [
+                  "north_entry"
+                ]
+              }
+            ],
+            "spawn_zones": [
+              {
+                "cells": [
+                  {
+                    "x": 0,
+                    "y": 0
+                  },
+                  {
+                    "x": 1,
+                    "y": 0
+                  },
+                  {
+                    "x": 2,
+                    "y": 0
+                  },
+                  {
+                    "x": 6,
+                    "y": 0
+                  },
+                  {
+                    "x": 7,
+                    "y": 0
+                  },
+                  {
+                    "x": 8,
+                    "y": 0
+                  }
+                ],
+                "confidence": "Confirmed",
+                "id": "north_entry",
+                "kind": "Entry",
+                "label": "North Entry",
+                "revealed_details": []
+              },
+              {
+                "cells": [
+                  {
+                    "x": 0,
+                    "y": 1
+                  },
+                  {
+                    "x": 0,
+                    "y": 2
+                  },
+                  {
+                    "x": 0,
+                    "y": 3
+                  },
+                  {
+                    "x": 0,
+                    "y": 4
+                  },
+                  {
+                    "x": 0,
+                    "y": 5
+                  },
+                  {
+                    "x": 0,
+                    "y": 6
+                  },
+                  {
+                    "x": 0,
+                    "y": 7
+                  }
+                ],
+                "confidence": "Suspected",
+                "id": "west_reinforcement",
+                "kind": "Entry",
+                "label": "West Reinforcement",
+                "revealed_details": []
+              },
+              {
+                "cells": [
+                  {
+                    "x": 8,
+                    "y": 1
+                  },
+                  {
+                    "x": 8,
+                    "y": 2
+                  },
+                  {
+                    "x": 8,
+                    "y": 3
+                  },
+                  {
+                    "x": 8,
+                    "y": 4
+                  },
+                  {
+                    "x": 8,
+                    "y": 5
+                  },
+                  {
+                    "x": 8,
+                    "y": 6
+                  },
+                  {
+                    "x": 8,
+                    "y": 7
+                  }
+                ],
+                "confidence": "Suspected",
+                "id": "east_reinforcement",
+                "kind": "Entry",
+                "label": "East Reinforcement",
+                "revealed_details": []
+              }
+            ],
+            "threat_warnings": [
+              {
+                "source": "Rumor",
+                "status": "Unverified",
+                "tag": "armored_enemy_possible"
+              }
+            ],
+            "tiles": [
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 1,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 2,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 3,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 4,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 5,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 6,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 7,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 8,
+                  "y": 0
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 0,
+                  "y": 1
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 1,
+                  "y": 1
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 2,
+                  "y": 1
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 3,
+                  "y": 1
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 4,
+                  "y": 1
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 5,
+                  "y": 1
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 6,
+                  "y": 1
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 7,
+                  "y": 1
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 8,
+                  "y": 1
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 0,
+                  "y": 2
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 1,
+                  "y": 2
+                }
+              },
+              {
+                "kind": "Platform",
+                "position": {
+                  "x": 2,
+                  "y": 2
+                }
+              },
+              {
+                "kind": "Platform",
+                "position": {
+                  "x": 3,
+                  "y": 2
+                }
+              },
+              {
+                "kind": "Platform",
+                "position": {
+                  "x": 4,
+                  "y": 2
+                }
+              },
+              {
+                "kind": "Platform",
+                "position": {
+                  "x": 5,
+                  "y": 2
+                }
+              },
+              {
+                "kind": "Platform",
+                "position": {
+                  "x": 6,
+                  "y": 2
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 7,
+                  "y": 2
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 8,
+                  "y": 2
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 0,
+                  "y": 3
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 1,
+                  "y": 3
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 2,
+                  "y": 3
+                }
+              },
+              {
+                "kind": "Obstacle",
+                "position": {
+                  "x": 3,
+                  "y": 3
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 4,
+                  "y": 3
+                }
+              },
+              {
+                "kind": "Obstacle",
+                "position": {
+                  "x": 5,
+                  "y": 3
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 6,
+                  "y": 3
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 7,
+                  "y": 3
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 8,
+                  "y": 3
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 0,
+                  "y": 4
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 1,
+                  "y": 4
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 2,
+                  "y": 4
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 3,
+                  "y": 4
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 4,
+                  "y": 4
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 5,
+                  "y": 4
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 6,
+                  "y": 4
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 7,
+                  "y": 4
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 8,
+                  "y": 4
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 0,
+                  "y": 5
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 1,
+                  "y": 5
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 2,
+                  "y": 5
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 3,
+                  "y": 5
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 4,
+                  "y": 5
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 5,
+                  "y": 5
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 6,
+                  "y": 5
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 7,
+                  "y": 5
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 8,
+                  "y": 5
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 0,
+                  "y": 6
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 1,
+                  "y": 6
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 2,
+                  "y": 6
+                }
+              },
+              {
+                "kind": "Obstacle",
+                "position": {
+                  "x": 3,
+                  "y": 6
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 4,
+                  "y": 6
+                }
+              },
+              {
+                "kind": "Obstacle",
+                "position": {
+                  "x": 5,
+                  "y": 6
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 6,
+                  "y": 6
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 7,
+                  "y": 6
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 8,
+                  "y": 6
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 0,
+                  "y": 7
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 1,
+                  "y": 7
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 2,
+                  "y": 7
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 3,
+                  "y": 7
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 4,
+                  "y": 7
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 5,
+                  "y": 7
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 6,
+                  "y": 7
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 7,
+                  "y": 7
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 8,
+                  "y": 7
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 0,
+                  "y": 8
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 1,
+                  "y": 8
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 2,
+                  "y": 8
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 3,
+                  "y": 8
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 4,
+                  "y": 8
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 5,
+                  "y": 8
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 6,
+                  "y": 8
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 7,
+                  "y": 8
+                }
+              },
+              {
+                "kind": "Ground",
+                "position": {
+                  "x": 8,
+                  "y": 8
+                }
+              }
+            ],
+            "valid_tiles": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 1,
+                "y": 0
+              },
+              {
+                "x": 2,
+                "y": 0
+              },
+              {
+                "x": 3,
+                "y": 0
+              },
+              {
+                "x": 4,
+                "y": 0
+              },
+              {
+                "x": 5,
+                "y": 0
+              },
+              {
+                "x": 6,
+                "y": 0
+              },
+              {
+                "x": 7,
+                "y": 0
+              },
+              {
+                "x": 8,
+                "y": 0
+              },
+              {
+                "x": 0,
+                "y": 1
+              },
+              {
+                "x": 1,
+                "y": 1
+              },
+              {
+                "x": 2,
+                "y": 1
+              },
+              {
+                "x": 3,
+                "y": 1
+              },
+              {
+                "x": 4,
+                "y": 1
+              },
+              {
+                "x": 5,
+                "y": 1
+              },
+              {
+                "x": 6,
+                "y": 1
+              },
+              {
+                "x": 7,
+                "y": 1
+              },
+              {
+                "x": 8,
+                "y": 1
+              },
+              {
+                "x": 0,
+                "y": 2
+              },
+              {
+                "x": 1,
+                "y": 2
+              },
+              {
+                "x": 2,
+                "y": 2
+              },
+              {
+                "x": 3,
+                "y": 2
+              },
+              {
+                "x": 4,
+                "y": 2
+              },
+              {
+                "x": 5,
+                "y": 2
+              },
+              {
+                "x": 6,
+                "y": 2
+              },
+              {
+                "x": 7,
+                "y": 2
+              },
+              {
+                "x": 8,
+                "y": 2
+              },
+              {
+                "x": 0,
+                "y": 3
+              },
+              {
+                "x": 1,
+                "y": 3
+              },
+              {
+                "x": 2,
+                "y": 3
+              },
+              {
+                "x": 3,
+                "y": 3
+              },
+              {
+                "x": 4,
+                "y": 3
+              },
+              {
+                "x": 5,
+                "y": 3
+              },
+              {
+                "x": 6,
+                "y": 3
+              },
+              {
+                "x": 7,
+                "y": 3
+              },
+              {
+                "x": 8,
+                "y": 3
+              },
+              {
+                "x": 0,
+                "y": 4
+              },
+              {
+                "x": 1,
+                "y": 4
+              },
+              {
+                "x": 2,
+                "y": 4
+              },
+              {
+                "x": 3,
+                "y": 4
+              },
+              {
+                "x": 4,
+                "y": 4
+              },
+              {
+                "x": 5,
+                "y": 4
+              },
+              {
+                "x": 6,
+                "y": 4
+              },
+              {
+                "x": 7,
+                "y": 4
+              },
+              {
+                "x": 8,
+                "y": 4
+              },
+              {
+                "x": 0,
+                "y": 5
+              },
+              {
+                "x": 1,
+                "y": 5
+              },
+              {
+                "x": 2,
+                "y": 5
+              },
+              {
+                "x": 3,
+                "y": 5
+              },
+              {
+                "x": 4,
+                "y": 5
+              },
+              {
+                "x": 5,
+                "y": 5
+              },
+              {
+                "x": 6,
+                "y": 5
+              },
+              {
+                "x": 7,
+                "y": 5
+              },
+              {
+                "x": 8,
+                "y": 5
+              },
+              {
+                "x": 0,
+                "y": 6
+              },
+              {
+                "x": 1,
+                "y": 6
+              },
+              {
+                "x": 2,
+                "y": 6
+              },
+              {
+                "x": 3,
+                "y": 6
+              },
+              {
+                "x": 4,
+                "y": 6
+              },
+              {
+                "x": 5,
+                "y": 6
+              },
+              {
+                "x": 6,
+                "y": 6
+              },
+              {
+                "x": 7,
+                "y": 6
+              },
+              {
+                "x": 8,
+                "y": 6
+              },
+              {
+                "x": 0,
+                "y": 7
+              },
+              {
+                "x": 1,
+                "y": 7
+              },
+              {
+                "x": 2,
+                "y": 7
+              },
+              {
+                "x": 3,
+                "y": 7
+              },
+              {
+                "x": 4,
+                "y": 7
+              },
+              {
+                "x": 5,
+                "y": 7
+              },
+              {
+                "x": 6,
+                "y": 7
+              },
+              {
+                "x": 7,
+                "y": 7
+              },
+              {
+                "x": 8,
+                "y": 7
+              },
+              {
+                "x": 0,
+                "y": 8
+              },
+              {
+                "x": 1,
+                "y": 8
+              },
+              {
+                "x": 2,
+                "y": 8
+              },
+              {
+                "x": 3,
+                "y": 8
+              },
+              {
+                "x": 4,
+                "y": 8
+              },
+              {
+                "x": 5,
+                "y": 8
+              },
+              {
+                "x": 6,
+                "y": 8
+              },
+              {
+                "x": 7,
+                "y": 8
+              },
+              {
+                "x": 8,
+                "y": 8
+              }
+            ],
+            "width": 9
+          }
+        },
+        "content_identity": {
+          "contract": {
+            "authoring": 1,
+            "catalog_schema": 6,
+            "execution": 3,
+            "fingerprint": 1,
+            "pack_format": 1
+          },
+          "semantic_sha256": "69f7c49fc7a63f571433204c20e71e40e8d873167e1bd5f03a81ca35868eeca3"
+        },
+        "current_floor_power_anchor": 100,
+        "encounter_progression": {
+          "boss_omen": {
+            "active": null,
+            "completed_chain_ids": [],
+            "cycle_index": 0,
+            "forced_boss": null,
+            "placed_source": null,
+            "provisional": null,
+            "remaining_chain_ids": []
+          },
+          "completed_reward_source_ids": [],
+          "mastered_elite_cycle": {
+            "assigned_source_ids": [],
+            "cycle_index": 0,
+            "remaining_source_ids": []
+          },
+          "monolith": {
+            "corrupted_monolith_acquired": false,
+            "exchange_shop_guarantee_issued": false,
+            "exchange_state": "Unavailable",
+            "next_floor_shop_guarantee_pending": false,
+            "next_residual_sequence": 0,
+            "progress_by_abnormality": {},
+            "remanifestation_nodes": {},
+            "residuals": []
+          },
+          "normal_boss_cycle": {
+            "assigned_source_ids": [],
+            "cycle_index": 0,
+            "remaining_source_ids": []
+          }
+        },
+        "enkephalin": {
+          "amount": 600
+        },
+        "event_sessions": {},
+        "facility_run_state": {
+          "pools": {},
+          "rooms": {
+            "activity_metadata": {
+              "48006277-0e96-4ffe-8cac-18d62983f494": {
+                "activity_id": "ordinary",
+                "omen_compatible": false,
+                "reward_activity": null
+              },
+              "48006277-0e96-4ffe-9b14-cd93ed07b1a5": {
+                "activity_id": "trial_u09_public_save",
+                "omen_compatible": false,
+                "reward_activity": null
+              },
+              "48006277-0e96-4ffe-9bc6-050257b12f7c": {
+                "activity_id": "ordinary",
+                "omen_compatible": false,
+                "reward_activity": null
+              },
+              "48006277-0e96-4ffe-aa50-a0e73e3ed370": {
+                "activity_id": "trial_containment_guard",
+                "omen_compatible": false,
+                "reward_activity": null
+              },
+              "48006277-0e96-4ffe-b388-bf9ffa5a6cf9": {
+                "activity_id": "gate",
+                "omen_compatible": false,
+                "reward_activity": null
+              },
+              "48006277-0e96-4ffe-b632-2e2c14a62d45": {
+                "activity_id": "trial_intake_corridor",
+                "omen_compatible": false,
+                "reward_activity": null
+              },
+              "48006277-0e96-4ffe-b6f6-ff315e2a5a4a": {
+                "activity_id": "trial_records_annex",
+                "omen_compatible": false,
+                "reward_activity": null
+              },
+              "48006277-0e96-4ffe-bcf9-7be7b649e167": {
+                "activity_id": "trial_supply_annex",
+                "omen_compatible": false,
+                "reward_activity": null
+              }
+            },
+            "current_room_id": "trial_room",
+            "golden_boughs": null,
+            "layout_id": "authoring_trial_facility_v1",
+            "visited_rooms": {}
+          }
+        },
+        "inventory": {
+          "consumables": {
+            "items": {}
+          },
+          "equipment_materials": {
+            "stacks": {
+              "equipment_dust": 4
+            }
+          },
+          "equipments": {
+            "items": {
+              "27d1f0c5-9e45-48f4-9c7d-151d29e7512a": {
+                "enhancement_level": 0,
+                "equipped_to": "d5f21295-0e74-4f6a-ad1e-bdb92d47e41e",
+                "instance_uuid": "27d1f0c5-9e45-48f4-9c7d-151d29e7512a",
+                "meta": {
+                  "ability_activations": [],
+                  "allow_duplicate_equip": true,
+                  "bound": false,
+                  "cannot_unequip_reason": "equipment_bound",
+                  "equipment_type": "Weapon",
+                  "event_check_modifiers": [],
+                  "event_choice_keys": [],
+                  "id": "standard_training_healing_staff",
+                  "name": "Company Training healing_staff",
+                  "price": 0,
+                  "rarity": "ZAYIN",
+                  "triggered_effects": {
+                    "Permanent": [
+                      {
+                        "effect": {
+                          "Modifier": {
+                            "kind": "Flat",
+                            "stat": "SpellPower",
+                            "value": 10
+                          }
+                        },
+                        "target": "SelfUnit"
+                      }
+                    ]
+                  },
+                  "uuid": "650e8400-e29b-41d4-a716-446655449004",
+                  "weapon_profile": {
+                    "action": {
+                      "Heal": {
+                        "flat": 8,
+                        "footprint": null,
+                        "spell_power_percent": 100
+                      }
+                    },
+                    "air_capable": true,
+                    "block_capacity": 0,
+                    "damage_type": "Physical",
+                    "defense_tile_range": {
+                      "include_anchor_tile": true,
+                      "rows": [
+                        "XXXXX",
+                        "XXXXX",
+                        "XX@XX",
+                        "XXXXX",
+                        "XXXXX"
+                      ]
+                    },
+                    "delivery": "Instant",
+                    "deployment_affinity": "platform_only",
+                    "ground_defense_focus": null,
+                    "interval_ms": 1800,
+                    "platform_rest": {
+                      "hp_recovery_per_tick": 3
+                    },
+                    "range_role": "Ranged",
+                    "ranged_reposition_ms": 1000,
+                    "targeting_profile": "DefaultForward",
+                    "weapon_archetype": "Staff",
+                    "windup_ms": 200
+                  }
+                }
+              },
+              "2aa270f3-27df-47b2-8f69-856da2646240": {
+                "enhancement_level": 0,
+                "equipped_to": "17c19684-fa92-4904-966b-1e884e4b17a7",
+                "instance_uuid": "2aa270f3-27df-47b2-8f69-856da2646240",
+                "meta": {
+                  "ability_activations": [],
+                  "allow_duplicate_equip": true,
+                  "bound": false,
+                  "cannot_unequip_reason": "equipment_bound",
+                  "equipment_type": "Armor",
+                  "event_check_modifiers": [],
+                  "event_choice_keys": [],
+                  "id": "standard_armor",
+                  "name": "Standard Training E.G.O Armor",
+                  "price": 80,
+                  "rarity": "TETH",
+                  "triggered_effects": {
+                    "Permanent": [
+                      {
+                        "effect": {
+                          "Modifier": {
+                            "kind": "Flat",
+                            "stat": "MaxHealth",
+                            "value": 80
+                          }
+                        },
+                        "target": "SelfUnit"
+                      },
+                      {
+                        "effect": {
+                          "Modifier": {
+                            "kind": "Flat",
+                            "stat": "Defense",
+                            "value": 5
+                          }
+                        },
+                        "target": "SelfUnit"
+                      }
+                    ]
+                  },
+                  "uuid": "650e8400-e29b-41d4-a716-446655440031",
+                  "weapon_profile": null
+                }
+              },
+              "5262f890-e020-4708-9551-c4797d762cdf": {
+                "enhancement_level": 0,
+                "equipped_to": "d5f21295-0e74-4f6a-ad1e-bdb92d47e41e",
+                "instance_uuid": "5262f890-e020-4708-9551-c4797d762cdf",
+                "meta": {
+                  "ability_activations": [],
+                  "allow_duplicate_equip": true,
+                  "bound": false,
+                  "cannot_unequip_reason": "equipment_bound",
+                  "equipment_type": "Armor",
+                  "event_check_modifiers": [],
+                  "event_choice_keys": [],
+                  "id": "standard_armor",
+                  "name": "Standard Training E.G.O Armor",
+                  "price": 80,
+                  "rarity": "TETH",
+                  "triggered_effects": {
+                    "Permanent": [
+                      {
+                        "effect": {
+                          "Modifier": {
+                            "kind": "Flat",
+                            "stat": "MaxHealth",
+                            "value": 80
+                          }
+                        },
+                        "target": "SelfUnit"
+                      },
+                      {
+                        "effect": {
+                          "Modifier": {
+                            "kind": "Flat",
+                            "stat": "Defense",
+                            "value": 5
+                          }
+                        },
+                        "target": "SelfUnit"
+                      }
+                    ]
+                  },
+                  "uuid": "650e8400-e29b-41d4-a716-446655440031",
+                  "weapon_profile": null
+                }
+              },
+              "e7bed3f4-840e-4221-872d-33d63e4d26fe": {
+                "enhancement_level": 0,
+                "equipped_to": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+                "instance_uuid": "e7bed3f4-840e-4221-872d-33d63e4d26fe",
+                "meta": {
+                  "ability_activations": [],
+                  "allow_duplicate_equip": true,
+                  "bound": false,
+                  "cannot_unequip_reason": "equipment_bound",
+                  "equipment_type": "Weapon",
+                  "event_check_modifiers": [],
+                  "event_choice_keys": [],
+                  "id": "standard_training_sword",
+                  "name": "Standard Training Sword",
+                  "price": 0,
+                  "rarity": "ZAYIN",
+                  "triggered_effects": {},
+                  "uuid": "650e8400-e29b-41d4-a716-446655440030",
+                  "weapon_profile": {
+                    "air_capable": false,
+                    "block_capacity": 1,
+                    "damage_type": "Physical",
+                    "defense_tile_range": {
+                      "include_anchor_tile": false,
+                      "rows": [
+                        ".X.",
+                        ".@.",
+                        "..."
+                      ]
+                    },
+                    "delivery": "Instant",
+                    "deployment_affinity": "ground_only",
+                    "ground_defense_focus": {
+                      "block_capacity_bonus": 1,
+                      "incoming_damage_reduction_percent": 10
+                    },
+                    "interval_ms": 1500,
+                    "platform_rest": null,
+                    "range_role": "Melee",
+                    "ranged_reposition_ms": 1000,
+                    "targeting_profile": "DefaultForward",
+                    "weapon_archetype": "Sword",
+                    "windup_ms": 200
+                  }
+                }
+              },
+              "f2bc5267-91e3-4841-8102-b26daa8f913c": {
+                "enhancement_level": 0,
+                "equipped_to": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+                "instance_uuid": "f2bc5267-91e3-4841-8102-b26daa8f913c",
+                "meta": {
+                  "ability_activations": [],
+                  "allow_duplicate_equip": true,
+                  "bound": false,
+                  "cannot_unequip_reason": "equipment_bound",
+                  "equipment_type": "Armor",
+                  "event_check_modifiers": [],
+                  "event_choice_keys": [],
+                  "id": "standard_armor",
+                  "name": "Standard Training E.G.O Armor",
+                  "price": 80,
+                  "rarity": "TETH",
+                  "triggered_effects": {
+                    "Permanent": [
+                      {
+                        "effect": {
+                          "Modifier": {
+                            "kind": "Flat",
+                            "stat": "MaxHealth",
+                            "value": 80
+                          }
+                        },
+                        "target": "SelfUnit"
+                      },
+                      {
+                        "effect": {
+                          "Modifier": {
+                            "kind": "Flat",
+                            "stat": "Defense",
+                            "value": 5
+                          }
+                        },
+                        "target": "SelfUnit"
+                      }
+                    ]
+                  },
+                  "uuid": "650e8400-e29b-41d4-a716-446655440031",
+                  "weapon_profile": null
+                }
+              },
+              "f5ccd61e-7119-454e-9dcb-94e95aef35ff": {
+                "enhancement_level": 0,
+                "equipped_to": "17c19684-fa92-4904-966b-1e884e4b17a7",
+                "instance_uuid": "f5ccd61e-7119-454e-9dcb-94e95aef35ff",
+                "meta": {
+                  "ability_activations": [],
+                  "allow_duplicate_equip": true,
+                  "bound": false,
+                  "cannot_unequip_reason": "equipment_bound",
+                  "equipment_type": "Weapon",
+                  "event_check_modifiers": [],
+                  "event_choice_keys": [],
+                  "id": "standard_training_shield",
+                  "name": "Company Training shield",
+                  "price": 0,
+                  "rarity": "ZAYIN",
+                  "triggered_effects": {},
+                  "uuid": "650e8400-e29b-41d4-a716-446655449002",
+                  "weapon_profile": {
+                    "air_capable": false,
+                    "block_capacity": 3,
+                    "damage_type": "Physical",
+                    "defense_tile_range": {
+                      "include_anchor_tile": false,
+                      "rows": [
+                        ".X.",
+                        ".@.",
+                        "..."
+                      ]
+                    },
+                    "delivery": "Instant",
+                    "deployment_affinity": "ground_only",
+                    "ground_defense_focus": {
+                      "block_capacity_bonus": 1,
+                      "incoming_damage_reduction_percent": 10
+                    },
+                    "interval_ms": 1800,
+                    "platform_rest": null,
+                    "range_role": "Melee",
+                    "ranged_reposition_ms": 1000,
+                    "targeting_profile": "DefaultForward",
+                    "weapon_archetype": "Shield",
+                    "windup_ms": 250
+                  }
+                }
+              }
+            }
+          },
+          "reserved_slot_count": 50
+        },
+        "map": {
+          "facility_template_version": 1,
+          "map_template_id": "standard_intro_a",
+          "nodes": [
+            {
+              "category": "Start",
+              "id": "48006277-0e96-4ffe-8162-00ebb7e838d6",
+              "kind_id": "start",
+              "payload": "None",
+              "slot_id": "entry",
+              "state": "Completed",
+              "visibility": "Revealed"
+            },
+            {
+              "category": "Combat",
+              "combat_difficulty": {
+                "class": {
+                  "Ordinary": "Standard"
+                },
+                "difficulty_profile_id": "facility_rooms_v1",
+                "floor_power_anchor": 100,
+                "monolith_stage": null,
+                "power_model_version": 2,
+                "target_power": 100
+              },
+              "id": "48006277-0e96-4ffe-b632-2e2c14a62d45",
+              "kind_id": "combat_monster",
+              "payload": {
+                "Encounter": {
+                  "encounter_id": "normal_corroded_patrol"
+                }
+              },
+              "slot_id": "intake_corridor",
+              "state": "Completed",
+              "visibility": "Revealed"
+            },
+            {
+              "category": "Event",
+              "id": "48006277-0e96-4ffe-b6f6-ff315e2a5a4a",
+              "kind_id": "event_sealed_archive",
+              "payload": {
+                "Event": {
+                  "event_id": "sealed_archive_recovery_01"
+                }
+              },
+              "slot_id": "records_annex",
+              "state": "Available",
+              "visibility": "Revealed"
+            },
+            {
+              "category": "Reward",
+              "id": "48006277-0e96-4ffe-bcf9-7be7b649e167",
+              "kind_id": "reward_treasure",
+              "payload": {
+                "Reward": {
+                  "reward_pool_id": "tutorial_f1_training_budget"
+                }
+              },
+              "slot_id": "supply_annex",
+              "state": "Available",
+              "visibility": "Revealed"
+            },
+            {
+              "category": "Combat",
+              "combat_difficulty": {
+                "class": {
+                  "Ordinary": "Easy"
+                },
+                "difficulty_profile_id": "facility_rooms_v1",
+                "floor_power_anchor": 100,
+                "monolith_stage": null,
+                "power_model_version": 2,
+                "target_power": 85
+              },
+              "id": "48006277-0e96-4ffe-aa50-a0e73e3ed370",
+              "kind_id": "combat_monster",
+              "payload": {
+                "Encounter": {
+                  "encounter_id": "normal_breach_response"
+                }
+              },
+              "slot_id": "containment_guard",
+              "state": "Unavailable",
+              "visibility": "Revealed"
+            },
+            {
+              "category": "Gate",
+              "id": "48006277-0e96-4ffe-b388-bf9ffa5a6cf9",
+              "kind_id": "gate_stairs",
+              "payload": "None",
+              "slot_id": "floor_gate",
+              "state": "Available",
+              "visibility": "Revealed"
+            },
+            {
+              "category": "SavePoint",
+              "id": "48006277-0e96-4ffe-9b14-cd93ed07b1a5",
+              "kind_id": "save_point",
+              "payload": "SavePoint",
+              "slot_id": "u09_public_save",
+              "state": "Completed",
+              "visibility": "Revealed"
+            },
+            {
+              "category": "Combat",
+              "combat_difficulty": {
+                "class": {
+                  "Ordinary": "Standard"
+                },
+                "difficulty_profile_id": "facility_rooms_v1",
+                "floor_power_anchor": 100,
+                "monolith_stage": null,
+                "power_model_version": 2,
+                "target_power": 100
+              },
+              "id": "48006277-0e96-4ffe-8cac-18d62983f494",
+              "kind_id": "combat_monster",
+              "payload": {
+                "Encounter": {
+                  "encounter_id": "normal_breach_response"
+                }
+              },
+              "slot_id": "trial_optional_a",
+              "state": "Available",
+              "visibility": "Revealed"
+            },
+            {
+              "category": "Combat",
+              "combat_difficulty": {
+                "class": {
+                  "Ordinary": "Hard"
+                },
+                "difficulty_profile_id": "facility_rooms_v1",
+                "floor_power_anchor": 100,
+                "monolith_stage": null,
+                "power_model_version": 2,
+                "target_power": 120
+              },
+              "id": "48006277-0e96-4ffe-9bc6-050257b12f7c",
+              "kind_id": "combat_monster",
+              "payload": {
+                "Encounter": {
+                  "encounter_id": "normal_breach_response"
+                }
+              },
+              "slot_id": "trial_optional_b",
+              "state": "Available",
+              "visibility": "Revealed"
+            }
+          ],
+          "start_node_ids": [
+            "48006277-0e96-4ffe-8cac-18d62983f494",
+            "48006277-0e96-4ffe-9b14-cd93ed07b1a5",
+            "48006277-0e96-4ffe-9bc6-050257b12f7c",
+            "48006277-0e96-4ffe-b388-bf9ffa5a6cf9",
+            "48006277-0e96-4ffe-b632-2e2c14a62d45",
+            "48006277-0e96-4ffe-b6f6-ff315e2a5a4a",
+            "48006277-0e96-4ffe-bcf9-7be7b649e167"
+          ],
+          "terminals": [
+            {
+              "node_id": "48006277-0e96-4ffe-b388-bf9ffa5a6cf9",
+              "resolution": "FloorGate"
+            }
+          ]
+        },
+        "map_progression": {
+          "available_node_ids": [
+            "48006277-0e96-4ffe-8cac-18d62983f494",
+            "48006277-0e96-4ffe-9bc6-050257b12f7c",
+            "48006277-0e96-4ffe-b388-bf9ffa5a6cf9",
+            "48006277-0e96-4ffe-b6f6-ff315e2a5a4a",
+            "48006277-0e96-4ffe-bcf9-7be7b649e167"
+          ],
+          "completed_node_ids": [
+            "48006277-0e96-4ffe-8162-00ebb7e838d6",
+            "48006277-0e96-4ffe-9b14-cd93ed07b1a5",
+            "48006277-0e96-4ffe-b632-2e2c14a62d45"
+          ],
+          "current_node_id": "48006277-0e96-4ffe-9b14-cd93ed07b1a5"
+        },
+        "power_model_version": 2,
+        "record_progress": {
+          "current_deathless_floor_streak": 0,
+          "employee_death_on_current_floor": false
+        },
+        "recruitment": {
+          "active_session": null,
+          "queue": [
+            "maintenance_tech",
+            "scout_runner",
+            "hq_maintenance_aide",
+            "hq_field_medic",
+            "hq_records_observer",
+            "hq_security_guard",
+            "hq_containment_aide",
+            "containment_trainee",
+            "hq_recovery_runner"
+          ]
+        },
+        "relics": {
+          "copies": {
+            "5ac1ac75-b2c4-4418-b222-f31d7a80b61d": {
+              "copy_uuid": "5ac1ac75-b2c4-4418-b222-f31d7a80b61d",
+              "definition_id": "u09_public_relic",
+              "variant": "Normal"
+            }
+          },
+          "slots": {
+            "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7": [
+              null,
+              null,
+              "5ac1ac75-b2c4-4418-b222-f31d7a80b61d"
+            ]
+          }
+        },
+        "roster": {
+          "employees": {
+            "17c19684-fa92-4904-966b-1e884e4b17a7": {
+              "active_consumable_modifier": null,
+              "breakdown": "Inactive",
+              "combat_profile": {
+                "battle_profile": {
+                  "basic_attack": {
+                    "air_capable": false,
+                    "damage_type": "Physical",
+                    "defense_tile_range": {
+                      "include_anchor_tile": true,
+                      "rows": [
+                        ".X.",
+                        ".@.",
+                        "..."
+                      ]
+                    },
+                    "delivery": "Instant",
+                    "interval_ms": 1500,
+                    "range_policy": "pattern",
+                    "range_role": "Melee",
+                    "ranged_reposition_ms": 1000,
+                    "targeting_profile": "DefaultForward",
+                    "windup_ms": 200
+                  },
+                  "basic_attack_speed_percent": 100,
+                  "block_capacity": 0,
+                  "block_radius_units": 0.75,
+                  "blockable": true,
+                  "deployment_affinity": "ground_only",
+                  "incoming_damage_modifiers": {
+                    "armor_penetration_flat": 0,
+                    "armor_penetration_percent": 0,
+                    "crit_chance_percent": 0,
+                    "crit_damage_percent": 0,
+                    "damage_amp_percent": 0,
+                    "damage_reduction_percent": 0,
+                    "magic_damage_amp_percent": 0,
+                    "magic_damage_reduction_percent": 0,
+                    "magic_resist_penetration_flat": 0,
+                    "magic_resist_penetration_percent": 0,
+                    "physical_damage_amp_percent": 0,
+                    "physical_damage_reduction_percent": 0,
+                    "true_damage_amp_percent": 0,
+                    "true_damage_reduction_percent": 0
+                  },
+                  "mobility_kind": "ground",
+                  "movement": {
+                    "radius_units": 350000,
+                    "speed_units_per_ms": 3000
+                  },
+                  "skill_activation_mode": "auto",
+                  "skill_id": null,
+                  "stats": {
+                    "attack": 10,
+                    "attack_interval_ms": 1500,
+                    "current_health": 100,
+                    "defense": 0,
+                    "magic_resist": 0,
+                    "max_health": 100,
+                    "move_speed_units_per_ms": 3000
+                  },
+                  "target_traits": [],
+                  "weapon_profile": null
+                },
+                "growth_stacks": {
+                  "stacks": {}
+                }
+              },
+              "condition": {
+                "physical_damage": 0,
+                "trauma": 0
+              },
+              "employee_definition_id": "breach_guard",
+              "experience": 10,
+              "level": 1,
+              "loadout": {
+                "item_slot": {
+                  "layout": {
+                    "ByType": {
+                      "accessory": null,
+                      "armor": {
+                        "base_uuid": "650e8400-e29b-41d4-a716-446655440031",
+                        "equipment_type": "Armor",
+                        "instance_uuid": "2aa270f3-27df-47b2-8f69-856da2646240"
+                      },
+                      "weapon": {
+                        "base_uuid": "650e8400-e29b-41d4-a716-446655449002",
+                        "equipment_type": "Weapon",
+                        "instance_uuid": "f5ccd61e-7119-454e-9dcb-94e95aef35ff"
+                      }
+                    }
+                  }
+                }
+              },
+              "name": "강민재",
+              "profile": {
+                "background": "브리칭 경보가 울릴 때 가장 먼저 문 앞으로 선 직원.",
+                "base_combat_stats": {
+                  "attack": 10,
+                  "defense": 0,
+                  "magic_resist": 0,
+                  "max_hp": 100
+                },
+                "basic_attack_speed_percent": 100,
+                "combat_aptitude": "Balanced",
+                "event_aptitude": "Security",
+                "personality": {
+                  "risk": "Brave",
+                  "social": "Obedient"
+                },
+                "role": "격리문 경비"
+              },
+              "role": "Tank",
+              "skill_fragments": {
+                "active_copy_uuid": "b205a86b-7424-4e9c-821c-dfab5432265e",
+                "baseline_ids": []
+              },
+              "uuid": "17c19684-fa92-4904-966b-1e884e4b17a7"
+            },
+            "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7": {
+              "active_consumable_modifier": null,
+              "breakdown": "Inactive",
+              "combat_profile": {
+                "battle_profile": {
+                  "basic_attack": {
+                    "air_capable": false,
+                    "damage_type": "Physical",
+                    "defense_tile_range": {
+                      "include_anchor_tile": true,
+                      "rows": [
+                        ".X.",
+                        ".@.",
+                        "..."
+                      ]
+                    },
+                    "delivery": "Instant",
+                    "interval_ms": 1500,
+                    "range_policy": "pattern",
+                    "range_role": "Melee",
+                    "ranged_reposition_ms": 1000,
+                    "targeting_profile": "DefaultForward",
+                    "windup_ms": 200
+                  },
+                  "basic_attack_speed_percent": 100,
+                  "block_capacity": 0,
+                  "block_radius_units": 0.75,
+                  "blockable": true,
+                  "deployment_affinity": "ground_only",
+                  "incoming_damage_modifiers": {
+                    "armor_penetration_flat": 0,
+                    "armor_penetration_percent": 0,
+                    "crit_chance_percent": 0,
+                    "crit_damage_percent": 0,
+                    "damage_amp_percent": 0,
+                    "damage_reduction_percent": 0,
+                    "magic_damage_amp_percent": 0,
+                    "magic_damage_reduction_percent": 0,
+                    "magic_resist_penetration_flat": 0,
+                    "magic_resist_penetration_percent": 0,
+                    "physical_damage_amp_percent": 0,
+                    "physical_damage_reduction_percent": 0,
+                    "true_damage_amp_percent": 0,
+                    "true_damage_reduction_percent": 0
+                  },
+                  "mobility_kind": "ground",
+                  "movement": {
+                    "radius_units": 350000,
+                    "speed_units_per_ms": 3000
+                  },
+                  "skill_activation_mode": "auto",
+                  "skill_id": null,
+                  "stats": {
+                    "attack": 10,
+                    "attack_interval_ms": 1500,
+                    "current_health": 100,
+                    "defense": 0,
+                    "magic_resist": 0,
+                    "max_health": 100,
+                    "move_speed_units_per_ms": 3000
+                  },
+                  "target_traits": [],
+                  "weapon_profile": null
+                },
+                "growth_stacks": {
+                  "stacks": {}
+                }
+              },
+              "condition": {
+                "physical_damage": 0,
+                "trauma": 0
+              },
+              "employee_definition_id": "records_clerk",
+              "experience": 10,
+              "level": 1,
+              "loadout": {
+                "item_slot": {
+                  "layout": {
+                    "ByType": {
+                      "accessory": null,
+                      "armor": {
+                        "base_uuid": "650e8400-e29b-41d4-a716-446655440031",
+                        "equipment_type": "Armor",
+                        "instance_uuid": "f2bc5267-91e3-4841-8102-b26daa8f913c"
+                      },
+                      "weapon": {
+                        "base_uuid": "650e8400-e29b-41d4-a716-446655440030",
+                        "equipment_type": "Weapon",
+                        "instance_uuid": "e7bed3f4-840e-4221-872d-33d63e4d26fe"
+                      }
+                    }
+                  }
+                }
+              },
+              "name": "한유진",
+              "profile": {
+                "background": "죽은 관리자의 명령 로그를 끝까지 복원하려 했다.",
+                "base_combat_stats": {
+                  "attack": 10,
+                  "defense": 0,
+                  "magic_resist": 0,
+                  "max_hp": 100
+                },
+                "basic_attack_speed_percent": 100,
+                "combat_aptitude": "Balanced",
+                "event_aptitude": "Analysis",
+                "personality": {
+                  "risk": "Cautious",
+                  "social": "Defiant"
+                },
+                "role": "기록 보조"
+              },
+              "role": "Dealer",
+              "skill_fragments": {
+                "active_copy_uuid": "2c0e9b5a-56b7-4fd3-9c71-f9c2bcc43796",
+                "baseline_ids": [
+                  "starter_basic_attack_enhancement"
+                ]
+              },
+              "uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7"
+            },
+            "d5f21295-0e74-4f6a-ad1e-bdb92d47e41e": {
+              "active_consumable_modifier": null,
+              "breakdown": "Inactive",
+              "combat_profile": {
+                "battle_profile": {
+                  "basic_attack": {
+                    "air_capable": false,
+                    "damage_type": "Physical",
+                    "defense_tile_range": {
+                      "include_anchor_tile": true,
+                      "rows": [
+                        ".X.",
+                        ".@.",
+                        "..."
+                      ]
+                    },
+                    "delivery": "Instant",
+                    "interval_ms": 1500,
+                    "range_policy": "pattern",
+                    "range_role": "Melee",
+                    "ranged_reposition_ms": 1000,
+                    "targeting_profile": "DefaultForward",
+                    "windup_ms": 200
+                  },
+                  "basic_attack_speed_percent": 100,
+                  "block_capacity": 0,
+                  "block_radius_units": 0.75,
+                  "blockable": true,
+                  "deployment_affinity": "ground_only",
+                  "incoming_damage_modifiers": {
+                    "armor_penetration_flat": 0,
+                    "armor_penetration_percent": 0,
+                    "crit_chance_percent": 0,
+                    "crit_damage_percent": 0,
+                    "damage_amp_percent": 0,
+                    "damage_reduction_percent": 0,
+                    "magic_damage_amp_percent": 0,
+                    "magic_damage_reduction_percent": 0,
+                    "magic_resist_penetration_flat": 0,
+                    "magic_resist_penetration_percent": 0,
+                    "physical_damage_amp_percent": 0,
+                    "physical_damage_reduction_percent": 0,
+                    "true_damage_amp_percent": 0,
+                    "true_damage_reduction_percent": 0
+                  },
+                  "mobility_kind": "ground",
+                  "movement": {
+                    "radius_units": 350000,
+                    "speed_units_per_ms": 3000
+                  },
+                  "skill_activation_mode": "auto",
+                  "skill_id": null,
+                  "stats": {
+                    "attack": 10,
+                    "attack_interval_ms": 1500,
+                    "current_health": 100,
+                    "defense": 0,
+                    "magic_resist": 0,
+                    "max_health": 100,
+                    "move_speed_units_per_ms": 3000
+                  },
+                  "target_traits": [],
+                  "weapon_profile": null
+                },
+                "growth_stacks": {
+                  "stacks": {}
+                }
+              },
+              "condition": {
+                "physical_damage": 0,
+                "trauma": 0
+              },
+              "employee_definition_id": "field_medic",
+              "experience": 0,
+              "level": 1,
+              "loadout": {
+                "item_slot": {
+                  "layout": {
+                    "ByType": {
+                      "accessory": null,
+                      "armor": {
+                        "base_uuid": "650e8400-e29b-41d4-a716-446655440031",
+                        "equipment_type": "Armor",
+                        "instance_uuid": "5262f890-e020-4708-9551-c4797d762cdf"
+                      },
+                      "weapon": {
+                        "base_uuid": "650e8400-e29b-41d4-a716-446655449004",
+                        "equipment_type": "Weapon",
+                        "instance_uuid": "27d1f0c5-9e45-48f4-9c7d-151d29e7512a"
+                      }
+                    }
+                  }
+                }
+              },
+              "name": "이서연",
+              "profile": {
+                "background": "붕괴 현장에서 끝까지 동료를 끌고 나온 기록이 있다.",
+                "base_combat_stats": {
+                  "attack": 10,
+                  "defense": 0,
+                  "magic_resist": 0,
+                  "max_hp": 100
+                },
+                "basic_attack_speed_percent": 100,
+                "combat_aptitude": "Balanced",
+                "event_aptitude": "Medical",
+                "personality": {
+                  "risk": "Brave",
+                  "social": "Comradely"
+                },
+                "role": "현장 의무 보조"
+              },
+              "role": "Healer",
+              "skill_fragments": {
+                "active_copy_uuid": "79a38d03-37c0-4eb0-bd4e-822e6fd28bc6",
+                "baseline_ids": []
+              },
+              "uuid": "d5f21295-0e74-4f6a-ad1e-bdb92d47e41e"
+            }
+          }
+        },
+        "run_progression": {
+          "deterrence": 12,
+          "entry_receipts": [
+            "48006277-0e96-4ffe-9b14-cd93ed07b1a5",
+            "48006277-0e96-4ffe-b632-2e2c14a62d45"
+          ],
+          "expedition_instance": {
+            "player_id": "00000000-0000-0000-0000-000000000019",
+            "sequence": 1,
+            "uuid": "4d3d92b2-4116-46b6-95f8-b195f9fd272d"
+          },
+          "game_mode": "Expedition",
+          "instance_namespace": "4d3d92b2-4116-46b6-95f8-b195f9fd272d",
+          "mode_state": {
+            "Expedition": {
+              "floor_index": 0
+            }
+          },
+          "pending_continuation": null,
+          "run_seed": 77
+        },
+        "shop_sessions": {},
+        "skill_fragments": {
+          "copies": {
+            "2c0e9b5a-56b7-4fd3-9c71-f9c2bcc43796": {
+              "copy_uuid": "2c0e9b5a-56b7-4fd3-9c71-f9c2bcc43796",
+              "definition_id": "u09_public_fragment",
+              "equipped_to": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+              "selected_form": "base",
+              "unlocked_forms": [
+                "base"
+              ]
+            },
+            "390983c1-5737-4032-8dda-d0c170f470c4": {
+              "copy_uuid": "390983c1-5737-4032-8dda-d0c170f470c4",
+              "definition_id": "authoring_preview_fragment",
+              "equipped_to": null,
+              "selected_form": "base",
+              "unlocked_forms": [
+                "base"
+              ]
+            },
+            "79a38d03-37c0-4eb0-bd4e-822e6fd28bc6": {
+              "copy_uuid": "79a38d03-37c0-4eb0-bd4e-822e6fd28bc6",
+              "definition_id": "training_single_heal",
+              "equipped_to": "d5f21295-0e74-4f6a-ad1e-bdb92d47e41e",
+              "selected_form": "base",
+              "unlocked_forms": [
+                "base"
+              ]
+            },
+            "b205a86b-7424-4e9c-821c-dfab5432265e": {
+              "copy_uuid": "b205a86b-7424-4e9c-821c-dfab5432265e",
+              "definition_id": "training_last_line",
+              "equipped_to": "17c19684-fa92-4904-966b-1e884e4b17a7",
+              "selected_form": "base",
+              "unlocked_forms": [
+                "base"
+              ]
+            }
+          },
+          "fragment_dust": 0
+        },
+        "typed_resources": {
+          "closed": false,
+          "entries": [],
+          "revision": 0
+        },
+        "uuid_manager": {
+          "counters": {
+            "4774189801023034181": 1,
+            "4993735850502735173": 3,
+            "5067184305072984153": 4,
+            "5717124307097834825": 6,
+            "5928228362047934288": 1
+          },
+          "instance_namespace": "4d3d92b2-4116-46b6-95f8-b195f9fd272d",
+          "run_seed": 77
+        },
+        "visual_novel_trigger_checkpoint_consumed": []
+      },
+      "pending_node_session": null,
+      "persistent_vn_consumed": [
+        {
+          "scope": {
+            "type": "run"
+          },
+          "trigger_id": "run_start_endless_hq_briefing"
+        }
+      ],
+      "phase": "ViewingMap",
+      "recovery_restriction": null,
+      "result": null,
+      "reward": null,
+      "reward_continuation": null,
+      "savepoint": {
+        "current": {}
+      },
+      "visual_novel": {
+        "queue": []
+      }
+    },
+    "continuation_sha256": "d9249b1dd54f7b7e63e4d518a355ebe477c97826e408beb6e0a5d97ecba61a42",
+    "version": 15
+  },
+  "employee": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+  "generation": {
+    "contract": {
+      "authoring": 1,
+      "catalog_schema": 6,
+      "execution": 3,
+      "fingerprint": 1,
+      "pack_format": 1
+    },
+    "semantic_sha256": "69f7c49fc7a63f571433204c20e71e40e8d873167e1bd5f03a81ca35868eeca3"
+  },
+  "loads": 0,
+  "peak": 313,
+  "pid": 2029,
+  "plan": {
+    "capabilities": [
+      {
+        "maximum": 4294967295,
+        "minimum": 0,
+        "numeric": true,
+        "operation": "Damage",
+        "property": "DamageAmount",
+        "runtime_connected": true,
+        "unit": "Hp"
+      },
+      {
+        "maximum": 0,
+        "minimum": 0,
+        "numeric": false,
+        "operation": "Damage",
+        "property": "DamageFootprint",
+        "runtime_connected": true,
+        "unit": "TilePattern"
+      },
+      {
+        "maximum": 4294967295,
+        "minimum": 1,
+        "numeric": true,
+        "operation": "PersonalShieldGrant",
+        "property": "PersonalShieldInitialAmount",
+        "runtime_connected": true,
+        "unit": "Hp"
+      },
+      {
+        "maximum": 4294967295,
+        "minimum": 1,
+        "numeric": true,
+        "operation": "PersonalShieldGrant",
+        "property": "SupportAreaRadius",
+        "runtime_connected": true,
+        "unit": "DataUnits"
+      },
+      {
+        "maximum": 4294967295,
+        "minimum": 1,
+        "numeric": true,
+        "operation": "ChannelAura",
+        "property": "SupportAreaRadius",
+        "runtime_connected": true,
+        "unit": "DataUnits"
+      },
+      {
+        "maximum": 10000,
+        "minimum": 0,
+        "numeric": true,
+        "operation": "ChannelAura",
+        "property": "RegularBasicDamagePercent",
+        "runtime_connected": true,
+        "unit": "PercentPoints"
+      },
+      {
+        "maximum": 10000,
+        "minimum": 0,
+        "numeric": true,
+        "operation": "ChannelAura",
+        "property": "RegularBasicSpeedPoints",
+        "runtime_connected": true,
+        "unit": "SpeedPoints"
+      }
+    ],
+    "causal_capabilities": [
+      {
+        "completion_contract": "native_action_and_finite_delivery",
+        "operation": "Subscribe",
+        "root_contract": "inherit_fact_ancestry_copy_rule_visit",
+        "runtime_connected": true
+      },
+      {
+        "completion_contract": "released_descendants_keep_root",
+        "operation": "Periodic",
+        "root_contract": "independent_owner_occurrence",
+        "runtime_connected": true
+      },
+      {
+        "completion_contract": "native_participant_completion",
+        "operation": "Fork",
+        "root_contract": "immutable_independent_paths",
+        "runtime_connected": true
+      },
+      {
+        "completion_contract": "all_successful_descendants_exactly_once",
+        "operation": "Join",
+        "root_contract": "actual_named_participant_union",
+        "runtime_connected": true
+      },
+      {
+        "completion_contract": "first_positive_actual_strike",
+        "operation": "Wedge",
+        "root_contract": "original_tagged_direct_skill_cast_target",
+        "runtime_connected": true
+      }
+    ],
+    "causal_rules": [],
+    "compile_usage": {
+      "binding_count": 4,
+      "candidate_count": 2,
+      "reserved_bytes": 252650,
+      "work": 14722
+    },
+    "effects": [
+      {
+        "amount": null,
+        "key": {
+          "kind": "original",
+          "site": {
+            "action": {
+              "action_id": "hit",
+              "definition_id": "u09_public_strike"
+            },
+            "effect_id": "original"
+          }
+        },
+        "operation": "Damage",
+        "properties": [
+          {
+            "base": {
+              "Literal": {
+                "Hp": 23
+              }
+            },
+            "contributions": [
+              {
+                "copy_uuid": "5ac1ac75-b2c4-4418-b222-f31d7a80b61d",
+                "definition_id": "u09_public_relic",
+                "rule_id": "original_add",
+                "variant": "Normal"
+              }
+            ],
+            "final_value": {
+              "Hp": 30
+            },
+            "program": {
+              "add": 7,
+              "replacement": null,
+              "scale_increment_percent": 0
+            },
+            "property": "DamageAmount"
+          }
+        ],
+        "provider_index": 0,
+        "recipe_contributions": [],
+        "recipes": [],
+        "source_creation": null,
+        "tags": [
+          "original"
+        ]
+      },
+      {
+        "amount": null,
+        "key": {
+          "anchor": {
+            "action_id": "hit",
+            "definition_id": "u09_public_strike"
+          },
+          "grant_rule_id": "grant",
+          "kind": "generated",
+          "local_action_id": "hit",
+          "local_effect_id": "bonus",
+          "relic_copy_uuid": "5ac1ac75-b2c4-4418-b222-f31d7a80b61d"
+        },
+        "operation": "Damage",
+        "properties": [
+          {
+            "base": {
+              "Literal": {
+                "Hp": 40
+              }
+            },
+            "contributions": [
+              {
+                "copy_uuid": "5ac1ac75-b2c4-4418-b222-f31d7a80b61d",
+                "definition_id": "u09_public_relic",
+                "rule_id": "bonus_add",
+                "variant": "Normal"
+              },
+              {
+                "copy_uuid": "5ac1ac75-b2c4-4418-b222-f31d7a80b61d",
+                "definition_id": "u09_public_relic",
+                "rule_id": "bonus_scale",
+                "variant": "Normal"
+              }
+            ],
+            "final_value": {
+              "Hp": 75
+            },
+            "program": {
+              "add": 10,
+              "replacement": null,
+              "scale_increment_percent": 50
+            },
+            "property": "DamageAmount"
+          }
+        ],
+        "provider_index": 0,
+        "recipe_contributions": [],
+        "recipes": [],
+        "source_creation": null,
+        "tags": [
+          "bonus"
+        ]
+      }
+    ],
+    "employee_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+    "execution_status": "runtime_supported_prospective_plan",
+    "fingerprint": "39f60e0c3d3bcfd4265bba2d33110affc18119d4a016fa3750d5c1941b0b84de",
+    "generation": {
+      "contract": {
+        "authoring": 1,
+        "catalog_schema": 6,
+        "execution": 3,
+        "fingerprint": 1,
+        "pack_format": 1
+      },
+      "semantic_sha256": "69f7c49fc7a63f571433204c20e71e40e8d873167e1bd5f03a81ca35868eeca3"
+    },
+    "providers": [
+      {
+        "Fragment": {
+          "copy_uuid": "2c0e9b5a-56b7-4fd3-9c71-f9c2bcc43796",
+          "definition_id": "u09_public_fragment",
+          "form_id": "base",
+          "skill_id": "u09_public_strike"
+        }
+      }
+    ],
+    "rules": [
+      {
+        "contribution": {
+          "copy_uuid": "5ac1ac75-b2c4-4418-b222-f31d7a80b61d",
+          "definition_id": "u09_public_relic",
+          "rule_id": "original_add",
+          "variant": "Normal"
+        },
+        "state": "Active",
+        "targets": [
+          {
+            "effect": {
+              "kind": "original",
+              "site": {
+                "action": {
+                  "action_id": "hit",
+                  "definition_id": "u09_public_strike"
+                },
+                "effect_id": "original"
+              }
+            },
+            "provider_index": 0
+          }
+        ]
+      },
+      {
+        "contribution": {
+          "copy_uuid": "5ac1ac75-b2c4-4418-b222-f31d7a80b61d",
+          "definition_id": "u09_public_relic",
+          "rule_id": "grant",
+          "variant": "Normal"
+        },
+        "state": "Active",
+        "targets": [
+          {
+            "effect": {
+              "anchor": {
+                "action_id": "hit",
+                "definition_id": "u09_public_strike"
+              },
+              "grant_rule_id": "grant",
+              "kind": "generated",
+              "local_action_id": "hit",
+              "local_effect_id": "bonus",
+              "relic_copy_uuid": "5ac1ac75-b2c4-4418-b222-f31d7a80b61d"
+            },
+            "provider_index": 0
+          }
+        ]
+      },
+      {
+        "contribution": {
+          "copy_uuid": "5ac1ac75-b2c4-4418-b222-f31d7a80b61d",
+          "definition_id": "u09_public_relic",
+          "rule_id": "bonus_add",
+          "variant": "Normal"
+        },
+        "state": "Active",
+        "targets": [
+          {
+            "effect": {
+              "anchor": {
+                "action_id": "hit",
+                "definition_id": "u09_public_strike"
+              },
+              "grant_rule_id": "grant",
+              "kind": "generated",
+              "local_action_id": "hit",
+              "local_effect_id": "bonus",
+              "relic_copy_uuid": "5ac1ac75-b2c4-4418-b222-f31d7a80b61d"
+            },
+            "provider_index": 0
+          }
+        ]
+      },
+      {
+        "contribution": {
+          "copy_uuid": "5ac1ac75-b2c4-4418-b222-f31d7a80b61d",
+          "definition_id": "u09_public_relic",
+          "rule_id": "bonus_scale",
+          "variant": "Normal"
+        },
+        "state": "Active",
+        "targets": [
+          {
+            "effect": {
+              "anchor": {
+                "action_id": "hit",
+                "definition_id": "u09_public_strike"
+              },
+              "grant_rule_id": "grant",
+              "kind": "generated",
+              "local_action_id": "hit",
+              "local_effect_id": "bonus",
+              "relic_copy_uuid": "5ac1ac75-b2c4-4418-b222-f31d7a80b61d"
+            },
+            "provider_index": 0
+          }
+        ]
+      }
+    ],
+    "schema_version": 1,
+    "scope": "prospective_loadout",
+    "wedge_rules": []
+  },
+  "player": "00000000-0000-0000-0000-000000000019",
+  "profile": {
+    "all_live_final_bosses_defeated": false,
+    "encounter_compendium": {
+      "registered_ids": [
+        "corroded_guard",
+        "corroded_marksman"
+      ]
+    },
+    "highest_floor_reached": 1,
+    "lifecycle": {
+      "active_expedition": {
+        "player_id": "00000000-0000-0000-0000-000000000019",
+        "sequence": 1,
+        "uuid": "4d3d92b2-4116-46b6-95f8-b195f9fd272d"
+      },
+      "expedition_sequence": 1,
+      "first_return_story": "Never",
+      "vault": {
+        "equipment": {},
+        "fragments": {}
+      }
+    },
+    "longest_deathless_floor_streak": 0
+  },
+  "relics": {
+    "copies": [
+      {
+        "copy_uuid": "5ac1ac75-b2c4-4418-b222-f31d7a80b61d",
+        "definition_id": "u09_public_relic",
+        "variant": "Normal"
+      }
+    ],
+    "loadouts": [
+      {
+        "employee_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+        "slots": [
+          null,
+          null,
+          "5ac1ac75-b2c4-4418-b222-f31d7a80b61d"
+        ]
+      }
+    ],
+    "not_sellable_copy_uuids": [
+      "5ac1ac75-b2c4-4418-b222-f31d7a80b61d"
+    ],
+    "resources": {
+      "equipment_dust": 0,
+      "relic_corruption_catalysts": 0
+    }
+  },
+  "selection": {
+    "packs": [
+      "official"
+    ],
+    "winners": []
+  }
+}

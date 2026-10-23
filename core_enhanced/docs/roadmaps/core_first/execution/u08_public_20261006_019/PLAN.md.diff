@@ -1,0 +1,11 @@
+--- before/PLAN.md
++++ after/PLAN.md
+@@ -22,7 +22,7 @@
+ ## 현재 우선 작업 — 2026-10-06/018
+ 
+ R07 기본stack 정확selector와 G1 세 검사, G4 모듈13/13의 성공을 보존한다. G2는 동일 최종source438/0eb5719496ccc828e6787c89032cb3791e84fbed06c4ea61194d4a8fde19d021에서 외부 데이터14음성사례1/1과 실제 변경/삭제 generation 복원 거절 및 원본 generation 정상복원1/1 PASS다. root가438 actual inputs·정확 테스트1파일 delta·6개 raw를 확인했다. [G2 결과·실패 원인·한계](../../../../roadmaps/core_first/execution/u08_public_20261006_018/RECORD.ko.md)를 따른다. 기존 [G4](../../../../roadmaps/core_first/execution/u08_public_20261006_017/RECORD.ko.md)와 [G1·CoreDomain 정정](../../../../roadmaps/core_first/execution/u08_public_20261006_016/RECORD.ko.md)은 보존한다.
+-현재 Astra는 G3 읽기 사전 확인 중이며 제품/통합/성능은 HOLD다. G3→G5/G6→G7 보강 뒤 통합을 재개한다. integrated003은 중도실패로 유지한다. 후속 U17 실제 부활촉매 교차시험과 전체 U08 완료는 아직 주장하지 않는다.
++현재 Astra는 G3 두 test-only 파일의 집중 검사를 수행하며 제품/통합/성능은 HOLD다. 보조 Astra/High u08_finalizer_author가 실행입력과 분리된 신규 최종증거 도구만 작성한다. [역할·파일소유·원형 용어 정정](../../../../roadmaps/core_first/execution/u08_public_20261006_019/RECORD.ko.md)을 따른다. G3→G5/G6→G7 보강 뒤 통합을 재개한다. integrated003은 중도실패로 유지한다. 후속 U17 실제 부활촉매 교차시험과 전체 U08 완료는 아직 주장하지 않는다.
+ 
+ ## 요청·역할·현재 인수
+ 

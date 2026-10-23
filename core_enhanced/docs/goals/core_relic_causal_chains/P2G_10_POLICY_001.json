@@ -1,0 +1,2387 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-01-OPEN-001",
+        "Content Digest": "sha256:a96945718f16a0e98213275673467bf25adda272f3bfa7e5448db498e4b42eb9"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRCE-01",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "실제 commit된 전투 결과가 활성 유물 효과의 사건 조건을 판정하고 정상 queue에 자식을 예약한다. 효과의 값·대상·출처는 해당 사건과 bound effective plan을 따른다. 예정 피해·표시 로그·조회 자체는 사건을 만들지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRCE-01-001",
+        "Content Digest": "sha256:890a5acd1cd2dcfc99b6ce450bf9913040e91088f7a7b58fd6934d079a7560ba"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRCE-01"
+        ],
+        "Decision Name": "실제 사건과 subscriber",
+        "Exact Decision": "실제 commit된 전투 결과가 활성 유물 효과의 사건 조건을 판정하고 정상 queue에 자식을 예약한다. 효과의 값·대상·출처는 해당 사건과 bound effective plan을 따른다. 예정 피해·표시 로그·조회 자체는 사건을 만들지 않는다.",
+        "Decision Authority": "Existing agreements applied; unresolved details are AI decisions under explicit H04 R13–R16 broad gameplay delegation retained by current continuous authorization. No invented user answer.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-001",
+            "IN-003",
+            "IN-004",
+            "IN-011"
+          ],
+          "span": "H04 lines139–152 구현 중 정책 결정 권한; current continuous approved scope U10/R16"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-002",
+            "IN-006",
+            "IN-014",
+            "IN-015"
+          ],
+          "span": "U10 together-transition; relics 효과 결합; runtime actual result",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "기존 실제 결과와 source 계약을 새 subscriber에도 적용한다.",
+        "Impact": [
+          "HP-loss 조건은 최종 HP 감소만 읽고 보호막 흡수·무적·초과 피해 예정량을 HP 감소로 세지 않는다. 원본 source/actual killer와 유물 copy/effect provenance를 함께 관찰할 수 있다.",
+          "정상 RON으로 만든 subscriber가 실제 기본 공격·직접 스킬 피해의 적격 사건에서 child 피해 또는 자원 변화를 실행한다. 부적격 사건·휴면 효과·조회 반복에는 child가 없다."
+        ],
+        "Alternatives not selected": "예정량 또는 로그를 사건 권위로 사용",
+        "Compatibility and data impact": "기존 데이터·정식 밸런스·장착 제한·저장 권리 유지. 새 작성 기능과 관련 runtime 상태에 한정하며 삭제·일괄 변환 없음.",
+        "Revisability": "실행 수단은 정책 안에서 선택; 의미/acceptance 변경은 P2G immutable successor와 해당 후속 재검토."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-01-DECIDED-001",
+        "Content Digest": "sha256:a506c1ad2625569fc346afcddfaa12a974fa2564fea0d7d0c04ae7a346e2938c"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRCE-01",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRCE-01-OPEN-001",
+          "Content Digest": "sha256:a96945718f16a0e98213275673467bf25adda272f3bfa7e5448db498e4b42eb9"
+        },
+        "Policy Statement": "실제 commit된 전투 결과가 활성 유물 효과의 사건 조건을 판정하고 정상 queue에 자식을 예약한다. 효과의 값·대상·출처는 해당 사건과 bound effective plan을 따른다. 예정 피해·표시 로그·조회 자체는 사건을 만들지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRCE-01-001",
+          "Content Digest": "sha256:890a5acd1cd2dcfc99b6ce450bf9913040e91088f7a7b58fd6934d079a7560ba"
+        },
+        "Observable Policy Acceptance": [
+          "HP-loss 조건은 최종 HP 감소만 읽고 보호막 흡수·무적·초과 피해 예정량을 HP 감소로 세지 않는다. 원본 source/actual killer와 유물 copy/effect provenance를 함께 관찰할 수 있다.",
+          "정상 RON으로 만든 subscriber가 실제 기본 공격·직접 스킬 피해의 적격 사건에서 child 피해 또는 자원 변화를 실행한다. 부적격 사건·휴면 효과·조회 반복에는 child가 없다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRCE-01-001",
+        "Content Digest": "sha256:6055b7c238b59b61ef79668bb7f63ec0322398bd0646dff7edae13defb447f34"
+      },
+      "payload": {
+        "Candidate ID": "C-CRCE-01",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRCE-001",
+            "Content Digest": "sha256:ed1c57b5421abb93ad5e86b22ea9215cb136d2498f488726c86747d304cf57f0"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-002",
+            "IN-006",
+            "IN-014",
+            "IN-015"
+          ],
+          "span": "U10 together-transition; relics 효과 결합; runtime actual result",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "실제 commit된 전투 결과가 활성 유물 효과의 사건 조건을 판정하고 정상 queue에 자식을 예약한다. 효과의 값·대상·출처는 해당 사건과 bound effective plan을 따른다. 예정 피해·표시 로그·조회 자체는 사건을 만들지 않는다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRCE-01",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRCE-01-OPEN-001",
+          "Content Digest": "sha256:a96945718f16a0e98213275673467bf25adda272f3bfa7e5448db498e4b42eb9"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRCE-01-001",
+          "Content Digest": "sha256:890a5acd1cd2dcfc99b6ce450bf9913040e91088f7a7b58fd6934d079a7560ba"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-02-OPEN-001",
+        "Content Digest": "sha256:d580ba410b70635661013bd216eca2eda47698d11593bfb9255d4da2b6168cf5"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRCE-02",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "같은 연쇄 경로에서 같은 개인 유물 사본의 같은 효과를 다시 발동하지 않는다. 다른 사본·다른 효과·독립 원인은 허용한다. 소유자·형태·plan 재컴파일/주소 변화만으로 같은 효과의 방문 기록을 지우지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRCE-02-001",
+        "Content Digest": "sha256:a4e886d4a76b0535d41accc5ec4f14d2d1e8af88a6858eb87700e6d08e439a9c"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRCE-02"
+        ],
+        "Decision Name": "copy/effect 경로 정체성",
+        "Exact Decision": "같은 연쇄 경로에서 같은 개인 유물 사본의 같은 효과를 다시 발동하지 않는다. 다른 사본·다른 효과·독립 원인은 허용한다. 소유자·형태·plan 재컴파일/주소 변화만으로 같은 효과의 방문 기록을 지우지 않는다.",
+        "Decision Authority": "Existing agreements applied; unresolved details are AI decisions under explicit H04 R13–R16 broad gameplay delegation retained by current continuous authorization. No invented user answer.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-001",
+            "IN-003",
+            "IN-004",
+            "IN-011"
+          ],
+          "span": "H04 lines139–152 구현 중 정책 결정 권한; current continuous approved scope U10/R16"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-006",
+            "IN-011"
+          ],
+          "span": "relics 같은 사본 같은 효과; H04 A16-01",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "사본·효과 정체성 보존에서 도출한다.",
+        "Impact": [
+          "A1.e→B1.e→A1.e는 마지막 A1.e만 차단하고 A2.e와 A1.f는 적격 조건이면 실행한다. 다음 독립 기본 공격에서는 A1.e가 다시 실행한다.",
+          "같은 사본이 owner/form/plan을 바꿔도 살아 있는 파생 경로의 동일 효과 방문은 보존한다. 실제 다른 authored effect는 별개이며 발동 금지는 전투 전체 잠금이 아니다."
+        ],
+        "Alternatives not selected": "actor/prototype/plan pointer 단위 전역 방문",
+        "Compatibility and data impact": "기존 데이터·정식 밸런스·장착 제한·저장 권리 유지. 새 작성 기능과 관련 runtime 상태에 한정하며 삭제·일괄 변환 없음.",
+        "Revisability": "실행 수단은 정책 안에서 선택; 의미/acceptance 변경은 P2G immutable successor와 해당 후속 재검토."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-02-DECIDED-001",
+        "Content Digest": "sha256:93262c109994ac2b80666c3928b7c2fec5080c6452bbaaf00a7bac6499e1ad28"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRCE-02",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRCE-02-OPEN-001",
+          "Content Digest": "sha256:d580ba410b70635661013bd216eca2eda47698d11593bfb9255d4da2b6168cf5"
+        },
+        "Policy Statement": "같은 연쇄 경로에서 같은 개인 유물 사본의 같은 효과를 다시 발동하지 않는다. 다른 사본·다른 효과·독립 원인은 허용한다. 소유자·형태·plan 재컴파일/주소 변화만으로 같은 효과의 방문 기록을 지우지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRCE-02-001",
+          "Content Digest": "sha256:a4e886d4a76b0535d41accc5ec4f14d2d1e8af88a6858eb87700e6d08e439a9c"
+        },
+        "Observable Policy Acceptance": [
+          "A1.e→B1.e→A1.e는 마지막 A1.e만 차단하고 A2.e와 A1.f는 적격 조건이면 실행한다. 다음 독립 기본 공격에서는 A1.e가 다시 실행한다.",
+          "같은 사본이 owner/form/plan을 바꿔도 살아 있는 파생 경로의 동일 효과 방문은 보존한다. 실제 다른 authored effect는 별개이며 발동 금지는 전투 전체 잠금이 아니다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRCE-02-001",
+        "Content Digest": "sha256:3474f507e241f750e19d271d6a68ef6e981559f9b31eee2b4d73c944d284c346"
+      },
+      "payload": {
+        "Candidate ID": "C-CRCE-02",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRCE-001",
+            "Content Digest": "sha256:ed1c57b5421abb93ad5e86b22ea9215cb136d2498f488726c86747d304cf57f0"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-006",
+            "IN-011"
+          ],
+          "span": "relics 같은 사본 같은 효과; H04 A16-01",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "같은 연쇄 경로에서 같은 개인 유물 사본의 같은 효과를 다시 발동하지 않는다. 다른 사본·다른 효과·독립 원인은 허용한다. 소유자·형태·plan 재컴파일/주소 변화만으로 같은 효과의 방문 기록을 지우지 않는다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRCE-02",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRCE-02-OPEN-001",
+          "Content Digest": "sha256:d580ba410b70635661013bd216eca2eda47698d11593bfb9255d4da2b6168cf5"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRCE-02-001",
+          "Content Digest": "sha256:a4e886d4a76b0535d41accc5ec4f14d2d1e8af88a6858eb87700e6d08e439a9c"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-03-OPEN-001",
+        "Content Digest": "sha256:0ec3a6c632cf5e7055b3808f9994606ea2bf9383a9e86c54637d5a2e86ef4405"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRCE-03",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "fork는 공통 조상의 방문을 각각 계승하고 fork 후 새 방문은 형제 경로와 공유하지 않는다. queue 처리 순서나 같은 대상/시각은 경로를 합치지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRCE-03-001",
+        "Content Digest": "sha256:87581447964ca4640c987f8c86752133a445fe195e1c679f16b71b70258db461"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRCE-03"
+        ],
+        "Decision Name": "fork 독립성",
+        "Exact Decision": "fork는 공통 조상의 방문을 각각 계승하고 fork 후 새 방문은 형제 경로와 공유하지 않는다. queue 처리 순서나 같은 대상/시각은 경로를 합치지 않는다.",
+        "Decision Authority": "Existing agreements applied; unresolved details are AI decisions under explicit H04 R13–R16 broad gameplay delegation retained by current continuous authorization. No invented user answer.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-001",
+            "IN-003",
+            "IN-004",
+            "IN-011"
+          ],
+          "span": "H04 lines139–152 구현 중 정책 결정 권한; current continuous approved scope U10/R16"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-006",
+            "IN-011"
+          ],
+          "span": "relics 갈라진 연쇄; H04 A16-02/03",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "명시 합의 적용.",
+        "Impact": [
+          "공통 A 이후 갈래 L/R에서 각각 B가 한 번 실행하며 L의 B 방문은 R을 차단하지 않는다. 두 갈래 모두 A 재방문은 차단한다.",
+          "같은 시각 같은 대상의 독립 적중은 각각 적격 효과를 발동하고 실행 순서 변화가 공유 방문 오염을 만들지 않는다."
+        ],
+        "Alternatives not selected": "root 전체 가변 visited set",
+        "Compatibility and data impact": "기존 데이터·정식 밸런스·장착 제한·저장 권리 유지. 새 작성 기능과 관련 runtime 상태에 한정하며 삭제·일괄 변환 없음.",
+        "Revisability": "실행 수단은 정책 안에서 선택; 의미/acceptance 변경은 P2G immutable successor와 해당 후속 재검토."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-03-DECIDED-001",
+        "Content Digest": "sha256:e0579cae216355a0376f4f5ef47231c4caac48a0089b395aa7b676f8c0ab3f1b"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRCE-03",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRCE-03-OPEN-001",
+          "Content Digest": "sha256:0ec3a6c632cf5e7055b3808f9994606ea2bf9383a9e86c54637d5a2e86ef4405"
+        },
+        "Policy Statement": "fork는 공통 조상의 방문을 각각 계승하고 fork 후 새 방문은 형제 경로와 공유하지 않는다. queue 처리 순서나 같은 대상/시각은 경로를 합치지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRCE-03-001",
+          "Content Digest": "sha256:87581447964ca4640c987f8c86752133a445fe195e1c679f16b71b70258db461"
+        },
+        "Observable Policy Acceptance": [
+          "공통 A 이후 갈래 L/R에서 각각 B가 한 번 실행하며 L의 B 방문은 R을 차단하지 않는다. 두 갈래 모두 A 재방문은 차단한다.",
+          "같은 시각 같은 대상의 독립 적중은 각각 적격 효과를 발동하고 실행 순서 변화가 공유 방문 오염을 만들지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRCE-03-001",
+        "Content Digest": "sha256:a748f12ba2001c02b7b9cdff7312a09b0d151f3c80a599822ef8f481e9f5fc00"
+      },
+      "payload": {
+        "Candidate ID": "C-CRCE-03",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRCE-001",
+            "Content Digest": "sha256:ed1c57b5421abb93ad5e86b22ea9215cb136d2498f488726c86747d304cf57f0"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-006",
+            "IN-011"
+          ],
+          "span": "relics 갈라진 연쇄; H04 A16-02/03",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "fork는 공통 조상의 방문을 각각 계승하고 fork 후 새 방문은 형제 경로와 공유하지 않는다. queue 처리 순서나 같은 대상/시각은 경로를 합치지 않는다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRCE-03",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRCE-03-OPEN-001",
+          "Content Digest": "sha256:0ec3a6c632cf5e7055b3808f9994606ea2bf9383a9e86c54637d5a2e86ef4405"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRCE-03-001",
+          "Content Digest": "sha256:87581447964ca4640c987f8c86752133a445fe195e1c679f16b71b70258db461"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-04-OPEN-001",
+        "Content Digest": "sha256:9f54841372539d2fc04b54f5433705c79e0106ca995bfa63340b008205b2c2fb"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRCE-04",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "공개 작성 가능한 실제 합류 producer는 참여 경로들의 결과를 소비해 하나의 후속 효과를 만들고 실제 참여 경로 방문의 합집합을 잇는다. 비참여 경로는 제외한다. 합류 자체의 피해는 정상 적용하며 방문한 효과의 재발동만 차단한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRCE-04-001",
+        "Content Digest": "sha256:eb833cda6c67a481831098e705f20adab9a376319a02d731f087f13571bb0aba"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRCE-04"
+        ],
+        "Decision Name": "실제 합류",
+        "Exact Decision": "공개 작성 가능한 실제 합류 producer는 참여 경로들의 결과를 소비해 하나의 후속 효과를 만들고 실제 참여 경로 방문의 합집합을 잇는다. 비참여 경로는 제외한다. 합류 자체의 피해는 정상 적용하며 방문한 효과의 재발동만 차단한다.",
+        "Decision Authority": "Existing agreements applied; unresolved details are AI decisions under explicit H04 R13–R16 broad gameplay delegation retained by current continuous authorization. No invented user answer.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-001",
+            "IN-003",
+            "IN-004",
+            "IN-011"
+          ],
+          "span": "H04 lines139–152 구현 중 정책 결정 권한; current continuous approved scope U10/R16"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-006",
+            "IN-011"
+          ],
+          "span": "relics 실제 합류; H04 A16-02/03 및 실제 producer 필수",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "합류의 실제 참여·단일 후속 결과 의미에서 도출.",
+        "Impact": [
+          "서로 다른 A/B 방문 경로가 실제 합류하면 합류 피해는 적용되고 A/B 재발동은 차단되며 미방문 C는 허용한다. 비참여 D는 방문 집합에 들어가지 않는다.",
+          "참여 결과는 producer의 정해진 참여 집합에서 정확히 한 번 소비한다. 같은 receipt 재전달·재시도는 중복 합류 피해를 만들지 않고 취소/실패한 미완성 합류는 성공으로 표시하지 않는다."
+        ],
+        "Alternatives not selected": "동시 시각 자동 합류 또는 helper 주입만 지원",
+        "Compatibility and data impact": "기존 데이터·정식 밸런스·장착 제한·저장 권리 유지. 새 작성 기능과 관련 runtime 상태에 한정하며 삭제·일괄 변환 없음.",
+        "Revisability": "실행 수단은 정책 안에서 선택; 의미/acceptance 변경은 P2G immutable successor와 해당 후속 재검토."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-04-DECIDED-001",
+        "Content Digest": "sha256:ef4869825eac34affc1771bb15a8334e22adb2c17d765d6d918cbb9c6942ec9b"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRCE-04",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRCE-04-OPEN-001",
+          "Content Digest": "sha256:9f54841372539d2fc04b54f5433705c79e0106ca995bfa63340b008205b2c2fb"
+        },
+        "Policy Statement": "공개 작성 가능한 실제 합류 producer는 참여 경로들의 결과를 소비해 하나의 후속 효과를 만들고 실제 참여 경로 방문의 합집합을 잇는다. 비참여 경로는 제외한다. 합류 자체의 피해는 정상 적용하며 방문한 효과의 재발동만 차단한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRCE-04-001",
+          "Content Digest": "sha256:eb833cda6c67a481831098e705f20adab9a376319a02d731f087f13571bb0aba"
+        },
+        "Observable Policy Acceptance": [
+          "서로 다른 A/B 방문 경로가 실제 합류하면 합류 피해는 적용되고 A/B 재발동은 차단되며 미방문 C는 허용한다. 비참여 D는 방문 집합에 들어가지 않는다.",
+          "참여 결과는 producer의 정해진 참여 집합에서 정확히 한 번 소비한다. 같은 receipt 재전달·재시도는 중복 합류 피해를 만들지 않고 취소/실패한 미완성 합류는 성공으로 표시하지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRCE-04-001",
+        "Content Digest": "sha256:035d2fc153c474fb76b73362dbc0e7619c5fe73c6300915a1d8994e9829846c7"
+      },
+      "payload": {
+        "Candidate ID": "C-CRCE-04",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRCE-001",
+            "Content Digest": "sha256:ed1c57b5421abb93ad5e86b22ea9215cb136d2498f488726c86747d304cf57f0"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-006",
+            "IN-011"
+          ],
+          "span": "relics 실제 합류; H04 A16-02/03 및 실제 producer 필수",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "공개 작성 가능한 실제 합류 producer는 참여 경로들의 결과를 소비해 하나의 후속 효과를 만들고 실제 참여 경로 방문의 합집합을 잇는다. 비참여 경로는 제외한다. 합류 자체의 피해는 정상 적용하며 방문한 효과의 재발동만 차단한다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRCE-04",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRCE-04-OPEN-001",
+          "Content Digest": "sha256:9f54841372539d2fc04b54f5433705c79e0106ca995bfa63340b008205b2c2fb"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRCE-04-001",
+          "Content Digest": "sha256:eb833cda6c67a481831098e705f20adab9a376319a02d731f087f13571bb0aba"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-05-OPEN-001",
+        "Content Digest": "sha256:9794694fe225985b70904cc42ee60e89bff42481675f1cde1826104b1641c8ff"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRCE-05",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "공개 독립 periodic producer는 다른 적중/발동이 원인이 아닌 각 발생마다 새 연쇄를 만든다. 발동으로 생성된 delay/projectile/area/DOT 및 그 후속 생성은 원인 경로를 끝까지 계승한다. timer flag나 시간 경과는 root 초기화 권한이 아니다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRCE-05-001",
+        "Content Digest": "sha256:b56cc5f5fb550652ce98a257d26efd1c1aec91dbaa6978fa7c85afa34389daeb"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRCE-05"
+        ],
+        "Decision Name": "독립 주기와 파생 지연",
+        "Exact Decision": "공개 독립 periodic producer는 다른 적중/발동이 원인이 아닌 각 발생마다 새 연쇄를 만든다. 발동으로 생성된 delay/projectile/area/DOT 및 그 후속 생성은 원인 경로를 끝까지 계승한다. timer flag나 시간 경과는 root 초기화 권한이 아니다.",
+        "Decision Authority": "Existing agreements applied; unresolved details are AI decisions under explicit H04 R13–R16 broad gameplay delegation retained by current continuous authorization. No invented user answer.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-001",
+            "IN-003",
+            "IN-004",
+            "IN-011"
+          ],
+          "span": "H04 lines139–152 구현 중 정책 결정 권한; current continuous approved scope U10/R16"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-006",
+            "IN-011"
+          ],
+          "span": "relics 독립 반복과 파생 원인; H04 A16-04",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "원인 기준 명시 합의 적용.",
+        "Impact": [
+          "실제 독립 주기 두 발생 모두 같은 효과를 새로 발동할 수 있다. A가 생성한 DOT의 여러 tick·지연 폭발·투사체 도착은 A 재방문을 허용하지 않는다.",
+          "주기와 파생 지연을 정상 RON과 명령으로 생성하여 실행한다. 공개 입력이 임의로 ancestry를 제거하거나 파생 child를 독립 root로 위장하지 못한다."
+        ],
+        "Alternatives not selected": "모든 tick마다 새 root 또는 periodic 미지원",
+        "Compatibility and data impact": "기존 데이터·정식 밸런스·장착 제한·저장 권리 유지. 새 작성 기능과 관련 runtime 상태에 한정하며 삭제·일괄 변환 없음.",
+        "Revisability": "실행 수단은 정책 안에서 선택; 의미/acceptance 변경은 P2G immutable successor와 해당 후속 재검토."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-05-DECIDED-001",
+        "Content Digest": "sha256:1002df545d2198eefbde02f1a914b63ff53f4b9450e558e3ed9137982644632b"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRCE-05",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRCE-05-OPEN-001",
+          "Content Digest": "sha256:9794694fe225985b70904cc42ee60e89bff42481675f1cde1826104b1641c8ff"
+        },
+        "Policy Statement": "공개 독립 periodic producer는 다른 적중/발동이 원인이 아닌 각 발생마다 새 연쇄를 만든다. 발동으로 생성된 delay/projectile/area/DOT 및 그 후속 생성은 원인 경로를 끝까지 계승한다. timer flag나 시간 경과는 root 초기화 권한이 아니다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRCE-05-001",
+          "Content Digest": "sha256:b56cc5f5fb550652ce98a257d26efd1c1aec91dbaa6978fa7c85afa34389daeb"
+        },
+        "Observable Policy Acceptance": [
+          "실제 독립 주기 두 발생 모두 같은 효과를 새로 발동할 수 있다. A가 생성한 DOT의 여러 tick·지연 폭발·투사체 도착은 A 재방문을 허용하지 않는다.",
+          "주기와 파생 지연을 정상 RON과 명령으로 생성하여 실행한다. 공개 입력이 임의로 ancestry를 제거하거나 파생 child를 독립 root로 위장하지 못한다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRCE-05-001",
+        "Content Digest": "sha256:6458a23544c841332ac27da115c31d3c89b80134ee7ce901b9306bee9adc7702"
+      },
+      "payload": {
+        "Candidate ID": "C-CRCE-05",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRCE-001",
+            "Content Digest": "sha256:ed1c57b5421abb93ad5e86b22ea9215cb136d2498f488726c86747d304cf57f0"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-006",
+            "IN-011"
+          ],
+          "span": "relics 독립 반복과 파생 원인; H04 A16-04",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "공개 독립 periodic producer는 다른 적중/발동이 원인이 아닌 각 발생마다 새 연쇄를 만든다. 발동으로 생성된 delay/projectile/area/DOT 및 그 후속 생성은 원인 경로를 끝까지 계승한다. timer flag나 시간 경과는 root 초기화 권한이 아니다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRCE-05",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRCE-05-OPEN-001",
+          "Content Digest": "sha256:9794694fe225985b70904cc42ee60e89bff42481675f1cde1826104b1641c8ff"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRCE-05-001",
+          "Content Digest": "sha256:b56cc5f5fb550652ce98a257d26efd1c1aec91dbaa6978fa7c85afa34389daeb"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-06-OPEN-001",
+        "Content Digest": "sha256:7932ae42196c56032b9221f6aaf2149d446517af49cd8118a1f79773baef41a3"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRCE-06",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "인과 상태는 살아 있는 원인·예약 자식·carrier·실제 합류 참여자에 귀속되고 표시 로그에 의존하지 않는다. release 후 유효한 공격은 기존 이탈 계약에 따라 인과와 plan을 보존한다. 취소/만료/대상 소멸/전투 종료로 더 이상 소비자가 없으면 회수한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRCE-06-001",
+        "Content Digest": "sha256:58c42d03d3e7af6aa63e895c7e785a9d9815c0cfc4cf2f27e37365bb3be2c868"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRCE-06"
+        ],
+        "Decision Name": "수명과 로그 독립",
+        "Exact Decision": "인과 상태는 살아 있는 원인·예약 자식·carrier·실제 합류 참여자에 귀속되고 표시 로그에 의존하지 않는다. release 후 유효한 공격은 기존 이탈 계약에 따라 인과와 plan을 보존한다. 취소/만료/대상 소멸/전투 종료로 더 이상 소비자가 없으면 회수한다.",
+        "Decision Authority": "Existing agreements applied; unresolved details are AI decisions under explicit H04 R13–R16 broad gameplay delegation retained by current continuous authorization. No invented user answer.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-001",
+            "IN-003",
+            "IN-004",
+            "IN-011"
+          ],
+          "span": "H04 lines139–152 구현 중 정책 결정 권한; current continuous approved scope U10/R16"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-002",
+            "IN-009",
+            "IN-011",
+            "IN-014"
+          ],
+          "span": "U10 state회수; H04 A16-05/X02/X03",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "기존 carrier/owner 수명과 로그 비권위 원칙 적용.",
+        "Impact": [
+          "trace off/on, 로그 eviction/포화에서 같은 HP·자원·발동 제한이 유지된다. pre-release 취소와 post-release owner 제거는 기존 실행 의미와 함께 인과 보존/회수를 보인다.",
+          "긴 지연·DOT·합류 대기 중에는 필요한 상태가 유지되고 마지막 소비자 종료 뒤 회수된다. clone은 형제 world의 방문·queue·합류 진행을 오염시키지 않는다."
+        ],
+        "Alternatives not selected": "로그 보존기간만큼 ancestry 유지 또는 owner 제거 즉시 전체 삭제",
+        "Compatibility and data impact": "기존 데이터·정식 밸런스·장착 제한·저장 권리 유지. 새 작성 기능과 관련 runtime 상태에 한정하며 삭제·일괄 변환 없음.",
+        "Revisability": "실행 수단은 정책 안에서 선택; 의미/acceptance 변경은 P2G immutable successor와 해당 후속 재검토."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-06-DECIDED-001",
+        "Content Digest": "sha256:6b4480605f802552dbbd8be97f89d45869a75dfad38c82fe7fa153057fcf7b57"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRCE-06",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRCE-06-OPEN-001",
+          "Content Digest": "sha256:7932ae42196c56032b9221f6aaf2149d446517af49cd8118a1f79773baef41a3"
+        },
+        "Policy Statement": "인과 상태는 살아 있는 원인·예약 자식·carrier·실제 합류 참여자에 귀속되고 표시 로그에 의존하지 않는다. release 후 유효한 공격은 기존 이탈 계약에 따라 인과와 plan을 보존한다. 취소/만료/대상 소멸/전투 종료로 더 이상 소비자가 없으면 회수한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRCE-06-001",
+          "Content Digest": "sha256:58c42d03d3e7af6aa63e895c7e785a9d9815c0cfc4cf2f27e37365bb3be2c868"
+        },
+        "Observable Policy Acceptance": [
+          "trace off/on, 로그 eviction/포화에서 같은 HP·자원·발동 제한이 유지된다. pre-release 취소와 post-release owner 제거는 기존 실행 의미와 함께 인과 보존/회수를 보인다.",
+          "긴 지연·DOT·합류 대기 중에는 필요한 상태가 유지되고 마지막 소비자 종료 뒤 회수된다. clone은 형제 world의 방문·queue·합류 진행을 오염시키지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRCE-06-001",
+        "Content Digest": "sha256:95e9eb6b8b58ceaacc96d197de6a878dce745ef5bc21ecdd5ff62d54f685f217"
+      },
+      "payload": {
+        "Candidate ID": "C-CRCE-06",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRCE-001",
+            "Content Digest": "sha256:ed1c57b5421abb93ad5e86b22ea9215cb136d2498f488726c86747d304cf57f0"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-002",
+            "IN-009",
+            "IN-011",
+            "IN-014"
+          ],
+          "span": "U10 state회수; H04 A16-05/X02/X03",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "인과 상태는 살아 있는 원인·예약 자식·carrier·실제 합류 참여자에 귀속되고 표시 로그에 의존하지 않는다. release 후 유효한 공격은 기존 이탈 계약에 따라 인과와 plan을 보존한다. 취소/만료/대상 소멸/전투 종료로 더 이상 소비자가 없으면 회수한다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRCE-06",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRCE-06-OPEN-001",
+          "Content Digest": "sha256:7932ae42196c56032b9221f6aaf2149d446517af49cd8118a1f79773baef41a3"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRCE-06-001",
+          "Content Digest": "sha256:58c42d03d3e7af6aa63e895c7e785a9d9815c0cfc4cf2f27e37365bb3be2c868"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-07-OPEN-001",
+        "Content Digest": "sha256:6b205b94dc5d85ced062900cce0d49ccf3dc70643d75ffaac5e252a62121e6ad"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRCE-07",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "기존 공격/피격 장비 효과는 확정된 기본 공격 적중에서만 발생한다. 일반 스킬·버프·장판·유물 자식·반격 피해로 해당 OnAttack/OnHit 사건을 재수집하지 않는다. 반격은 원래 공격자에게 한 번이며 죽거나 없는 공격자를 대체하지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRCE-07-001",
+        "Content Digest": "sha256:4c2c378c4264dd4211d711d81a9f5fbdbb88bcb56abcd02e38ccb7f1a78b0a9a"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRCE-07"
+        ],
+        "Decision Name": "장비 counter와 기본 공격",
+        "Exact Decision": "기존 공격/피격 장비 효과는 확정된 기본 공격 적중에서만 발생한다. 일반 스킬·버프·장판·유물 자식·반격 피해로 해당 OnAttack/OnHit 사건을 재수집하지 않는다. 반격은 원래 공격자에게 한 번이며 죽거나 없는 공격자를 대체하지 않는다.",
+        "Decision Authority": "Existing agreements applied; unresolved details are AI decisions under explicit H04 R13–R16 broad gameplay delegation retained by current continuous authorization. No invented user answer.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-001",
+            "IN-003",
+            "IN-004",
+            "IN-011"
+          ],
+          "span": "H04 lines139–152 구현 중 정책 결정 권한; current continuous approved scope U10/R16"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-007",
+            "IN-011",
+            "IN-014"
+          ],
+          "span": "장비 효과의 발동; H04 A16-06",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "기존 장비 의미 보존.",
+        "Impact": [
+          "정상 기본 공격의 장비 반격과 유물 subscriber가 공존한다. 반격은 방어자 피격 증폭이 아니고 반사 재귀가 없으며 dead/missing attacker는 건너뛴다.",
+          "일반 스킬·DOT·유물 child는 자기 적격 유물 사건을 만들 수 있지만 장비 기본 공격/피격 proc를 재생성하지 않는다. 같은 사건 일반 효과는 능력 활성화보다 먼저, 기존 결정론적 순서로 처리한다."
+        ],
+        "Alternatives not selected": "모든 피해를 기본 공격으로 취급",
+        "Compatibility and data impact": "기존 데이터·정식 밸런스·장착 제한·저장 권리 유지. 새 작성 기능과 관련 runtime 상태에 한정하며 삭제·일괄 변환 없음.",
+        "Revisability": "실행 수단은 정책 안에서 선택; 의미/acceptance 변경은 P2G immutable successor와 해당 후속 재검토."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-07-DECIDED-001",
+        "Content Digest": "sha256:8e0fc70b5263986c02b38da3614d25f46d6e18d08a4cf12a47e135b6454d24c3"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRCE-07",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRCE-07-OPEN-001",
+          "Content Digest": "sha256:6b205b94dc5d85ced062900cce0d49ccf3dc70643d75ffaac5e252a62121e6ad"
+        },
+        "Policy Statement": "기존 공격/피격 장비 효과는 확정된 기본 공격 적중에서만 발생한다. 일반 스킬·버프·장판·유물 자식·반격 피해로 해당 OnAttack/OnHit 사건을 재수집하지 않는다. 반격은 원래 공격자에게 한 번이며 죽거나 없는 공격자를 대체하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRCE-07-001",
+          "Content Digest": "sha256:4c2c378c4264dd4211d711d81a9f5fbdbb88bcb56abcd02e38ccb7f1a78b0a9a"
+        },
+        "Observable Policy Acceptance": [
+          "정상 기본 공격의 장비 반격과 유물 subscriber가 공존한다. 반격은 방어자 피격 증폭이 아니고 반사 재귀가 없으며 dead/missing attacker는 건너뛴다.",
+          "일반 스킬·DOT·유물 child는 자기 적격 유물 사건을 만들 수 있지만 장비 기본 공격/피격 proc를 재생성하지 않는다. 같은 사건 일반 효과는 능력 활성화보다 먼저, 기존 결정론적 순서로 처리한다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRCE-07-001",
+        "Content Digest": "sha256:c1de09b96a5e2218ac97f9880b4f0f0c30c72b39f68986d534839f0084c32eeb"
+      },
+      "payload": {
+        "Candidate ID": "C-CRCE-07",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRCE-001",
+            "Content Digest": "sha256:ed1c57b5421abb93ad5e86b22ea9215cb136d2498f488726c86747d304cf57f0"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-007",
+            "IN-011",
+            "IN-014"
+          ],
+          "span": "장비 효과의 발동; H04 A16-06",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "기존 공격/피격 장비 효과는 확정된 기본 공격 적중에서만 발생한다. 일반 스킬·버프·장판·유물 자식·반격 피해로 해당 OnAttack/OnHit 사건을 재수집하지 않는다. 반격은 원래 공격자에게 한 번이며 죽거나 없는 공격자를 대체하지 않는다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRCE-07",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRCE-07-OPEN-001",
+          "Content Digest": "sha256:6b205b94dc5d85ced062900cce0d49ccf3dc70643d75ffaac5e252a62121e6ad"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRCE-07-001",
+          "Content Digest": "sha256:4c2c378c4264dd4211d711d81a9f5fbdbb88bcb56abcd02e38ccb7f1a78b0a9a"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-08-OPEN-001",
+        "Content Digest": "sha256:1b988831507731821a1b553f4e42ecc127c08ca3c57a5c6f49ab5c4d3b6ac782"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRCE-08",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "실제 확정 사망마다 dead owner OnDeath·actual killer OnKill·같은 편 다른 living ally OnAllyDeath를 기존 순서로 처리한다. 허용된 장비/유물 피해가 새 피해자를 죽이면 그 새 사망의 허용 효과를 처리하되 같은 사망은 중복 처리하지 않는다. 기존 Corrosion 부가 사망 반응 억제를 새 subscriber가 우회하지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRCE-08-001",
+        "Content Digest": "sha256:91b44bd977fc63485a1e374cdec6a3db0f4e6e1419d10c93582943dd95962f52"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRCE-08"
+        ],
+        "Decision Name": "사망 연쇄와 suppression",
+        "Exact Decision": "실제 확정 사망마다 dead owner OnDeath·actual killer OnKill·같은 편 다른 living ally OnAllyDeath를 기존 순서로 처리한다. 허용된 장비/유물 피해가 새 피해자를 죽이면 그 새 사망의 허용 효과를 처리하되 같은 사망은 중복 처리하지 않는다. 기존 Corrosion 부가 사망 반응 억제를 새 subscriber가 우회하지 않는다.",
+        "Decision Authority": "Existing agreements applied; unresolved details are AI decisions under explicit H04 R13–R16 broad gameplay delegation retained by current continuous authorization. No invented user answer.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-001",
+            "IN-003",
+            "IN-004",
+            "IN-011"
+          ],
+          "span": "H04 lines139–152 구현 중 정책 결정 권한; current continuous approved scope U10/R16"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-002",
+            "IN-007",
+            "IN-011",
+            "IN-013"
+          ],
+          "span": "U10 deathchain/suppression; H04 A16-06; H06 death chain",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "기존 suppression과 새 피해자별 사망을 함께 보존. U19 미래 침식 정책은 미확정 범위로 남긴다.",
+        "Impact": [
+          "일반 사망 장비 child가 다음 피해자를 죽이는 실제 연쇄가 실행되고 각 사망은 한 번이다. 죽은 소유자 사망 능력·실제 killer·정렬된 생존 아군 수신자가 유지된다.",
+          "일반 kill과 기존 Corrosion kill을 비교한다. Corrosion은 필수 death 상태/사실을 보존하면서 억제 대상 장비/유물 부가 반응을 실행하지 않고 queue/derived source에도 억제 의미를 잃지 않는다."
+        ],
+        "Alternatives not selected": "모든 장비 사망 연쇄 금지 또는 suppression 무시",
+        "Compatibility and data impact": "기존 데이터·정식 밸런스·장착 제한·저장 권리 유지. 새 작성 기능과 관련 runtime 상태에 한정하며 삭제·일괄 변환 없음.",
+        "Revisability": "실행 수단은 정책 안에서 선택; 의미/acceptance 변경은 P2G immutable successor와 해당 후속 재검토."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-08-DECIDED-001",
+        "Content Digest": "sha256:165054f5f3f2f1ec714bcdc8f7806edb92cb2d12b095c1a60f9976ba77b59b54"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRCE-08",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRCE-08-OPEN-001",
+          "Content Digest": "sha256:1b988831507731821a1b553f4e42ecc127c08ca3c57a5c6f49ab5c4d3b6ac782"
+        },
+        "Policy Statement": "실제 확정 사망마다 dead owner OnDeath·actual killer OnKill·같은 편 다른 living ally OnAllyDeath를 기존 순서로 처리한다. 허용된 장비/유물 피해가 새 피해자를 죽이면 그 새 사망의 허용 효과를 처리하되 같은 사망은 중복 처리하지 않는다. 기존 Corrosion 부가 사망 반응 억제를 새 subscriber가 우회하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRCE-08-001",
+          "Content Digest": "sha256:91b44bd977fc63485a1e374cdec6a3db0f4e6e1419d10c93582943dd95962f52"
+        },
+        "Observable Policy Acceptance": [
+          "일반 사망 장비 child가 다음 피해자를 죽이는 실제 연쇄가 실행되고 각 사망은 한 번이다. 죽은 소유자 사망 능력·실제 killer·정렬된 생존 아군 수신자가 유지된다.",
+          "일반 kill과 기존 Corrosion kill을 비교한다. Corrosion은 필수 death 상태/사실을 보존하면서 억제 대상 장비/유물 부가 반응을 실행하지 않고 queue/derived source에도 억제 의미를 잃지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRCE-08-001",
+        "Content Digest": "sha256:e907c8938e5d8080d1544a98a0be6d04099beff12c0d80969a75ab9d31d68230"
+      },
+      "payload": {
+        "Candidate ID": "C-CRCE-08",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRCE-001",
+            "Content Digest": "sha256:ed1c57b5421abb93ad5e86b22ea9215cb136d2498f488726c86747d304cf57f0"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-002",
+            "IN-007",
+            "IN-011",
+            "IN-013"
+          ],
+          "span": "U10 deathchain/suppression; H04 A16-06; H06 death chain",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "실제 확정 사망마다 dead owner OnDeath·actual killer OnKill·같은 편 다른 living ally OnAllyDeath를 기존 순서로 처리한다. 허용된 장비/유물 피해가 새 피해자를 죽이면 그 새 사망의 허용 효과를 처리하되 같은 사망은 중복 처리하지 않는다. 기존 Corrosion 부가 사망 반응 억제를 새 subscriber가 우회하지 않는다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRCE-08",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRCE-08-OPEN-001",
+          "Content Digest": "sha256:1b988831507731821a1b553f4e42ecc127c08ca3c57a5c6f49ab5c4d3b6ac782"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRCE-08-001",
+          "Content Digest": "sha256:91b44bd977fc63485a1e374cdec6a3db0f4e6e1419d10c93582943dd95962f52"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-09-OPEN-001",
+        "Content Digest": "sha256:72f362859286baedebac1c7d32619843649eccbe633b7c6accffcc76be217939"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRCE-09",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "유물/장비 연쇄의 양수 공명 변화도 기존 사용 중 추가 획득 잠금을 적용한다. 잠긴 양수는 저장·지연 적립하지 않고 음수 변화와 기존 상한 버림은 원래 의미를 유지한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRCE-09-001",
+        "Content Digest": "sha256:11492c0c8428ad8966d0386fbe68058edae1d44dd4c10e51bb7257e1e58177ba"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRCE-09"
+        ],
+        "Decision Name": "공명 획득 잠금",
+        "Exact Decision": "유물/장비 연쇄의 양수 공명 변화도 기존 사용 중 추가 획득 잠금을 적용한다. 잠긴 양수는 저장·지연 적립하지 않고 음수 변화와 기존 상한 버림은 원래 의미를 유지한다.",
+        "Decision Authority": "Existing agreements applied; unresolved details are AI decisions under explicit H04 R13–R16 broad gameplay delegation retained by current continuous authorization. No invented user answer.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-001",
+            "IN-003",
+            "IN-004",
+            "IN-011"
+          ],
+          "span": "H04 lines139–152 구현 중 정책 결정 권한; current continuous approved scope U10/R16"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-002",
+            "IN-008",
+            "IN-014"
+          ],
+          "span": "U10 positivegain; U05 기존 자원 계약",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "새 경로도 기존 공명 권한을 따른다.",
+        "Impact": [
+          "사용 중 직접/queued/periodic/derived 유물 양수 명령은 추가 획득 0이며 사용 종료 뒤 몰아 지급하지 않는다. 음수 변화는 허용된다.",
+          "적격 일반 시점의 양수는 정상 획득하고 cap 초과량은 기존처럼 버린다. rollback/retry가 잠금 상태나 지급 횟수를 오염시키지 않는다."
+        ],
+        "Alternatives not selected": "subscriber 경로의 lock bypass/숨은 bank",
+        "Compatibility and data impact": "기존 데이터·정식 밸런스·장착 제한·저장 권리 유지. 새 작성 기능과 관련 runtime 상태에 한정하며 삭제·일괄 변환 없음.",
+        "Revisability": "실행 수단은 정책 안에서 선택; 의미/acceptance 변경은 P2G immutable successor와 해당 후속 재검토."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-09-DECIDED-001",
+        "Content Digest": "sha256:5eee633bf756c054efb849186e8b4894d6e67a005c3c88862fd04dca18138774"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRCE-09",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRCE-09-OPEN-001",
+          "Content Digest": "sha256:72f362859286baedebac1c7d32619843649eccbe633b7c6accffcc76be217939"
+        },
+        "Policy Statement": "유물/장비 연쇄의 양수 공명 변화도 기존 사용 중 추가 획득 잠금을 적용한다. 잠긴 양수는 저장·지연 적립하지 않고 음수 변화와 기존 상한 버림은 원래 의미를 유지한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRCE-09-001",
+          "Content Digest": "sha256:11492c0c8428ad8966d0386fbe68058edae1d44dd4c10e51bb7257e1e58177ba"
+        },
+        "Observable Policy Acceptance": [
+          "사용 중 직접/queued/periodic/derived 유물 양수 명령은 추가 획득 0이며 사용 종료 뒤 몰아 지급하지 않는다. 음수 변화는 허용된다.",
+          "적격 일반 시점의 양수는 정상 획득하고 cap 초과량은 기존처럼 버린다. rollback/retry가 잠금 상태나 지급 횟수를 오염시키지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRCE-09-001",
+        "Content Digest": "sha256:431373e8a946cb310a08b407e90930993142795f3576291d653f8ac928d3f89c"
+      },
+      "payload": {
+        "Candidate ID": "C-CRCE-09",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRCE-001",
+            "Content Digest": "sha256:ed1c57b5421abb93ad5e86b22ea9215cb136d2498f488726c86747d304cf57f0"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-002",
+            "IN-008",
+            "IN-014"
+          ],
+          "span": "U10 positivegain; U05 기존 자원 계약",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "유물/장비 연쇄의 양수 공명 변화도 기존 사용 중 추가 획득 잠금을 적용한다. 잠긴 양수는 저장·지연 적립하지 않고 음수 변화와 기존 상한 버림은 원래 의미를 유지한다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRCE-09",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRCE-09-OPEN-001",
+          "Content Digest": "sha256:72f362859286baedebac1c7d32619843649eccbe633b7c6accffcc76be217939"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRCE-09-001",
+          "Content Digest": "sha256:11492c0c8428ad8966d0386fbe68058edae1d44dd4c10e51bb7257e1e58177ba"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-10-OPEN-001",
+        "Content Digest": "sha256:921598165c4260e2c1de53b57a0cea002bcf824381063f5f52e83749d986606e"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRCE-10",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "깊은 쐐기는 다중타격 태그를 갖춘 직접 스킬 피해에 적용한다. 한 시전·한 대상의 이번 유효 타격을 포함한 횟수 n에 대해 n×r 비율 증폭을 첫 유효 타격부터 제공하고 공통 동일 종류 증폭과 합산한다. 기존 타격을 강화하며 새 packet을 만들지 않고 source/type을 보존한다. 사본별 r은 독립 기여이며 허용 장착 조건을 우회하지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRCE-10-001",
+        "Content Digest": "sha256:ba9bb927cef83f620d4a2519a617cb3f735115384feea98bc6d1c5ac72072bab"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRCE-10"
+        ],
+        "Decision Name": "깊은 쐐기 산술과 귀속",
+        "Exact Decision": "깊은 쐐기는 다중타격 태그를 갖춘 직접 스킬 피해에 적용한다. 한 시전·한 대상의 이번 유효 타격을 포함한 횟수 n에 대해 n×r 비율 증폭을 첫 유효 타격부터 제공하고 공통 동일 종류 증폭과 합산한다. 기존 타격을 강화하며 새 packet을 만들지 않고 source/type을 보존한다. 사본별 r은 독립 기여이며 허용 장착 조건을 우회하지 않는다.",
+        "Decision Authority": "Existing agreements applied; unresolved details are AI decisions under explicit H04 R13–R16 broad gameplay delegation retained by current continuous authorization. No invented user answer.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-001",
+            "IN-003",
+            "IN-004",
+            "IN-011"
+          ],
+          "span": "H04 lines139–152 구현 중 정책 결정 권한; current continuous approved scope U10/R16"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-002",
+            "IN-006",
+            "IN-011"
+          ],
+          "span": "U10 Deep Wedge; D04 깊은 쐐기 725–815",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "D04 합의 산술·귀속 적용. 수치 10%p는 시험 예시이며 정식 밸런스 확정 아님.",
+        "Impact": [
+          "설명 fixture r=10%p, 원피해 100/100/200의 같은 대상 3타는 다른 증폭을 제외할 때 110/120/260이다. target B와 새 cast는 1회부터 시작하며 복리/소급 수정이 없다.",
+          "다른 사본의 적격 기여는 공통 산술로 합산하고 다른 직원·cast·target의 횟수가 새지 않는다. DOT/반사/장비 proc/다른 유물 추가 피해/Corrosion은 원래 직접 스킬 타격 횟수에 자동 포함하지 않는다."
+        ],
+        "Alternatives not selected": "예정 단계 번호 또는 전역 actor 횟수",
+        "Compatibility and data impact": "기존 데이터·정식 밸런스·장착 제한·저장 권리 유지. 새 작성 기능과 관련 runtime 상태에 한정하며 삭제·일괄 변환 없음.",
+        "Revisability": "실행 수단은 정책 안에서 선택; 의미/acceptance 변경은 P2G immutable successor와 해당 후속 재검토."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-10-DECIDED-001",
+        "Content Digest": "sha256:2da08189bc64960b35ae0ba67cb69f0ef4dfd206994e9c0a2fb51a9a061c5dbb"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRCE-10",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRCE-10-OPEN-001",
+          "Content Digest": "sha256:921598165c4260e2c1de53b57a0cea002bcf824381063f5f52e83749d986606e"
+        },
+        "Policy Statement": "깊은 쐐기는 다중타격 태그를 갖춘 직접 스킬 피해에 적용한다. 한 시전·한 대상의 이번 유효 타격을 포함한 횟수 n에 대해 n×r 비율 증폭을 첫 유효 타격부터 제공하고 공통 동일 종류 증폭과 합산한다. 기존 타격을 강화하며 새 packet을 만들지 않고 source/type을 보존한다. 사본별 r은 독립 기여이며 허용 장착 조건을 우회하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRCE-10-001",
+          "Content Digest": "sha256:ba9bb927cef83f620d4a2519a617cb3f735115384feea98bc6d1c5ac72072bab"
+        },
+        "Observable Policy Acceptance": [
+          "설명 fixture r=10%p, 원피해 100/100/200의 같은 대상 3타는 다른 증폭을 제외할 때 110/120/260이다. target B와 새 cast는 1회부터 시작하며 복리/소급 수정이 없다.",
+          "다른 사본의 적격 기여는 공통 산술로 합산하고 다른 직원·cast·target의 횟수가 새지 않는다. DOT/반사/장비 proc/다른 유물 추가 피해/Corrosion은 원래 직접 스킬 타격 횟수에 자동 포함하지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRCE-10-001",
+        "Content Digest": "sha256:1d8ddb6bd1d4872983cf2cd42cb216fd2686b52d93e29766d5165c3ad207ffdb"
+      },
+      "payload": {
+        "Candidate ID": "C-CRCE-10",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRCE-001",
+            "Content Digest": "sha256:ed1c57b5421abb93ad5e86b22ea9215cb136d2498f488726c86747d304cf57f0"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-002",
+            "IN-006",
+            "IN-011"
+          ],
+          "span": "U10 Deep Wedge; D04 깊은 쐐기 725–815",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "깊은 쐐기는 다중타격 태그를 갖춘 직접 스킬 피해에 적용한다. 한 시전·한 대상의 이번 유효 타격을 포함한 횟수 n에 대해 n×r 비율 증폭을 첫 유효 타격부터 제공하고 공통 동일 종류 증폭과 합산한다. 기존 타격을 강화하며 새 packet을 만들지 않고 source/type을 보존한다. 사본별 r은 독립 기여이며 허용 장착 조건을 우회하지 않는다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRCE-10",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRCE-10-OPEN-001",
+          "Content Digest": "sha256:921598165c4260e2c1de53b57a0cea002bcf824381063f5f52e83749d986606e"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRCE-10-001",
+          "Content Digest": "sha256:ba9bb927cef83f620d4a2519a617cb3f735115384feea98bc6d1c5ac72072bab"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-11-OPEN-001",
+        "Content Digest": "sha256:b8656b8a7abd6b5fd096c366803611bcd104916e8f9c015a8ab3a8fa33281eda"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRCE-11",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "쐐기의 유효 적중은 적격 실제 직접 strike가 최종 HP를 양수 감소시킨 경우로 결정한다. 완전 보호막 흡수·무적·피해 0·빗나감·미실행은 횟수를 소비하지 않는다. 이번 타격에는 직전 유효 횟수+1의 증폭을 계산하고 실제 유효 결과에만 횟수를 확정한다. 같은 실제 strike의 여러 피해 segment는 하나이며 같은 시각의 별도 strike는 각각 센다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRCE-11-001",
+        "Content Digest": "sha256:0efdab156588b5cbc3ee5a2ba4fd65a5f20ca5d02d406e2574c2bb2984a768e8"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRCE-11"
+        ],
+        "Decision Name": "깊은 쐐기 유효 타격 경계",
+        "Exact Decision": "쐐기의 유효 적중은 적격 실제 직접 strike가 최종 HP를 양수 감소시킨 경우로 결정한다. 완전 보호막 흡수·무적·피해 0·빗나감·미실행은 횟수를 소비하지 않는다. 이번 타격에는 직전 유효 횟수+1의 증폭을 계산하고 실제 유효 결과에만 횟수를 확정한다. 같은 실제 strike의 여러 피해 segment는 하나이며 같은 시각의 별도 strike는 각각 센다.",
+        "Decision Authority": "Existing agreements applied; unresolved details are AI decisions under explicit H04 R13–R16 broad gameplay delegation retained by current continuous authorization. No invented user answer.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-001",
+            "IN-003",
+            "IN-004",
+            "IN-011"
+          ],
+          "span": "H04 lines139–152 구현 중 정책 결정 권한; current continuous approved scope U10/R16"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-002",
+            "IN-006",
+            "IN-011"
+          ],
+          "span": "D04 미정 유효적중/segment; H04 구현 중 정책 결정 권한",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "AI broad-delegated gameplay 결정: U09 HP-loss 사건과 같은 관찰 가능한 유효성으로 일관화하되 보호막만 맞은 접촉을 쐐기 적중으로 인정하는 대안과 구분한다.",
+        "Impact": [
+          "완전 차단/흡수/0 피해 뒤 첫 HP 감소 타격은 1회 보너스다. 일부 보호막 뒤 HP 감소가 있는 타격은 1회다. segment 여러 개가 HP를 줄여도 하나의 실제 strike당 횟수는 한 번만 증가한다.",
+          "같은 strike의 뒤 segment는 해당 strike에 확정한 동일 n을 사용한다. 별도 실제 strike는 같은 시각에도 다음 n을 쓴다. 실패/rollback은 횟수를 소비하지 않고 재시도는 깨끗한 실행과 같다."
+        ],
+        "Alternatives not selected": "보호막 접촉 포함/무적 포함 또는 피해 segment별 횟수",
+        "Compatibility and data impact": "기존 데이터·정식 밸런스·장착 제한·저장 권리 유지. 새 작성 기능과 관련 runtime 상태에 한정하며 삭제·일괄 변환 없음.",
+        "Revisability": "실행 수단은 정책 안에서 선택; 의미/acceptance 변경은 P2G immutable successor와 해당 후속 재검토."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-11-DECIDED-001",
+        "Content Digest": "sha256:104d106f590d7af498a9b7616324ebb98aa951da4c0221aefaacbb14994fd5f6"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRCE-11",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRCE-11-OPEN-001",
+          "Content Digest": "sha256:b8656b8a7abd6b5fd096c366803611bcd104916e8f9c015a8ab3a8fa33281eda"
+        },
+        "Policy Statement": "쐐기의 유효 적중은 적격 실제 직접 strike가 최종 HP를 양수 감소시킨 경우로 결정한다. 완전 보호막 흡수·무적·피해 0·빗나감·미실행은 횟수를 소비하지 않는다. 이번 타격에는 직전 유효 횟수+1의 증폭을 계산하고 실제 유효 결과에만 횟수를 확정한다. 같은 실제 strike의 여러 피해 segment는 하나이며 같은 시각의 별도 strike는 각각 센다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRCE-11-001",
+          "Content Digest": "sha256:0efdab156588b5cbc3ee5a2ba4fd65a5f20ca5d02d406e2574c2bb2984a768e8"
+        },
+        "Observable Policy Acceptance": [
+          "완전 차단/흡수/0 피해 뒤 첫 HP 감소 타격은 1회 보너스다. 일부 보호막 뒤 HP 감소가 있는 타격은 1회다. segment 여러 개가 HP를 줄여도 하나의 실제 strike당 횟수는 한 번만 증가한다.",
+          "같은 strike의 뒤 segment는 해당 strike에 확정한 동일 n을 사용한다. 별도 실제 strike는 같은 시각에도 다음 n을 쓴다. 실패/rollback은 횟수를 소비하지 않고 재시도는 깨끗한 실행과 같다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRCE-11-001",
+        "Content Digest": "sha256:6e916be2dc4085fb68db5caf7f76751ea6cc46ac5a38ab9a205286195b432d6f"
+      },
+      "payload": {
+        "Candidate ID": "C-CRCE-11",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRCE-001",
+            "Content Digest": "sha256:ed1c57b5421abb93ad5e86b22ea9215cb136d2498f488726c86747d304cf57f0"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-002",
+            "IN-006",
+            "IN-011"
+          ],
+          "span": "D04 미정 유효적중/segment; H04 구현 중 정책 결정 권한",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "쐐기의 유효 적중은 적격 실제 직접 strike가 최종 HP를 양수 감소시킨 경우로 결정한다. 완전 보호막 흡수·무적·피해 0·빗나감·미실행은 횟수를 소비하지 않는다. 이번 타격에는 직전 유효 횟수+1의 증폭을 계산하고 실제 유효 결과에만 횟수를 확정한다. 같은 실제 strike의 여러 피해 segment는 하나이며 같은 시각의 별도 strike는 각각 센다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRCE-11",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRCE-11-OPEN-001",
+          "Content Digest": "sha256:b8656b8a7abd6b5fd096c366803611bcd104916e8f9c015a8ab3a8fa33281eda"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRCE-11-001",
+          "Content Digest": "sha256:0efdab156588b5cbc3ee5a2ba4fd65a5f20ca5d02d406e2574c2bb2984a768e8"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-12-OPEN-001",
+        "Content Digest": "sha256:1d2ba2e83f1be6c2f7b6f995a0f8d44537a244bd9af7194a6747a3b0d148f7e7"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRCE-12",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "쐐기의 시전별 누적과 이미 release된 타격의 bound 기여는 원본 시전·carrier 수명을 따른다. 시전자 이탈이나 장비/form 변경은 release된 공격을 새 시전으로 만들지 않는다. unreleased 취소와 마지막 관련 공격 종료 시 누적을 정리하고 다른 시전·직원·전투로 이월하지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRCE-12-001",
+        "Content Digest": "sha256:3b07bf3b2faba43627250317f267bb422e8191691e6806b6b9771849a190c45e"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRCE-12"
+        ],
+        "Decision Name": "쐐기 release 및 정리",
+        "Exact Decision": "쐐기의 시전별 누적과 이미 release된 타격의 bound 기여는 원본 시전·carrier 수명을 따른다. 시전자 이탈이나 장비/form 변경은 release된 공격을 새 시전으로 만들지 않는다. unreleased 취소와 마지막 관련 공격 종료 시 누적을 정리하고 다른 시전·직원·전투로 이월하지 않는다.",
+        "Decision Authority": "Existing agreements applied; unresolved details are AI decisions under explicit H04 R13–R16 broad gameplay delegation retained by current continuous authorization. No invented user answer.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-001",
+            "IN-003",
+            "IN-004",
+            "IN-011"
+          ],
+          "span": "H04 lines139–152 구현 중 정책 결정 권한; current continuous approved scope U10/R16"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-002",
+            "IN-009",
+            "IN-011"
+          ],
+          "span": "D04 수명 미정; H04 source/copy/form/owner 및 X02/X03",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "기존 released payload 수명에서 도출한 AI 위임 결정.",
+        "Impact": [
+          "post-release 시전자 이탈 후 유효한 기존 공격은 같은 cast/target 순번과 bound 기여를 유지한다. pre-release 취소는 보너스 횟수를 만들지 않는다.",
+          "시전 완료/취소/마지막 carrier 만료 뒤 관련 누적이 회수되고 새 시전은 다시 1회다. clone/fresh continue의 지원 경계가 누적 공유나 임의 reset을 만들지 않는다."
+        ],
+        "Alternatives not selected": "owner 존재만으로 release 상태 삭제 또는 run 영구 누적",
+        "Compatibility and data impact": "기존 데이터·정식 밸런스·장착 제한·저장 권리 유지. 새 작성 기능과 관련 runtime 상태에 한정하며 삭제·일괄 변환 없음.",
+        "Revisability": "실행 수단은 정책 안에서 선택; 의미/acceptance 변경은 P2G immutable successor와 해당 후속 재검토."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-12-DECIDED-001",
+        "Content Digest": "sha256:1d8bda3c6d5714f6e819a2524bc8f63b1360340bf8689acd95ce6f21e9efc14f"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRCE-12",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRCE-12-OPEN-001",
+          "Content Digest": "sha256:1d2ba2e83f1be6c2f7b6f995a0f8d44537a244bd9af7194a6747a3b0d148f7e7"
+        },
+        "Policy Statement": "쐐기의 시전별 누적과 이미 release된 타격의 bound 기여는 원본 시전·carrier 수명을 따른다. 시전자 이탈이나 장비/form 변경은 release된 공격을 새 시전으로 만들지 않는다. unreleased 취소와 마지막 관련 공격 종료 시 누적을 정리하고 다른 시전·직원·전투로 이월하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRCE-12-001",
+          "Content Digest": "sha256:3b07bf3b2faba43627250317f267bb422e8191691e6806b6b9771849a190c45e"
+        },
+        "Observable Policy Acceptance": [
+          "post-release 시전자 이탈 후 유효한 기존 공격은 같은 cast/target 순번과 bound 기여를 유지한다. pre-release 취소는 보너스 횟수를 만들지 않는다.",
+          "시전 완료/취소/마지막 carrier 만료 뒤 관련 누적이 회수되고 새 시전은 다시 1회다. clone/fresh continue의 지원 경계가 누적 공유나 임의 reset을 만들지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRCE-12-001",
+        "Content Digest": "sha256:c605785b1716ca12786f6ecab3ef2800868181226aee0cee7905056ac19c4a16"
+      },
+      "payload": {
+        "Candidate ID": "C-CRCE-12",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRCE-001",
+            "Content Digest": "sha256:ed1c57b5421abb93ad5e86b22ea9215cb136d2498f488726c86747d304cf57f0"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-002",
+            "IN-009",
+            "IN-011"
+          ],
+          "span": "D04 수명 미정; H04 source/copy/form/owner 및 X02/X03",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "쐐기의 시전별 누적과 이미 release된 타격의 bound 기여는 원본 시전·carrier 수명을 따른다. 시전자 이탈이나 장비/form 변경은 release된 공격을 새 시전으로 만들지 않는다. unreleased 취소와 마지막 관련 공격 종료 시 누적을 정리하고 다른 시전·직원·전투로 이월하지 않는다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRCE-12",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRCE-12-OPEN-001",
+          "Content Digest": "sha256:1d2ba2e83f1be6c2f7b6f995a0f8d44537a244bd9af7194a6747a3b0d148f7e7"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRCE-12-001",
+          "Content Digest": "sha256:3b07bf3b2faba43627250317f267bb422e8191691e6806b6b9771849a190c45e"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-13-OPEN-001",
+        "Content Digest": "sha256:de7ca610201429a83d3b4be87d66b6d003577ea8d35dde43e4ae0c4d1bf46cfd"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRCE-13",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "ancestry·subscriber fanout·queue child·join 참여/완료·periodic 및 strike 누적의 새 비용은 기존 admission·retained·clone·rollback 계약에 포함한다. 자원 부족은 typed fault와 원자적 실패로 처리하며 게임 규칙의 임의 공통 발동 cap으로 대체하지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRCE-13-001",
+        "Content Digest": "sha256:e158c548f2946fa808481ce4d20d5835685c21b2d8192225fb2b958774e4da36"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRCE-13"
+        ],
+        "Decision Name": "자원 실패와 원자성",
+        "Exact Decision": "ancestry·subscriber fanout·queue child·join 참여/완료·periodic 및 strike 누적의 새 비용은 기존 admission·retained·clone·rollback 계약에 포함한다. 자원 부족은 typed fault와 원자적 실패로 처리하며 게임 규칙의 임의 공통 발동 cap으로 대체하지 않는다.",
+        "Decision Authority": "Existing agreements applied; unresolved details are AI decisions under explicit H04 R13–R16 broad gameplay delegation retained by current continuous authorization. No invented user answer.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-001",
+            "IN-003",
+            "IN-004",
+            "IN-011"
+          ],
+          "span": "H04 lines139–152 구현 중 정책 결정 권한; current continuous approved scope U10/R16"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-002",
+            "IN-006",
+            "IN-011",
+            "IN-014"
+          ],
+          "span": "U10 queuebudgetfail; H04 A16-05",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "기존 자원 계약을 새 상태에 적용.",
+        "Impact": [
+          "정상 경계와 한 단위 부족을 실제 producer에서 검증한다. 실패 시 HP·자원·queue·방문·join receipt·타격 횟수·계량·RNG 등 영향 상태가 prefix 성공 이전의 해당 transaction 의미로 복원되고 재시도 가능하다.",
+          "clone/admission/retained 비용을 누락하지 않으며 종료 후 회수된다. 직원 3슬롯·순환 금지만 유지하고 합법 유한 fanout을 임의 발동 횟수로 자르지 않는다."
+        ],
+        "Alternatives not selected": "비용 누락/부분 commit/한도 상향으로 실패 은폐",
+        "Compatibility and data impact": "기존 데이터·정식 밸런스·장착 제한·저장 권리 유지. 새 작성 기능과 관련 runtime 상태에 한정하며 삭제·일괄 변환 없음.",
+        "Revisability": "실행 수단은 정책 안에서 선택; 의미/acceptance 변경은 P2G immutable successor와 해당 후속 재검토."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-13-DECIDED-001",
+        "Content Digest": "sha256:33129a01637e1a1fbcdfa311fffa345291186a13e888201c736ceb53609af69f"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRCE-13",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRCE-13-OPEN-001",
+          "Content Digest": "sha256:de7ca610201429a83d3b4be87d66b6d003577ea8d35dde43e4ae0c4d1bf46cfd"
+        },
+        "Policy Statement": "ancestry·subscriber fanout·queue child·join 참여/완료·periodic 및 strike 누적의 새 비용은 기존 admission·retained·clone·rollback 계약에 포함한다. 자원 부족은 typed fault와 원자적 실패로 처리하며 게임 규칙의 임의 공통 발동 cap으로 대체하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRCE-13-001",
+          "Content Digest": "sha256:e158c548f2946fa808481ce4d20d5835685c21b2d8192225fb2b958774e4da36"
+        },
+        "Observable Policy Acceptance": [
+          "정상 경계와 한 단위 부족을 실제 producer에서 검증한다. 실패 시 HP·자원·queue·방문·join receipt·타격 횟수·계량·RNG 등 영향 상태가 prefix 성공 이전의 해당 transaction 의미로 복원되고 재시도 가능하다.",
+          "clone/admission/retained 비용을 누락하지 않으며 종료 후 회수된다. 직원 3슬롯·순환 금지만 유지하고 합법 유한 fanout을 임의 발동 횟수로 자르지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRCE-13-001",
+        "Content Digest": "sha256:3e2a777af6ddbbbb9698b76f5e0ce0c1a15f99b6e93613fc8f53db878a0f9cf4"
+      },
+      "payload": {
+        "Candidate ID": "C-CRCE-13",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRCE-001",
+            "Content Digest": "sha256:ed1c57b5421abb93ad5e86b22ea9215cb136d2498f488726c86747d304cf57f0"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-002",
+            "IN-006",
+            "IN-011",
+            "IN-014"
+          ],
+          "span": "U10 queuebudgetfail; H04 A16-05",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "ancestry·subscriber fanout·queue child·join 참여/완료·periodic 및 strike 누적의 새 비용은 기존 admission·retained·clone·rollback 계약에 포함한다. 자원 부족은 typed fault와 원자적 실패로 처리하며 게임 규칙의 임의 공통 발동 cap으로 대체하지 않는다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRCE-13",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRCE-13-OPEN-001",
+          "Content Digest": "sha256:de7ca610201429a83d3b4be87d66b6d003577ea8d35dde43e4ae0c4d1bf46cfd"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRCE-13-001",
+          "Content Digest": "sha256:e158c548f2946fa808481ce4d20d5835685c21b2d8192225fb2b958774e4da36"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-14-OPEN-001",
+        "Content Digest": "sha256:91f94e13f1d6b2bdfec6fc6c4d797ce6932693c5d3c1a02de93647dbccf32cc5"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRCE-14",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy Statement": "신규 subscriber·실제 join·독립 periodic·쐐기와 인과 전달은 정상 RON→GameData 준비→명령→실제 실행→조회로 사용 가능해야 한다. 잘못된 조합은 typed 진단하고 parse-only 성공을 금지한다. 기존 저장/사본/attempt 의미를 보존하며 새 상태의 durable 또는 transient 책임을 소유 수명별로 명시한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": [],
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRCE-14-001",
+        "Content Digest": "sha256:ce73179c0d6747637849621eabbe4fa29c85c0dc37e25a4125167730a32c10f1"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CRCE-14"
+        ],
+        "Decision Name": "공개 계약·호환·복원",
+        "Exact Decision": "신규 subscriber·실제 join·독립 periodic·쐐기와 인과 전달은 정상 RON→GameData 준비→명령→실제 실행→조회로 사용 가능해야 한다. 잘못된 조합은 typed 진단하고 parse-only 성공을 금지한다. 기존 저장/사본/attempt 의미를 보존하며 새 상태의 durable 또는 transient 책임을 소유 수명별로 명시한다.",
+        "Decision Authority": "Existing agreements applied; unresolved details are AI decisions under explicit H04 R13–R16 broad gameplay delegation retained by current continuous authorization. No invented user answer.",
+        "Exact User Approval Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-001",
+            "IN-003",
+            "IN-004",
+            "IN-011"
+          ],
+          "span": "H04 lines139–152 구현 중 정책 결정 권한; current continuous approved scope U10/R16"
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-002",
+            "IN-009",
+            "IN-011",
+            "IN-014",
+            "IN-015"
+          ],
+          "span": "U10 normalRON/restore; H04 X01/X02/X03",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Reason": "기존 공공 경로·저장 책임을 현재 기능에도 적용.",
+        "Impact": [
+          "정상 외부 RON 통합에서 구조 활성·사본·새 사건 child·join/periodic·장비·쐐기 결과가 관찰되고 negative fixture는 실행 전 또는 명시된 runtime boundary에서 원자적으로 거절된다.",
+          "기존 durable run 상태를 저장해 fresh Core로 계속해도 copy/plan 의미가 같다. transient battle 인과를 지원하지 않는 mid-battle 저장으로 암묵 노출하지 않으며 지원되는 clone/restore·attempt/retreat 경계의 상태가 누락되지 않는다."
+        ],
+        "Alternatives not selected": "fixture 주입만 지원 또는 새 상태 저장 책임을 후속으로 미룸",
+        "Compatibility and data impact": "기존 데이터·정식 밸런스·장착 제한·저장 권리 유지. 새 작성 기능과 관련 runtime 상태에 한정하며 삭제·일괄 변환 없음.",
+        "Revisability": "실행 수단은 정책 안에서 선택; 의미/acceptance 변경은 P2G immutable successor와 해당 후속 재검토."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-14-DECIDED-001",
+        "Content Digest": "sha256:ccdcb4cf33183574b3b4acc8fdf3bfb98317034f1fd204fb9e56749a1bc1683a"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CRCE-14",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRCE-14-OPEN-001",
+          "Content Digest": "sha256:91f94e13f1d6b2bdfec6fc6c4d797ce6932693c5d3c1a02de93647dbccf32cc5"
+        },
+        "Policy Statement": "신규 subscriber·실제 join·독립 periodic·쐐기와 인과 전달은 정상 RON→GameData 준비→명령→실제 실행→조회로 사용 가능해야 한다. 잘못된 조합은 typed 진단하고 parse-only 성공을 금지한다. 기존 저장/사본/attempt 의미를 보존하며 새 상태의 durable 또는 transient 책임을 소유 수명별로 명시한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRCE-14-001",
+          "Content Digest": "sha256:ce73179c0d6747637849621eabbe4fa29c85c0dc37e25a4125167730a32c10f1"
+        },
+        "Observable Policy Acceptance": [
+          "정상 외부 RON 통합에서 구조 활성·사본·새 사건 child·join/periodic·장비·쐐기 결과가 관찰되고 negative fixture는 실행 전 또는 명시된 runtime boundary에서 원자적으로 거절된다.",
+          "기존 durable run 상태를 저장해 fresh Core로 계속해도 copy/plan 의미가 같다. transient battle 인과를 지원하지 않는 mid-battle 저장으로 암묵 노출하지 않으며 지원되는 clone/restore·attempt/retreat 경계의 상태가 누락되지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRCE-14-001",
+        "Content Digest": "sha256:f0511336fa9cdbad6ceb79669ff37dcf0c5effd30b1cf2c4411e3feaabd631a6"
+      },
+      "payload": {
+        "Candidate ID": "C-CRCE-14",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRCE-001",
+            "Content Digest": "sha256:ed1c57b5421abb93ad5e86b22ea9215cb136d2498f488726c86747d304cf57f0"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-002",
+            "IN-009",
+            "IN-011",
+            "IN-014",
+            "IN-015"
+          ],
+          "span": "U10 normalRON/restore; H04 X01/X02/X03",
+          "linked_evidence_selector": "P2G_10_RESULT_001.json.policy_source_evidence"
+        },
+        "Candidate Statement": "신규 subscriber·실제 join·독립 periodic·쐐기와 인과 전달은 정상 RON→GameData 준비→명령→실제 실행→조회로 사용 가능해야 한다. 잘못된 조합은 typed 진단하고 parse-only 성공을 금지한다. 기존 저장/사본/attempt 의미를 보존하며 새 상태의 durable 또는 transient 책임을 소유 수명별로 명시한다.",
+        "Disposition": "promoted",
+        "Stable Element ID": "PE-CRCE-14",
+        "Initial Open Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CRCE-14-OPEN-001",
+          "Content Digest": "sha256:91f94e13f1d6b2bdfec6fc6c4d797ce6932693c5d3c1a02de93647dbccf32cc5"
+        },
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CRCE-14-001",
+          "Content Digest": "sha256:ce73179c0d6747637849621eabbe4fa29c85c0dc37e25a4125167730a32c10f1"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRCE-15-001",
+        "Content Digest": "sha256:31c8ab33ffd3de2c5a40b525b3e7a79c93245a0edb728b4a4d35f274501ebce9"
+      },
+      "payload": {
+        "Candidate ID": "C-CRCE-15",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRCE-001",
+            "Content Digest": "sha256:ed1c57b5421abb93ad5e86b22ea9215cb136d2498f488726c86747d304cf57f0"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-002",
+            "IN-011"
+          ],
+          "span": "U10 explicit scope/uncertainty and H04 implementation discretion"
+        },
+        "Candidate Statement": "깊은 쐐기 최종 표시 이름·정식 증가율·획득/분쇄/희귀 밸런스",
+        "Disposition": "out_of_scope",
+        "Evidence/Decision Reference": "현재 U10 실제 사건 소비 구현은 D04 설명 fixture를 사용하며 정식 밸런스 채택이 아니다. 희귀 등급 기존 합의 유지."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRCE-16-001",
+        "Content Digest": "sha256:1949f8bed6983fcdd83b8f3c374c5891d03022176069a430505ecca358fb21fc"
+      },
+      "payload": {
+        "Candidate ID": "C-CRCE-16",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRCE-001",
+            "Content Digest": "sha256:ed1c57b5421abb93ad5e86b22ea9215cb136d2498f488726c86747d304cf57f0"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-002",
+            "IN-011"
+          ],
+          "span": "U10 explicit scope/uncertainty and H04 implementation discretion"
+        },
+        "Candidate Statement": "U19의 미래 침식 source/death 정책 및 전체 roster",
+        "Disposition": "out_of_scope",
+        "Evidence/Decision Reference": "현재 U10은 기존 suppression의 전달/소비를 보존하고 미도입 후속 콘텐츠의 정책을 확정하지 않는다."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CD-CRCE-17-001",
+        "Content Digest": "sha256:33a792c9c19e3834e047f510ad48a2a03933410f8624cf9e127d4944ee127193"
+      },
+      "payload": {
+        "Candidate ID": "C-CRCE-17",
+        "P2G-10 Evaluation Basis": {
+          "Input Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRCE-001",
+            "Content Digest": "sha256:ed1c57b5421abb93ad5e86b22ea9215cb136d2498f488726c86747d304cf57f0"
+          },
+          "Exact User-Approved Target Scope/Change Request": null,
+          "Policy Intake Snapshot Ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          }
+        },
+        "Source Reference": {
+          "intake_ref": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CRCE-001",
+            "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+          },
+          "items": [
+            "IN-002",
+            "IN-011"
+          ],
+          "span": "U10 explicit scope/uncertainty and H04 implementation discretion"
+        },
+        "Candidate Statement": "Rust ancestry 표현·queue 저장 형태·join 내부 자료구조",
+        "Disposition": "not_a_policy_element",
+        "Evidence/Decision Reference": "구현 수단은 P2G20/40 실제 소유·자원 검토에서 선택한다."
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CRCE-002",
+        "Content Digest": "sha256:3f3697c6bf41b0c1b1553b67b4a9bde786d368c65331d776078bded4fe8b7517"
+      },
+      "payload": {
+        "Predecessor Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CRCE-001",
+          "Content Digest": "sha256:ed1c57b5421abb93ad5e86b22ea9215cb136d2498f488726c86747d304cf57f0"
+        },
+        "Predecessor Final Policy Freeze Ref": null,
+        "Approved Metadata and Scope": {
+          "Working Policy Document ID": "WPD-CRCE-20261009",
+          "Policy Topic": "U10 실제 사건 기반 유물 연쇄와 장비 효과 통합",
+          "Requested Result": "bounded_pipeline P2G-00 through P2G-60; then authorized GEX implementation, independent tests/execution, whole-Goal independent audit/correction and roadmap continuation",
+          "Target Project/Repository": {
+            "project": "simulator",
+            "workspace": "/mnt/f/work/simulator",
+            "head_at_intake": "2f725172edbffd27c5078d29000a1a2ba6ddc4d9"
+          },
+          "Approval Reference": {
+            "user_request": "IN-001 explicit instruction invoking IN-003 revised continuous instructions; IN-004 stored continuous authorization",
+            "scope": "IN-002 active ROADMAP U10/C07/C08 responsibility, implementation, exclusions and acceptance columns",
+            "boundary": "U09 independent Complete/High/open0 consumed from IN-016, exact target IN-017 and Root publication IN-018/019; next authorized roadmap P2G through handoff and subsequent separately staged GEX."
+          },
+          "Scope Items": [
+            {
+              "Scope Item ID": "I01",
+              "Approved Disposition": "in",
+              "Statement": "Actual-event producer, relic effect subscription and normal queued child execution through source/copy/effect context, modifiers/resources and public query",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 explicit instruction invoking IN-003 revised continuous instructions; IN-004 stored continuous authorization",
+                "scope": "IN-002 active ROADMAP U10/C07/C08 responsibility, implementation, exclusions and acceptance columns",
+                "boundary": "U09 independent Complete/High/open0 consumed from IN-016, exact target IN-017 and Root publication IN-018/019; next authorized roadmap P2G through handoff and subsequent separately staged GEX.",
+                "specific_locator": "ROADMAP U10 together-transition/output columns; C07"
+              }
+            },
+            {
+              "Scope Item ID": "I02",
+              "Approved Disposition": "in",
+              "Statement": "Same copy+effect path revisit prevention, independent forks, actual participant-union joins, independent periodic roots and inherited derived delay/projectile/area causality with log-independent lifetime",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 explicit instruction invoking IN-003 revised continuous instructions; IN-004 stored continuous authorization",
+                "scope": "IN-002 active ROADMAP U10/C07/C08 responsibility, implementation, exclusions and acceptance columns",
+                "boundary": "U09 independent Complete/High/open0 consumed from IN-016, exact target IN-017 and Root publication IN-018/019; next authorized roadmap P2G through handoff and subsequent separately staged GEX.",
+                "specific_locator": "ROADMAP U10 implementation/completion; C07"
+              }
+            },
+            {
+              "Scope Item ID": "I03",
+              "Approved Disposition": "in",
+              "Statement": "Deep Wedge actual strike consumption and existing equipment counter/death integration, positive resonance-gain lock and suppression preservation",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 explicit instruction invoking IN-003 revised continuous instructions; IN-004 stored continuous authorization",
+                "scope": "IN-002 active ROADMAP U10/C07/C08 responsibility, implementation, exclusions and acceptance columns",
+                "boundary": "U09 independent Complete/High/open0 consumed from IN-016, exact target IN-017 and Root publication IN-018/019; next authorized roadmap P2G through handoff and subsequent separately staged GEX.",
+                "specific_locator": "ROADMAP U10 implementation/completion; C08"
+              }
+            },
+            {
+              "Scope Item ID": "I04",
+              "Approved Disposition": "in",
+              "Statement": "Normal external RON, failure/resource/queue/clone/reclamation/restore contracts, affected predecessor regressions and whole-Goal independent completion",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 explicit instruction invoking IN-003 revised continuous instructions; IN-004 stored continuous authorization",
+                "scope": "IN-002 active ROADMAP U10/C07/C08 responsibility, implementation, exclusions and acceptance columns",
+                "boundary": "U09 independent Complete/High/open0 consumed from IN-016, exact target IN-017 and Root publication IN-018/019; next authorized roadmap P2G through handoff and subsequent separately staged GEX.",
+                "specific_locator": "ROADMAP U10 together-transition/completion and continuous instructions validation rules"
+              }
+            },
+            {
+              "Scope Item ID": "O01",
+              "Approved Disposition": "out",
+              "Statement": "Presentation logs as authority, blanket suppression of all equipment death chains, common gameplay activation cap and automatic causal join by time coincidence",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 explicit instruction invoking IN-003 revised continuous instructions; IN-004 stored continuous authorization",
+                "scope": "IN-002 active ROADMAP U10/C07/C08 responsibility, implementation, exclusions and acceptance columns",
+                "boundary": "U09 independent Complete/High/open0 consumed from IN-016, exact target IN-017 and Root publication IN-018/019; next authorized roadmap P2G through handoff and subsequent separately staged GEX.",
+                "specific_locator": "ROADMAP U10 explicit exclusions"
+              }
+            },
+            {
+              "Scope Item ID": "O02",
+              "Approved Disposition": "out",
+              "Statement": "Unity-first work, individual final-boss unique implementations, full future-card/roster/shop/activity implementation and whole-roadmap detailed design",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 explicit instruction invoking IN-003 revised continuous instructions; IN-004 stored continuous authorization",
+                "scope": "IN-002 active ROADMAP U10/C07/C08 responsibility, implementation, exclusions and acceptance columns",
+                "boundary": "U09 independent Complete/High/open0 consumed from IN-016, exact target IN-017 and Root publication IN-018/019; next authorized roadmap P2G through handoff and subsequent separately staged GEX.",
+                "specific_locator": "Current continuous instructions and ROADMAP global scope/U11 onward owners"
+              }
+            },
+            {
+              "Scope Item ID": "O03",
+              "Approved Disposition": "out",
+              "Statement": "Retroactive rewriting of frozen predecessor evidence or unrelated cleanup; treating fixture numbers as new formal balance",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 explicit instruction invoking IN-003 revised continuous instructions; IN-004 stored continuous authorization",
+                "scope": "IN-002 active ROADMAP U10/C07/C08 responsibility, implementation, exclusions and acceptance columns",
+                "boundary": "U09 independent Complete/High/open0 consumed from IN-016, exact target IN-017 and Root publication IN-018/019; next authorized roadmap P2G through handoff and subsequent separately staged GEX.",
+                "specific_locator": "Current continuous instructions preservation/scope and latest policy authority"
+              }
+            }
+          ]
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CRCE-001",
+          "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+        },
+        "Current Policy Element Revision Map": {
+          "PE-CRCE-01": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRCE-01-DECIDED-001",
+            "Content Digest": "sha256:a506c1ad2625569fc346afcddfaa12a974fa2564fea0d7d0c04ae7a346e2938c"
+          },
+          "PE-CRCE-02": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRCE-02-DECIDED-001",
+            "Content Digest": "sha256:93262c109994ac2b80666c3928b7c2fec5080c6452bbaaf00a7bac6499e1ad28"
+          },
+          "PE-CRCE-03": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRCE-03-DECIDED-001",
+            "Content Digest": "sha256:e0579cae216355a0376f4f5ef47231c4caac48a0089b395aa7b676f8c0ab3f1b"
+          },
+          "PE-CRCE-04": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRCE-04-DECIDED-001",
+            "Content Digest": "sha256:ef4869825eac34affc1771bb15a8334e22adb2c17d765d6d918cbb9c6942ec9b"
+          },
+          "PE-CRCE-05": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRCE-05-DECIDED-001",
+            "Content Digest": "sha256:1002df545d2198eefbde02f1a914b63ff53f4b9450e558e3ed9137982644632b"
+          },
+          "PE-CRCE-06": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRCE-06-DECIDED-001",
+            "Content Digest": "sha256:6b4480605f802552dbbd8be97f89d45869a75dfad38c82fe7fa153057fcf7b57"
+          },
+          "PE-CRCE-07": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRCE-07-DECIDED-001",
+            "Content Digest": "sha256:8e0fc70b5263986c02b38da3614d25f46d6e18d08a4cf12a47e135b6454d24c3"
+          },
+          "PE-CRCE-08": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRCE-08-DECIDED-001",
+            "Content Digest": "sha256:165054f5f3f2f1ec714bcdc8f7806edb92cb2d12b095c1a60f9976ba77b59b54"
+          },
+          "PE-CRCE-09": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRCE-09-DECIDED-001",
+            "Content Digest": "sha256:5eee633bf756c054efb849186e8b4894d6e67a005c3c88862fd04dca18138774"
+          },
+          "PE-CRCE-10": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRCE-10-DECIDED-001",
+            "Content Digest": "sha256:2da08189bc64960b35ae0ba67cb69f0ef4dfd206994e9c0a2fb51a9a061c5dbb"
+          },
+          "PE-CRCE-11": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRCE-11-DECIDED-001",
+            "Content Digest": "sha256:104d106f590d7af498a9b7616324ebb98aa951da4c0221aefaacbb14994fd5f6"
+          },
+          "PE-CRCE-12": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRCE-12-DECIDED-001",
+            "Content Digest": "sha256:1d8bda3c6d5714f6e819a2524bc8f63b1360340bf8689acd95ce6f21e9efc14f"
+          },
+          "PE-CRCE-13": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRCE-13-DECIDED-001",
+            "Content Digest": "sha256:33129a01637e1a1fbcdfa311fffa345291186a13e888201c736ceb53609af69f"
+          },
+          "PE-CRCE-14": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CRCE-14-DECIDED-001",
+            "Content Digest": "sha256:ccdcb4cf33183574b3b4acc8fdf3bfb98317034f1fd204fb9e56749a1bc1683a"
+          }
+        },
+        "Decision Revision Ref Set": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRCE-01-001",
+            "Content Digest": "sha256:890a5acd1cd2dcfc99b6ce450bf9913040e91088f7a7b58fd6934d079a7560ba"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRCE-02-001",
+            "Content Digest": "sha256:a4e886d4a76b0535d41accc5ec4f14d2d1e8af88a6858eb87700e6d08e439a9c"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRCE-03-001",
+            "Content Digest": "sha256:87581447964ca4640c987f8c86752133a445fe195e1c679f16b71b70258db461"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRCE-04-001",
+            "Content Digest": "sha256:eb833cda6c67a481831098e705f20adab9a376319a02d731f087f13571bb0aba"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRCE-05-001",
+            "Content Digest": "sha256:b56cc5f5fb550652ce98a257d26efd1c1aec91dbaa6978fa7c85afa34389daeb"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRCE-06-001",
+            "Content Digest": "sha256:58c42d03d3e7af6aa63e895c7e785a9d9815c0cfc4cf2f27e37365bb3be2c868"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRCE-07-001",
+            "Content Digest": "sha256:4c2c378c4264dd4211d711d81a9f5fbdbb88bcb56abcd02e38ccb7f1a78b0a9a"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRCE-08-001",
+            "Content Digest": "sha256:91b44bd977fc63485a1e374cdec6a3db0f4e6e1419d10c93582943dd95962f52"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRCE-09-001",
+            "Content Digest": "sha256:11492c0c8428ad8966d0386fbe68058edae1d44dd4c10e51bb7257e1e58177ba"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRCE-10-001",
+            "Content Digest": "sha256:ba9bb927cef83f620d4a2519a617cb3f735115384feea98bc6d1c5ac72072bab"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRCE-11-001",
+            "Content Digest": "sha256:0efdab156588b5cbc3ee5a2ba4fd65a5f20ca5d02d406e2574c2bb2984a768e8"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRCE-12-001",
+            "Content Digest": "sha256:3b07bf3b2faba43627250317f267bb422e8191691e6806b6b9771849a190c45e"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRCE-13-001",
+            "Content Digest": "sha256:e158c548f2946fa808481ce4d20d5835685c21b2d8192225fb2b958774e4da36"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CRCE-14-001",
+            "Content Digest": "sha256:ce73179c0d6747637849621eabbe4fa29c85c0dc37e25a4125167730a32c10f1"
+          }
+        ],
+        "Open Policy Question Ref Set": [],
+        "Post-Freeze Change/Closure Basis": {
+          "Post-Freeze Change Record Ref Set": [],
+          "Authoritative Change Obligation Declaration Ref Set": []
+        }
+      }
+    }
+  ]
+}

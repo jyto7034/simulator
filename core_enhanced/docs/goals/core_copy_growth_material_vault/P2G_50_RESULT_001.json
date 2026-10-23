@@ -1,0 +1,11 @@
+{
+  "stage": "P2G-50",
+  "status": "complete",
+  "goal_set_ref": {
+    "Artifact Type": "Goal Set",
+    "Artifact ID": "GS-CGMV-001",
+    "Content Digest": "sha256:1825d9ad985ae4a7c56a38c36e0d71506c7f9269415ae43adde7f1dea2bf45de"
+  },
+  "validation": "P2G_50_VALIDATION_001.json passed",
+  "semantic_review": "21acceptance exact;10dimensions/5IVA; original scope and stop preserved"
+}

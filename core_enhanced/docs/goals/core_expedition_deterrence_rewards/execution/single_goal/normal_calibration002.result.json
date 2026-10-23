@@ -1,0 +1,12 @@
+{
+  "command": [
+    "core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/artifacts/normal001/mod_launcher",
+    "--cmva-calibrate",
+    "core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/test_parts/normal_inputs001/admission.json",
+    "/tmp/u14-normal-private-qwvoj42o/calibration002"
+  ],
+  "exit_code": 0,
+  "seconds": 11.442163859996072,
+  "stdout": "normal_calibration002.stdout.log",
+  "stderr": "normal_calibration002.stderr.log"
+}

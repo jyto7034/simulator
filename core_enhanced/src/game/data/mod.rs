@@ -223,8 +223,8 @@ pub struct GameDataBase {
     pub relic_data: Arc<RelicDatabase>,
     pub(crate) resource_data: Arc<crate::game::resource::ResourceCatalog>,
 
-    /// Generation-local immutable amount plans. Authored expressions remain
-    /// publication-blocked until the WP02 battle consumer is connected.
+    /// Generation-local immutable amount plans. Authored expressions are checked
+    /// for runtime support before content publication.
     value_expr_data: Arc<crate::game::value_expr::ValueExprCatalog>,
 
     /// UUID 기반 아이템 조회 레지스트리
@@ -410,7 +410,7 @@ impl GameDataBuilder {
         Self::empty_with_map_catalogs(live_ron::embedded_map_catalogs_for_fixtures())
     }
 
-    fn empty_with_map_catalogs(map_catalogs: live_ron::GameplayMapCatalogs) -> Self {
+    pub(crate) fn empty_with_map_catalogs(map_catalogs: live_ron::GameplayMapCatalogs) -> Self {
         Self {
             map_catalogs,
             abnormality_data: Arc::new(AbnormalityDatabase::new(vec![])),
@@ -1106,6 +1106,27 @@ impl GameDataBase {
             )
             .with_definition(content_pack::DefinitionKind::Resource)
         })?;
+        let mut evolution_bindings = std::collections::BTreeSet::new();
+        for item in &equipment_data.items {
+            if let Some(marks) = item.weapon_profile.as_ref().and_then(|p| p.mark_weapon.as_ref()) {
+                let e = &marks.evolution;
+                let valid_form = skill_fragment_data.get_by_id(&e.fragment.clone().into()).is_some_and(|fragment| {
+                    matches!(&fragment.effect, skill_fragment_data::SkillFragmentEffectDef::ActiveSkill {forms, ..} if forms.contains_key(&e.form))
+                });
+                if !valid_form || !evolution_bindings.insert((&e.fragment, &e.form))
+                    || marks.modifiers.iter().any(|m| relic_data.get_by_id(&m.relic_definition).is_none()) {
+                    return Err(live_ron::LiveRonError::validation("data/equipment/base.ron", "equipment", Some(item.id.clone()), Some("weapon_profile.mark_weapon"), "Invalid or conflicting weapon evolution/mark catalog references"));
+                }
+            }
+            if let Some(growth) = item.weapon_profile.as_ref().and_then(|p| p.kill_growth.as_ref()) {
+                crate::authoring::control::charge(resource_data.resources.len() as u64 + 1, "weapon_growth_reference").map_err(|e| live_ron::LiveRonError::validation("data/equipment/base.ron", "equipment", Some(item.id.clone()), Some("weapon_profile.kill_growth"), format!("{e:?}")))?;
+                growth.validate_catalog(&resource_data).and_then(|_| {
+                    if growth.multiplier.as_ref().is_some_and(|m| relic_data.get_by_id(&m.relic_definition).is_none()) {
+                        Err("Weapon growth references unknown relic".into())
+                    } else { Ok(()) }
+                }).map_err(|e| live_ron::LiveRonError::validation("data/equipment/base.ron", "equipment", Some(item.id.clone()), Some("weapon_profile.kill_growth"), e))?;
+            }
+        }
         skill_data
             .validate_resource_references(&resource_data)
             .map_err(|error| skill_data.live_error("data/skills/base.ron", error))?;
@@ -1132,7 +1153,7 @@ impl GameDataBase {
             &relic_data,
         );
 
-        validation::validate_shop_item_references(&shop_data, &consumable_data, &equipment_data)
+        validation::validate_shop_item_references(&shop_data, &consumable_data, &equipment_data, &relic_data)
             .expect("invalid Shop item reference");
         let item_registry = ItemRegistry::new(&consumable_data, &equipment_data);
         validation::validate_starter_employee_loadout_references(
@@ -1199,7 +1220,10 @@ impl GameDataBase {
                 .consumable_data
                 .get_by_id(consumable_id)
                 .map(ItemRef::Consumable),
-            shop_data::ShopMerchandise::Monolith { .. } => None,
+            shop_data::ShopMerchandise::Monolith { .. }
+            | shop_data::ShopMerchandise::Relic { .. }
+            | shop_data::ShopMerchandise::RevivalCatalyst { .. }
+            | shop_data::ShopMerchandise::RelicCorruptionCatalyst => None,
         }
     }
 
@@ -1457,6 +1481,8 @@ mod tests {
 
     fn minimal_skill(id: &str) -> SkillDef {
         SkillDef {
+            action_policy: None,
+            resonance_admission: None,
             use_lifetime: crate::game::ability::SkillUseLifetime::Action,
             flow: None,
             id: SkillId::from(id),
@@ -1582,6 +1608,7 @@ mod tests {
         };
 
         let equipment = EquipmentMetadata {
+            content_family: None,
             id: "equip".to_string(),
             uuid: equip_uuid,
             name: "Equip".to_string(),
@@ -1721,6 +1748,8 @@ mod tests {
                     equipment_id: "missing".to_string(),
                 },
                 quantity: 1,
+            base_price: None,
+            guaranteed: false,
                 weight: 1,
                 repeatable: false,
                 buy_percent: None,
@@ -1739,6 +1768,7 @@ mod tests {
     #[should_panic(expected = "maximum live sell quote")]
     fn game_data_base_rejects_same_and_cross_shop_non_loss_arbitrage() {
         let equipment = EquipmentMetadata {
+            content_family: None,
             id: "trade_item".to_string(),
             uuid: Uuid::from_u128(0x700),
             name: "Trade Item".to_string(),
@@ -1759,6 +1789,8 @@ mod tests {
                 equipment_id: equipment.id.clone(),
             },
             quantity: 1,
+            base_price: None,
+            guaranteed: false,
             weight: 1,
             repeatable: false,
             buy_percent: None,
@@ -1793,6 +1825,7 @@ mod tests {
     fn item_accessors_reflect_metadata() {
         let uuid = Uuid::from_u128(1);
         let equipment = EquipmentMetadata {
+            content_family: None,
             id: "equip".to_string(),
             uuid,
             name: "Equip".to_string(),

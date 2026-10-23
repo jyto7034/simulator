@@ -1,0 +1,21 @@
+{
+  "selected": 12,
+  "passed": 10,
+  "failed": 2,
+  "claim": "raw suite failed; no all-pass claim",
+  "dispositions": [
+    {
+      "test": "active_run_checkpoint_round_trip_preserves_monotonic_loads_without_local_profile",
+      "failure": "historical current-writer expectation12, actual14",
+      "further_scope": "same legacy test mutates exported versions, inventory fields and checksums; not a genuine old writer and excluded by ROADMAP1.9",
+      "required_positive_evidence": "external004/CHECKPOINT_ORACLE.json + actual fresh-process route + legacy001 genuine old writer"
+    },
+    {
+      "test": "load_run_checkpoint_restores_visible_state_and_anchor_but_not_load_count_or_peak",
+      "failure": "historical Standard spelling, actual canonical Expedition; all preceding recovery, state, loads and power assertions passed",
+      "origin": "pre-existing U12 alias expectation, no product mode change in U13",
+      "required_public_evidence": "external004/CHECKPOINT_ORACLE.json confirms actual Expedition, loads1/remaining2 and no can_load field"
+    }
+  ],
+  "action": "preserve legacy failures; do not expand U13 into arbitrary-save-tamper regression repair or unrelated alias cleanup; current U13 contract checked on actual public paths"
+}

@@ -1,0 +1,30 @@
+{
+  "command": [
+    "/home/blast/.cargo/bin/cargo",
+    "test",
+    "-p",
+    "game_core",
+    "--lib",
+    "--offline",
+    "--locked",
+    "--target-dir",
+    ".cache/u12-vault-cost-target",
+    "--",
+    "u14_",
+    "u13_",
+    "u12_lifecycle",
+    "u04_each_unfinished",
+    "u04_unfinished_event",
+    "retreat_battle_restores",
+    "two_retreats",
+    "final_boss_retreat",
+    "owned_clone_shape",
+    "current_v12_checkpoint_round_trips_with_canonical_map_order",
+    "--skip",
+    "u12_vault"
+  ],
+  "exit_code": 0,
+  "seconds": 86.09922111000196,
+  "stdout": "core001.stdout.log",
+  "stderr": "core001.stderr.log"
+}

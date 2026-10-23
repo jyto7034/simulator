@@ -1,0 +1,25 @@
+--- core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/EXPERIMENT_NOTES.md:before
++++ core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/EXPERIMENT_NOTES.md:after
+@@ -358,3 +358,22 @@
+ 모든기능검사를닫고실제functional receipt목록과입력writer/runner0을기록한뒤PC와R05를순차실행한다. 각측정직전별도UTC/source/quiescence를기록하며소급작성하지않는다. 성능중기능빌드/실행을겹치지않고PC576/36의31성공5거절/17음성/hardguard, R05 cap9030188의기존concurrentpeak단독예외·공유호스트timing한계·20분stress제외를유지한다. 마지막필수실행뒤122files_after/외부입력동일성/실제UTC·각receipt기간을닫는다. namespace에제한된프로세스가시성과담당자실행상태를구분한다. 실패는원본보존·새label이며제품은Sol,시험/fixture/oracle/comparator는Astra에게원인에따라반환한다.
+ 
+ Sol docs_checkpoint024 SHAce5b9d041820c5212eb103b2e3eed72acb9289e277138c2a9eddfbfceab07e6e의64nested실제참조와현재문서2개를대조했다. root는계획/읽기/문서만담당하고Astra작성자둘은HOLD로전환했다. 최종current evidence→impact→adaptation→coverage→자체검증→PLAN/NOTES→exactfreeze/정역복원→비참여Astra전체U08감사가남아있다. 이인수는전체U08/16.1/16.2완료가아니다.
++
++
++## 2026-10-06/025 — 통합 교정 종료·실제 환경 장애 인계
++
++작성 UTC: 2026-10-06T10:59:49.321222+00:00. 현재 U08 GEX-10은 부분 구현·국소 검증 상태다. 필수 소켓 환경 장애 때문에 전체 실행을 인계하며 사용자 중지·Goal 완료로 기록하지 않는다. 기존 연속 권한은 유지한다.
++
++통합004는 당시 source438/ce0e0f2f에서 fmt PASS 뒤 Core default 1,872 PASS / 12 FAIL로 종료했다. 원 receipt/log와 execution_harness_binding004/ABORTED_INTERVAL.json은 보존했다. 이것은 중단된 실제 구간이며 최종 실행 PASS binding이 아니다. Sol의 환경 진단은 AF_UNIX 생성 후 /tmp bind EPERM(1), AF_INET 생성 EPERM(1)을 확인했다. connect/listen/외부 통신이나 권한 우회는 없었다. 현재 workspace-write/network restricted/approval never에서 필수 검증의 완주가 불가능하다. 소켓 시험을 skip하거나 성공으로 바꾸지 않는다.
++
++권한 안에서 가능한 일반 교정은 끝냈다. Sol은 packaging.rs의 낡은 공식 catalog 수를 언급한 문서 주석만 교정했다. Astra는 7개 테스트 파일의 catalog·definition fixture 6건과 capability 기대 5건을 교정했다. 26 catalogs/27 sources/45 kinds와 Relics 경로를 독립 상수로 명시하고 외부 query_relic 정의를 정상 authoring explain으로 조회하여 실제412정의의 출처·typed projection을 검사했다. 다섯 capability 벡터는 enabled Query DTO RequestRelicState/RequestRelicNumericPlan만 정확히 기대하며 원래 상태 검사를 보존한다. raw selector의 all_25→all_26 변경은 RESULT에 매핑했다. 첫 ron::from_str 컴파일 오류는 ron::de::from_str로 교정했으며 원 실패/시험0을 보존했다. 소켓 시험과 제품 의미는 바꾸지 않았다.
++
++최종 source438/8734111ce349bc36de5534aff831f89ccf8c9034b7e802e120d87cee5d0e248b에서 11개 selector가 각1/1 PASS, Sol post_correction_fmt001 PASS/변경0이다. root는438개 실제파일과7파일 exact delta,12개 receipt/raw,각 실행 source 불변·최종11성공 및 모든7diff를 대조했다. 이는 전체 suite/release/performance 통과가 아니다. test_integrated_corrections001/RESULT.json과 final/의 patch가 교정을 소유한다. GEX00 398파일 대비 현재는40추가57수정0삭제이며 SOURCE_DELTA_FROM_GEX00.json에97경로/전후해시를 기록했다. runner가 수집한 현재438파일 원본 archive를 exact 참조하고 과거 archive를 재귀 복사하지 않는다.
++
++fresh verify_harness_handoff003의 MANIFEST(975f39720e8089e99d6a74c1b4e1d54e22085f84869e21b74011c23a3ba16a58)와 HANDOFF(9cb399d65c9af84ac8c96cf93cdbd929e6253e8d81669c203f5fddb392c29d39)를 root가 인수했다. 실제122파일과438source, 기존002의 TOOL_INPUTS78+STATIC_INPUTS44 아카이브 exact member 및 외부 archive/필수2member를 확인했다. 003은 기존122입력과 순서를 유지하며 새 source를 결속한 준비다. 제품/도구/시험 실행은 새로 하지 않았다. 003의 root review null은 작성 당시 미완료 참조이며, 실제 닫힌 review는 본 RECORD.json이다. 원003은 소급 수정하지 않는다. 002의 경로 오기3개는003에서 정정됐다: public025 review, 미래 R05 target /tmp/u08-r05-target005, cli_current_005 내부의 고정 이름 CLI_FINAL_SUMMARY_002.json. 미래005 명령은 미실행이며 환경 복구를 주장하지 않는다.
++
++Sol docs_checkpoint025의97 nested 실제참조와 현재 EXPS/STATE 두파일을 대조했다. 해당 문서의 public025/fresh003 준비중 표현은 당시 작성시각의 이력이며 본 인수로 닫힌 준비 상태를 기록한다. 이 publication에서는 PLAN/NOTES·두 roadmap 현황·HANDOFF만 갱신했고 제품/test/harness 입력은 불변이다. 기존 HANDOFF_LATEST는 사용자가 작성한 두줄/CRLF 원문이었으며 HANDOFF_20261006_001.ko.md에 byte 그대로 보존했다. 과거 기술 인수인계로 오인하지 않는다.
++
++현재 Sol 구현/통합 담당과 Astra 시험 담당·보조 finalizer 작성자는 모두0 writer/runner/HOLD로 반환했다. root는 문서/읽기/조정만 수행하며 독립 감사자가 아니다. 프로세스 확인은 현재 sandbox namespace에 한정된다. G1–G6 국소 증거와 G7 준비는 기존 exact 범위로 보존하며 U17 실제 부활촉매 교차검사는 미구현 한계다. 현재 source의 전체49기능묶음, G7 공개 CLI, PC/R05 성능, evidence→predecessor impact→adaptation→coverage→자체검증→PLAN/NOTES→exact동결/정역복원→비참여 Astra 전체U08 독립감사가 남았다. 32수용문장/16군·10차원·191선행+31R06·3node/16seam를 모두 닫은 뒤 U09로 간다.
++
++합법적으로 필수 소켓 실행이 가능한 환경에서만 003/HANDOFF의 정확한 argv와 fresh label을 다시 확인한다. 첫 실행 전122files_before/실제UTC/source/전체writer0/root 본review/외부archive 전체와필수member를 기록한다. integrated_matrix.py 005 0 → verify_remaining.py 0 005의 순서이며 freshrelease/debugbinding이 각 소비자보다 선행한다. 기능 종료·실제 receipt closure 뒤 각 PC/R05 직전 별도 quiescence를 기록하고 순차 측정한다. 최종 뒤122files_after/외부입력/실제UTC/각receipt기간을 닫아 prep002 finalizer 실제 config에 결속한다. 기존 한도·workload·실패 기준을 완화하지 않으며 준비를 실제 실행으로 대체하지 않는다.

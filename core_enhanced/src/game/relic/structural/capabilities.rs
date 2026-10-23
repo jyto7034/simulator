@@ -21,6 +21,49 @@ pub struct RelicCapabilityDescriptor {
     /// The producer and the typed battle consumer use this same contract.
     pub runtime_connected: bool,
 }
+/// Causal operations have execution semantics, rather than a fake numeric
+/// property/unit. This same closed table is exposed by prospective queries.
+#[derive(Debug, Clone, Copy, Serialize)]
+pub struct RelicCausalCapabilityDescriptor {
+    pub operation: &'static str,
+    pub runtime_connected: bool,
+    pub root_contract: &'static str,
+    pub completion_contract: &'static str,
+}
+pub fn causal_capabilities() -> &'static [RelicCausalCapabilityDescriptor] {
+    &[
+        RelicCausalCapabilityDescriptor {
+            operation: "Subscribe",
+            runtime_connected: true,
+            root_contract: "inherit_fact_ancestry_copy_rule_visit",
+            completion_contract: "native_action_and_finite_delivery",
+        },
+        RelicCausalCapabilityDescriptor {
+            operation: "Periodic",
+            runtime_connected: true,
+            root_contract: "independent_owner_occurrence",
+            completion_contract: "released_descendants_keep_root",
+        },
+        RelicCausalCapabilityDescriptor {
+            operation: "Fork",
+            runtime_connected: true,
+            root_contract: "immutable_independent_paths",
+            completion_contract: "native_participant_completion",
+        },
+        RelicCausalCapabilityDescriptor {
+            operation: "Join",
+            runtime_connected: true,
+            root_contract: "actual_named_participant_union",
+            completion_contract: "all_successful_descendants_exactly_once",
+        },
+        RelicCausalCapabilityDescriptor {
+            operation: "Wedge",
+            runtime_connected: true,
+            root_contract: "original_tagged_direct_skill_cast_target",
+            completion_contract: "first_positive_actual_strike",
+        },
+    ]
+}
 // Damage/Shield amount expressions narrow through the existing u32 consumer.
 // Literal i32 producers remain their own authored representation.
 const HP_MAX: i64 = u32::MAX as i64;

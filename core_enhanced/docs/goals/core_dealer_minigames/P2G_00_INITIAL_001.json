@@ -1,0 +1,105 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Policy Intake Snapshot",
+        "Artifact ID": "PIS-CDMG-001",
+        "Content Digest": "sha256:de365e851c3d0331c312eeffbfc70716f42517c90523eadc206814abda12b723"
+      },
+      "payload": {
+        "Working Policy Document ID": "WPD-CDMG-20261015",
+        "Snapshot Kind": "initial",
+        "Created By Stage": "P2G-00",
+        "Predecessor Policy Intake Snapshot Ref": null,
+        "Intake Items": [
+          {
+            "Intake Item ID": "USER-U163",
+            "Intake Kind": "raw user request",
+            "Exact Content or Content Reference": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u16-3 작업 착수 및 완수 후 서브에이전트를 소환하여 독립 감사 작업에 착수해줄래? 현재 명령을 지침서보다 더 우선시해."
+          },
+          {
+            "Intake Item ID": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "path": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+              "sha256": "6946331d2c5563ff63202e079ae2d01fe5a61f6c4b9997d77cf8ba187c277b6e",
+              "archive": "INTAKE_SOURCE_001.tar.gz"
+            }
+          },
+          {
+            "Intake Item ID": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md",
+              "sha256": "4903caba141ee9e2daed304b1de9dab231bb92d61ff8c55587e0ed1dbf59e8a1",
+              "archive": "INTAKE_SOURCE_001.tar.gz"
+            }
+          },
+          {
+            "Intake Item ID": "core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_LATEST.ko.md",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_LATEST.ko.md",
+              "sha256": "2bc04199fb21e2d1099b6953aff6998bcd60b8045f7238da66a78cd1b049a20f",
+              "archive": "INTAKE_SOURCE_001.tar.gz"
+            }
+          },
+          {
+            "Intake Item ID": "core_enhanced/docs/game_rules/relic-reward-nodes.md",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "path": "core_enhanced/docs/game_rules/relic-reward-nodes.md",
+              "sha256": "bb1dac1a48bf8cb2150e51f4d0bf87710647dc43f41eab898aa6afd611d7b715",
+              "archive": "INTAKE_SOURCE_001.tar.gz"
+            }
+          },
+          {
+            "Intake Item ID": "core_enhanced/docs/core_runtime_contract.md",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "path": "core_enhanced/docs/core_runtime_contract.md",
+              "sha256": "48bb49d311da6734616708dce23c80b0a5dd0bfd9982f9c3b20c501c229c1ace",
+              "archive": "INTAKE_SOURCE_001.tar.gz"
+            }
+          },
+          {
+            "Intake Item ID": "core_enhanced/docs/data_loading_contract.md",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "path": "core_enhanced/docs/data_loading_contract.md",
+              "sha256": "a7cdd56cd2069852eceb09969c31ef3792995ec35ed3a02dd7565e933e5523cf",
+              "archive": "INTAKE_SOURCE_001.tar.gz"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CDMG-001",
+        "Content Digest": "sha256:eec3b47bf1c6592623352f7bf17d236eadd3f7b0a29e69c50f51e8653316823b"
+      },
+      "payload": {
+        "Approved metadata and scope": {
+          "Working Policy Document ID": "WPD-CDMG-20261015",
+          "Policy Topic": "U16-3 딜러와 세 미니게임",
+          "Target Documentation Root": "core_enhanced/docs",
+          "Policy Directory Name": "core_dealer_minigames",
+          "Requested Result": "U16-3 구현/검증/고정 뒤 비참여 서브에이전트 독립감사",
+          "User-Approved Scope": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u16-3 작업 착수 및 완수 후 서브에이전트를 소환하여 독립 감사 작업에 착수해줄래? 현재 명령을 지침서보다 더 우선시해.",
+          "Excluded": "U16-4/U21/Unity/개별최종보스/외부임의변조; 전체U16 완료 아님"
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CDMG-001",
+          "Content Digest": "sha256:de365e851c3d0331c312eeffbfc70716f42517c90523eadc206814abda12b723"
+        },
+        "Current Policy Element Revision Map": {},
+        "Decision Revision Ref Set": [],
+        "Open Policy Question Ref Set": [],
+        "Predecessor Working Revision Ref": null
+      }
+    }
+  ]
+}

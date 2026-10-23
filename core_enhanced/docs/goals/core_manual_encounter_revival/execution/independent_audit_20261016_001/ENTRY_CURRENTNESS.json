@@ -1,0 +1,50 @@
+{
+  "single_goal": {
+    "record_sha256": "4c79e08e0c435758343276ce4d9a7387acf46fa7fcc877f7ed0870d58e04a420",
+    "manifests": {
+      "SOURCE": {
+        "members": 979,
+        "changed": [
+          "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+          "core_enhanced/src/application/fault_tests.rs",
+          "core_enhanced/src/game/relic/allocation.rs",
+          "core_enhanced/src/game/resource/durable.rs",
+          "core_enhanced/src/game/revival.rs",
+          "core_enhanced/src/game/world/active_run.rs",
+          "core_enhanced/src/game/world/active_run/continuation.rs",
+          "core_enhanced/src/game/world/combat.rs",
+          "core_enhanced/src/game/world/node_flow.rs",
+          "core_enhanced/src/game/world/state.rs",
+          "core_enhanced/src/game/world/tests/mod.rs",
+          "core_enhanced/src/game/world/tests/u08_continue_owner.rs",
+          "core_enhanced/src/game/world/tests/u17_public.rs"
+        ],
+        "missing": []
+      },
+      "EVIDENCE": {
+        "members": 688,
+        "changed": [],
+        "missing": []
+      }
+    }
+  },
+  "storage_refactor": {
+    "record_sha256": "526f3276a277b50a9c6306b3c24c3a4c6b3dd660429c70aedee1590c999a984a",
+    "manifests": {
+      "SOURCE": {
+        "members": 626,
+        "changed": [],
+        "missing": []
+      },
+      "EVIDENCE": {
+        "members": 1103,
+        "changed": [],
+        "missing": []
+      }
+    }
+  },
+  "inherited_changed_outside_successor": [
+    "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md"
+  ],
+  "head": "2f725172edbffd27c5078d29000a1a2ba6ddc4d9"
+}

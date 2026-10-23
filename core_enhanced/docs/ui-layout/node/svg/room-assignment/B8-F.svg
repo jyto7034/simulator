@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1780" viewBox="0 0 1800 1780">
+<rect x="0" y="0" width="1800" height="1780" rx="0" fill="#f7f8fc" stroke="none" stroke-width="2"/>
+<text x="60" y="60" text-anchor="start" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="35" font-weight="700" fill="#25354b">B8-F · 고요한 오케스트라 최종방</text>
+<text x="60" y="120" text-anchor="start" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="24" font-weight="400" fill="#25354b">보스 1 · 준비 지원 1 · 격파 후 일반전 3 · 탐사 보상 1</text>
+<rect x="155" y="915" width="1400" height="750" rx="24" fill="#edf5ee" stroke="none" stroke-width="2"/>
+<text x="850" y="950" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="23" font-weight="400" fill="#397554">격파 후 선택 탐사 · 각 활동에서 Gate로 귀환 가능</text>
+<g data-victory-edge="false">
+<polyline points="730.00,230.00 350.00,230.00 350.00,386.00" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="350.00,386.00 355.00,374.00 345.00,374.00" fill="#91a0b3"/>
+<polygon points="730.00,230.00 718.00,225.00 718.00,235.00" fill="#91a0b3"/>
+</g>
+<g data-victory-edge="false">
+<polyline points="850.00,274.00 850.00,526.00" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="850.00,526.00 855.00,514.00 845.00,514.00" fill="#91a0b3"/>
+<polygon points="850.00,274.00 845.00,286.00 855.00,286.00" fill="#91a0b3"/>
+</g>
+<g data-victory-edge="false">
+<polyline points="350.00,474.00 350.00,570.00 730.00,570.00" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="730.00,570.00 718.00,565.00 718.00,575.00" fill="#91a0b3"/>
+<polygon points="350.00,474.00 345.00,486.00 355.00,486.00" fill="#91a0b3"/>
+</g>
+<g data-victory-edge="true">
+<polyline points="850.00,614.00 850.00,756.00" fill="none" stroke="#a46d28" stroke-width="3" stroke-linejoin="round" stroke-dasharray="9 8"/>
+<polygon points="850.00,756.00 855.00,744.00 845.00,744.00" fill="#a46d28"/>
+<polygon points="850.00,614.00 845.00,626.00 855.00,626.00" fill="#a46d28"/>
+</g>
+<g data-victory-edge="false">
+<polyline points="730.00,800.00 380.00,800.00 380.00,986.00" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="380.00,986.00 385.00,974.00 375.00,974.00" fill="#91a0b3"/>
+<polygon points="730.00,800.00 718.00,795.00 718.00,805.00" fill="#91a0b3"/>
+</g>
+<g data-victory-edge="false">
+<polyline points="970.00,800.00 1330.00,800.00 1330.00,986.00" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1330.00,986.00 1335.00,974.00 1325.00,974.00" fill="#91a0b3"/>
+<polygon points="970.00,800.00 982.00,805.00 982.00,795.00" fill="#91a0b3"/>
+</g>
+<g data-victory-edge="false">
+<polyline points="380.00,1074.00 380.00,1206.00" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="380.00,1206.00 385.00,1194.00 375.00,1194.00" fill="#91a0b3"/>
+<polygon points="380.00,1074.00 375.00,1086.00 385.00,1086.00" fill="#91a0b3"/>
+</g>
+<g data-victory-edge="false">
+<polyline points="380.00,1294.00 380.00,1436.00" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="380.00,1436.00 385.00,1424.00 375.00,1424.00" fill="#91a0b3"/>
+<polygon points="380.00,1294.00 375.00,1306.00 385.00,1306.00" fill="#91a0b3"/>
+</g>
+<g data-victory-edge="false">
+<polyline points="970.00,800.00 1030.00,800.00 1030.00,1500.00 1210.00,1500.00" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1210.00,1500.00 1198.00,1495.00 1198.00,1505.00" fill="#91a0b3"/>
+</g>
+<g data-victory-edge="false">
+<polyline points="500.00,1030.00 630.00,1030.00 630.00,1440.00 1330.00,1440.00 1330.00,1456.00" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1330.00,1456.00 1335.00,1444.00 1325.00,1444.00" fill="#91a0b3"/>
+</g>
+<g data-victory-edge="false">
+<polyline points="500.00,1250.00 740.00,1250.00 740.00,1460.00 1330.00,1460.00 1330.00,1456.00" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1330.00,1456.00 1325.00,1468.00 1335.00,1468.00" fill="#91a0b3"/>
+</g>
+<g data-victory-edge="false">
+<polyline points="380.00,1524.00 380.00,1600.00 1330.00,1600.00 1330.00,1544.00" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1330.00,1544.00 1325.00,1556.00 1335.00,1556.00" fill="#91a0b3"/>
+</g>
+<g data-victory-edge="false">
+<polyline points="1330.00,1074.00 1330.00,1456.00" fill="none" stroke="#91a0b3" stroke-width="3" stroke-linejoin="round"/>
+<polygon points="1330.00,1456.00 1335.00,1444.00 1325.00,1444.00" fill="#91a0b3"/>
+</g>
+<g data-node="S" data-after-victory="false">
+<rect x="730" y="186" width="240" height="88" rx="12" fill="#34475f" stroke="#8d9eb3" stroke-width="2"/>
+<text x="850" y="218" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="22" font-weight="700" fill="#ffffff">입구</text>
+<text x="850" y="251" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="17" font-weight="400" fill="#ffffff">활동 수 제외</text>
+</g>
+<g data-node="1" data-after-victory="false">
+<rect x="230" y="386" width="240" height="88" rx="12" fill="#e4f0ff" stroke="#8d9eb3" stroke-width="2"/>
+<text x="350" y="418" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="22" font-weight="700" fill="#34475f">01 · 준비 지원</text>
+<text x="350" y="451" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="17" font-weight="400" fill="#34475f">지원 종류 1종 배정</text>
+</g>
+<g data-node="2" data-after-victory="false">
+<rect x="730" y="526" width="240" height="88" rx="12" fill="#fff0d4" stroke="#8d9eb3" stroke-width="2"/>
+<text x="850" y="558" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="22" font-weight="700" fill="#34475f">02 · 최종보스</text>
+<text x="850" y="591" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="17" font-weight="400" fill="#34475f">승리 후 아래 연결 개방</text>
+</g>
+<g data-node="J" data-after-victory="true">
+<rect x="730" y="756" width="240" height="88" rx="12" fill="#f0e8fa" stroke="#8d9eb3" stroke-width="2"/>
+<text x="850" y="788" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="22" font-weight="700" fill="#34475f">격파 후 선택</text>
+<text x="850" y="821" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="17" font-weight="400" fill="#34475f">활동 수 제외</text>
+</g>
+<g data-node="3" data-after-victory="true">
+<rect x="260" y="986" width="240" height="88" rx="12" fill="#ffffff" stroke="#8d9eb3" stroke-width="2"/>
+<text x="380" y="1018" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="22" font-weight="700" fill="#34475f">03 · 후속 일반전 1</text>
+<text x="380" y="1051" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="17" font-weight="400" fill="#34475f">보스 격파 후 선택</text>
+</g>
+<g data-node="4" data-after-victory="true">
+<rect x="260" y="1206" width="240" height="88" rx="12" fill="#ffffff" stroke="#8d9eb3" stroke-width="2"/>
+<text x="380" y="1238" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="22" font-weight="700" fill="#34475f">04 · 후속 일반전 2</text>
+<text x="380" y="1271" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="17" font-weight="400" fill="#34475f">보스 격파 후 선택</text>
+</g>
+<g data-node="5" data-after-victory="true">
+<rect x="1210" y="986" width="240" height="88" rx="12" fill="#ffffff" stroke="#8d9eb3" stroke-width="2"/>
+<text x="1330" y="1018" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="22" font-weight="700" fill="#34475f">05 · 후속 일반전 3</text>
+<text x="1330" y="1051" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="17" font-weight="400" fill="#34475f">보스 격파 후 선택</text>
+</g>
+<g data-node="6" data-after-victory="true">
+<rect x="260" y="1436" width="240" height="88" rx="12" fill="#ffffff" stroke="#8d9eb3" stroke-width="2"/>
+<text x="380" y="1468" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="22" font-weight="700" fill="#34475f">06 · 탐사 보상</text>
+<text x="380" y="1501" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="17" font-weight="400" fill="#34475f">보스 격파 후 선택</text>
+</g>
+<g data-node="G" data-after-victory="true">
+<rect x="1210" y="1456" width="240" height="88" rx="12" fill="#34475f" stroke="#8d9eb3" stroke-width="2"/>
+<text x="1330" y="1488" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="22" font-weight="700" fill="#ffffff">Gate</text>
+<text x="1330" y="1521" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="17" font-weight="400" fill="#ffffff">활동 수 제외</text>
+</g>
+<text x="900" y="1720" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="23" font-weight="400" fill="#25354b">빈 분기·입구·Gate는 활동 수 제외 · 완료한 보스·지원 재방문으로 활동을 재생성하지 않음</text>
+</svg>

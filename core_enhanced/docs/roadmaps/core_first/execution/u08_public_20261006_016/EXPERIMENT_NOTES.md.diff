@@ -1,0 +1,31 @@
+--- core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/EXPERIMENT_NOTES.md
++++ core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/EXPERIMENT_NOTES.md
+@@ -213,3 +213,28 @@
+ ## 통합 스택 회귀와 수용 조건 누락 인수 — 2026-10-06/015
+ 
+ Core003은 기존 R07시험 stackoverflow로 종료되어 전체PASS가 아니고 기본stack exact재현도 실패했다. scopewrapper/body 한파일 분리 뒤 source438/73a3d7b6b22a49e6632bcc3b83a5842d614ae0cae55dda324b573ff22ab20425에서 재현검사 중이다. Astra32문장대조의G1–G7 직접검증누락을 보강한 뒤 최종통합을 재개한다. [원증거·한계·현재담당·보강계약](../../../../roadmaps/core_first/execution/u08_public_20261006_015/RECORD.ko.md)을 따른다.
++
++
++## 2026-10-06/016 — R07 회수와 G1 완료
++
++- 원 R07 기본 stack 단독 재현은 world/application.rs scope wrapper/body 분리 후 source438/73a3d7b6b22a49e6632bcc3b83a5842d614ae0cae55dda324b573ff22ab20425에서1/1 PASS했다. integrated003은 중도 실패로 남는다. 수정 전129,880×2와 수정 후 wrapper680+scoped129,448의 정적 frame 차이는129,632bytes이며 전체 peak 실측 주장이 아니다. docs_checkpoint018의 문서2·참조7·닫힌receipt11과raw11을 root가 대조했다.
++- G1 duplicate0021/1: Normal/Corrupt 장착 역순×휴면4경우의 중복 거절과 정의·사본·양직원 슬롯·UUID 보존이다. inventory 계층에서 absent provider selector를 사용하는 시험이며 정상 full-loader 유효 콘텐츠 검증으로 주장하지 않는다.
++- G1 battle0021/1: 실제 일반 활성전투에서 EquipRelic/UnequipRelic/CorruptRelic 각2회 거절, 전체 world roots·실제 battle/queue/facts/events/revision/deployment/attempt·SavePoint/Continue 보존이다.
++- G1 weapon0021/1: 공개 CoreApplication 명령으로 Normal/Corrupt 두 경우 실제 무기를 해제해도 전체 RelicState(copies/slots/variant/resources)가 동일하고 fabricated provider/stats가 생기지 않음을 확인했다.
++
++G1 최종 source438/04a14334d757eb14a41f1b30a1b1915fa3b3980aff15e1b78109e015660bafec은 R07 성공 뒤 테스트3파일만 변경됐다. root는 전체438 actual bytes·membership와 정확3파일 delta 및6개 실행raw를 대조했다. duplicate002의 후속 변경은 carrier 오류 기대값/public JSON 표현뿐이고 battle002의 후속 변경은 public JSON 표현뿐이므로 각 exact 성공을 이 비영향 범위에서 재사용한다. 모든 성공을 마지막 동일 source에서 실행했다고 표기하지 않는다.
++
++## 명시 정정과 실패 보존
++
++G1 초기 duplicate001은 테스트 import 오류로0시험, weapon001은 새 json!의 untyped None 때문에0시험이었다. battle001은1시험 FAIL이다. root와 Astra가 requires_battle_authority=false를 확인했지만 common preflight가 실행된다고 잘못 추정하여 ContextIrrelevant를 기대했다.
++실제 behavior.rs descriptor는 CoreDomain이고 action_capability.rs의 uses_common_preflight=false→world.rs gate_behavior_action의 domain 위임→relic_runtime.rs의 loadout context 거절이므로 반환은 InvalidAction이다. 정책은 전투중 거절/무변경을 요구하며 새 오류종류를 요구하지 않는다. 기존 API/route를 바꾸지 않고 exact InvalidAction 기대값을 교정했다. 실패·각 교정 전후·diff는 test_g1_stage001 및 test_g1_fix001–003에 보존한다.
++
++## 다음 보강의 계약
++
++G4는 정상 CorruptRelic 자체의 촉매부족/부적격variant/early·late admission 실패와 전체 roots·저장 원본 보존을 직접 검증한다. handle_corrupt_relic는 context→ensure→target검증→catalyst감소→variant변경→RelicState snapshot 순서다. snapshot의 반환용 할당은 변경 이후이므로 late failure 후보이며 실제 site/prefix를 확인한다. 정상 host profile/공개 boundary를 우선하고 private outer scope 결과와 구분한다. valid copy+catalyst1 양성대조와 반복거절을 포함한다.
++
++침식촉매 checked_sub 실패는 InvalidAction이며 별도 InsufficientCatalyst 코드를 만들지 않는다. 충분한 실제 기타자산+침식촉매0을 대조하되 존재하지 않는 부활촉매 자산을 만들어 두촉매 교차검증으로 주장하지 않는다. 현재 src에는 부활촉매 owner가 없고 ROADMAP G29/U17이 알+선택촉매를 후속 구현한다. frozen11.2의 부활촉매 혼용금지 정책은 유지한다. 현재의 별도 field/typed command와 무대체소비를 검증하고 실제 두촉매 동시보유 교차시험은 U17 소비 seam의 미실행 한계로 명시한다. 이 기록은 동결문장 삭제나 정책완화가 아니다.
++
++이후 G2 외부RON 음성/실제 catalog 변경복원, G3 실제 startup/provider/slot순서/피해·패널티, G5 nonempty host reconnect/retreat/decoder, G6 유한 반복 owner 해제, G7 release describe/explain 의미검증을 이어간다. G6은 허용 last_terminal 보유와 오래된 owner 누적을 구분하며 GameData가 보유하는 generation 전체 해제를 기대하지 않는다. 제품 결함은 Sol에 반환하고 테스트 일반 교정은 Astra가 승인 묶음에서 자율 수행한다.
++
++보강 뒤 현재 source에서 기능통합을 재개하고 기능 writer/runner0 뒤 PC/R05를 수행한다. evidence→impact→adaptation→coverage→자체검증→PLAN/NOTES→exact freeze/정역복원→비참여 Astra 전체 U08 감사 순서를 유지한다. 현재 전체 U08 완료나16.1/16.2 PASS가 아니다. HANDOFF는 실제 중지/인계/장애 때 갱신하며 이번 연속 진행에서는 바꾸지 않는다.

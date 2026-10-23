@@ -1,0 +1,155 @@
+{
+  "schema": "U10_INDEPENDENT_AUDIT_V1",
+  "goal": "GOAL-CRCE-01",
+  "goal_set": "GS-CRCE-001",
+  "auditor": "/root/u09_independent_audit029",
+  "model": "previously confirmed gpt-6-astra/high",
+  "target_manifest": {
+    "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/target/u10_current_001/MANIFEST.json",
+    "bytes": 218265,
+    "sha256": "c24c6e90c48b81f432deeaf78258bb6b0e5110bd5b770d0851927c4b37961c95"
+  },
+  "runtime_source_sha256": "02e185fad4820f3366c465af9904284fc33394d5f6d59ec65e0dc33710d329ac",
+  "independence": "Prior U09 independent audit participation only. No U10 plan, design, product, test authorship or execution participation. Read-only inspection and independent hash/data checks; only new audit artifacts written. Root summaries are inputs, not verdicts.",
+  "verdict": "Not Complete",
+  "confidence": "High",
+  "open_findings": 2,
+  "findings": [
+    {
+      "id": "U10-AUD-F01",
+      "severity": "completion_blocker",
+      "type": "missing_combined_execution_evidence",
+      "status": "open",
+      "policy": [
+        "PE-CRCE-07.1"
+      ],
+      "seams": [
+        "IVA-CRCE-V07",
+        "IVA-CRCE-INTEGRATED"
+      ],
+      "title": "Actual normal-basic equipment counter with an active causal subscriber is not demonstrated",
+      "observation": "ancestry_active executes a normal basic hit 10 and relic echo 7. CausalWorld::prepare uses the starter equipment helper and does not equip a defender counter; the oracle is target loss17 and contains no simultaneous counter-source/attacker-loss oracle. death_chain tests equipment death eligibility without a causal relic. Existing final46 passive/reflection tests also use the old no-relic fixture. These separate successes do not demonstrate the explicitly promised coexistence. The selected evidence was searched across all groups, not just a test name.",
+      "source_boundary": "The new actual HP-loss observer and inherited causal source in existing trigger delivery join old basic/equipment semantics; unchanged legacy tests alone cannot prove this new combination.",
+      "locations": [
+        {
+          "ref": {
+            "path": "core_enhanced/src/game/world/tests/u10_causal/ancestry_cases.rs",
+            "bytes": 27913,
+            "sha256": "561cd04d0a3e719275b1f92e8ad5ec47a614da1a9d784242ea6a61a0d9065e45"
+          },
+          "line": 298
+        },
+        {
+          "ref": {
+            "path": "core_enhanced/src/game/world/tests/u10_causal.rs",
+            "bytes": 13576,
+            "sha256": "899e03b3fda73aeb58938d1f4e6df94d92a9c8fc010de446923316e59791a3be"
+          },
+          "line": 125
+        },
+        {
+          "ref": {
+            "path": "core_enhanced/src/game/battle/core/relic_causal_tests.rs",
+            "bytes": 13490,
+            "sha256": "4f52834d5b0d8e38fc862a94b0b8c379bcd31a9d092bb93cf9574d2e6a2ba4e5"
+          },
+          "line": 154
+        },
+        {
+          "ref": {
+            "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/TEST_PLAN_001.ko.md",
+            "bytes": 46847,
+            "sha256": "cd28e543e4dd49ac86e797a7e759376b5f1ffdca94afb8ef5e40aedeb118b0cf"
+          },
+          "line": 17
+        }
+      ],
+      "evidence_groups": [
+        "ancestry_active",
+        "death_chain",
+        "final46"
+      ],
+      "demonstrated_product_failure": false,
+      "owner": "Root coordinates; independent test Astra authors oracle and fixture; Sol executes fixed selectors. Product owner only if a real failure appears.",
+      "required_closure": "One normal published-relic battle must execute the real basic producer with defender counter equipment and active subscriber together. Assert original/counter/child HP, actor/target/source and counts; no incoming-damage amplification or recreated basic/hit proc/reflection loop, and dead/missing-attacker guards at the affected boundary. Preserve existing positive controls. Bind exact source, selector, raw result and coverage; freeze successor target and request independent re-audit."
+    },
+    {
+      "id": "U10-AUD-F02",
+      "severity": "completion_blocker",
+      "type": "missing_combined_execution_evidence",
+      "status": "open",
+      "policy": [
+        "PE-CRCE-08.2"
+      ],
+      "seams": [
+        "IVA-CRCE-V08",
+        "IVA-CRCE-PREDECESSOR",
+        "IVA-CRCE-INTEGRATED"
+      ],
+      "title": "Actual Corrosion with an active causal owner and optional relic reactions is not demonstrated",
+      "observation": "The selected r09_public_equipment_death_reactions_are_suppressed_only_for_corrosion and r09_corrosion_faults use native_action_fixture plus skills/fragments/equipment, with no relic/effective causal owner. Thus runtime_facts.causal is None and the new corrosion.rs causal.is_some() branch, inherited context and suppressed causal root are not exercised. The U10 equipment death-chain fixture also has no causal relic. Ordinary ancestry/death tests do not enter Corrosion.",
+      "source_boundary": "corrosion.rs154-156 creates a suppression-carrying causal root only when causal state exists; death_runtime dispatch=false and relic_causal payload suppression are new affected consumers. Source review supports intent but cannot replace the required actual comparison.",
+      "locations": [
+        {
+          "ref": {
+            "path": "core_enhanced/src/game/battle/core/corrosion.rs",
+            "bytes": 21561,
+            "sha256": "84723fa12a1d7bc65b9b49d7fbd4f9a7a1244aae1d91b14f45b412530479b484"
+          },
+          "line": 154
+        },
+        {
+          "ref": {
+            "path": "core_enhanced/src/game/battle/core/corrosion.rs",
+            "bytes": 21561,
+            "sha256": "84723fa12a1d7bc65b9b49d7fbd4f9a7a1244aae1d91b14f45b412530479b484"
+          },
+          "line": 231
+        },
+        {
+          "ref": {
+            "path": "core_enhanced/src/game/battle/core/corrosion.rs",
+            "bytes": 21561,
+            "sha256": "84723fa12a1d7bc65b9b49d7fbd4f9a7a1244aae1d91b14f45b412530479b484"
+          },
+          "line": 441
+        },
+        {
+          "ref": {
+            "path": "core_enhanced/src/game/battle/core/relic_causal_tests.rs",
+            "bytes": 13490,
+            "sha256": "4f52834d5b0d8e38fc862a94b0b8c379bcd31a9d092bb93cf9574d2e6a2ba4e5"
+          },
+          "line": 154
+        },
+        {
+          "ref": {
+            "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/TEST_PLAN_001.ko.md",
+            "bytes": 46847,
+            "sha256": "cd28e543e4dd49ac86e797a7e759376b5f1ffdca94afb8ef5e40aedeb118b0cf"
+          },
+          "line": 17
+        }
+      ],
+      "evidence_groups": [
+        "death_chain",
+        "ancestry_identity",
+        "final46"
+      ],
+      "direct_predecessor_examples": [
+        "A09-04",
+        "X04",
+        "PE-CRNV-08.2",
+        "PE-CRSA-12.2"
+      ],
+      "demonstrated_product_failure": false,
+      "owner": "Root coordinates; independent test Astra authors oracle and fixture; Sol executes fixed selectors. Product owner only if a real failure appears.",
+      "required_closure": "Publish and activate normal relic Death/Kill/AllyDeath subscribers with observable queued/delayed reactions. First prove the reactions under a normal kill. Then cause actual Corrosion with causal state present and assert mandatory death/wave/facts/cost remain while optional equipment/relic reactions stay absent after queue drain, including suppression on applicable derived context. Keep unrelated previously released effects as a control against blanket suppression. Bind exact source/raw and changed predecessor predicates; freeze successor and independently re-audit."
+    }
+  ],
+  "not_findings": [
+    "Absence of a whole-suite rerun is not by itself a failure.",
+    "No product defect is inferred from either evidence gap.",
+    "Measured authorized default16 and exact causal-empty fixed cost are not unapproved contract changes."
+  ]
+}

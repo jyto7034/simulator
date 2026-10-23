@@ -25,7 +25,7 @@ fn main() {
         .execute(
             player_id,
             ApplicationCommand::from_document(
-                json!({"type":"start_new_game","game_mode":"Standard","replace_active_run":false})
+                json!({"type":"start_new_game","game_mode":"Expedition","replace_active_run":false})
                     .into(),
             )
             .unwrap(),
@@ -61,7 +61,7 @@ fn main() {
         .collect();
     core.execute(
         player_id,
-        ApplicationCommand::from_document(json!({"type":"select_starter_employees","employee_definition_ids":employee_definition_ids}).into()).unwrap(),
+        ApplicationCommand::from_document(json!({"type":"select_starter_employees","employee_definition_ids":employee_definition_ids,"loan_copy_ids":[]}).into()).unwrap(),
         ApplicationExecutionContext::default(),
     )
     .expect("starter selection must succeed");
@@ -95,7 +95,7 @@ fn main() {
                     "employee_definition_id": employee["employee_definition_id"],
                     "name": employee["name"],
                     "profile": employee["profile"],
-                    "psychology": employee["psychology"],
+                    "role": employee["role"],
                     "condition": employee["condition"],
                     "eligibility": employee["eligibility"],
                 }],

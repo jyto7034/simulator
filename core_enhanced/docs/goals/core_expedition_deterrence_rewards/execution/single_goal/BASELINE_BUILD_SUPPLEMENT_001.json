@@ -1,0 +1,12 @@
+{
+  "root": "/tmp/u14-baseline-compare001",
+  "extras": [
+    {
+      "path": "core_enhanced/build.rs",
+      "sha256": "b7483b0be8d34a781bfbdd06567201e94313aeda831a7da942b8cfc1aebf8138",
+      "basis": "not edited during U14; baseline archive omitted build scripts; copied current unchanged file for executable comparison"
+    }
+  ],
+  "historical_fixtures": "unchanged existing docs/goals read-only symlink; no artifact generator rerun",
+  "scope": "diagnostic comparison only, not final U14 validation"
+}

@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/home/blast/.cargo/bin/cargo",
+    "test",
+    "-p",
+    "game_core",
+    "--lib",
+    "--offline",
+    "--locked",
+    "--target-dir",
+    "/mnt/f/work/simulator/.cache/u12-vault-cost-target",
+    "--",
+    "u12_vault",
+    "durable_continue_recomputes_battle_setup_instead_of_trusting_serialized_preview_cache"
+  ],
+  "exit_code": 0,
+  "seconds": 50.486818257995765,
+  "stdout": "final_focus_019.stdout.log",
+  "stderr": "final_focus_019.stderr.log"
+}

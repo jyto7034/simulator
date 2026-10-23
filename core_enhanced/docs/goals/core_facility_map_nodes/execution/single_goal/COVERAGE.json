@@ -1,0 +1,575 @@
+{
+  "goal_set": "GS-CFMN-001",
+  "goal": "GOAL-CFMN-01",
+  "phase": "PHASE-CFMN-01",
+  "implementation_self_validation": "complete",
+  "audit_verdict": null,
+  "acceptance": [
+    {
+      "id": "A01",
+      "requirement": "A01: 같은 제약의 후보에 추가 위치 가중치가 없고 seed와 입력이 같으면 동일 배정이다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "test013.stdout.log"
+      ],
+      "claim": "u13_assignment_counts_reservations_seed_and_coordinate_independence; same seed and eligible shuffle, no path-balancing weights"
+    },
+    {
+      "id": "A02",
+      "requirement": "A02: 좌표만 바뀌면 연결/도달성과 배정 의미가 유지된다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "test013.stdout.log"
+      ],
+      "claim": "same policy oracle moves display coordinates and clears slot display without changing sampled assignment; navigation consumes authored edges"
+    },
+    {
+      "id": "A03",
+      "requirement": "A03: 초반 예약은 단순 선택형이며 나머지는 다섯 유형이 양의 동일 비중이다. 매5개 각1개 보장/플레이어 직접 유형 선택을 추가하지 않는다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "test013.stdout.log"
+      ],
+      "claim": "5000 fixed seeds check equal positive five-type frequencies and fixed early SimpleChoice; independent draws, no five-item bag"
+    },
+    {
+      "id": "A04",
+      "requirement": "A04: 재방문/Continue/SavePoint 복원에서 유형과 원정 배정을 보존하고 진입 전 공개 조건 내 유형·이용 조건을 제공한다. 활동 executor 전체 구현은 U16이다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "test013.stdout.log",
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json"
+      ],
+      "claim": "room metadata survives revisit, current V14 and SavePoint; public reward type/support visible. All executors deferred to U16, no generic salvage substitute"
+    },
+    {
+      "id": "A05",
+      "requirement": "A05: 초기89방/846활동을 작성 입력과 대조하고 엔진의 고정 상한으로 하드코딩하지 않는다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "test013.stdout.log",
+        "measurements002/RESULT.json",
+        "probe_prepare002.result.json"
+      ],
+      "claim": "normal loader/pack and oracle verify official89/846; expanded177/1692 loads under unchanged input/runtime limits"
+    },
+    {
+      "id": "A06",
+      "requirement": "A06: 동층은 작성된 양방향 연결·층간은 하강만 허용하며 모든7층은 지정8층과 연결된다. 심층 동간 횡단·흉탄의 A6-05외 직접 연결·상승을 거절한다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "test013.stdout.log"
+      ],
+      "claim": "authored graph validation and actual descent/return-edge refusal; deep cross-wing, hidden exclusive approach and final-floor relationships checked"
+    },
+    {
+      "id": "A07",
+      "requirement": "A07: 방당 한 계열을 유지하며 합류나 진입 방향으로 바뀌지 않는다. 표시 좌표/자산 ID는 전장 판정 좌표와 분리한다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "test013.stdout.log",
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json"
+      ],
+      "claim": "room owns its static wing/template; revisiting from another edge selects saved identity. Display asset/coordinates are not battlefield coordinates"
+    },
+    {
+      "id": "A08",
+      "requirement": "A08: 중복/누락ID·끊어진 참조·Gate 미도달·잘못된 방향/예약 충돌을 정상 작성 오류로 거절한다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "test013.stdout.log"
+      ],
+      "claim": "normal authored category/missing reference/support capacity and graph duplicate/omen/exclusive approach failures; inherited template unreachable-Gate validation included"
+    },
+    {
+      "id": "A09",
+      "requirement": "A09: 지원 총수에 고정 HQ/정비 포함 최대2, SavePoint/유물은 제외. 예약을 이중 집계하거나 삭제하지 않는다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "test013.stdout.log"
+      ],
+      "claim": "all nonfinal official rooms across64seeds verify fixed reservations, support<=2 and exclusion of SavePoint/reward from support marginal"
+    },
+    {
+      "id": "A10",
+      "requirement": "A10: 지원 총수의 분포를 유지한 채 이벤트·추가보상·정예의 유효 개수 조합을 추첨하고 남는 곳은 일반전이다. 1~2층 일반전>=2,3~7층 치환전>=3/후>=2를 유지한다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "test013.stdout.log"
+      ],
+      "claim": "all official nonfinal rooms across64seeds preserve support-first marginal and minimum ordinary counts; 5000seed independent marginal oracle"
+    },
+    {
+      "id": "A11",
+      "requirement": "A11:1층 정예0/2~7층 최대1, 작성 후보 제한과 고정 조우 우회·동층 거점 접근을 유지한다. 예약 포화로 분포를 실현할 수 없는 입력을 거절한다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "test013.stdout.log"
+      ],
+      "claim": "first-floor elite0, max1 and candidate/safe-access checks; authoring rejects impossible reservation/candidate/feasibility inputs"
+    },
+    {
+      "id": "A12",
+      "requirement": "A12: 일반전 난도20/50/30 정수배분을 소비하며 지원 종류 가중치30/45/25·예약별 지원 분포와 개수표는 §1.8 초기값을 따른다. 최종 밸런스 완료를 주장하지 않는다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "test013.stdout.log",
+        "external004/BATTLE_ORACLE.json",
+        "probe_prepare002.result.json"
+      ],
+      "claim": "authored support30/45/25 and ordinary20/50/30 consumed by shared tested integer allocation; actual combat generated with facility profile, not final balance claim"
+    },
+    {
+      "id": "A13",
+      "requirement": "A13:전조 없는 층/계열·후보없음·후보있음+자리있음/없음을 구분해 검증하고 불가능한 작성 입력은 거절한다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "test013.stdout.log"
+      ],
+      "claim": "depth1/2 no omen slot; depth3-7 require an ordinary compatible slot; missing/nonexistent/reserved slot rejected. Current producer absent by U20 scope"
+    },
+    {
+      "id": "A14",
+      "requirement": "A14:호환 자리는 전조 확정 배정이 아니다. U20의 계열/층별 첫진입·미완료 후보·재방문/부화대체 소비 경계를 인계한다. 두건 선행 전 늑대 발생 금지는 유지한다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "test013.stdout.log"
+      ],
+      "claim": "compatible marker remains ordinary and fixed facility bypasses legacy automatic replacement; wolf reservation condition remains unsupported, so no early false wolf execution"
+    },
+    {
+      "id": "A15",
+      "requirement": "A15:실제 연결/도달 가능한 Gate를 통하여 목적 방으로 이동한다. 정보 미공개만으로 일반 방을 잠그지 않고 조회만으로 이동/배정/비용을 바꾸지 않는다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "test013.stdout.log",
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json"
+      ],
+      "claim": "actual supported Gate and authored destination; premature/direct bad target/query/prepare-discard do not mutate any root"
+    },
+    {
+      "id": "A16",
+      "requirement": "A16:동층 왕복/재방문 시 기존 노드 배정·해결·최초 입장 기록을 보존하며 방 사이 이동 추가 비용/중복 입장 비용이 없다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "test013.stdout.log",
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json"
+      ],
+      "claim": "same-floor roundtrip restores assignments/completed nodes/receipts; movement itself and revisited resolved route do not charge again"
+    },
+    {
+      "id": "A17",
+      "requirement": "A17:하강 Gate에서만 생존 직원 현재 트라우마10% 올림 회복(Critical/Breakdown 포함/Dead 제외); 동층 이동·귀환 회복 없음. 장비/인벤토리/자원은 수명대로 보존한다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "test013.stdout.log",
+        "test014.stdout.log",
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json"
+      ],
+      "claim": "37->33 and100->90 only on descent, same-floor unchanged; shared actual SavePoint/legacy recovery tests cover living versus dead/critical/breakdown semantics"
+    },
+    {
+      "id": "A18",
+      "requirement": "A18:Gate 도달에 추가 일반 보스 처치·노드 완료 수 조건이 없고 안전지대 허용 장착은 무료로 유지한다. U12 귀환/실패/첫입장 계약을 보존한다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "test013.stdout.log",
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json"
+      ],
+      "claim": "real support-only route reaches Gate without boss or completed-node quota; U12 continuation/first-entry semantics and inherited safe-loadout policy retained"
+    },
+    {
+      "id": "A19",
+      "requirement": "A19:일반 위치·연결·방향은 처음부터, 인접 이름/컨셉은 조건 내 공개하고 미탐사 보스 정체/내부정보·숨은 연결·초상은 누설하지 않는다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "test013.stdout.log"
+      ],
+      "claim": "initial public85of89rooms hides4finals/edges, distant names and unvisited interiors; adjacent ordinary names reveal without travel lock"
+    },
+    {
+      "id": "A20",
+      "requirement": "A20:실제 Gate 떠남/깊이>=3 Gate 정상귀환에서 방완료·영구 지식 확정, Gate 조회/취소·소진 조기귀환·클리어 전 전멸은 신규 완료를 만들지 않는다. 이미 확정한 지식은 실패/Checkpoint 복구에서 유지한다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "test013.stdout.log",
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json"
+      ],
+      "claim": "arrival alone creates no knowledge; departure and B3Gate Return commit completion; SavePoint preserves prior permanent knowledge; exhaustion/failure branch code does not call completion"
+    },
+    {
+      "id": "A21",
+      "requirement": "A21:실패 소비와 성공 개방을 구분하고 지난 원정 상품/보상/배정 정보를 새 원정에 공개하지 않는다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "test013.stdout.log",
+        "normal_route001/RESULT.json"
+      ],
+      "claim": "Abandon/new departure retains fixed knowledge but clears prior expedition maps/receipts and never exposes prior variable rewards/shop state"
+    },
+    {
+      "id": "A22",
+      "requirement": "A22:승리의 실제 등장 적 profile만 도감 등록하고 미출현wave/소환/미리보기는 제외한다. 미인식 외부/기존 보스ID와 기존 영구 기록을 보존한다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "test013.stdout.log",
+        "external004/BATTLE_ORACLE.json"
+      ],
+      "claim": "actual victory registers only two spawned profiles; current selected conditional-wave/summon, preview/candidate ordering and defeat/retreat tests; unknown historical IDs preserved by unchanged merge"
+    },
+    {
+      "id": "A23",
+      "requirement": "A23:전체graph·연결·기존기록을 보존하고 유효참조와 실행지원 상태를 분리한다. 누락 참조 무시·가짜boss executor·자동귀환/클리어/보상을 만들지 않는다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "test013.stdout.log",
+        "probe_prepare002.result.json",
+        "external004/route/RESULT.json"
+      ],
+      "claim": "full graph remains authored, missing refs fail, unsupported execution is separate and no fabricated boss/reward completion occurs"
+    },
+    {
+      "id": "A24",
+      "requirement": "A24:공개 전 미구현 표시로 숨은정보를 누설하지 않고 공개 후 지원상태/입장불가 사유를 제공한다. 자격 충족/미충족·직접/재전송·복원후 입장을 거절하고 비용/진행 무변경이다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "test013.stdout.log",
+        "normal_route001/RESULT.json"
+      ],
+      "claim": "reachable unsupported room is rejected repeatedly and after Continue with all roots unchanged; initial relic refusal has no cost/fake reward; concealed final rooms never reveal support text"
+    },
+    {
+      "id": "A25",
+      "requirement": "A25:일반 활동 개발profile의 정상 로더/입장/결과/복원을 실행하고 제외된 공식 콘텐츠 사유를 명시한다. 구조 검증 성공을 정식 전체 플레이 완료로 집계하지 않는다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json",
+        "external004/BATTLE_ORACLE.json"
+      ],
+      "claim": "normal external authored movement profile executes real support and ordinary battle, Continue and result; official relic/unique/final executors explicitly excluded"
+    },
+    {
+      "id": "A26",
+      "requirement": "A26:실제 전장과 브리핑이 일치하고 배치/비용/입장 후 유예사망·자격 정보를 제공한다. 숨긴wave/미공개보상은 공개하지 않고 예상/확정 상태를 구분한다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "test013.stdout.log",
+        "external004/BATTLE_ORACLE.json"
+      ],
+      "claim": "actual briefing equals battle setup for encounter/mission/geometry/route/deployment; exposed cost/eligibility and hidden-wave negative proof retained"
+    },
+    {
+      "id": "A27",
+      "requirement": "A27:조회/미리보기 취소는 비용/진행 무변경이며 입장 전에 변경된 자원/직원 자격을 재검증한다. 보상 활동의 사전 조건을 공개하고 실제 실행 지원과 구분한다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "test013.stdout.log",
+        "external004/route/RESULT.json"
+      ],
+      "claim": "supported Select/Cancel and prepared-discard preserve roots; support and live entry validation rerun at confirmation; reward type disclosure does not imply executor availability"
+    },
+    {
+      "id": "A28",
+      "requirement": "A28:동일 원정 배정/현재방·방별 진행/최초입장/보상유형과 공개 상태를 새프로세스 Continue 및 SavePoint복원에서 보존한다. 새 원정은 새 가변상태, 영구 지식은 유지한다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "test013.stdout.log",
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json",
+        "external004/CHECKPOINT_ORACLE.json"
+      ],
+      "claim": "fresh-process Continue exact all snapshots/core bytes; SavePoint preserves knowledge; new expedition clears only variable state"
+    },
+    {
+      "id": "A29",
+      "requirement": "A29:지원 구writer/미지원 저장·잘못된 지원 작성/명령·실제 IO실패에서 원본 보호와 실패 원자성을 검증한다. 임의 변조만 가능한 입력은 검증범위 밖이다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "test013.stdout.log",
+        "legacy001/RESULT.json",
+        "external004/CHECKPOINT_ORACLE.json",
+        "normal_route001/RESULT.json",
+        "server_test001.stdout.log"
+      ],
+      "claim": "genuine old V12/V4 producer bytes, current V14/V5, actual IO failure/retry/child-process read, supported input/command rejection; arbitrary save edits explicitly excluded"
+    },
+    {
+      "id": "A30",
+      "requirement": "A30:공식89방/846활동 및 제한된 확장 입력에서 결정론·실시간 비용·메모리peak/회수·작업량을 구분해 측정하고 정상profile과 미지원/초과입력 거부를 구분한다. U12/U04/U11의 유효 비영향 증거를 재사용한다.",
+      "disposition": "satisfied",
+      "evidence": [
+        "measurements002/RESULT.json",
+        "test012.stdout.log",
+        "NORMAL_LIMIT_REVIEW_003.json",
+        "normal_route001/RESULT.json"
+      ],
+      "claim": "three fresh-process samples per official/expanded case distinguish wall time, requested heap lifetime/peak/drop and loader work; move exact/one-short budgets and current Normal approval; no raised limits/SLO claim"
+    }
+  ],
+  "integration": [
+    {
+      "id": "IVA-CFMN-ALLOCATION-01",
+      "acceptance": [
+        "A01",
+        "A02"
+      ],
+      "owner": "GOAL-CFMN-01/WP-CFMN-VERIFY",
+      "evidence": [
+        "test013.stdout.log"
+      ]
+    },
+    {
+      "id": "IVA-CFMN-ALLOCATION-02",
+      "acceptance": [
+        "A03",
+        "A04"
+      ],
+      "owner": "GOAL-CFMN-01/WP-CFMN-VERIFY",
+      "evidence": [
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json",
+        "test013.stdout.log"
+      ]
+    },
+    {
+      "id": "IVA-CFMN-GRAPH",
+      "acceptance": [
+        "A05",
+        "A06",
+        "A07",
+        "A08"
+      ],
+      "owner": "GOAL-CFMN-01/WP-CFMN-VERIFY",
+      "evidence": [
+        "external004/route/RESULT.json",
+        "measurements002/RESULT.json",
+        "normal_route001/RESULT.json",
+        "probe_prepare002.result.json",
+        "test013.stdout.log"
+      ]
+    },
+    {
+      "id": "IVA-CFMN-ASSIGNMENT",
+      "acceptance": [
+        "A09",
+        "A10",
+        "A11",
+        "A12"
+      ],
+      "owner": "GOAL-CFMN-01/WP-CFMN-VERIFY",
+      "evidence": [
+        "external004/BATTLE_ORACLE.json",
+        "probe_prepare002.result.json",
+        "test013.stdout.log"
+      ]
+    },
+    {
+      "id": "IVA-CFMN-OMEN",
+      "acceptance": [
+        "A13",
+        "A14"
+      ],
+      "owner": "GOAL-CFMN-01/WP-CFMN-VERIFY",
+      "evidence": [
+        "test013.stdout.log"
+      ]
+    },
+    {
+      "id": "IVA-CFMN-NAVIGATION",
+      "acceptance": [
+        "A15",
+        "A16",
+        "A17",
+        "A18"
+      ],
+      "owner": "GOAL-CFMN-01/WP-CFMN-VERIFY",
+      "evidence": [
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json",
+        "test013.stdout.log",
+        "test014.stdout.log"
+      ]
+    },
+    {
+      "id": "IVA-CFMN-KNOWLEDGE",
+      "acceptance": [
+        "A19",
+        "A20",
+        "A21",
+        "A22"
+      ],
+      "owner": "GOAL-CFMN-01/WP-CFMN-VERIFY",
+      "evidence": [
+        "external004/BATTLE_ORACLE.json",
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json",
+        "test013.stdout.log"
+      ]
+    },
+    {
+      "id": "IVA-CFMN-SUPPORT",
+      "acceptance": [
+        "A23",
+        "A24",
+        "A25"
+      ],
+      "owner": "GOAL-CFMN-01/WP-CFMN-VERIFY",
+      "evidence": [
+        "external004/BATTLE_ORACLE.json",
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json",
+        "probe_prepare002.result.json",
+        "test013.stdout.log"
+      ]
+    },
+    {
+      "id": "IVA-CFMN-BRIEFING",
+      "acceptance": [
+        "A26",
+        "A27"
+      ],
+      "owner": "GOAL-CFMN-01/WP-CFMN-VERIFY",
+      "evidence": [
+        "external004/BATTLE_ORACLE.json",
+        "external004/route/RESULT.json",
+        "test013.stdout.log"
+      ]
+    },
+    {
+      "id": "IVA-CFMN-PERSISTENCE",
+      "acceptance": [
+        "A28",
+        "A29",
+        "A30"
+      ],
+      "owner": "GOAL-CFMN-01/WP-CFMN-VERIFY",
+      "evidence": [
+        "NORMAL_LIMIT_REVIEW_003.json",
+        "external004/CHECKPOINT_ORACLE.json",
+        "external004/route/RESULT.json",
+        "legacy001/RESULT.json",
+        "measurements002/RESULT.json",
+        "normal_route001/RESULT.json",
+        "server_test001.stdout.log",
+        "test012.stdout.log",
+        "test013.stdout.log"
+      ]
+    }
+  ],
+  "validation_dimensions": [
+    {
+      "dimension": "success",
+      "disposition": "required/satisfied",
+      "evidence": [
+        "test013.stdout.log",
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json",
+        "external004/BATTLE_ORACLE.json"
+      ]
+    },
+    {
+      "dimension": "invalid_input",
+      "disposition": "required/satisfied",
+      "evidence": [
+        "test013.stdout.log"
+      ]
+    },
+    {
+      "dimension": "failure_rollback",
+      "disposition": "required/satisfied",
+      "evidence": [
+        "test013.stdout.log",
+        "legacy001/RESULT.json"
+      ]
+    },
+    {
+      "dimension": "retry_idempotency",
+      "disposition": "required/satisfied",
+      "evidence": [
+        "test013.stdout.log",
+        "legacy001/RESULT.json",
+        "normal_route001/RESULT.json"
+      ]
+    },
+    {
+      "dimension": "ordering_concurrency",
+      "disposition": "required/satisfied",
+      "evidence": [
+        "test013.stdout.log",
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json",
+        "BASELINE_REUSE.json"
+      ]
+    },
+    {
+      "dimension": "boundary_empty_max",
+      "disposition": "required/satisfied",
+      "evidence": [
+        "test013.stdout.log",
+        "measurements002/RESULT.json"
+      ]
+    },
+    {
+      "dimension": "disconnect_restart_persistence",
+      "disposition": "required/satisfied",
+      "evidence": [
+        "external004/route/RESULT.json",
+        "legacy001/RESULT.json",
+        "normal_route001/RESULT.json"
+      ]
+    },
+    {
+      "dimension": "live_data",
+      "disposition": "required/satisfied",
+      "evidence": [
+        "probe_prepare002.result.json",
+        "test013.stdout.log",
+        "measurements002/RESULT.json"
+      ]
+    },
+    {
+      "dimension": "producer_consumer",
+      "disposition": "required/satisfied",
+      "evidence": [
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json",
+        "external004/BATTLE_ORACLE.json",
+        "legacy001/RESULT.json"
+      ]
+    },
+    {
+      "dimension": "legacy_fallback_absence",
+      "disposition": "required/satisfied",
+      "evidence": [
+        "test013.stdout.log",
+        "legacy001/RESULT.json",
+        "test014.DISPOSITION.json",
+        "BASELINE_REUSE.json"
+      ]
+    }
+  ],
+  "execution_nodes": [
+    "WP-CFMN-DATA",
+    "WP-CFMN-FLOW",
+    "WP-CFMN-STORE",
+    "WP-CFMN-PUBLIC",
+    "WP-CFMN-VERIFY"
+  ],
+  "known_limits": [
+    "GEX-20 audit not performed; this is implementation/self-validation, not Goal Complete.",
+    "Official full playthrough is unavailable: B1-01 first SimpleChoice and all five relic activity executors belong to U16; no generic reward fallback.",
+    "U20 omen/eligibility producer, unique final bosses, Unity and network deployment remain outside U13.",
+    "Current119-test selection passed. Extra legacy selection10/12 has two documented stale expectations; excluded manually edited save/checksum cases are not claimed passed. See test014.DISPOSITION and IMPLEMENTATION_REVIEW.",
+    "Performance samples cover full authored static graph with initial room manifested, plus actual small development traversal; not all89rooms visited or a final performance/balance SLO.",
+    "Private issuer material is not archived; public actual calibration/adoption/Passed host evidence and binary/config identities are preserved.",
+    "FacilityLayout add/replace mod consumer witness remains unsupported in existing U11 matrix; current trusted-base authored loading/execution is verified."
+  ]
+}

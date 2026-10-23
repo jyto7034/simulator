@@ -1,0 +1,29 @@
+(skills: [
+(id: "u09_family_closure", name: "External two relic closure", kind: Targeted, focus_time_ms: 0, use_lifetime: Action,
+ cast_targeting: Explicit(selection: automatic_unit, target: EnemySingle(rule: Nearest), reach: global, air_capable: true),
+ steps: [(id: "hit", delay_ms: 0, target: CastTarget, delivery: Instant, effects: [(id: "original", tags: ["family_original"], op: Damage(amount: 23, damage_type: True))])]),
+(id: "u09_family_personal", name: "External representative personal protection", kind: Untargeted, focus_time_ms: 0, use_lifetime: Action,
+ cast_targeting: Explicit(selection: self, target: SelfUnit, reach: pattern, air_capable: true),
+ steps: [(id: "grant", delay_ms: 0, target: SelfUnit, delivery: Instant, effects: [(id: "pool", op: PersonalShieldGrant(definition: (
+ amount: (moment: Snapshot, root: Const((value: 200, unit: Magnitude))), duration_ms: 20000, priority: 5,
+ recipients: PlayerEmployeesAtRelease(radius_units: 2000000), source_creation: Some((operations: [Scale(increment_percent: 50)])))))])]),
+(id: "u09_family_support", name: "External representative fixed regular support", kind: Targeted, focus_time_ms: 0,
+ use_lifetime: ActionAndEffects(effects: [(step: "support", effect: "channel")]),
+ cast_targeting: Explicit(selection: self, target: SelfUnit, reach: pattern, air_capable: true),
+ steps: [(id: "support", delay_ms: 0, target: SelfUnit, delivery: Instant, effects: [(id: "channel", op: Sustained(definition: ChannelAura(duration_ms: 30000,
+ aura: (family: "u09_family_support", priority: 0, radius_units: 2000000, basic_damage_percent: 20, basic_speed_points: 15))))])]),
+(id: "u09_family_monk", name: "External representative physical footprint and one heal", kind: Targeted, focus_time_ms: 0, use_lifetime: Action,
+ cast_targeting: Explicit(selection: automatic_unit, target: EnemySingle(rule: Nearest), reach: global, air_capable: true),
+ flow: Some(Sequence(id: "sequence", children: [Action(id: "cost_action", step_id: "cost", wait: EffectsSettled), Action(id: "bite_action", step_id: "bite", wait: EffectsSettled)])),
+ steps: [(id: "cost", delay_ms: 0, target: SelfUnit, delivery: Instant, effects: [(id: "hp_cost", op: HealthCost(amount: 10, allow_lethal: false))]),
+ (id: "bite", delay_ms: 0, target: CastTarget, delivery: Instant, effects: [(id: "bite_damage", tags: ["family_bite"], op: Damage(amount: 40, damage_type: Physical))])]),
+// Explicit enemy pressure makes the personal-pool consumer independent of
+// the defended objective's separate occupancy and enemy basic-attack target.
+(id: "u09_family_enemy_pressure", name: "External one-point enemy pressure", kind: Targeted, focus_time_ms: 0, use_lifetime: Action,
+ cast_targeting: Explicit(selection: automatic_unit, target: EnemySingle(rule: Nearest), reach: global, air_capable: true),
+ flow: Some(Action(id: "pressure_release", step_id: "pressure", wait: Released)),
+ steps: [(id: "pressure", delay_ms: 0, target: CastTarget,
+ delivery: TileArea(footprint: (include_anchor_tile: true, rows: ["XXXXX", "XXXXX", "XX@XX", "XXXXX", "XXXXX"]),
+ area: (anchor: CastTarget, tile_origin: Anchor, tracking: GroundFixed, hit_targets: Enemies, tick_policy: EveryTick, duration_ms: 10000, tick_interval_ms: Some(1000))),
+ effects: [(id: "pressure_hit", op: Damage(amount: 1, damage_type: True))])]),
+])

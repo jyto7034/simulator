@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "pages": 220,
+  "actions": 61,
+  "images": 25,
+  "viewports": [
+    "1440×1100",
+    "390×844"
+  ],
+  "offline": true,
+  "errors": [],
+  "failed": [],
+  "remote": [],
+  "mobileOverflow": []
+}

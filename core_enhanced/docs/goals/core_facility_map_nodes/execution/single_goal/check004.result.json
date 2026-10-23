@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/home/blast/.cargo/bin/cargo",
+    "test",
+    "-p",
+    "game_core",
+    "--lib",
+    "--offline",
+    "--locked",
+    "--no-run"
+  ],
+  "exit_code": 0,
+  "seconds": 102.18395406099444,
+  "stdout": "check004.stdout.log",
+  "stderr": "check004.stderr.log"
+}

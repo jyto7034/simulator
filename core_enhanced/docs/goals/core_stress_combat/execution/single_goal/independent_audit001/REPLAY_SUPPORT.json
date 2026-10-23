@@ -1,0 +1,670 @@
+{
+  "purpose": "existing build-only support/fixtures from prior isolated workspace; no product source overrides",
+  "files": [
+    {
+      "path": "core_enhanced/docs/audit/live_skill_catalog_manifest.ron",
+      "sha256": "98961f00a6c942a28ccd69b3ed013c7402416296f6ef974da3594987a49c8437"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/evidence/preimplementation/PREIMPLEMENTATION_FIXTURES.json",
+      "sha256": "99f41d63657d0ece0e07d7c1c049bbf4490f2b9f4822fb9cee6dd8958daf2f2d"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/evidence/preimplementation/active_run_v7.pre_r06.json",
+      "sha256": "47af09db635ab1691dc61d7094d6b2414237562c27cd6e1d1b6ce9a4e49024c9"
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/evidence/preimplementation/literal_effects.pre_r06.ron",
+      "sha256": "1bd51a81d6b528ea4a80895bf95348c8417fd7113c77a73c6a2543d7821cf8c0"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/test_parts/g11_inputs001/empty.profile.json",
+      "sha256": "836e88a6a522ad5f7284e818cb7e24f87fa4df8bb1156a19ea64d4caa354074f"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/test_parts/g11_inputs001/expanded.profile.json",
+      "sha256": "1c2a9a17aad09aac5ac7ce0efdacfa0e11919be78cf7cd56bde3ec29f7abd50f"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/test_parts/g11_inputs001/manifest.json",
+      "sha256": "563e0945e3601e9d12ff5f255ff48437990a98b076d6f8d005076cb55db0bb13"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/test_parts/g11_inputs001/normal.profile.json",
+      "sha256": "b9c8a23eac9b208eab57fd2275071472a498eefebe20fbbc4dc2c249569a993c"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/runs/public_phase1_002/RESULT.json",
+      "sha256": "d642beee7f920e3f0f4b1e4388f505c59b498bc295d39b310b0f226ad1aa1496"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/runs/public_phase1_002/commands.jsonl",
+      "sha256": "35a6d3f9b45e9e401e4f36883f37d0488d0d5927ccbd973a65e5abb72897c004"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/product_parts/public_inputs001/selection.json",
+      "sha256": "b483eae40010790ea76f2c2238db626988eed9343433fb076b0c2bca66f58fa9"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/test_parts/runtime001/collect.py",
+      "sha256": "2fc101637b5cc191f19a97af5580e2bceca882c7c674b0b96646dc5a072e6402"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/test_parts/runtime001/prepare_normal_approval.py",
+      "sha256": "7ca50486f5dea7aa4fd075c763b8c26c3dacbfd1f1ad30cca28adfc85cf3fee4"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/test_parts/runtime001/prepare_workload.py",
+      "sha256": "a7ed8d70c8d80aa383c2e6a8fa62e1df1e652c262a8682d4e593445ade7af65e"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/test_parts/runtime001/probe/Cargo.toml",
+      "sha256": "6f382360d863ae1d076c497c20a5ca327532d478535678cbfe100bd3f710782b"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/test_parts/runtime001/probe/src/bin/normal_host_lifecycle.rs",
+      "sha256": "99d430a4e79ff6a66edc9303f2ed427e876e65780295aec7bedc20931c91c119"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/test_parts/runtime001/probe/src/bin/public_lifecycle.rs",
+      "sha256": "00dedaa23da75d687153d845a156c645cc6b8faa6e87293fdc4952b71ab42b61"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/test_parts/runtime001/probe/src/bin/u13_facility_host.rs",
+      "sha256": "d7a52e5534d046d2600bba713ac097b52905b9634e2b6386fd604f585b0f082d"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/test_parts/runtime001/probe/src/lib.rs",
+      "sha256": "9df2a99e03946166e85dbcbf3f0847ae6f75796dcd9eac5dc3e8e431a9bfef65"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/test_parts/runtime001/shared/normal_host_support.rs",
+      "sha256": "984a89e72b5ad81f5dd474fb584dd989ff7d78a88c545194d7b209102d65d040"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/test_parts/runtime001/shared/normal_host_tests.rs",
+      "sha256": "2e8b751791898edb549dad73732a5f79a01e4844e2590e97ef56fc3584b4458d"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/test_parts/runtime001/shared/normal_return_cycle_tests.rs",
+      "sha256": "0d6038eb2e593dea8b98e15297b6c176cef208ff964092aae65c046094facbb9"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/INPUTS.json",
+      "sha256": "65b1af4f3cb88607e0ee3b63dd519315e2200c223ea42bafb725d6a7442a7806"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/authority_api_cases.json",
+      "sha256": "06bd93ca9140367748269563fac959bf96b989c038d6b899bdacbe14c8d14278"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/bind_inputs.py",
+      "sha256": "bc94f03836e628c617240b8f01dafce312406f0e5b6060a9351098332f93cc3f"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/collect_authority_api.py",
+      "sha256": "a2447fb435cc89f7d7f9f6d3133c0bd8aaa56fdcddb4b8b90b35cc0d439750b4"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/collect_environment.py",
+      "sha256": "d2bc59be9b32bc80684a14a4fbbd038fbdddba525941367516e57790285ce4c1"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/compare_authority_api.py",
+      "sha256": "79a645e6fbcdee68d2ecdfd558a83a33de4b3fed1a8bfe2438d5243807688a08"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/diagnostic_inputs/family_usage001/DERIVED_INPUTS_RECEIPT.json",
+      "sha256": "c1077884f6d31647186908c60dcdfb1c56a0f9d02e3133c12f09c68dd97a7fc8"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/diagnostic_inputs/family_usage001/EXECUTION_GUIDANCE.json",
+      "sha256": "d4f05bdd3028f7d06daa1b8ab22b2cfb129e3de803abec30cd789e5b3e229301"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/diagnostic_inputs/family_usage001/causal_selection.json",
+      "sha256": "f1490031cfe460c52ba1b7ce54e39dbb4793b3e62282669a4cb1dae0911fcece"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/diagnostic_inputs/family_usage001/noop_selection.json",
+      "sha256": "25f02ed4567067d570ac8da90889d5add9a194a007ee94f7bd37e75a6b8a92e7"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/diagnostic_inputs/family_usage001/objects_selection.json",
+      "sha256": "b9300e43573bf8334f556d74750aee1ae9f90ea274225263af1b6d90485e0a6a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/diagnostic_inputs/family_usage001/observation_only_authoring_100m.ron",
+      "sha256": "491197cc5d6e98f26a6b037fda5ac6d176ed732f7e7a3898b8061eececbf43d0"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/diagnostic_inputs/family_usage001/official_base_selection.json",
+      "sha256": "b483eae40010790ea76f2c2238db626988eed9343433fb076b0c2bca66f58fa9"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/diagnostic_inputs/family_usage001/recipe_selection.json",
+      "sha256": "3bb256e39611ec114555fcbf94aba7e5dedf5a26ade7344d44c13da571b06a2a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/diagnostic_inputs/family_usage001/resources_selection.json",
+      "sha256": "40ab013fc919b3b84d50a147d45e1f1b91d4d9ebcc755386b507d3d43d640bf9"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/diagnostic_inputs/family_usage001/structural_selection.json",
+      "sha256": "080d9edc2a2ef78c45c34fbe224583b7d534a67acbbb120584fd3b8e92917850"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/diagnostic_inputs/family_usage001/unchanged_embedded_baseline.ron",
+      "sha256": "a1bb554def1974239b12c05e2a93f655f7d054d5101d52dd6b4d97dab0e7fe76"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/diagnostic_inputs/setup_cost001/DERIVED_INPUTS_RECEIPT.json",
+      "sha256": "878d1ba4214efc88d9610f6d5103c2de4acdf2862cc386bdd1992bae7613e00c"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/diagnostic_inputs/setup_cost001/EXECUTION_GUIDANCE.json",
+      "sha256": "f8ce101c2b46b9caf033c6e1a98619dadb2d576d3a12ab1d1c96771ea21e8909"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/diagnostic_inputs/setup_cost001/INPUTS.json",
+      "sha256": "a3a5a4ec13f6749d749b5d802958d1106127b13ab97e38c7ae20000f64df2d31"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/diagnostic_inputs/setup_cost001/adopted_parent.ron",
+      "sha256": "491197cc5d6e98f26a6b037fda5ac6d176ed732f7e7a3898b8061eececbf43d0"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/diagnostic_inputs/setup_cost001/observation_only_clone_1000000.ron",
+      "sha256": "fbd5a60a12dc3bc36080880f96d31e3817abe7a0247f45e45eb4fab197ef9de3"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/fixtures/fragment_recipe_manual.ron",
+      "sha256": "486eb932c2210621d05fd979483c1265aac73c06a8db6df16a4acea735103cb3"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/fixtures/objects.ron",
+      "sha256": "3ee1a3944a310f278602d09c190e2d532d8a9b63fb941aa9be71055569c34184"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/fixtures/relics_causal.ron",
+      "sha256": "cb1b2dd1934627e62331331ca2528c5430afb9e613dabfce529e9ad84d65bf9b"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/fixtures/relics_recipe.ron",
+      "sha256": "bf620e6a42db4081670040300be25cc08959eac6b235adbbdc7dfdb2ab2fbe2f"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/fixtures/relics_resources.ron",
+      "sha256": "d5f3c080dcd6fa35bd375b8ca8147ee7983c69f1a5ff1d71269e6e15e234a691"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/fixtures/relics_structural.ron",
+      "sha256": "b5ca04b35753c3dade5b55c5c1aac2e12f7a80c8e08433ef151009e33ec6e4ea"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/fixtures/skills_a.ron",
+      "sha256": "0f5a17b674d86ed9216f276053a2495b8fc7e9d4825a0ed25fe5961679dfa2c8"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/fixtures/skills_b.ron",
+      "sha256": "1266e2c06d2bf4e5f56aa93c4cb174d346e36257b357ac344a2771d8764fbd2e"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/fixtures/skills_causal.ron",
+      "sha256": "9dabb5e47bdcf0b806cab479b28b7592893e9088f8b0d0458f09addf0e920fdb"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/fixtures/skills_noop.ron",
+      "sha256": "82d36fd4e964a21a5142aca289771e603316e3b85f7374f87dc1afd12cd980ff"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/fixtures/skills_object.ron",
+      "sha256": "26ed091aad9b4b0a72ef12e9d00f7e64e474daeef04cda5456618340f6ebb091"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/fixtures/skills_recipe.ron",
+      "sha256": "ed4f72477a868adffa6b65419866179f288e46127d819abe86c84b0b7f161d48"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/fixtures/skills_recipe_manual.ron",
+      "sha256": "53b35c00e47775ebb9b30559728cde3b4e82f7e16210ad50244ce60d4ffd3b0e"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/fixtures/skills_resources.ron",
+      "sha256": "21415c99ac5416eb2046b3896c3ce5311ca94aa2a102b7949f1637925ee96f81"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/fixtures/skills_structural.ron",
+      "sha256": "00596451b2222fc0ec85836da6afdb005d19c3c12ed349f908faebc6b34e86f0"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/fixtures/skills_terminal.ron",
+      "sha256": "3610b5f4ec4079a700d88b4af0750a264ff109a6b6a017a978f33b6daf77aa2c"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/fixtures/workload_context/battlefield_templates.ron",
+      "sha256": "ff506facc42e9cfbc31a18c5f3baa4c3bbf0f941f5b12e762566830f17a9637d"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/fixtures/workload_context/encounters.ron",
+      "sha256": "0172e6c856683593333c143a27fa1ba499ed7553e201e8866b446acd7772b5ff"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/fixtures/workload_context/pack.ron",
+      "sha256": "f231f5dbe8c4e6e3e45415ae968915ffdd1a8d006f503b34090fccdbf28dac71"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/prepare_contexts.py",
+      "sha256": "2d28e0251f6af521357675b5424629915344b659df8388ba0119ae7f36f07caf"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/prepare_expression_contexts.py",
+      "sha256": "49a2e12b526926a2641a02345806185fd1eb02f1358ded5b2e78f1fb368dfffe"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/prepare_expression_fault.py",
+      "sha256": "0f4cb6e5a727a309ee6d4de812ddad8cee39d2816207841b8f8d4d289b649e97"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/prepare_load32_context.py",
+      "sha256": "1adab4ba46066620970824dc514e6fc4017673c3a17d944c8f9a1d26313ff3ed"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/prepare_public_entry.py",
+      "sha256": "5698d575705673039fa56142ac87815436dcb4f2355d00143302ae1d1021872c"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/prepare_successor_contexts.py",
+      "sha256": "8136bf333ab4a1d36db5b2f46a390433cd4238a664c55d40eb5b1390a463bcb3"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/prepare_unsupported_resource_context.py",
+      "sha256": "37330bb7f7a6f8df6d08f97cb8c03808f0654355b0bf56535d689257ed7ab3fa"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/Cargo.lock",
+      "sha256": "2feca3e0cb9ff7245a0b2da62fe9f8e784dfbf9d614a762987e66005893f6a34"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/Cargo.toml",
+      "sha256": "a43cae59bc4062e469e2de3a58f53fa1280472899fa126b059d05c438bea111e"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/bin/approved_lifecycle.rs",
+      "sha256": "e05be43f39f14a920d655daf8caad7f6eda101f71156bd140ad3189bda841208"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/bin/authority_api.rs",
+      "sha256": "dd4c4784fd2616448b456592afc80b6952093a530ebe68da0d347bc484ce5e8a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/bin/bulk_coverage.rs",
+      "sha256": "ce6b01cf67f2a8d57da39ee1c9c4ee5c12a5c06982d35f81309411a8357354fb"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/bin/cache_context.rs",
+      "sha256": "c01db4091c9a9a509528d9a2464e245899ebefc2de39049584f2a227433d1a44"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/bin/cache_negative.rs",
+      "sha256": "4be58c3ffc5dc1fa40f6566fb9160a3023de58d46e3990587e12e1405444715a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/bin/cache_preaccept.rs",
+      "sha256": "aa3e2fe58cbf3b665359d052346fe7ae87d938b16ea2ed14d341d100e4269429"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/bin/calibration.rs",
+      "sha256": "60739286533cee15efe7355d002b3d65ff7733252c4d760e86bd11eea112928a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/bin/candidate.rs",
+      "sha256": "43c7003872ad6c40c854b1dbfd0f5c4d2e452576426087347bbbce7d716611c2"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/bin/candidate_usage.rs",
+      "sha256": "2969a78e338da336ff9f2eda6057e1d5fceeb078159c53437205501c8eb37add"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/bin/combination_boundary.rs",
+      "sha256": "706ab84953d45197ee6510c69e0ca26c8c49f259b680ca282630aabc754f6113"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/bin/expression_profile.rs",
+      "sha256": "893321ce3dc0ee6f8f9969b737d750fb9a805e5d7cf78aeca5413b70d220c6d6"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/bin/family_usage.rs",
+      "sha256": "2585459a77265966100535ec2c7302eb5b9c51c48ee17a873a3ab378a38d183a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/bin/issuer_pending.rs",
+      "sha256": "473dee517e0fc69c51e46f4328a2b36b698f62709d6ab6ce5f6510a3f0145f2a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/bin/lab_diagnostic.rs",
+      "sha256": "7943c8e3015c4702b93b550dc584e95ca9ddf3eacd90b3a09bfd6f3141d54618"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/bin/native_fault_gap.rs",
+      "sha256": "94fe2485f2a2bd126c48e9d1f171ecb5e863466648e5312c3c1ab1bd858b7bf6"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/bin/normal_save.rs",
+      "sha256": "3d2fe8911fb439724b0bf7d78629e5e0d1dd19384516a70e0bc99bf7a459cc58"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/bin/prepare_capability_registry.rs",
+      "sha256": "d6fbff2cdca0ca598c2d8bd30be25b7aee68119633626dd93edfe97dd45e4abd"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/bin/prepare_lab_registry.rs",
+      "sha256": "565d1b5938f16aec8e6ec4d413245735a0a1f68b14e0e4756132eb293b570152"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/bin/prepare_registry.rs",
+      "sha256": "fa9b7873d630d40f100372bb98e46101d72f7788dfbc27ecd3a901e99a916463"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/bin/prepare_semantic_registry.rs",
+      "sha256": "663bb463b3c6bdbdcd669d27e364e4ac028efef22598173f29b703d4a169024f"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/bin/prepare_workload_fixture.rs",
+      "sha256": "9415ed2bf3d1e4e5c0e6c19306a18cdd37a979d812359dbd123a5ec99f119145"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/bin/prepare_workloads.rs",
+      "sha256": "4db91a9528f4cea1adc0160dbd72f3355c059e9ec094f82fdaf7cc0541522e5b"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/bin/semantic_coverage.rs",
+      "sha256": "2612cb2efa7cb0d1722b61a00ad363d6c7afc1f53ec496d10c99029b7b4fd79c"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/bin/setup_cost.rs",
+      "sha256": "d07e5733bd66c5275080397d1b1713d10136f50981f722a90e6814c30e796fdc"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/bin/worker_boundaries.rs",
+      "sha256": "59c58fb432929d3391d1c2f2ef7a2e4e7b1f047cf8c241d71597c74f15d0c08d"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/bin/worker_pair.rs",
+      "sha256": "b56cca0bf602f0e753b4704f8660279c0ad50ac1b4f67fa6a7568b17069bd4e4"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/bin/zero_site_coverage.rs",
+      "sha256": "c4f5e4be54464a8562bf41770db2a63c655b6c1ea0ff72892a4692573da214d9"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/cache_fixture.rs",
+      "sha256": "ff2498d27bc72a070042d639d0ea63649fbcc5ef71dd3fd4d6d4c831f5fa42e6"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/capability_oracle.rs",
+      "sha256": "86b8c15a2dde82a001890ccab9f8eaeec3b9c25c9d2840e9e9473598427eee73"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/core_host_oracle.rs",
+      "sha256": "89daca1f454841dda718b1a4a2268f287bdbaca1da85a708ce7a75fd0a99df94"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/coverage_oracle.rs",
+      "sha256": "eda70b6b03fb1017acff615c4004502d485132c6357eda51727ae580a6d33fb1"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/criterion_oracle.rs",
+      "sha256": "564741f8c3b3eca461792c6f05e6271228969fa9a39d93027c26111772207168"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/extended_oracle.rs",
+      "sha256": "f03422270aafff13ccfdbd18192676a4e5956fa1c488beb6b994f04b7cd9bfa5"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/file_state.rs",
+      "sha256": "f526a059de1d67f141db6db85fffe6f9a8ba0d523866b496e01cfb5f44b388ed"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/fixture_coverage.rs",
+      "sha256": "bd8fd83a17de653907862e5ca547ce31162b77f13a95c2576eeca255ef77a76e"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/lib.rs",
+      "sha256": "e75e44333b070eb14f7b5f852374df1443cfdc4910683d69f09858f1409c70cb"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/normal_preparation.rs",
+      "sha256": "6f005146b2f54635575ccd0f7ff70b5ddee9fcf2a7a5211ff085d971fdeed35e"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/secret_oracle.rs",
+      "sha256": "661022e57617372e035c6e45be5741518a202afdeee222f26f22527fdc2d4db3"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/worker_evidence.rs",
+      "sha256": "0801e252f992958629e3a39d6dd89f0d253d23ee8c8abf7749ccd23f89807c3b"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/src/workload_oracle.rs",
+      "sha256": "afbeba16bfde2a218e9baaee026981386a539c45afe9b4a54ce86c7780dcbf55"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/tests/calibration_authority.rs",
+      "sha256": "3a55681d94f63081c0b117908b582d02221fa864945e80260a4a42c8e6b6377d"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/tests/registry_contract.rs",
+      "sha256": "9f448c96317ae56a68b10640d91239b363c1eb83e401b8d18005d4d05360fc12"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe/tests/required_configuration.rs",
+      "sha256": "d69a6077b5ed4431a0c5d7c1c49f61b2f9042034850c4d1153e2f1ddecaf7744"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/public_entry_smoke.py",
+      "sha256": "4ac1ac2d435afcc1fd707befff7e1fccca0c1aa995fbf8b99f919177f198c19b"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/required_integration_selectors.json",
+      "sha256": "be521aa2e980f0c15f49394358150ef5d875f7169e3419b8c30ca152c042d136"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/run.py",
+      "sha256": "31248dedc4ea47d6db8223b865d2ee4af1f5ef87fbcfd0a6cdbd0af2dea687fe"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/shared/cache_hooks.rs",
+      "sha256": "8e9898ece3973d2163c9542470bcd449d7b6f7912b49da3485781d95c9b608f8"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/shared/cache_tests.rs",
+      "sha256": "d9264848de17653e3ad8e03879c91e0930a94d2cea9d7fc8066eb2740f155cee"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/shared/issuer_generation_lifetime.rs",
+      "sha256": "0eb8daa04fadf85865fe96a18d6fb62f1924a5b9c40826848deffd8664a2c447"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/shared/normal_actor_tests.rs",
+      "sha256": "767f4712fc650d814a1f921f9e85487d49e6185ad7e6f767c005ea8ae8737488"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/shared/normal_save_support.rs",
+      "sha256": "9ce1be557d5b07ad780aac03f6c84f3a670fb85969db409b3bf4e199969fb0ce"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/shared/normal_save_tests.rs",
+      "sha256": "6af5b078d76daabac1fbfbd59be8f07721ee83c1a1094b4a6b87277eca01b9f3"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/shared/normal_update_tests.rs",
+      "sha256": "b04a998a39561883dc738cce23465a92ec4a849e90175360dcae76529c7080df"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/fixtures/fragments.ron",
+      "sha256": "3bfc32a164c485c981c4985d06d21f1c6642266ab4ec6dbfbcbeed7061853df2"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/fixtures/relics.ron",
+      "sha256": "08bf6f6d434456b4ba826fa706dcfdd1b8de456a6b884bebb7299050152d432f"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/fixtures/rewards.ron",
+      "sha256": "5c5931f1c4986aaeb414b703b82beb6fe6546759eac1b5cbd6888561c95d6f2d"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/fixtures/skills.ron",
+      "sha256": "6b1fd34ee804001624f249c8c619891c9e507b73e2f5600a38b392857c67597a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/runtime_validation001/fixtures/family_closure_scenario038.json",
+      "sha256": "9057827487b87f35a7faa01ed8f7ed9b8a5ff8e11842fc99fdc12e8102f94015"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/runtime_validation001/fixtures/family_fragments.ron",
+      "sha256": "639f64929690c2f7b5e5ecea2a272504d7fe7ff8fcd9fc8eaa82edd1051bf261"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/runtime_validation001/fixtures/family_relics.ron",
+      "sha256": "4384de54edb839d4bc93aecb1c92a7d7885e738d5a7c245275542b117c5fab0a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/runtime_validation001/fixtures/family_rewards.ron",
+      "sha256": "95a539e11fdd5fb7f64c6db82d07c69eec8c3c618b764e1a78316c90790126af"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/runtime_validation001/fixtures/family_skills.ron",
+      "sha256": "c07ee8c97be01a0a05e0705b92b3a2850439c565a974552c09591a9fbdd9253f"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/runtime_validation001/fixtures/fragments.ron",
+      "sha256": "f8a4691989e153884c1702c08336f3a55bebfc81d70bd7379dec94f3a3da1291"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/runtime_validation001/fixtures/relics.ron",
+      "sha256": "d7e6dbfec7f289040980b6addb8a077d433a7c77d8f7049e41979474be9f1e66"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/runtime_validation001/fixtures/rewards.ron",
+      "sha256": "34bb666a432da517291f6a215673db7c9a0c3c15e3f97605069065c158822e94"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/runtime_validation001/fixtures/skills.ron",
+      "sha256": "fe86c8be079b0ac2191e427f96aaaa1cf0c28d2a45072bce8bf6f85f33dc8f92"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/current_legacy001/content/official/data/abnormalities/base.ron",
+      "sha256": "b1c2edb2af416e754bd445d581278555f6196936832a155bed31fb4bd048c474"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/current_legacy001/content/official/data/boss_omen/chains.ron",
+      "sha256": "8ababe6019c5a4f371b728ec321c7bb72e213131bc93870fed482b4838bdd8b0"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/current_legacy001/content/official/data/boss_runtime/base.ron",
+      "sha256": "58805dbc82ee3d4513c571acf8c034646b1389e070fcaebacd08f84ba4966d04"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/current_legacy001/content/official/data/buffs/base.ron",
+      "sha256": "e7cc335f4243b4fc0ac907a72356ba44a1eae2669aa340147a0fbbc14f9c448b"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/current_legacy001/content/official/data/consumables/base.ron",
+      "sha256": "bdaa2b1f4667ebd20234d0541dd50dd5241f3828b2a417b44980d7390cccdd0a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/current_legacy001/content/official/data/employees/definitions.ron",
+      "sha256": "34f57e39daaa4728585804f7fadcfd4f09f4697d9894d1d2831995806acf86d9"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/current_legacy001/content/official/data/enemies/corroded_employees.ron",
+      "sha256": "f4bf8aea315da15da172cb584bec6c73f93f1e40ffb46226f2e3adbcdc294154"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/current_legacy001/content/official/data/enemies/corroded_wave_presets.ron",
+      "sha256": "c638648cdc9999b07fd8dcd8e1f6e699c9f5c6650d41959d7b1f0bca6764b751"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/current_legacy001/content/official/data/equipments/base.ron",
+      "sha256": "bb6c1760e8a2ae2bbdebdd9f7610bce4b3e1ce9a27248fba326f844eb7445c4d"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/current_legacy001/content/official/data/events/rewards/base.ron",
+      "sha256": "8f02b9119f31a244934324e263791902b4fc6ad582d351abd99bd951c447829a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/current_legacy001/content/official/data/events/shops/base.ron",
+      "sha256": "a2d16a0c8e5a5a309cc5f89e068c6642383179e14901eeead2a63d325b769297"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/current_legacy001/content/official/data/events/story/base.ron",
+      "sha256": "f49c464ccf13d9d9ff85bf462e1f19af289af1bf45b07cca02713af7757dbc4c"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/current_legacy001/content/official/data/map/battlefield_archetypes.ron",
+      "sha256": "c8251aab51532ee5f045fe182999e0f627e89c7e8ca936f2714bf165fc043dd9"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/current_legacy001/content/official/data/map/battlefield_templates.ron",
+      "sha256": "1f51d0e4cc1a784c684e60cf4bef9ee4b4e943aa776cd7db781ad7078144223f"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/current_legacy001/content/official/data/map/facility_templates.ron",
+      "sha256": "2ad14cfc29fa944d7aa2bdedf5747868199d843205b93ff1f28b4a9ceb50d4ff"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/current_legacy001/content/official/data/map/node_assignment_profiles.ron",
+      "sha256": "d27bb55245dcff74bc4bf801f32168104926698162589009470641d6d69c10a3"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/current_legacy001/content/official/data/map/node_definitions.ron",
+      "sha256": "482d876e7a0baf406118b62afccb2e88ec4d2372b39e48be8cd872c3dd25491b"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/current_legacy001/content/official/data/pve/encounters.ron",
+      "sha256": "83a45bbc7f123b9261c6ee5d40edaff57af30d91f28cf34484ef3d6339a86182"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/current_legacy001/content/official/data/relics/base.ron",
+      "sha256": "6d3a1b7f298fe2d4b4e7995549f88e78b21e45db65b1d4856dbfabfe8c768d27"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/current_legacy001/content/official/data/resources/base.ron",
+      "sha256": "2bba22ea16ddc7967d507ca9fcd8278931f1581da3f55a79aee895862a642449"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/current_legacy001/content/official/data/run/policy.ron",
+      "sha256": "eaccc2d80bccc8ab39641568d5899fdfcfbf5289dce9eeefea3f49f4c680fea4"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/current_legacy001/content/official/data/skill_fragments/base.ron",
+      "sha256": "0e3a405e83420052544b655085795c386c6730e6cba284f33507460823109c4c"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/current_legacy001/content/official/data/skills/base.ron",
+      "sha256": "8cfecd4db355aa40082ac0ebc463f73987a4c7e845a122f1d0b2b33ef6dd87f2"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/current_legacy001/content/official/data/summoned_units/base.ron",
+      "sha256": "341047f471a809ceed21edb14270eb76779cd90e09f4080d67d42c3fc2182966"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/current_legacy001/content/official/data/visual_novel_triggers/base.ron",
+      "sha256": "63b11363113f621f782d34aa0e6b5883fa87e4b4486f2e71afec5d833c25b1af"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/current_legacy001/content/official/data/visual_novels/base.ron",
+      "sha256": "0c37bba3a0659fa1960e44a4e8f7dca9c92399eb9f1c9fda9b588bae6338b55f"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/current_legacy001/content/official/pack.ron",
+      "sha256": "c90e64ad0de2458bec340c46f25516a743e99e5a319a5160725d7cf268a1c2cf"
+    },
+    {
+      "path": "core_enhanced/docs/skills/live_content_index.md",
+      "sha256": "e67640573525325cfb123b00415e418ef3805debcdbce81316375bfc9060267c"
+    }
+  ],
+  "archive_sha256": "e1c3cd4e891c4d128c429041f360e9309c3a9812dbf96757dc8998bc25fe47eb"
+}

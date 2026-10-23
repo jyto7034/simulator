@@ -1,0 +1,249 @@
+{
+  "approval_claimed": false,
+  "cases": [
+    {
+      "byte_count": 589,
+      "equipment_copies": 0,
+      "fixture_status": "I: actual full profile with vault cleared",
+      "fragment_copies": 0,
+      "name": "empty",
+      "path": "empty.profile.json",
+      "sha256": "836e88a6a522ad5f7284e818cb7e24f87fa4df8bb1156a19ea64d4caa354074f"
+    },
+    {
+      "byte_count": 4193,
+      "equipment_copies": 6,
+      "fixture_status": "actual public Return full profile, unchanged",
+      "fragment_copies": 6,
+      "name": "normal",
+      "path": "normal.profile.json",
+      "sha256": "b9c8a23eac9b208eab57fd2275071472a498eefebe20fbbc4dc2c249569a993c"
+    },
+    {
+      "byte_count": 226583,
+      "equipment_copies": 384,
+      "fixture_status": "I: actual asset batch replicated 64 times; fresh deterministic UUIDs; material balance unchanged",
+      "fragment_copies": 384,
+      "name": "expanded",
+      "path": "expanded.profile.json",
+      "sha256": "1c2a9a17aad09aac5ac7ce0efdacfa0e11919be78cf7cd56bde3ec29f7abd50f"
+    }
+  ],
+  "content_identity": {
+    "contract": {
+      "authoring": 1,
+      "catalog_schema": 6,
+      "execution": 3,
+      "fingerprint": 1,
+      "pack_format": 1
+    },
+    "semantic_sha256": "a5082a9e7e2c0d1511eda587fe3b2552e97f7b907d048f1cec287a067be2f1c6"
+  },
+  "content_root_repo_relative": "core_enhanced/docs/goals/core_manual_encounter_revival/execution/single_goal/test_parts/g11_inputs001/content",
+  "fresh_children_per_case": 3,
+  "identity_update_reason": "U16-2 adds default relic_rewards policy to normalized catalog; unchanged raw authored pack, source receipt, profiles, source trace/result, limits and oracle.",
+  "input_description": "Unchanged actual public Return full profile and empty/expanded G11 variants, consumed by current U17 official content. Historical source evidence and profiles remain byte-identical.",
+  "measurement_contract": {
+    "default_runtime_safety_first": true,
+    "expectation_snapshots_json_and_io_outside_windows": true,
+    "finite_expansion_multiplier": 64,
+    "full_60_suite_replaced": false,
+    "input_preparation_and_warmup_outside_windows": true,
+    "native_observation_feature_required": true,
+    "product_cap_or_performance_pass_line": null
+  },
+  "player_uuid": "c0de1200-0000-0000-0000-000000002001",
+  "predecessor": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/g11_inputs001/manifest.json",
+  "profile_json_pointer": "/profile",
+  "runtime_safety": {
+    "byte_count": 1605,
+    "repo_relative_path": "config/runtime_safety.ron",
+    "sha256": "a1bb554def1974239b12c05e2a93f655f7d054d5101d52dd6b4d97dab0e7fe76"
+  },
+  "runtime_safety_effective_sha256": "7c26e5cda30e1edd9932ccb74b69fe2dc7b4698a35b129343de2dfd79cf159a2",
+  "schema_version": 1,
+  "scope": "Current shared vault ownership/capture/restore regression; no new approval or cost cap claim",
+  "seed": 12077,
+  "selection": {
+    "byte_count": 53,
+    "repo_relative_path": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/product_parts/public_inputs001/selection.json",
+    "sha256": "b483eae40010790ea76f2c2238db626988eed9343433fb076b0c2bca66f58fa9"
+  },
+  "source_receipt": {
+    "files": [
+      {
+        "byte_count": 33133,
+        "pack_id": "official",
+        "path": "official/data/abnormalities/base.ron",
+        "sha256": "b1c2edb2af416e754bd445d581278555f6196936832a155bed31fb4bd048c474"
+      },
+      {
+        "byte_count": 799,
+        "pack_id": "official",
+        "path": "official/data/boss_omen/chains.ron",
+        "sha256": "8ababe6019c5a4f371b728ec321c7bb72e213131bc93870fed482b4838bdd8b0"
+      },
+      {
+        "byte_count": 15863,
+        "pack_id": "official",
+        "path": "official/data/boss_runtime/base.ron",
+        "sha256": "58805dbc82ee3d4513c571acf8c034646b1389e070fcaebacd08f84ba4966d04"
+      },
+      {
+        "byte_count": 917,
+        "pack_id": "official",
+        "path": "official/data/buffs/base.ron",
+        "sha256": "e7cc335f4243b4fc0ac907a72356ba44a1eae2669aa340147a0fbbc14f9c448b"
+      },
+      {
+        "byte_count": 4154,
+        "pack_id": "official",
+        "path": "official/data/consumables/base.ron",
+        "sha256": "bdaa2b1f4667ebd20234d0541dd50dd5241f3828b2a417b44980d7390cccdd0a"
+      },
+      {
+        "byte_count": 9974,
+        "pack_id": "official",
+        "path": "official/data/employees/definitions.ron",
+        "sha256": "34f57e39daaa4728585804f7fadcfd4f09f4697d9894d1d2831995806acf86d9"
+      },
+      {
+        "byte_count": 6332,
+        "pack_id": "official",
+        "path": "official/data/enemies/corroded_employees.ron",
+        "sha256": "f4bf8aea315da15da172cb584bec6c73f93f1e40ffb46226f2e3adbcdc294154"
+      },
+      {
+        "byte_count": 3346,
+        "pack_id": "official",
+        "path": "official/data/enemies/corroded_wave_presets.ron",
+        "sha256": "c638648cdc9999b07fd8dcd8e1f6e699c9f5c6650d41959d7b1f0bca6764b751"
+      },
+      {
+        "byte_count": 82291,
+        "pack_id": "official",
+        "path": "official/data/equipments/base.ron",
+        "sha256": "11d1340a6f726aedd78e2fe3e6828a759e659f440267d970c48db6771e58161d"
+      },
+      {
+        "byte_count": 5148,
+        "pack_id": "official",
+        "path": "official/data/events/rewards/base.ron",
+        "sha256": "8f02b9119f31a244934324e263791902b4fc6ad582d351abd99bd951c447829a"
+      },
+      {
+        "byte_count": 6618,
+        "pack_id": "official",
+        "path": "official/data/events/shops/base.ron",
+        "sha256": "c84d6d8a5e655ae8904dc8b4997ebb0d91e086ba69ac4c4473775e8c82e68dd1"
+      },
+      {
+        "byte_count": 5693,
+        "pack_id": "official",
+        "path": "official/data/events/story/base.ron",
+        "sha256": "9832b9a0efe187b733e146d941d6499958c38984d41da6722c82f84f0a003242"
+      },
+      {
+        "byte_count": 1823,
+        "pack_id": "official",
+        "path": "official/data/map/battlefield_archetypes.ron",
+        "sha256": "c8251aab51532ee5f045fe182999e0f627e89c7e8ca936f2714bf165fc043dd9"
+      },
+      {
+        "byte_count": 12299,
+        "pack_id": "official",
+        "path": "official/data/map/battlefield_templates.ron",
+        "sha256": "1f51d0e4cc1a784c684e60cf4bef9ee4b4e943aa776cd7db781ad7078144223f"
+      },
+      {
+        "byte_count": 183699,
+        "pack_id": "official",
+        "path": "official/data/map/facility_templates.ron",
+        "sha256": "cbe9345daea16cce57a80f642474dfe5dbfd81555b3d9c014ae4f87589443c46"
+      },
+      {
+        "byte_count": 10591,
+        "pack_id": "official",
+        "path": "official/data/map/node_assignment_profiles.ron",
+        "sha256": "d27bb55245dcff74bc4bf801f32168104926698162589009470641d6d69c10a3"
+      },
+      {
+        "byte_count": 2419,
+        "pack_id": "official",
+        "path": "official/data/map/node_definitions.ron",
+        "sha256": "482d876e7a0baf406118b62afccb2e88ec4d2372b39e48be8cd872c3dd25491b"
+      },
+      {
+        "byte_count": 132724,
+        "pack_id": "official",
+        "path": "official/data/pve/encounters.ron",
+        "sha256": "b1c1d580bd7b1348764d9d3d309d14344f09d5e0fb3eacfc9d6273df293eb764"
+      },
+      {
+        "byte_count": 83,
+        "pack_id": "official",
+        "path": "official/data/relics/base.ron",
+        "sha256": "6d3a1b7f298fe2d4b4e7995549f88e78b21e45db65b1d4856dbfabfe8c768d27"
+      },
+      {
+        "byte_count": 91,
+        "pack_id": "official",
+        "path": "official/data/resources/base.ron",
+        "sha256": "2bba22ea16ddc7967d507ca9fcd8278931f1581da3f55a79aee895862a642449"
+      },
+      {
+        "byte_count": 16886,
+        "pack_id": "official",
+        "path": "official/data/run/policy.ron",
+        "sha256": "0fe8b3776627ebcaa646919cfbc91b5f866e77e1d83b1bd5489763779bd8b430"
+      },
+      {
+        "byte_count": 33797,
+        "pack_id": "official",
+        "path": "official/data/skill_fragments/base.ron",
+        "sha256": "655d1a59eba3865c1db920322026486d7f33dfdc3ec2f4aeda0fa5292578f1b7"
+      },
+      {
+        "byte_count": 53805,
+        "pack_id": "official",
+        "path": "official/data/skills/base.ron",
+        "sha256": "8cfecd4db355aa40082ac0ebc463f73987a4c7e845a122f1d0b2b33ef6dd87f2"
+      },
+      {
+        "byte_count": 2918,
+        "pack_id": "official",
+        "path": "official/data/summoned_units/base.ron",
+        "sha256": "341047f471a809ceed21edb14270eb76779cd90e09f4080d67d42c3fc2182966"
+      },
+      {
+        "byte_count": 725,
+        "pack_id": "official",
+        "path": "official/data/visual_novel_triggers/base.ron",
+        "sha256": "63b11363113f621f782d34aa0e6b5883fa87e4b4486f2e71afec5d833c25b1af"
+      },
+      {
+        "byte_count": 6051,
+        "pack_id": "official",
+        "path": "official/data/visual_novels/base.ron",
+        "sha256": "c76d2d1fb76dcdafb58b42dac195bb1a9605999efcf925a873386951595433e3"
+      },
+      {
+        "byte_count": 1877,
+        "pack_id": "official",
+        "path": "official/pack.ron",
+        "sha256": "c90e64ad0de2458bec340c46f25516a743e99e5a319a5160725d7cf268a1c2cf"
+      }
+    ]
+  },
+  "source_result": {
+    "byte_count": 174332,
+    "repo_relative_path": "core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/runs/public_phase1_002/RESULT.json",
+    "sha256": "d642beee7f920e3f0f4b1e4388f505c59b498bc295d39b310b0f226ad1aa1496"
+  },
+  "source_trace": {
+    "byte_count": 8641053,
+    "repo_relative_path": "core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/runs/public_phase1_002/commands.jsonl",
+    "sha256": "35a6d3f9b45e9e401e4f36883f37d0488d0d5927ccbd973a65e5abb72897c004"
+  },
+  "u16_successor": "Same source catalog/profile bytes and public workload; new optional shop field defaults participate in current semantic identity. No previous fixture overwritten."
+}

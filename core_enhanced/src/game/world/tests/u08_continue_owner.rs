@@ -174,6 +174,7 @@ fn u08_continue_nonempty_sets_preserve_wire_identity_under_array_permutation() {
     );
     let input = checkpoint.core_payload_json().to_vec();
     let mut restored = CoreApplication::new(generation, 0xdead);
+    install_application_profile_for_continue(&mut restored, &source);
     let (result, admissions) = native::observe_retained_admissions(|| {
         restored.continue_from_active_run_checkpoint(player, &checkpoint)
     });
@@ -189,22 +190,21 @@ fn u08_continue_nonempty_sets_preserve_wire_identity_under_array_permutation() {
         .filter(|row| row.0 == "relic_continue_normalization")
         .collect();
     assert!(
-        normalization.len() >= 8,
-        "checksum and final capture each normalize four nonempty sets: {admissions:?}"
+        normalization.len() == 4,
+        "the verified wire normalizes four nonempty sets once and is reused: {admissions:?}"
     );
     assert!(normalization.iter().all(|row| row.2 > row.1));
     println!("U08_CONTINUE_SET_PERMUTATION counts={counts:?} normalization={normalization:?}");
 }
 
-fn destination(generation: crate::game::data::ValidatedGameData) -> CoreApplication {
+fn destination(generation: crate::game::data::ValidatedGameData, source: &CoreApplication) -> CoreApplication {
     let mut app = CoreApplication::new(generation, 0xbeef);
-    let profile = crate::game::encounter_compendium::PlayerProfileState {
-        standard_tutorial_completed: true,
-        highest_floor_reached: 99,
-        longest_deathless_floor_streak: 17,
-        ..Default::default()
-    };
-    app.merge_player_profile(serde_json::to_value(profile).unwrap().into())
+    let mut profile: crate::game::encounter_compendium::PlayerProfileState = serde_json::from_value(
+        source.snapshot(crate::application::ApplicationSnapshotKind::PlayerProfile).unwrap().read_model().as_value().clone()
+    ).unwrap();
+    profile.highest_floor_reached = 99;
+    profile.longest_deathless_floor_streak = 17;
+    app.install_authoritative_player_profile(serde_json::to_value(profile).unwrap().into())
         .unwrap();
     app
 }
@@ -216,7 +216,7 @@ fn u08_continue_stages_are_cumulative_and_one_short_refusal_is_atomic() {
     let source = CoreApplication::from_core(core);
     let saved = source.export_active_run_checkpoint().unwrap().unwrap();
     let input = saved.core_payload_json().to_vec();
-    let mut probe = destination(generation.clone());
+    let mut probe = destination(generation.clone(), &source);
     // An outer test allowance includes the complete public call. As with the
     // existing query-owner probes, its typed sticky fault is the outer result.
     let (result, admissions) = native::observe_retained_admissions(|| {
@@ -233,13 +233,13 @@ fn u08_continue_stages_are_cumulative_and_one_short_refusal_is_atomic() {
     let values: Vec<_> = admissions
         .iter()
         .enumerate()
-        .filter(|(_, row)| row.0 == "relic_continue_value")
+        .filter(|(_, row)| matches!(row.0, "continue_typed_decode" | "relic_continue_value"))
         .map(|(index, _)| index)
         .collect();
     assert_eq!(
         values.len(),
-        3,
-        "typed decode, checksum Value and final stable capture: {admissions:?}"
+        2,
+        "typed decode and one normalized Value reused as the confirmed cache: {admissions:?}"
     );
     let decode_arc = admissions
         .iter()
@@ -250,7 +250,9 @@ fn u08_continue_stages_are_cumulative_and_one_short_refusal_is_atomic() {
         .iter()
         .position(|row| row.0 == "relic_continue_normalization")
         .unwrap();
-    assert!(values[1] < normalization && normalization < values[2]);
+    assert!(values[1] < normalization);
+    let encoded = admissions.iter().position(|row| row.0 == "relic_continue_bytes").unwrap();
+    assert!(normalization < encoded);
     let cap = admissions.last().unwrap().2;
     assert!(cap <= native::RuntimeFactLimits::default().max_retained_bytes);
     println!("U08_CONTINUE_CUMULATIVE cap={cap} values={values:?} admissions={admissions:?}");
@@ -262,7 +264,7 @@ fn u08_continue_stages_are_cumulative_and_one_short_refusal_is_atomic() {
         decode_arc,
         values[1],
         normalization,
-        values[2],
+        encoded,
         admissions.len() - 1,
     ];
     boundaries.sort_unstable();
@@ -270,7 +272,7 @@ fn u08_continue_stages_are_cumulative_and_one_short_refusal_is_atomic() {
     for index in boundaries {
         let (site, _, after) = admissions[index];
         let limit = after - 1;
-        let mut app = destination(generation.clone());
+        let mut app = destination(generation.clone(), &source);
         let before = app_roots(&app);
         let (result, refused_admissions) = native::observe_retained_admissions(|| {
             native::run(
@@ -296,7 +298,7 @@ fn u08_continue_stages_are_cumulative_and_one_short_refusal_is_atomic() {
         );
         assert_eq!(saved.core_payload_json(), input);
     }
-    let mut exact = destination(generation);
+    let mut exact = destination(generation, &source);
     native::run(
         native::RuntimeFactLimits {
             max_retained_bytes: cap,

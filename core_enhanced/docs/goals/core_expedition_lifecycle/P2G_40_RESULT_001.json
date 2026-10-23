@@ -1,0 +1,25 @@
+{
+  "stage": "P2G-40",
+  "status": "complete",
+  "Phase Plan Ref": {
+    "Artifact Type": "Phase Plan",
+    "Artifact ID": "PP-CEXL-001",
+    "Content Digest": "sha256:70669c818fcec1ccba714a22ad66106f5efbf063add00ef1e017e97c486d3aba"
+  },
+  "Phase Plan Validation Receipt Ref": {
+    "Artifact Type": "Phase Plan Validation Receipt",
+    "Artifact ID": "PVR-CEXL-001",
+    "Content Digest": "sha256:13051fcb2e818c92704a4e7aa6fd410aff722e00be8ece4296f1779dd514aedf"
+  },
+  "Receipt source": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_40_VALIDATION_RECEIPT_001.json",
+  "Goal Structure Fact": "single_phase",
+  "semantic_review": {
+    "reviewer": "main Astra high",
+    "scope": "CODE_REVIEW T01–T07 and PP6WP/19edges/minimal4WP SCC/3nodes/1phase/19integration",
+    "result": "complete",
+    "basis": "Mode/instance/copy/pending terminal producers and exact store readers share atomic ownership; public contract and independent verification downstream. Single phase has complete supported tutorial/expedition lifecycle without relying on U13/U14/Unity. No policy/acceptance change."
+  },
+  "validation_record": "P2G_40_VALIDATION_001.json",
+  "runtime_pass_claimed": false,
+  "next": "P2G-50"
+}

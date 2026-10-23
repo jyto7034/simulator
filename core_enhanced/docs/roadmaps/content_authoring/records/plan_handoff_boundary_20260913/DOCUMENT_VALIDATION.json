@@ -1,0 +1,125 @@
+{
+  "kind": "Documentation edit validation only",
+  "revision": "plan-handoff-boundary-1",
+  "validated_at": "2026-09-12T15:51:43.521Z",
+  "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+  "status": "passed",
+  "checks": [
+    {
+      "name": "Explicit planning terminal and no current implementation authority",
+      "passed": true,
+      "detail": "AUTORUN §§1/3/6/10; planning success is not R implementation completion."
+    },
+    {
+      "name": "Resume cannot cross the planning boundary",
+      "passed": true,
+      "detail": "A new explicit implementation request is required."
+    },
+    {
+      "name": "Old autorun continuation directives removed",
+      "passed": true,
+      "detail": "Earlier all-in-one authority is retained only in historical originals."
+    },
+    {
+      "name": "Concrete design and preparation limits",
+      "passed": true,
+      "detail": "Detailed design is required; unresolved prerequisite-dependent details remain disclosed."
+    },
+    {
+      "name": "Baseline is reconstructable and distinguished from implementation baseline",
+      "passed": true,
+      "detail": "Git, staged/unstaged/untracked identity, bytes, manifest and before/after connection; no invented completed baseline."
+    },
+    {
+      "name": "Existing GEX modes and optional implementation checkpoint preserved",
+      "passed": true,
+      "detail": "Future implementation uses existing modes/checkpoint; audit remains separately requested."
+    },
+    {
+      "name": "Mutable R06 request view points to successor",
+      "passed": true,
+      "detail": "Policy checkpoint identity remains WR-CAVE-P2G10-001; this turn only edits documents."
+    },
+    {
+      "name": "Execution history 0080 and earlier preserved byte-for-byte",
+      "passed": true,
+      "detail": "No new game execution number; document-change note only."
+    },
+    {
+      "name": "All preexisting R06 formal/source/intake records preserved",
+      "passed": true,
+      "detail": "10 preexisting files including original request, P2G JSON, review and source evidence."
+    },
+    {
+      "name": "Historical governance copies match the exact pre-edit files",
+      "passed": true,
+      "detail": "single-r-v3 and operating v1.6 preserved durably."
+    },
+    {
+      "name": "P2G and GEX originals unchanged",
+      "passed": true,
+      "detail": "Pipeline contracts and validators were not edited."
+    },
+    {
+      "name": "New relative document links resolve",
+      "passed": true,
+      "detail": {
+        "new_links_checked": 20,
+        "broken": [],
+        "receipt_link": "This output will be persisted at the linked DOCUMENT_VALIDATION.json path."
+      }
+    },
+    {
+      "name": "Patch whitespace checks",
+      "passed": true,
+      "detail": []
+    }
+  ],
+  "document_manifest": [
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+      "sha256": "51cada5fba4426af479ef271e7fbd4c0456f49157c3543b343c51c2b74112efd",
+      "bytes": 34742
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/OPERATING_RULES.md",
+      "sha256": "030a9bd78fb22b4dc89aade262a9c5f528f4856a07219053c6dbf39313a37884",
+      "bytes": 29873
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "sha256": "982ebac99e3e3e0500b605cec5882f9b41fbbeff96cab4622071666fe36b3e65",
+      "bytes": 32182
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions/WORKING_POLICY.ko.md",
+      "sha256": "9589cb57e2fb59c2e63365a215adf45bd899cde2b5499043db4f4da8ca524877",
+      "bytes": 6667
+    },
+    {
+      "path": "core_enhanced/docs/goals/content_authoring_value_expressions/REQUEST_INTAKE_002.ko.md",
+      "sha256": "561471ca5661b6e018ebe3138bdababf278abf1a19d1a2fffb278162075c284f",
+      "bytes": 6203
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/records/plan_handoff_boundary_20260913/before/AUTORUN_REQUEST.ko.md",
+      "sha256": "0d4bc87b608e68d0af519381a152dbf8914d48a43c6b99ffbee6add8ceb42ee4",
+      "bytes": 30582
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/records/plan_handoff_boundary_20260913/before/OPERATING_RULES.md",
+      "sha256": "ead531ece29920ab2dd0295f0b068f5362afba936490a34854e3f5938ee76e42",
+      "bytes": 26303
+    }
+  ],
+  "unchanged_pipeline_sha256": {
+    "core_enhanced/docs/policy_to_goal_pipeline_revised_v2.md": "a1ec714c7bc300f1566352908ee4aaecf56f6ba36f6c95ac94c10a634dcfe735",
+    "core_enhanced/docs/goal_execution_pipeline(1).md": "7b8bbcb9b57ea2d0cb4ed847bb69158fcad164764cfdb738417611392195702a"
+  },
+  "limitations": [
+    "No P2G stage or GEX run was resumed.",
+    "No game build/test/audit was performed or claimed.",
+    "Planning-end and implementation baselines are future artifacts, not this document manifest.",
+    "Formal prior payloads and historical audit verdicts retain their original identity; later consumers must check affected governance currentness."
+  ]
+}

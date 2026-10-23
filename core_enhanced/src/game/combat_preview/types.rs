@@ -246,6 +246,38 @@ pub struct BattlefieldGenerationRequest<'a> {
 
 pub struct BattlefieldGenerator;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct BattleDeterrenceSnapshot {
+    pub unrestrained: bool,
+    pub seal_released: bool,
+    pub enemy_health_percent: u32,
+    pub enemy_attack_percent: u32,
+    pub victory_quantity_multiplier: u32,
+}
+impl Default for BattleDeterrenceSnapshot {
+    fn default() -> Self {
+        Self { unrestrained: false, seal_released: false, enemy_health_percent: 100,
+            enemy_attack_percent: 100, victory_quantity_multiplier: 1 }
+    }
+}
+impl BattleDeterrenceSnapshot {
+    pub(crate) fn quantity_multiplier(unrestrained: bool) -> u32 {
+        if unrestrained { 2 } else { 1 }
+    }
+
+    pub(crate) fn for_entry(tuning: crate::game::data::pve_data::PveDeterrenceTuning, unrestrained: bool, sealed: bool) -> Self {
+        Self {
+            unrestrained, seal_released: sealed,
+            enemy_health_percent: if unrestrained { tuning.unrestrained_health_percent } else if sealed { tuning.seal_health_percent } else { 100 },
+            enemy_attack_percent: if unrestrained { tuning.unrestrained_attack_percent } else if sealed { tuning.seal_attack_percent } else { 100 },
+            victory_quantity_multiplier: Self::quantity_multiplier(unrestrained),
+        }
+    }
+}
+crate::authoring::clone_shape::struct_shape!(BattleDeterrenceSnapshot {
+    unrestrained, seal_released, enemy_health_percent, enemy_attack_percent, victory_quantity_multiplier
+});
+
 /// Unity-facing pre-battle preview DTO and battle setup seed.
 ///
 /// This struct is intentionally serialized in `game_state_context.combat_preview`
@@ -253,6 +285,8 @@ pub struct BattlefieldGenerator;
 /// out of the wire contract, or be explicitly marked as skipped.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CombatPreview {
+    #[serde(default)]
+    pub deterrence: BattleDeterrenceSnapshot,
     pub node_id: MapNodeId,
     pub encounter_id: Option<String>,
     pub battlefield_template_id: String,
@@ -282,6 +316,7 @@ pub struct CombatPreview {
 }
 
 crate::authoring::clone_shape::struct_shape!(CombatPreview {
+    deterrence,
     node_id,
     encounter_id,
     battlefield_template_id,

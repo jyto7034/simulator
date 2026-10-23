@@ -43,7 +43,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         player,
         command(
             Kind::StartNewGame,
-            json!({"game_mode": GameMode::Standard, "replace_active_run": false}),
+            json!({"game_mode": GameMode::Tutorial, "replace_active_run": false}),
         )?,
         ApplicationExecutionContext::default(),
     )?;

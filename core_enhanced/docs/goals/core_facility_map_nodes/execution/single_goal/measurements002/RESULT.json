@@ -1,0 +1,64 @@
+{
+  "passed": true,
+  "samples": 6,
+  "all_exact_requested_bytes_recovered": true,
+  "summary": {
+    "official": {
+      "load": {
+        "median_seconds": 0.572971335,
+        "max_seconds": 0.573619538
+      },
+      "new": {
+        "median_seconds": 2.144e-06,
+        "max_seconds": 2.845e-06
+      },
+      "start": {
+        "median_seconds": 0.001448064,
+        "max_seconds": 0.00145136
+      },
+      "whole_facility_query": {
+        "median_seconds": 0.002015352,
+        "max_seconds": 0.002015873
+      },
+      "checkpoint_export": {
+        "median_seconds": 2.9196e-05,
+        "max_seconds": 3.3092e-05
+      },
+      "drop_application": {
+        "median_seconds": 2.073e-05,
+        "max_seconds": 2.2402e-05
+      }
+    },
+    "expanded": {
+      "load": {
+        "median_seconds": 0.569866166,
+        "max_seconds": 0.574443901
+      },
+      "new": {
+        "median_seconds": 2.415e-06,
+        "max_seconds": 2.635e-06
+      },
+      "start": {
+        "median_seconds": 0.001386517,
+        "max_seconds": 0.001441431
+      },
+      "whole_facility_query": {
+        "median_seconds": 0.002579284,
+        "max_seconds": 0.002739168
+      },
+      "checkpoint_export": {
+        "median_seconds": 4.2421e-05,
+        "max_seconds": 5.9834e-05
+      },
+      "drop_application": {
+        "median_seconds": 2.4506e-05,
+        "max_seconds": 2.7322e-05
+      }
+    }
+  },
+  "binary_sha256": "f83ccee335d56c36eda3ca6658fd8ddeb69794df6041717f75515394b26e78dc",
+  "input": "test_parts/public_inputs002",
+  "scope": "full authored static graph, initial room manifested; six fresh processes after compilation and host execution finished; not all rooms visited or final performance SLO",
+  "native_counters": "Raw load stage is measured. Unavailable operation counters remain unavailable; do not interpret zero raw counters without coverage as zero cost. Actual movement budget is test012.",
+  "source_currentness": "BASELINE_REUSE.json describes probe008 nonimpact of subsequent active store version gate correction."
+}

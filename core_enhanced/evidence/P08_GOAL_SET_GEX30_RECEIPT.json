@@ -1,0 +1,159 @@
+{
+  "record_ref": "ECR-CRAR-C2-MASTER-GEX30-001",
+  "captured_at_utc": "2026-08-22T21:24:14Z",
+  "handoff": {
+    "ref": "HA-CRAR-P2G60-002",
+    "path": "docs/goals/current_runtime_architecture_remediation/P2G_60_CORE_ONLY_HANDOFF_002.ko.md",
+    "sha256": "40ec840f91be7b600d3edab509715f78d35887b7e4ddb5a3e642cd04abd8e4ff"
+  },
+  "goal_set": {
+    "ref": "GS-CRAR-P2G50-002",
+    "path": "docs/goals/current_runtime_architecture_remediation/P2G_50_CORE_ONLY_GOAL_SET_002.ko.md",
+    "sha256": "2fc3730dc9e0024e3ead2a1ae37851799411dc63d5f63614430e37d26b3af08a"
+  },
+  "goal_id": "GOAL-CRAR-C2-MASTER",
+  "execution_pass": "GEX-30",
+  "repository": {
+    "workspace_locator": "/mnt/f/work/simulator/core_enhanced",
+    "revision": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+    "branch": "cleanup/simulator-dirty-worktree-20260803"
+  },
+  "phase_results": [
+    {
+      "ordinal": 1,
+      "goal_id": "GOAL-CRAR-C2-P01-PRESERVATION-OBSERVABILITY",
+      "completion_audit": {
+        "path": "docs/goals/current_runtime_architecture_remediation/execution/p01_preservation_observability/COMPLETION_AUDIT.md",
+        "sha256": "4b02feed4abb1dd3c85af7fd072740fad49b5431b95932964c2711c65dcdcda6"
+      },
+      "currentness": {
+        "record_ref": "ATR-CRAR-C2-P01-GEX20-008",
+        "path": "evidence/P01_SUCCESSOR_AUDIT_TARGET_008.json",
+        "sha256": "fca0d4aaa2ec1aa69adb99d894b192a2d0acaba278da127e2b8bffc14e521739"
+      },
+      "verdict": "Complete / High"
+    },
+    {
+      "ordinal": 2,
+      "goal_id": "GOAL-CRAR-C2-P02-VALIDATED-DATA",
+      "completion_audit": {
+        "path": "docs/goals/current_runtime_architecture_remediation/execution/p02_validated_data/COMPLETION_AUDIT.md",
+        "sha256": "7e52ff1bfeab768362a7bdab80802253376721b7a452f20a52f72b8ce7650ce3"
+      },
+      "currentness": {
+        "record_ref": "ATR-CRAR-C2-P02-GEX20-007",
+        "path": "evidence/P02_SUCCESSOR_AUDIT_TARGET_007.json",
+        "sha256": "ae12124d9708dfa576a1fd3924e642a6bfbbd30a1be3ffbbf15c4fd52fc84a25"
+      },
+      "verdict": "Complete / High"
+    },
+    {
+      "ordinal": 3,
+      "goal_id": "GOAL-CRAR-C2-P03-APPLICATION-AUTHORITY",
+      "completion_audit": {
+        "path": "docs/goals/current_runtime_architecture_remediation/execution/p03_application_authority/COMPLETION_AUDIT.md",
+        "sha256": "5ad8314fe3d0ff50fd845ebbe4ece22356b37ce8a34ca9fce7cf2ffc333b3c57"
+      },
+      "currentness": {
+        "record_ref": "ATR-CRAR-C2-P03-GEX20-006",
+        "path": "evidence/P03_SUCCESSOR_AUDIT_TARGET_006.json",
+        "sha256": "f20abd05aa607b74aa4cb8983c3603aa4ce18bdaafaed168a992ae0bea3076d5"
+      },
+      "verdict": "Complete / High"
+    },
+    {
+      "ordinal": 4,
+      "goal_id": "GOAL-CRAR-C2-P04-BATTLE-KERNEL",
+      "completion_audit": {
+        "path": "docs/goals/current_runtime_architecture_remediation/execution/p04_battle_kernel/COMPLETION_AUDIT.md",
+        "sha256": "ede79ef4c5d95ac5014bb3f41f03c223a8b1568b789527f7ca56175e98749da7"
+      },
+      "currentness": {
+        "record_ref": "ATR-CRAR-C2-P04-GEX20-005",
+        "path": "evidence/P04_SUCCESSOR_AUDIT_TARGET_005.json",
+        "sha256": "ac2c7d1ade176e9db247c4244c06fc575431f9aa55525e522b936e0bfda7df84"
+      },
+      "verdict": "Complete / High"
+    },
+    {
+      "ordinal": 5,
+      "goal_id": "GOAL-CRAR-C2-P05-BOUNDED-HISTORY-RESULT",
+      "completion_audit": {
+        "path": "docs/goals/current_runtime_architecture_remediation/execution/p05_bounded_history_result/COMPLETION_AUDIT.md",
+        "sha256": "65b60f99096a6a74f74905105dcbee646bddd5aff128db6f0d03f03e71f190f2"
+      },
+      "currentness": {
+        "record_ref": "ATR-CRAR-C2-P05-GEX20-004",
+        "path": "evidence/P05_SUCCESSOR_AUDIT_TARGET_004.json",
+        "sha256": "b17d3a2ce819ffea621f44c4f7a81ed49457c68c04e929217270d606bfbf1cf6"
+      },
+      "verdict": "Complete / High"
+    },
+    {
+      "ordinal": 6,
+      "goal_id": "GOAL-CRAR-C2-P06-CHECKPOINT-MIGRATION",
+      "completion_audit": {
+        "path": "docs/goals/current_runtime_architecture_remediation/execution/p06_checkpoint_migration/COMPLETION_AUDIT.md",
+        "sha256": "7370e3f539b16a10453d4b58f652ad20306c4bc03035f8e55e885380a16081db"
+      },
+      "currentness": {
+        "record_ref": "ATR-CRAR-C2-P06-GEX20-002",
+        "path": "evidence/P06_SUCCESSOR_AUDIT_TARGET_002.json",
+        "sha256": "581df8a794e7f5ff2358bcd975e576e5613d6f97359cba63d62941fdd79e0497"
+      },
+      "verdict": "Complete / High"
+    },
+    {
+      "ordinal": 7,
+      "goal_id": "GOAL-CRAR-C2-P07-CORE-PUBLIC-PROJECTION",
+      "completion_audit": {
+        "path": "docs/goals/current_runtime_architecture_remediation/execution/p07_core_public_projection/COMPLETION_AUDIT.md",
+        "sha256": "f2e3d68e83c86a0228ce75274652d822136a31243a4e1c17b90378d9663655d0"
+      },
+      "currentness": {
+        "record_ref": "ATR-CRAR-C2-P07-GEX20-001",
+        "path": "evidence/P07_SUCCESSOR_AUDIT_TARGET_001.json",
+        "sha256": "2d9a91fce9bd9b0086709f188d49004b307f0823d2d71591403d2e29687eee2f"
+      },
+      "verdict": "Complete / High"
+    },
+    {
+      "ordinal": 8,
+      "goal_id": "GOAL-CRAR-C2-P08-PERFORMANCE-FINAL-INTEGRATION",
+      "completion_audit": {
+        "path": "docs/goals/current_runtime_architecture_remediation/execution/p08_performance_final_integration/COMPLETION_AUDIT.md",
+        "sha256": "fccedacd63224d91fcc0c5e8408872d4b8a30c7b89d969c38f298c3f51f156c4"
+      },
+      "currentness": {
+        "record_ref": "ATR-CRAR-C2-P08-GEX10-001",
+        "path": "evidence/P08_AUDIT_TARGET.json",
+        "sha256": "a3486eca50fc9f0f9685ece4e31609fa904eb972afb81bbe5610dfa6d43bed9e"
+      },
+      "verdict": "Complete / High"
+    }
+  ],
+  "master_completion": {
+    "ordered_phase_goals": {"required": 8, "passed": 8, "failed": 0},
+    "final_freeze_selectors": {"required": 10, "passed": 10, "failed": 0},
+    "final_execution_nodes": {"required": 9, "passed": 9, "failed": 0},
+    "integration_seams": {"required": 12, "passed": 12, "failed": 0},
+    "p08_policy_acceptance": {"required": 10, "passed": 10, "failed": 0, "missing": 0, "unknown": 0},
+    "p08_validation_dimensions": {"required": 10, "passed": 10, "failed": 0, "missing": 0, "unknown": 0},
+    "feature_inventory": {"required": 57, "passed": 57, "failed": 0},
+    "current_core_tests": {"passed": 1159, "failed": 0, "ignored": 0},
+    "structural_unresolved": 0
+  },
+  "final_integration": {
+    "receipt_path": "evidence/P08_PERFORMANCE_FINAL_INTEGRATION_RECEIPT.json",
+    "receipt_sha256": "b44179c70bb4e815bac4a55d3fb9d7aa7f38f908793ee34a4e5029b34468b13d",
+    "evidence_index_path": "docs/goals/current_runtime_architecture_remediation/execution/p08_performance_final_integration/FINAL_EVIDENCE_INDEX.md",
+    "evidence_index_sha256": "d8abbe689696e2ea6494d550090647372fccebb092a2353025c50adad2568919",
+    "structural_audit_path": "docs/goals/current_runtime_architecture_remediation/execution/p08_performance_final_integration/STRUCTURAL_AUDIT.md",
+    "structural_audit_sha256": "0c39777d6dae5219ce6de034f0615cc71c7bfe19b796484db55967cf4ad3b9cb",
+    "p08_target_members": {"matched": 95, "declared": 95}
+  },
+  "result": "Complete / High",
+  "currentness": "current / all eight ordered phase goals complete and final P08 target unchanged",
+  "production_mutation_in_gex30": "none",
+  "external_scope": "game_server, Unity, sibling resources and external consumers uninspected and unclaimed"
+}

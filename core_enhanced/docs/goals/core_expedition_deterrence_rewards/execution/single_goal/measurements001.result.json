@@ -1,0 +1,10 @@
+{
+  "command": [
+    "python3",
+    "core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/test_parts/measure.py"
+  ],
+  "exit_code": 0,
+  "seconds": 6.946622145995207,
+  "stdout": "measurements001.stdout.log",
+  "stderr": "measurements001.stderr.log"
+}

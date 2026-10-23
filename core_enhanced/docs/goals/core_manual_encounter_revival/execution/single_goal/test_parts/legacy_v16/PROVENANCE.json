@@ -1,0 +1,7 @@
+{
+  "source": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/runs/completion_host001/prepare001/RESULT.json",
+  "source_sha256": "743220e1e981e1e65cc4c301004b8d744e0c2b7cc56f7f4734843efc33139e87",
+  "selector": "roots.continue byte array, preserved without reencoding",
+  "payload_sha256": "35363ce1325697f4263e76370fbdd5c7251aee2d42575279860f71edb173616a",
+  "original_version": 16
+}

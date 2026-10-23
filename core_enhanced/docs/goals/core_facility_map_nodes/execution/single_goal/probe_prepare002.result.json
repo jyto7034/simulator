@@ -1,0 +1,12 @@
+{
+  "command": [
+    ".cache/u12-vault-cost-target/release/u13_facility_consumer",
+    "prepare",
+    "game_resources",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/test_parts/public_inputs002"
+  ],
+  "exit_code": 0,
+  "seconds": 4.227337980999437,
+  "stdout": "probe_prepare002.stdout.log",
+  "stderr": "probe_prepare002.stderr.log"
+}

@@ -719,6 +719,17 @@ impl EventQueue {
     pub(super) fn iter_queued(&self) -> impl Iterator<Item = &QueuedEvent> {
         self.0.iter()
     }
+    pub(super) fn retain_causal_periodics(
+        &mut self,
+        eligible: impl Fn(&RuntimeFactSource) -> bool,
+    ) -> Result<(), crate::game::behavior::GameError> {
+        control::charge(self.0.len() as u64, "causal_periodic_reconcile_queue")?;
+        self.0.retain(|q| {
+            !matches!(q.event.view().as_ref(), BattleEvent::CausalPeriodic { .. })
+                || eligible(&q.fact_source)
+        });
+        Ok(())
+    }
     pub(super) fn slot_extent(&self) -> Option<usize> {
         self.0
             .capacity()
@@ -764,6 +775,67 @@ impl EventQueue {
             | BattleEvent::SkillFlowWake { cast_seq, .. } if *cast_seq == cast)
         });
         control::poll("boss_action_queue_pruned")
+    }
+    // Only status areas call this: their dwell events have no completion owner.
+    pub(super) fn discard_ground_dwell_ticks(&mut self, area: uuid::Uuid) -> Result<(), crate::game::behavior::GameError> {
+        control::charge(self.0.len() as u64, "ground_dwell_queue_scan")?;
+        self.0.retain(|q| !matches!(q.event.view().as_ref(), BattleEvent::SkillAreaTick { area_id, .. } if *area_id == area));
+        Ok(())
+    }
+    pub(super) fn take_area_event(
+        &mut self, area: uuid::Uuid,
+    ) -> Result<Option<QueuedEvent>, crate::game::behavior::GameError> {
+        control::charge(self.0.len() as u64, "area_end_queue_scan")?;
+        let selected = self.0.iter().find(|q| matches!(q.event.view().as_ref(),
+            BattleEvent::SkillAreaTick { area_id, .. } | BattleEvent::SkillAreaExpire { area_id, .. } if *area_id == area));
+        let Some(selected) = selected else { return Ok(None); };
+        let owned = crate::authoring::clone_shape::controlled_clone(selected)?;
+        self.0.retain(|q| q != &owned);
+        Ok(Some(owned))
+    }
+    pub(super) fn discard_counter_events(&mut self, owner: Option<uuid::Uuid>, gains: bool, channels: bool) -> Result<(), crate::game::behavior::GameError> {
+        control::charge(self.0.len() as u64, "counter_queue_scan")?;
+        self.0.retain(|q| match q.event.view().as_ref() {
+            BattleEvent::CounterGain { source, .. } => !(gains && owner.is_none_or(|o| o == *source)),
+            BattleEvent::CounterChannelTick { source, .. } => !(channels && owner.is_none_or(|o| o == *source)),
+            _ => true,
+        });
+        Ok(())
+    }
+    pub(super) fn discard_status_mobile_tick(&mut self)->Result<(),crate::game::behavior::GameError>{control::charge(self.0.len() as u64,"chase_queue_scan")?;self.0.retain(|q|!matches!(q.event.view().as_ref(),BattleEvent::StatusMobileTick{..}));Ok(())}
+    pub(super) fn discard_mobile_tick(&mut self)->Result<(),crate::game::behavior::GameError>{control::charge(self.0.len() as u64,"mobile_queue_scan")?;self.0.retain(|q|!matches!(q.event.view().as_ref(),BattleEvent::MobileEffectsTick{..}));Ok(())}
+    pub(super) fn discard_pair_tick(&mut self,id:Option<u64>)->Result<(),crate::game::behavior::GameError>{control::charge(self.0.len() as u64,"paired_queue_scan")?;self.0.retain(|q|!matches!(q.event.view().as_ref(),BattleEvent::PairedAreaTick{id:found,..} if id.is_none_or(|id|id==*found)));Ok(())}
+    pub(super) fn discard_prepared_volley_events(&mut self,owner:Option<uuid::Uuid>,flights:bool)->Result<(),crate::game::behavior::GameError>{
+        control::charge(self.0.len()as u64,"prepared_volley_queue_scan")?;
+        self.0.retain(|q|match q.event.view().as_ref(){BattleEvent::PreparedVolleyTick{source,..}=>!owner.is_none_or(|o|o==*source),BattleEvent::VolleyFlightTick{..}=>!flights,_=>true});Ok(())
+    }
+    pub(super) fn discard_input_plan_events(&mut self)->Result<(),crate::game::behavior::GameError>{
+        control::charge(self.0.len()as u64,"shot_queue_scan")?;
+        self.0.retain(|q|!matches!(q.event.view().as_ref(),BattleEvent::ShotStockTick{..}|BattleEvent::HostileCohortTick{..}|BattleEvent::ShotFlightTick{..}));Ok(())
+    }
+    pub(super) fn take_immediate_action_event(&mut self,action:&crate::game::battle::runtime_facts::ActionHandle,caster:crate::game::battle::ids::UnitInstanceId,start_seq:u64,cast:Option<u64>,now:u64)->Result<Option<QueuedEvent>,crate::game::behavior::GameError>{
+        control::charge(self.0.len()as u64,"shot_immediate_action_queue")?;
+        let selected=self.0.iter().filter(|q|q.event.time_ms()==now&&(q.fact_source.action.as_ref()==Some(action)||matches!(q.event.view().as_ref(),BattleEvent::SkillStep{cast_seq,..}|BattleEvent::SkillFlowWake{cast_seq,..} if Some(*cast_seq)==cast)||matches!(q.event.view().as_ref(),BattleEvent::ManualCastEnd{caster_instance_id,cause,..}|BattleEvent::SkillStartGate{caster_instance_id,cause,..} if *caster_instance_id==caster && cause.parent_seq()==Some(start_seq)))).max();
+        let Some(selected)=selected else{return Ok(None);};let owned=crate::authoring::clone_shape::controlled_clone(selected)?;self.0.retain(|q|q!=&owned);Ok(Some(owned))
+    }
+    pub(super) fn discard_relation_events(&mut self, owner: Option<uuid::Uuid>, gains: bool, channels: bool) -> Result<(), crate::game::behavior::GameError> {
+        control::charge(self.0.len() as u64, "relation_queue_scan")?;
+        self.0.retain(|q| match q.event.view().as_ref() {
+            BattleEvent::RelationGain { source, .. } => !(gains && owner.is_none_or(|o| o == *source)),
+            BattleEvent::RelationActionTick { source, .. } => !(channels && owner.is_none_or(|o| o == *source)),
+            _ => true,
+        });
+        Ok(())
+    }
+    pub(super) fn discard_tile_bursts(&mut self) -> Result<(), crate::game::behavior::GameError> {
+        control::charge(self.0.len() as u64, "tile_burst_queue_scan")?;
+        self.0.retain(|q| !matches!(q.event.view().as_ref(), BattleEvent::TileBurstWave { .. }));
+        Ok(())
+    }
+    pub(super) fn discard_presence_ticks(&mut self, source: Option<uuid::Uuid>, host: Option<crate::game::battle::ids::UnitInstanceId>) -> Result<(), crate::game::behavior::GameError> {
+        control::charge(self.0.len() as u64, "presence_tick_queue_scan")?;
+        self.0.retain(|q| !matches!(q.event.view().as_ref(), BattleEvent::PresenceTick { source: id, host: target, .. } if source.is_none_or(|s|s==*id) && host.is_none_or(|h|h==*target)));
+        Ok(())
     }
     pub(super) fn discard_sustained_expiry(
         &mut self,

@@ -29,6 +29,42 @@ pub(crate) fn validate_rules(
             selector(&rule.selector)?;
             condition(&rule.when, 0)?;
             match &rule.apply {
+                RelicRuleActionDef::Subscribe(_) | RelicRuleActionDef::Periodic { .. } => {
+                    super::causal::validate_action(&rule.apply)?;
+                    if matches!(&rule.apply, RelicRuleActionDef::Periodic { .. }) {
+                        fn event_dependent(c: &RelicConditionDef) -> bool {
+                            match c {
+                                RelicConditionDef::SameEffect(_) => true,
+                                RelicConditionDef::All(v) | RelicConditionDef::Any(v) => {
+                                    v.iter().any(event_dependent)
+                                }
+                                RelicConditionDef::Not(c) => event_dependent(c),
+                                _ => false,
+                            }
+                        }
+                        if rule.selector.effect != EffectPredicateDef::default()
+                            || event_dependent(&rule.when)
+                        {
+                            return Err(invalid("independent periodic requires owner-only predicates; no triggering effect exists"));
+                        }
+                    }
+                }
+                RelicRuleActionDef::Wedge { .. } => {
+                    if rule.selector.effect.all_tags.is_empty()
+                        || rule
+                            .selector
+                            .effect
+                            .op
+                            .is_some_and(|op| op != EffectOperation::Damage)
+                        || rule
+                            .selector
+                            .effect
+                            .has_property
+                            .is_some_and(|p| p != RelicProperty::DamageAmount)
+                    {
+                        return Err(invalid("Wedge requires explicit eligible damage tags"));
+                    }
+                }
                 RelicRuleActionDef::Grant(body) => {
                     let mut ids = std::collections::BTreeSet::new();
                     match body {
@@ -79,6 +115,9 @@ pub(crate) fn validate_rules(
                     NumericProgram::default().include(*operation, descriptor)?;
                 }
                 RelicRuleActionDef::Recipe(recipe) => match recipe {
+                    StructuralRecipeDef::SupportSelectionPattern { range, .. } => {
+                        range.validate().map_err(|e| invalid(&e))?
+                    }
                     StructuralRecipeDef::DamageFootprint { footprint } => {
                         footprint.validate().map_err(|e| invalid(&e))?
                     }
@@ -182,14 +221,17 @@ fn effects_valid<'a>(
     Ok(())
 }
 pub(crate) fn shield(d: &PersonalShieldGrantDef) -> Result<(), RelicPlanError> {
+    if let Some(support) = &d.support {
+        support.validate(true).map_err(|e| invalid(&e))?;
+    }
     if d.duration_ms == 0
-        || matches!(
+        || (d.support.is_none() && matches!(
             d.recipients,
             PersonalShieldRecipientsDef::PlayerEmployeesAtRelease { radius_units: 0 }
                 | PersonalShieldRecipientsDef::SelectedPlayerEmployeeAtRelease {
                     authored_reach_units: 0
                 }
-        )
+        ))
     {
         return Err(RelicPlanError::new(
             FaultCode::OutOfRange,
@@ -248,6 +290,20 @@ pub(crate) fn provider_references(
         }
     }
     for r in rules {
+        if let RelicRuleActionDef::Subscribe(s) = &r.apply {
+            check(
+                &StructuralSelectorDef {
+                    provider: ProviderPredicateDef {
+                        equipment_id: s.source.equipment_id.clone(),
+                        fragment_id: s.source.fragment_id.clone(),
+                        form_id: s.source.form_id.clone(),
+                    },
+                    effect: Default::default(),
+                },
+                data,
+            )
+            .map_err(|e| e.at("", &r.id, "apply.Subscribe.source"))?;
+        }
         check(&r.selector, data)
             .and_then(|()| nested(&r.when, data))
             .map_err(|e| e.at("", &r.id, "selector/when"))?;

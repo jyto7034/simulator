@@ -338,7 +338,7 @@ pub fn apply_boss_omen_to_map(
     if state.forced_boss.is_some() {
         return;
     }
-    if run_progression.game_mode != GameMode::Endless {
+    if run_progression.game_mode != GameMode::Expedition {
         return;
     }
     state.ensure_cycle(game_data, run_progression.run_seed);
@@ -646,7 +646,7 @@ fn assign_role_difficulty(
         power_model_version: authority.power_model_version,
         difficulty_profile_id: authority.difficulty_profile_id.clone(),
         class: crate::game::map::MapNodeCombatDifficultyClass::Role(role),
-        monolith_stage: None,
+        revival: None,
         floor_power_anchor: authority.floor_power_anchor,
         target_power,
     });

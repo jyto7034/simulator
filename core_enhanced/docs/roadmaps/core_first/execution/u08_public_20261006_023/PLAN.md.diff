@@ -1,0 +1,15 @@
+--- core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/PLAN.md
++++ core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/PLAN.md
+@@ -19,10 +19,10 @@
+ [E1·Continue 회수 및 E2 범위](../../../../roadmaps/core_first/execution/u08_public_20261006_009/RECORD.ko.md)를 따른다.
+ 과거 실패·원 작성 이력·감사·target·HANDOFF는 보존한다. 프로세스 가시성은 sandbox namespace에 한정된다.
+ 
+-## 현재 우선 작업 — 2026-10-06/022
++## 현재 우선 작업 — 2026-10-06/023
+ 
+ R07 기본stack 교정과 G1/G4/G2/G3 성공을 보존한다. G5는 최종source438/eae98e63146c1e9ac2cd91ea0668fb26ec7edb66872b4e7b0f35e7dffd36e2a5에서 host003/retreat002/wire002 각1/1 PASS다. 실제 자동정지 재접속·진행보존, 철수/재진입 및 checksum-valid graph4종 거부를 확인했다. root438 bytes/membership·승인test3파일delta·7raw를 대조했다. [G5 결과·한계·다음 범위](../../../../roadmaps/core_first/execution/u08_public_20261006_022/RECORD.ko.md)를 따른다.
+-기존 Astra는 G6 소유수명 검사의 최소 test-only 경계를 읽기 사전 확인한다. 보조 Astra는 prep002에서 measurement_support stdout과 Path정렬 계약에 맞춘 신규 finalizer 준비 교정을 담당한다. Sol의 제품/통합/성능은 HOLD이며 문서만 갱신한다. G6→G7 및 fresh harness 인수 후 새label로 현재 통합을 재개한다. integrated003 중도실패·기존 준비 원본은 보존한다. U17 실제 부활촉매 교차시험과 전체U08 완료는 아직 주장하지 않는다.
++기존 Astra는 G6 소유수명의 test-only 두파일 및 최초1회 집중검사를 담당한다. 보조 Astra의 prep002 교정은 닫혔고 root가23파일/신구archive각10member/정확2tool delta를 대조했다. [준비 교정 인수·G6 실행 계약](../../../../roadmaps/core_first/execution/u08_public_20261006_023/RECORD.ko.md)을 따른다. 보조 작성자는 HOLD0이다. Sol의 제품/통합/성능은 HOLD이며 문서만 갱신한다. G6→G7 및 fresh harness 인수 후 새label로 현재 통합을 재개한다. integrated003 중도실패·기존 준비 원본은 보존한다. U17 실제 부활촉매 교차시험과 전체U08 완료는 아직 주장하지 않는다.
+ 
+ ## 요청·역할·현재 인수
+ 

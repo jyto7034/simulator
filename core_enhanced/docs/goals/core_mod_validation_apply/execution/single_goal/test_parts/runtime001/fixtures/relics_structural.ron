@@ -1,0 +1,11 @@
+(relics:[(
+ id:"u11_structural_relic",uuid:"c0de1100-0000-0000-0000-000000000201",
+ name:"Independent generated effects",description:"Authored oracle: original30 generated75",
+ rarity:"probe",allow_duplicates:false,effects:[],dismantle_equipment_dust:1,
+ rules:[
+  (id:"original_add",selector:(effect:(all_tags:["u11_original"])),apply:Edit(property:DamageAmount,operation:Add(Hp(7)))),
+  (id:"grant",selector:(effect:(all_tags:["u11_original"])),apply:Grant(InlineEffects(action_id:"hit",effects:[(id:"bonus",tags:["u11_bonus"],op:Damage(amount:40,damage_type:True))]))),
+  (id:"bonus_add",selector:(effect:(all_tags:["u11_bonus"])),apply:Edit(property:DamageAmount,operation:Add(Hp(10)))),
+  (id:"bonus_scale",selector:(effect:(all_tags:["u11_bonus"])),apply:Edit(property:DamageAmount,operation:Scale(increment_percent:50))),
+ ]
+)])

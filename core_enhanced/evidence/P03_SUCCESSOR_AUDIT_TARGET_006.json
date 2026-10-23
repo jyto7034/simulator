@@ -1,0 +1,14 @@
+{
+  "record_ref": "ATR-CRAR-C2-P03-GEX20-006",
+  "goal_id": "GOAL-CRAR-C2-P03-APPLICATION-AUTHORITY",
+  "successor_goal_id": "GOAL-CRAR-C2-P08-PERFORMANCE-FINAL-INTEGRATION",
+  "captured_date": "2026-08-23",
+  "verdict": "Complete / High",
+  "currentness": "current / expected P08 COW staging optimization",
+  "previous_currentness_ref": "ATR-CRAR-C2-P03-GEX20-005",
+  "application_executor_sha256": "7d9c8f707a90ff5c32cf3de2355d4188f2906045248445ccdcac336d56e20df1",
+  "event_log_sha256": "3dbd55e505e293bc59bac030086c3863e594cabf837d310ce8aaa92511ffa566",
+  "staging_allocation_identity": "128 == 8192: 675 allocations / 0 reallocations / 84409 peak bytes / 0 retained bytes",
+  "validation": ["release application selector 9/9", "current Core 1159/1159", "authority invalid probe expected exit 101"],
+  "external_scope": "game_server, Unity, sibling resources and external consumers uninspected and unclaimed"
+}

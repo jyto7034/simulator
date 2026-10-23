@@ -21,7 +21,7 @@ impl ContentContract {
             pack_format: 1,
             catalog_schema: LIVE_RON_SCHEMA_VERSION,
             authoring: 1,
-            execution: 2,
+            execution: 3,
             fingerprint: 1,
         }
     }
@@ -79,6 +79,7 @@ pub struct PackManifest {
 impl PackManifest {
     pub const SUPPORTED_CAPABILITIES: &'static [&'static str] = &[
         "gameplay_catalogs_v2",
+        "expedition_lifecycle_v1",
         "literal_effect_authoring_v1",
         "boss_runtime_v1",
         "summoned_units_v1",

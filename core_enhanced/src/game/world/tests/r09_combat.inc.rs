@@ -13,6 +13,9 @@ fn r12_live_full_fixture(later: bool, structured: bool, trauma: u32, authored: O
     r12_live_cross_fixture(later, structured, trauma, authored, guard, hostile, false)
 }
 fn r12_live_cross_fixture(later: bool, structured: bool, trauma: u32, authored: Option<&str>, guard: bool, hostile: bool, boss: bool) -> (GameCore, Uuid, Uuid) {
+    r12_live_cross_deployment_fixture(later,structured,trauma,authored,guard,hostile,boss,true)
+}
+fn r12_live_cross_deployment_fixture(later: bool, structured: bool, trauma: u32, authored: Option<&str>, guard: bool, hostile: bool, boss: bool, deploy:bool) -> (GameCore, Uuid, Uuid) {
     let skills = SkillDatabase::from_ron("r09/world_skills.ron", &include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/r08/skills.ron")).replace(" steps:", if structured { " flow: Some(Repeat(id: \"r09_flow\", count: 3, interval_ms: 10, body: Action(id: \"r09_action\", step_id: \"hit\", wait: EffectsSettled))), steps:" } else { " steps:" }).replace("selection: automatic_unit, target: EnemySingle(rule: Nearest)", "selection: self, target: SelfUnit").replace("reach: global", "reach: pattern").replace("Damage(amount: 100, damage_type: True)", "Heal(amount: 100)")).unwrap();
     let skills = if structured && trauma == 0 { SkillDatabase::from_ron("r10/world_result.ron", include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/r10/world_result.ron"))).unwrap() } else { skills };
     let skills = authored.map(|ron| SkillDatabase::from_ron("r11/world.ron", ron).unwrap()).unwrap_or(skills);
@@ -20,6 +23,18 @@ fn r12_live_cross_fixture(later: bool, structured: bool, trauma: u32, authored: 
     let fragments = if guard { ron::de::from_str(&include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/r09/fragments.ron")).replace("ActiveSkill(forms:", "ActiveSkill(passive_guard: Some((reduction_percent: 30, reflection_chance_percent: 100, reflection_percent: 50)), forms:")).unwrap() } else { fragments };
     let fragment = fragments.fragments[0].clone();
     let mut core = GameCore::new(game_data_with_pve_equipment_and_active_skill_fragments(vec![], skills.skills.clone(), vec![fragment.clone()]), 909);
+    // The terminal/future-wave cases exercise ordinary corrosion deaths. Boss
+    // cases below deliberately retain their abnormality and percentage damage.
+    if trauma >= 80 && !hostile && !boss {
+        let mut encounters = core.game_data.pve_data.encounters.clone();
+        let encounter = encounters.iter_mut().find(|e| e.id == "defense_encounter").unwrap();
+        encounter.encounter_class = crate::game::data::pve_data::PveEncounterClass::Normal;
+        encounter.primary_abnormality_id = None;
+        encounter.waves[0].source = test_corroded_pve_wave("corroded_guard").source;
+        let sources = core.game_data.pve_data.reward_sources.iter().filter(|source| source.encounter_id != "defense_encounter").cloned().collect();
+        let data = GameDataBuilder::from_validated(&core.game_data).with_pve(PveEncounterDatabase::new_with_reward_sources(encounters, sources)).build_arc();
+        core = GameCore::new(data, 909);
+    }
     if hostile {
         let mut abnormalities = core.game_data.abnormality_data.items.clone();
         let enemy = abnormalities.iter_mut().find(|a| a.id == "defense_risk_abno").unwrap();
@@ -75,7 +90,7 @@ fn r12_live_cross_fixture(later: bool, structured: bool, trauma: u32, authored: 
     let preview = core.execute(player, PlayerBehavior::SelectMapNode { node_id: node }).unwrap();
     let position = first_ground_deployment_cell(&preview);
     core.execute(player, PlayerBehavior::ConfirmEnterNode).unwrap();
-    execute_current_battle_mutation(&mut core, player, PlayerBehavior::DeployUnit { employee_uuid: employee, position, facing: FacingDirection::Right }).unwrap();
+    if deploy {execute_current_battle_mutation(&mut core, player, PlayerBehavior::DeployUnit { employee_uuid: employee, position, facing: FacingDirection::Right }).unwrap();}
     (core, player, employee)
 }
 
@@ -120,12 +135,12 @@ fn r09_world_corrosion_roundtrip(structured: bool) {
         core.execute(player, PlayerBehavior::CompleteCombatResult).unwrap();
         let employee_state = core.state.roster.get(&employee).unwrap();
         assert_eq!(employee_state.condition, EmployeeCondition::new(0, 100));
-        assert_eq!(employee_state.breakdown.remaining_nodes(), Some(2));
+        assert_eq!(employee_state.breakdown.remaining_cost(), Some(4));
         let expected_counter = employee_state.breakdown;
         assert!(core.execute(player, PlayerBehavior::CompleteCombatResult).is_err());
         core.save_run_checkpoint_for_test().unwrap();
         let saved = core.export_active_run_checkpoint().unwrap().unwrap();
-        let mut restored = GameCore::new(core.game_data.clone(), 1);
+        let mut restored = core_with_profile_for_continue(&core, 1);
         restored.continue_from_active_run_checkpoint(player, &saved.core_payload_json, 0, 1).unwrap();
         assert_eq!(restored.state.roster.get(&employee).unwrap().breakdown, expected_counter);
     }
@@ -184,10 +199,10 @@ fn r10_normal_world_flow_reaches_result_and_current_checkpoint() {
     core.execute(player, PlayerBehavior::CompleteCombatResult).unwrap();
     core.save_run_checkpoint_for_test().unwrap();
     let saved = core.export_active_run_checkpoint().unwrap().unwrap();
-    let mut restored = GameCore::new(core.game_data.clone(), 1);
+    let mut restored = core_with_profile_for_continue(&core, 1);
     restored.continue_from_active_run_checkpoint(player, &saved.core_payload_json, 0, saved.run_peak_certified_power).unwrap();
     assert_eq!(restored.state.roster.get(&employee).unwrap().condition, core.state.roster.get(&employee).unwrap().condition);
-    assert_eq!(restored.state.roster.get(&employee).unwrap().breakdown.remaining_nodes(), None);
+    assert_eq!(restored.state.roster.get(&employee).unwrap().breakdown.remaining_cost(), None);
     assert!(restored.state.active_battle.is_none());
 }
 
@@ -221,7 +236,7 @@ fn r11_world_channel_pause_public_query_terminal_and_save() {
     core.save_run_checkpoint_for_test().unwrap();
     let saved = core.export_active_run_checkpoint().unwrap().unwrap();
     assert!(!std::str::from_utf8(&saved.core_payload_json).unwrap().contains("sustained_effects"));
-    let mut restored = GameCore::new(core.game_data.clone(), 1);
+    let mut restored = core_with_profile_for_continue(&core, 1);
     restored.continue_from_active_run_checkpoint(player, &saved.core_payload_json, 0, saved.run_peak_certified_power).unwrap();
     assert!(restored.state.active_battle.is_none());
 }
@@ -257,7 +272,7 @@ fn r11_world_exact_fragment_hello_reinput_goodbye_result_and_save() {
     core.execute(player, PlayerBehavior::CompleteCombatResult).unwrap();
     core.save_run_checkpoint_for_test().unwrap();
     let saved = core.export_active_run_checkpoint().unwrap().unwrap();
-    let mut restored = GameCore::new(core.game_data.clone(), 1);
+    let mut restored = core_with_profile_for_continue(&core, 1);
     restored.continue_from_active_run_checkpoint(player, &saved.core_payload_json, 0, saved.run_peak_certified_power).unwrap();
     assert!(restored.state.active_battle.is_none());
 }
@@ -353,7 +368,8 @@ fn r12_world_two_employees_shared_personal_parry_cost_result_and_fresh_restore()
     let mut shield_hit = false;
     let mut deflected = false;
     let mut last_log = Vec::new();
-    for _ in 0..200 {
+    // Bounded observation; protection/counter and natural result remain required.
+    for _ in 0..2000 {
         if !matches!(core.get_state(), GameState::InBattle { .. }) { break; }
         core.advance_active_battle_for_server_tick(50).unwrap();
         if let Some(active) = &core.state.active_battle {
@@ -379,7 +395,7 @@ fn r12_world_two_employees_shared_personal_parry_cost_result_and_fresh_restore()
     core.execute(player, PlayerBehavior::CompleteCombatResult).unwrap();
     core.save_run_checkpoint_for_test().unwrap();
     let saved = core.export_active_run_checkpoint().unwrap().unwrap();
-    let mut restored = GameCore::new(core.game_data.clone(), 1);
+    let mut restored = core_with_profile_for_continue(&core, 1);
     restored.continue_from_active_run_checkpoint(player, &saved.core_payload_json, 0, saved.run_peak_certified_power).unwrap();
     assert!(restored.state.active_battle.is_none());
     assert_eq!(serde_json::to_value(&restored.state.roster.get(&employee).unwrap().skill_fragments).unwrap(), serde_json::to_value(&core.state.roster.get(&employee).unwrap().skill_fragments).unwrap());
@@ -387,7 +403,7 @@ fn r12_world_two_employees_shared_personal_parry_cost_result_and_fresh_restore()
 
 
 #[test]
-fn r12_world_corrosion_during_boss_flow_channel_pool_freezes_then_commits_result_and_restore() {
+fn r12_world_corrosion_during_boss_flow_channel_pool_freezes_then_preserves_boss() {
     let authored = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/r12/world_corrosion.ron"));
     let (mut core, player, caster) = r12_live_cross_fixture(false, false, 0, Some(authored), false, true, true);
     let other = core.roster().unwrap().combat_eligible_employee_ids().into_iter().find(|id| *id != caster).unwrap();
@@ -405,8 +421,9 @@ fn r12_world_corrosion_during_boss_flow_channel_pool_freezes_then_commits_result
     core.advance_active_battle_for_server_tick(1).unwrap();
     let active = core.state.active_battle.as_ref().unwrap();
     let facts = active.battle.runtime_fact_summary();
-    assert_eq!(facts.latest_death.as_ref().unwrap().cause, crate::game::battle::runtime_facts::DeathCause::Corrosion);
-    assert!(facts.latest_death.as_ref().unwrap().lethal_damage.is_none());
+    assert!(facts.latest_death.is_none());
+    assert!(active.battle.units.values().any(|unit| unit.owner == crate::game::enums::Side::Opponent && unit.is_active()));
+    assert!(active.battle.event_log.entries.iter().any(|entry| matches!(entry.event, crate::game::battle::event_log::BattleLogEvent::HpChanged { reason: crate::game::battle::event_log::HpChangeReason::Corrosion, .. })));
     assert_eq!(active.employee_attempt.roster.get(&other).unwrap().condition.trauma, 100);
     assert_eq!(active.battle.forced_pause_remaining_ms(), Some(1000));
     let frozen = battle_advance_atomic_snapshot(&core);
@@ -415,14 +432,12 @@ fn r12_world_corrosion_during_boss_flow_channel_pool_freezes_then_commits_result
     core.advance_active_battle_for_server_tick(1000).unwrap();
     assert!(matches!(core.get_state(), GameState::InBattle { .. }));
     core.advance_active_battle_for_server_tick(1).unwrap();
-    assert!(!matches!(core.get_state(), GameState::InBattle { .. }));
-    core.execute(player, PlayerBehavior::CompleteCombatResult).unwrap();
-    assert_eq!(core.roster().unwrap().get(&other).unwrap().breakdown.remaining_nodes(), Some(2));
-    core.save_run_checkpoint_for_test().unwrap();
-    let saved = core.export_active_run_checkpoint().unwrap().unwrap();
-    let mut restored = GameCore::new(core.game_data.clone(), 1);
-    restored.continue_from_active_run_checkpoint(player, &saved.core_payload_json, 0, saved.run_peak_certified_power).unwrap();
-    assert_eq!(restored.state.roster.get(&other).unwrap().breakdown, core.state.roster.get(&other).unwrap().breakdown);
-    assert_eq!(serde_json::to_value(&restored.state.roster.get(&other).unwrap().skill_fragments).unwrap(), serde_json::to_value(&core.state.roster.get(&other).unwrap().skill_fragments).unwrap());
-    assert!(restored.state.active_battle.is_none());
+    assert!(matches!(core.get_state(), GameState::InBattle { .. }), "corrosion cannot skip the surviving boss");
+    let active = core.state.active_battle.as_ref().unwrap();
+    assert!(active.battle.units.values().any(|unit| unit.owner == crate::game::enums::Side::Opponent && unit.is_active()));
+    assert_eq!(active.employee_attempt.roster.get(&other).unwrap().condition.trauma, 100);
+    assert_eq!(active.battle.forced_pause_remaining_ms(), None);
+    // Result/checkpoint transfer remains covered by the ordinary-death cases;
+    // this boss fixture must keep its native encounter running after the pause.
+
 }

@@ -1,0 +1,29 @@
+{
+  "all_live_final_bosses_defeated": false,
+  "encounter_compendium": {
+    "registered_ids": []
+  },
+  "facility_knowledge": {
+    "u15_economy": {
+      "completed_rooms": [
+        "B1-01",
+        "B2-01",
+        "B3-01"
+      ],
+      "discovered_final_rooms": []
+    }
+  },
+  "highest_floor_reached": 3,
+  "lifecycle": {
+    "active_expedition": null,
+    "expedition_sequence": 1,
+    "first_return_story": "Pending",
+    "vault": {
+      "equipment": {},
+      "fragments": {},
+      "materials": {}
+    },
+    "warehouse_debits": {}
+  },
+  "longest_deathless_floor_streak": 2
+}

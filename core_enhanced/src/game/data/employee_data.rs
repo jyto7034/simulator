@@ -7,8 +7,8 @@ use crate::game::{
     employee::EmployeeDefinition,
 };
 
-pub const STARTER_DEFINITION_MIN_COUNT: usize = 5;
-pub const STARTER_DEFINITION_MAX_COUNT: usize = 7;
+pub const STARTER_DEFINITION_MIN_COUNT: usize = 6;
+pub const STARTER_DEFINITION_MAX_COUNT: usize = 6;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -108,6 +108,17 @@ impl EmployeeDefinitionDatabase {
                 ),
             ));
         }
+        if !self.definitions.is_empty() {
+            for role in [crate::game::employee::EmployeeRole::Dealer,
+                crate::game::employee::EmployeeRole::Tank,
+                crate::game::employee::EmployeeRole::Healer] {
+                if self.definitions.iter().filter(|definition|
+                    definition.starter_eligible && definition.role == role).count() != 2 {
+                    return Err(DataValidationError::at("employee_definitions",
+                        "definitions.role", "starter roles must have exactly two candidates each"));
+                }
+            }
+        }
         Ok(())
     }
 
@@ -145,9 +156,13 @@ mod tests {
     use super::*;
 
     fn definition_ron(id: &str, starter_eligible: bool) -> String {
+        let role = match id.strip_prefix("starter_").and_then(|value| value.parse::<usize>().ok()).unwrap_or(0) % 3 {
+            0 => "Dealer", 1 => "Tank", _ => "Healer",
+        };
         format!(
             r#"(
                 employee_definition_id: "{id}",
+                role: {role},
                 name: "Employee {id}",
                 starter_eligible: {starter_eligible},
                 initial_loadout: (equipment_ids: [], baseline_skill_fragment_ids: []),
@@ -166,7 +181,7 @@ mod tests {
 
     #[test]
     fn employee_definitions_deserialize_from_one_strict_catalog() {
-        let definitions = (0..5)
+        let definitions = (0..6)
             .map(|index| definition_ron(&format!("starter_{index}"), true))
             .chain(std::iter::once(definition_ron("recruitment_0", false)))
             .collect::<Vec<_>>()
@@ -176,7 +191,7 @@ mod tests {
                 .expect("employee definitions should deserialize");
 
         db.validate_indexes();
-        assert_eq!(db.starter_definitions().len(), 5);
+        assert_eq!(db.starter_definitions().len(), 6);
         assert_eq!(db.recruitment_definitions().len(), 1);
         assert_eq!(
             db.get_by_id("recruitment_0").unwrap().name,
@@ -186,7 +201,7 @@ mod tests {
 
     #[test]
     fn duplicate_definition_id_is_rejected() {
-        let definitions = (0..5)
+        let definitions = (0..6)
             .map(|index| definition_ron(&format!("starter_{index}"), true))
             .chain(std::iter::once(definition_ron("starter_0", false)))
             .collect::<Vec<_>>()
@@ -200,7 +215,7 @@ mod tests {
 
     #[test]
     fn zero_attack_speed_is_rejected() {
-        let mut definitions = (0..5)
+        let mut definitions = (0..6)
             .map(|index| definition_ron(&format!("starter_{index}"), true))
             .collect::<Vec<_>>()
             .join(",");
@@ -222,6 +237,7 @@ mod tests {
             r#"(
                 definitions: [(
                     employee_definition_id: "missing_profile",
+                    role: Dealer,
                     name: "Missing Profile",
                     starter_eligible: false,
                     initial_loadout: (equipment_ids: [], baseline_skill_fragment_ids: []),
@@ -231,5 +247,42 @@ mod tests {
         .unwrap_err();
 
         assert!(error.to_string().contains("profile"));
+    }
+
+    #[test]
+    fn u12_starter_count_and_each_role_count_are_independent_contracts() {
+        let definitions = (0..6)
+            .map(|index| definition_ron(&format!("starter_{index}"), true))
+            .collect::<Vec<_>>().join(",");
+        let db: EmployeeDefinitionDatabase =
+            ron::de::from_str(&format!("(definitions: [{definitions}])")).unwrap();
+        db.validate_contract().unwrap();
+        for count in [5, 7] {
+            let definitions = (0..count)
+                .map(|index| definition_ron(&format!("starter_{index}"), true))
+                .collect::<Vec<_>>().join(",");
+            let bad: EmployeeDefinitionDatabase =
+                ron::de::from_str(&format!("(definitions: [{definitions}])")).unwrap();
+            assert!(bad.validate_contract().is_err(), "starter count {count}");
+        }
+        let imbalanced = definitions.replacen("role: Healer", "role: Dealer", 1);
+        assert_ne!(imbalanced, definitions);
+        let bad: EmployeeDefinitionDatabase =
+            ron::de::from_str(&format!("(definitions: [{imbalanced}])")).unwrap();
+        assert_eq!(bad.starter_definitions().len(), 6);
+        assert!(bad.validate_contract().is_err(), "six total cannot hide 3/2/1 roles");
+    }
+
+    #[test]
+    fn u12_authored_role_is_required_and_does_not_use_profile_text_as_fallback() {
+        let valid = definition_ron("starter_0", true);
+        let definition: EmployeeDefinition = ron::de::from_str(&valid).unwrap();
+        assert_eq!(definition.role, crate::game::employee::EmployeeRole::Dealer);
+        assert_eq!(definition.profile.role, "Role");
+        for bad in [valid.replacen("role: Dealer,", "", 1),
+            valid.replacen("role: Dealer,", "role: Unknown,", 1)] {
+            assert_ne!(bad, valid);
+            assert!(ron::de::from_str::<EmployeeDefinition>(&bad).is_err());
+        }
     }
 }

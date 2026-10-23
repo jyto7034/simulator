@@ -1,0 +1,53 @@
+{
+  "stage": "exit",
+  "started_at_utc": "2026-10-13T13:06:50.149221+00:00",
+  "target_manifest": {
+    "path": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/target/u12_current_002/MANIFEST.json",
+    "bytes": 2599320,
+    "sha256": "3eda79477ee69d83442721e6c5f591240eee51e6677f9ebea9080cacd8351ecd"
+  },
+  "checks": [
+    {
+      "group": "source",
+      "checked": 4728,
+      "mismatches": []
+    },
+    {
+      "group": "records",
+      "checked": 3692,
+      "mismatches": []
+    },
+    {
+      "group": "references",
+      "checked": 39,
+      "mismatches": []
+    },
+    {
+      "group": "external",
+      "checked": 41,
+      "mismatches": []
+    },
+    {
+      "group": "target_artifacts",
+      "checked": 14,
+      "mismatches": []
+    }
+  ],
+  "membership": {
+    "expected_count": 4728,
+    "actual_count": 4728,
+    "added": [],
+    "missing": []
+  },
+  "deleted_still_absent": {
+    "core_enhanced/src/game/employee_psychology.rs": true
+  },
+  "unique_files_hashed": 8489,
+  "unrelated_design_note": {
+    "path": "core_enhanced/docs/skills/run_relic_content_design_notes.ko.md",
+    "bytes": 125934,
+    "sha256": "5de64f5973f92751ef4ba66f1ec5f4cd27228be76fffb7235f9608f4f5ae15bd"
+  },
+  "finished_at_utc": "2026-10-13T13:08:24.764697+00:00",
+  "pass": true
+}

@@ -38,6 +38,14 @@ impl BattleCore {
                 continue;
             }
 
+            if let Some((source, _)) = self.approach_taunt(unit_id) {
+                let goal = if self.is_basic_attack_target_in_range(unit_id, source) {
+                    Some(MovementGoal::AttackUnit { target_id: source })
+                } else { self.unit_body_view(source).map(|body| MovementGoal::MoveToPoint { point: body.position, stop_radius: 0.1 }) };
+                if let Some(goal) = goal { goals.insert(unit_id, goal); }
+                continue;
+            }
+
             // An independent actor's explicit path applies to either side;
             // the player's employee stance does not grant it chase authority.
             if matches!(

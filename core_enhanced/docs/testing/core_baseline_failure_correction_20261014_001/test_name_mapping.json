@@ -1,0 +1,12 @@
+{
+  "game::world::tests::node_sessions::headquarters_recruit_employee_completes_node_and_adds_roster_member": [
+    "game::world::tests::node_sessions::headquarters_recruit_employee_adds_roster_member_and_retains_session_until_exit"
+  ],
+  "game::world::tests::snapshots_and_start::start_new_game_creates_starter_employee_roster_and_equipment": [
+    "game::world::tests::u06_starter::u06_starter_six_normal_sets_grant_exact_copies_and_continue_bindings"
+  ],
+  "game::data::content_pack::snapshot::tests::unix::invalid_utf8_directories_and_socket_inputs_return_errors": [
+    "game::data::content_pack::snapshot::tests::unix::invalid_utf8_and_directory_inputs_return_errors",
+    "game::data::content_pack::snapshot::tests::unix::socket_inputs_return_errors"
+  ]
+}

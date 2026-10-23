@@ -1,0 +1,27 @@
+{
+  "full_run": "raw_logs001/u14-core-regression002.log",
+  "passed": 1940,
+  "failed": 154,
+  "ignored": 6,
+  "actual_baseline_comparison": "BASELINE_FAILURE_COMPARISON_001.json",
+  "preexisting_failed": 138,
+  "u14_changed_existing_failures": 15,
+  "new_fixture_failure": 1,
+  "closure": [
+    "raw_logs001/u14-focused011.log",
+    "raw_logs001/u14-g11-default001.log",
+    "raw_logs001/u14-g11-native001.log"
+  ],
+  "reuse_basis": "After full run, product changes were pending Gate continuation vs unfinished activity, entry-death-only recovery reassessment, current_map_view completion projection, sorted breakdown preview; focused011 reexecuted all U12 lifecycle and U13 public route/shared-boundary tests plus changed U04 retreat/clone/codec tests. Unchanged employee XP and staged grant target policies, difficulty rounding, monolith ledger, battle damage runtime full-run passes remain scoped evidence. No full-green claim.",
+  "external_currentness": "All current public/host binaries built after focused011 from unchanged Core/src, game_resources/data, server source. consumer002->004 and host003 changes affect preparation and IO instrumentation only. Separate archived sources, build logs and receipts preserve provenance.",
+  "source_changes_after_final_functional_execution": "canonical docs/current records only; no runtime/data/config edits",
+  "predecessor": "U13 audit/u13_independent_002 Complete/High/open0 applies only to its target; changed U13 paths rerun in focused011 and route_public001/normal_route002",
+  "old_tamper_tests": "Existing selected tests remain in raw logs, but no new external-tamper defense or completion requirement was added.",
+  "correction001": {
+    "result": "correction/u14_correction_001/RESULT.json",
+    "new_execution": "core00299; G11default4/native4; public3cases/6freshprocess; measurements6",
+    "reused": "Original1940 full-run successes only unchanged XP/grant/difficulty/monolith/damage paths, baseline138failures; server29 and host30+10, growth12 unchanged mechanics",
+    "nonimpact_basis": "Three runtime files change only lookup context and validation supply bound; no reward producer, persistence encoding/store/journal, version, admission/profile or host source edits. Changed consumer paths reexecuted; previous Normal approvals stay tied to original binary.",
+    "currentness": "Final runtime sources fixed through core002/G11/public_build003/public003/measurements001; docs/records only afterward"
+  }
+}

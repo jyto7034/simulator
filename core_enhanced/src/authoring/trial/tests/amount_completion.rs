@@ -3,7 +3,7 @@ use crate::authoring::{AmountBattle, AmountQuery, BattleKey, TraceLimits, TraceO
 use uuid::Uuid;
 
 fn r06_held_public_run() -> (ExternalFixture, ValidatedGameData, TrialSession) {
-    let fixture = ExternalFixture::official_with_legacy_starters();
+    let fixture = ExternalFixture::official_with_trial_route();
     let cancel = CancellationToken::default();
     let content = crate::authoring::validate(
         fixture.root(),
@@ -123,7 +123,7 @@ fn r06_public_operator_units_reject_before_publication_and_preserve_held_run() {
 
 #[test]
 fn r06_public_authored_member_scope_preserves_valid_inputs() {
-    let fixture = ExternalFixture::official_with_legacy_starters();
+    let fixture = ExternalFixture::official_with_trial_route();
     let original = fixture.read("official/data/skills/base.ron");
     let mixed = ["Magnitude", "Milliseconds"];
     let child = "Aggregate(source: AuthoredMembers([(identity: \"child\", value: (value: 2, unit: Scalar), owner: None, projected_tile: None)]), grouping: WholeSet, reduction: Sum, outer_reduction: None, member: Ratio(numerator: Const((value: 8, unit: Magnitude)), denominator: Read(AggregateMember(unit: Scalar)), rounding: TowardZero))";
@@ -703,8 +703,13 @@ fn r12_public_sustained_protection_amount_trace_and_cli_export() {
                 assert_eq!(value["status"], "evaluated", "{name}: {value}");
                 assert_eq!(
                     value["site"]["action"]["action_id"],
-                    if name == "hello" { "remaining" } else { "hit" }
+                    if name == "hello" { "remaining" } else { "counter" }
                 );
+                if name == "protection" {
+                    // Facing the actual arrival tile permits the authored parry;
+                    // its 100 True counter is now the terminal amount observation.
+                    assert_eq!(value["typed_base_amount"]["value"],100);
+                }
                 assert!(!value["source"]["fragment"].is_null());
                 assert_eq!(value["typed_base_amount"], explain["typed_base_amount"]);
                 assert_eq!(value["trace"], explain["trace"]);
@@ -775,7 +780,7 @@ fn r12_public_sustained_protection_amount_trace_and_cli_export() {
 fn r12_public_boss_flow_projectile_area_milestones_and_cli_export() {
     use crate::game::data::{boss_runtime_data::*, pve_data::*};
     for milestone in ["Released", "EffectsSettled"] {
-        let fixture = ExternalFixture::official_with_legacy_starters();
+        let fixture = ExternalFixture::official_with_trial_route();
         {
             let path = "official/data/boss_runtime/base.ron";
             let mut catalog: BossRuntimeCatalogData =
@@ -873,7 +878,7 @@ SkillDef(id: "r12_boss_marker", name: "Public milestone marker", kind: Targeted,
             &cancel,
         )
         .unwrap();
-        let ground = probe.step(4).unwrap().public_result().unwrap()["payload"]["combat_preview"]
+        let ground = probe.step(5).unwrap().public_result().unwrap()["payload"]["battle_setup_snapshot"]
             ["deployment_zones"]
             .as_array()
             .unwrap()
@@ -888,7 +893,7 @@ SkillDef(id: "r12_boss_marker", name: "Public milestone marker", kind: Targeted,
             deploy["command"]["facing"] = json!("right");
             deploy["bindings"].as_array_mut().unwrap().extend([
                 json!({"from":{"step":6,"pointer":format!("/payload/battle_update/checkpoint/deployment/unit_deploy_costs/{i}/employee_uuid")},"to":"/command/employee_uuid","value_type":"string"}),
-                json!({"from":{"step":4,"pointer":format!("/payload/combat_preview/deployment_zones/{ground}/cells/{}",3-i)},"to":"/command/position","value_type":"object"}),
+                json!({"from":{"step":5,"pointer":format!("/payload/battle_setup_snapshot/deployment_zones/{ground}/cells/{}",3-i)},"to":"/command/position","value_type":"object"}),
             ]);
             steps.push(deploy);
         }

@@ -104,6 +104,8 @@ fn definition(rules: Vec<RelicRuleDef>) -> RelicDefinition {
 }
 fn fixture(rules: Vec<RelicRuleDef>, effects: Vec<AuthoredSkillEffect>) -> Fixture {
     let skill = SkillDef {
+        action_policy: None,
+        resonance_admission: None,
         id: "u09_skill".into(),
         name: "U09 private compiler fixture".into(),
         kind: crate::game::ability::SkillKind::Untargeted,
@@ -471,6 +473,8 @@ fn personal() -> AuthoredSkillEffect {
         "personal",
         SkillEffectDef::PersonalShieldGrant {
             definition: PersonalShieldGrantDef {
+                support: None,
+                replace_only_recipients: false,
                 amount: amount(200, crate::game::value_expr::EvalMoment::Snapshot),
                 duration_ms: 1000,
                 priority: 5,
@@ -649,3 +653,6 @@ fn u09_personal_single_preserves_eval_moment_and_conflicting_recipes_reject() {
     assert_eq!(p.effects[0].recipes.len(), 1);
     assert_eq!(p.effects[0].recipe_contributions.len(), 2);
 }
+
+#[path = "publication_cases.rs"]
+mod publication_cases;

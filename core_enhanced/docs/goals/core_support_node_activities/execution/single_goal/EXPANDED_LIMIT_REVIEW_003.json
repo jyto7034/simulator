@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "source": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/runs/expanded_calibration003.stdout.log",
+  "sha256": "8d2deeb5ce87e765cb5a0957b483680c6416b53a8fcfa0250a44973f9d12571c",
+  "limits": {
+    "max_elapsed_ns": 6000000000,
+    "max_native_work": 233000000,
+    "max_requested_heap_bytes": 1342177280,
+    "max_rss_bytes": 1610612736
+  },
+  "limits_changed": false,
+  "summary": {
+    "plain": {
+      "samples": 12,
+      "max_elapsed_ns": 905934370,
+      "max_native_work": null,
+      "max_requested_heap_bytes": null,
+      "max_rss_bytes": null
+    },
+    "instrumented": {
+      "samples": 12,
+      "max_elapsed_ns": 1033967837,
+      "max_native_work": 8445816,
+      "max_requested_heap_bytes": 28536582,
+      "max_rss_bytes": 56778752
+    }
+  },
+  "scope": "finite diagnostic scenario; plain missing counters remain null; no final gameplay SLO claim"
+}

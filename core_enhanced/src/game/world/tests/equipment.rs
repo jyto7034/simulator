@@ -845,7 +845,7 @@ fn bound_equipment_cannot_be_dismantled_or_enhanced_in_maintenance() {
         uuid: Uuid::from_u128(31),
         name: "Bound Maintenance Fragment".to_string(),
         description: "A test material for bound equipment operations".to_string(),
-        material_type: EquipmentMaterialType::Fragment,
+        material_type: EquipmentMaterialType::EquipmentDust,
         rarity: crate::game::enums::RiskLevel::ZAYIN,
         equipment_type: Some(EquipmentType::Weapon),
     };
@@ -1078,7 +1078,7 @@ fn dismantle_equipment_is_maintenance_only_and_grants_material_stacks() {
         uuid: Uuid::from_u128(41),
         name: "Dismantled Weapon Fragment".to_string(),
         description: "A test dismantle material".to_string(),
-        material_type: EquipmentMaterialType::Fragment,
+        material_type: EquipmentMaterialType::EquipmentDust,
         rarity: crate::game::enums::RiskLevel::ZAYIN,
         equipment_type: Some(EquipmentType::Weapon),
     };
@@ -1180,7 +1180,7 @@ fn dismantle_equipment_automatically_unequips_equipped_item() {
         uuid: Uuid::from_u128(46),
         name: "Equipment Dust".to_string(),
         description: "A test equipment dust material".to_string(),
-        material_type: EquipmentMaterialType::Generic,
+        material_type: EquipmentMaterialType::EquipmentDust,
         rarity: crate::game::enums::RiskLevel::ZAYIN,
         equipment_type: None,
     };
@@ -1245,7 +1245,7 @@ fn dismantle_equipment_automatically_unequips_equipped_item() {
     let result = core
         .execute(
             player_id,
-            PlayerBehavior::DismantleEquipment {
+            PlayerBehavior::DismantleEquipmentConfirmed { confirmed: true,
                 item_uuid: owned_uuid,
             },
         )
@@ -1274,10 +1274,7 @@ fn dismantle_equipment_automatically_unequips_equipped_item() {
     let employee = core.roster().unwrap().get(&employee_uuid).unwrap();
     assert!(!employee.loadout.item_slot.contains_instance(owned_uuid));
     assert_eq!(
-        core.inventory()
-            .unwrap()
-            .equipment_materials
-            .amount(&material.id),
+        core.state.crafting_resources.equipment_dust,
         1
     );
     assert_equipment_loadout_graph_valid(&core);
@@ -1292,7 +1289,7 @@ fn enhance_equipment_is_maintenance_only_and_updates_owned_instance() {
         uuid: Uuid::from_u128(51),
         name: "Enhance Weapon Fragment".to_string(),
         description: "A test enhancement material".to_string(),
-        material_type: EquipmentMaterialType::Fragment,
+        material_type: EquipmentMaterialType::EquipmentDust,
         rarity: crate::game::enums::RiskLevel::ZAYIN,
         equipment_type: Some(EquipmentType::Weapon),
     };
@@ -1409,7 +1406,7 @@ fn duplicate_enhancement_cost_fixture(material_balance: u32) -> (GameCore, Uuid,
         uuid: Uuid::from_u128(61),
         name: "Duplicate Enhance Dust".to_string(),
         description: "Aggregate enhancement fixture".to_string(),
-        material_type: EquipmentMaterialType::Fragment,
+        material_type: EquipmentMaterialType::EquipmentDust,
         rarity: crate::game::enums::RiskLevel::ZAYIN,
         equipment_type: Some(EquipmentType::Weapon),
     };
@@ -1675,7 +1672,6 @@ fn newly_dead_employee_keeps_roster_record_and_atomically_returns_equipment_and_
     {
         let employee = staged_roster.get_mut(&employee_uuid).unwrap();
         employee.condition.physical_damage = MAX_PHYSICAL_DAMAGE;
-        employee.psychology.trust_score = 8;
     }
     let mut staged_inventory = core.state.inventory.clone();
     let mut staged_fragments = core.state.skill_fragments.clone();
@@ -1700,8 +1696,8 @@ fn newly_dead_employee_keeps_roster_record_and_atomically_returns_equipment_and_
     assert!(dead.condition.is_dead());
     assert!(dead.loadout.item_slot.is_empty());
     assert!(dead.skill_fragments.active_copy_uuid().is_none());
-    assert_eq!(dead.psychology.trust_score, 8);
-    assert!(dead.psychology.memories.is_empty());
+    assert_eq!(dead.profile, core.state.roster.get(&employee_uuid).unwrap().profile);
+    assert!(serde_json::to_value(dead).unwrap().get("psychology").is_none());
     assert_eq!(staged_roster.len(), core.state.roster.len());
     assert_eq!(
         diff.updated

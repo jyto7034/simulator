@@ -1,0 +1,668 @@
+{
+  "validation_receipt_ref": {
+    "Artifact Type": "Phase Plan Validation Receipt",
+    "Artifact ID": "PVR-CRCE-001",
+    "Content Digest": null
+  },
+  "validator_method_version": "p2g40-receipt-validator/1.2.0",
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Phase Plan",
+        "Artifact ID": "PP-CRCE-001",
+        "Content Digest": "sha256:21d88bbedeea8ca8383ce32de54eb31419c9a711c532c343660d21ee1852735d"
+      },
+      "payload": {
+        "Bound Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CRCE-001",
+          "Content Digest": "sha256:76acc0e6df605e4ae92903e06783803c766ab108fc8cdb7770834fbcb3d43ae1"
+        },
+        "Exact Prerequisite Composite Basis": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CRCE-003",
+            "Content Digest": "sha256:374d57b08b6fc3ba1f90c264f925b33c4aadf126b671b695c7ae9ebf9235f24a"
+          },
+          "Final Policy Freeze Ref": {
+            "Artifact Type": "Final Policy Freeze",
+            "Artifact ID": "FPF-CRCE-001",
+            "Content Digest": "sha256:76acc0e6df605e4ae92903e06783803c766ab108fc8cdb7770834fbcb3d43ae1"
+          },
+          "Phase Plan Ref": null,
+          "Goal Set Ref": null,
+          "Handoff Artifact Ref": null,
+          "Post-Freeze Change Record Ref Set": [],
+          "Authoritative Change Obligation Declaration Ref Set": []
+        },
+        "Applicable P2G-40 Obligation Key Set": [],
+        "P2G-40 Resolution Record Ref Set": [],
+        "Applicable Obligation Supersession Record Ref Set": [],
+        "Goal Structure Fact": "single_phase",
+        "Parallelization": "none approved",
+        "work_packages": [
+          {
+            "id": "WP-CRCE-AUTHORING",
+            "selectors": {
+              "implementation": [
+                "PE-CRCE-01",
+                "PE-CRCE-02",
+                "PE-CRCE-04",
+                "PE-CRCE-05",
+                "PE-CRCE-10",
+                "PE-CRCE-11",
+                "PE-CRCE-14"
+              ],
+              "supporting": [
+                "PE-CRCE-03",
+                "PE-CRCE-06",
+                "PE-CRCE-12",
+                "PE-CRCE-13"
+              ]
+            },
+            "boundary": "Normal relic RON/validation→compiled event/periodic/join/Wedge plan→owned query/capabilities",
+            "expected_change": "Extend closed typed authoring using existing source/effect/selector and normal publication; stable copy/effect identity; generated payload tags/modifiers; reject invalid references/types/intervals/combinations with no parse-only support.",
+            "prerequisite": "U08 copy and U09 structural compiler; CAUSAL/STRIKE/STATE must consume advertised capabilities.",
+            "validation": "Normal new-ID external RON, descriptor/query and actual downstream effects; invalid typed negative fixtures.",
+            "unknown": "Exact enum/module/API names may be chosen by Sol within CODE_REVIEW contracts; no forged source/ancestry flags."
+          },
+          {
+            "id": "WP-CRCE-CAUSAL",
+            "selectors": {
+              "implementation": [
+                "PE-CRCE-01",
+                "PE-CRCE-02",
+                "PE-CRCE-03",
+                "PE-CRCE-04",
+                "PE-CRCE-05",
+                "PE-CRCE-07",
+                "PE-CRCE-08",
+                "PE-CRCE-09"
+              ],
+              "supporting": [
+                "PE-CRCE-06",
+                "PE-CRCE-10",
+                "PE-CRCE-12",
+                "PE-CRCE-13",
+                "PE-CRCE-14"
+              ]
+            },
+            "boundary": "Actual committed facts→subscriber selection→queued child/fork/participant join and independent periodic→existing damage/resource/death consumers",
+            "expected_change": "Implement immutable ancestry, actual participant receipts and join own payload; separate independent periodic roots from derived carriers; preserve equipment basic-only counter/death order and Corrosion suppression; positive gain gate remains common.",
+            "prerequisite": "AUTHORING stable effects/payload; STATE transaction/leases and all source rebinding paths.",
+            "validation": "A/B/copy/effect loops, real forks/join/nonparticipants/duplicate receipt, independent periodic vs DOT/delay/projectile/area, real equipment death chain/lock.",
+            "unknown": "Concrete event/payload shape is internal design within approved semantic observability; helper-only join or periodic unsupported is not accepted."
+          },
+          {
+            "id": "WP-CRCE-STRIKE",
+            "selectors": {
+              "implementation": [
+                "PE-CRCE-10",
+                "PE-CRCE-11",
+                "PE-CRCE-12"
+              ],
+              "supporting": [
+                "PE-CRCE-01",
+                "PE-CRCE-02",
+                "PE-CRCE-06",
+                "PE-CRCE-13",
+                "PE-CRCE-14"
+              ]
+            },
+            "boundary": "Accepted direct multihit source→preformula modifier→native actual positive strike→cast-target lifetime",
+            "expected_change": "Use existing admitted strike identity and first-positive witness; candidate n+1 before formula, commit once only on actual HP loss, same-strike segments reuse n, bound copy r adds to normal flat-then-percent arithmetic, released casts retain until last consumer.",
+            "prerequisite": "AUTHORING typed Wedge and compiled bindings; CAUSAL source preservation; STATE clone/reclaim/rollback.",
+            "validation": "110/120/260 example; target/cast/copy isolation; full shield/zero/miss excluded, partial HP counts; simultaneous distinct strikes, same-strike multiple segments; cancellation/retry.",
+            "unknown": "No generic CurrentActionPrefix reinterpretation or scheduled-step/global-actor counter; fixture balance remains illustrative."
+          },
+          {
+            "id": "WP-CRCE-STATE",
+            "selectors": {
+              "implementation": [
+                "PE-CRCE-06",
+                "PE-CRCE-12",
+                "PE-CRCE-13",
+                "PE-CRCE-14"
+              ],
+              "supporting": [
+                "PE-CRCE-01",
+                "PE-CRCE-02",
+                "PE-CRCE-03",
+                "PE-CRCE-04",
+                "PE-CRCE-05",
+                "PE-CRCE-07",
+                "PE-CRCE-08",
+                "PE-CRCE-09",
+                "PE-CRCE-10",
+                "PE-CRCE-11"
+              ]
+            },
+            "boundary": "New transient causal/join/periodic/strike roots→source carrier ownership→candidate transaction/clone/admission/retained→cleanup and existing durable Continue",
+            "expected_change": "Close all new storage and native/authoring scan/copy/retained budgets before allocation; preserve source through command reconstruction and observation; clean terminal consumers and clone independently; preserve durable copies and pre-entry/fresh Continue.",
+            "prerequisite": "AUTHORING compiled owner extent; CAUSAL actual producer/receipt lifetimes; STRIKE actual released direct consumers.",
+            "validation": "One-short resource faults at actual producers; prefix rollback/exact retry; log eviction/off; release/target/battle end cleanup; fresh process Continue and attempt boundaries.",
+            "unknown": "Do not introduce live battle disk resume, global visited state or larger limits/workload reduction."
+          },
+          {
+            "id": "WP-CRCE-PUBLIC",
+            "selectors": {
+              "implementation": [
+                "PE-CRCE-14"
+              ],
+              "supporting": [
+                "PE-CRCE-01",
+                "PE-CRCE-02",
+                "PE-CRCE-03",
+                "PE-CRCE-04",
+                "PE-CRCE-05",
+                "PE-CRCE-06",
+                "PE-CRCE-07",
+                "PE-CRCE-08",
+                "PE-CRCE-09",
+                "PE-CRCE-10",
+                "PE-CRCE-11",
+                "PE-CRCE-12",
+                "PE-CRCE-13"
+              ]
+            },
+            "boundary": "Normal public representative content and usage explanation→Core commands/query/observed results",
+            "expected_change": "Provide representative Deep Wedge and causal event/fork/join/periodic authored examples through existing normal catalogs without treating fixture numbers as formal live balance. Product example docs/data Sol; independent fixture/oracle Astra owns separate files.",
+            "prerequisite": "Completed runtime atomic group and immutable normal loader API.",
+            "validation": "Normal external RON→prepare→real relic/fragment setup→execution→query/restore, plus negative cases.",
+            "unknown": "Examples must consume actual new features; fixture injection alone cannot close public support."
+          },
+          {
+            "id": "WP-CRCE-VERIFY",
+            "selectors": {
+              "validation_only": [
+                "PE-CRCE-01",
+                "PE-CRCE-02",
+                "PE-CRCE-03",
+                "PE-CRCE-04",
+                "PE-CRCE-05",
+                "PE-CRCE-06",
+                "PE-CRCE-07",
+                "PE-CRCE-08",
+                "PE-CRCE-09",
+                "PE-CRCE-10",
+                "PE-CRCE-11",
+                "PE-CRCE-12",
+                "PE-CRCE-13",
+                "PE-CRCE-14"
+              ]
+            },
+            "boundary": "Independent tests/fixtures/oracles and prepared execution→current source/evidence selection→whole Goal audit",
+            "expected_change": "Astra authors eight meaningful test groups and impact-based regressions; Sol runs prepared bundles and preserves raw failure/results; Root assesses coverage/currentness; nonparticipant Astra audits whole Goal.",
+            "prerequisite": "Runtime group and public examples implement required producers; valid predecessor evidence may be reused only with explicit nonimpact.",
+            "validation": "28 exact acceptance sentences, required GEX dimensions, affected U05/U08/U09/R06/R09 contracts, resource/performance where hot-path affected, exact target restoration and independent Complete/High/open0.",
+            "unknown": "Actual final command selection follows product changes, not an automatic all-tests requirement. Same prepared batch handles normal correction cycles."
+          }
+        ],
+        "dependencies": [
+          {
+            "from": "WP-CRCE-AUTHORING",
+            "to": "WP-CRCE-CAUSAL",
+            "type": "schema_data",
+            "evidence": "Typed identities/payload/bindings are shared input.",
+            "broken": "Unvalidated or mismatched runtime interpretation."
+          },
+          {
+            "from": "WP-CRCE-AUTHORING",
+            "to": "WP-CRCE-STRIKE",
+            "type": "schema_data",
+            "evidence": "Typed identities/payload/bindings are shared input.",
+            "broken": "Unvalidated or mismatched runtime interpretation."
+          },
+          {
+            "from": "WP-CRCE-AUTHORING",
+            "to": "WP-CRCE-STATE",
+            "type": "schema_data",
+            "evidence": "Typed identities/payload/bindings are shared input.",
+            "broken": "Unvalidated or mismatched runtime interpretation."
+          },
+          {
+            "from": "WP-CRCE-CAUSAL",
+            "to": "WP-CRCE-AUTHORING",
+            "type": "producer_consumer",
+            "evidence": "Publication advertises only actually connected operations and owned observation.",
+            "broken": "Parse/query-only support would be reported executable."
+          },
+          {
+            "from": "WP-CRCE-STRIKE",
+            "to": "WP-CRCE-AUTHORING",
+            "type": "producer_consumer",
+            "evidence": "Publication advertises only actually connected operations and owned observation.",
+            "broken": "Parse/query-only support would be reported executable."
+          },
+          {
+            "from": "WP-CRCE-STATE",
+            "to": "WP-CRCE-CAUSAL",
+            "type": "transaction",
+            "evidence": "Source/leases/new roots must be in candidate clone and resource accounting.",
+            "broken": "Partial commit or lost causal/strike lifetime."
+          },
+          {
+            "from": "WP-CRCE-CAUSAL",
+            "to": "WP-CRCE-STATE",
+            "type": "persistence_lifetime",
+            "evidence": "Actual producer and released consumer determine each root retention and terminal cleanup.",
+            "broken": "Premature reset or unbounded retained state."
+          },
+          {
+            "from": "WP-CRCE-STATE",
+            "to": "WP-CRCE-STRIKE",
+            "type": "transaction",
+            "evidence": "Source/leases/new roots must be in candidate clone and resource accounting.",
+            "broken": "Partial commit or lost causal/strike lifetime."
+          },
+          {
+            "from": "WP-CRCE-STRIKE",
+            "to": "WP-CRCE-STATE",
+            "type": "persistence_lifetime",
+            "evidence": "Actual producer and released consumer determine each root retention and terminal cleanup.",
+            "broken": "Premature reset or unbounded retained state."
+          },
+          {
+            "from": "WP-CRCE-CAUSAL",
+            "to": "WP-CRCE-STRIKE",
+            "type": "producer_consumer",
+            "evidence": "All source transport/rebinding preserves original direct-strike identity; derived children stay distinct.",
+            "broken": "Derived damage could pollute cast-target Wedge count."
+          },
+          {
+            "from": "WP-CRCE-AUTHORING",
+            "to": "WP-CRCE-PUBLIC",
+            "type": "producer_consumer",
+            "evidence": "Public examples require working typed runtime consumers.",
+            "broken": "Examples could pass parsing but not actual effects."
+          },
+          {
+            "from": "WP-CRCE-CAUSAL",
+            "to": "WP-CRCE-PUBLIC",
+            "type": "producer_consumer",
+            "evidence": "Public examples require working typed runtime consumers.",
+            "broken": "Examples could pass parsing but not actual effects."
+          },
+          {
+            "from": "WP-CRCE-STRIKE",
+            "to": "WP-CRCE-PUBLIC",
+            "type": "producer_consumer",
+            "evidence": "Public examples require working typed runtime consumers.",
+            "broken": "Examples could pass parsing but not actual effects."
+          },
+          {
+            "from": "WP-CRCE-STATE",
+            "to": "WP-CRCE-PUBLIC",
+            "type": "producer_consumer",
+            "evidence": "Public examples require working typed runtime consumers.",
+            "broken": "Examples could pass parsing but not actual effects."
+          },
+          {
+            "from": "WP-CRCE-PUBLIC",
+            "to": "WP-CRCE-VERIFY",
+            "type": "validation",
+            "evidence": "External fixtures/examples and actual normal route are validation inputs.",
+            "broken": "Only helper-level evidence for public support."
+          },
+          {
+            "from": "WP-CRCE-CAUSAL",
+            "to": "WP-CRCE-VERIFY",
+            "type": "validation",
+            "evidence": "Final integrated source is required for independent acceptance and failure-path evidence.",
+            "broken": "Prepared tests cannot establish current behavior before implementation."
+          },
+          {
+            "from": "WP-CRCE-STRIKE",
+            "to": "WP-CRCE-VERIFY",
+            "type": "validation",
+            "evidence": "Final integrated source is required for independent acceptance and failure-path evidence.",
+            "broken": "Prepared tests cannot establish current behavior before implementation."
+          },
+          {
+            "from": "WP-CRCE-STATE",
+            "to": "WP-CRCE-VERIFY",
+            "type": "validation",
+            "evidence": "Final integrated source is required for independent acceptance and failure-path evidence.",
+            "broken": "Prepared tests cannot establish current behavior before implementation."
+          }
+        ],
+        "atomic_groups": [
+          {
+            "id": "AG-CRCE-RUNTIME",
+            "members": [
+              "WP-CRCE-AUTHORING",
+              "WP-CRCE-CAUSAL",
+              "WP-CRCE-STRIKE",
+              "WP-CRCE-STATE"
+            ],
+            "evidence": "One typed support/source/transaction/lifetime cutover: schema cannot claim execution without actual subscribers/join/periodic/Wedge; consumers cannot commit without clone/retained/reclaim. Internal editing may be ordered but no subset is a separately supported completion. Public examples and final independent verification are bounded downstream nodes."
+          }
+        ],
+        "standalone": [
+          "WP-CRCE-PUBLIC",
+          "WP-CRCE-VERIFY"
+        ],
+        "cyclic_sccs": [
+          {
+            "members": [
+              "WP-CRCE-AUTHORING",
+              "WP-CRCE-CAUSAL",
+              "WP-CRCE-STRIKE",
+              "WP-CRCE-STATE"
+            ],
+            "disposition": "coimplement_atomic",
+            "atomic_group": "AG-CRCE-RUNTIME",
+            "evidence": "Explicit authoring↔consumer and consumer↔state edges close support and actual lifetime; no stable independently valid partial support boundary."
+          }
+        ],
+        "phases": [
+          {
+            "id": "PHASE-CRCE-01",
+            "primary": [
+              "PE-CRCE-01",
+              "PE-CRCE-02",
+              "PE-CRCE-03",
+              "PE-CRCE-04",
+              "PE-CRCE-05",
+              "PE-CRCE-06",
+              "PE-CRCE-07",
+              "PE-CRCE-08",
+              "PE-CRCE-09",
+              "PE-CRCE-10",
+              "PE-CRCE-11",
+              "PE-CRCE-12",
+              "PE-CRCE-13",
+              "PE-CRCE-14"
+            ],
+            "supporting": [],
+            "nodes": [
+              "AG-CRCE-RUNTIME",
+              "WP-CRCE-PUBLIC",
+              "WP-CRCE-VERIFY"
+            ],
+            "exit": "All 14 elements/28 sentences and relevant GEX dimensions/current predecessor impacts resolved; normal actual public consumers; independent Complete/High/open0. No dependence on future U11/U18/U19/Unity for present validity."
+          }
+        ],
+        "audits": [
+          {
+            "phase": "PHASE-CRCE-01",
+            "state": "Actual-event relic chains and Deep Wedge operate through normal source-bound queue, real fork/join/periodic and current equipment/resource consumers; transient and durable ownership closed.",
+            "checks": "One authoritative source/receipt/cast counter; immutable path fork, actual participant union, suppression consumer; no parser-only feature, global visited/cap, log authority, new mid-battle disk resume, unmetered state, implicit retarget or partial failure.",
+            "evidence": "14-member acceptance projection, CODE_REVIEW seams, independent native and external RON tests, selected regression/resource/performance results and exact target restore.",
+            "limitation": "Planning audit of final state; no runtime PASS yet. Formal balance/full roster/future U19 remain out. Phase-level parallelization none; safe separate file authoring only under explicit ownership."
+          }
+        ],
+        "integration": [
+          {
+            "id": "IVA-CRCE-V01",
+            "source": "FPF-CRCE-001 PE-CRCE-01: both exact member acceptance sentences; CODE_REVIEW policy-element table",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRCE-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRCE-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V01 and independent test_parts/native+external fixtures to be authored",
+            "evidence": "Nonzero actual normal/native execution with exact source/inputs/raw results and independently derived oracle; no helper-only substitution for public producers. Reuse predecessor evidence only with explicit unchanged/nonimpact basis.",
+            "prerequisite": "AG-CRCE-RUNTIME and WP-CRCE-PUBLIC; independent test author separated from product and sole prepared runner."
+          },
+          {
+            "id": "IVA-CRCE-V02",
+            "source": "FPF-CRCE-001 PE-CRCE-02: both exact member acceptance sentences; CODE_REVIEW policy-element table",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRCE-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRCE-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V02 and independent test_parts/native+external fixtures to be authored",
+            "evidence": "Nonzero actual normal/native execution with exact source/inputs/raw results and independently derived oracle; no helper-only substitution for public producers. Reuse predecessor evidence only with explicit unchanged/nonimpact basis.",
+            "prerequisite": "AG-CRCE-RUNTIME and WP-CRCE-PUBLIC; independent test author separated from product and sole prepared runner."
+          },
+          {
+            "id": "IVA-CRCE-V03",
+            "source": "FPF-CRCE-001 PE-CRCE-03: both exact member acceptance sentences; CODE_REVIEW policy-element table",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRCE-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRCE-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V03 and independent test_parts/native+external fixtures to be authored",
+            "evidence": "Nonzero actual normal/native execution with exact source/inputs/raw results and independently derived oracle; no helper-only substitution for public producers. Reuse predecessor evidence only with explicit unchanged/nonimpact basis.",
+            "prerequisite": "AG-CRCE-RUNTIME and WP-CRCE-PUBLIC; independent test author separated from product and sole prepared runner."
+          },
+          {
+            "id": "IVA-CRCE-V04",
+            "source": "FPF-CRCE-001 PE-CRCE-04: both exact member acceptance sentences; CODE_REVIEW policy-element table",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRCE-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRCE-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V04 and independent test_parts/native+external fixtures to be authored",
+            "evidence": "Nonzero actual normal/native execution with exact source/inputs/raw results and independently derived oracle; no helper-only substitution for public producers. Reuse predecessor evidence only with explicit unchanged/nonimpact basis.",
+            "prerequisite": "AG-CRCE-RUNTIME and WP-CRCE-PUBLIC; independent test author separated from product and sole prepared runner."
+          },
+          {
+            "id": "IVA-CRCE-V05",
+            "source": "FPF-CRCE-001 PE-CRCE-05: both exact member acceptance sentences; CODE_REVIEW policy-element table",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRCE-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRCE-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V05 and independent test_parts/native+external fixtures to be authored",
+            "evidence": "Nonzero actual normal/native execution with exact source/inputs/raw results and independently derived oracle; no helper-only substitution for public producers. Reuse predecessor evidence only with explicit unchanged/nonimpact basis.",
+            "prerequisite": "AG-CRCE-RUNTIME and WP-CRCE-PUBLIC; independent test author separated from product and sole prepared runner."
+          },
+          {
+            "id": "IVA-CRCE-V06",
+            "source": "FPF-CRCE-001 PE-CRCE-06: both exact member acceptance sentences; CODE_REVIEW policy-element table",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRCE-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRCE-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V06 and independent test_parts/native+external fixtures to be authored",
+            "evidence": "Nonzero actual normal/native execution with exact source/inputs/raw results and independently derived oracle; no helper-only substitution for public producers. Reuse predecessor evidence only with explicit unchanged/nonimpact basis.",
+            "prerequisite": "AG-CRCE-RUNTIME and WP-CRCE-PUBLIC; independent test author separated from product and sole prepared runner."
+          },
+          {
+            "id": "IVA-CRCE-V07",
+            "source": "FPF-CRCE-001 PE-CRCE-07: both exact member acceptance sentences; CODE_REVIEW policy-element table",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRCE-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRCE-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V07 and independent test_parts/native+external fixtures to be authored",
+            "evidence": "Nonzero actual normal/native execution with exact source/inputs/raw results and independently derived oracle; no helper-only substitution for public producers. Reuse predecessor evidence only with explicit unchanged/nonimpact basis.",
+            "prerequisite": "AG-CRCE-RUNTIME and WP-CRCE-PUBLIC; independent test author separated from product and sole prepared runner."
+          },
+          {
+            "id": "IVA-CRCE-V08",
+            "source": "FPF-CRCE-001 PE-CRCE-08: both exact member acceptance sentences; CODE_REVIEW policy-element table",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRCE-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRCE-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V08 and independent test_parts/native+external fixtures to be authored",
+            "evidence": "Nonzero actual normal/native execution with exact source/inputs/raw results and independently derived oracle; no helper-only substitution for public producers. Reuse predecessor evidence only with explicit unchanged/nonimpact basis.",
+            "prerequisite": "AG-CRCE-RUNTIME and WP-CRCE-PUBLIC; independent test author separated from product and sole prepared runner."
+          },
+          {
+            "id": "IVA-CRCE-V09",
+            "source": "FPF-CRCE-001 PE-CRCE-09: both exact member acceptance sentences; CODE_REVIEW policy-element table",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRCE-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRCE-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V09 and independent test_parts/native+external fixtures to be authored",
+            "evidence": "Nonzero actual normal/native execution with exact source/inputs/raw results and independently derived oracle; no helper-only substitution for public producers. Reuse predecessor evidence only with explicit unchanged/nonimpact basis.",
+            "prerequisite": "AG-CRCE-RUNTIME and WP-CRCE-PUBLIC; independent test author separated from product and sole prepared runner."
+          },
+          {
+            "id": "IVA-CRCE-V10",
+            "source": "FPF-CRCE-001 PE-CRCE-10: both exact member acceptance sentences; CODE_REVIEW policy-element table",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRCE-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRCE-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V10 and independent test_parts/native+external fixtures to be authored",
+            "evidence": "Nonzero actual normal/native execution with exact source/inputs/raw results and independently derived oracle; no helper-only substitution for public producers. Reuse predecessor evidence only with explicit unchanged/nonimpact basis.",
+            "prerequisite": "AG-CRCE-RUNTIME and WP-CRCE-PUBLIC; independent test author separated from product and sole prepared runner."
+          },
+          {
+            "id": "IVA-CRCE-V11",
+            "source": "FPF-CRCE-001 PE-CRCE-11: both exact member acceptance sentences; CODE_REVIEW policy-element table",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRCE-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRCE-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V11 and independent test_parts/native+external fixtures to be authored",
+            "evidence": "Nonzero actual normal/native execution with exact source/inputs/raw results and independently derived oracle; no helper-only substitution for public producers. Reuse predecessor evidence only with explicit unchanged/nonimpact basis.",
+            "prerequisite": "AG-CRCE-RUNTIME and WP-CRCE-PUBLIC; independent test author separated from product and sole prepared runner."
+          },
+          {
+            "id": "IVA-CRCE-V12",
+            "source": "FPF-CRCE-001 PE-CRCE-12: both exact member acceptance sentences; CODE_REVIEW policy-element table",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRCE-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRCE-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V12 and independent test_parts/native+external fixtures to be authored",
+            "evidence": "Nonzero actual normal/native execution with exact source/inputs/raw results and independently derived oracle; no helper-only substitution for public producers. Reuse predecessor evidence only with explicit unchanged/nonimpact basis.",
+            "prerequisite": "AG-CRCE-RUNTIME and WP-CRCE-PUBLIC; independent test author separated from product and sole prepared runner."
+          },
+          {
+            "id": "IVA-CRCE-V13",
+            "source": "FPF-CRCE-001 PE-CRCE-13: both exact member acceptance sentences; CODE_REVIEW policy-element table",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRCE-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRCE-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V13 and independent test_parts/native+external fixtures to be authored",
+            "evidence": "Nonzero actual normal/native execution with exact source/inputs/raw results and independently derived oracle; no helper-only substitution for public producers. Reuse predecessor evidence only with explicit unchanged/nonimpact basis.",
+            "prerequisite": "AG-CRCE-RUNTIME and WP-CRCE-PUBLIC; independent test author separated from product and sole prepared runner."
+          },
+          {
+            "id": "IVA-CRCE-V14",
+            "source": "FPF-CRCE-001 PE-CRCE-14: both exact member acceptance sentences; CODE_REVIEW policy-element table",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRCE-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRCE-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V14 and independent test_parts/native+external fixtures to be authored",
+            "evidence": "Nonzero actual normal/native execution with exact source/inputs/raw results and independently derived oracle; no helper-only substitution for public producers. Reuse predecessor evidence only with explicit unchanged/nonimpact basis.",
+            "prerequisite": "AG-CRCE-RUNTIME and WP-CRCE-PUBLIC; independent test author separated from product and sole prepared runner."
+          },
+          {
+            "id": "IVA-CRCE-INTEGRATED",
+            "source": "FPF-CRCE-001 integration and CODE_REVIEW 검사 범위와 재사용: Normal external RON with U08 copy/U09 structural effects, actual event child/fork/join/periodic and equipment/Wedge coexistence",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRCE-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRCE-01"
+            ],
+            "locator": "execution/single_goal PLAN/STATE_INVENTORY/COVERAGE/finalization; independent prepared test fixtures and existing runner",
+            "evidence": "Normal external RON with U08 copy/U09 structural effects, actual event child/fork/join/periodic and equipment/Wedge coexistence; independently assess expected vs actual and preserve all failure/limitation records.",
+            "prerequisite": "Runtime+PUBLIC complete, selected checks current; final audit by nonparticipant Astra."
+          },
+          {
+            "id": "IVA-CRCE-LIFETIME",
+            "source": "FPF-CRCE-001 integration and CODE_REVIEW 검사 범위와 재사용: New transient ancestry/join/periodic/cast counters: release/cancel/expiry/clone/attempt/fresh Continue and log independence",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRCE-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRCE-01"
+            ],
+            "locator": "execution/single_goal PLAN/STATE_INVENTORY/COVERAGE/finalization; independent prepared test fixtures and existing runner",
+            "evidence": "New transient ancestry/join/periodic/cast counters: release/cancel/expiry/clone/attempt/fresh Continue and log independence; independently assess expected vs actual and preserve all failure/limitation records.",
+            "prerequisite": "Runtime+PUBLIC complete, selected checks current; final audit by nonparticipant Astra."
+          },
+          {
+            "id": "IVA-CRCE-RESOURCES",
+            "source": "FPF-CRCE-001 integration and CODE_REVIEW 검사 범위와 재사용: Actual producer admission/fanout/queue/clone/retained and hot-path performance regressions on unchanged limits/workloads",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRCE-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRCE-01"
+            ],
+            "locator": "execution/single_goal PLAN/STATE_INVENTORY/COVERAGE/finalization; independent prepared test fixtures and existing runner",
+            "evidence": "Actual producer admission/fanout/queue/clone/retained and hot-path performance regressions on unchanged limits/workloads; independently assess expected vs actual and preserve all failure/limitation records.",
+            "prerequisite": "Runtime+PUBLIC complete, selected checks current; final audit by nonparticipant Astra."
+          },
+          {
+            "id": "IVA-CRCE-PREDECESSOR",
+            "source": "FPF-CRCE-001 integration and CODE_REVIEW 검사 범위와 재사용: Current affected predecessor contracts; explicit nonimpact/reuse or exact selected regression evidence",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRCE-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRCE-01"
+            ],
+            "locator": "execution/single_goal PLAN/STATE_INVENTORY/COVERAGE/finalization; independent prepared test fixtures and existing runner",
+            "evidence": "Current affected predecessor contracts; explicit nonimpact/reuse or exact selected regression evidence; independently assess expected vs actual and preserve all failure/limitation records.",
+            "prerequisite": "Runtime+PUBLIC complete, selected checks current; final audit by nonparticipant Astra."
+          },
+          {
+            "id": "IVA-CRCE-FINAL",
+            "source": "FPF-CRCE-001 integration and CODE_REVIEW 검사 범위와 재사용: Evidence coverage, frozen exact target, isolated forward/reverse restoration and whole independent completion",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CRCE-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CRCE-01"
+            ],
+            "locator": "execution/single_goal PLAN/STATE_INVENTORY/COVERAGE/finalization; independent prepared test fixtures and existing runner",
+            "evidence": "Evidence coverage, frozen exact target, isolated forward/reverse restoration and whole independent completion; independently assess expected vs actual and preserve all failure/limitation records.",
+            "prerequisite": "Runtime+PUBLIC complete, selected checks current; final audit by nonparticipant Astra."
+          }
+        ],
+        "Shared Contract Handoff": "CODE_REVIEW.ko.md sections1–8 and per-element table. Root owns semantic design; Sol concrete product APIs and internal algorithms within frozen meaning; independent Astra test inputs/oracles. AUTHORING owns typed input/plan/DTO, CAUSAL actual producer/subscriber/source/queue/receipt semantics, STRIKE native cast-target modifier, STATE owner/clone/budget/reclaim/Continue. All shared new APIs become available after atomic runtime node; PUBLIC/VERIFY consume actual implementations. Whole-file sequential ownership for embedded test modules/registration. No proposed symbol is presumed existing.",
+        "Known Unknown/Limitations": "Exact RON/Rust naming and private representations are bounded implementation choices; schema drift affecting public meaning returns to Root/P2G owner. Performance/resource cost must be measured where affected with unchanged guards. Predecessor evidence reused selectively, no automatic all-tests finalization. Product/test writers do not perform final independent audit."
+      }
+    }
+  ]
+}

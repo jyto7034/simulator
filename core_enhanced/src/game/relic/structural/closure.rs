@@ -183,6 +183,7 @@ fn reads<'a>(c: &'a RelicConditionDef, negative: bool, out: &mut Vec<Read<'a>>) 
 }
 fn changes(recipe: &StructuralRecipeDef, p: RelicProperty) -> bool {
     match recipe {
+        StructuralRecipeDef::SupportSelectionPattern { .. } => false,
         StructuralRecipeDef::FixedRecipientSupport
         | StructuralRecipeDef::PersonalShieldSingle { .. } => p == RelicProperty::SupportAreaRadius,
         StructuralRecipeDef::RegularBasicSupport { .. } => matches!(

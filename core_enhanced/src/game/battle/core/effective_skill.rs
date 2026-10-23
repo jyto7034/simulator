@@ -34,12 +34,20 @@ impl EffectiveBattleOwner {
         if plans.is_empty() {
             return Ok(None);
         }
-        let extent = plans
-            .values()
-            .try_fold(std::mem::size_of::<Self>(), |n, plan| {
-                n.checked_add(plan.usage.reserved_bytes).and_then(|n| {
-                    n.checked_add(std::mem::size_of::<(Uuid, Arc<EmployeeEffectivePlan>)>() + 64)
-                })
+        // The same conservative B-tree node/spare-slot proof used by native
+        // fact owners; shared plan pointees remain priced once per owner.
+        let tree_nodes = 1_usize.checked_add(plans.len().saturating_sub(1) / 5);
+        let tree_bytes = std::mem::size_of::<(Uuid, Arc<EmployeeEffectivePlan>)>()
+            .checked_mul(11)
+            .and_then(|n| n.checked_add(12 * std::mem::size_of::<usize>() + 128))
+            .and_then(|n| tree_nodes.and_then(|count| n.checked_mul(count)));
+        let extent = std::mem::size_of::<Self>()
+            .checked_add(64)
+            .and_then(|n| tree_bytes.and_then(|tree| n.checked_add(tree)))
+            .and_then(|start| {
+                plans
+                    .values()
+                    .try_fold(start, |n, plan| n.checked_add(plan.retained_extent()))
             })
             .ok_or_else(|| {
                 GameError::InvalidStaticData("effective owner extent overflow".into())
@@ -92,7 +100,7 @@ impl EffectiveSkillBinding {
     pub(crate) fn retained_extent(&self) -> Option<usize> {
         std::mem::size_of::<Self>()
             .checked_add(64)?
-            .checked_add(self.plan.usage.reserved_bytes)
+            .checked_add(self.plan.retained_extent())
     }
     pub(crate) fn execution(&self) -> &crate::game::relic::structural::EffectiveProviderPlan {
         &self.plan.execution[self.provider]
@@ -211,7 +219,15 @@ impl BattleCore {
                 ));
             }
         }
+        if owner.as_ref().is_some_and(|o| {
+            o.plans
+                .values()
+                .any(|p| !p.causal_rules.is_empty() || !p.wedge_rules.is_empty())
+        }) {
+            self.causal_state()?;
+        }
         self.effective_owner = owner;
+        self.start_causal_periodics(None)?;
         Ok(())
     }
     pub(super) fn current_effective_skill<'a>(
@@ -359,6 +375,12 @@ impl BattleCore {
         crate::game::battle::runtime_control::poll()?;
         Ok(selection)
     }
+    pub(super) fn current_action_interrupt_protected(&self,actor:UnitInstanceId)->bool {
+        if self.counter_channel_protected(actor) || self.relation_action_protected(actor) { return true; }
+        let protects=|skill:&SkillDef|skill.action_policy.as_ref().is_some_and(|p|p.external_interrupt_protected);
+        self.units.get(&actor).and_then(|u|u.pending_skill_cast.as_ref()).and_then(|pending|self.pending_skill_view(pending,actor)).is_some_and(protects)
+            || self.active_skill_casts.values().any(|cast|cast.caster_instance_id==actor&&!cast.control_cancelled&&(cast.flow.as_ref().is_some_and(|f|f.has_use_control()) || cast.active_area_ids.iter().any(|id|self.active_areas.get(id).is_some_and(|a|matches!(a.mode,crate::game::ability::SkillTileAreaMode::ChannelGround { .. }))))&&self.skill_for_source(&cast.skill_id,&cast.fact_source).is_some_and(protects))
+    }
     pub(super) fn pending_skill_view<'a>(
         &'a self,
         pending: &super::types::PendingSkillCast,
@@ -369,6 +391,20 @@ impl BattleCore {
             return self.skill_for_source(&pending.skill_id, source);
         }
         self.current_skill_view(&pending.skill_id, actor, &self.runtime_fact_source)
+    }
+    pub(super) fn selected_support_in_reach(
+        &self,
+        caster: UnitInstanceId,
+        recipient: UnitInstanceId,
+        reach: &crate::game::relic::structural::support::SelectedSupportReach,
+    ) -> bool {
+        use crate::game::relic::structural::support::SelectedSupportReach;
+        match reach {
+            SelectedSupportReach::Radius(radius) => self.selected_player_employee_in_reach(caster, recipient, *radius),
+            SelectedSupportReach::Pattern { range, .. } => self.normal_player_employee(caster)
+                && self.normal_player_employee(recipient)
+                && self.is_target_in_skill_reach(caster, recipient, crate::game::ability::SkillTargetReach::Pattern, Some(range)),
+        }
     }
     pub(super) fn selected_player_employee_in_reach(
         &self,
@@ -413,6 +449,17 @@ impl BattleCore {
         actor: UnitInstanceId,
         source: &RuntimeFactSource,
     ) -> Result<RuntimeFactSource, GameError> {
+        if let Some(b) = source.causal().and_then(|c| c.program.as_ref()) {
+            if b.owner != actor
+                || b.execution().skill.id != *id
+                || self.content_identity.as_deref() != Some(b.generation.identity())
+            {
+                return Err(GameError::InvalidStaticData(
+                    "causal accepted skill binding differs".into(),
+                ));
+            }
+            return Ok(source.clone());
+        }
         if let Some(bound) = source.relic_effective() {
             bound.validate(
                 self.content_identity
@@ -501,6 +548,9 @@ impl BattleCore {
         id: &SkillId,
         source: &'a RuntimeFactSource,
     ) -> Option<&'a SkillDef> {
+        if let Some(b) = source.causal().and_then(|c| c.program.as_ref()) {
+            return (b.execution().skill.id == *id).then_some(b.execution().skill.as_ref());
+        }
         if let Some(binding) = source.relic_effective() {
             return (binding.execution().skill.id == *id)
                 .then_some(binding.execution().skill.as_ref());
@@ -523,6 +573,9 @@ impl BattleCore {
         source: &'a RuntimeFactSource,
         site: &EffectSite,
     ) -> Option<&'a CompiledAmountEntry> {
+        if let Some(b) = source.causal().and_then(|c| c.program.as_ref()) {
+            return b.execution().amounts.get(site);
+        }
         if let Some(binding) = source.relic_effective() {
             return binding.execution().amounts.get(site);
         }

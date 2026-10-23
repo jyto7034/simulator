@@ -1,0 +1,108 @@
+{
+  "date": "2026-09-25T16:26:53.651Z",
+  "statement": "Current 294 inputs unchanged; temporary copy differs only by two exact diagnostic additions. Not a stage-review PASS.",
+  "verified_files": 294,
+  "binaries": [
+    {
+      "path": "/tmp/r06-load-baseline.ZZys4Z/target/release/deps/game_core-c72449008a18bf09",
+      "sha256": "ba486199c60ef706b010646c21dd29d1d41b9e576eb5496c3040e420b435c009"
+    }
+  ],
+  "files": [
+    {
+      "path": "REPORT.ko.md",
+      "bytes": 15010,
+      "sha256": "2cfb4edd3696e5b877cb4fec4b8e857112f45c55910a4ff5f41be7055e5892b2"
+    },
+    {
+      "path": "archive_files.txt",
+      "bytes": 13291,
+      "sha256": "60adbc2bb5caac1e082fe6c8ecf30998c19e378f4b4137dd2fbeb39d47aabb74"
+    },
+    {
+      "path": "build_001.log",
+      "bytes": 3266,
+      "sha256": "37529b8ca94834038a8e71ea3acca246dabbc4f2b8e0efbb11ec35d676d65645"
+    },
+    {
+      "path": "build_001_receipt.json",
+      "bytes": 530,
+      "sha256": "dc4a941f135d6f836f9062552bb633ea9576fc44a179ad3a2d7e571b42b454a6"
+    },
+    {
+      "path": "environment.json",
+      "bytes": 7612,
+      "sha256": "b9aef29ce5bd8107de83921cf18d782db345181b5c72be29328d5f9a02568b70"
+    },
+    {
+      "path": "finalize.mjs",
+      "bytes": 2495,
+      "sha256": "e6b052c502468f30f0f5d665c0886bf5573b783369058428a246397a854c7f85"
+    },
+    {
+      "path": "instrumentation.patch",
+      "bytes": 860,
+      "sha256": "47e2f3e6406a174dffe55dc72bbf14f227546ba5363b6f8aaa4fa1a07d0ff04d"
+    },
+    {
+      "path": "measure_001.log",
+      "bytes": 1485,
+      "sha256": "08489e97a17e2ace14bab77015126c5c0525287152e0f3352723112f5fb498b5"
+    },
+    {
+      "path": "measure_001_receipt.json",
+      "bytes": 687,
+      "sha256": "0812d748bc1154a8c824f395f7774dd4b1f389491278a13a875bf4f6df6dae50"
+    },
+    {
+      "path": "measure_002.log",
+      "bytes": 1574,
+      "sha256": "519b812dab803a29d28aa36ff655cf207cd760071d79702b36097fb10db6b704"
+    },
+    {
+      "path": "measure_002_raw.json",
+      "bytes": 936736,
+      "sha256": "8682d193b23c87b01927401f1a004f6c3b3ab5381f217220bff0cacb5d50ba30"
+    },
+    {
+      "path": "measure_002_receipt.json",
+      "bytes": 685,
+      "sha256": "e5c535bf7fd62202ce2c4b47cc4e433271caa9a508c4f60bf6e56ffa443cbf58"
+    },
+    {
+      "path": "measure_002_summary.json",
+      "bytes": 83303,
+      "sha256": "1ee206f3b1e1e8288688ac5a43dfc0d2dff662cfeb94541a0e9e173779e72873"
+    },
+    {
+      "path": "probe.rs",
+      "bytes": 12592,
+      "sha256": "096f011800275fe93e15ff230e333719b02137b318d8130a9c19b46110d2a11b"
+    },
+    {
+      "path": "probe_initial_invalid_add.rs",
+      "bytes": 12573,
+      "sha256": "52794bd3c822ad45326f4ee8fd9854538f338f890eae544a066c2b36d2f348e9"
+    },
+    {
+      "path": "run.mjs",
+      "bytes": 4269,
+      "sha256": "0ec09f83cf7ae0da8971c6403e4bb7c5af5e557a1d307fc1f0ef4019d5932910"
+    },
+    {
+      "path": "source_before.tar.gz",
+      "bytes": 1335624,
+      "sha256": "4b87faf3a0befa63728e298b9dc36a5ca320615596a43933144d1ef5339fcba1"
+    },
+    {
+      "path": "source_identity.json",
+      "bytes": 53394,
+      "sha256": "b3dd64b558ea2f2307e3eef1a350583c706c4bba1c488e8afcd11d5c89bc4dc1"
+    },
+    {
+      "path": "summarize.mjs",
+      "bytes": 2474,
+      "sha256": "aac733039d01fce15bcc482d1e73f6064e6dd5219ef24e58a353f8e6284bb6c6"
+    }
+  ]
+}

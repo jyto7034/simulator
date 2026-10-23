@@ -1,0 +1,22 @@
+{
+  "command": [
+    "/home/blast/.cargo/bin/cargo",
+    "test",
+    "-p",
+    "game_core",
+    "--lib",
+    "--features",
+    "runtime-observation",
+    "--offline",
+    "--locked",
+    "--target-dir",
+    "/mnt/f/work/simulator/.cache/u12-vault-cost-target",
+    "--",
+    "u12_vault",
+    "game::world::tests::resource_lifetimes::"
+  ],
+  "exit_code": 0,
+  "seconds": 68.99202907500148,
+  "stdout": "observation_024.stdout.log",
+  "stderr": "observation_024.stderr.log"
+}

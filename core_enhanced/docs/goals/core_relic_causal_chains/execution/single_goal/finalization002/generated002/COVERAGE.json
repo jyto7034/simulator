@@ -1,0 +1,1322 @@
+{
+  "recorded_at_utc": "2026-10-09T15:08:44.972084+00:00",
+  "goal": "GOAL-CRCE-01",
+  "goal_set": "GS-CRCE-001",
+  "source": {
+    "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/CURRENT_SOURCE.json",
+    "bytes": 101309,
+    "sha256": "7f5f4dc2cd89350557a158d424527688e45d04952f82c0618cbbe095819832b7"
+  },
+  "source_sha256": "76aba953d84c644d3659b553e50f99f342c5826c709952c1fe808984ebfc340d",
+  "collector": {
+    "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/collect_finalization.py",
+    "bytes": 22204,
+    "sha256": "e22680389a35b37da85c8ab78c840c1880ec43b93579c02c0096838317485acc"
+  },
+  "independent_completion": "pending_nonparticipant_audit_not_implied_by_collection",
+  "schema": "U10_COVERAGE_V1",
+  "status": "pending_currentness_performance_restore_and_independent_completion",
+  "frozen_policy": {
+    "path": "core_enhanced/docs/goals/core_relic_causal_chains/P2G_30_FREEZE_001.json",
+    "bytes": 23788,
+    "sha256": "762a150b00f76eccd5bcfb5e8c0ab3bc33d96a9988bcb62a9b2f8949c197dfde"
+  },
+  "mapping_input": {
+    "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/COVERAGE_INPUT.json",
+    "bytes": 18495,
+    "sha256": "bfd20e84c038e668c2b14399254db99459e4f0cea72a44b8da9e65469f520eb3"
+  },
+  "acceptances": [
+    {
+      "id": "PE-CRCE-01.1",
+      "text": "HP-loss 조건은 최종 HP 감소만 읽고 보호막 흡수·무적·초과 피해 예정량을 HP 감소로 세지 않는다. 원본 source/actual killer와 유물 copy/effect provenance를 함께 관찰할 수 있다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-01-REVIEWED-001",
+        "Content Digest": "sha256:19229986434bd6a3ff1ad1b8d956b96e7be6b2a1aed1db3c2ebc2bc23e9fa144"
+      },
+      "independent_oracle": "Only actual committed HP loss; final source and killer with copy/effect provenance survive delayed delivery/eviction. Shield/zero/overkill/heal/health-cost are distinct.",
+      "evidence_refs": [
+        "ancestry_base",
+        "ancestry_identity",
+        "final46"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRCE-01.2",
+      "text": "정상 RON으로 만든 subscriber가 실제 기본 공격·직접 스킬 피해의 적격 사건에서 child 피해 또는 자원 변화를 실행한다. 부적격 사건·휴면 효과·조회 반복에는 child가 없다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-01-REVIEWED-001",
+        "Content Digest": "sha256:19229986434bd6a3ff1ad1b8d956b96e7be6b2a1aed1db3c2ebc2bc23e9fa144"
+      },
+      "independent_oracle": "Normal RON no-fragment basic/direct eligible events create child; dormant/ineligible and pure repeated queries create none.",
+      "evidence_refs": [
+        "ancestry_active",
+        "final46",
+        "invalid_external"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRCE-02.1",
+      "text": "A1.e→B1.e→A1.e는 마지막 A1.e만 차단하고 A2.e와 A1.f는 적격 조건이면 실행한다. 다음 독립 기본 공격에서는 A1.e가 다시 실행한다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-02-REVIEWED-001",
+        "Content Digest": "sha256:b6943471e050f8e9f897187161364ccf557d13ca028bc7d1d4c612135b2ec673"
+      },
+      "independent_oracle": "A1.e revisit blocked; A2.e/A1.f independent; next real cast/root can visit A1.e again.",
+      "evidence_refs": [
+        "ancestry_base",
+        "ancestry_identity",
+        "join"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRCE-02.2",
+      "text": "같은 사본이 owner/form/plan을 바꿔도 살아 있는 파생 경로의 동일 효과 방문은 보존한다. 실제 다른 authored effect는 별개이며 발동 금지는 전투 전체 잠금이 아니다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-02-REVIEWED-001",
+        "Content Digest": "sha256:b6943471e050f8e9f897187161364ccf557d13ca028bc7d1d4c612135b2ec673"
+      },
+      "independent_oracle": "Live ancestry identity survives same-copy owner/form/fingerprint/plan and employee rebinding; authored distinct rule remains independent.",
+      "evidence_refs": [
+        "ancestry_identity"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRCE-03.1",
+      "text": "공통 A 이후 갈래 L/R에서 각각 B가 한 번 실행하며 L의 B 방문은 R을 차단하지 않는다. 두 갈래 모두 A 재방문은 차단한다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-03-REVIEWED-001",
+        "Content Digest": "sha256:55337da9fa595b33e3a70e877a419f1d8cf6cdc2baeeda84c2e35fce46fa19ec"
+      },
+      "independent_oracle": "Both real sibling branches inherit A and may each visit B; no sibling contamination.",
+      "evidence_refs": [
+        "join"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRCE-03.2",
+      "text": "같은 시각 같은 대상의 독립 적중은 각각 적격 효과를 발동하고 실행 순서 변화가 공유 방문 오염을 만들지 않는다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-03-REVIEWED-001",
+        "Content Digest": "sha256:55337da9fa595b33e3a70e877a419f1d8cf6cdc2baeeda84c2e35fce46fa19ec"
+      },
+      "independent_oracle": "Distinct committed facts/strikes at same timestamp remain independent; same-strike segments do not manufacture independent Wedge counts.",
+      "evidence_refs": [
+        "ancestry_base",
+        "join",
+        "wedge_lifetime"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRCE-04.1",
+      "text": "서로 다른 A/B 방문 경로가 실제 합류하면 합류 피해는 적용되고 A/B 재발동은 차단되며 미방문 C는 허용한다. 비참여 D는 방문 집합에 들어가지 않는다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-04-REVIEWED-001",
+        "Content Digest": "sha256:2b0864a61b313cc1f26a5341f0c54f6b19dc6c12d64ac5b93b8b2e2cecb77dde"
+      },
+      "independent_oracle": "Actual participant A/B union blocks their revisits; join payload applies; unvisited C allowed and same-clock nonparticipant D excluded.",
+      "evidence_refs": [
+        "join"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRCE-04.2",
+      "text": "참여 결과는 producer의 정해진 참여 집합에서 정확히 한 번 소비한다. 같은 receipt 재전달·재시도는 중복 합류 피해를 만들지 않고 취소/실패한 미완성 합류는 성공으로 표시하지 않는다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-04-REVIEWED-001",
+        "Content Digest": "sha256:2b0864a61b313cc1f26a5341f0c54f6b19dc6c12d64ac5b93b8b2e2cecb77dde"
+      },
+      "independent_oracle": "Producer-defined receipts consume exactly once; duplicate/cancel/incomplete/failed prefix never pays duplicate successful join; retry is clean.",
+      "evidence_refs": [
+        "join",
+        "admission"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRCE-05.1",
+      "text": "실제 독립 주기 두 발생 모두 같은 효과를 새로 발동할 수 있다. A가 생성한 DOT의 여러 tick·지연 폭발·투사체 도착은 A 재방문을 허용하지 않는다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-05-REVIEWED-001",
+        "Content Digest": "sha256:f88d59fb9918466dfa3ada00383c0ce7cacbfc38410270dc7806cf0470d86be7"
+      },
+      "independent_oracle": "Independent periodic occurrences reset only their trusted root; derived DOT/delay/projectile retain inherited visited identity.",
+      "evidence_refs": [
+        "periodic",
+        "ancestry_base"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRCE-05.2",
+      "text": "주기와 파생 지연을 정상 RON과 명령으로 생성하여 실행한다. 공개 입력이 임의로 ancestry를 제거하거나 파생 child를 독립 root로 위장하지 못한다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-05-REVIEWED-001",
+        "Content Digest": "sha256:f88d59fb9918466dfa3ada00383c0ce7cacbfc38410270dc7806cf0470d86be7"
+      },
+      "independent_oracle": "Normal RON periodic/derived producers execute; invalid arbitrary ancestry/reset/root declarations cannot publish.",
+      "evidence_refs": [
+        "periodic",
+        "invalid_external",
+        "final46"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRCE-06.1",
+      "text": "trace off/on, 로그 eviction/포화에서 같은 HP·자원·발동 제한이 유지된다. pre-release 취소와 post-release owner 제거는 기존 실행 의미와 함께 인과 보존/회수를 보인다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-06-REVIEWED-001",
+        "Content Digest": "sha256:0a64806728cde5162d8c33ddda3838a2f071a6b509c33864858fb264bdc318c4"
+      },
+      "independent_oracle": "Trace off/on/eviction/saturation preserve outcomes; pre-release cancellation and accepted post-release removal retain existing delivery semantics.",
+      "evidence_refs": [
+        "periodic",
+        "wedge_lifetime",
+        "final46"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRCE-06.2",
+      "text": "긴 지연·DOT·합류 대기 중에는 필요한 상태가 유지되고 마지막 소비자 종료 뒤 회수된다. clone은 형제 world의 방문·queue·합류 진행을 오염시키지 않는다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-06-REVIEWED-001",
+        "Content Digest": "sha256:0a64806728cde5162d8c33ddda3838a2f071a6b509c33864858fb264bdc318c4"
+      },
+      "independent_oracle": "Waiting delayed/DOT/join state retained to final consumer, then cleaned; cloned visits/queue/join progress isolated.",
+      "evidence_refs": [
+        "periodic",
+        "join",
+        "admission",
+        "final46"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRCE-07.1",
+      "text": "정상 기본 공격의 장비 반격과 유물 subscriber가 공존한다. 반격은 방어자 피격 증폭이 아니고 반사 재귀가 없으며 dead/missing attacker는 건너뛴다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-07-REVIEWED-001",
+        "Content Digest": "sha256:cfe2201bdee60ad89ba13736c1e40bdecb16e9a579f9b7677561ff6af0135378"
+      },
+      "independent_oracle": "One normally published/equipped/deployed relic battle: actual basic10, defender flat8+half-original5 counter, delayed child7; exact actors/targets/equipment/copy/cause and four damage rows/total30. Exactly two original attack/hit markers; no reflected recreated context. Real released projectile covers dead and removed original attacker guards. Original controls remain explicit actual PASS rows. Dead source uses normal World advance; explicitly removed native source uses the original BattleExecutionState native timestamp scheduler, since a removed deployed unit is invalid World input. No host deployment-map bypass or public missing-unit operation claim.",
+      "evidence_refs": [
+        "ancestry_active",
+        "death_chain",
+        "final46",
+        "audit_joint_basic",
+        "audit_existing_controls",
+        "audit_joint_provenance"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRCE-07.2",
+      "text": "일반 스킬·DOT·유물 child는 자기 적격 유물 사건을 만들 수 있지만 장비 기본 공격/피격 proc를 재생성하지 않는다. 같은 사건 일반 효과는 능력 활성화보다 먼저, 기존 결정론적 순서로 처리한다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-07-REVIEWED-001",
+        "Content Digest": "sha256:cfe2201bdee60ad89ba13736c1e40bdecb16e9a579f9b7677561ff6af0135378"
+      },
+      "independent_oracle": "Skill/DOT/causal child eligibility does not recreate basic-only item Attack/Hit context; established effect-before-ability and sorted recipient ordering preserved.",
+      "evidence_refs": [
+        "death_chain",
+        "ancestry_base",
+        "final46"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRCE-08.1",
+      "text": "일반 사망 장비 child가 다음 피해자를 죽이는 실제 연쇄가 실행되고 각 사망은 한 번이다. 죽은 소유자 사망 능력·실제 killer·정렬된 생존 아군 수신자가 유지된다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-08-REVIEWED-001",
+        "Content Digest": "sha256:cdfd7f1bc997bbbb10fd4b487193dd8d4900d4ed652ccb1dd1a779cdbeb2f33a"
+      },
+      "independent_oracle": "Dead owner actual equipment child kills new victim, each death once; source/killer and sorted living ally plans preserved.",
+      "evidence_refs": [
+        "death_chain",
+        "ancestry_identity",
+        "final46"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRCE-08.2",
+      "text": "일반 kill과 기존 Corrosion kill을 비교한다. Corrosion은 필수 death 상태/사실을 보존하면서 억제 대상 장비/유물 부가 반응을 실행하지 않고 queue/derived source에도 억제 의미를 잃지 않는다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-08-REVIEWED-001",
+        "Content Digest": "sha256:cdfd7f1bc997bbbb10fd4b487193dd8d4900d4ed652ccb1dd1a779cdbeb2f33a"
+      },
+      "independent_oracle": "Actual World Corrosion with causal Some versus normal Kill11: cost100, special death state/facts/source suppress=true, optional queue/cast/heal absent after drain, living-ally already released DOT19 twice with suppress=false, future wave. Additional explicit native opponent side setup retains World-published plans and proves normal delayed Death7/Kill11/AllyDeath13 with actual killer/victim/copy/source versus actual Corrosion suppression. Corrosion dispatch=false creates no applicable optional derived child; no synthetic suppressed child or public opponent relic configuration claim.",
+      "evidence_refs": [
+        "death_chain",
+        "final46",
+        "audit_joint_corrosion",
+        "audit_existing_controls",
+        "audit_joint_provenance"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRCE-09.1",
+      "text": "사용 중 직접/queued/periodic/derived 유물 양수 명령은 추가 획득 0이며 사용 종료 뒤 몰아 지급하지 않는다. 음수 변화는 허용된다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-09-REVIEWED-001",
+        "Content Digest": "sha256:b68ca07e99ecf07719487476395e769ea83b980bb75e5e594ff5d48fbb493e93"
+      },
+      "independent_oracle": "During use direct/queued/periodic/derived positive gain0, no later banking; negative changes remain permitted.",
+      "evidence_refs": [
+        "resonance"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRCE-09.2",
+      "text": "적격 일반 시점의 양수는 정상 획득하고 cap 초과량은 기존처럼 버린다. rollback/retry가 잠금 상태나 지급 횟수를 오염시키지 않는다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-09-REVIEWED-001",
+        "Content Digest": "sha256:b68ca07e99ecf07719487476395e769ea83b980bb75e5e594ff5d48fbb493e93"
+      },
+      "independent_oracle": "Eligible positive gain and cap discard normal; rollback/retry do not consume/change gate or duplicate payments.",
+      "evidence_refs": [
+        "resonance",
+        "admission",
+        "final46"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRCE-10.1",
+      "text": "설명 fixture r=10%p, 원피해 100/100/200의 같은 대상 3타는 다른 증폭을 제외할 때 110/120/260이다. target B와 새 cast는 1회부터 시작하며 복리/소급 수정이 없다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-10-REVIEWED-001",
+        "Content Digest": "sha256:6d28df1536cfa4a1ffe9f45fb16efde78aff56dd3be302ce2fdfc8ce0e012ab8"
+      },
+      "independent_oracle": "Illustrative10pp 100/100/200→110/120/260; B/new cast starts1, additive common arithmetic without retroactive or compounding edits.",
+      "evidence_refs": [
+        "wedge_arithmetic",
+        "final46"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRCE-10.2",
+      "text": "다른 사본의 적격 기여는 공통 산술로 합산하고 다른 직원·cast·target의 횟수가 새지 않는다. DOT/반사/장비 proc/다른 유물 추가 피해/Corrosion은 원래 직접 스킬 타격 횟수에 자동 포함하지 않는다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-10-REVIEWED-001",
+        "Content Digest": "sha256:6d28df1536cfa4a1ffe9f45fb16efde78aff56dd3be302ce2fdfc8ce0e012ab8"
+      },
+      "independent_oracle": "Two copies add before percent composition; target/cast/employee isolated; other relic child and existing DOT/reflection/item/Corrosion eligibility controls do not count as original direct strike.",
+      "evidence_refs": [
+        "wedge_arithmetic",
+        "wedge_child",
+        "numeric_controls",
+        "final46"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRCE-11.1",
+      "text": "완전 차단/흡수/0 피해 뒤 첫 HP 감소 타격은 1회 보너스다. 일부 보호막 뒤 HP 감소가 있는 타격은 1회다. segment 여러 개가 HP를 줄여도 하나의 실제 strike당 횟수는 한 번만 증가한다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-11-REVIEWED-001",
+        "Content Digest": "sha256:a140d7e3befdc8d83cb22ac9b3422fe62fc9711f444a4241f654d74cd402e1e7"
+      },
+      "independent_oracle": "Zero/full shield/invulnerability first hit does not count; partial HP does; multiple positive segments share one actual strike count.",
+      "evidence_refs": [
+        "wedge_arithmetic",
+        "wedge_lifetime"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRCE-11.2",
+      "text": "같은 strike의 뒤 segment는 해당 strike에 확정한 동일 n을 사용한다. 별도 실제 strike는 같은 시각에도 다음 n을 쓴다. 실패/rollback은 횟수를 소비하지 않고 재시도는 깨끗한 실행과 같다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-11-REVIEWED-001",
+        "Content Digest": "sha256:a140d7e3befdc8d83cb22ac9b3422fe62fc9711f444a4241f654d74cd402e1e7"
+      },
+      "independent_oracle": "Same-strike later segments reuse fixed n; same-time distinct strike advances; failed prefix restores count and exact retry equals clean execution.",
+      "evidence_refs": [
+        "wedge_lifetime",
+        "admission",
+        "timestamp_controls"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRCE-12.1",
+      "text": "post-release 시전자 이탈 후 유효한 기존 공격은 같은 cast/target 순번과 bound 기여를 유지한다. pre-release 취소는 보너스 횟수를 만들지 않는다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-12-REVIEWED-001",
+        "Content Digest": "sha256:7b4f5f513f1ad512312d1bfdf2e0b28c0590b77ae38d6b3db5615b3f819a85e5"
+      },
+      "independent_oracle": "Released caster withdrawal keeps accepted cast/target/bound contribution; unreleased cancellation creates no count.",
+      "evidence_refs": [
+        "wedge_lifetime",
+        "final46"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRCE-12.2",
+      "text": "시전 완료/취소/마지막 carrier 만료 뒤 관련 누적이 회수되고 새 시전은 다시 1회다. clone/fresh continue의 지원 경계가 누적 공유나 임의 reset을 만들지 않는다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-12-REVIEWED-001",
+        "Content Digest": "sha256:7b4f5f513f1ad512312d1bfdf2e0b28c0590b77ae38d6b3db5615b3f819a85e5"
+      },
+      "independent_oracle": "Completion/cancel/final carrier cleanup and fresh cast reset; clone isolation and supported durable pre-entry Continue only, no mid-battle resume.",
+      "evidence_refs": [
+        "wedge_arithmetic",
+        "wedge_lifetime",
+        "periodic",
+        "final46"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRCE-13.1",
+      "text": "정상 경계와 한 단위 부족을 실제 producer에서 검증한다. 실패 시 HP·자원·queue·방문·join receipt·타격 횟수·계량·RNG 등 영향 상태가 prefix 성공 이전의 해당 transaction 의미로 복원되고 재시도 가능하다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-13-REVIEWED-001",
+        "Content Digest": "sha256:d1d1266ab02a85d0896f9a6d69dea3a28e0c9dac71123c58a15c122b98b81a9f"
+      },
+      "independent_oracle": "Real producer work/clone/retained exact/one-short restores HP/resources/queue/visits/receipts/count/meter/RNG at proper transaction prefix; current strict cap/owner controls.",
+      "evidence_refs": [
+        "admission",
+        "timestamp_controls",
+        "external_current_pair",
+        "final46"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRCE-13.2",
+      "text": "clone/admission/retained 비용을 누락하지 않으며 종료 후 회수된다. 직원 3슬롯·순환 금지만 유지하고 합법 유한 fanout을 임의 발동 횟수로 자르지 않는다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-13-REVIEWED-001",
+        "Content Digest": "sha256:d1d1266ab02a85d0896f9a6d69dea3a28e0c9dac71123c58a15c122b98b81a9f"
+      },
+      "independent_oracle": "Account clone/admission/retained and reclaim. Legal fanout not cut by arbitrary trigger count. Native declaration, graph owners, SystemLayout and process RSS retain distinct scopes.",
+      "evidence_refs": [
+        "admission",
+        "join_cost",
+        "external_development_cost",
+        "external_current_pair",
+        "pc_current",
+        "r05_current"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRCE-14.1",
+      "text": "정상 외부 RON 통합에서 구조 활성·사본·새 사건 child·join/periodic·장비·쐐기 결과가 관찰되고 negative fixture는 실행 전 또는 명시된 runtime boundary에서 원자적으로 거절된다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-14-REVIEWED-001",
+        "Content Digest": "sha256:b48c26e2b2bdc38ec4f5f7e0b8f25855ef5e263b534fb23cd5a9142701c5980f"
+      },
+      "independent_oracle": "Immutable normal external pack uses public prepare/equip/query/cast, structural copies/new child/join/periodic/equipment/Wedge; typed negatives refuse atomically.",
+      "evidence_refs": [
+        "final46",
+        "invalid_external",
+        "external_current_pair"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRCE-14.2",
+      "text": "기존 durable run 상태를 저장해 fresh Core로 계속해도 copy/plan 의미가 같다. transient battle 인과를 지원하지 않는 mid-battle 저장으로 암묵 노출하지 않으며 지원되는 clone/restore·attempt/retreat 경계의 상태가 누락되지 않는다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRCE-14-REVIEWED-001",
+        "Content Digest": "sha256:b48c26e2b2bdc38ec4f5f7e0b8f25855ef5e263b534fb23cd5a9142701c5980f"
+      },
+      "independent_oracle": "Fresh child durable Continue retains copy/plan; own step25 pre-entry snapshot survives26/33; step20 separate prior snapshot, forged transient keys/generation refused; no midbattle disk claim.",
+      "evidence_refs": [
+        "final46",
+        "periodic",
+        "wedge_lifetime"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    }
+  ],
+  "integration_seams": [
+    {
+      "id": "IVA-CRCE-V01",
+      "source": "FPF-CRCE-001 PE-CRCE-01: both exact member acceptance sentences; CODE_REVIEW policy-element table",
+      "disposition": "assigned_execution_node",
+      "nodes": [
+        "WP-CRCE-VERIFY"
+      ],
+      "phases": [
+        "PHASE-CRCE-01"
+      ],
+      "locator": "execution/single_goal/COVERAGE.json V01 and independent test_parts/native+external fixtures to be authored",
+      "evidence": "Nonzero actual normal/native execution with exact source/inputs/raw results and independently derived oracle; no helper-only substitution for public producers. Reuse predecessor evidence only with explicit unchanged/nonimpact basis.",
+      "prerequisite": "AG-CRCE-RUNTIME and WP-CRCE-PUBLIC; independent test author separated from product and sole prepared runner.",
+      "phase_plan_row_ref": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/P2G_40_PHASE_PLAN_001.json",
+        "bytes": 38010,
+        "sha256": "c2f2df7d7bd4e46bd32b805ad7a9e99e81469af3f766c6fa5fad9c00e7757158",
+        "json_pointer": "/artifacts/0/payload/integration/0",
+        "canonical_row_sha256": "9888c34428cc1728c274efb886863445886898bcde1f4a87a3beaa24ad2ca081"
+      },
+      "sentence_refs": [
+        "PE-CRCE-01.1",
+        "PE-CRCE-01.2"
+      ],
+      "evidence_refs": [
+        "ancestry_base",
+        "ancestry_identity",
+        "final46",
+        "ancestry_active",
+        "invalid_external"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "IVA-CRCE-V02",
+      "source": "FPF-CRCE-001 PE-CRCE-02: both exact member acceptance sentences; CODE_REVIEW policy-element table",
+      "disposition": "assigned_execution_node",
+      "nodes": [
+        "WP-CRCE-VERIFY"
+      ],
+      "phases": [
+        "PHASE-CRCE-01"
+      ],
+      "locator": "execution/single_goal/COVERAGE.json V02 and independent test_parts/native+external fixtures to be authored",
+      "evidence": "Nonzero actual normal/native execution with exact source/inputs/raw results and independently derived oracle; no helper-only substitution for public producers. Reuse predecessor evidence only with explicit unchanged/nonimpact basis.",
+      "prerequisite": "AG-CRCE-RUNTIME and WP-CRCE-PUBLIC; independent test author separated from product and sole prepared runner.",
+      "phase_plan_row_ref": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/P2G_40_PHASE_PLAN_001.json",
+        "bytes": 38010,
+        "sha256": "c2f2df7d7bd4e46bd32b805ad7a9e99e81469af3f766c6fa5fad9c00e7757158",
+        "json_pointer": "/artifacts/0/payload/integration/1",
+        "canonical_row_sha256": "36db1e7dc99e7843a17e0faa35934c31304db0c141bd60bd5b1eecbb98a2d104"
+      },
+      "sentence_refs": [
+        "PE-CRCE-02.1",
+        "PE-CRCE-02.2"
+      ],
+      "evidence_refs": [
+        "ancestry_base",
+        "ancestry_identity",
+        "join"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "IVA-CRCE-V03",
+      "source": "FPF-CRCE-001 PE-CRCE-03: both exact member acceptance sentences; CODE_REVIEW policy-element table",
+      "disposition": "assigned_execution_node",
+      "nodes": [
+        "WP-CRCE-VERIFY"
+      ],
+      "phases": [
+        "PHASE-CRCE-01"
+      ],
+      "locator": "execution/single_goal/COVERAGE.json V03 and independent test_parts/native+external fixtures to be authored",
+      "evidence": "Nonzero actual normal/native execution with exact source/inputs/raw results and independently derived oracle; no helper-only substitution for public producers. Reuse predecessor evidence only with explicit unchanged/nonimpact basis.",
+      "prerequisite": "AG-CRCE-RUNTIME and WP-CRCE-PUBLIC; independent test author separated from product and sole prepared runner.",
+      "phase_plan_row_ref": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/P2G_40_PHASE_PLAN_001.json",
+        "bytes": 38010,
+        "sha256": "c2f2df7d7bd4e46bd32b805ad7a9e99e81469af3f766c6fa5fad9c00e7757158",
+        "json_pointer": "/artifacts/0/payload/integration/2",
+        "canonical_row_sha256": "77c67b0e00a6d3b07b09db72baaa6c187c383d59f0d65549444595764eb85ba5"
+      },
+      "sentence_refs": [
+        "PE-CRCE-03.1",
+        "PE-CRCE-03.2"
+      ],
+      "evidence_refs": [
+        "join",
+        "ancestry_base",
+        "wedge_lifetime"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "IVA-CRCE-V04",
+      "source": "FPF-CRCE-001 PE-CRCE-04: both exact member acceptance sentences; CODE_REVIEW policy-element table",
+      "disposition": "assigned_execution_node",
+      "nodes": [
+        "WP-CRCE-VERIFY"
+      ],
+      "phases": [
+        "PHASE-CRCE-01"
+      ],
+      "locator": "execution/single_goal/COVERAGE.json V04 and independent test_parts/native+external fixtures to be authored",
+      "evidence": "Nonzero actual normal/native execution with exact source/inputs/raw results and independently derived oracle; no helper-only substitution for public producers. Reuse predecessor evidence only with explicit unchanged/nonimpact basis.",
+      "prerequisite": "AG-CRCE-RUNTIME and WP-CRCE-PUBLIC; independent test author separated from product and sole prepared runner.",
+      "phase_plan_row_ref": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/P2G_40_PHASE_PLAN_001.json",
+        "bytes": 38010,
+        "sha256": "c2f2df7d7bd4e46bd32b805ad7a9e99e81469af3f766c6fa5fad9c00e7757158",
+        "json_pointer": "/artifacts/0/payload/integration/3",
+        "canonical_row_sha256": "5f87bee8ce0f26aa80691d62f05f264581ddc219ef45938947fde3d2745ce8d6"
+      },
+      "sentence_refs": [
+        "PE-CRCE-04.1",
+        "PE-CRCE-04.2"
+      ],
+      "evidence_refs": [
+        "join",
+        "admission"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "IVA-CRCE-V05",
+      "source": "FPF-CRCE-001 PE-CRCE-05: both exact member acceptance sentences; CODE_REVIEW policy-element table",
+      "disposition": "assigned_execution_node",
+      "nodes": [
+        "WP-CRCE-VERIFY"
+      ],
+      "phases": [
+        "PHASE-CRCE-01"
+      ],
+      "locator": "execution/single_goal/COVERAGE.json V05 and independent test_parts/native+external fixtures to be authored",
+      "evidence": "Nonzero actual normal/native execution with exact source/inputs/raw results and independently derived oracle; no helper-only substitution for public producers. Reuse predecessor evidence only with explicit unchanged/nonimpact basis.",
+      "prerequisite": "AG-CRCE-RUNTIME and WP-CRCE-PUBLIC; independent test author separated from product and sole prepared runner.",
+      "phase_plan_row_ref": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/P2G_40_PHASE_PLAN_001.json",
+        "bytes": 38010,
+        "sha256": "c2f2df7d7bd4e46bd32b805ad7a9e99e81469af3f766c6fa5fad9c00e7757158",
+        "json_pointer": "/artifacts/0/payload/integration/4",
+        "canonical_row_sha256": "5e8dc25755828ea22da679000dc62e760d86168127030dbe54ab5952cc910034"
+      },
+      "sentence_refs": [
+        "PE-CRCE-05.1",
+        "PE-CRCE-05.2"
+      ],
+      "evidence_refs": [
+        "periodic",
+        "ancestry_base",
+        "invalid_external",
+        "final46"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "IVA-CRCE-V06",
+      "source": "FPF-CRCE-001 PE-CRCE-06: both exact member acceptance sentences; CODE_REVIEW policy-element table",
+      "disposition": "assigned_execution_node",
+      "nodes": [
+        "WP-CRCE-VERIFY"
+      ],
+      "phases": [
+        "PHASE-CRCE-01"
+      ],
+      "locator": "execution/single_goal/COVERAGE.json V06 and independent test_parts/native+external fixtures to be authored",
+      "evidence": "Nonzero actual normal/native execution with exact source/inputs/raw results and independently derived oracle; no helper-only substitution for public producers. Reuse predecessor evidence only with explicit unchanged/nonimpact basis.",
+      "prerequisite": "AG-CRCE-RUNTIME and WP-CRCE-PUBLIC; independent test author separated from product and sole prepared runner.",
+      "phase_plan_row_ref": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/P2G_40_PHASE_PLAN_001.json",
+        "bytes": 38010,
+        "sha256": "c2f2df7d7bd4e46bd32b805ad7a9e99e81469af3f766c6fa5fad9c00e7757158",
+        "json_pointer": "/artifacts/0/payload/integration/5",
+        "canonical_row_sha256": "8f7231c0a53ba21b7a3d4e90cc704c8329ba3d416a6a7f49b6f11c17ce21ccff"
+      },
+      "sentence_refs": [
+        "PE-CRCE-06.1",
+        "PE-CRCE-06.2"
+      ],
+      "evidence_refs": [
+        "periodic",
+        "wedge_lifetime",
+        "final46",
+        "join",
+        "admission"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "IVA-CRCE-V07",
+      "source": "FPF-CRCE-001 PE-CRCE-07: both exact member acceptance sentences; CODE_REVIEW policy-element table",
+      "disposition": "assigned_execution_node",
+      "nodes": [
+        "WP-CRCE-VERIFY"
+      ],
+      "phases": [
+        "PHASE-CRCE-01"
+      ],
+      "locator": "execution/single_goal/COVERAGE.json V07 and independent test_parts/native+external fixtures to be authored",
+      "evidence": "Nonzero actual normal/native execution with exact source/inputs/raw results and independently derived oracle; no helper-only substitution for public producers. Reuse predecessor evidence only with explicit unchanged/nonimpact basis.",
+      "prerequisite": "AG-CRCE-RUNTIME and WP-CRCE-PUBLIC; independent test author separated from product and sole prepared runner.",
+      "phase_plan_row_ref": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/P2G_40_PHASE_PLAN_001.json",
+        "bytes": 38010,
+        "sha256": "c2f2df7d7bd4e46bd32b805ad7a9e99e81469af3f766c6fa5fad9c00e7757158",
+        "json_pointer": "/artifacts/0/payload/integration/6",
+        "canonical_row_sha256": "0c0a9103d7bb2bc9a7fbeba07370738f1cb764274c919cab6a51d16a0db8e359"
+      },
+      "sentence_refs": [
+        "PE-CRCE-07.1",
+        "PE-CRCE-07.2"
+      ],
+      "evidence_refs": [
+        "ancestry_active",
+        "death_chain",
+        "final46",
+        "ancestry_base",
+        "audit_joint_basic",
+        "audit_joint_provenance"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "IVA-CRCE-V08",
+      "source": "FPF-CRCE-001 PE-CRCE-08: both exact member acceptance sentences; CODE_REVIEW policy-element table",
+      "disposition": "assigned_execution_node",
+      "nodes": [
+        "WP-CRCE-VERIFY"
+      ],
+      "phases": [
+        "PHASE-CRCE-01"
+      ],
+      "locator": "execution/single_goal/COVERAGE.json V08 and independent test_parts/native+external fixtures to be authored",
+      "evidence": "Nonzero actual normal/native execution with exact source/inputs/raw results and independently derived oracle; no helper-only substitution for public producers. Reuse predecessor evidence only with explicit unchanged/nonimpact basis.",
+      "prerequisite": "AG-CRCE-RUNTIME and WP-CRCE-PUBLIC; independent test author separated from product and sole prepared runner.",
+      "phase_plan_row_ref": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/P2G_40_PHASE_PLAN_001.json",
+        "bytes": 38010,
+        "sha256": "c2f2df7d7bd4e46bd32b805ad7a9e99e81469af3f766c6fa5fad9c00e7757158",
+        "json_pointer": "/artifacts/0/payload/integration/7",
+        "canonical_row_sha256": "c22de4def284b3b54127a14e70aeaec7fd3bd8340c881e8ba1c197748e7219f9"
+      },
+      "sentence_refs": [
+        "PE-CRCE-08.1",
+        "PE-CRCE-08.2"
+      ],
+      "evidence_refs": [
+        "death_chain",
+        "ancestry_identity",
+        "final46",
+        "audit_joint_corrosion",
+        "audit_joint_provenance"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "IVA-CRCE-V09",
+      "source": "FPF-CRCE-001 PE-CRCE-09: both exact member acceptance sentences; CODE_REVIEW policy-element table",
+      "disposition": "assigned_execution_node",
+      "nodes": [
+        "WP-CRCE-VERIFY"
+      ],
+      "phases": [
+        "PHASE-CRCE-01"
+      ],
+      "locator": "execution/single_goal/COVERAGE.json V09 and independent test_parts/native+external fixtures to be authored",
+      "evidence": "Nonzero actual normal/native execution with exact source/inputs/raw results and independently derived oracle; no helper-only substitution for public producers. Reuse predecessor evidence only with explicit unchanged/nonimpact basis.",
+      "prerequisite": "AG-CRCE-RUNTIME and WP-CRCE-PUBLIC; independent test author separated from product and sole prepared runner.",
+      "phase_plan_row_ref": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/P2G_40_PHASE_PLAN_001.json",
+        "bytes": 38010,
+        "sha256": "c2f2df7d7bd4e46bd32b805ad7a9e99e81469af3f766c6fa5fad9c00e7757158",
+        "json_pointer": "/artifacts/0/payload/integration/8",
+        "canonical_row_sha256": "cd76bcccfbbe057138fedea7dfe0fb17e328e6ceaf87089786d61c2595b1e20c"
+      },
+      "sentence_refs": [
+        "PE-CRCE-09.1",
+        "PE-CRCE-09.2"
+      ],
+      "evidence_refs": [
+        "resonance",
+        "admission",
+        "final46"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "IVA-CRCE-V10",
+      "source": "FPF-CRCE-001 PE-CRCE-10: both exact member acceptance sentences; CODE_REVIEW policy-element table",
+      "disposition": "assigned_execution_node",
+      "nodes": [
+        "WP-CRCE-VERIFY"
+      ],
+      "phases": [
+        "PHASE-CRCE-01"
+      ],
+      "locator": "execution/single_goal/COVERAGE.json V10 and independent test_parts/native+external fixtures to be authored",
+      "evidence": "Nonzero actual normal/native execution with exact source/inputs/raw results and independently derived oracle; no helper-only substitution for public producers. Reuse predecessor evidence only with explicit unchanged/nonimpact basis.",
+      "prerequisite": "AG-CRCE-RUNTIME and WP-CRCE-PUBLIC; independent test author separated from product and sole prepared runner.",
+      "phase_plan_row_ref": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/P2G_40_PHASE_PLAN_001.json",
+        "bytes": 38010,
+        "sha256": "c2f2df7d7bd4e46bd32b805ad7a9e99e81469af3f766c6fa5fad9c00e7757158",
+        "json_pointer": "/artifacts/0/payload/integration/9",
+        "canonical_row_sha256": "9fe003fdacb8d10bad6d6f754e65c5db21c9e1093d36f263fbc94a54780d283d"
+      },
+      "sentence_refs": [
+        "PE-CRCE-10.1",
+        "PE-CRCE-10.2"
+      ],
+      "evidence_refs": [
+        "wedge_arithmetic",
+        "final46",
+        "wedge_child",
+        "numeric_controls"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "IVA-CRCE-V11",
+      "source": "FPF-CRCE-001 PE-CRCE-11: both exact member acceptance sentences; CODE_REVIEW policy-element table",
+      "disposition": "assigned_execution_node",
+      "nodes": [
+        "WP-CRCE-VERIFY"
+      ],
+      "phases": [
+        "PHASE-CRCE-01"
+      ],
+      "locator": "execution/single_goal/COVERAGE.json V11 and independent test_parts/native+external fixtures to be authored",
+      "evidence": "Nonzero actual normal/native execution with exact source/inputs/raw results and independently derived oracle; no helper-only substitution for public producers. Reuse predecessor evidence only with explicit unchanged/nonimpact basis.",
+      "prerequisite": "AG-CRCE-RUNTIME and WP-CRCE-PUBLIC; independent test author separated from product and sole prepared runner.",
+      "phase_plan_row_ref": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/P2G_40_PHASE_PLAN_001.json",
+        "bytes": 38010,
+        "sha256": "c2f2df7d7bd4e46bd32b805ad7a9e99e81469af3f766c6fa5fad9c00e7757158",
+        "json_pointer": "/artifacts/0/payload/integration/10",
+        "canonical_row_sha256": "0db23ab741e5b4abc6bf46ade1142b82ac703a3b201a0c0e26bc05729940ddd5"
+      },
+      "sentence_refs": [
+        "PE-CRCE-11.1",
+        "PE-CRCE-11.2"
+      ],
+      "evidence_refs": [
+        "wedge_arithmetic",
+        "wedge_lifetime",
+        "admission",
+        "timestamp_controls"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "IVA-CRCE-V12",
+      "source": "FPF-CRCE-001 PE-CRCE-12: both exact member acceptance sentences; CODE_REVIEW policy-element table",
+      "disposition": "assigned_execution_node",
+      "nodes": [
+        "WP-CRCE-VERIFY"
+      ],
+      "phases": [
+        "PHASE-CRCE-01"
+      ],
+      "locator": "execution/single_goal/COVERAGE.json V12 and independent test_parts/native+external fixtures to be authored",
+      "evidence": "Nonzero actual normal/native execution with exact source/inputs/raw results and independently derived oracle; no helper-only substitution for public producers. Reuse predecessor evidence only with explicit unchanged/nonimpact basis.",
+      "prerequisite": "AG-CRCE-RUNTIME and WP-CRCE-PUBLIC; independent test author separated from product and sole prepared runner.",
+      "phase_plan_row_ref": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/P2G_40_PHASE_PLAN_001.json",
+        "bytes": 38010,
+        "sha256": "c2f2df7d7bd4e46bd32b805ad7a9e99e81469af3f766c6fa5fad9c00e7757158",
+        "json_pointer": "/artifacts/0/payload/integration/11",
+        "canonical_row_sha256": "6f4916d832b59b41cfea22dc28fde6d2997e23d62d26a95c03558728ab4c8af4"
+      },
+      "sentence_refs": [
+        "PE-CRCE-12.1",
+        "PE-CRCE-12.2"
+      ],
+      "evidence_refs": [
+        "wedge_lifetime",
+        "final46",
+        "wedge_arithmetic",
+        "periodic"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "IVA-CRCE-V13",
+      "source": "FPF-CRCE-001 PE-CRCE-13: both exact member acceptance sentences; CODE_REVIEW policy-element table",
+      "disposition": "assigned_execution_node",
+      "nodes": [
+        "WP-CRCE-VERIFY"
+      ],
+      "phases": [
+        "PHASE-CRCE-01"
+      ],
+      "locator": "execution/single_goal/COVERAGE.json V13 and independent test_parts/native+external fixtures to be authored",
+      "evidence": "Nonzero actual normal/native execution with exact source/inputs/raw results and independently derived oracle; no helper-only substitution for public producers. Reuse predecessor evidence only with explicit unchanged/nonimpact basis.",
+      "prerequisite": "AG-CRCE-RUNTIME and WP-CRCE-PUBLIC; independent test author separated from product and sole prepared runner.",
+      "phase_plan_row_ref": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/P2G_40_PHASE_PLAN_001.json",
+        "bytes": 38010,
+        "sha256": "c2f2df7d7bd4e46bd32b805ad7a9e99e81469af3f766c6fa5fad9c00e7757158",
+        "json_pointer": "/artifacts/0/payload/integration/12",
+        "canonical_row_sha256": "293532c1cbf010f619092ba812d9e7044d37a2a0ae41993d999eb87a20bb3ef8"
+      },
+      "sentence_refs": [
+        "PE-CRCE-13.1",
+        "PE-CRCE-13.2"
+      ],
+      "evidence_refs": [
+        "admission",
+        "timestamp_controls",
+        "external_current_pair",
+        "final46",
+        "join_cost",
+        "external_development_cost",
+        "pc_current",
+        "r05_current"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "IVA-CRCE-V14",
+      "source": "FPF-CRCE-001 PE-CRCE-14: both exact member acceptance sentences; CODE_REVIEW policy-element table",
+      "disposition": "assigned_execution_node",
+      "nodes": [
+        "WP-CRCE-VERIFY"
+      ],
+      "phases": [
+        "PHASE-CRCE-01"
+      ],
+      "locator": "execution/single_goal/COVERAGE.json V14 and independent test_parts/native+external fixtures to be authored",
+      "evidence": "Nonzero actual normal/native execution with exact source/inputs/raw results and independently derived oracle; no helper-only substitution for public producers. Reuse predecessor evidence only with explicit unchanged/nonimpact basis.",
+      "prerequisite": "AG-CRCE-RUNTIME and WP-CRCE-PUBLIC; independent test author separated from product and sole prepared runner.",
+      "phase_plan_row_ref": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/P2G_40_PHASE_PLAN_001.json",
+        "bytes": 38010,
+        "sha256": "c2f2df7d7bd4e46bd32b805ad7a9e99e81469af3f766c6fa5fad9c00e7757158",
+        "json_pointer": "/artifacts/0/payload/integration/13",
+        "canonical_row_sha256": "a8f6ed23b3174eb386c995678355260c3648930235ce9ccb7f7dbba7719dfebe"
+      },
+      "sentence_refs": [
+        "PE-CRCE-14.1",
+        "PE-CRCE-14.2"
+      ],
+      "evidence_refs": [
+        "final46",
+        "invalid_external",
+        "external_current_pair",
+        "periodic",
+        "wedge_lifetime"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "IVA-CRCE-INTEGRATED",
+      "source": "FPF-CRCE-001 integration and CODE_REVIEW 검사 범위와 재사용: Normal external RON with U08 copy/U09 structural effects, actual event child/fork/join/periodic and equipment/Wedge coexistence",
+      "disposition": "assigned_execution_node",
+      "nodes": [
+        "WP-CRCE-VERIFY"
+      ],
+      "phases": [
+        "PHASE-CRCE-01"
+      ],
+      "locator": "execution/single_goal PLAN/STATE_INVENTORY/COVERAGE/finalization; independent prepared test fixtures and existing runner",
+      "evidence": "Normal external RON with U08 copy/U09 structural effects, actual event child/fork/join/periodic and equipment/Wedge coexistence; independently assess expected vs actual and preserve all failure/limitation records.",
+      "prerequisite": "Runtime+PUBLIC complete, selected checks current; final audit by nonparticipant Astra.",
+      "phase_plan_row_ref": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/P2G_40_PHASE_PLAN_001.json",
+        "bytes": 38010,
+        "sha256": "c2f2df7d7bd4e46bd32b805ad7a9e99e81469af3f766c6fa5fad9c00e7757158",
+        "json_pointer": "/artifacts/0/payload/integration/14",
+        "canonical_row_sha256": "c0cf7c8c8467b83d39471194e7e676ac3d18938cb6aff44d500f6fd54dfcbe81"
+      },
+      "sentence_refs": [],
+      "evidence_refs": [
+        "final46",
+        "invalid_external",
+        "external_current_pair",
+        "audit_joint_basic",
+        "audit_joint_corrosion",
+        "audit_joint_provenance"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "IVA-CRCE-LIFETIME",
+      "source": "FPF-CRCE-001 integration and CODE_REVIEW 검사 범위와 재사용: New transient ancestry/join/periodic/cast counters: release/cancel/expiry/clone/attempt/fresh Continue and log independence",
+      "disposition": "assigned_execution_node",
+      "nodes": [
+        "WP-CRCE-VERIFY"
+      ],
+      "phases": [
+        "PHASE-CRCE-01"
+      ],
+      "locator": "execution/single_goal PLAN/STATE_INVENTORY/COVERAGE/finalization; independent prepared test fixtures and existing runner",
+      "evidence": "New transient ancestry/join/periodic/cast counters: release/cancel/expiry/clone/attempt/fresh Continue and log independence; independently assess expected vs actual and preserve all failure/limitation records.",
+      "prerequisite": "Runtime+PUBLIC complete, selected checks current; final audit by nonparticipant Astra.",
+      "phase_plan_row_ref": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/P2G_40_PHASE_PLAN_001.json",
+        "bytes": 38010,
+        "sha256": "c2f2df7d7bd4e46bd32b805ad7a9e99e81469af3f766c6fa5fad9c00e7757158",
+        "json_pointer": "/artifacts/0/payload/integration/15",
+        "canonical_row_sha256": "47b6edcad8816e5dfd843a68db2f38d3eec38b5ae2e92e8ad11894248a6ad31d"
+      },
+      "sentence_refs": [],
+      "evidence_refs": [
+        "periodic",
+        "wedge_lifetime",
+        "join",
+        "admission",
+        "final46"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "IVA-CRCE-RESOURCES",
+      "source": "FPF-CRCE-001 integration and CODE_REVIEW 검사 범위와 재사용: Actual producer admission/fanout/queue/clone/retained and hot-path performance regressions on unchanged limits/workloads",
+      "disposition": "assigned_execution_node",
+      "nodes": [
+        "WP-CRCE-VERIFY"
+      ],
+      "phases": [
+        "PHASE-CRCE-01"
+      ],
+      "locator": "execution/single_goal PLAN/STATE_INVENTORY/COVERAGE/finalization; independent prepared test fixtures and existing runner",
+      "evidence": "Actual producer admission/fanout/queue/clone/retained and hot-path performance regressions on unchanged limits/workloads; independently assess expected vs actual and preserve all failure/limitation records.",
+      "prerequisite": "Runtime+PUBLIC complete, selected checks current; final audit by nonparticipant Astra.",
+      "phase_plan_row_ref": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/P2G_40_PHASE_PLAN_001.json",
+        "bytes": 38010,
+        "sha256": "c2f2df7d7bd4e46bd32b805ad7a9e99e81469af3f766c6fa5fad9c00e7757158",
+        "json_pointer": "/artifacts/0/payload/integration/16",
+        "canonical_row_sha256": "ba75a7519146e150462b9a71fab51509d018fe6bcbac2f630abd1dc513d36e8d"
+      },
+      "sentence_refs": [],
+      "evidence_refs": [
+        "admission",
+        "join_cost",
+        "external_development_cost",
+        "external_current_pair",
+        "final46",
+        "pc_current",
+        "r05_current"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "IVA-CRCE-PREDECESSOR",
+      "source": "FPF-CRCE-001 integration and CODE_REVIEW 검사 범위와 재사용: Current affected predecessor contracts; explicit nonimpact/reuse or exact selected regression evidence",
+      "disposition": "assigned_execution_node",
+      "nodes": [
+        "WP-CRCE-VERIFY"
+      ],
+      "phases": [
+        "PHASE-CRCE-01"
+      ],
+      "locator": "execution/single_goal PLAN/STATE_INVENTORY/COVERAGE/finalization; independent prepared test fixtures and existing runner",
+      "evidence": "Current affected predecessor contracts; explicit nonimpact/reuse or exact selected regression evidence; independently assess expected vs actual and preserve all failure/limitation records.",
+      "prerequisite": "Runtime+PUBLIC complete, selected checks current; final audit by nonparticipant Astra.",
+      "phase_plan_row_ref": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/P2G_40_PHASE_PLAN_001.json",
+        "bytes": 38010,
+        "sha256": "c2f2df7d7bd4e46bd32b805ad7a9e99e81469af3f766c6fa5fad9c00e7757158",
+        "json_pointer": "/artifacts/0/payload/integration/17",
+        "canonical_row_sha256": "2a7223624fde815b02113e50079a7b2dc65dd4e51fcefe7e575d2cec3df812c5"
+      },
+      "sentence_refs": [],
+      "evidence_refs": [
+        "predecessor_impact",
+        "final46",
+        "numeric_controls",
+        "timestamp_controls",
+        "selected825_reuse",
+        "pc_current",
+        "r05_current",
+        "audit_joint_basic",
+        "audit_joint_corrosion",
+        "audit_existing_controls",
+        "audit_joint_provenance"
+      ],
+      "pending_evidence": [
+        "predecessor_impact"
+      ]
+    },
+    {
+      "id": "IVA-CRCE-FINAL",
+      "source": "FPF-CRCE-001 integration and CODE_REVIEW 검사 범위와 재사용: Evidence coverage, frozen exact target, isolated forward/reverse restoration and whole independent completion",
+      "disposition": "assigned_execution_node",
+      "nodes": [
+        "WP-CRCE-VERIFY"
+      ],
+      "phases": [
+        "PHASE-CRCE-01"
+      ],
+      "locator": "execution/single_goal PLAN/STATE_INVENTORY/COVERAGE/finalization; independent prepared test fixtures and existing runner",
+      "evidence": "Evidence coverage, frozen exact target, isolated forward/reverse restoration and whole independent completion; independently assess expected vs actual and preserve all failure/limitation records.",
+      "prerequisite": "Runtime+PUBLIC complete, selected checks current; final audit by nonparticipant Astra.",
+      "phase_plan_row_ref": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/P2G_40_PHASE_PLAN_001.json",
+        "bytes": 38010,
+        "sha256": "c2f2df7d7bd4e46bd32b805ad7a9e99e81469af3f766c6fa5fad9c00e7757158",
+        "json_pointer": "/artifacts/0/payload/integration/18",
+        "canonical_row_sha256": "4e5295073c0cf30c074e5b431f11e5337a73b827be737a1447764ea009230a05"
+      },
+      "sentence_refs": [],
+      "evidence_refs": [
+        "predecessor_impact",
+        "pc_current",
+        "r05_current",
+        "frozen_restore",
+        "independent_completion"
+      ],
+      "pending_evidence": [
+        "predecessor_impact",
+        "frozen_restore",
+        "independent_completion"
+      ]
+    }
+  ],
+  "required_dimensions": [
+    {
+      "id": "success",
+      "evidence_refs": [
+        "ancestry_active",
+        "join",
+        "periodic",
+        "wedge_arithmetic",
+        "final46",
+        "audit_joint_basic",
+        "audit_joint_corrosion"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "invalid_input",
+      "evidence_refs": [
+        "invalid_external",
+        "final46"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "failure_rollback",
+      "evidence_refs": [
+        "admission",
+        "timestamp_controls",
+        "external_current_pair",
+        "final46"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "retry_idempotency",
+      "evidence_refs": [
+        "join",
+        "admission",
+        "timestamp_controls",
+        "final46"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "ordering_concurrency",
+      "evidence_refs": [
+        "join",
+        "wedge_lifetime",
+        "death_chain",
+        "final46",
+        "audit_joint_basic",
+        "audit_joint_corrosion"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "boundary_empty_max",
+      "evidence_refs": [
+        "ancestry_base",
+        "wedge_arithmetic",
+        "admission",
+        "final46",
+        "audit_joint_basic",
+        "audit_joint_corrosion"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "disconnect_restart_persistence",
+      "evidence_refs": [
+        "periodic",
+        "wedge_lifetime",
+        "final46"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "live_data",
+      "evidence_refs": [
+        "final46",
+        "invalid_external",
+        "external_current_pair",
+        "audit_joint_basic",
+        "audit_joint_corrosion"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "producer_consumer",
+      "evidence_refs": [
+        "ancestry_active",
+        "join",
+        "periodic",
+        "death_chain",
+        "resonance",
+        "wedge_arithmetic",
+        "final46",
+        "audit_joint_basic",
+        "audit_joint_corrosion"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "legacy_fallback_absence",
+      "evidence_refs": [
+        "numeric_controls",
+        "timestamp_controls",
+        "selected825_reuse",
+        "final46",
+        "predecessor_impact",
+        "pc_current",
+        "r05_current",
+        "independent_completion",
+        "audit_joint_basic",
+        "audit_joint_corrosion"
+      ],
+      "pending_evidence": [
+        "predecessor_impact",
+        "independent_completion"
+      ]
+    }
+  ],
+  "execution_nodes": [
+    {
+      "id": "AG-CRCE-RUNTIME",
+      "evidence": [
+        "ancestry_base",
+        "ancestry_identity",
+        "final46",
+        "ancestry_active",
+        "invalid_external",
+        "join",
+        "wedge_lifetime",
+        "admission",
+        "periodic",
+        "death_chain",
+        "resonance",
+        "wedge_arithmetic",
+        "wedge_child",
+        "numeric_controls",
+        "timestamp_controls",
+        "external_current_pair",
+        "join_cost",
+        "external_development_cost",
+        "pc_current",
+        "r05_current",
+        "audit_joint_basic",
+        "audit_joint_corrosion",
+        "audit_existing_controls"
+      ],
+      "meaning": "Atomic WP-CRCE-AUTHORING/CAUSAL/STRIKE/STATE integrated runtime; exact frozen node membership.",
+      "pending_evidence": []
+    },
+    {
+      "id": "WP-CRCE-PUBLIC",
+      "evidence": [
+        "final46",
+        "invalid_external",
+        "external_current_pair",
+        "audit_joint_basic",
+        "audit_joint_corrosion",
+        "audit_existing_controls"
+      ],
+      "meaning": "Normal external content/current default; canonical examples/docs require Root product review.",
+      "pending_evidence": []
+    },
+    {
+      "id": "WP-CRCE-VERIFY",
+      "evidence": [
+        "final46",
+        "predecessor_impact",
+        "pc_current",
+        "r05_current",
+        "frozen_restore",
+        "independent_completion",
+        "audit_joint_basic",
+        "audit_joint_corrosion",
+        "audit_existing_controls",
+        "audit_joint_provenance"
+      ],
+      "meaning": "Independent authored oracles; Sol raw execution; Root currentness; nonparticipant completion.",
+      "pending_evidence": [
+        "predecessor_impact",
+        "frozen_restore",
+        "independent_completion"
+      ]
+    }
+  ],
+  "limits": [
+    "Only exact selected current rows and reviewed scoped reuse; whole historical failures preserved.",
+    "Final46 and003 actualPASS; PC002 strictFAIL preserved plus causal-empty successor actualPASS; R05 original101 peak-only warning and summary0 actually bound; no runtime evidence pending.",
+    "Current nominal16, explicit authoring_dev8hard, and historical legacy8+development16/32 are distinct host profiles.",
+    "Graph/native declarations/SystemLayout/RSS scopes differ and are never summed as equivalent heap.",
+    "Own pre-entry checkpoint corrected from obsolete prior-node baseline; HP100/periodic24/step20 fresh child and invalids unchanged.",
+    "Author or collector cannot award Complete/High/open0; frozen restore and nonparticipant audit separate.",
+    "Original target001/audit001 remain frozen Not Complete/High/open2. Successor actual9 is selected5+3+1 at original exact sources, not one fresh9 batch. Original failed001/002/003 remain failed. Unchanged product/config and old helper/test bodies justify scoped final46/PC/R05 reuse; no new performance or whole-suite freshness claim. Successor independent whole-Goal audit still required."
+  ]
+}

@@ -238,7 +238,7 @@ impl BattleCore {
             TriggerEffectTarget::AllAllies => self
                 .units
                 .values()
-                .filter(|unit| unit.owner == owner && unit.is_active())
+                .filter(|unit| unit.owner == owner && unit.is_active() && !self.stress_protected_target(unit.instance_id))
                 .map(|unit| unit.instance_id)
                 .collect(),
             TriggerEffectTarget::AllEnemies => self
@@ -275,7 +275,7 @@ impl BattleCore {
         }
 
         match hit_targets {
-            SkillHitTargetFilter::Allies => target.owner == caster_owner,
+            SkillHitTargetFilter::Allies => target.owner == caster_owner && !self.stress_protected_target(target_id),
             SkillHitTargetFilter::Enemies => target.owner != caster_owner,
             SkillHitTargetFilter::Any => true,
         }
@@ -380,6 +380,16 @@ impl BattleCore {
             return false;
         }
 
+        match self.release_relation_basic(&source_snapshot, target_id, current_time_ms) { Ok(true) => return true, Err(_) => return false, Ok(false) => () }
+        if let Some(line) = self.basic_line_profile(attacker_instance_id) {
+            if control::charge_serialized(line,"basic_line_profile_copy").is_err()
+                || crate::game::battle::runtime_control::admit_retained_growth(0,
+                    std::mem::size_of_val(line).checked_add(line.piercing.as_ref().map_or(0,|p|p.relic_definition.capacity())),
+                    "basic_line_profile_storage").is_err() { return false; }
+            let line = line.clone();
+            return self.resolve_basic_line(attacker_instance_id,target_id,source_snapshot,line,current_time_ms).unwrap_or(false);
+        }
+
         if let Some(unit) = self.units.get(&attacker_instance_id) {
             if control::charge_serialized(&unit.basic_attack, "basic_release_profile_copy").is_err()
             {
@@ -425,6 +435,7 @@ impl BattleCore {
                 false,
             );
             self.grant_basic_attack_release_resonance(attacker_instance_id, current_time_ms);
+            if self.release_prepared_basic(&source_snapshot).is_err() { return false; }
             if self
                 .consume_basic_overlay(attacker_instance_id, current_time_ms)
                 .is_err()
@@ -469,6 +480,7 @@ impl BattleCore {
         match delivery {
             crate::game::battle::event_log::AttackDelivery::Instant => {
                 self.grant_basic_attack_release_resonance(attacker_instance_id, current_time_ms);
+                if self.release_prepared_basic(&source_snapshot).is_err() { return false; }
                 if self
                     .consume_basic_overlay(attacker_instance_id, current_time_ms)
                     .is_err()
@@ -550,6 +562,15 @@ impl BattleCore {
                 ) else {
                     return false;
                 };
+                if self.release_prepared_basic(&source_snapshot).is_err() { return false; }
+                if let Some(prepared) = &source_snapshot.prepared_basic {
+                    let Ok(base) = prepared.apply(launch_source_snapshot.base_damage) else { return false; };
+                    launch_source_snapshot.base_damage = base;
+                }
+                launch_source_snapshot.prepared_basic = source_snapshot.prepared_basic;
+                launch_source_snapshot.weapon_growth = source_snapshot.weapon_growth;
+                launch_source_snapshot.presence_capture = source_snapshot.presence_capture;
+                launch_source_snapshot.weapon_mark_capture = source_snapshot.weapon_mark_capture;
                 launch_source_snapshot.fact_source = source_snapshot.fact_source;
                 let spatial = (hit_policy
                     == crate::game::ability::ProjectileHitPolicy::DirectionalCollision)
@@ -626,6 +647,13 @@ impl BattleCore {
                     self.resource_context_for_source(&self.runtime_fact_source), batch.fact_source.resource_delivery().cloned(),
                 ) { Ok(value) => value, Err(_) => break };
             }
+            batch.fact_source = match batch
+                .fact_source
+                .inherit_causal_context(&self.runtime_fact_source)
+            {
+                Ok(source) => source,
+                Err(_) => break,
+            };
             let prior_fact_source =
                 std::mem::replace(&mut self.runtime_fact_source, batch.fact_source);
             let summary = self.process_commands_with_modifier_source(
@@ -638,6 +666,8 @@ impl BattleCore {
             total.actual_damage_target_count = total
                 .actual_damage_target_count
                 .saturating_add(summary.actual_damage_target_count);
+            total.effective_hit_count = total.effective_hit_count.saturating_add(summary.effective_hit_count);
+            total.accepted_hit_count = total.accepted_hit_count.saturating_add(summary.accepted_hit_count);
             total.killed_target_count = total
                 .killed_target_count
                 .saturating_add(summary.killed_target_count);
@@ -729,12 +759,14 @@ impl BattleCore {
                 source_snapshot, ..
             } = &mut command
             {
-                let numeric_extension = source_snapshot
-                    .fact_source
-                    .relic_numeric()
-                    .map(|_| source_snapshot.fact_source.extended_observation.clone());
+                let captured_extension = (source_snapshot.fact_source.relic_numeric().is_some()
+                    || source_snapshot
+                        .fact_source
+                        .causal()
+                        .is_some_and(|causal| causal.amount.is_some()))
+                .then(|| source_snapshot.fact_source.extended_observation.clone());
                 source_snapshot.fact_source = self.runtime_fact_source.clone();
-                if let Some(extension) = numeric_extension {
+                if let Some(extension) = captured_extension {
                     source_snapshot.fact_source.extended_observation = extension;
                 }
             }
@@ -764,6 +796,8 @@ impl BattleCore {
             summary.actual_damage_target_count = summary
                 .actual_damage_target_count
                 .saturating_add(result.actual_damage_target_count);
+            summary.effective_hit_count = summary.effective_hit_count.saturating_add(result.effective_hit_count);
+            summary.accepted_hit_count = summary.accepted_hit_count.saturating_add(result.accepted_hit_count);
             summary.killed_target_count = summary
                 .killed_target_count
                 .saturating_add(result.killed_target_count);
@@ -813,6 +847,30 @@ impl BattleCore {
                     if self.channel_active(caster_id) {
                         continue;
                     }
+                    // A proc counterpart is an event hint, never an accepted
+                    // player selection. Inspect this exact equipped provider
+                    // before consuming its roll, cooldown or one-shot token.
+                    let selection_source = crate::game::battle::runtime_facts::RuntimeFactSource {
+                        actor: Some(caster_id),
+                        equipment: equipment_source,
+                        ..Default::default()
+                    };
+                    let requires_selection = match self.current_skill_view(
+                        &skill_id, caster_id, &selection_source,
+                    ) {
+                        Some(skill) => self.requires_explicit_structural_selection(
+                            skill, caster_id, &selection_source,
+                        ),
+                        None => Ok(false),
+                    };
+                    if control::poll("trigger_structural_selection").is_err() {
+                        break;
+                    }
+                    match requires_selection {
+                        Ok(true) => continue,
+                        Ok(false) => {}
+                        Err(_) => break,
+                    }
                     if !self.should_fire_triggered_ability(
                         super::sim::TriggeredAbilityProcContext {
                             proc_roll_identity: &proc_roll_identity,
@@ -848,6 +906,7 @@ impl BattleCore {
                     let resource_context =
                         self.resource_context_for_source(&self.runtime_fact_source);
                     let flow_occurrence = self.runtime_fact_source.flow.clone();
+                    let inherited_causal = self.runtime_fact_source.clone();
                     let prior_fact_source = std::mem::replace(
                         &mut self.runtime_fact_source,
                         crate::game::battle::runtime_facts::RuntimeFactSource {
@@ -860,6 +919,17 @@ impl BattleCore {
                             ..Default::default()
                         },
                     );
+                    self.runtime_fact_source = match self
+                        .runtime_fact_source
+                        .inherit_causal_context(&inherited_causal)
+                    {
+                        Ok(source) => source,
+                        Err(_) => {
+                            self.runtime_fact_source = prior_fact_source;
+                            self.recording_skill_proc_origin = prior_proc;
+                            break;
+                        }
+                    };
                     self.invoke_ability(
                         current_time_ms,
                         caster_id,
@@ -922,6 +992,13 @@ impl BattleCore {
                     target_id,
                     definition,
                 } => {
+                    if matches!(&definition, crate::game::ability::sustained::SustainedEffectDef::Control { .. }) {
+                        match self.sustained_invulnerable(target_id, current_time_ms) {
+                            Ok(true) => continue,
+                            Ok(false) => {},
+                            Err(_) => break,
+                        }
+                    }
                     if self
                         .begin_sustained(caster_id, target_id, definition, current_time_ms)
                         .is_err()
@@ -933,6 +1010,7 @@ impl BattleCore {
                     target_id,
                     modifier,
                 } => {
+                    if !self.stress_allied_effect_allowed(modifier_source_instance_id, target_id) { continue; }
                     let Some(target) = self.units.get(&target_id) else {
                         continue;
                     };
@@ -1018,6 +1096,8 @@ impl BattleCore {
                         summary.actual_damage_target_count = summary
                             .actual_damage_target_count
                             .saturating_add(execution.actual_damage_target_count);
+                        summary.effective_hit_count = summary.effective_hit_count.saturating_add(execution.effective_hit_count);
+            summary.accepted_hit_count = summary.accepted_hit_count.saturating_add(execution.accepted_hit_count);
                         summary.killed_target_count = summary
                             .killed_target_count
                             .saturating_add(execution.killed_target_count);
@@ -1027,6 +1107,7 @@ impl BattleCore {
                     source_id,
                     target_id,
                 } => {
+                    if self.current_action_interrupt_protected(target_id) {continue;}
                     self.cancel_resonance_use_control(target_id);
                     if self
                         .stop_channel_with_reason(
@@ -1085,6 +1166,7 @@ impl BattleCore {
                     percent,
                     source_id,
                 } => {
+                    if self.stress_protected_target(target_id) { continue; }
                     let max_health = match self.units.get(&target_id) {
                         Some(unit) if unit.is_active() => unit.stats.max_health.max(1),
                         _ => continue,
@@ -1200,6 +1282,7 @@ impl BattleCore {
                     buff_id,
                     duration_ms,
                 } => {
+                    if !self.stress_allied_effect_allowed(Some(caster_id), target_id) { continue; }
                     let source = if self.authoring_observation.is_some() {
                         if control::charge(1, "authoring_buff_source").is_err() {
                             break;
@@ -1251,7 +1334,7 @@ pub(super) mod amount_command_observation {
                 BattleCommand::BeginSustained {
                     target_id,
                     definition:
-                        crate::game::ability::sustained::SustainedEffectDef::Shield { amount, .. },
+                        crate::game::ability::sustained::SustainedEffectDef::Shield { amount, .. } | crate::game::ability::sustained::SustainedEffectDef::IndependentShield { amount, .. },
                     ..
                 } => {
                     inputs.push((*target_id, RuntimeAmount::Shield(*amount)));
@@ -1355,6 +1438,12 @@ mod tests {
             fact_source: Default::default(),
             skill_cast_source: None,
             value_expr_capture: None,
+            prepared_basic: None,
+            weapon_growth: None,
+            presence_capture: None,
+            reactive_capture: None,
+            mobile_capture: None,
+            weapon_mark_capture: None,
             source_id,
             source_side: Side::Player,
             source_attack: base_damage,
@@ -2823,6 +2912,7 @@ mod tests {
             target_traits: Vec::new(),
         };
         let item = EquipmentMetadata {
+            content_family: None,
             id: "item".to_string(),
             uuid: item_base_uuid,
             name: "Item".to_string(),
@@ -2848,6 +2938,8 @@ mod tests {
 
     fn damage_proc_skill(id: &str, amount: i32) -> SkillDef {
         SkillDef {
+            action_policy: None,
+            resonance_admission: None,
             use_lifetime: crate::game::ability::SkillUseLifetime::Action,
             flow: None,
             id: SkillId::from(id),
@@ -2885,6 +2977,8 @@ mod tests {
 
     fn self_heal_proc_skill(id: &str) -> SkillDef {
         SkillDef {
+            action_policy: None,
+            resonance_admission: None,
             use_lifetime: crate::game::ability::SkillUseLifetime::Action,
             flow: None,
             id: SkillId::from(id),
@@ -2916,6 +3010,8 @@ mod tests {
 
     fn stat_modifier_skill(id: &str, modifier: StatModifier) -> SkillDef {
         SkillDef {
+            action_policy: None,
+            resonance_admission: None,
             use_lifetime: crate::game::ability::SkillUseLifetime::Action,
             flow: None,
             id: SkillId::from(id),
@@ -4241,7 +4337,7 @@ mod tests {
         )
         .unwrap_err();
         assert_eq!(error.code, "authoring_work_limit");
-        assert_eq!(error.site, "skill_definition_copy");
+        assert_eq!(error.site, "effective_skill_definition_copy");
         assert_eq!(core.skill_cast_seq, 0);
         assert!(core.event_queue.is_empty());
         invoke(&mut core);
@@ -5076,6 +5172,7 @@ mod tests {
             core.items.insert(
                 instance_id,
                 crate::game::battle::core::RuntimeItem {
+            weapon_stage: Default::default(),
                     persistent_copy_uuid: None,
                     instance_id,
                     owner,
@@ -5706,6 +5803,7 @@ mod tests {
             core.items.insert(
                 instance_id,
                 crate::game::battle::core::RuntimeItem {
+            weapon_stage: Default::default(),
                     persistent_copy_uuid: None,
                     instance_id,
                     owner,
@@ -6321,6 +6419,7 @@ mod tests {
         core.items.insert(
             item_instance_id,
             crate::game::battle::core::RuntimeItem {
+            weapon_stage: Default::default(),
                 persistent_copy_uuid: None,
                 instance_id: item_instance_id,
                 owner: Side::Player,
@@ -6406,6 +6505,7 @@ mod tests {
         core.items.insert(
             item_instance_id,
             crate::game::battle::core::RuntimeItem {
+            weapon_stage: Default::default(),
                 persistent_copy_uuid: None,
                 instance_id: item_instance_id,
                 owner: Side::Player,
@@ -6520,6 +6620,7 @@ mod tests {
         core.items.insert(
             item_instance_id,
             crate::game::battle::core::RuntimeItem {
+            weapon_stage: Default::default(),
                 persistent_copy_uuid: None,
                 instance_id: item_instance_id,
                 owner: Side::Player,
@@ -6636,6 +6737,7 @@ mod tests {
             core.items.insert(
                 item_instance_id,
                 crate::game::battle::core::RuntimeItem {
+            weapon_stage: Default::default(),
                     persistent_copy_uuid: None,
                     instance_id: item_instance_id,
                     owner: Side::Player,
@@ -6740,6 +6842,7 @@ mod tests {
         core.items.insert(
             Uuid::from_u128(0x731),
             crate::game::battle::core::RuntimeItem {
+            weapon_stage: Default::default(),
                 persistent_copy_uuid: None,
                 instance_id: Uuid::from_u128(0x731),
                 owner: Side::Opponent,
@@ -6884,6 +6987,7 @@ mod tests {
             core.items.insert(
                 instance_id,
                 crate::game::battle::core::RuntimeItem {
+            weapon_stage: Default::default(),
                     persistent_copy_uuid: None,
                     instance_id,
                     owner,
@@ -7045,6 +7149,7 @@ mod tests {
         core.items.insert(
             item_instance_id,
             crate::game::battle::core::RuntimeItem {
+            weapon_stage: Default::default(),
                 persistent_copy_uuid: None,
                 instance_id: item_instance_id,
                 owner: Side::Player,
@@ -7144,6 +7249,7 @@ mod tests {
             core.items.insert(
                 item_instance_id,
                 crate::game::battle::core::RuntimeItem {
+            weapon_stage: Default::default(),
                     persistent_copy_uuid: None,
                     instance_id: item_instance_id,
                     owner,
@@ -7233,6 +7339,7 @@ mod tests {
         core.items.insert(
             Uuid::from_u128(0x931),
             crate::game::battle::core::RuntimeItem {
+            weapon_stage: Default::default(),
                 persistent_copy_uuid: None,
                 instance_id: Uuid::from_u128(0x931),
                 owner: Side::Opponent,
@@ -7327,6 +7434,7 @@ mod tests {
             core.items.insert(
                 item_instance_id,
                 crate::game::battle::core::RuntimeItem {
+            weapon_stage: Default::default(),
                     persistent_copy_uuid: None,
                     instance_id: item_instance_id,
                     owner,
@@ -7441,6 +7549,7 @@ mod tests {
         core.items.insert(
             item_instance_id,
             crate::game::battle::core::RuntimeItem {
+            weapon_stage: Default::default(),
                 persistent_copy_uuid: None,
                 instance_id: item_instance_id,
                 owner: Side::Player,
@@ -7521,6 +7630,7 @@ mod tests {
         core.items.insert(
             item_instance_id,
             crate::game::battle::core::RuntimeItem {
+            weapon_stage: Default::default(),
                 persistent_copy_uuid: None,
                 instance_id: item_instance_id,
                 owner: Side::Player,
@@ -7724,5 +7834,34 @@ mod tests {
         let death = facts.latest_death.as_ref().unwrap();
         assert_eq!(death.predeath.hp_before_lethal, 1000);
         assert!(Arc::ptr_eq(damage, death.lethal_damage.as_ref().unwrap()));
+    }
+
+    #[test]
+    fn u14_decisive_damage_observes_actual_single_strikes_not_ticks_or_requested_overkill() {
+        for (amount,source,expected) in [(249,DamageSource::Ability,249),(250,DamageSource::Ability,250),
+            (251,DamageSource::BasicAttack,251),(500,DamageSource::BuffTick,0)] {
+            let skill=damage_proc_skill("u14_bonus",amount);
+            let (mut core,caster,target)=authoring_control_core(skill);
+            core.performance_bonus.primary=Some(Uuid::nil());
+            let snapshot=core.damage_source_snapshot_for_unit(caster,target,source,DamageType::True,
+                amount as u32,DamageModifiers::default(),0,1,false).unwrap();
+            core.process_commands(vec![BattleCommand::ApplyDamage{target_id:target,source_snapshot:snapshot}],1);
+            assert_eq!(1000-core.units[&target].stats.current_health,amount as u32);
+            assert_eq!(core.performance_bonus.largest_loss,expected);
+        }
+        let skill=damage_proc_skill("u14_bonus",200);
+        let (mut core,caster,target)=authoring_control_core(skill.clone());
+        core.performance_bonus.primary=Some(Uuid::nil());
+        for time in [1,2,3] {
+            let (commands,_)=core.build_skill_step_commands(caster,&skill.steps[0],&[target],time,None).unwrap();
+            core.process_skill_commands(commands,time,caster,None);
+        }
+        assert_eq!(core.units[&target].stats.current_health,400);
+        assert_eq!((core.performance_bonus.largest_loss,core.performance_bonus.target_max_health),(200,1000),"three 20% strikes do not satisfy a 25% single-strike objective");
+        core.units.get_mut(&target).unwrap().stats.current_health=100;
+        let snapshot=core.damage_source_snapshot_for_unit(caster,target,DamageSource::Ability,DamageType::True,
+            2000,DamageModifiers::default(),0,4,false).unwrap();
+        core.process_commands(vec![BattleCommand::ApplyDamage{target_id:target,source_snapshot:snapshot}],4);
+        assert_eq!(core.performance_bonus.largest_loss,200,"overkill of 100 actual HP cannot replace 200 actual damage");
     }
 }

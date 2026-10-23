@@ -1,0 +1,316 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CEDR-001",
+        "Content Digest": "sha256:452294e14c278fa9b25942bc7f87477a0f7270254976715d96c4518c7468f31e"
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-004",
+          "Content Digest": "sha256:b2d071f404a8c87efefed99a654cc780c7b1d1ca532119f966f4786ba74fd3e1"
+        },
+        "Review Batch Ref": {
+          "Artifact Type": "Review Batch",
+          "Artifact ID": "RB-CEDR-001",
+          "Content Digest": "sha256:e171be32c7d379ab67f0ee8e5bb1288f4f6eb3e42dad82d72c357292a09bbb53"
+        },
+        "Predecessor Freeze": null,
+        "Ordered code_reviewed Policy Element Revision Ref Set": [
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-G13-REVIEWED-001",
+            "Content Digest": "sha256:5419fe09465118b2c1f2e25e4d38c70ee41632ed4946f2f8aff94c5420dfd183"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-G14-REVIEWED-001",
+            "Content Digest": "sha256:08234232b8b278df0c916f5cce36e4f64e6dae68b82d2d2e3a6e43073ceb60dc"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-G15-REVIEWED-001",
+            "Content Digest": "sha256:0d4060507a36299f141b957e3f4adcac64ccd9a0208a73f8ad9763ebbfd84f10"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-G16-REVIEWED-001",
+            "Content Digest": "sha256:72315a6349a742a0328d73dba92842e491d1b8d28aae47381512333c0353a4b4"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-G17-REVIEWED-001",
+            "Content Digest": "sha256:64f9c9976dc58b5a992a86c6c8836a23fc0c0c9279d3c2b36dd80551325d2ea7"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-G18-REVIEWED-001",
+            "Content Digest": "sha256:ce585c5037c0dc627675c1aa6929d6710e59f63efe14490bc5c45c43948e133e"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-G19-REVIEWED-001",
+            "Content Digest": "sha256:22c51d5955cbeb1deb51023e8c1ff94f89abdf1377e892ac777fbe1a9811510b"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-PERSISTENCE-REVIEWED-001",
+            "Content Digest": "sha256:8e8104911115506a599fc26fb9088a9c49bdce67931720179f12296a1547cb9e"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-PWR01-REVIEWED-001",
+            "Content Digest": "sha256:dce46c3cb94e69cbde1ddbe581ba91b91185d9f4a01b5931faf34093791c1e41"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-PWR02-REVIEWED-001",
+            "Content Digest": "sha256:8eb2de02dd8c34edd5e8f3b0e47892b25558f6185025d1979c89c70c89ce4b25"
+          }
+        ],
+        "Decision Revision Ref Set": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-G13-001",
+            "Content Digest": "sha256:192222588e027654a8a0cd7a3d1eca1d7bf2c3a00377a64a2577d43ceab18042"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-G14-001",
+            "Content Digest": "sha256:6d5560f4a09df3987fa200040a6450614682d578a2dd74ca30a5f778a0bedf1d"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-G15-001",
+            "Content Digest": "sha256:241f154c3ad2e8f086a3afcb71a3d40aeb27bb3160c2cbfeb8b9f348c18affe1"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-PWR01-001",
+            "Content Digest": "sha256:99adf8ee8b707ca4d273ea7a9919c3127b8d91424780615434b19f790d8fd441"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-PWR02-001",
+            "Content Digest": "sha256:642e18fb90e165a2a783cadb8d8e475654fa487427f2bb9f61ac3fe53eefec56"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-G16-001",
+            "Content Digest": "sha256:2a391b39ff2300baad1c17f019795f340ac3a489a3c1f2d548ce46dd84031223"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-G17-001",
+            "Content Digest": "sha256:21a611ba07232e1256598870e9298fea3c55062d94ca21608205bb0417ba7e75"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-G18-001",
+            "Content Digest": "sha256:df0bf819901c9f2027b631adb7d587fe63f8b06e3e59136c0f7d88b2e295eebc"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-G19-001",
+            "Content Digest": "sha256:7fe05d38441c8584db83556123c8eaec34694188eb382d06a06751bffa9de08d"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-PERSISTENCE-001",
+            "Content Digest": "sha256:6c017002033f2371faf6eaae526670252543901db8eacb882bf8ab5518e27520"
+          }
+        ],
+        "Observable Policy Acceptance Set": [
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CEDR-G13-REVIEWED-001",
+              "Content Digest": "sha256:5419fe09465118b2c1f2e25e4d38c70ee41632ed4946f2f8aff94c5420dfd183"
+            },
+            "Observable Policy Acceptance": [
+              "A01: 비용2/잔량1과 비용2/잔량0 모두 잔량0·규정 유예2이며, 비용0은 유예 무진행이다. 같은 노드 재입장/정비 반복은 중복 청구하지 않는다.",
+              "A02: 공개 preview는 비용·예상 잔량·무억제 여부·직원별 예상 유예/사망을 실제 입장과 일치하게 표시하고 상태를 변경하지 않는다.",
+              "A03: SavePoint/치료 노드도 비용과 사망을 먼저 확정하고 사망 직원을 그 노드 치료로 되살리지 않는다. 시작/Gate/방 이동은 무료다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CEDR-G14-REVIEWED-001",
+              "Content Digest": "sha256:08234232b8b278df0c916f5cce36e4f64e6dae68b82d2d2e3a6e43073ceb60dc"
+            },
+            "Observable Policy Acceptance": [
+              "A04: 새 유예4에서 비용1+2+1은 마지막 입장에서 사망한다. 완료/재입장/비용0/황금가지 보충으로 유예가 바뀌지 않는다.",
+              "A05: 트라우마99 치료 뒤100 재진입은 새 유예4이고, 입장 사망은 장비/파편/유물 회수를 수행하며 전투 사망 방지로 취소되지 않는다.",
+              "A06: 입장 사망으로 출전 불가이면 기존 런 실패/복구 자격을 적용한다. 잔량 부족·0에서도 같은 규정 비용으로 사망한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CEDR-G15-REVIEWED-001",
+              "Content Digest": "sha256:0d4060507a36299f141b957e3f4adcac64ccd9a0208a73f8ad9763ebbfd84f10"
+            },
+            "Observable Policy Acceptance": [
+              "A07: 깊이2/3 비용 소진 선택을 실제 공개 명령으로 구분한다. 깊이2 귀환은 거절, 계속은 해당 활동, 포기는 실패 정산이다.",
+              "A08: 소진 귀환은 미시작 활동 보상·완료를 주지 않으며 기존 회수품의 정상 성공 귀환은 유지한다.",
+              "A09: 이미0인 상태의 다음 입장/깊이3 도달만으로 선택을 다시 열지 않는다. 보충후 재소진은 새 선택이다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CEDR-G16-REVIEWED-001",
+              "Content Digest": "sha256:72315a6349a742a0328d73dba92842e491d1b8d28aae47381512333c0353a4b4"
+            },
+            "Observable Policy Acceptance": [
+              "A18: 새 원정에서 plan을 선택하고 같은 원정의 재방문/후퇴/저장/Continue에서 plan과 노드 배정이 같다. 경로 선택에 따라 재배정하거나 개별 보스 코인추첨하지 않는다.",
+              "A19: 적합 배치안 부재/잘못된 후보/도달불가/작성 누락을 거절하고 정상 테스트 조우로 배치·진입을 증명한다. 정식4종 본체 전체는 U21이다.",
+              "A20: 미탐사 방에도 가지 위치·회수 여부·현재 경로 도달가능성을 표시하되 숨긴 방/보스 정체를 추가 노출하지 않는다. 모든 가지 회수 가능을 강제하지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CEDR-G17-REVIEWED-001",
+              "Content Digest": "sha256:64f9c9976dc58b5a992a86c6c8836a23fc0c0c9279d3c2b36dd80551325d2ea7"
+            },
+            "Observable Policy Acceptance": [
+              "A21: 억제/무억제 두 상태에서 봉인 진입→승리의 스탯과 수량보상을 확인한다. 해제만으로 가지/보충을 지급하지 않는다.",
+              "A22: 후퇴는 봉인 미해제 상태·전투 손실을 복원하되 입장비용/유예/입장사망/후퇴횟수는 유지한다. 반복 승리/재접속 중복 지급을 막는다.",
+              "A23: 패배/부활 전투는 황금가지/보충을 지급하지 않는다. 원래 시설 봉인승리의 보충으로 유예를 되돌리지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CEDR-G18-REVIEWED-001",
+              "Content Digest": "sha256:ce585c5037c0dc627675c1aa6929d6710e59f63efe14490bc5c45c43948e133e"
+            },
+            "Observable Policy Acceptance": [
+              "A24: 실제 참가 생존 직원에게 중복배치와 무관하게 기본XP1회, 미참가/Dead 제외. 승리 무억제만20, 패배10, 후퇴0이다.",
+              "A25: 한번 지급으로 여러 레벨과 잔여XP를 보존한다. 일반 authored 성장 경로의 중반 목표를 관측하고 최종보스 플레이 검증은 제외로 기록한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CEDR-G19-REVIEWED-001",
+              "Content Digest": "sha256:22c51d5955cbeb1deb51023e8c1ff94f89abdf1377e892ac777fbe1a9811510b"
+            },
+            "Observable Policy Acceptance": [
+              "A26: 같은 방 Easy20/Standard50/Hard30 초기 혼합과 난이도별 재화/가루를 정상 콘텐츠로 확인한다. 편성전투력 연동은 없다.",
+              "A27: ClearWithin 경계 이내/초과를 실제 전투시간으로, DecisiveDamage는 주환상체 최대HP 비율 경계/초과·다중타격·DOT 구별을 실제 action 결과로 검증한다.",
+              "A28: 여러 번 조건 달성해도 목표당1회이며 패배/후퇴는 보너스0, 보너스XP는 모든 살아있는 직원 각자 전액·Dead제외·파편자격 불변이다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CEDR-PERSISTENCE-REVIEWED-001",
+              "Content Digest": "sha256:8e8104911115506a599fc26fb9088a9c49bdce67931720179f12296a1547cb9e"
+            },
+            "Observable Policy Acceptance": [
+              "A29: 새프로세스 미확정 노드Continue는 비용/receipt/유예/입장사망/봉인을 입장전으로 복원하고 이미 사용한 후퇴횟수는 되돌리지 않는다.",
+              "A30: 승패/노드 소비 확정 뒤 Continue/재확인은 보상/가지/비용을 반복하지 않는다. SavePoint는 비용·상태를 함께 과거로 복원한다.",
+              "A31: 실제 지원 경로 IO실패/재시도에서 부분 비용/보상/가지 상태가 노출되지 않고 지원하지 않는 구저장 원본은 보호한다. 외부 임의변조 전용 방어는 범위 제외다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CEDR-PWR01-REVIEWED-001",
+              "Content Digest": "sha256:dce46c3cb94e69cbde1ddbe581ba91b91185d9f4a01b5931faf34093791c1e41"
+            },
+            "Observable Policy Acceptance": [
+              "A10: 동일 seed/조우에서 편성·장비·최고전투력만 바꿔도 적 능력치/구성은 같다. 위험도/준비 정보는 유지할 수 있다.",
+              "A11: 일반 적/엘리트/보스/부활의 생성 적과 지연 spawn에서 HP/ATK만 배율 적용되며 속도/사거리/저지/패턴은 불변이다.",
+              "A12: 최초 비용 반영 후 전투 진입시 무억제 자격을 고정한다. 1.5배 부활×1.5배 무억제는2.25배이며 봉인 추가 스탯은 무억제와 중복하지 않는다.",
+              "A13: 조우별 배율은 진입전 공개되고 작성 범위 밖/비정상 제작 입력을 로더가 거절한다. 전투마다 숨겨진 추첨은 없다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CEDR-PWR02-REVIEWED-001",
+              "Content Digest": "sha256:8eb2de02dd8c34edd5e8f3b0e47892b25558f6185025d1979c89c70c89ce4b25"
+            },
+            "Observable Policy Acceptance": [
+              "A14: 서로 다른 기본·추가·보너스 재료/XP의 합계가 정확히2배이고 실제 참가자/전체생존/선택직원 등 기존 XP 대상과1인당 수량을 유지한다.",
+              "A15: 물품/알/파편/장비/유물/촉매제/선택횟수/황금가지/보충량과 비전투/판매/분쇄/반출은 배율 제외다.",
+              "A16: 패배 기본 생존XP10, 후퇴0. 승리후 억제력 보충·결과재확인·Continue로 누락/중복배율·중복보상이 없다.",
+              "A17: U16-4가 소비할 전투 전체1회 자격/배율 seam을 제공한다. U14는 스트레스 활동 전체 구현 완료를 주장하지 않는다."
+            ]
+          }
+        ],
+        "Current Code Review Binding Ref Set": [
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEDR-G13-001",
+            "Content Digest": "sha256:864ee24962c3059fe91b66344617ec0bb47229bb78c99aaf368bbec4e19944bb"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEDR-G14-001",
+            "Content Digest": "sha256:1f6dede60742100a0cbb6571ce47aca5f18def8219ecab0b7ce8a298889d485d"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEDR-G15-001",
+            "Content Digest": "sha256:acfe1535becdcd26317f51a3fd5cfb2bb23708d07300649cc4eff430d58b633f"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEDR-PWR01-001",
+            "Content Digest": "sha256:0571e74ab8e5a60adcd7afbc3367f8f8d656c68829987debd221245e580307a1"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEDR-PWR02-001",
+            "Content Digest": "sha256:bdd2c059648dc2ddb76797ebfd2ae476cf4a062276ef726d59b818e477c85b87"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEDR-G16-001",
+            "Content Digest": "sha256:965e07ecbfe7721104507f4464d89e3fd25f74a39db636167a8aede1c4191d27"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEDR-G17-001",
+            "Content Digest": "sha256:7c975ed810715192a452fb55d84220e2914344252cfb803e634d9c6554fa022c"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEDR-G18-001",
+            "Content Digest": "sha256:5b107fb8f5964c66733153518f1408ab0043f59292272db27c955d3744167906"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEDR-G19-001",
+            "Content Digest": "sha256:955a74ca1d26430dc3f78d1663b31053626addc2e40210c5b87fc22a29c1bcf8"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEDR-PERSISTENCE-001",
+            "Content Digest": "sha256:0620dcb98f71a68314153f16fd2b19495b4aadb568e4f6f13d200167d5cdcdd7"
+          }
+        ],
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CEDR-001",
+          "Content Digest": "sha256:9d7f89d0bae2d2d0aafb22c2741c786b03ebddf924fa118dafa3dd80c5e11e2e"
+        },
+        "Binding Completeness Evidence": "P2G20 complete: every exact current member has reviewed owner/delta/seams;31acceptance preserved",
+        "Applicable Change/Obligation Basis": [],
+        "Resolved Prerequisite Evidence": [],
+        "Known Unknowns": [
+          "Final numerical tuning, Unity, final bosses, normal4boss bodies/U16 stress activity/U17 actual revival flow remain future owners; U14 common contracts still required."
+        ],
+        "Compatibility/Migration Disposition": "D01 allows new format with explicit unsupported prior development-save rejection and original preservation; current new-format Continue/SavePoint/IO recovery required. No silent reinterpretation.",
+        "Lifecycle Disposition": "current"
+      }
+    }
+  ]
+}

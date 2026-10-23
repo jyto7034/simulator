@@ -1,0 +1,80 @@
+{
+  "record_ref": "ATR-CRAR-C2-P02-GEX10-002",
+  "captured_at_utc": "2026-08-22T15:09:21Z",
+  "handoff_ref": "HA-CRAR-P2G60-002",
+  "goal_set_ref": "GS-CRAR-P2G50-002",
+  "goal_id": "GOAL-CRAR-C2-P02-VALIDATED-DATA",
+  "phase_id": "PHASE-CRAR-C2-02-VALIDATED-DATA",
+  "execution_node": "WP-CRAR-C2-04",
+  "audit_kind": "correction_target_after_not_complete_audit",
+  "previous_target": {
+    "record_ref": "ATR-CRAR-C2-P02-GEX10-001",
+    "path": "evidence/P02_AUDIT_TARGET.json",
+    "sha256": "c4f5af350c64658631c6eb3ea8a03e818f25875ad816125279e9e9705bcd1caa",
+    "verdict": "Not Complete",
+    "finding": "public CombatExecutor bare-Arc battle construction helper"
+  },
+  "repository": {
+    "workspace_locator": "/mnt/f/work/simulator/core_enhanced",
+    "revision": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+    "branch": "cleanup/simulator-dirty-worktree-20260803"
+  },
+  "predecessor_currentness": {
+    "record_ref": "ATR-CRAR-C2-P01-GEX20-002",
+    "verdict": "Complete / High",
+    "currentness": "current / proven non-impacting delta",
+    "direct_evidence": "P02 correction is test-only visibility gating; current Core 1132-test suite passes and P01 verifier remains 42 contents/composite ecaee1745fdc0a0fc9fb60118bf3648cc552fa2c0c4345c1d5170ac2ddc80eab with current receipt"
+  },
+  "impact_surface": {
+    "derivation": {
+      "base_record_ref": "ATR-CRAR-C2-P02-GEX10-001",
+      "base_content_member_count": 34,
+      "unchanged_base_content_member_count": 28,
+      "changed_base_member_count": 6,
+      "added_member_count": 1,
+      "current_content_member_count": 35,
+      "verification": "rehash base manifest; every member except the six paths below remains exact; replace six identities and add battlefield_plan"
+    },
+    "changed_or_added_members": [
+      { "path": "src/game/events/combat.rs", "kind": "tracked_dirty_mixed_attribution_correction", "sha256": "65677baa2deee83e1dcae974500d0da7ed61c633c8688fd8804ef60600261614" },
+      { "path": "src/game/combat_setup/battlefield_plan.rs", "kind": "tracked_dirty_mixed_attribution_correction_added", "sha256": "ae109e5d93e2f320d1efe4c1e6098504135d0c43eaee91b5539efc843e93c3a6" },
+      { "path": "tools/validated_data_api_audit/invalid/src/main.rs", "kind": "untracked_p02_owned_probe_correction", "sha256": "645612a0b1125e4e0098712c267b051a7406283f67b772e4770f84dd63b45b46" },
+      { "path": "docs/goals/current_runtime_architecture_remediation/execution/p02_validated_data/PLAN.md", "kind": "untracked_p02_execution_evidence", "sha256": "048950521bbcce05b60f4d78ccf5fb08245dbf9bb34397bf8532c0420cf39346" },
+      { "path": "docs/goals/current_runtime_architecture_remediation/execution/p02_validated_data/EXPERIMENTS.md", "kind": "untracked_p02_execution_evidence", "sha256": "f581ffede09544b7d5ecbacdb4a48b40a51f8e35fecf30de8044d5fbec405727" },
+      { "path": "docs/goals/current_runtime_architecture_remediation/execution/p02_validated_data/EXPERIMENT_NOTES.md", "kind": "untracked_p02_execution_evidence", "sha256": "4e477bb4270b144efe8cb805d475be3d0e3f217bb182ce341faf703c83b55742" },
+      { "path": "evidence/P02_VALIDATED_DATA_RECEIPT.json", "kind": "untracked_p02_validation_evidence", "sha256": "f12f85f489f422a8cdf131cd8e2a0aa1c05034a28572ef2a45181c8b438fe7ce" }
+    ]
+  },
+  "validation": [
+    { "command": "cargo check -p game_core --release", "result": "exit 0; warnings 0" },
+    { "command": "cargo test -p game_core --no-run", "result": "exit 0" },
+    { "command": "cargo test -p game_core --lib game::events::combat::tests", "result": "14 passed; 0 failed" },
+    { "command": "cargo check -p game_core --release --features test-fixtures --bins", "result": "exit 0; four gated fixture binaries" },
+    { "command": "cargo run --manifest-path tools/validated_data_api_audit/valid/Cargo.toml --release", "result": "exit 0; actual publication and GameCore construction" },
+    { "command": "cargo check --manifest-path tools/validated_data_api_audit/invalid/Cargo.toml --release", "result": "expected exit 101; E0432/E0603/E0277/E0599" },
+    { "command": "cargo test -p game_core", "result": "1132 passed; 0 failed; 0 ignored" },
+    { "command": "P01 manifest verifier", "result": "exit 0; locator contents 42; composite ecaee1745fdc0a0fc9fb60118bf3648cc552fa2c0c4345c1d5170ac2ddc80eab; errors 0" },
+    { "command": "cargo fmt --all -- --check", "result": "exit 0" }
+  ],
+  "unrelated_dirty_baseline": {
+    "exclusion_basis": "base P02 target paths plus correction battlefield_plan, current audit/evidence and generated standalone targets excluded",
+    "modified": 141,
+    "deleted": 24,
+    "untracked": 695,
+    "total": 860,
+    "porcelain_sha256": "92a03ef08834653e4861fe207458b78c0d98e3d48eef1a931326ce08edb280b9",
+    "disposition": "preserved; correction owns only exact visibility/probe/document hunks"
+  },
+  "explicit_exclusions": [
+    "game_server, Unity, and external consumer/admin compatibility",
+    "gameplay balance and authored data meaning",
+    "transaction, lifecycle, checkpoint, protocol, deployment, and performance PASS",
+    "standalone target directories and audit-local output",
+    "COMPLETION_AUDIT.md"
+  ],
+  "known_omissions_or_limitations": [
+    "ordering_concurrency and disconnect_restart_persistence remain evidence-backed N/A",
+    "whole-package Clippy pre-existing denied never_loop remains outside P02 correction",
+    "P08 owns final performance comparison and gates"
+  ]
+}

@@ -1,0 +1,866 @@
+[
+  {
+    "test": "every_live_starter_and_recruit_has_its_active_training_set",
+    "run": "integration_021",
+    "in_original_138": false,
+    "first_failure": "stale weapon expectation: shield versus greatsword",
+    "raw_failure": "thread 'every_live_starter_and_recruit_has_its_active_training_set' (1802) panicked at core_enhanced/tests/ron_loading.rs:468:9:\nassertion `left == right` failed\n  left: \"standard_training_shield\"\n right: \"standard_training_greatsword\"\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+    "later_assertions": "not reached; not assessed as a product defect",
+    "label": "시작·영입 장비 명세",
+    "purpose": "실제 RON의 12명 훈련 장비·액티브 파편·보상풀 분리 검사",
+    "overlap_assessment": "U06는 지급 사본을 현재 정의와 비교한다. 따라서 잘못된 정의와 잘못된 지급이 함께 바뀌면 통과할 수 있어, 명시적 12명 명세 검사 전체를 대체하지 못한다.",
+    "unique_assertions": "12명 정확한 장비/파편 ID, baseline 파편 없음, 일반 보상풀에서 훈련 무기 제외",
+    "candidate_test_names": [
+      "u06_starter_six_normal_sets_grant_exact_copies_and_continue_bindings",
+      "u06_starter_recruit_normal_loadout_and_post_grant_failure_rollback"
+    ],
+    "recommendation": "유지·기대값/문서 정합화",
+    "source": {
+      "path": "core_enhanced/tests/ron_loading.rs",
+      "line": 442
+    },
+    "existing_coverage": [
+      {
+        "test": "u06_starter_six_normal_sets_grant_exact_copies_and_continue_bindings",
+        "path": "core_enhanced/src/game/world/tests/u06_starter.rs",
+        "line": 122,
+        "prior_pass_evidence": [
+          {
+            "run": "correction_remaining_004",
+            "test": "game::world::tests::u06_starter::u06_starter_six_normal_sets_grant_exact_copies_and_continue_bindings",
+            "stdout": "correction_remaining_004.stdout.log"
+          },
+          {
+            "run": "full_core_016",
+            "test": "game::world::tests::u06_starter::u06_starter_six_normal_sets_grant_exact_copies_and_continue_bindings",
+            "stdout": "full_core_016.stdout.log"
+          }
+        ]
+      },
+      {
+        "test": "u06_starter_recruit_normal_loadout_and_post_grant_failure_rollback",
+        "path": "core_enhanced/src/game/world/tests/u06_starter.rs",
+        "line": 162,
+        "prior_pass_evidence": [
+          {
+            "run": "full_core_016",
+            "test": "game::world::tests::u06_starter::u06_starter_recruit_normal_loadout_and_post_grant_failure_rollback",
+            "stdout": "full_core_016.stdout.log"
+          }
+        ]
+      }
+    ],
+    "next_preparation": "containment_trainee shield/last_line: 현재 데이터·validator와 구 룰북 간 정합화. hq_containment_aide greatsword/breakthrough 유지.",
+    "duplication_decision_basis": "소스 assertion/공개 경로 비교; 기존 후보의 PASS는 동등성 증명이 아님",
+    "probe_runs": [
+      {
+        "run": "diagnostic001.result",
+        "status": "ok",
+        "stdout": "diagnostic001.stdout.log",
+        "stderr": "diagnostic001.stderr.log"
+      }
+    ]
+  },
+  {
+    "test": "prospective::u08_public_external_fixture_registers_new_definitions_before_app_setup",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "thread 'prospective::u08_public_external_fixture_registers_new_definitions_before_app_setup' (1057) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect",
+    "label": "외부 등록·장착 기본 확인",
+    "purpose": "외부 pack 등록 뒤 유물 1개 지급/장착 검사",
+    "overlap_assessment": "성공 이전 테스트가 동일 외부 content(), 공개 grant/equip, 정확한 copy/owner/slot/count를 이미 검사한다. 파일 존재·pack 수 및 최초 슬롯0 확인은 명시적으로 옮겨야 한다.",
+    "unique_assertions": "root/u08_public/relics.ron 존재, selection.packs=2, 최초 단일 사본의 owner/slot0",
+    "candidate_test_names": [
+      "u08_public_successful_transfer_moves_exact_copy_and_only_its_employee_contributions"
+    ],
+    "recommendation": "고유 검증 통합 후 제거",
+    "source": {
+      "path": "core_enhanced/tests/u08_relic_public/prospective.rs",
+      "line": 45
+    },
+    "existing_coverage": [
+      {
+        "test": "u08_public_successful_transfer_moves_exact_copy_and_only_its_employee_contributions",
+        "path": "core_enhanced/tests/u08_relic_public/lifecycle.rs",
+        "line": 86,
+        "prior_pass_evidence": []
+      }
+    ],
+    "next_preparation": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화",
+    "duplication_decision_basis": "소스 assertion/공개 경로 비교; 기존 후보의 PASS는 동등성 증명이 아님",
+    "probe_runs": [
+      {
+        "run": "diagnostic001.result",
+        "status": "FAILED",
+        "stdout": "diagnostic001.stdout.log",
+        "stderr": "diagnostic001.stderr.log"
+      },
+      {
+        "run": "diagnostic002.result",
+        "status": "ok",
+        "stdout": "diagnostic002.stdout.log",
+        "stderr": "diagnostic002.stderr.log"
+      }
+    ]
+  },
+  {
+    "test": "prospective::u08_public_plan_two_employees_same_skill_and_queries_preserve_all_public_roots",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "thread 'prospective::u08_public_plan_two_employees_same_skill_and_queries_preserve_all_public_roots' (1062) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+    "later_assertions": "not reached; not assessed as a product defect",
+    "label": "동일 스킬·직원별 조회",
+    "purpose": "동일 스킬을 가진 직원 둘의 유물 기여와 조회 순수성 검사",
+    "overlap_assessment": "실전 HP 바인딩 검사와 query owner의 예산·원자성 검사는 일부 겹치지만 public DTO의 직원/세대/범위와 출력 비노출까지 대체하지 못한다.",
+    "unique_assertions": "100→180/100 직원별 분리, copy 식별, prospective scope/generation, 반복 결과, public roots 불변, runtime ID/ordinal/epoch 미노출",
+    "candidate_test_names": [
+      "literal_observation_off_same_skill_two_employees_keep_distinct_actual_bindings",
+      "relic_query_outer_native_retained_admission_precedes_targets_penalties_and_generation"
+    ],
+    "recommendation": "유지·준비 교정",
+    "source": {
+      "path": "core_enhanced/tests/u08_relic_public/prospective.rs",
+      "line": 59
+    },
+    "existing_coverage": [
+      {
+        "test": "literal_observation_off_same_skill_two_employees_keep_distinct_actual_bindings",
+        "path": "core_enhanced/src/game/world/tests/u08_carriers.rs",
+        "line": 1280,
+        "prior_pass_evidence": [
+          {
+            "run": "full_core_016",
+            "test": "game::world::tests::u08_carriers::literal_observation_off_same_skill_two_employees_keep_distinct_actual_bindings",
+            "stdout": "full_core_016.stdout.log"
+          }
+        ]
+      },
+      {
+        "test": "relic_query_outer_native_retained_admission_precedes_targets_penalties_and_generation",
+        "path": "core_enhanced/src/game/world/tests/u08_query_owner.rs",
+        "line": 88,
+        "prior_pass_evidence": [
+          {
+            "run": "full_core_016",
+            "test": "game::world::tests::u08_query_owner::relic_query_outer_native_retained_admission_precedes_targets_penalties_and_generation",
+            "stdout": "full_core_016.stdout.log"
+          }
+        ]
+      }
+    ],
+    "next_preparation": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화",
+    "duplication_decision_basis": "소스 assertion/공개 경로 비교; 기존 후보의 PASS는 동등성 증명이 아님",
+    "probe_runs": [
+      {
+        "run": "diagnostic001.result",
+        "status": "FAILED",
+        "stdout": "diagnostic001.stdout.log",
+        "stderr": "diagnostic001.stderr.log"
+      },
+      {
+        "run": "diagnostic002.result",
+        "status": "ok",
+        "stdout": "diagnostic002.stdout.log",
+        "stderr": "diagnostic002.stderr.log"
+      }
+    ]
+  },
+  {
+    "test": "prospective::u08_public_plan_uses_real_fragment_form_and_weapon_provider_without_cross_borrowing",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "thread 'prospective::u08_public_plan_uses_real_fragment_form_and_weapon_provider_without_cross_borrowing' (1063) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect",
+    "label": "파편·폼·무기 공급자",
+    "purpose": "실제 장착 파편·폼·무기별 효과 적용과 휴면 사유 검사",
+    "overlap_assessment": "실전 rebind 검사는 결과 피해를 다룬다. 공개 plan의 provider copy와 equipment/form/fragment 휴면 사유는 별도 계약이다.",
+    "unique_assertions": "최종 절삭133, 기본공격+9, 다른 공급자 차용 금지, 폼/파편 교체 시100과 정확한 dormant reason",
+    "candidate_test_names": [
+      "typed_form_and_weapon_changes_rebind_actual_skill_and_basic_damage_in_fresh_battles"
+    ],
+    "recommendation": "유지·준비 교정",
+    "source": {
+      "path": "core_enhanced/tests/u08_relic_public/prospective.rs",
+      "line": 94
+    },
+    "existing_coverage": [
+      {
+        "test": "typed_form_and_weapon_changes_rebind_actual_skill_and_basic_damage_in_fresh_battles",
+        "path": "core_enhanced/src/game/world/tests/u08_carriers.rs",
+        "line": 811,
+        "prior_pass_evidence": [
+          {
+            "run": "full_core_016",
+            "test": "game::world::tests::u08_carriers::typed_form_and_weapon_changes_rebind_actual_skill_and_basic_damage_in_fresh_battles",
+            "stdout": "full_core_016.stdout.log"
+          }
+        ]
+      }
+    ],
+    "next_preparation": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화",
+    "duplication_decision_basis": "소스 assertion/공개 경로 비교; 기존 후보의 PASS는 동등성 증명이 아님",
+    "probe_runs": [
+      {
+        "run": "diagnostic001.result",
+        "status": "FAILED",
+        "stdout": "diagnostic001.stdout.log",
+        "stderr": "diagnostic001.stderr.log"
+      },
+      {
+        "run": "diagnostic002.result",
+        "status": "ok",
+        "stdout": "diagnostic002.stdout.log",
+        "stderr": "diagnostic002.stderr.log"
+      }
+    ]
+  },
+  {
+    "test": "prospective::u08_public_plan_split_tags_unresolved_target_and_heal_basic_are_distinct",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "thread 'prospective::u08_public_plan_split_tags_unresolved_target_and_heal_basic_are_distinct' (1061) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect",
+    "label": "태그·실행 맥락·치유 구분",
+    "purpose": "태그 교집합 및 런타임 대상 필요/치유 기본공격의 조회 표현 검사",
+    "overlap_assessment": "실전 피해·순수 숫자 연산으로는 아직 실행하지 않은 대상의 unresolved 상태나 Heal의 Damage target 제외를 검증할 수 없다.",
+    "unique_assertions": "분리 태그3/3·교집합34, dormant tags, runtime_context_required, 치유 무기에는 basic_attack_damage 없음",
+    "candidate_test_names": [],
+    "recommendation": "유지·준비 교정",
+    "source": {
+      "path": "core_enhanced/tests/u08_relic_public/prospective.rs",
+      "line": 139
+    },
+    "existing_coverage": [],
+    "next_preparation": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화",
+    "duplication_decision_basis": "소스 assertion/공개 경로 비교; 기존 후보의 PASS는 동등성 증명이 아님",
+    "probe_runs": [
+      {
+        "run": "diagnostic001.result",
+        "status": "FAILED",
+        "stdout": "diagnostic001.stdout.log",
+        "stderr": "diagnostic001.stderr.log"
+      },
+      {
+        "run": "diagnostic002.result",
+        "status": "ok",
+        "stdout": "diagnostic002.stdout.log",
+        "stderr": "diagnostic002.stderr.log"
+      }
+    ]
+  },
+  {
+    "test": "prospective::u08_public_plan_corrupt_penalty_matches_roster_and_preserves_certified_power",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "thread 'prospective::u08_public_plan_corrupt_penalty_matches_roster_and_preserves_certified_power' (1059) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect",
+    "label": "타락 페널티·인증 전투력",
+    "purpose": "타락 후 기본/유효 능력치 및 roster·인증 전투력 일치 검사",
+    "overlap_assessment": "실전 저항/피해와 인증 기본값 검사에 일부 겹치지만 공개 plan과 roster의 동일 투영 및 읽기 순수성은 남는다.",
+    "unique_assertions": "기본값 불변, 방어-15/마저-10, roster 유효값 일치, peak 불변, 피해210, 반복 query roots 불변",
+    "candidate_test_names": [
+      "physical_magic_modifiers_and_resistance_consume_relic_once_and_negative_penalties_in_real_hp",
+      "all_three_copy_slot_permutations_preserve_actual_damage_penalties_and_certified_base"
+    ],
+    "recommendation": "유지·준비 교정",
+    "source": {
+      "path": "core_enhanced/tests/u08_relic_public/prospective.rs",
+      "line": 174
+    },
+    "existing_coverage": [
+      {
+        "test": "physical_magic_modifiers_and_resistance_consume_relic_once_and_negative_penalties_in_real_hp",
+        "path": "core_enhanced/src/game/world/tests/u08_carriers.rs",
+        "line": 1068,
+        "prior_pass_evidence": [
+          {
+            "run": "full_core_016",
+            "test": "game::world::tests::u08_carriers::physical_magic_modifiers_and_resistance_consume_relic_once_and_negative_penalties_in_real_hp",
+            "stdout": "full_core_016.stdout.log"
+          }
+        ]
+      },
+      {
+        "test": "all_three_copy_slot_permutations_preserve_actual_damage_penalties_and_certified_base",
+        "path": "core_enhanced/src/game/world/tests/u08_lifecycle.rs",
+        "line": 404,
+        "prior_pass_evidence": [
+          {
+            "run": "full_core_016",
+            "test": "game::world::tests::u08_lifecycle::all_three_copy_slot_permutations_preserve_actual_damage_penalties_and_certified_base",
+            "stdout": "full_core_016.stdout.log"
+          }
+        ]
+      }
+    ],
+    "next_preparation": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화",
+    "duplication_decision_basis": "소스 assertion/공개 경로 비교; 기존 후보의 PASS는 동등성 증명이 아님",
+    "probe_runs": [
+      {
+        "run": "diagnostic001.result",
+        "status": "FAILED",
+        "stdout": "diagnostic001.stdout.log",
+        "stderr": "diagnostic001.stderr.log"
+      },
+      {
+        "run": "diagnostic002.result",
+        "status": "ok",
+        "stdout": "diagnostic002.stdout.log",
+        "stderr": "diagnostic002.stderr.log"
+      }
+    ]
+  },
+  {
+    "test": "prospective::u08_public_plan_canonical_copy_order_survives_slot_permutation_and_rejects_final_overflow",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "thread 'prospective::u08_public_plan_canonical_copy_order_survives_slot_permutation_and_rejects_final_overflow' (1058) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect",
+    "label": "정렬·반올림·오버플로",
+    "purpose": "장착 슬롯 순서와 무관한 공개 plan 및 최종 overflow 표현 검사",
+    "overlap_assessment": "순수 산술 및 실전 슬롯순열은 일부 중복이다. plan 전체 정렬과 공개 final/overflow fault, 실패 query 원자성은 대체하지 못한다.",
+    "unique_assertions": "중복 Normal 합산280, 슬롯 재배치 후 plan 전체 동일, final overflow, roots 불변, 해제 후 u32::MAX 복구",
+    "candidate_test_names": [
+      "all_three_copy_slot_permutations_preserve_actual_damage_penalties_and_certified_base",
+      "relic_numeric_once_additive_fraction_and_final_narrow"
+    ],
+    "recommendation": "유지·준비 교정",
+    "source": {
+      "path": "core_enhanced/tests/u08_relic_public/prospective.rs",
+      "line": 232
+    },
+    "existing_coverage": [
+      {
+        "test": "all_three_copy_slot_permutations_preserve_actual_damage_penalties_and_certified_base",
+        "path": "core_enhanced/src/game/world/tests/u08_lifecycle.rs",
+        "line": 404,
+        "prior_pass_evidence": [
+          {
+            "run": "full_core_016",
+            "test": "game::world::tests::u08_lifecycle::all_three_copy_slot_permutations_preserve_actual_damage_penalties_and_certified_base",
+            "stdout": "full_core_016.stdout.log"
+          }
+        ]
+      },
+      {
+        "test": "relic_numeric_once_additive_fraction_and_final_narrow",
+        "path": "core_enhanced/src/game/relic/numeric.rs",
+        "line": 83,
+        "prior_pass_evidence": [
+          {
+            "run": "full_core_016",
+            "test": "game::relic::numeric::tests::relic_numeric_once_additive_fraction_and_final_narrow",
+            "stdout": "full_core_016.stdout.log"
+          }
+        ]
+      }
+    ],
+    "next_preparation": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화",
+    "duplication_decision_basis": "소스 assertion/공개 경로 비교; 기존 후보의 PASS는 동등성 증명이 아님",
+    "probe_runs": [
+      {
+        "run": "diagnostic001.result",
+        "status": "FAILED",
+        "stdout": "diagnostic001.stdout.log",
+        "stderr": "diagnostic001.stderr.log"
+      },
+      {
+        "run": "diagnostic002.result",
+        "status": "ok",
+        "stdout": "diagnostic002.stdout.log",
+        "stderr": "diagnostic002.stderr.log"
+      }
+    ]
+  },
+  {
+    "test": "prospective::u08_public_plan_missing_weapon_has_no_fabricated_stats_or_damage_provider",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "thread 'prospective::u08_public_plan_missing_weapon_has_no_fabricated_stats_or_damage_provider' (1060) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect",
+    "label": "무기 부재 조회",
+    "purpose": "무기 해제 시 유물 보존과 능력치/피해 공급자 부재 검사",
+    "overlap_assessment": "자원 owner 검사나 정상 장착 수치 검사는 무기 부재 DTO 계약의 대체가 아니다.",
+    "unique_assertions": "Normal/Corrupt 양쪽에서 copy/slot/variant/material 보존, roster effective_stats 없음, 공개 plan의 없는 무기 처리와 읽기 불변",
+    "candidate_test_names": [],
+    "recommendation": "유지·준비 교정",
+    "source": {
+      "path": "core_enhanced/tests/u08_relic_public/prospective.rs",
+      "line": 280
+    },
+    "existing_coverage": [],
+    "next_preparation": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화",
+    "duplication_decision_basis": "소스 assertion/공개 경로 비교; 기존 후보의 PASS는 동등성 증명이 아님",
+    "probe_runs": [
+      {
+        "run": "diagnostic001.result",
+        "status": "FAILED",
+        "stdout": "diagnostic001.stdout.log",
+        "stderr": "diagnostic001.stderr.log"
+      },
+      {
+        "run": "diagnostic002.result",
+        "status": "ok",
+        "stdout": "diagnostic002.stdout.log",
+        "stderr": "diagnostic002.stderr.log"
+      }
+    ]
+  },
+  {
+    "test": "event::u08_public_event_normal_reward_grants_feed_multiple_free_exact_copy_selections",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "U08_PUBLIC_CONTENT root=/tmp/u08-public-5bcc50b4-1a4a-4d70-a90b-b447307078db generation=ae834a76490e10af163202c1c171c9183de35d2c7407dbb2f6ad9b1ebcf7b2fb\n\nthread 'event::u08_public_event_normal_reward_grants_feed_multiple_free_exact_copy_selections' (1052) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect",
+    "label": "무료 타락·다중 선택",
+    "purpose": "정상 보상 유물들의 무료 타락 후보·선택·재시도 검사",
+    "overlap_assessment": "외부 trial 및 내부 event owner가 일부 보상/이력/예산을 다루지만 이 테스트의 다중 후보 필터·두 선택·정확 재시도·완료 후 권한 상실 전체를 대체하지 못한다.",
+    "unique_assertions": "촉매0 무료 선택, 이미타락/미지원 제외, 후보 정렬·수치·페널티, 장착 유지, 두 이력, 재시도 멱등성, 다른copy/비활성 이벤트 거절",
+    "candidate_test_names": [
+      "u08_external_ron_normal_grants_savepoint_event_replay_and_fresh_process",
+      "relic_event_history_survives_a_later_legal_dismantle_of_its_selected_copy"
+    ],
+    "recommendation": "유지·준비 교정",
+    "source": {
+      "path": "core_enhanced/tests/u08_relic_public/event.rs",
+      "line": 41
+    },
+    "existing_coverage": [
+      {
+        "test": "u08_external_ron_normal_grants_savepoint_event_replay_and_fresh_process",
+        "path": "core_enhanced/src/authoring/trial/tests/u08_relics.rs",
+        "line": 979,
+        "prior_pass_evidence": [
+          {
+            "run": "correction_remaining_013",
+            "test": "authoring::trial::tests::u08_relics::u08_external_ron_normal_grants_savepoint_event_replay_and_fresh_process",
+            "stdout": "correction_remaining_013.stdout.log"
+          },
+          {
+            "run": "full_core_016",
+            "test": "authoring::trial::tests::u08_relics::u08_external_ron_normal_grants_savepoint_event_replay_and_fresh_process",
+            "stdout": "full_core_016.stdout.log"
+          }
+        ]
+      },
+      {
+        "test": "relic_event_history_survives_a_later_legal_dismantle_of_its_selected_copy",
+        "path": "core_enhanced/src/game/world/tests/u08_event_owner.rs",
+        "line": 307,
+        "prior_pass_evidence": [
+          {
+            "run": "correction_remaining_008",
+            "test": "game::world::tests::u08_event_owner::relic_event_history_survives_a_later_legal_dismantle_of_its_selected_copy",
+            "stdout": "correction_remaining_008.stdout.log"
+          },
+          {
+            "run": "full_core_016",
+            "test": "game::world::tests::u08_event_owner::relic_event_history_survives_a_later_legal_dismantle_of_its_selected_copy",
+            "stdout": "full_core_016.stdout.log"
+          }
+        ]
+      }
+    ],
+    "next_preparation": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화",
+    "duplication_decision_basis": "소스 assertion/공개 경로 비교; 기존 후보의 PASS는 동등성 증명이 아님",
+    "probe_runs": [
+      {
+        "run": "diagnostic001.result",
+        "status": "FAILED",
+        "stdout": "diagnostic001.stdout.log",
+        "stderr": "diagnostic001.stderr.log"
+      },
+      {
+        "run": "diagnostic002.result",
+        "status": "ok",
+        "stdout": "diagnostic002.stdout.log",
+        "stderr": "diagnostic002.stderr.log"
+      }
+    ]
+  },
+  {
+    "test": "event::u08_public_event_empty_candidates_still_allow_decline_and_exact_historical_retry",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "thread 'event::u08_public_event_empty_candidates_still_allow_decline_and_exact_historical_retry' (1051) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect",
+    "label": "빈 후보·거절 이력",
+    "purpose": "후보 없는 두 장면에서 거절과 과거 재시도 검사",
+    "overlap_assessment": "내부 decline owner의 admission·메모리 계측과 부분 중복이지만 공개 후보/장면/정확 이력·잘못된 copy 재시도는 별도다.",
+    "unique_assertions": "빈 후보에서도 can_decline, null 선택 이력 두 개, 정확 재시도, 잘못된 UUID 거절·roots 보존, 자원0",
+    "candidate_test_names": [
+      "relic_event_decline_only_activates_independent_history_owners_and_admits_before_allocation"
+    ],
+    "recommendation": "유지·준비 교정",
+    "source": {
+      "path": "core_enhanced/tests/u08_relic_public/event.rs",
+      "line": 152
+    },
+    "existing_coverage": [
+      {
+        "test": "relic_event_decline_only_activates_independent_history_owners_and_admits_before_allocation",
+        "path": "core_enhanced/src/game/world/tests/u08_event_owner.rs",
+        "line": 389,
+        "prior_pass_evidence": [
+          {
+            "run": "full_core_016",
+            "test": "game::world::tests::u08_event_owner::relic_event_decline_only_activates_independent_history_owners_and_admits_before_allocation",
+            "stdout": "full_core_016.stdout.log"
+          }
+        ]
+      }
+    ],
+    "next_preparation": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화",
+    "duplication_decision_basis": "소스 assertion/공개 경로 비교; 기존 후보의 PASS는 동등성 증명이 아님",
+    "probe_runs": [
+      {
+        "run": "diagnostic001.result",
+        "status": "FAILED",
+        "stdout": "diagnostic001.stdout.log",
+        "stderr": "diagnostic001.stderr.log"
+      },
+      {
+        "run": "diagnostic002.result",
+        "status": "ok",
+        "stdout": "diagnostic002.stdout.log",
+        "stderr": "diagnostic002.stderr.log"
+      }
+    ]
+  },
+  {
+    "test": "event::u08_public_event_rejects_wrong_authority_and_follows_the_committed_employee_check_branch",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "thread 'event::u08_public_event_rejects_wrong_authority_and_follows_the_committed_employee_check_branch' (1053) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect",
+    "label": "분기 권한·잘못된 명령",
+    "purpose": "EmployeeCheck 확정 분기와 정상 명령 경계의 잘못된 식별자 거절 검사",
+    "overlap_assessment": "저장 문서 위조 거절 검사와 대체 관계가 아니다. 사용자 입력 명령의 node/event/scene/copy 검증은 유효한 공개 계약이다.",
+    "unique_assertions": "Check 장면 타락 금지, committed outcome과 분기 일치, 네 잘못된 식별자 각각 mutation 없음, 유효 선택의 source_scene 기록",
+    "candidate_test_names": [],
+    "recommendation": "유지·준비 교정",
+    "source": {
+      "path": "core_enhanced/tests/u08_relic_public/event.rs",
+      "line": 185
+    },
+    "existing_coverage": [],
+    "next_preparation": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화",
+    "duplication_decision_basis": "소스 assertion/공개 경로 비교; 기존 후보의 PASS는 동등성 증명이 아님",
+    "probe_runs": [
+      {
+        "run": "diagnostic001.result",
+        "status": "FAILED",
+        "stdout": "diagnostic001.stdout.log",
+        "stderr": "diagnostic001.stderr.log"
+      },
+      {
+        "run": "diagnostic002.result",
+        "status": "ok",
+        "stdout": "diagnostic002.stdout.log",
+        "stderr": "diagnostic002.stderr.log"
+      }
+    ]
+  },
+  {
+    "test": "sell::u08_public_shop_rejects_all_relic_variants_and_loadouts_with_a_specific_reason",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "thread 'sell::u08_public_shop_rejects_all_relic_variants_and_loadouts_with_a_specific_reason' (1066) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect",
+    "label": "판매 금지·변형/장착 조합",
+    "purpose": "유물 판매 금지와 구체 오류 및 상태 불변 검사",
+    "overlap_assessment": "일반 shop 정책이나 유물 owner 자원 검증만으로 정확한 relic_not_sellable 및 네 조합을 대체하지 못한다.",
+    "unique_assertions": "Normal/Corrupt×장착/미장착 4조합, unsellable UUID 정렬, quantity0 우선, 미지 UUID offer_unavailable, 전체 roots 보존",
+    "candidate_test_names": [],
+    "recommendation": "유지·준비 교정",
+    "source": {
+      "path": "core_enhanced/tests/u08_relic_public/sell.rs",
+      "line": 6
+    },
+    "existing_coverage": [],
+    "next_preparation": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화",
+    "duplication_decision_basis": "소스 assertion/공개 경로 비교; 기존 후보의 PASS는 동등성 증명이 아님",
+    "probe_runs": [
+      {
+        "run": "diagnostic001.result",
+        "status": "FAILED",
+        "stdout": "diagnostic001.stdout.log",
+        "stderr": "diagnostic001.stderr.log"
+      },
+      {
+        "run": "diagnostic002.result",
+        "status": "ok",
+        "stdout": "diagnostic002.stdout.log",
+        "stderr": "diagnostic002.stderr.log"
+      }
+    ]
+  },
+  {
+    "test": "sell::u08_public_relic_does_not_bypass_the_existing_disabled_shop_sale_policy",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "thread 'sell::u08_public_relic_does_not_bypass_the_existing_disabled_shop_sale_policy' (1065) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect",
+    "label": "판매 상태·정책 우선순위",
+    "purpose": "유물 판매에서도 상점 밖/판매 비활성 정책을 우선 적용",
+    "overlap_assessment": "판매 허용 상점의 relic_not_sellable 테스트와 입력 상태 및 기대 오류가 다르다.",
+    "unique_assertions": "상점 밖 not_in_shop_state, 비활성 selling_unavailable, 두 실패 모두 roots 불변",
+    "candidate_test_names": [],
+    "recommendation": "유지·준비 교정",
+    "source": {
+      "path": "core_enhanced/tests/u08_relic_public/sell.rs",
+      "line": 60
+    },
+    "existing_coverage": [],
+    "next_preparation": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화",
+    "duplication_decision_basis": "소스 assertion/공개 경로 비교; 기존 후보의 PASS는 동등성 증명이 아님",
+    "probe_runs": [
+      {
+        "run": "diagnostic001.result",
+        "status": "FAILED",
+        "stdout": "diagnostic001.stdout.log",
+        "stderr": "diagnostic001.stderr.log"
+      },
+      {
+        "run": "diagnostic002.result",
+        "status": "ok",
+        "stdout": "diagnostic002.stdout.log",
+        "stderr": "diagnostic002.stderr.log"
+      }
+    ]
+  },
+  {
+    "test": "sell::u08_public_empty_relic_state_omits_the_derived_unsellable_list",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "thread 'sell::u08_public_empty_relic_state_omits_the_derived_unsellable_list' (1064) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect",
+    "label": "빈 목록 JSON 생략",
+    "purpose": "유물이 없을 때 파생 판매불가 목록의 JSON 필드 생략",
+    "overlap_assessment": "비어 있는 자료구조/clone 비용 및 비어 있지 않은 판매불가 목록 검사와 다르다. 작다는 이유만으로 중복 삭제하지 않는다.",
+    "unique_assertions": "request_relic_state 결과에서 not_sellable_copy_uuids 키 자체가 없음",
+    "candidate_test_names": [],
+    "recommendation": "유지·준비 교정",
+    "source": {
+      "path": "core_enhanced/tests/u08_relic_public/sell.rs",
+      "line": 87
+    },
+    "existing_coverage": [],
+    "next_preparation": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화",
+    "duplication_decision_basis": "소스 assertion/공개 경로 비교; 기존 후보의 PASS는 동등성 증명이 아님",
+    "probe_runs": [
+      {
+        "run": "diagnostic001.result",
+        "status": "FAILED",
+        "stdout": "diagnostic001.stdout.log",
+        "stderr": "diagnostic001.stderr.log"
+      },
+      {
+        "run": "diagnostic002.result",
+        "status": "ok",
+        "stdout": "diagnostic002.stdout.log",
+        "stderr": "diagnostic002.stderr.log"
+      }
+    ]
+  },
+  {
+    "test": "lifecycle::u08_public_successful_transfer_moves_exact_copy_and_only_its_employee_contributions",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "thread 'lifecycle::u08_public_successful_transfer_moves_exact_copy_and_only_its_employee_contributions' (1055) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect",
+    "label": "정상·타락 유물 이전",
+    "purpose": "공개 EquipRelic로 정확한 사본을 다른 직원에게 이전",
+    "overlap_assessment": "이름이 비슷한 normal_grant_and_three_slot_transfer...는 중복 정책에 의한 이전 거절을 검사한다. 성공 이전을 대체하지 못한다.",
+    "unique_assertions": "두 variant의 copy/resources 보존, 유일 slot 소유, 이전 직원100/새 직원180 또는210, penalty 귀속, copy만으로 역조회 unequip",
+    "candidate_test_names": [
+      "normal_grant_and_three_slot_transfer_use_current_variant_duplicate_policy"
+    ],
+    "recommendation": "유지·준비 교정",
+    "source": {
+      "path": "core_enhanced/tests/u08_relic_public/lifecycle.rs",
+      "line": 86
+    },
+    "existing_coverage": [
+      {
+        "test": "normal_grant_and_three_slot_transfer_use_current_variant_duplicate_policy",
+        "path": "core_enhanced/src/game/world/tests/u08_relics.rs",
+        "line": 458,
+        "prior_pass_evidence": [
+          {
+            "run": "full_core_016",
+            "test": "game::world::tests::u08_relics::normal_grant_and_three_slot_transfer_use_current_variant_duplicate_policy",
+            "stdout": "full_core_016.stdout.log"
+          }
+        ]
+      }
+    ],
+    "next_preparation": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화",
+    "duplication_decision_basis": "소스 assertion/공개 경로 비교; 기존 후보의 PASS는 동등성 증명이 아님",
+    "probe_runs": [
+      {
+        "run": "diagnostic001.result",
+        "status": "FAILED",
+        "stdout": "diagnostic001.stdout.log",
+        "stderr": "diagnostic001.stderr.log"
+      },
+      {
+        "run": "diagnostic002.result",
+        "status": "ok",
+        "stdout": "diagnostic002.stdout.log",
+        "stderr": "diagnostic002.stderr.log"
+      }
+    ]
+  },
+  {
+    "test": "lifecycle::u08_public_abandon_then_new_run_resets_copies_slots_catalysts_and_equipment_dust",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "thread 'lifecycle::u08_public_abandon_then_new_run_resets_copies_slots_catalysts_and_equipment_dust' (1054) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect",
+    "label": "포기·새 런 초기화",
+    "purpose": "포기 후 새 런에서 유물·슬롯·촉매·분진 초기화와 정상 Continue 검사",
+    "overlap_assessment": "U12 loans/abandon은 vault 자산·직원 종료를 다룬다. 활성 유물 네 root 초기화, 구 copy 거절 및 새 런 복원은 별도다.",
+    "unique_assertions": "비어있지 않은 유물/두 슬롯/촉매4/분진23→새런0, 이전 UUID 거절, checkpoint roundtrip",
+    "candidate_test_names": [
+      "u12_lifecycle_zero_one_two_loans_move_exact_copies_and_abandon_loses_only_active_assets"
+    ],
+    "recommendation": "유지·준비 교정",
+    "source": {
+      "path": "core_enhanced/tests/u08_relic_public/lifecycle.rs",
+      "line": 166
+    },
+    "existing_coverage": [
+      {
+        "test": "u12_lifecycle_zero_one_two_loans_move_exact_copies_and_abandon_loses_only_active_assets",
+        "path": "core_enhanced/src/game/world/tests/u12_lifecycle/loans_terminal.rs",
+        "line": 15,
+        "prior_pass_evidence": [
+          {
+            "run": "full_core_016",
+            "test": "game::world::tests::u12_lifecycle::loans_terminal::u12_lifecycle_zero_one_two_loans_move_exact_copies_and_abandon_loses_only_active_assets",
+            "stdout": "full_core_016.stdout.log"
+          }
+        ]
+      }
+    ],
+    "next_preparation": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화; 성공 재시작 replace_active_run=false, 활성 런 거절은 false로도 별도 확인하여 금지 true 때문에만 통과하지 않게 함; 실제 PlayerProfile 설치 후 Continue",
+    "duplication_decision_basis": "소스 assertion/공개 경로 비교; 기존 후보의 PASS는 동등성 증명이 아님",
+    "probe_runs": [
+      {
+        "run": "diagnostic001.result",
+        "status": "FAILED",
+        "stdout": "diagnostic001.stdout.log",
+        "stderr": "diagnostic001.stderr.log"
+      },
+      {
+        "run": "diagnostic002.result",
+        "status": "FAILED",
+        "stdout": "diagnostic002.stdout.log",
+        "stderr": "diagnostic002.stderr.log"
+      }
+    ]
+  },
+  {
+    "test": "lifecycle::u08_public_unfinished_event_continue_rewinds_variants_and_history_but_keeps_pre_entry_paid_cost",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "U08_LIFECYCLE_CONTENT root=/tmp/u08-lifecycle-39ef45ee-2579-4dd1-9abe-e2775a1d2f83 generation=f52c8cfe57d41c605b94f19ef6b9c133d14fc45e0008c01fd9cb2568eeff0675 parent_generation=ae834a76490e10af163202c1c171c9183de35d2c7407dbb2f6ad9b1ebcf7b2fb\n\nthread 'lifecycle::u08_public_unfinished_event_continue_rewinds_variants_and_history_but_keeps_pre_entry_paid_cost' (1056) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect",
+    "label": "미완료 이벤트 Continue",
+    "purpose": "이벤트 전 유료 타락 비용은 유지하며 미완료 무료 타락/이력만 되감고 재진입·완료·복원",
+    "overlap_assessment": "U04는 미완료 이벤트 전투 복원, 기존 U08 trial은 SavePoint Load 및 완료 이벤트 history의 fresh Continue다. 미완료 이벤트 Continue와 사전 유료 타락 비용 조합을 대체하지 못한다.",
+    "unique_assertions": "진입전 checkpoint 바이트 동일, 선택 유물180 복원·기지급 타락210 유지, 촉매2/분진11 유지, 원앱 불변, 재진입 이력 초기화, 완료의 두 이력 보존",
+    "candidate_test_names": [
+      "u04_unfinished_event_combat_restores_before_event_instead_of_after_choice",
+      "durable_continue_and_savepoint_keep_independent_variant_cost_and_slot_owners",
+      "u08_external_ron_normal_grants_savepoint_event_replay_and_fresh_process"
+    ],
+    "recommendation": "유지·준비 교정",
+    "source": {
+      "path": "core_enhanced/tests/u08_relic_public/lifecycle.rs",
+      "line": 314
+    },
+    "existing_coverage": [
+      {
+        "test": "u04_unfinished_event_combat_restores_before_event_instead_of_after_choice",
+        "path": "core_enhanced/src/game/world/tests/u04_continuation.inc.rs",
+        "line": 317,
+        "prior_pass_evidence": [
+          {
+            "run": "full_core_016",
+            "test": "game::world::tests::combat::u04_unfinished_event_combat_restores_before_event_instead_of_after_choice",
+            "stdout": "full_core_016.stdout.log"
+          }
+        ]
+      },
+      {
+        "test": "durable_continue_and_savepoint_keep_independent_variant_cost_and_slot_owners",
+        "path": "core_enhanced/src/game/world/tests/u08_relics.rs",
+        "line": 686,
+        "prior_pass_evidence": [
+          {
+            "run": "correction138_001",
+            "test": "game::world::tests::u08_relics::durable_continue_and_savepoint_keep_independent_variant_cost_and_slot_owners",
+            "stdout": "correction138_001.stdout.log"
+          },
+          {
+            "run": "full_core_016",
+            "test": "game::world::tests::u08_relics::durable_continue_and_savepoint_keep_independent_variant_cost_and_slot_owners",
+            "stdout": "full_core_016.stdout.log"
+          }
+        ]
+      },
+      {
+        "test": "u08_external_ron_normal_grants_savepoint_event_replay_and_fresh_process",
+        "path": "core_enhanced/src/authoring/trial/tests/u08_relics.rs",
+        "line": 979,
+        "prior_pass_evidence": [
+          {
+            "run": "correction_remaining_013",
+            "test": "authoring::trial::tests::u08_relics::u08_external_ron_normal_grants_savepoint_event_replay_and_fresh_process",
+            "stdout": "correction_remaining_013.stdout.log"
+          },
+          {
+            "run": "full_core_016",
+            "test": "authoring::trial::tests::u08_relics::u08_external_ron_normal_grants_savepoint_event_replay_and_fresh_process",
+            "stdout": "full_core_016.stdout.log"
+          }
+        ]
+      }
+    ],
+    "next_preparation": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화; 현재 Expedition layout/실제 Event 진입 가능한 authored fixture; fresh/after_completion에 해당 PlayerProfile 설치",
+    "duplication_decision_basis": "소스 assertion/공개 경로 비교; 기존 후보의 PASS는 동등성 증명이 아님",
+    "probe_runs": [
+      {
+        "run": "diagnostic001.result",
+        "status": "FAILED",
+        "stdout": "diagnostic001.stdout.log",
+        "stderr": "diagnostic001.stderr.log"
+      },
+      {
+        "run": "diagnostic002.result",
+        "status": "FAILED",
+        "stdout": "diagnostic002.stdout.log",
+        "stderr": "diagnostic002.stderr.log"
+      }
+    ]
+  }
+]

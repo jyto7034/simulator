@@ -1,0 +1,239 @@
+{
+  "schema": "U09_EXPLICIT_LATE_BINDINGS_V1",
+  "status": "functional_pc_and_r05_classified_bindings_closed_restore_audit_pending",
+  "receipts": [
+    {
+      "id": "impact_server4",
+      "receipt": "test_parts/runtime_validation001/performance001/evidence/boundary020_server_tests.json",
+      "raw_format": "generic_combined_log",
+      "selected_count": 4,
+      "scope": "Release server4 exact selections with explicit game_core/test-fixtures dependency; prior no-feature server build remains failed/zero tests"
+    },
+    {
+      "id": "same_skill_structural",
+      "receipt": "test_parts/runtime_validation001/performance001/evidence/boundary022_tests.json",
+      "raw_format": "generic_combined_log",
+      "selected_count": 1,
+      "include_suffixes": [
+        "rv006_same_skill_two_structural_owners_keep_paused_immediate_and_delayed_results_independent"
+      ],
+      "preserve_enclosing_failure": true,
+      "scope": "Only rv006 passed row: delay0/20, two same-SkillId Normal/Corrupt owners, actor-caused105/40 and queries30_75/40 with copy/prototype isolation. Enclosing022 rv005 two failures remain failed."
+    },
+    {
+      "id": "literal_gap_extensions",
+      "receipt": "test_parts/runtime_validation001/performance001/evidence/boundary024_tests.json",
+      "raw_format": "generic_combined_log",
+      "selected_count": 2,
+      "include_suffixes": [
+        "rv005_effect_gate_empty_invulnerable_and_lethal_footprints_use_actual_hp_loss",
+        "rv005_fixed_channel_preserves_authored_health_cost_pause_stop_cc_and_insufficient_atomicity"
+      ],
+      "scope": "Product023 corrected real side owner target lifecycle: empty/invulnerable no heal; lethal10/nonlethal53 loss heals37 once. Actual lethal consumption tick minimum native work326456 and one-short326455 at application_deployed_context rolls back accepted roots and exact retry matches clean. Fixed channel SelfHealthCost10, Pause, public activation-owned Reinput, real Stun and insufficient atomic retry all pass. No claim that the one-short terminal site is the side lookup itself."
+    },
+    {
+      "id": "post_lethal_impact",
+      "receipt": "test_parts/runtime_validation001/performance001/evidence/boundary024_tests.json",
+      "raw_format": "generic_combined_log",
+      "selected_count": 7,
+      "exclude_suffixes": [
+        "rv005_effect_gate_empty_invulnerable_and_lethal_footprints_use_actual_hp_loss",
+        "rv005_fixed_channel_preserves_authored_health_cost_pause_stop_cc_and_insufficient_atomicity"
+      ],
+      "scope": "Exact7 Product023 direct regressions: original manual target invalidation, target withdrawal and delayed SkillStep CC; two released-child owners through original Repeat, child withdrawal/CC prefix lifetime, three late cancellation rollback/retry sites and separate resource scopes/clone cleanup. Original69 remains separately reused."
+    },
+    {
+      "id": "pc_probe",
+      "receipt": "test_parts/runtime_validation001/performance001/evidence/compat_pc_001.json",
+      "raw_format": "generic_combined_log",
+      "selected_count": 1,
+      "include_suffixes": [
+        "pc_load_baseline"
+      ],
+      "scope": "Actual explicitly selected ignored PC probe ran and passed (not skipped),109.14s measured test; original36 conditions/11 timing samples with existing allocation sampling,576 raw rows and31 success5 typed refusals; fixed outer source1ca0fbe."
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "authoring_preset",
+      "path": "test_parts/runtime_validation001/performance001/evidence/preset_parse001.json",
+      "raw_format": "generic_combined_log",
+      "scope": "Selected config/runtime_safety_authoring_dev.ron fresh CLI parses and validates exact public030 content; same effective profile as retained measurement and work15745019; embedded/default/native ceilings unchanged",
+      "expected_json_fields": {
+        "status": "validated",
+        "runtime_safety_sha256": "0ca49a46b6cd28e8f00b2b50b305bbf4f71c44b73498f1b14c5b62edb24b11f7",
+        "validation_usage.work": 15745019
+      }
+    },
+    {
+      "id": "pc_preparation",
+      "path": "test_parts/runtime_validation001/performance001/evidence/pc_prepare001.json",
+      "raw_format": "generic_combined_log",
+      "result_artifact": "test_parts/runtime_validation001/performance001/evidence/pc_isolate_001.json",
+      "scope": "Binding-only isolated PC preparation copies the complete generic runner membership492. Current/copy tuple-based compact serializer digest5941e61e matches exactly. The outer generic receipt represents the same membership as path/bytes/sha dictionaries with its established serializer, hence identity1ca0fbe; different serializers explain the two digests. Original fixture migration, layout observation and unchanged supplemental probe hooks remain explicit.",
+      "expected_json_fields": {
+        "current_source.file_count": 492,
+        "copied_source.file_count": 492,
+        "current_source.digest": "5941e61ea135c6926d0627c19d81087d6067a0b1afa83d7f90783d082da3a936",
+        "copied_source.digest": "5941e61ea135c6926d0627c19d81087d6067a0b1afa83d7f90783d082da3a936"
+      },
+      "supporting_artifacts": [
+        "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/runtime_validation001/performance001/ADAPTATION.json",
+        "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/runtime_validation001/performance001/RUNPLAN.json",
+        "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/runtime_validation001/performance001/evidence/pc_isolate_hooks_001.tar.gz"
+      ]
+    },
+    {
+      "id": "pc_gameplay",
+      "path": "test_parts/runtime_validation001/performance001/evidence/compat_pc_gameplay_001.json",
+      "raw_format": "generic_combined_log",
+      "result_artifact": "test_parts/runtime_validation001/performance001/evidence/PC_SUMMARY_CURRENT_001.json",
+      "scope": "Unchanged original gameplay/log comparator:576 rows/36 conditions31 success5 refusal; literal gameplay, completion and error code differences0.80 historical requested-detail differences remain recorded and are explained separately by strict cost comparator, not hidden.",
+      "expected_json_fields": {
+        "rows_each": 576,
+        "distinct_conditions": 36,
+        "successful_conditions": 31,
+        "typed_refusal_conditions": 5,
+        "oracle_differences_excluding_measurement_and_cost": {},
+        "completion_status_differences": 0,
+        "error_code_differences": 0,
+        "same_gameplay_oracle_and_typed_refusal": true
+      },
+      "supporting_artifacts": [
+        "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/runtime_validation001/performance001/evidence/pc_raw_current_001.json"
+      ]
+    },
+    {
+      "id": "pc_cost",
+      "path": "test_parts/runtime_validation001/performance001/evidence/compat_pc_cost_001.json",
+      "raw_format": "generic_combined_log",
+      "result_artifact": "test_parts/runtime_validation001/performance001/evidence/PC_IMMEDIATE_ACCOUNTED_U07M_001.json",
+      "scope": "Existing strict comparator passed without oracle edits: immediateU07M all non-timing observations exact allowed_delta0; historicalU06 only existing200-byte owner/requested extent delta. source136/object152/placement48 compiler layout retained; all17 negative controls rejected. No deployment timing claim.",
+      "expected_json_fields": {
+        "passed": true,
+        "rows": 576,
+        "distinct_conditions": 36,
+        "successful_conditions": 31,
+        "typed_refusal_conditions": 5,
+        "expected_owner_extent_delta": 200,
+        "immediate_u07m.non_timing_exact": true,
+        "immediate_u07m.allowed_delta": 0,
+        "compiler_layout.runtime_source_bytes": 136,
+        "compiler_layout.object_state_bytes": 152,
+        "compiler_layout.placement_domain_option_bytes": 48,
+        "source_sha256": "1ca0fbe68a2ba80603470dde38a6c50e67c9d0ca3938391dbc4b211e875c492e",
+        "controls.1.rejected": true,
+        "controls.2.rejected": true,
+        "controls.3.rejected": true,
+        "controls.4.rejected": true,
+        "controls.5.rejected": true,
+        "controls.6.rejected": true,
+        "controls.7.rejected": true,
+        "controls.8.rejected": true,
+        "controls.9.rejected": true,
+        "controls.10.rejected": true,
+        "controls.11.rejected": true,
+        "controls.12.rejected": true,
+        "controls.13.rejected": true,
+        "controls.14.rejected": true,
+        "controls.15.rejected": true,
+        "controls.16.rejected": true,
+        "controls.17.rejected": true
+      },
+      "supporting_artifacts": [
+        "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/runtime_validation001/performance001/evidence/pc_raw_current_001.json"
+      ]
+    },
+    {
+      "id": "r05_preparation",
+      "path": "test_parts/runtime_validation001/performance001/evidence/compat_r05_prepare_002.json",
+      "raw_format": "generic_combined_log",
+      "result_artifact": "test_parts/runtime_validation001/performance001/evidence/r05_harness_002/PROOF.json",
+      "scope": "Existing unchanged002 preparation binds fixed current product1ca and exact prior workload, lock, baseline and actual harness sources. Only isolation path/provenance binding adaptation is allowed; first001 offline missing locked dependency measured nothing and remains a failed attempt.",
+      "expected_json_fields": {
+        "source_sha256": "1ca0fbe68a2ba80603470dde38a6c50e67c9d0ca3938391dbc4b211e875c492e"
+      },
+      "supporting_artifacts": [
+        "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/runtime_validation001/performance001/ADAPTATION.json",
+        "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/runtime_validation001/performance001/evidence/r05_harness_002/ISOLATE_INPUTS.tar.gz"
+      ]
+    },
+    {
+      "id": "r05_classified_summary",
+      "path": "test_parts/runtime_validation001/performance001/evidence/compat_r05_summary_002.json",
+      "raw_format": "generic_combined_log",
+      "result_artifact": "test_parts/runtime_validation001/performance001/evidence/R05_SUMMARY_CURRENT_002.json",
+      "scope": "Summary command succeeded while raw performance exit101 remains failed at the original concurrent peak assertion. Existing permitted classification is warning_concurrent_peak_only: event ops44206/retained266102/peak271927 fit old caps; concurrent ops370928 and retained4196928 fit old caps, peak9709348 exceeds9030188 by679160. Concurrent p9510014462ns exceeds observed10ms cap, observed absolute-cap=false, but original allocation-observer mode marks latency_gate_applicable=false and statistical-regression=false. No all-caps PASS or timing guarantee. Original21 latency/5 allocation samples, parity/repeatability, raw hash, unchanged caps and exact tool/proof verified by unchanged summarizer.",
+      "expected_json_fields": {
+        "source_digest": "1ca0fbe68a2ba80603470dde38a6c50e67c9d0ca3938391dbc4b211e875c492e",
+        "raw_sha256": "464b7ec210808d864c6adba69b35319ec9f09cc6cdefd6b2efebf517d989d642",
+        "raw_exit_code": 101,
+        "classification": "warning_concurrent_peak_only",
+        "concurrent_peak_excess_bytes": 679160,
+        "other_hard_guard_failures": [],
+        "harness_proof.workload_input_exact_prior": true,
+        "harness_proof.guards_oracles_caps_unchanged": true,
+        "event_heavy.original_allocation_guard_pass": true,
+        "event_heavy.repeatable": true,
+        "event_heavy.parity": true,
+        "event_heavy.max_peak_bytes": 271927,
+        "event_heavy.latency_gate_applicable": false,
+        "concurrent_sessions.original_allocation_guard_pass": false,
+        "concurrent_sessions.repeatable": true,
+        "concurrent_sessions.parity": true,
+        "concurrent_sessions.caps.peak": 9030188,
+        "concurrent_sessions.max_peak_bytes": 9709348,
+        "concurrent_sessions.latency_gate_applicable": false,
+        "concurrent_sessions.p95_ns": 10014462,
+        "concurrent_sessions.latency_absolute_cap_pass_observation": false,
+        "concurrent_sessions.latency_regression_observation": false
+      },
+      "supporting_artifacts": [
+        "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/runtime_validation001/performance001/evidence/compat_r05_002.json",
+        "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/runtime_validation001/performance001/evidence/compat_r05_002.log",
+        "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/runtime_validation001/performance001/evidence/r05_raw_current_002.json",
+        "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/test_parts/runtime_validation001/performance001/evidence/r05_harness_002/PROOF.json",
+        "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/P01_LOG_V32_BASELINE_001.json"
+      ]
+    }
+  ],
+  "composites": [
+    {
+      "id": "current_impact_69",
+      "members": [
+        "impact_core64",
+        "impact_observation1",
+        "impact_server4"
+      ],
+      "scope": "Original69 exact impact selections:019default64+observation1 and020server4; no broadened suite or replay of passed configurations. Two new literal acceptance tests are a separate binding."
+    },
+    {
+      "id": "pc_current",
+      "members": [
+        "pc_preparation",
+        "pc_probe",
+        "pc_gameplay",
+        "pc_cost"
+      ],
+      "scope": "Actual current PC phase with original workload, unchanged gameplay and strict non-timing cost oracles, negative controls and exact isolated-source binding. Standalone performance validation complements structural live consumer evidence; it does not substitute for R05."
+    },
+    {
+      "id": "r05_current",
+      "members": [
+        "r05_preparation",
+        "r05_classified_summary"
+      ],
+      "scope": "Current R05 evidence available with preserved raw exit101 and inherited concurrent peak-only warning, plus explicit non-applicable latency cap observation. Summary exit0 validates that classification; it does not promote raw performance to PASS. Source cost explanations remain Root-reviewed claims, separate from original cap/oracle results."
+    }
+  ],
+  "preserved_failed_attempts": [
+    "test_parts/runtime_validation001/performance001/evidence/impact019_server_build.json",
+    "test_parts/runtime_validation001/performance001/evidence/boundary020_rv005.json",
+    "test_parts/runtime_validation001/performance001/evidence/boundary021_rv005.json",
+    "test_parts/runtime_validation001/performance001/evidence/boundary022_tests.json",
+    "test_parts/runtime_validation001/performance001/evidence/compat_r05_001.json",
+    "test_parts/runtime_validation001/performance001/evidence/compat_r05_002.json",
+    "test_parts/runtime_validation001/performance001/evidence/finalization026_collect.json",
+    "test_parts/runtime_validation001/performance001/evidence/finalization027_collect.json"
+  ]
+}

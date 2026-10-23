@@ -1,0 +1,22 @@
+{
+  "schema": "u12.independent-audit-entry/v1",
+  "started_at_utc": "2026-10-13T12:48:36.934723+00:00",
+  "mode": "direct GEX-20 stage-run",
+  "authorization": "User: 너가 독립 감사를 수행해줘.",
+  "goal": "GOAL-CEXL-01",
+  "goal_set": "GS-CEXL-001",
+  "target_manifest": {
+    "path": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/target/u12_current_002/MANIFEST.json",
+    "bytes": 2599320,
+    "sha256": "3eda79477ee69d83442721e6c5f591240eee51e6677f9ebea9080cacd8351ecd"
+  },
+  "reviewer": {
+    "agent": "/root in current conversation",
+    "prior_goal_planning_product_test_participation": false,
+    "prior_actions_in_this_conversation": "Read execution instructions and records; verified metadata references and six old result receipts; archived/updated HANDOFF_LATEST and EXECUTION_HISTORY only. No design, product, test, fixture, implementation plan or target edits; no functional executions.",
+    "model_claim": "No independent runtime verification of model identity is claimed. User explicitly assigned this assistant as independent auditor.",
+    "separation": "Read-only GEX20 pass; outputs restricted to this new post_audit directory. No subagents."
+  },
+  "scope": "whole U12: 15 policy elements, 38 acceptances, 19 seams, 10 dimensions, 3 nodes; currentness, source, actual evidence, predecessor impact, restoration",
+  "stop": "Issue audit verdict and return; no product correction within audit and no U13 work."
+}

@@ -1,0 +1,1124 @@
+{
+  "format": "node-graph",
+  "version": 1,
+  "id": "f737765d-dc26-4782-a08b-9c8a41ee939b",
+  "name": "음양 · 음양의 순환",
+  "nodes": [
+    {
+      "id": "015f3bea-5b76-48ff-a78d-48922ad03431",
+      "kind": "skill-seconds",
+      "title": "승천의 징표 · 출현 판정 지연 미정",
+      "position": {
+        "x": 840,
+        "y": 2436.5
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "125c0bfe-e0df-4f97-87d8-78383b2877ad"
+    },
+    {
+      "id": "07a40c18-67a3-418b-a2a6-26ca1c5131d9",
+      "kind": "skill-seconds",
+      "title": "남은 온기 · 버프 유지 시간 미정",
+      "position": {
+        "x": 40,
+        "y": 3504.5
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "125c0bfe-e0df-4f97-87d8-78383b2877ad"
+    },
+    {
+      "id": "0fd94a37-6380-4a55-b05c-ad3e6700fbd6",
+      "kind": "skill-resonance-requirement",
+      "title": "수동 · 공명 만충",
+      "position": {
+        "x": 1800,
+        "y": 594
+      },
+      "values": {
+        "mode": "full"
+      },
+      "note": "",
+      "frame": "8ae2c072-3e38-49b3-b06a-0db06fa38636"
+    },
+    {
+      "id": "11dfbf2b-b418-4e27-bd92-06026d29aa59",
+      "kind": "skill-resonance-amount",
+      "title": "최대 공명 · 미정",
+      "position": {
+        "x": 480,
+        "y": 407.7380952380953
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "8ae2c072-3e38-49b3-b06a-0db06fa38636"
+    },
+    {
+      "id": "33f8ad0e-9359-4876-ada6-fba9a4beec6c",
+      "kind": "skill-equipment-condition",
+      "title": "긴 호흡 · 장착 여부",
+      "position": {
+        "x": 1640,
+        "y": 2142.5
+      },
+      "values": {
+        "copies": "once",
+        "definition": "long-breath",
+        "slot": "relic",
+        "variant": "normal"
+      },
+      "note": "",
+      "frame": "125c0bfe-e0df-4f97-87d8-78383b2877ad"
+    },
+    {
+      "id": "37bc1878-8f67-4e4d-8b9c-51979458fc6a",
+      "kind": "skill-pair-intersection",
+      "title": "교집합 진입 부여 · 이탈 즉시 해제",
+      "position": {
+        "x": 920,
+        "y": 1710.5
+      },
+      "values": {},
+      "note": "",
+      "frame": "504fbd47-55bb-4ff4-b6ab-f8b19e144cd2"
+    },
+    {
+      "id": "3f4f3ade-4c51-45f6-b62d-b8a71d573ff0",
+      "kind": "skill-equipment-condition",
+      "title": "승천의 징표 · 장착 여부",
+      "position": {
+        "x": 840,
+        "y": 2916.5
+      },
+      "values": {
+        "copies": "once",
+        "definition": "yin-yang-dragon",
+        "slot": "relic",
+        "variant": "normal"
+      },
+      "note": "",
+      "frame": "125c0bfe-e0df-4f97-87d8-78383b2877ad"
+    },
+    {
+      "id": "40d585e6-2524-4d7b-b723-39dcfc71748a",
+      "kind": "skill-pair-transfer",
+      "title": "HP 상한 초과분만 전달 · 재전달 없음",
+      "position": {
+        "x": 1800,
+        "y": 1013
+      },
+      "values": {
+        "percent": ""
+      },
+      "note": "",
+      "frame": "504fbd47-55bb-4ff4-b6ab-f8b19e144cd2"
+    },
+    {
+      "id": "452d1c6d-d405-4ab1-b48d-314a400d17d0",
+      "kind": "skill-range",
+      "title": "승천의 징표 · 일회 영역 타일 미정",
+      "position": {
+        "x": 840,
+        "y": 2658.5
+      },
+      "values": {
+        "includeAnchor": false,
+        "pattern": ""
+      },
+      "note": "",
+      "frame": "125c0bfe-e0df-4f97-87d8-78383b2877ad"
+    },
+    {
+      "id": "4537ba8b-6680-40f4-96de-f4550a33e42e",
+      "kind": "skill-range",
+      "title": "두 중심의 선택 가능 범위 · 미정",
+      "position": {
+        "x": 40,
+        "y": 651
+      },
+      "values": {
+        "includeAnchor": false,
+        "pattern": ""
+      },
+      "note": "",
+      "frame": "8ae2c072-3e38-49b3-b06a-0db06fa38636"
+    },
+    {
+      "id": "46a737a1-98b8-4398-bb4d-6138304edc83",
+      "kind": "skill-modifier-heal-buff",
+      "title": "남은 온기 → 대상당 기본 회복 · 미정",
+      "position": {
+        "x": 920,
+        "y": 3310
+      },
+      "values": {},
+      "note": "",
+      "frame": "125c0bfe-e0df-4f97-87d8-78383b2877ad"
+    },
+    {
+      "id": "4ea35ddc-ec1e-4334-9999-24eb7c96ed51",
+      "kind": "skill-attribute-effect",
+      "title": "남은 온기 · 버프 종류/방식/수치 미정",
+      "position": {
+        "x": 40,
+        "y": 3210.5
+      },
+      "values": {
+        "amount": "",
+        "attribute": "unresolved",
+        "operation": "unresolved"
+      },
+      "note": "",
+      "frame": "125c0bfe-e0df-4f97-87d8-78383b2877ad"
+    },
+    {
+      "id": "4ee18692-70f5-49f1-a10a-f6fc6cc8bcca",
+      "kind": "skill-equipment-condition",
+      "title": "남은 온기 · 장착 여부",
+      "position": {
+        "x": 480,
+        "y": 3525.5
+      },
+      "values": {
+        "copies": "once",
+        "definition": "lingering-warmth",
+        "slot": "relic",
+        "variant": "normal"
+      },
+      "note": "",
+      "frame": "125c0bfe-e0df-4f97-87d8-78383b2877ad"
+    },
+    {
+      "id": "5860c6d7-562e-424f-b6fa-7f570fc908f6",
+      "kind": "skill-pair-base-heal",
+      "title": "기본 회복 한 번 · 실제 결과 확정",
+      "position": {
+        "x": 1360,
+        "y": 1149
+      },
+      "values": {},
+      "note": "",
+      "frame": "504fbd47-55bb-4ff4-b6ab-f8b19e144cd2"
+    },
+    {
+      "id": "5e2ff8ea-31b5-45de-8eaa-8454e04b9004",
+      "kind": "skill-resonance-settings",
+      "title": "사본 공명 저장 설정",
+      "position": {
+        "x": 920,
+        "y": 425.7380952380953
+      },
+      "values": {},
+      "note": "",
+      "frame": "8ae2c072-3e38-49b3-b06a-0db06fa38636"
+    },
+    {
+      "id": "623f132f-51c5-4599-ae4a-6b596bcfdcf5",
+      "kind": "skill-modifier-coincident-area-burst",
+      "title": "승천의 징표 → 두 영역 생성 · 생성 후 사용 완료",
+      "position": {
+        "x": 1280,
+        "y": 2640.3
+      },
+      "values": {
+        "percent": 25
+      },
+      "note": "",
+      "frame": "125c0bfe-e0df-4f97-87d8-78383b2877ad"
+    },
+    {
+      "id": "6989bd1b-f295-4529-8f99-475bba11a960",
+      "kind": "skill-resonance-read",
+      "title": "이번 요청의 공명 조회",
+      "position": {
+        "x": 1360,
+        "y": 418.0714285714286
+      },
+      "values": {},
+      "note": "",
+      "frame": "8ae2c072-3e38-49b3-b06a-0db06fa38636"
+    },
+    {
+      "id": "747c2948-1c49-4214-bf7d-ce5cd9e37e57",
+      "kind": "skill-resonance-admit",
+      "title": "원자적 접수·비용 확정",
+      "position": {
+        "x": 2680,
+        "y": 177.3
+      },
+      "values": {},
+      "note": "",
+      "frame": "8ae2c072-3e38-49b3-b06a-0db06fa38636"
+    },
+    {
+      "id": "7ba5a543-ec07-411e-b3c4-8390de0c2026",
+      "kind": "skill-attack-speed-buff",
+      "title": "교집합 기본 공격 속도 증가 · 미정",
+      "position": {
+        "x": 480,
+        "y": 1451.5
+      },
+      "values": {
+        "points": ""
+      },
+      "note": "",
+      "frame": "504fbd47-55bb-4ff4-b6ab-f8b19e144cd2"
+    },
+    {
+      "id": "83af9075-b655-44bf-8508-6deb590eb8bc",
+      "kind": "skill-modifier-buff",
+      "title": "선명한 축복 → 교집합 기본 공격 속도 증가 · 미정",
+      "position": {
+        "x": 1280,
+        "y": 2139.5
+      },
+      "values": {
+        "percent": ""
+      },
+      "note": "",
+      "frame": "125c0bfe-e0df-4f97-87d8-78383b2877ad"
+    },
+    {
+      "id": "85a29497-4bda-4f52-aca6-5506fa7b6bf3",
+      "kind": "skill-resonance-cost",
+      "title": "수동 · 공명 전량 소비",
+      "position": {
+        "x": 1800,
+        "y": 80
+      },
+      "values": {
+        "minimumCost": "",
+        "mode": "all",
+        "percent": ""
+      },
+      "note": "",
+      "frame": "8ae2c072-3e38-49b3-b06a-0db06fa38636"
+    },
+    {
+      "id": "8d55db2d-8b8e-4d21-8210-c3427b576c93",
+      "kind": "skill-modifier-duration",
+      "title": "긴 호흡 → 두 영역 공통 수명 · 미정",
+      "position": {
+        "x": 2080,
+        "y": 2139.5
+      },
+      "values": {
+        "percent": 25
+      },
+      "note": "",
+      "frame": "125c0bfe-e0df-4f97-87d8-78383b2877ad"
+    },
+    {
+      "id": "94d0e115-a4eb-4a68-9a3e-8af2e00161a5",
+      "kind": "skill-modifier-range",
+      "title": "넓어진 지평 → 음과 양의 공통 효과 패턴 · 미정",
+      "position": {
+        "x": 480,
+        "y": 2474
+      },
+      "values": {
+        "mode": "replace"
+      },
+      "note": "",
+      "frame": "125c0bfe-e0df-4f97-87d8-78383b2877ad"
+    },
+    {
+      "id": "9623fbfb-cffd-4109-b0db-44c61c1ae9c2",
+      "kind": "skill-modifier-healing",
+      "title": "온기의 성배 → 대상당 기본 회복 · 미정",
+      "position": {
+        "x": 480,
+        "y": 2139.5
+      },
+      "values": {
+        "percent": ""
+      },
+      "note": "",
+      "frame": "125c0bfe-e0df-4f97-87d8-78383b2877ad"
+    },
+    {
+      "id": "99e846b4-7797-4a40-b2a4-cecb383e5fdc",
+      "kind": "skill-range",
+      "title": "이 형상의 확대 타일 · 미정",
+      "position": {
+        "x": 40,
+        "y": 2436.5
+      },
+      "values": {
+        "includeAnchor": false,
+        "pattern": ""
+      },
+      "note": "",
+      "frame": "125c0bfe-e0df-4f97-87d8-78383b2877ad"
+    },
+    {
+      "id": "9bf67e4a-1c07-4190-b1cb-aeff9b4ad9f8",
+      "kind": "skill-equipment-condition",
+      "title": "온기의 성배 · 장착 여부",
+      "position": {
+        "x": 40,
+        "y": 2142.5
+      },
+      "values": {
+        "copies": "once",
+        "definition": "healing-increase",
+        "slot": "relic",
+        "variant": "normal"
+      },
+      "note": "",
+      "frame": "125c0bfe-e0df-4f97-87d8-78383b2877ad"
+    },
+    {
+      "id": "9c4b6591-c981-416a-ae78-d3793fc2984b",
+      "kind": "skill-paired-areas",
+      "title": "두 영역 생성 · 생성 후 사용 완료",
+      "position": {
+        "x": 480,
+        "y": 1673.5
+      },
+      "values": {},
+      "note": "",
+      "frame": "504fbd47-55bb-4ff4-b6ab-f8b19e144cd2"
+    },
+    {
+      "id": "a733ea85-b1e6-4cd4-a826-5896e0d85cf9",
+      "kind": "skill-healing-amount",
+      "title": "대상당 기본 회복 · 미정",
+      "position": {
+        "x": 920,
+        "y": 1032.5
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "504fbd47-55bb-4ff4-b6ab-f8b19e144cd2"
+    },
+    {
+      "id": "b60a0566-e05c-4cde-849c-29835a18b64b",
+      "kind": "skill-range",
+      "title": "음과 양의 공통 효과 패턴 · 미정",
+      "position": {
+        "x": 40,
+        "y": 1725.5
+      },
+      "values": {
+        "includeAnchor": false,
+        "pattern": ""
+      },
+      "note": "",
+      "frame": "504fbd47-55bb-4ff4-b6ab-f8b19e144cd2"
+    },
+    {
+      "id": "c0e60927-ad58-4d91-8564-72304fb65b72",
+      "kind": "skill-cue",
+      "title": "음·양 영역과 버프 표시",
+      "position": {
+        "x": 2240,
+        "y": 1811.5
+      },
+      "values": {
+        "description": "음과 양의 고정 영역을 구분해 표시합니다. 교집합 기여분은 진입·이탈·교체·종료에 맞춰 표시하며 연출로 피해나 추가 회복을 만들지 않습니다."
+      },
+      "note": "",
+      "frame": "504fbd47-55bb-4ff4-b6ab-f8b19e144cd2"
+    },
+    {
+      "id": "cae93d09-369d-4a12-9bbe-a0dca919d3f0",
+      "kind": "skill-equipment-condition",
+      "title": "선명한 축복 · 장착 여부",
+      "position": {
+        "x": 840,
+        "y": 2142.5
+      },
+      "values": {
+        "copies": "once",
+        "definition": "vivid-blessing",
+        "slot": "relic",
+        "variant": "normal"
+      },
+      "note": "",
+      "frame": "125c0bfe-e0df-4f97-87d8-78383b2877ad"
+    },
+    {
+      "id": "cf7d6038-ab18-408b-ac49-dac0a59ac69e",
+      "kind": "skill-seconds",
+      "title": "두 영역 공통 수명 · 미정",
+      "position": {
+        "x": 40,
+        "y": 1503.5
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "504fbd47-55bb-4ff4-b6ab-f8b19e144cd2"
+    },
+    {
+      "id": "d1fc1f73-3c70-4581-8beb-8c94e9df9045",
+      "kind": "skill-seconds",
+      "title": "회복 주기 · 첫 회복은 한 주기 뒤",
+      "position": {
+        "x": 480,
+        "y": 1229.5
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "504fbd47-55bb-4ff4-b6ab-f8b19e144cd2"
+    },
+    {
+      "id": "e2a4c44f-aa48-44bb-9424-c0174e4adb05",
+      "kind": "skill-request",
+      "title": "두 위치 확정 입력",
+      "position": {
+        "x": 920,
+        "y": 665
+      },
+      "values": {},
+      "note": "",
+      "frame": "8ae2c072-3e38-49b3-b06a-0db06fa38636"
+    },
+    {
+      "id": "e417a878-430b-4258-8c89-97fe83388d17",
+      "kind": "skill-equipment-condition",
+      "title": "넓어진 지평 · 장착 여부",
+      "position": {
+        "x": 40,
+        "y": 2694.5
+      },
+      "values": {
+        "copies": "once",
+        "definition": "widened-horizon",
+        "slot": "relic",
+        "variant": "normal"
+      },
+      "note": "",
+      "frame": "125c0bfe-e0df-4f97-87d8-78383b2877ad"
+    },
+    {
+      "id": "e7e32088-daae-4ca5-9bc9-0eaaaa271fc5",
+      "kind": "skill-pair-pulse",
+      "title": "두 영역 대상 집합 · 같은 회차",
+      "position": {
+        "x": 920,
+        "y": 1254.5
+      },
+      "values": {},
+      "note": "",
+      "frame": "504fbd47-55bb-4ff4-b6ab-f8b19e144cd2"
+    },
+    {
+      "id": "f0821794-fb38-4442-921d-5f712f548790",
+      "kind": "skill-target-state",
+      "title": "남은 온기 · 버프 정의와 독립 수명 미정",
+      "position": {
+        "x": 480,
+        "y": 3259.5
+      },
+      "values": {
+        "sourceExit": "independent"
+      },
+      "note": "",
+      "frame": "125c0bfe-e0df-4f97-87d8-78383b2877ad"
+    },
+    {
+      "id": "fb16b2e3-cd01-4ea6-81e6-95e3976ffe38",
+      "kind": "skill-resonance-qualify",
+      "title": "대상·공명·자원 자격 검사",
+      "position": {
+        "x": 2240,
+        "y": 260.8
+      },
+      "values": {},
+      "note": "",
+      "frame": "8ae2c072-3e38-49b3-b06a-0db06fa38636"
+    },
+    {
+      "id": "ffb22be3-ec6e-4d5a-bdfb-0c08363d3717",
+      "kind": "skill-two-tile-selection",
+      "title": "음·양 순서로 두 타일 지정",
+      "position": {
+        "x": 480,
+        "y": 687
+      },
+      "values": {},
+      "note": "",
+      "frame": "8ae2c072-3e38-49b3-b06a-0db06fa38636"
+    }
+  ],
+  "edges": [
+    {
+      "id": "0ef737aa-3e53-4581-a191-5f617eb566ad",
+      "source": {
+        "node": "7ba5a543-ec07-411e-b3c4-8390de0c2026",
+        "port": "buff"
+      },
+      "target": {
+        "node": "83af9075-b655-44bf-8508-6deb590eb8bc",
+        "port": "target"
+      }
+    },
+    {
+      "id": "106a88a6-3d4e-4ae4-843c-352beabfd4f7",
+      "source": {
+        "node": "b60a0566-e05c-4cde-849c-29835a18b64b",
+        "port": "range"
+      },
+      "target": {
+        "node": "94d0e115-a4eb-4a68-9a3e-8af2e00161a5",
+        "port": "target"
+      }
+    },
+    {
+      "id": "14692241-1950-4710-9586-7e02e5579c19",
+      "source": {
+        "node": "5860c6d7-562e-424f-b6fa-7f570fc908f6",
+        "port": "cue"
+      },
+      "target": {
+        "node": "c0e60927-ad58-4d91-8564-72304fb65b72",
+        "port": "event"
+      }
+    },
+    {
+      "id": "16ddff46-782c-44ad-94bb-d34cd2ddcf8d",
+      "source": {
+        "node": "e7e32088-daae-4ca5-9bc9-0eaaaa271fc5",
+        "port": "pulse"
+      },
+      "target": {
+        "node": "5860c6d7-562e-424f-b6fa-7f570fc908f6",
+        "port": "pulse"
+      }
+    },
+    {
+      "id": "1b1af1c2-6354-4ed6-be35-039ce277f43a",
+      "source": {
+        "node": "452d1c6d-d405-4ab1-b48d-314a400d17d0",
+        "port": "range"
+      },
+      "target": {
+        "node": "623f132f-51c5-4599-ae4a-6b596bcfdcf5",
+        "port": "range"
+      }
+    },
+    {
+      "id": "1b3fec1f-d0dc-40ea-9722-975dd5ef3320",
+      "source": {
+        "node": "e2a4c44f-aa48-44bb-9424-c0174e4adb05",
+        "port": "request"
+      },
+      "target": {
+        "node": "6989bd1b-f295-4529-8f99-475bba11a960",
+        "port": "request"
+      }
+    },
+    {
+      "id": "24663beb-9050-4a3a-ac33-e428e455ef3b",
+      "source": {
+        "node": "11dfbf2b-b418-4e27-bd92-06026d29aa59",
+        "port": "value"
+      },
+      "target": {
+        "node": "5e2ff8ea-31b5-45de-8eaa-8454e04b9004",
+        "port": "capacity"
+      }
+    },
+    {
+      "id": "2b19b47b-18cc-4b46-a142-9db78c350dbd",
+      "source": {
+        "node": "e7e32088-daae-4ca5-9bc9-0eaaaa271fc5",
+        "port": "out"
+      },
+      "target": {
+        "node": "5860c6d7-562e-424f-b6fa-7f570fc908f6",
+        "port": "in"
+      }
+    },
+    {
+      "id": "339ae15f-c583-4670-8afb-01cc0ba797d0",
+      "source": {
+        "node": "fb16b2e3-cd01-4ea6-81e6-95e3976ffe38",
+        "port": "permit"
+      },
+      "target": {
+        "node": "747c2948-1c49-4214-bf7d-ce5cd9e37e57",
+        "port": "permit"
+      }
+    },
+    {
+      "id": "377186dd-bbcc-433b-8c85-3828546e6d8a",
+      "source": {
+        "node": "ffb22be3-ec6e-4d5a-bdfb-0c08363d3717",
+        "port": "selection"
+      },
+      "target": {
+        "node": "e2a4c44f-aa48-44bb-9424-c0174e4adb05",
+        "port": "selection"
+      }
+    },
+    {
+      "id": "3f010499-8292-47dd-a3fa-9d082f6866b3",
+      "source": {
+        "node": "a733ea85-b1e6-4cd4-a826-5896e0d85cf9",
+        "port": "power"
+      },
+      "target": {
+        "node": "5860c6d7-562e-424f-b6fa-7f570fc908f6",
+        "port": "power"
+      }
+    },
+    {
+      "id": "4eb49e6d-cd00-4e22-a555-e2eb3b1bb680",
+      "source": {
+        "node": "9bf67e4a-1c07-4190-b1cb-aeff9b4ad9f8",
+        "port": "condition"
+      },
+      "target": {
+        "node": "9623fbfb-cffd-4109-b0db-44c61c1ae9c2",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "4f345da1-3781-4007-9353-baa4681feb56",
+      "source": {
+        "node": "d1fc1f73-3c70-4581-8beb-8c94e9df9045",
+        "port": "value"
+      },
+      "target": {
+        "node": "e7e32088-daae-4ca5-9bc9-0eaaaa271fc5",
+        "port": "interval"
+      }
+    },
+    {
+      "id": "5762837b-02c1-461c-8080-ed175c9385b2",
+      "source": {
+        "node": "747c2948-1c49-4214-bf7d-ce5cd9e37e57",
+        "port": "out"
+      },
+      "target": {
+        "node": "9c4b6591-c981-416a-ae78-d3793fc2984b",
+        "port": "in"
+      }
+    },
+    {
+      "id": "5bea6102-ea67-418d-b66b-abcafc227cd4",
+      "source": {
+        "node": "fb16b2e3-cd01-4ea6-81e6-95e3976ffe38",
+        "port": "out"
+      },
+      "target": {
+        "node": "747c2948-1c49-4214-bf7d-ce5cd9e37e57",
+        "port": "in"
+      }
+    },
+    {
+      "id": "6385b966-36ae-4719-b367-c43ec4c3a083",
+      "source": {
+        "node": "7ba5a543-ec07-411e-b3c4-8390de0c2026",
+        "port": "buff"
+      },
+      "target": {
+        "node": "37bc1878-8f67-4e4d-8b9c-51979458fc6a",
+        "port": "buff"
+      }
+    },
+    {
+      "id": "6ca0b014-3e6b-48cd-8ea5-4a95130b2693",
+      "source": {
+        "node": "5860c6d7-562e-424f-b6fa-7f570fc908f6",
+        "port": "out"
+      },
+      "target": {
+        "node": "40d585e6-2524-4d7b-b723-39dcfc71748a",
+        "port": "in"
+      }
+    },
+    {
+      "id": "738fc8fd-5654-4fde-9783-00b8035e656b",
+      "source": {
+        "node": "9c4b6591-c981-416a-ae78-d3793fc2984b",
+        "port": "pair"
+      },
+      "target": {
+        "node": "e7e32088-daae-4ca5-9bc9-0eaaaa271fc5",
+        "port": "pair"
+      }
+    },
+    {
+      "id": "7ae5a5ca-f0a5-457b-ae75-6d75d5a6799e",
+      "source": {
+        "node": "f0821794-fb38-4442-921d-5f712f548790",
+        "port": "state"
+      },
+      "target": {
+        "node": "46a737a1-98b8-4398-bb4d-6138304edc83",
+        "port": "state"
+      }
+    },
+    {
+      "id": "815e4bbf-bcbf-4d9f-af18-9dd129be5953",
+      "source": {
+        "node": "3f4f3ade-4c51-45f6-b62d-b8a71d573ff0",
+        "port": "condition"
+      },
+      "target": {
+        "node": "623f132f-51c5-4599-ae4a-6b596bcfdcf5",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "859f7f4a-bbef-4416-b723-25fb0af04583",
+      "source": {
+        "node": "e2a4c44f-aa48-44bb-9424-c0174e4adb05",
+        "port": "request"
+      },
+      "target": {
+        "node": "fb16b2e3-cd01-4ea6-81e6-95e3976ffe38",
+        "port": "request"
+      }
+    },
+    {
+      "id": "8ad12088-af40-4eea-a2ab-db722817a9a9",
+      "source": {
+        "node": "9c4b6591-c981-416a-ae78-d3793fc2984b",
+        "port": "pair"
+      },
+      "target": {
+        "node": "623f132f-51c5-4599-ae4a-6b596bcfdcf5",
+        "port": "target"
+      }
+    },
+    {
+      "id": "8dee1d5e-a39e-4ca6-b9e7-7fce628ee5db",
+      "source": {
+        "node": "4ea35ddc-ec1e-4334-9999-24eb7c96ed51",
+        "port": "effect"
+      },
+      "target": {
+        "node": "f0821794-fb38-4442-921d-5f712f548790",
+        "port": "effects"
+      }
+    },
+    {
+      "id": "9016f121-fbd5-4413-b4dc-e941d28d0696",
+      "source": {
+        "node": "6989bd1b-f295-4529-8f99-475bba11a960",
+        "port": "snapshot"
+      },
+      "target": {
+        "node": "85a29497-4bda-4f52-aca6-5506fa7b6bf3",
+        "port": "snapshot"
+      }
+    },
+    {
+      "id": "96376c78-a6ce-4344-8c3d-e5dbd0c229bb",
+      "source": {
+        "node": "33f8ad0e-9359-4876-ada6-fba9a4beec6c",
+        "port": "condition"
+      },
+      "target": {
+        "node": "8d55db2d-8b8e-4d21-8210-c3427b576c93",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "986bcbde-4ee1-40e6-8ee3-45abd56e333c",
+      "source": {
+        "node": "a733ea85-b1e6-4cd4-a826-5896e0d85cf9",
+        "port": "power"
+      },
+      "target": {
+        "node": "46a737a1-98b8-4398-bb4d-6138304edc83",
+        "port": "target"
+      }
+    },
+    {
+      "id": "9912e607-1f45-4395-b765-013115000b4c",
+      "source": {
+        "node": "e417a878-430b-4258-8c89-97fe83388d17",
+        "port": "condition"
+      },
+      "target": {
+        "node": "94d0e115-a4eb-4a68-9a3e-8af2e00161a5",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "9ae40ee6-d2ee-47fc-9d05-d085ffca7856",
+      "source": {
+        "node": "e2a4c44f-aa48-44bb-9424-c0174e4adb05",
+        "port": "out"
+      },
+      "target": {
+        "node": "fb16b2e3-cd01-4ea6-81e6-95e3976ffe38",
+        "port": "in"
+      }
+    },
+    {
+      "id": "9bbd9f90-a57f-4360-b919-bc18df54021b",
+      "source": {
+        "node": "4537ba8b-6680-40f4-96de-f4550a33e42e",
+        "port": "range"
+      },
+      "target": {
+        "node": "ffb22be3-ec6e-4d5a-bdfb-0c08363d3717",
+        "port": "range"
+      }
+    },
+    {
+      "id": "a6ef7615-bfd6-4790-a224-5e63637aa8b2",
+      "source": {
+        "node": "37bc1878-8f67-4e4d-8b9c-51979458fc6a",
+        "port": "cue"
+      },
+      "target": {
+        "node": "c0e60927-ad58-4d91-8564-72304fb65b72",
+        "port": "event"
+      }
+    },
+    {
+      "id": "a800dde9-a2dd-49cf-8c23-8e35debd0bad",
+      "source": {
+        "node": "0fd94a37-6380-4a55-b05c-ad3e6700fbd6",
+        "port": "requirement"
+      },
+      "target": {
+        "node": "fb16b2e3-cd01-4ea6-81e6-95e3976ffe38",
+        "port": "requirement"
+      }
+    },
+    {
+      "id": "aeb0d176-3c05-4980-ae67-0a1ab65db89d",
+      "source": {
+        "node": "cae93d09-369d-4a12-9bbe-a0dca919d3f0",
+        "port": "condition"
+      },
+      "target": {
+        "node": "83af9075-b655-44bf-8508-6deb590eb8bc",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "b71cb524-5ca3-4e22-8a1a-95b38385354c",
+      "source": {
+        "node": "cf7d6038-ab18-408b-ac49-dac0a59ac69e",
+        "port": "value"
+      },
+      "target": {
+        "node": "8d55db2d-8b8e-4d21-8210-c3427b576c93",
+        "port": "target"
+      }
+    },
+    {
+      "id": "bd090367-f7b3-46c7-814f-5909ccc562e4",
+      "source": {
+        "node": "07a40c18-67a3-418b-a2a6-26ca1c5131d9",
+        "port": "value"
+      },
+      "target": {
+        "node": "f0821794-fb38-4442-921d-5f712f548790",
+        "port": "duration"
+      }
+    },
+    {
+      "id": "c0281248-47fe-47d1-9cdf-d9d55afd407c",
+      "source": {
+        "node": "b60a0566-e05c-4cde-849c-29835a18b64b",
+        "port": "range"
+      },
+      "target": {
+        "node": "9c4b6591-c981-416a-ae78-d3793fc2984b",
+        "port": "second"
+      }
+    },
+    {
+      "id": "c52879e1-b789-48ca-8f3d-0ce94faf9afa",
+      "source": {
+        "node": "cf7d6038-ab18-408b-ac49-dac0a59ac69e",
+        "port": "value"
+      },
+      "target": {
+        "node": "9c4b6591-c981-416a-ae78-d3793fc2984b",
+        "port": "duration"
+      }
+    },
+    {
+      "id": "cb1424f6-366f-4a88-9614-561360524838",
+      "source": {
+        "node": "99e846b4-7797-4a40-b2a4-cecb383e5fdc",
+        "port": "range"
+      },
+      "target": {
+        "node": "94d0e115-a4eb-4a68-9a3e-8af2e00161a5",
+        "port": "replacement"
+      }
+    },
+    {
+      "id": "cc02514f-2ad9-4c52-bc99-3e890b71a92d",
+      "source": {
+        "node": "e7e32088-daae-4ca5-9bc9-0eaaaa271fc5",
+        "port": "pulse"
+      },
+      "target": {
+        "node": "40d585e6-2524-4d7b-b723-39dcfc71748a",
+        "port": "pulse"
+      }
+    },
+    {
+      "id": "cd44531a-46d2-44bc-a397-2001ef50fa90",
+      "source": {
+        "node": "a733ea85-b1e6-4cd4-a826-5896e0d85cf9",
+        "port": "power"
+      },
+      "target": {
+        "node": "9623fbfb-cffd-4109-b0db-44c61c1ae9c2",
+        "port": "target"
+      }
+    },
+    {
+      "id": "da14902d-d419-400e-9ffe-ad1850d6b258",
+      "source": {
+        "node": "9c4b6591-c981-416a-ae78-d3793fc2984b",
+        "port": "pair"
+      },
+      "target": {
+        "node": "37bc1878-8f67-4e4d-8b9c-51979458fc6a",
+        "port": "pair"
+      }
+    },
+    {
+      "id": "da19050d-495c-4123-94d5-0b8d48658462",
+      "source": {
+        "node": "4ee18692-70f5-49f1-a10a-f6fc6cc8bcca",
+        "port": "condition"
+      },
+      "target": {
+        "node": "46a737a1-98b8-4398-bb4d-6138304edc83",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "da35e4e8-3a1d-4832-8a11-da1ec73c6184",
+      "source": {
+        "node": "b60a0566-e05c-4cde-849c-29835a18b64b",
+        "port": "range"
+      },
+      "target": {
+        "node": "9c4b6591-c981-416a-ae78-d3793fc2984b",
+        "port": "first"
+      }
+    },
+    {
+      "id": "dc3a70b1-21cd-4478-ba99-c8884c9b3b78",
+      "source": {
+        "node": "5860c6d7-562e-424f-b6fa-7f570fc908f6",
+        "port": "result"
+      },
+      "target": {
+        "node": "40d585e6-2524-4d7b-b723-39dcfc71748a",
+        "port": "result"
+      }
+    },
+    {
+      "id": "dc3d4d4b-dd7c-44da-a098-19b52dfa7969",
+      "source": {
+        "node": "6989bd1b-f295-4529-8f99-475bba11a960",
+        "port": "snapshot"
+      },
+      "target": {
+        "node": "fb16b2e3-cd01-4ea6-81e6-95e3976ffe38",
+        "port": "snapshot"
+      }
+    },
+    {
+      "id": "de81919a-f7f4-4e75-badb-d2bbbcd85e44",
+      "source": {
+        "node": "85a29497-4bda-4f52-aca6-5506fa7b6bf3",
+        "port": "cost"
+      },
+      "target": {
+        "node": "fb16b2e3-cd01-4ea6-81e6-95e3976ffe38",
+        "port": "cost"
+      }
+    },
+    {
+      "id": "dfba8944-c3aa-4236-bd18-2dbd7e70c13b",
+      "source": {
+        "node": "747c2948-1c49-4214-bf7d-ce5cd9e37e57",
+        "port": "use"
+      },
+      "target": {
+        "node": "9c4b6591-c981-416a-ae78-d3793fc2984b",
+        "port": "use"
+      }
+    },
+    {
+      "id": "e25a4364-ff13-4e04-8bc4-901abb3c6783",
+      "source": {
+        "node": "9c4b6591-c981-416a-ae78-d3793fc2984b",
+        "port": "cue"
+      },
+      "target": {
+        "node": "c0e60927-ad58-4d91-8564-72304fb65b72",
+        "port": "event"
+      }
+    },
+    {
+      "id": "ec975b54-d94f-44aa-98f3-678541359c36",
+      "source": {
+        "node": "40d585e6-2524-4d7b-b723-39dcfc71748a",
+        "port": "cue"
+      },
+      "target": {
+        "node": "c0e60927-ad58-4d91-8564-72304fb65b72",
+        "port": "event"
+      }
+    },
+    {
+      "id": "eca909b8-84fe-42a5-ab78-89ff596b5790",
+      "source": {
+        "node": "5e2ff8ea-31b5-45de-8eaa-8454e04b9004",
+        "port": "settings"
+      },
+      "target": {
+        "node": "6989bd1b-f295-4529-8f99-475bba11a960",
+        "port": "settings"
+      }
+    },
+    {
+      "id": "ff804175-4b50-4d5d-bbfa-2d29f08159c6",
+      "source": {
+        "node": "015f3bea-5b76-48ff-a78d-48922ad03431",
+        "port": "value"
+      },
+      "target": {
+        "node": "623f132f-51c5-4599-ae4a-6b596bcfdcf5",
+        "port": "delay"
+      }
+    }
+  ],
+  "frames": [
+    {
+      "id": "125c0bfe-e0df-4f97-87d8-78383b2877ad",
+      "title": "장착 유물 → 두 영역 공통 정의 변경 · 선택 거리는 유지"
+    },
+    {
+      "id": "504fbd47-55bb-4ff4-b6ab-f8b19e144cd2",
+      "title": "독립 두 영역 · 중복 회복 제외 · 반대편 전달 · 교집합 버프"
+    },
+    {
+      "id": "8ae2c072-3e38-49b3-b06a-0db06fa38636",
+      "title": "두 위치 선택 · 공명과 위치의 원자적 접수"
+    }
+  ]
+}

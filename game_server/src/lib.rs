@@ -19,9 +19,10 @@ lazy_static::lazy_static! {
 
 pub mod bootstrap;
 pub mod env;
+pub mod mod_admission;
 #[cfg(feature = "runtime-observation")]
 pub mod observability;
-#[cfg(feature = "runtime-measurement")]
+#[cfg(any(feature = "runtime-measurement", feature = "cmva-lab-measurement"))]
 pub mod runtime_measurement;
 
 // Module groups
@@ -124,7 +125,7 @@ pub struct AppState {
     pub load_balance_addr: Addr<LoadBalanceActor>,
     pub logger_manager: Arc<LoggerManager>,
     pub current_run_id: Uuid,
-    pub game_data: ValidatedGameData,
+    pub approved_host: Arc<game_core::mod_validation::ApprovedHost>,
 }
 
 #[cfg(test)]

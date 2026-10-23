@@ -1,0 +1,18 @@
+--- core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md
++++ core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md
+@@ -1,4 +1,6 @@
+ # Simulator 개발 현황 — 단일 진입점
++
++**2026-10-06 U08 R06 사전 검증 교정028:** 공개 RON의 혼합unit Sum/Max에 외부 능력치 참조를 더하면 validation이 성공하는 결함을 재현했다. [교정 인수](../core_first/execution/u08_public_20261006_028/RECORD.ko.md)에 따라 기존 거부 요건을 유지해 compiler를 교정하고 관측 공백을 보강한다. 통합006의 Core default/fixtures 각각1958PASS는 보존하며 나머지54역할은 미시작이다. U08 전체 완료·독립 감사·U09 진입은 아직 아니다. 아래027은 교정 전 인수 이력이다.
+ 
+ **2026-10-06 U08 공개 경로 보강·최종 통합 입력 인수027:** Normal 실제 피해180/Corrupt210 및 비정상 입력16건의 집중 검증을 같은 source438/380e7408에서 통과했다. [현재 인수](../core_first/execution/u08_public_20261006_027/RECORD.ko.md)는 실행 입력1322개와 외부archive2개/8members를 고정하여 Sol의 통합006을 승인한다. 현재 환경은 fullaccess이며 추가 승인 인자를 사용하지 않는다. 전체 기능·성능·최종화·독립 감사와 U09 진입은 아직 미완료다. 아래 상태는 각 당시 이력이다.
+ 
+@@ -32,7 +34,7 @@
+ [이름 변경·동결 기록 경로 대응표](../core_first/execution/rulebook_path_migration_20261004_001/RECORD.ko.md)를 함께 인수한다.
+ 제품 소스·기존 감사 원본은 변경하지 않았으며 아래 완료·진행 이력을 소급 변경하지 않는다.
+ 
+-2026-10-06 · v1.155 · 현재 개발 주작업: **U08 GEX-10 공개 경로 보강 후 통합006 검증**.
++2026-10-06 · v1.156 · 현재 개발 주작업: **U08 GEX-10 R06 사전 검증 교정**.
+ [재개 인수](../core_first/execution/u06_resume_20261005_001/INTAKE.ko.md)에서 [중지 당시 인수인계](../core_first/execution/HANDOFF_20261005.ko.md)를 이어받았으며 현재 위치는 아래 실행 PLAN이 소유한다.
+ [활성 로드맵](../core_first/ROADMAP.ko.md), [연속 실행 위임](../core_first/execution/CONTINUOUS_REQUEST_20261004.ko.md),
+ [U01 완료 인수](../core_first/execution/u01_closure_20261004_001/RESULT.ko.md),

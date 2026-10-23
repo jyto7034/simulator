@@ -1,0 +1,7 @@
+{
+  "request": "연속 구현 지시서가 업데이트 되었으니 한 번 읽어보고.",
+  "path": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md",
+  "sha256": "2bac1c06cbe6f983d5e328a1b5b7305fecd4c0821aa3020aefee9e8fc59f02aa",
+  "change": "§1 필요한 관련 기반 리팩토링 병행; 정책·공개 계약 보존; 무관한 정리 제외",
+  "disposition": "execution guidance update; approved U17 scope and22policy acceptance unchanged; source review explicitly separates old monolith responsibilities"
+}

@@ -239,6 +239,7 @@ pub(crate) struct MandatoryObservation {
     pub(crate) amount_evaluations: u64,
     #[serde(skip)]
     pub(crate) latest_amount: Option<Arc<super::amount_observation::RecordedAmountEvaluation>>,
+    pub(crate) coverage:Option<Box<crate::mod_validation::coverage::CoverageCollector>>,
     #[serde(skip)]
     failed: bool,
 }
@@ -252,6 +253,7 @@ crate::authoring::clone_shape::struct_shape!(MandatoryObservation {
     amount_observation_enabled,
     amount_evaluations,
     latest_amount,
+    coverage,
     failed
 });
 
@@ -273,6 +275,7 @@ impl MandatoryObservation {
                 bytes = bytes.checked_add(fact.retained_extent()?)?;
             }
         }
+        bytes=bytes.checked_add(self.coverage.as_ref().map_or(Some(0),|c|c.report.retained_extent())?)?;
         bytes.checked_add(
             self.latest_amount
                 .as_ref()
@@ -294,6 +297,26 @@ pub(super) struct ObservationReservation {
 }
 
 impl BattleCore {
+    pub(crate) fn set_lab_coverage(&mut self,plan:&crate::mod_validation::CoveragePlan)->Result<(),GameError>{
+        let collector=crate::mod_validation::coverage::CoverageCollector::new(plan)?;
+        self.authoring_observation.as_mut().ok_or_else(||control::reject("lab_coverage_missing","lab_coverage_owner"))?.coverage=Some(collector);Ok(())
+    }
+    pub(super) fn record_lab_source(&mut self,source:&crate::game::battle::runtime_facts::RuntimeFactSource,stage:crate::mod_validation::CoverageStage)->Result<(),GameError>{
+        if let Some(coverage)=self.authoring_observation.as_mut().and_then(|o|o.coverage.as_mut()){
+            coverage.price_source(source)?;
+            coverage.record_source(source,stage);
+        }Ok(())
+    }
+    pub(super) fn record_lab_site(&mut self,source:&crate::game::battle::runtime_facts::RuntimeFactSource,site:Option<&crate::game::ability::authoring::EffectSite>,stage:crate::mod_validation::CoverageStage)->Result<(),GameError>{
+        if let Some(coverage)=self.authoring_observation.as_mut().and_then(|o|o.coverage.as_mut()){
+            coverage.price_source(source)?;coverage.record_source_at(source,site,stage);
+        }Ok(())
+    }
+    pub(super) fn record_lab_object(&mut self,id:&str,terminal:bool)->Result<(),GameError>{
+        if let Some(coverage)=self.authoring_observation.as_mut().and_then(|o|o.coverage.as_mut()){
+            coverage.price_record()?;coverage.record_object(id,terminal);
+        }Ok(())
+    }
     pub(crate) fn enable_authoring_observation(&mut self) {
         self.enable_authoring_observation_with_trace(Default::default());
     }
@@ -371,6 +394,7 @@ impl BattleCore {
             self.authoring_observation.as_mut(),
             self.authoring_direct_source.as_ref(),
             self.runtime_fact_source.fragment.as_ref(),
+            &self.runtime_fact_source,
         )
     }
 
@@ -382,6 +406,7 @@ impl BattleCore {
             self.authoring_observation.as_mut(),
             source,
             self.runtime_fact_source.fragment.as_ref(),
+            &self.runtime_fact_source,
         )
     }
 
@@ -389,12 +414,14 @@ impl BattleCore {
         state: Option<&mut MandatoryObservation>,
         source: Option<&Arc<SkillEffectExecutionSource>>,
         fragment: Option<&Arc<crate::game::skill_fragment::FragmentSourceSnapshot>>,
+        runtime_source: &crate::game::battle::runtime_facts::RuntimeFactSource,
     ) -> Result<Option<ObservationReservation>, GameError> {
         let Some(state) = state else {
             return Ok(None);
         };
         // One operation plus at most two immutable source-handle copies.
         control::charge(3, "authoring_observation_reserve")?;
+        if let Some(coverage)=&state.coverage {coverage.price_source(runtime_source)?;}
         let counters = state
             .applications
             .checked_add(1)
@@ -451,6 +478,13 @@ impl BattleCore {
             fragment: reservation.fragment,
         };
         state.applications = reservation.ordinal;
+        if !matches!(change,AppliedChange::Hp{..}) {
+            if let Some(coverage)=&mut state.coverage {
+                coverage.record_effect(witness.source.as_deref(),crate::mod_validation::CoverageStage::ConsumedOrEffect);
+                coverage.record_source(&self.runtime_fact_source,crate::mod_validation::CoverageStage::ConsumedOrEffect);
+                if let AppliedChange::Buff{buff_id,..}=change {coverage.record_buff(buff_id);}
+            }
+        }
         state.sourced_applications = reservation.next_sourced;
         if nonzero {
             state.nonzero_hp_applications = reservation.next_nonzero;

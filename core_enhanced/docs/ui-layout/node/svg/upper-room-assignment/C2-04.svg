@@ -1,0 +1,143 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1510" viewBox="0 0 1800 1510"><title>C2-04 시료대기실 · 12A 배정안</title>
+<rect x="0" y="0" width="1800" height="1510" rx="0" fill="#f7f8fc" stroke="none" stroke-width="2" />
+<text x="55" y="60" text-anchor="start" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="39" font-weight="700" fill="#25354b">C2-04 시료대기실 · 12A</text>
+<text x="55" y="118" text-anchor="start" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="23" font-weight="400" fill="#65758a">고정 활동과 전조 후보 위치 배정안 · 초록 테두리는 빠른 통과 경로</text>
+<rect x="1260" y="35" width="490" height="105" rx="16" fill="#e8edf5" stroke="none" stroke-width="2" />
+<text x="1505" y="69" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="25" font-weight="700" fill="#25354b">활동 12개 · 출구 접근 2곳</text>
+<text x="1505" y="111" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="21" font-weight="400" fill="#65758a">최단 활동 3개 · 시작 / Gate 제외</text>
+<rect x="120" y="340" width="760" height="735" rx="22" fill="#eaf1f8" stroke="none" stroke-width="2" />
+<rect x="920" y="340" width="760" height="735" rx="22" fill="#eaf4ee" stroke="none" stroke-width="2" />
+<polyline points="300.00,488.00 300.00,672.00" fill="none" stroke="#71869f" stroke-width="3" stroke-linejoin="round" />
+<polygon points="300.00,672.00 305.00,660.00 295.00,660.00" fill="#71869f" />
+<polygon points="300.00,488.00 295.00,500.00 305.00,500.00" fill="#71869f" />
+<polyline points="300.00,758.00 300.00,942.00" fill="none" stroke="#71869f" stroke-width="3" stroke-linejoin="round" />
+<polygon points="300.00,942.00 305.00,930.00 295.00,930.00" fill="#71869f" />
+<polygon points="300.00,758.00 295.00,770.00 305.00,770.00" fill="#71869f" />
+<polyline points="1500.00,488.00 1500.00,672.00" fill="none" stroke="#71869f" stroke-width="3" stroke-linejoin="round" />
+<polygon points="1500.00,672.00 1505.00,660.00 1495.00,660.00" fill="#71869f" />
+<polygon points="1500.00,488.00 1495.00,500.00 1505.00,500.00" fill="#71869f" />
+<polyline points="1500.00,758.00 1500.00,942.00" fill="none" stroke="#71869f" stroke-width="3" stroke-linejoin="round" />
+<polygon points="1500.00,942.00 1505.00,930.00 1495.00,930.00" fill="#71869f" />
+<polygon points="1500.00,758.00 1495.00,770.00 1505.00,770.00" fill="#71869f" />
+<polyline points="400.00,715.00 600.00,715.00" fill="none" stroke="#71869f" stroke-width="3" stroke-linejoin="round" />
+<polygon points="600.00,715.00 588.00,710.00 588.00,720.00" fill="#71869f" />
+<polygon points="400.00,715.00 412.00,720.00 412.00,710.00" fill="#71869f" />
+<polyline points="800.00,715.00 1000.00,715.00" fill="none" stroke="#16747f" stroke-width="3" stroke-linejoin="round" />
+<polygon points="1000.00,715.00 988.00,710.00 988.00,720.00" fill="#16747f" />
+<polygon points="800.00,715.00 812.00,720.00 812.00,710.00" fill="#16747f" />
+<polyline points="1200.00,715.00 1400.00,715.00" fill="none" stroke="#71869f" stroke-width="3" stroke-linejoin="round" />
+<polygon points="1400.00,715.00 1388.00,710.00 1388.00,720.00" fill="#71869f" />
+<polygon points="1200.00,715.00 1212.00,720.00 1212.00,710.00" fill="#71869f" />
+<polyline points="400.00,445.00 600.00,445.00" fill="none" stroke="#b18439" stroke-width="3" stroke-linejoin="round" />
+<polygon points="600.00,445.00 588.00,440.00 588.00,450.00" fill="#b18439" />
+<polygon points="400.00,445.00 412.00,450.00 412.00,440.00" fill="#b18439" />
+<polyline points="1400.00,445.00 1200.00,445.00" fill="none" stroke="#b18439" stroke-width="3" stroke-linejoin="round" />
+<polygon points="1200.00,445.00 1212.00,450.00 1212.00,440.00" fill="#b18439" />
+<polygon points="1400.00,445.00 1388.00,440.00 1388.00,450.00" fill="#b18439" />
+<polyline points="400.00,985.00 600.00,985.00" fill="none" stroke="#b18439" stroke-width="3" stroke-linejoin="round" />
+<polygon points="600.00,985.00 588.00,980.00 588.00,990.00" fill="#b18439" />
+<polygon points="400.00,985.00 412.00,990.00 412.00,980.00" fill="#b18439" />
+<polyline points="1400.00,985.00 1200.00,985.00" fill="none" stroke="#b18439" stroke-width="3" stroke-linejoin="round" />
+<polygon points="1200.00,985.00 1212.00,990.00 1212.00,980.00" fill="#b18439" />
+<polygon points="1400.00,985.00 1388.00,980.00 1388.00,990.00" fill="#b18439" />
+<polyline points="800.00,235.00 300.00,235.00 300.00,402.00" fill="none" stroke="#71869f" stroke-width="3" stroke-linejoin="round" />
+<polygon points="300.00,402.00 305.00,390.00 295.00,390.00" fill="#71869f" />
+<polygon points="800.00,235.00 788.00,230.00 788.00,240.00" fill="#71869f" />
+<polyline points="1000.00,235.00 1500.00,235.00 1500.00,402.00" fill="none" stroke="#71869f" stroke-width="3" stroke-linejoin="round" />
+<polygon points="1500.00,402.00 1505.00,390.00 1495.00,390.00" fill="#71869f" />
+<polygon points="1000.00,235.00 1012.00,240.00 1012.00,230.00" fill="#71869f" />
+<polyline points="300.00,1028.00 300.00,1190.00 800.00,1190.00" fill="none" stroke="#71869f" stroke-width="3" stroke-linejoin="round" />
+<polygon points="800.00,1190.00 788.00,1185.00 788.00,1195.00" fill="#71869f" />
+<polyline points="1500.00,1028.00 1500.00,1190.00 1000.00,1190.00" fill="none" stroke="#71869f" stroke-width="3" stroke-linejoin="round" />
+<polygon points="1000.00,1190.00 1012.00,1195.00 1012.00,1185.00" fill="#71869f" />
+<rect x="343.0" y="350" width="314" height="36" rx="8" fill="#eaf1f8" stroke="none" stroke-width="2" />
+<text x="500.0" y="368" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="21" font-weight="700" fill="#356492">서측 · 기록 구역 6자리</text>
+<rect x="1143.0" y="350" width="314" height="36" rx="8" fill="#eaf4ee" stroke="none" stroke-width="2" />
+<text x="1300.0" y="368" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="21" font-weight="700" fill="#317964">동측 · 작업 구역 6자리</text>
+<g data-node="S">
+<rect x="800" y="192" width="200" height="86" rx="10" fill="#eef2f7" stroke="#34475f" stroke-width="2" />
+<text x="900" y="225" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="23" font-weight="700" fill="#34475f">입구</text>
+<text x="900" y="257" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="17" font-weight="400" fill="#34475f">시작 위치</text>
+</g>
+<g data-node="G">
+<rect x="800" y="1147" width="200" height="86" rx="10" fill="#34475f" stroke="#ffffff" stroke-width="2" />
+<text x="900" y="1180" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="23" font-weight="700" fill="#ffffff">Gate</text>
+<text x="900" y="1212" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="17" font-weight="400" fill="#ffffff">출구</text>
+</g>
+<g data-node="1" data-quick="true" data-reserved="false">
+<rect x="200" y="402" width="200" height="86" rx="10" fill="#ffffff" stroke="#178660" stroke-width="5" />
+<text x="300" y="435" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="23" font-weight="700" fill="#356492">01 · 접수 전실</text>
+<text x="300" y="467" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="17" font-weight="400" fill="#356492">일반 활동 배정</text>
+</g>
+<g data-node="2" data-quick="false" data-reserved="false">
+<rect x="600" y="402" width="200" height="86" rx="10" fill="#ffffff" stroke="#a16b20" stroke-width="2" />
+<text x="700" y="435" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="23" font-weight="700" fill="#a16b20">02 · 자료 보관</text>
+<text x="700" y="467" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="17" font-weight="400" fill="#a16b20">정예 후보 가능</text>
+</g>
+<g data-node="3" data-quick="false" data-reserved="false">
+<rect x="1000" y="402" width="200" height="86" rx="10" fill="#ffffff" stroke="#a16b20" stroke-width="2" />
+<text x="1100" y="435" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="23" font-weight="700" fill="#a16b20">03 · 시료 보관</text>
+<text x="1100" y="467" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="17" font-weight="400" fill="#a16b20">정예 후보 가능</text>
+</g>
+<g data-node="4" data-quick="false" data-reserved="false">
+<rect x="1400" y="402" width="200" height="86" rx="10" fill="#ffffff" stroke="#317964" stroke-width="2" />
+<text x="1500" y="435" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="23" font-weight="700" fill="#317964">04 · 작업 전실</text>
+<text x="1500" y="467" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="17" font-weight="400" fill="#317964">정예 후보 가능</text>
+</g>
+<g data-node="5" data-quick="true" data-reserved="false">
+<rect x="200" y="672" width="200" height="86" rx="10" fill="#ffffff" stroke="#178660" stroke-width="5" />
+<text x="300" y="705" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="23" font-weight="700" fill="#356492">05 · 기록 복도</text>
+<text x="300" y="737" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="17" font-weight="400" fill="#356492">일반 활동 배정</text>
+</g>
+<g data-node="6" data-quick="false" data-reserved="false">
+<rect x="600" y="672" width="200" height="86" rx="10" fill="#ffffff" stroke="#356492" stroke-width="2" />
+<text x="700" y="705" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="23" font-weight="700" fill="#356492">06 · 서측 연결</text>
+<text x="700" y="737" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="17" font-weight="400" fill="#356492">정예 후보 가능</text>
+</g>
+<g data-node="7" data-quick="false" data-reserved="false">
+<rect x="1000" y="672" width="200" height="86" rx="10" fill="#ffffff" stroke="#317964" stroke-width="2" />
+<text x="1100" y="705" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="23" font-weight="700" fill="#317964">07 · 동측 연결</text>
+<text x="1100" y="737" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="17" font-weight="400" fill="#317964">정예 후보 가능</text>
+</g>
+<g data-node="8" data-quick="false" data-reserved="false">
+<rect x="1400" y="672" width="200" height="86" rx="10" fill="#ffffff" stroke="#317964" stroke-width="2" />
+<text x="1500" y="705" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="23" font-weight="700" fill="#317964">08 · 설비 복도</text>
+<text x="1500" y="737" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="17" font-weight="400" fill="#317964">정예 후보 가능</text>
+</g>
+<g data-node="9" data-quick="true" data-reserved="false">
+<rect x="200" y="942" width="200" height="86" rx="10" fill="#ffffff" stroke="#178660" stroke-width="5" />
+<text x="300" y="975" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="23" font-weight="700" fill="#356492">09 · 기록 반출</text>
+<text x="300" y="1007" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="17" font-weight="400" fill="#356492">일반 활동 배정</text>
+</g>
+<g data-node="10" data-quick="false" data-reserved="false">
+<rect x="600" y="942" width="200" height="86" rx="10" fill="#ffffff" stroke="#a16b20" stroke-width="2" />
+<text x="700" y="975" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="23" font-weight="700" fill="#a16b20">10 · 서고 안쪽</text>
+<text x="700" y="1007" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="17" font-weight="400" fill="#a16b20">정예 후보 가능</text>
+</g>
+<g data-node="11" data-quick="false" data-reserved="false">
+<rect x="1000" y="942" width="200" height="86" rx="10" fill="#ffffff" stroke="#a16b20" stroke-width="2" />
+<text x="1100" y="975" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="23" font-weight="700" fill="#a16b20">11 · 예비 창고</text>
+<text x="1100" y="1007" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="17" font-weight="400" fill="#a16b20">정예 후보 가능</text>
+</g>
+<g data-node="12" data-quick="false" data-reserved="false">
+<rect x="1400" y="942" width="200" height="86" rx="10" fill="#ffffff" stroke="#317964" stroke-width="2" />
+<text x="1500" y="975" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="23" font-weight="700" fill="#317964">12 · 작업 반출</text>
+<text x="1500" y="1007" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="17" font-weight="400" fill="#317964">정예 후보 가능</text>
+</g>
+<polyline points="80.00,1290.00 160.00,1290.00" fill="none" stroke="#71869f" stroke-width="3" stroke-linejoin="round" />
+<polygon points="160.00,1290.00 148.00,1285.00 148.00,1295.00" fill="#71869f" />
+<polygon points="80.00,1290.00 92.00,1295.00 92.00,1285.00" fill="#71869f" />
+<text x="180" y="1290" text-anchor="start" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="21" font-weight="400" fill="#25354b">구역 내부 연결</text>
+<polyline points="560.00,1290.00 640.00,1290.00" fill="none" stroke="#16747f" stroke-width="3" stroke-linejoin="round" />
+<polygon points="640.00,1290.00 628.00,1285.00 628.00,1295.00" fill="#16747f" />
+<polygon points="560.00,1290.00 572.00,1295.00 572.00,1285.00" fill="#16747f" />
+<text x="660" y="1290" text-anchor="start" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="21" font-weight="400" fill="#25354b">구역 사이 연결</text>
+<polyline points="1040.00,1290.00 1120.00,1290.00" fill="none" stroke="#b18439" stroke-width="3" stroke-linejoin="round" />
+<polygon points="1120.00,1290.00 1108.00,1285.00 1108.00,1295.00" fill="#b18439" />
+<polygon points="1040.00,1290.00 1052.00,1295.00 1052.00,1285.00" fill="#b18439" />
+<text x="1140" y="1290" text-anchor="start" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="21" font-weight="400" fill="#25354b">곁방 끝으로 연결</text>
+<text x="1740" y="1290" text-anchor="end" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="19" font-weight="400" fill="#65758a">Gate 방향은 단방향</text>
+<text x="900" y="1360" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="23" font-weight="700" fill="#25354b">여러 곁방의 선택 탐사</text>
+<text x="900" y="1404" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="23" font-weight="400" fill="#25354b">빠른 통과 3개 · 전체 탐사 12개 · 추가 9개</text>
+<text x="900" y="1470" text-anchor="middle" dominant-baseline="central" font-family="Malgun Gothic,Noto Sans CJK KR,sans-serif" font-size="20" font-weight="400" fill="#65758a">입구→출구 직행 없음 · 실제 이동은 노드 해결 상태를 따름 · 세로 위치는 층수가 아님</text>
+</svg>

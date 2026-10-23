@@ -460,7 +460,12 @@ impl GrantExecutor {
                         ))
                     })?;
 
-                let new_amount = inventory.equipment_materials.add(&metadata.id, *amount)?;
+                let new_amount = if metadata.id == "equipment_dust" {
+                    let (_, resources) = run_state.ok_or(GameError::InvalidAction)?;
+                    resources.grant_equipment_dust(*amount)?;
+                    result.crafting_resources = Some(*resources);
+                    resources.equipment_dust
+                } else { inventory.equipment_materials.add(&metadata.id, *amount)? };
                 result.inventory_diff.material_stacks.push(
                     crate::game::resources::EquipmentMaterialStackDto::from_metadata(
                         metadata, new_amount,

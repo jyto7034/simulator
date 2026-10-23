@@ -1,0 +1,549 @@
+--- a/core_enhanced/src/application.rs
++++ b/core_enhanced/src/application.rs
+@@ -1844,8 +1844,8 @@
+ 
+     #[test]
+     fn command_kind_is_exactly_bijective_with_all_domain_actions() {
+-        assert_eq!(ApplicationCommandKind::ALL.len(), 79);
+-        assert_eq!(ActionKind::ALL.len(), 79);
++        assert_eq!(ApplicationCommandKind::ALL.len(), 80);
++        assert_eq!(ActionKind::ALL.len(), 80);
+         for domain in ActionKind::ALL {
+             let application = ApplicationCommandKind::from_domain(*domain);
+             assert_eq!(application.into_domain(), *domain);
+--- a/core_enhanced/src/authoring/resolve.rs
++++ b/core_enhanced/src/authoring/resolve.rs
+@@ -648,7 +648,7 @@
+             "battle_uuid":"00000000-0000-0000-0000-000000000008", "battle_state_revision":19}, "seq":23});
+         let original_source = source.clone();
+         let document = input(
+-            json!({"type":"select_starter_employees", "employee_definition_ids":[null,null,null]}),
++            json!({"type":"select_starter_employees", "loan_copy_ids":[], "employee_definition_ids":[null,null,null]}),
+             json!({"expected_battle_authority":null, "battle_event_after_seq":null}),
+             json!([
+                 string_binding("/a~1b/~0key/0", "/command/employee_definition_ids/0"),
+@@ -784,14 +784,14 @@
+     #[test]
+     fn public_command_rejection_is_preserved_instead_of_a_successful_noop() {
+         let document = input(
+-            json!({"type":"select_starter_employees", "employee_definition_ids":[null]}),
++            json!({"type":"select_starter_employees", "loan_copy_ids":[], "employee_definition_ids":[null]}),
+             json!({}),
+             json!([{"from":{"step":0,"pointer":""},"to":"/command/employee_definition_ids/0","value_type":"number"}]),
+         );
+         let scenario = parse(&document, &ScenarioLimits::default());
+         let error = resolved(&scenario, Some(&json!(7)), 0).unwrap_err();
+         let expected = ApplicationCommand::from_document(ApplicationDocument::new(
+-            json!({"type":"select_starter_employees", "employee_definition_ids":[7]}),
++            json!({"type":"select_starter_employees", "loan_copy_ids":[], "employee_definition_ids":[7]}),
+         ))
+         .unwrap_err();
+         match error {
+@@ -945,7 +945,7 @@
+     #[test]
+     fn whole_resolved_node_count_includes_template_and_all_inserted_values() {
+         let document = input(
+-            json!({"type":"select_starter_employees", "employee_definition_ids":null}),
++            json!({"type":"select_starter_employees", "loan_copy_ids":[], "employee_definition_ids":null}),
+             json!({}),
+             json!([{"from":{"step":0,"pointer":""},"to":"/command/employee_definition_ids","value_type":"array"}]),
+         );
+--- a/core_enhanced/src/authoring/tests.rs
++++ b/core_enhanced/src/authoring/tests.rs
+@@ -244,7 +244,7 @@
+     let first = describe(&content, &ExecutionLimits::default(), &cancellation).unwrap();
+     let value: serde_json::Value = serde_json::from_str(first.document()).unwrap();
+     assert_eq!(value["catalog_kinds"].as_array().unwrap().len(), 26);
+-    assert_eq!(value["definition_kinds"].as_array().unwrap().len(), 45);
++    assert_eq!(value["definition_kinds"].as_array().unwrap().len(), 46);
+     assert!(value["catalog_kinds"]
+         .as_array()
+         .unwrap()
+--- a/core_enhanced/src/authoring/trial/tests/amount_completion.rs
++++ b/core_enhanced/src/authoring/trial/tests/amount_completion.rs
+@@ -3,7 +3,7 @@
+ use uuid::Uuid;
+ 
+ fn r06_held_public_run() -> (ExternalFixture, ValidatedGameData, TrialSession) {
+-    let fixture = ExternalFixture::official_with_legacy_starters();
++    let fixture = ExternalFixture::official_with_trial_route();
+     let cancel = CancellationToken::default();
+     let content = crate::authoring::validate(
+         fixture.root(),
+@@ -123,7 +123,7 @@
+ 
+ #[test]
+ fn r06_public_authored_member_scope_preserves_valid_inputs() {
+-    let fixture = ExternalFixture::official_with_legacy_starters();
++    let fixture = ExternalFixture::official_with_trial_route();
+     let original = fixture.read("official/data/skills/base.ron");
+     let mixed = ["Magnitude", "Milliseconds"];
+     let child = "Aggregate(source: AuthoredMembers([(identity: \"child\", value: (value: 2, unit: Scalar), owner: None, projected_tile: None)]), grouping: WholeSet, reduction: Sum, outer_reduction: None, member: Ratio(numerator: Const((value: 8, unit: Magnitude)), denominator: Read(AggregateMember(unit: Scalar)), rounding: TowardZero))";
+@@ -775,7 +775,7 @@
+ fn r12_public_boss_flow_projectile_area_milestones_and_cli_export() {
+     use crate::game::data::{boss_runtime_data::*, pve_data::*};
+     for milestone in ["Released", "EffectsSettled"] {
+-        let fixture = ExternalFixture::official_with_legacy_starters();
++        let fixture = ExternalFixture::official_with_trial_route();
+         {
+             let path = "official/data/boss_runtime/base.ron";
+             let mut catalog: BossRuntimeCatalogData =
+--- a/core_enhanced/src/authoring/trial/tests/r07_copies.rs
++++ b/core_enhanced/src/authoring/trial/tests/r07_copies.rs
+@@ -68,9 +68,14 @@
+                 .replacen("skills: [", &format!("skills: [{raw},"), 1),
+         );
+         let map = "official/data/map/facility_templates.ron";
+-        let text=f.read(map).replacen("(id: \"floor_gate\", role: Terminal(FloorGate), allowed_categories: [Gate]),",r#"(id:"r07_maintenance",role:Ordinary,allowed_categories:[Maintenance]),(id:"r07_savepoint",role:Ordinary,allowed_categories:[SavePoint],tags:["save_point_candidate"]),(id: "floor_gate", role: Terminal(FloorGate), allowed_categories: [Gate]),"#,1)
+-            .replacen("connections: [",r#"connections: [(from_slot_id:"intake_corridor",to_slot_id:"r07_maintenance",direction:Bidirectional),(from_slot_id:"r07_maintenance",to_slot_id:"r07_savepoint",direction:Bidirectional),(from_slot_id:"r07_savepoint",to_slot_id:"supply_annex",direction:Bidirectional),"#,1);
+-        f.write(map, text);
++        let mut catalog: crate::game::map::FacilityTemplateDatabase = ron::de::from_str(&f.read(map)).unwrap();
++        let intro = catalog.templates.iter_mut().find(|t|t.id.as_str()=="standard_intro_a").unwrap();
++        intro.slots.push(ron::de::from_str(r#"(id:"r07_maintenance",role:Ordinary,allowed_categories:[Maintenance])"#).unwrap());
++        intro.slots.push(ron::de::from_str(r#"(id:"r07_savepoint",role:Ordinary,allowed_categories:[SavePoint],tags:["save_point_candidate"])"#).unwrap());
++        for (from,to) in [("intake_corridor","r07_maintenance"),("r07_maintenance","r07_savepoint"),("r07_savepoint","supply_annex")] {
++            intro.connections.push(ron::de::from_str(&format!(r#"(from_slot_id:"{from}",to_slot_id:"{to}",direction:Bidirectional)"#)).unwrap());
++        }
++        f.write(map,ron::ser::to_string(&catalog).unwrap());
+         let assignments = "official/data/map/node_assignment_profiles.ron";
+         f.write(assignments,f.read(assignments).replacen("fixed_slot_assignments: [",r#"fixed_slot_assignments: [(slot_id:"r07_maintenance",kind_id:"maintenance",payload:Maintenance),(slot_id:"r07_savepoint",kind_id:"save_point",payload:SavePoint),"#,1));
+     })
+@@ -395,7 +400,7 @@
+         r#"forms: {"base":(skill_id:"fragment_freischutz_black_round", resonance_max: 100,unknown:true)}"#,
+         r#"forms: {"base":(skill_id:"fragment_freischutz_black_round", resonance_max: 100),"base":(skill_id:"freischutz_magic_bullet", resonance_max: 100)}"#,
+     ] {
+-        let fixture = ExternalFixture::official_with_legacy_starters();
++        let fixture = ExternalFixture::official_with_trial_route();
+         let path = "official/data/skill_fragments/base.ron";
+         let text = fixture.read(path);
+         assert!(text.contains(original));
+--- a/core_enhanced/src/authoring/trial/tests/u10_causal.rs
++++ b/core_enhanced/src/authoring/trial/tests/u10_causal.rs
+@@ -642,7 +642,7 @@
+ 
+ #[test]
+ fn u10_p_invalid_causal_external_candidates_preserve_the_held_generation() {
+-    let fixture = ExternalFixture::official_with_legacy_starters();
++    let fixture = ExternalFixture::official_with_trial_route();
+     let held = fixture.load();
+     let held_identity = serde_json::to_value(held.identity()).unwrap();
+     let prepared = preparation_document(&held);
+--- a/core_enhanced/src/authoring/trial.rs
++++ b/core_enhanced/src/authoring/trial.rs
+@@ -1127,7 +1127,7 @@
+         let start = command(
+             &mut app,
+             player,
+-            json!({"type":"start_new_game", "game_mode":"Standard", "replace_active_run":false}),
++            json!({"type":"start_new_game", "game_mode":"Expedition", "replace_active_run":false}),
+         );
+         command(
+             &mut app,
+@@ -1138,18 +1138,22 @@
+             serde_json::to_value(app.snapshot(ApplicationSnapshotKind::Run).unwrap()).unwrap();
+         let context = &snapshot["read_model"]["game_state_context"];
+         let count = context["required_count"].as_u64().unwrap() as usize;
+-        let ids: Vec<_> = context["candidates"]
++        let indices: Vec<_> = ["records_clerk", "breach_guard", "field_medic"].iter()
++            .map(|id| context["candidates"].as_array().unwrap().iter().position(|c| c["employee_definition_id"] == *id).unwrap()).collect();
++        let ids: Vec<_> = indices.iter().map(|index| context["candidates"][*index]["employee_definition_id"].clone()).collect();
++        /*let ids: Vec<_> = context["candidates"]
+             .as_array()
+             .unwrap()
+             .iter()
+             .take(count)
+             .map(|entry| entry["employee_definition_id"].clone())
+             .collect();
++        */
+         assert_eq!(ids.len(), count);
+         let selected = command(
+             &mut app,
+             player,
+-            json!({"type":"select_starter_employees", "employee_definition_ids":ids}),
++            json!({"type":"select_starter_employees", "employee_definition_ids":ids,"loan_copy_ids":[]}),
+         );
+         let node_index = selected["payload"]["map"]["nodes"]
+             .as_array()
+@@ -1157,20 +1161,20 @@
+             .iter()
+             .position(|node| node["state"] == "Available" && node["category"] == "Combat")
+             .unwrap();
+-        let starter_bindings: Vec<_> = (0..count).map(|index| json!({
+-            "from":{"step":2,"pointer":format!("/read_model/game_state_context/candidates/{index}/employee_definition_id")},
++        let starter_bindings: Vec<_> = indices.iter().enumerate().map(|(index, candidate)| json!({
++            "from":{"step":2,"pointer":format!("/read_model/game_state_context/candidates/{candidate}/employee_definition_id")},
+             "to":format!("/command/employee_definition_ids/{index}"), "value_type":"string"
+         })).collect();
+         json!({
+             "initial":{"player_id":player, "run_seed":77, "profile":"default_memory"},
+             "preparation_steps":[
+-                {"kind":"command", "command":{"type":"start_new_game", "game_mode":"Standard", "replace_active_run":false}},
++                {"kind":"command", "command":{"type":"start_new_game", "game_mode":"Expedition", "replace_active_run":false}},
+                 {"kind":"command", "command":{"type":"advance_visual_novel", "session_id":null,"current_scene_id":null}, "bindings":[
+                     {"from":{"step":0,"pointer":"/payload/visual_novel/session_id"},"to":"/command/session_id","value_type":"string"},
+                     {"from":{"step":0,"pointer":"/payload/visual_novel/current_scene_id"},"to":"/command/current_scene_id","value_type":"string"}
+                 ]},
+                 {"kind":"snapshot", "snapshot":"run"},
+-                {"kind":"command", "command":{"type":"select_starter_employees","employee_definition_ids":vec![Value::Null;count]}, "bindings":starter_bindings},
++                {"kind":"command", "command":{"type":"select_starter_employees","employee_definition_ids":vec![Value::Null;count],"loan_copy_ids":[]}, "bindings":starter_bindings},
+                 {"kind":"command", "command":{"type":"select_map_node","node_id":null},"bindings":[
+                     {"from":{"step":3,"pointer":format!("/payload/map/nodes/{node_index}/id")},"to":"/command/node_id","value_type":"string"}
+                 ]},
+@@ -1202,7 +1206,7 @@
+             authoring::TrialPreview,
+             game::{ability::SkillId, resources::board::Position},
+         };
+-        let fixture = ExternalFixture::official_with_legacy_starters();
++        let fixture = ExternalFixture::official_with_trial_route();
+         let token = fixture.load();
+         let document = preparation_document(&token);
+         let cancel = CancellationToken::default();
+@@ -1353,7 +1357,7 @@
+ 
+     #[test]
+     fn public_trial_session_preserves_receipt_order_none_slots_and_finite_completion() {
+-        let token = ValidatedGameData::load_live_embedded().unwrap();
++        let token = ExternalFixture::official_with_trial_route().load();
+         let document = preparation_document(&token);
+         let cancel = CancellationToken::default();
+         let mut session = TrialSession::prepare(
+@@ -1462,7 +1466,7 @@
+ 
+     #[test]
+     fn public_trial_failures_keep_preparation_position_and_partial_simulation_owner() {
+-        let token = ValidatedGameData::load_live_embedded().unwrap();
++        let token = ExternalFixture::official_with_trial_route().load();
+         let document = preparation_document(&token);
+         let cancel = CancellationToken::default();
+         let cancelled = CancellationToken::default();
+@@ -1588,7 +1592,7 @@
+     #[test]
+     fn optional_trace_private_trial_keeps_complete_receipts_and_public_results_identical() {
+         use super::super::trace::{TraceLimits, TraceOptions};
+-        let fixture = ExternalFixture::official_with_legacy_starters();
++        let fixture = ExternalFixture::official_with_trial_route();
+         let token = fixture.load();
+         let mut document = preparation_document(&token);
+         let cancel = CancellationToken::default();
+@@ -1774,7 +1778,7 @@
+ 
+     #[test]
+     fn private_trial_preparation_uses_one_scope_keeps_none_slots_and_rejects_late_output() {
+-        let token = ValidatedGameData::load_live_embedded().unwrap();
++        let token = ExternalFixture::official_with_trial_route().load();
+         let document = preparation_document(&token);
+         let cancel = CancellationToken::default();
+         let mut state = TrialState::prepare_owned(
+@@ -1887,7 +1891,7 @@
+ 
+     #[test]
+     fn private_trial_preparation_and_execution_enforce_actual_clock_and_final_readiness() {
+-        let token = ValidatedGameData::load_live_embedded().unwrap();
++        let token = ExternalFixture::official_with_trial_route().load();
+         let document = preparation_document(&token);
+         let mut scenario_limits = super::super::ScenarioLimits::default();
+         scenario_limits.max_total_clock_ms = 1;
+@@ -1981,7 +1985,7 @@
+             "initial": {"player_id":"00000000-0000-0000-0000-000000000019", "run_seed":77, "profile":"default_memory"},
+             "preparation_steps": [],
+             "steps": [
+-                {"kind":"command", "command":{"type":"start_new_game", "game_mode":"Standard", "replace_active_run":false}},
++                {"kind":"command", "command":{"type":"start_new_game", "game_mode":"Expedition", "replace_active_run":false}},
+                 {"kind":"assert", "from":{"step":0,"pointer":"/kind"}, "assertion":{"test":"type","value_type":"string"}},
+                 {"kind":"snapshot", "snapshot":"run"},
+                 {"kind":"clock", "clock":{"mode":"elapsed","delta_ms":1,"after_seq":0}}
+@@ -2018,7 +2022,7 @@
+ 
+     #[test]
+     fn private_trial_step_receipt_failure_discards_real_start_and_retries_identically() {
+-        let token = ValidatedGameData::load_live_embedded().unwrap();
++        let token = ExternalFixture::official_with_trial_route().load();
+         let mut measured = initial(&token);
+         let initial_work = measured.accepted_work;
+         measured.advance(&CancellationToken::default()).unwrap();
+@@ -2082,7 +2086,7 @@
+ 
+     #[test]
+     fn private_trial_prefix_keeps_public_slots_and_survives_domain_and_control_failure() {
+-        let token = ValidatedGameData::load_live_embedded().unwrap();
++        let token = ExternalFixture::official_with_trial_route().load();
+         let mut state = initial(&token);
+         state.advance(&CancellationToken::default()).unwrap();
+         let first = Arc::clone(&state.records[0]);
+@@ -2134,7 +2138,7 @@
+     fn d07_b09_b14_amount_query_states_are_typed_and_do_not_advance_the_trial() {
+         use crate::authoring::{AmountBattle, AmountQuery};
+ 
+-        let token = ValidatedGameData::load_live_embedded().unwrap();
++        let token = ExternalFixture::official_with_trial_route().load();
+         let document = preparation_document(&token);
+         let cancellation = CancellationToken::default();
+         let disabled = TrialSession::prepare(
+@@ -2212,7 +2216,7 @@
+     fn public_amount_trial_fixture(
+         configure: impl FnOnce(&ExternalFixture),
+     ) -> (ExternalFixture, ValidatedGameData, Value) {
+-        let fixture = ExternalFixture::official_with_legacy_starters();
++        let fixture = ExternalFixture::official();
+         let fragments_path = "official/data/skill_fragments/base.ron";
+         let fragments = fixture.read(fragments_path).replacen(
+             "fragments: [",
+@@ -2239,6 +2243,7 @@
+             .replacen("attack: 12,", "attack: 1,", 1);
+         fixture.write(enemies_path, enemies);
+         configure(&fixture);
++        fixture.author_trial_facility();
+         let token = fixture.load();
+         let mut document = preparation_document(&token);
+         let cancellation = CancellationToken::default();
+--- a/core_enhanced/src/game/battle/core/commands.rs
++++ b/core_enhanced/src/game/battle/core/commands.rs
+@@ -4286,7 +4286,7 @@
+         )
+         .unwrap_err();
+         assert_eq!(error.code, "authoring_work_limit");
+-        assert_eq!(error.site, "skill_definition_copy");
++        assert_eq!(error.site, "effective_skill_definition_copy");
+         assert_eq!(core.skill_cast_seq, 0);
+         assert!(core.event_queue.is_empty());
+         invoke(&mut core);
+--- a/core_enhanced/src/game/behavior.rs
++++ b/core_enhanced/src/game/behavior.rs
+@@ -5825,7 +5825,7 @@
+ 
+         assert_eq!(
+             cases.len(),
+-            79,
++            80,
+             "the current command vocabulary is exhaustive"
+         );
+         let characterized_actions = cases
+--- a/core_enhanced/src/game/data/content_pack/tests.rs
++++ b/core_enhanced/src/game/data/content_pack/tests.rs
+@@ -41,30 +41,88 @@
+     }
+     /// Preserve the explicit pre-U06 loadout used by inherited public trial oracles.
+     /// The official() fixture remains the current, unmodified production content.
+-    pub(crate) fn official_with_legacy_starters() -> Self {
++    pub(crate) fn official_with_trial_route() -> Self {
+         let fixture = Self::official();
+-        let path = "official/data/employees/definitions.ron";
+-        let mut database: crate::game::data::employee_data::EmployeeDefinitionDatabase =
+-            ron::de::from_str(&fixture.read(path)).unwrap();
+-        for definition in &mut database.definitions {
+-            definition.initial_loadout = if definition.starter_eligible {
+-                let mut equipment_ids =
+-                    vec!["standard_training_sword".into(), "standard_armor".into()];
+-                if definition.employee_definition_id == "maintenance_tech" {
+-                    equipment_ids.push("archive_scanner".into());
+-                }
+-                crate::game::employee::EmployeeInitialLoadout {
+-                    equipment_ids,
+-                    baseline_skill_fragment_ids: vec!["starter_basic_attack_enhancement".into()],
+-                    active_skill_fragment_id: None,
+-                }
+-            } else {
+-                Default::default()
+-            };
++        fixture.author_trial_facility();
++        fixture
++    }
++    /// Author a small current Expedition facility for public Trial scenarios.
++    /// The old slot names are stable test labels, not a legacy mode or restored run.
++    /// Call after scenario-specific catalog edits so the emitted RON is the tested input.
++    pub(crate) fn author_trial_facility(&self) {
++        use crate::game::map::*;
++        use crate::game::data::{pve_data::PveEncounterDatabase, reward_data::RewardDatabase};
++        use std::collections::BTreeMap;
++        let path = "official/data/map/facility_templates.ron";
++        let mut catalog: FacilityTemplateDatabase = ron::de::from_str(&self.read(path)).unwrap();
++        let assignments: NodeAssignmentProfileDatabase = ron::de::from_str(
++            &self.read("official/data/map/node_assignment_profiles.ron")).unwrap();
++        let profile = assignments.profiles.iter().find(|p| p.id == "standard_floor_1").unwrap();
++        let template = catalog.templates.iter_mut().find(|t| t.id.as_str() == "standard_intro_a").unwrap();
++        // Current allocation requires two ordinary, unreserved encounters.
++        // Keep them optional and distinct from the explicitly tested encounters.
++        for id in ["trial_optional_a", "trial_optional_b"] {
++            if !template.slots.iter().any(|s| s.id.as_str() == id) {
++                template.slots.push(ron::de::from_str(&format!(r#"(id:"{id}",role:Ordinary,allowed_categories:[Combat])"#)).unwrap());
++                template.connections.push(ron::de::from_str(&format!(r#"(from_slot_id:"entry",to_slot_id:"{id}",direction:Bidirectional)"#)).unwrap());
++            }
+         }
+-        fixture.write(path, ron::ser::to_string(&database).unwrap());
+-        fixture
+-    }
++        // Fixed encounters must not block any other authored activity or the Gate.
++        for slot in &template.slots {
++            if slot.id.as_str() != "entry" && !slot.allowed_categories.contains(&MapNodeCategory::Combat)
++                && !template.connections.iter().any(|e| e.from_slot_id.as_str() == "entry" && e.to_slot_id == slot.id) {
++                template.connections.push(ron::de::from_str(&format!(r#"(from_slot_id:"entry",to_slot_id:"{}",direction:Bidirectional)"#,slot.id.as_str())).unwrap());
++            }
++        }
++        let size = template.slots.iter().filter(|s| s.role == FacilitySlotRole::Ordinary).count() as u32;
++        let template_id = template.id.clone();
++        let slots = template.slots.clone();
++        let mut layout = catalog.layouts[0].clone();
++        let entrance = layout.room(&layout.entrance_room_id).unwrap().clone();
++        let mut room = layout.room(&layout.initial_room_id).unwrap().clone();
++        room.id = "trial_room".into(); room.template_id = Some(template_id);
++        room.name = "Authored public trial route".into(); room.reservations.clear();
++        room.omen_slot = None; room.elite_slots.clear(); room.safe_access_slots.clear(); room.slot_display.clear();
++        layout.id = "authoring_trial_facility_v1".into(); layout.initial_room_id = room.id.clone();
++        layout.golden_bough_plans.clear();
++        for activity in &mut layout.activities { activity.golden_bough_candidate = false; }
++        for fixed in &profile.fixed_slot_assignments {
++            if !slots.iter().any(|s| s.id == fixed.slot_id && s.role == FacilitySlotRole::Ordinary) { continue; }
++            let id = format!("trial_{}",fixed.slot_id.as_str());
++            layout.activities.retain(|a| a.id != id);
++            layout.activities.push(FacilityActivityDefinition { id:id.clone(),first_entry_cost:Some(0),golden_bough_candidate:false,
++                label:id.clone(),kind_id:fixed.kind_id.clone(),payload:fixed.payload.clone(),
++                support:FacilityContentSupport::Supported,condition:None,reward_activity:None });
++            room.reservations.push(FacilityReservation {slot_id:fixed.slot_id.clone(),activity_id:id});
++        }
++        layout.connections = vec![FacilityRoomConnection {from:entrance.id.clone(),to:room.id.clone(),direction:MapEdgeDirection::ForwardOnly,condition:None}];
++        layout.rooms = vec![entrance,room];
++        let support = layout.reserved_support_count(&layout.rooms[1]);
++        layout.allocation.support_counts = BTreeMap::from([(0,100)]);
++        layout.allocation.one_reserved_support_counts = BTreeMap::from([(1,100)]);
++        assert!(support <= 2);
++        layout.allocation.sizes = vec![FacilitySizeAllocation {size,event_counts:BTreeMap::from([(0,100)]),reward_counts:BTreeMap::from([(0,100)]),elite_percent_by_depth:BTreeMap::from([(1,0)])}];
++        // Current facility difficulty and role rules remain enabled.
++        catalog.layouts = vec![layout];
++        self.write(path,ron::ser::to_string(&catalog).unwrap());
++        // Authored rewards now belong to the actual encounter producer.
++        let rewards: RewardDatabase = ron::de::from_str(&self.read("official/data/events/rewards/base.ron")).unwrap();
++        let encounters_path = "official/data/pve/encounters.ron";
++        let mut encounters: PveEncounterDatabase = ron::de::from_str(&self.read(encounters_path)).unwrap();
++        for fixed in &profile.fixed_slot_assignments {
++            let (MapNodePayload::Encounter {encounter_id:Some(id)},Some(authored)) = (&fixed.payload,&fixed.authored_combat) else {continue;};
++            let encounter = encounters.encounters.iter_mut().find(|e| &e.id == id).unwrap();
++            for outcome in &authored.outcome_policies {
++                let policy = encounter.outcome_policies.iter_mut().find(|p| p.outcome_id == outcome.outcome_id).unwrap();
++                policy.reward_uuids = outcome.reward_ids.iter().map(|id|rewards.rewards.iter().find(|r| &r.id == id).unwrap().uuid).collect();
++                policy.grant_node_bonus = outcome.grant_node_bonus;
++                policy.advance_encounter_progression = outcome.advance_encounter_progression;
++            }
++        }
++        self.write(encounters_path,ron::ser::to_string(&encounters).unwrap());
++    }
++
++
+     pub(crate) fn write(&self, path: &str, input: impl AsRef<[u8]>) {
+         let path = self.0.join(path);
+         fs::create_dir_all(path.parent().unwrap()).unwrap();
+@@ -1629,7 +1687,7 @@
+ 
+     #[test]
+     fn real_trial_replacement_failures_and_last_pin_reclaim_generations() {
+-        let fixture = ExternalFixture::official();
++        let fixture = ExternalFixture::official_with_trial_route();
+         let cancel = CancellationToken::default();
+         let load = || {
+             authoring::validate(
+--- a/core_enhanced/src/game/world/application.rs
++++ b/core_enhanced/src/game/world/application.rs
+@@ -550,7 +550,7 @@
+ 
+     #[test]
+     fn every_behavior_kind_has_exactly_one_application_owner() {
+-        assert_eq!(ActionKind::ALL.len(), 79);
++        assert_eq!(ActionKind::ALL.len(), 80);
+         for action in ActionKind::ALL {
+             let route = ApplicationRoute::Behavior(*action);
+             assert_eq!(route.owner(), behavior_owner(*action));
+--- a/core_enhanced/src/game/world/tests/checkpoint_validation.rs
++++ b/core_enhanced/src/game/world/tests/checkpoint_validation.rs
+@@ -516,7 +516,7 @@
+         object_keys(&document),
+         ["continuation", "continuation_sha256", "version"]
+     );
+-    assert_eq!(document["version"], json!(12));
++    assert_eq!(document["version"], json!(15));
+     assert_eq!(
+         object_keys(&document["continuation"]["current"]),
+         CURRENT_CHECKPOINT_KEYS
+@@ -537,7 +537,7 @@
+         object_keys(&document),
+         ["continuation", "continuation_sha256", "version"]
+     );
+-    assert_eq!(document["version"], json!(12));
++    assert_eq!(document["version"], json!(15));
+     assert_eq!(
+         object_keys(&document["continuation"]["current"]),
+         CURRENT_CHECKPOINT_KEYS
+@@ -742,7 +742,7 @@
+         .expect("restored checkpoint must recapture");
+     let recaptured_document =
+         serde_json::from_slice::<Value>(&recaptured.core_payload_json).unwrap();
+-    assert_eq!(recaptured_document["version"], json!(12));
++    assert_eq!(recaptured_document["version"], json!(15));
+     assert_eq!(
+         recaptured_document["continuation"]["current"],
+         original_document["continuation"]["current"]
+@@ -1085,7 +1085,7 @@
+         .unwrap()
+         .expect("completed SavePoint must export through the application port");
+     let document: Value = serde_json::from_slice(checkpoint.core_payload_json()).unwrap();
+-    assert_eq!(document["version"], 12);
++    assert_eq!(document["version"], 15);
+ 
+     let mut destination = crate::application::CoreApplication::new(game_data, 0xCA07_0004);
+     install_application_profile_for_continue(&mut destination, &source);
+@@ -1482,7 +1482,7 @@
+                 .core_payload_json
+         )
+         .unwrap()["version"],
+-        json!(12)
++        json!(15)
+     );
+ 
+     let mut overflow = document;
+@@ -1684,7 +1684,7 @@
+         export
+     );
+     let document: Value = serde_json::from_slice(&export.core_payload_json).unwrap();
+-    assert_eq!(document["version"], 12);
++    assert_eq!(document["version"], 15);
+     assert_eq!(
+         document["continuation"]["current"]["content_identity"],
+         json!(a_identity)
+--- a/core_enhanced/src/game/world/tests/facility.rs
++++ b/core_enhanced/src/game/world/tests/facility.rs
+@@ -578,7 +578,7 @@
+     assert!(!String::from_utf8_lossy(&exported.core_payload_json).contains("encounter_compendium"));
+     let exported_document: serde_json::Value =
+         serde_json::from_slice(&exported.core_payload_json).unwrap();
+-    assert_eq!(exported_document["version"], 12);
++    assert_eq!(exported_document["version"], 15);
+     assert_eq!(
+         exported_document["continuation"]["current"]["power_model_version"],
+         power_model_version
+--- a/core_enhanced/src/game/world/tests/mod.rs
++++ b/core_enhanced/src/game/world/tests/mod.rs
+@@ -1628,7 +1628,14 @@
+     let target_slot_id = template
+         .slots
+         .iter()
+-        .find(|slot| slot.allowed_categories.contains(&category))
++        .filter(|slot| slot.allowed_categories.contains(&category))
++        .min_by_key(|slot| {
++            let node = run.map.nodes.iter().find(|node| node.slot_id == slot.id).unwrap();
++            // Preserve an existing authored difficulty when preparing a battle.
++            if matches!(category, MapNodeCategory::Combat | MapNodeCategory::Boss) {
++                (node.category != category, node.combat_difficulty.is_none())
++            } else { (false, false) }
++        })
+         .expect("authored slot for forced category")
+         .id
+         .clone();
+--- a/core_enhanced/src/game/world/tests/u08_relics.rs
++++ b/core_enhanced/src/game/world/tests/u08_relics.rs
+@@ -702,7 +702,7 @@
+         .unwrap();
+     let export = core.export_active_run_checkpoint().unwrap().unwrap();
+     let wire: Value = serde_json::from_slice(&export.core_payload_json).unwrap();
+-    assert_eq!(wire["version"], 12);
++    assert_eq!(wire["version"], 15);
+     assert!(wire["continuation"]["current"]["relics"].is_object());
+     assert!(wire["continuation"]["savepoint"]["snapshot"]["checkpoint"]["relics"].is_object());
+     let mut restarted = core_with_profile_for_continue(&core, 0xDEAD);

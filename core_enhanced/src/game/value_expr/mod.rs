@@ -129,6 +129,7 @@ pub enum ValueUnit {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct TypedInteger {
+    #[serde(serialize_with = "parse::serialize_integer")]
     pub value: i128,
     pub unit: ValueUnit,
 }

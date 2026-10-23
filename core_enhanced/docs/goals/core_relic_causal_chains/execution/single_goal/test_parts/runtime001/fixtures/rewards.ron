@@ -1,0 +1,5 @@
+(rewards: [(
+ id: "u10_public_supply", uuid: "a510e100-0000-0000-0000-000000000301",
+ name: "Independent causal supply", description: "Normal victory rewards", icon: "u10_public",
+ effects: [GrantRelic(relic_id: "u10_public_relic"), GrantSkillFragment(fragment_id: "u10_public_fragment")],
+)], pools: [], equipment_pools: [])

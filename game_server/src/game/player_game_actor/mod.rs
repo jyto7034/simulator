@@ -41,6 +41,9 @@ pub struct PlayerGameActor {
     pub(crate) active_run_store: Option<Arc<Mutex<ActiveRunStore>>>,
     pub(crate) active_run_revision: Option<crate::persistence::active_run_store::ActiveRunRevision>,
     pub(crate) player_profile_persistence: Option<Arc<Mutex<PlayerProfilePersistence>>>,
+    pub(crate) approved_host: Option<Arc<game_core::mod_validation::ApprovedHost>>,
+    pub(crate) active_required: Option<game_core::mod_validation::RequiredConfiguration>,
+    pub(crate) approved_persistence: Option<Arc<crate::mod_admission::ApprovedPersistence>>,
 }
 
 impl PlayerGameActor {
@@ -64,7 +67,12 @@ impl PlayerGameActor {
             active_run_store: None,
             active_run_revision: None,
             player_profile_persistence: None,
+            approved_host: None, active_required: None, approved_persistence: None,
         }
+    }
+
+    pub fn with_approved_host(mut self, host: Arc<game_core::mod_validation::ApprovedHost>, required: game_core::mod_validation::RequiredConfiguration, persistence: Arc<crate::mod_admission::ApprovedPersistence>) -> Self {
+        self.approved_host = Some(host); self.active_required = Some(required); self.approved_persistence = Some(persistence); self
     }
 
     pub fn with_active_run_store(mut self, store: Arc<Mutex<ActiveRunStore>>) -> Self {
@@ -130,7 +138,9 @@ impl Actor for PlayerGameActor {
             if let Ok(mut persistence) = persistence.lock() {
                 match self.read_player_profile() {
                     Ok(profile) => {
-                        persistence.merge_and_persist(profile);
+                        if let Err(error) = persistence.merge_and_persist(profile) {
+                            tracing::warn!(error = %error, "profile publication rejected at actor stop");
+                        }
                     }
                     Err(error) => {
                         tracing::warn!(code = %error.code, "profile snapshot failed at actor stop")

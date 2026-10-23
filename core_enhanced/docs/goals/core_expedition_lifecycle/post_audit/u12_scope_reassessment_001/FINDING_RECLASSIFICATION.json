@@ -1,0 +1,30 @@
+{
+  "schema": "u12.scope-finding-reclassification/v1",
+  "finding": "F-U12-001",
+  "historical_verdict": "Not Complete / P1",
+  "current_disposition": "범위 밖 — 외부 임의 변조",
+  "supported_occurrence": "Absent for this exact reproducer: adds removed field to typed current V4 envelope and recomputes checksum manually; current writer cannot emit it. Actual historical-writer saves are distinct and remain in scope.",
+  "basis": [
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+      "bytes": 380578,
+      "sha256": "13ec3130a11468f910aad3b0996b68d201b6268a785769fe807c7ac70f41be31"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md",
+      "bytes": 25265,
+      "sha256": "2f3242652e7492b00e5fcb8b6fe8898b8322a3b97dcef065f08ea88474be681c"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/post_audit/u12_current_002_pass001/AUDIT_CLOSURE.json",
+      "bytes": 20556,
+      "sha256": "1b15e091d75d5f1462fa9b5663088d3254ab82d274b280c18f4a97b2558e89ff"
+    }
+  ],
+  "product_fixed": false,
+  "product_fix_required": false,
+  "completion_blocker": false,
+  "current_open_findings": 0,
+  "unknown_occurrence_used_to_waive_required_condition": false,
+  "prior_audit_modified": false
+}

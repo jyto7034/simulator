@@ -1,0 +1,175 @@
+{
+  "audit_id": "u13_independent_001",
+  "goal_set": "GS-CFMN-001",
+  "goal": "GOAL-CFMN-01",
+  "target": "u13_current_001",
+  "stage": "GEX-20",
+  "mode": "stage-run",
+  "verdict": "Not Complete",
+  "open_findings": [
+    "F-U13-001",
+    "F-U13-002"
+  ],
+  "currentness": "current / unchanged",
+  "product_changes": 0,
+  "subagents": 0,
+  "closed_at": "2026-10-14T05:09:37.970854+00:00",
+  "next_owner": "GOAL-CFMN-01 GEX-10 correction, affected validation and successor GEX-20; separate authorization boundary",
+  "audit_files": [
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/COMPLETION_AUDIT.md",
+      "bytes": 12781,
+      "sha256": "eb75936b3509cbd685ef39eb9cd09816584afd30e1e631b6d5205c2ec811ecb2"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/AUDIT_TOOL_NOTES.json",
+      "bytes": 696,
+      "sha256": "60cd31db084402384ab4878327f2c852dc4c47f9c25fcf8307199be0ce0ea175"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/CONDITION_REVIEW.json",
+      "bytes": 34305,
+      "sha256": "c4c2b488fce87fb4cfd587763e8a92216e84aec9a1553bc457812fd02fb5657e"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/CURRENTNESS_ENTRY.json",
+      "bytes": 259,
+      "sha256": "d029093dc2565f175035d3a4f042a60181268e252ab570f6a1b6289170df6865"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/CURRENTNESS_EXIT.json",
+      "bytes": 482,
+      "sha256": "e2f3fe5887ff6435faa8ed83afb909c3bdc1c171546e958a25b68331e6648f6c"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/FINDINGS.json",
+      "bytes": 1158,
+      "sha256": "7bfb79385fb1b5b32d48fdb74737ebfc1ef702dd775dfcd1e002d6c55df223a4"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/LOCATOR_UPDATE.json",
+      "bytes": 453,
+      "sha256": "b293e2f4ae205545df61b77eea019312ebfc946ff7b32f32bd73b5c7c80d9268"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/PROBE_PLAN.md",
+      "bytes": 2100,
+      "sha256": "2b26242d5abf43e62dfa80e1e45ce5ed4fee6b0d6911493b4993db6fef157625"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/PROBE_RECEIPT.json",
+      "bytes": 1368,
+      "sha256": "5f9f0a67eb19d27e6efa2785b8522c75e6408882ab47e57428e74d0c34b0d2ae"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/RAW_REVIEW.json",
+      "bytes": 1984,
+      "sha256": "66f8a2b24a8f7bafb990e028f9ce241e400e56ad509a9f01c0adef69212eff1e"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/artifacts/u13_independent_audit_probe",
+      "bytes": 29127280,
+      "sha256": "48bb7763a06025f7c98906452f2edc9cfdbe5574859551cbbf36ca9732ed372a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/build.stderr.log",
+      "bytes": 21211,
+      "sha256": "19dd9a9b1fb21ec74bf3a88d918b5829838500f64f0313126fb15ee70d754d5c"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/build.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/observations/RESULT.json",
+      "bytes": 3205,
+      "sha256": "cc804be548e0e7836d7cb4dccd9b7ccc4e1f55cfd661a4d73ad01b02c6e598c5"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/observations/hidden_concrete/facility_templates.ron",
+      "bytes": 168177,
+      "sha256": "8149d65a8d00e751e6355414f4db5eb0e35034aa34777cf4732b1a3c878a3487"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/observations/hidden_concrete/map_query.json",
+      "bytes": 4255,
+      "sha256": "1fb6441c7a2e32275ebabac28322461a6d9af539bb523fcbfd1480d0a2e6eef0"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/observations/hidden_concrete/run.json",
+      "bytes": 191284,
+      "sha256": "4728916b99a1922dab9e4d7f713cd63aba331192662ff3b0bd707accd0cf2a35"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/observations/hidden_official/facility_templates.ron",
+      "bytes": 168154,
+      "sha256": "30953977ea42fff96a5138190b67950624756b74a67ef9ed405ca0342bfdb897"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/observations/hidden_official/map_query.json",
+      "bytes": 4238,
+      "sha256": "b1bb0b7f5175f8c6c742ce6896020785d2c0253ef4e0d4dd75e9ee32df15355d"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/observations/hidden_official/run.json",
+      "bytes": 191267,
+      "sha256": "f36183b0cb4bcc0b3536d4148b52e99557c749139fe653d5cda2f06a6c8974bb"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/observations/wrong_normal_role/facility_templates.ron",
+      "bytes": 168168,
+      "sha256": "07ab55ac708dc9da8de5c080e961c0b03ab01802235f0025bfc8df12a7950907"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/observations/wrong_normal_role/map_query.json",
+      "bytes": 3217,
+      "sha256": "6ec1b968bba87e0a37195adff136d4c6914fd404464ebf75beda125831200ff3"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/observations/wrong_normal_role/run.json",
+      "bytes": 189092,
+      "sha256": "602c465a8aab359116a05a6dd1007009ac96bc2dd900bf833957d7c0dde4ef93"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/probe/Cargo.lock",
+      "bytes": 73885,
+      "sha256": "c23a7c8f1351a9a43eb5a655d0377823b6a9cbf5f3dc9c1fb5bb7791a49a45de"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/probe/Cargo.toml",
+      "bytes": 629,
+      "sha256": "25defd5b0d99eeff0b4a464f36fae791bc35f30d671fd2f65cb9a86748e4b8e2"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/probe/src/main.rs",
+      "bytes": 21251,
+      "sha256": "798cbe2ea22be8e3ef9642779617255779d7b4c2d4921145e21a108314fdc35c"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/probe.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/probe.stdout.log",
+      "bytes": 2917,
+      "sha256": "d6096872623f90111a6cb7e5a3d702f21a9456efa9563f6552d0c00ebcca8818"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/review_evidence.py",
+      "bytes": 6242,
+      "sha256": "4d6bc22e30024e78142c30c82debdf7cbbcf44d195bff735312cb6b97fdeb822"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/verify_currentness.py",
+      "bytes": 2136,
+      "sha256": "b2fc818605e9a6e02d75aff4e775ad916b7e882238b16d0e8bd32860fdc07ec7"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_001/write_review.py",
+      "bytes": 11307,
+      "sha256": "88b0e5aa23df84c389ecd74291cf974583872f76f2aeb4d5db66a731ba93085d"
+    }
+  ]
+}

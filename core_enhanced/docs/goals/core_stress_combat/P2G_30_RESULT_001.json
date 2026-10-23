@@ -1,0 +1,12 @@
+{
+  "stage": "P2G-30",
+  "status": "complete",
+  "final_policy_freeze_ref": {
+    "Artifact Type": "Final Policy Freeze",
+    "Artifact ID": "FPF-CSCB-001",
+    "Content Digest": "sha256:532e0f0b70dfcd3fe302182a3f8d1fb9d19c328cd9d7894c8d5cb3034717c47d"
+  },
+  "acceptance": 10,
+  "policy_source": "RULES.ko.md",
+  "checks": "exact sorted current reviewed members, preserved acceptance, same working basis bindings; no open policy"
+}

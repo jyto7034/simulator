@@ -1,0 +1,17 @@
+{
+  "command": [
+    "node",
+    "core_enhanced/docs/tools/validate_p2g50_goal_set.mjs",
+    "--freeze",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_support_node_activities/P2G_30_FREEZE_001.json",
+    "--plan",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_support_node_activities/P2G_40_PHASE_PLAN_002.json",
+    "--receipt",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_support_node_activities/P2G_40_VALIDATION_RECEIPT_002.json",
+    "--quality-contract",
+    "2",
+    "--goal-set",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_support_node_activities/P2G_50_GOAL_SET.ko.md"
+  ],
+  "exit_code": 0
+}

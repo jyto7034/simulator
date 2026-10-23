@@ -2,7 +2,7 @@
 use super::{authoring::*, capabilities::RelicCapabilityDescriptor, FaultCode, RelicPlanError};
 use serde::Serialize;
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Default)]
 pub struct NumericProgram {
     pub(crate) replacement: Option<TypedRelicValue>,
     pub(crate) add: i128,
@@ -57,6 +57,16 @@ impl NumericProgram {
         base: TypedRelicValue,
         d: &RelicCapabilityDescriptor,
     ) -> Result<TypedRelicValue, RelicPlanError> {
+        self.apply_additional_percent(base, d, 0)
+    }
+    /// Native positive-strike progression joins the already normalized Scale
+    /// class. Keep Replace/Add/Scale and its one final division unchanged.
+    pub(crate) fn apply_additional_percent(
+        &self,
+        base: TypedRelicValue,
+        d: &RelicCapabilityDescriptor,
+        additional_percent: i128,
+    ) -> Result<TypedRelicValue, RelicPlanError> {
         if base.unit() != d.unit {
             return Err(RelicPlanError::new(
                 FaultCode::UnitMismatch,
@@ -66,6 +76,7 @@ impl NumericProgram {
         let base = self.replacement.unwrap_or(base);
         let factor = 100i128
             .checked_add(self.scale_increment_percent)
+            .and_then(|v| v.checked_add(additional_percent))
             .ok_or_else(overflow)?;
         if factor < 0 {
             return Err(RelicPlanError::new(

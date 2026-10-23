@@ -120,7 +120,15 @@ ShopDatabase(
             preset_refs: [
                 (preset_id: "headquarters_field_supplies", weight_multiplier: 1),
             ],
-            local_entries: [],
+            local_entries: [
+                // Initial tuning: basic stock, never a rare merchandise roll.
+                (merchandise: (type: revival_catalyst, material_id: "revival_catalyst"),
+                 quantity: 1, base_price: Some(150), guaranteed: true,
+                 weight: 1, repeatable: false, buy_percent: None, tags: ["revival_catalyst"]),
+                (merchandise: (type: relic_corruption_catalyst),
+                 quantity: 1, base_price: Some(30), guaranteed: false,
+                 weight: 8, repeatable: true, buy_percent: None, tags: ["relic_corruption_catalyst"]),
+            ],
             refresh_policy: Some((base_cost: 20, max_uses: 1)),
             sell_policy: Some((price_percent: 35, accepted_tags: None)),
         ),
@@ -134,7 +142,15 @@ ShopDatabase(
             preset_refs: [
                 (preset_id: "unknown_high_value_merchandise", weight_multiplier: 1),
             ],
-            local_entries: [],
+            local_entries: [
+                // Initial tuning: basic stock, never a rare merchandise roll.
+                (merchandise: (type: revival_catalyst, material_id: "revival_catalyst"),
+                 quantity: 1, base_price: Some(150), guaranteed: true,
+                 weight: 1, repeatable: false, buy_percent: None, tags: ["revival_catalyst"]),
+                (merchandise: (type: relic_corruption_catalyst),
+                 quantity: 1, base_price: Some(30), guaranteed: false,
+                 weight: 8, repeatable: true, buy_percent: None, tags: ["relic_corruption_catalyst"]),
+            ],
             refresh_policy: Some((base_cost: 35, max_uses: 1)),
             sell_policy: Some((price_percent: 40, accepted_tags: None)),
         ),

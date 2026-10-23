@@ -1,0 +1,9 @@
+{
+  "product_or_probe_failures": 0,
+  "record_edit_failure": {
+    "operation": "apply_patch delete and add same COMPLETION_AUDIT.md in one patch",
+    "result": "tool rejected invalid patch before mutation",
+    "resolution": "write canonical audit once through normal file output; predecessor original preserved before either attempt"
+  },
+  "preserved_report_relative_links": "PREDECESSOR_COMPLETION_AUDIT.md is exact original bytes; its relative references use original single_goal base."
+}

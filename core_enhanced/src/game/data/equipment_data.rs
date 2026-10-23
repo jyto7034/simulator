@@ -68,6 +68,10 @@ pub enum TargetingProfile {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct WeaponCombatProfile {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub mark_weapon: Option<crate::game::ability::weapon_marks::MarkWeaponDef>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub kill_growth: Option<crate::game::resource::WeaponKillGrowthDef>,
     #[serde(
         default,
         skip_serializing_if = "super::abnormality_data::BasicAttackAction::is_damage"
@@ -124,6 +128,8 @@ pub struct PlatformRestProfile {
 impl Default for WeaponCombatProfile {
     fn default() -> Self {
         Self {
+            mark_weapon: None,
+            kill_growth: None,
             action: Default::default(),
             attack: 0,
             spell_power: 0,
@@ -169,11 +175,18 @@ fn default_weapon_attack_delivery() -> crate::game::ability::DeliveryDef {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum EquipmentMaterialType {
+    EquipmentDust,
+    AbnormalityPart,
+    RevivalCatalyst,
     Fragment,
     Core,
     Blueprint,
     Residue,
     Generic,
+}
+
+impl EquipmentMaterialType {
+    pub fn is_storable(self) -> bool { matches!(self, Self::AbnormalityPart | Self::RevivalCatalyst) }
 }
 
 pub type EquipmentItem = EquipmentMetadata;
@@ -188,6 +201,9 @@ pub struct EventCheckModifierDefinition {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct EquipmentMetadata {
+    /// Explicit source-family identity used by source-scoped combat rules.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub content_family: Option<String>,
     pub id: String,
     pub uuid: Uuid,
     pub name: String,
@@ -375,6 +391,15 @@ impl EquipmentDatabase {
     }
 
     pub(crate) fn validate_contract(&self) -> Result<(), crate::game::data::DataValidationError> {
+        for item in &self.items {
+            if item.content_family.as_ref().is_some_and(|family|family.trim().is_empty()) {return Err(crate::game::data::DataValidationError::at(&item.id,"content_family","content family must be nonempty"));}
+        }
+        for (index, material) in self.materials.iter().enumerate() {
+            if material.id == "equipment_dust" && material.material_type != EquipmentMaterialType::EquipmentDust {
+                return Err(crate::game::data::DataValidationError::at(&material.id,
+                    format!("materials[{index}].material_type"), "reserved equipment_dust requires EquipmentDust purpose"));
+            }
+        }
         self.validate_weapon_profiles()?;
         self.validate_event_check_metadata()?;
         self.validate_dismantle_recipe_references()?;
@@ -660,6 +685,11 @@ impl EquipmentDatabase {
                     "references missing equipment",
                 ));
             }
+            if self.get_by_id(&recipe.equipment_id).is_none_or(|item| item.equipment_type != EquipmentType::Weapon)
+                || recipe.costs_per_level.iter().any(|cost| self.get_material_by_id(&cost.material_id).is_none_or(|m| m.material_type != EquipmentMaterialType::EquipmentDust))
+                || recipe.modifiers_per_level.iter().any(|m| !matches!(m.stat, crate::game::stats::StatId::Attack | crate::game::stats::StatId::SpellPower)) {
+                return Err(crate::game::data::DataValidationError::at(&recipe.equipment_id, &recipe_path, "enhancement requires a weapon, equipment dust and attack/spell power modifiers"));
+            }
             if recipe.max_level == 0 {
                 return Err(crate::game::data::DataValidationError::at(
                     &recipe.equipment_id,
@@ -718,6 +748,12 @@ impl WeaponCombatProfile {
         &self,
         owner_label: &str,
     ) -> Result<(), WeaponProfileValidationError> {
+        if let Some(marks) = &self.mark_weapon {
+            marks.validate().map_err(|cause| WeaponProfileValidationError::new("mark_weapon", cause))?;
+        }
+        if let Some(growth) = &self.kill_growth {
+            growth.validate().map_err(|cause| WeaponProfileValidationError::new("kill_growth", cause))?;
+        }
         self.action
             .validate_delivery(&self.delivery)
             .map_err(|error| WeaponProfileValidationError::new(error.field_suffix, error.cause))?;
@@ -889,13 +925,13 @@ mod tests {
 
     #[test]
     fn duplicate_enhancement_material_total_overflow_is_rejected_at_publication() {
-        let database = from_str::<EquipmentDatabase>(
+        let mut database = from_str::<EquipmentDatabase>(
             r#"EquipmentDatabase(
                 items: [(
                     id: "overflow_accessory",
                     uuid: "00000000-0000-0000-0000-000000000011",
                     name: "Overflow Accessory",
-                    equipment_type: Accessory,
+                    equipment_type: Weapon,
                     rarity: ZAYIN,
                     price: 1,
                 )],
@@ -904,9 +940,9 @@ mod tests {
                     uuid: "00000000-0000-0000-0000-000000000012",
                     name: "Overflow Dust",
                     description: "Overflow fixture",
-                    material_type: Fragment,
+                    material_type: EquipmentDust,
                     rarity: ZAYIN,
-                    equipment_type: Some(Accessory),
+                    equipment_type: Some(Weapon),
                 )],
                 enhancement_recipes: [(
                     equipment_id: "overflow_accessory",
@@ -920,6 +956,7 @@ mod tests {
         )
         .expect("overflow fixture should deserialize before contract validation");
 
+        database.items[0].weapon_profile = Some(WeaponCombatProfile::default());
         let error = database
             .validate_contract()
             .expect_err("duplicate aggregate overflow must fail publication");

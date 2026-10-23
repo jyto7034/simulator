@@ -1,0 +1,14 @@
+{
+  "ref": {
+    "Artifact Type": "Goal Set",
+    "Artifact ID": "GS-CEXL-001",
+    "Content Digest": "sha256:92913e65bda4d5dee71ae48385b23e66bba8f9139502acffcfb11cd115f97362"
+  },
+  "canonical_digest_method": "SHA256 UTF8 LF Markdown excluding the entire - Goal Set Ref: envelope line, preserving remaining newlines",
+  "source": {
+    "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_50_GOAL_SET.ko.md",
+    "bytes": 27584,
+    "sha256": "5bc52c14c02964bc7f9dc916efd950638c05e9d765e0a64ca1fda41dd76a5e77"
+  },
+  "status": "current"
+}

@@ -40,7 +40,7 @@ use crate::game::{
     events::combat::CombatExecutor,
     map::{
         MapNodeCategory, MapNodeCombatDifficulty, MapNodeCombatDifficultyClass, MapNodeId,
-        MonolithRemanifestationStage,
+        RevivalStage,
     },
     resources::item_slot::{EquippedRef, ItemSlot},
     reward::{RewardEffect, RewardOption},
@@ -48,71 +48,6 @@ use crate::game::{
 };
 
 use super::GameDataBase;
-
-pub(super) fn validate_monolith_references(
-    run_policy: &crate::game::data::run_policy_data::RunPolicyData,
-    shop_data: &ShopDatabase,
-    visual_novel_data: &VisualNovelDatabase,
-    pve_data: &PveEncounterDatabase,
-    abnormality_data: &AbnormalityDatabase,
-) -> Result<(), crate::game::data::DataValidationError> {
-    let policy = &run_policy.monolith;
-    let shop = shop_data
-        .get_by_id(&policy.wandering_merchant_shop_id)
-        .ok_or_else(|| {
-            crate::game::data::DataValidationError::at(
-                &policy.wandering_merchant_shop_id,
-                "run_policy.monolith.wandering_merchant_shop_id",
-                "references missing Shop",
-            )
-        })?;
-    if shop.context != crate::game::data::shop_data::ShopContext::UnknownExploration
-        || shop.offer_count != policy.first_page_offer_count
-        || shop
-            .refresh_policy
-            .is_none_or(|refresh| refresh.max_uses != u32::from(policy.paid_refresh_uses))
-    {
-        return Err(crate::game::data::DataValidationError::at(
-            &shop.id,
-            "run_policy.monolith.wandering_merchant_shop_id",
-            "monolith merchant must be an unknown-exploration Shop with the authored three-offer/one-refresh contract",
-        ));
-    }
-    if visual_novel_data
-        .get_by_id(&policy.exchange_visual_novel_id)
-        .is_none()
-    {
-        return Err(crate::game::data::DataValidationError::at(
-            &policy.exchange_visual_novel_id,
-            "run_policy.monolith.exchange_visual_novel_id",
-            "references missing visual novel",
-        ));
-    }
-    for encounter in pve_data
-        .encounters
-        .iter()
-        .filter(|encounter| encounter.encounter_class == PveEncounterClass::Elite)
-    {
-        let Some(abnormality_id) = encounter.primary_abnormality_id() else {
-            continue;
-        };
-        let metadata = abnormality_data.get_by_id(abnormality_id).ok_or_else(|| {
-            crate::game::data::DataValidationError::at(
-                &encounter.id,
-                "pve.primary_abnormality_id",
-                "monolith-eligible Elite references missing abnormality",
-            )
-        })?;
-        if metadata.response_complete_skill_fragment_id.is_none() {
-            return Err(crate::game::data::DataValidationError::at(
-                &encounter.id,
-                "abnormality.response_complete_skill_fragment_id",
-                "monolith-eligible Elite abnormality must define a unique skill fragment",
-            ));
-        }
-    }
-    Ok(())
-}
 
 pub(super) fn validate_pve_reward_source_references(
     pve_data: &PveEncounterDatabase,
@@ -170,6 +105,91 @@ pub(super) fn validate_pve_reward_source_references(
                 format!("{source_path}.fragment_id"),
                 format!("references missing Skill Fragment '{}'", source.fragment_id),
             ));
+        }
+    }
+    Ok(())
+}
+
+/// Cross-catalog reward validation is shared by the live loader and fixture assembly.
+pub(super) fn validate_revival_rewards(
+    pve: &PveEncounterDatabase, equipment: &EquipmentDatabase,
+    rewards: &RewardDatabase, consumables: &ConsumableDatabase,
+    fragments: &skill_fragment_data::SkillFragmentDatabase,
+    relics: &super::relic_data::RelicDatabase,
+) -> Result<(), crate::game::data::DataValidationError> {
+    use crate::game::data::equipment_data::EquipmentMaterialType;
+    for (index, source) in pve.reward_sources.iter().enumerate() {
+        let fail = |field: &str, cause: String| crate::game::data::DataValidationError::at(
+            &source.reward_source_id, format!("reward_sources[{index}].{field}"), cause);
+        let encounter = pve.get_by_id(&source.encounter_id)
+            .ok_or_else(|| fail("encounter_id", "missing encounter".into()))?;
+        let validate_items = |field: &str, items: &[String]| {
+            let mut seen = HashSet::new();
+            for id in items {
+                if equipment.get_by_id(id).is_none() || !seen.insert(id) {
+                    return Err(fail(field, format!("missing or duplicate equipment '{id}'")));
+                }
+            }
+            Ok(())
+        };
+        let validate_effects = |field: &str, effects: &[RewardEffect]| {
+            for effect in effects {
+                let valid = match effect {
+                    RewardEffect::GrantEnkephalin { amount } | RewardEffect::GrantEquipmentDust { amount }
+                    | RewardEffect::GrantEquipmentMaterial { amount, .. } => *amount > 0,
+                    RewardEffect::GrantExperience { amount, target: crate::game::reward::ExperienceTargetPolicy::AliveRoster } => *amount > 0,
+                    RewardEffect::GrantRelic { .. } => true,
+                    _ => false,
+                };
+                if !valid { return Err(fail(field, "expected positive quantity reward or explicit relic; equipment belongs in choices and fragments are first-only".into())); }
+                validate_reward_effect(effect, rewards, equipment, consumables, fragments, relics)
+                    .map_err(|cause| fail(field, cause))?;
+            }
+            Ok(())
+        };
+        validate_items("first_equipment_ids", &source.first_equipment_ids)?;
+        validate_effects("repeat_rewards", &source.repeat_rewards)?;
+        if encounter.encounter_class == PveEncounterClass::Elite && source.first_equipment_ids.is_empty() {
+            return Err(fail("first_equipment_ids", "elite first victory requires equipment".into()));
+        }
+        if encounter.is_rewardless_story_encounter() {
+            if source.revival.is_some() || !source.first_equipment_ids.is_empty() || !source.repeat_rewards.is_empty() {
+                return Err(fail("revival", "rewardless story encounter cannot grant rewards or eggs".into()));
+            }
+            continue;
+        }
+        let Some(policy) = &source.revival else {
+            if encounter.encounter_class == PveEncounterClass::NormalBoss {
+                return Err(fail("revival", "normal boss requires its two revival stages".into()));
+            }
+            continue;
+        };
+        if encounter.encounter_class != PveEncounterClass::NormalBoss {
+            return Err(fail("revival", "only normal bosses leave eggs".into()));
+        }
+        if policy.catalyst_amount == 0 || !equipment.get_material_by_id(&policy.catalyst_material_id)
+            .is_some_and(|m| m.material_type == EquipmentMaterialType::RevivalCatalyst) {
+            return Err(fail("revival.catalyst_material_id", "requires a positive common revival catalyst recipe".into()));
+        }
+        if !equipment.get_material_by_id(&policy.part_material_id)
+            .is_some_and(|m| m.material_type == EquipmentMaterialType::AbnormalityPart) {
+            return Err(fail("revival.part_material_id", "requires the boss's authored abnormality part".into()));
+        }
+        if policy.stage_2.stat_multiplier_percent <= 100
+            || policy.stage_3.stat_multiplier_percent <= policy.stage_2.stat_multiplier_percent {
+            return Err(fail("revival", "stage 2 must exceed 100%; stage 3 must exceed stage 2".into()));
+        }
+        for (field, stage) in [("stage_2", &policy.stage_2), ("stage_3", &policy.stage_3)] {
+            if !pve.get_by_id(&stage.encounter_id).is_some_and(|e|
+                e.encounter_class == PveEncounterClass::NormalBoss && e.primary_abnormality_id() == encounter.primary_abnormality_id()) {
+                return Err(fail(&format!("revival.{field}.encounter_id"), "revival must target the same normal boss kind".into()));
+            }
+            validate_items(&format!("revival.{field}.equipment_choices"), &stage.equipment_choices)?;
+            validate_effects(&format!("revival.{field}.rewards"), &stage.rewards)?;
+            if !stage.rewards.iter().any(|effect| matches!(effect,
+                RewardEffect::GrantEquipmentMaterial { material_id, amount } if material_id == &policy.part_material_id && *amount > 0)) {
+                return Err(fail(&format!("revival.{field}.rewards"), "revival victory must grant its authored boss part".into()));
+            }
         }
     }
     Ok(())
@@ -254,6 +274,8 @@ pub(super) fn validate_data_references(
     .expect("invalid PVE cross-catalog reference");
     validate_pve_reward_source_references(pve_data, abnormality_data, skill_fragment_data)
         .expect("invalid PVE reward-source cross-catalog reference");
+    validate_revival_rewards(pve_data, equipment_data, reward_data, consumable_data, skill_fragment_data, relic_data)
+        .expect("invalid revival reward contract");
     validate_ordinary_reward_source_exclusion(reward_data, pve_data)
         .expect("ordinary Reward grants an encounter-source fragment");
     validate_event_combat_references(event_data, pve_data).expect("invalid Event combat reference");
@@ -278,6 +300,7 @@ pub(super) fn validate_shop_item_references(
     shop_data: &ShopDatabase,
     consumable_data: &ConsumableDatabase,
     equipment_data: &EquipmentDatabase,
+    relic_data: &crate::game::data::relic_data::RelicDatabase,
 ) -> Result<(), crate::game::data::DataValidationError> {
     let mut tags_by_merchandise: HashMap<ShopMerchandise, HashSet<String>> = HashMap::new();
     let mut minimum_buy_quote: HashMap<ShopMerchandise, u32> = HashMap::new();
@@ -297,6 +320,11 @@ pub(super) fn validate_shop_item_references(
                 ShopMerchandise::Consumable { consumable_id } => consumable_data
                     .get_by_id(consumable_id)
                     .map(|item| item.price),
+                ShopMerchandise::Relic { relic_id } => relic_data.get_by_id(relic_id).and(entry.base_price),
+                ShopMerchandise::RevivalCatalyst { material_id } => equipment_data.get_material_by_id(material_id)
+                    .filter(|material| material.material_type == crate::game::data::equipment_data::EquipmentMaterialType::RevivalCatalyst)
+                    .and(entry.base_price),
+                ShopMerchandise::RelicCorruptionCatalyst => entry.base_price,
                 ShopMerchandise::Monolith { .. } => None,
             }
             .ok_or_else(|| {
@@ -384,6 +412,8 @@ pub(super) fn validate_shop_item_references(
                 .get_by_id(consumable_id)
                 .map(|item| item.price)
                 .expect("validated consumable merchandise"),
+            ShopMerchandise::Relic { .. } | ShopMerchandise::RevivalCatalyst { .. }
+                | ShopMerchandise::RelicCorruptionCatalyst => continue, // These goods cannot be sold.
             ShopMerchandise::Monolith { .. } => {
                 unreachable!("dynamic monolith merchandise cannot be authored in Shop data")
             }
@@ -505,6 +535,17 @@ pub(super) fn validate_starter_employee_loadout_references(
             has_weapon |= equipment.equipment_type == EquipmentType::Weapon;
             if equipment.equipment_type == EquipmentType::Weapon {
                 if let Some(weapon) = &equipment.weapon_profile {
+                    if definition.starter_eligible {
+                        use crate::game::employee::EmployeeRole;
+                        use crate::game::data::equipment_data::WeaponArchetype;
+                        let matches_role = match definition.role {
+                            EmployeeRole::Healer => weapon.action.is_heal(),
+                            EmployeeRole::Tank => weapon.weapon_archetype == WeaponArchetype::Shield && !weapon.action.is_heal(),
+                            EmployeeRole::Dealer => weapon.weapon_archetype != WeaponArchetype::Shield && !weapon.action.is_heal(),
+                        };
+                        if !matches_role { return Err(crate::game::data::DataValidationError::at(
+                            &definition.employee_definition_id, &equipment_path, "starter weapon must match its declared role")); }
+                    }
                     profile.apply_weapon_profile(weapon).map_err(|error| {
                         crate::game::data::DataValidationError::at(
                             &definition.employee_definition_id,
@@ -628,6 +669,12 @@ pub(super) fn validate_skill_fragment_skill_references(
                     format!("references unknown skill '{}'", form.skill_id),
                 )
             })?;
+            if skill.resonance_admission.is_some_and(|policy| policy.capacity != form.resonance_max) {
+                return Err(error(
+                    format!("{path}.resonance_max"),
+                    "fragment form capacity must match its compiled skill admission capacity".into(),
+                ));
+            }
             if skill.steps.iter().any(|step| {
                 step.targeting == crate::game::ability::StepTargetingMode::RetargetOnStep
             }) {
@@ -636,7 +683,11 @@ pub(super) fn validate_skill_fragment_skill_references(
                     "manual employee fragment cannot retarget after admission".into(),
                 ));
             }
-            if passive_guard.is_some() {
+            let compiled_guard = skill.fragment_guard();
+            if passive_guard.is_some() && compiled_guard.is_some() && *passive_guard != compiled_guard {
+                return Err(error(format!("{path}.skill_id"), "compiled and fragment metadata guard declarations disagree".into()));
+            }
+            if passive_guard.is_some() || compiled_guard.is_some() {
                 let parry_steps: Vec<_> = skill.steps.iter().filter(|step| step.effects.iter().any(|effect| matches!(&effect.op, crate::game::ability::SkillEffectDef::Sustained { definition: crate::game::ability::sustained::SustainedEffectDef::Parry { .. } }))).collect();
                 if skill.cast_selection() != crate::game::ability::SkillCastSelection::SelfUnit
                     || !matches!(skill.cast_target_definition(), Some((crate::game::ability::SkillTarget::SelfUnit, ..)))
@@ -649,6 +700,9 @@ pub(super) fn validate_skill_fragment_skill_references(
                     .map_err(|cause| error(format!("{path}.skill_id"), cause))?;
             }
             if let Some(recipe) = &form.bloom_recipe {
+                if recipe.materials.iter().any(|cost| equipment_data.get_material_by_id(&cost.material_id).is_some_and(|m| m.material_type != crate::game::data::equipment_data::EquipmentMaterialType::AbnormalityPart)) {
+                    return Err(error(format!("{path}.bloom_recipe"), "bloom requires abnormality parts".into()));
+                }
                 recipes.push((format!("{path}.bloom_recipe"), recipe));
             }
         }
@@ -933,7 +987,7 @@ pub(super) fn validate_pve_enemy_references(
             crate::game::data::DataValidationError::at(&encounter.id, path, cause)
         };
         match encounter.encounter_class {
-            PveEncounterClass::Normal => {
+            PveEncounterClass::Normal | PveEncounterClass::StressCombat => {
                 if encounter.primary_abnormality_id().is_some() {
                     return Err(error(
                         format!("{encounter_path}.primary_abnormality_id"),
@@ -984,7 +1038,7 @@ pub(super) fn validate_pve_enemy_references(
                             format!("primary abnormality '{primary_abnormality_id}' must be Boss"),
                         ));
                     }
-                    PveEncounterClass::Normal => unreachable!(),
+                    PveEncounterClass::Normal | PveEncounterClass::StressCombat => unreachable!(),
                     _ => {}
                 }
             }
@@ -1415,7 +1469,7 @@ struct GeneratedValidationContext<'a> {
     game_data: &'a GameDataBase,
     encounter_index: usize,
     tuning_path: String,
-    monolith_stage: Option<MonolithRemanifestationStage>,
+    revival: Option<crate::game::revival::RevivalNodeTuning>,
 }
 
 impl GeneratedValidationContext<'_> {
@@ -1456,11 +1510,11 @@ impl GeneratedValidationContext<'_> {
             }
         }
         let mut related_sources = vec![encounter_source, policy_source];
-        if self.monolith_stage.is_some() {
+        if self.revival.is_some() {
             related_sources.push(LiveRonSource {
-                source_file: "data/run/policy.ron".into(),
-                object_id: Some("run_policy".into()),
-                field_path: Some("monolith".into()),
+                source_file: "data/pve/encounters.ron".into(),
+                object_id: Some(encounter.id.clone()),
+                field_path: Some("reward_sources.revival".into()),
                 ..Default::default()
             });
         }
@@ -1585,7 +1639,7 @@ fn validate_combat_preview_threat_warning_contract(
             game_data,
             encounter_index,
             tuning_path: baseline_tuning_path(game_data),
-            monolith_stage: None,
+            revival: None,
         };
         for seed in PREVIEW_VALIDATION_SEEDS {
             control::charge(1, "generated_baseline_seed").map_err(control_error)?;
@@ -1638,7 +1692,7 @@ fn validate_combat_preview_threat_warning_contract(
         for (
             difficulty_index,
             (difficulty_label, difficulty, reward_multiplier_percent, tuning_path),
-        ) in manifested_difficulty_cases(game_data.as_ref())
+        ) in manifested_difficulty_cases(game_data.as_ref(), &encounter.id)
             .map_err(control_error)?
             .into_iter()
             .enumerate()
@@ -1647,7 +1701,7 @@ fn validate_combat_preview_threat_warning_contract(
                 game_data,
                 encounter_index,
                 tuning_path,
-                monolith_stage: difficulty.monolith_stage,
+                revival: difficulty.revival,
             };
             for seed in PREVIEW_VALIDATION_SEEDS {
                 control::charge(1, "generated_manifested_seed").map_err(control_error)?;
@@ -1721,6 +1775,7 @@ fn validate_preview_briefing_warnings(
 
 fn manifested_difficulty_cases(
     game_data: &GameDataBase,
+    encounter_id: &str,
 ) -> Result<Vec<(String, MapNodeCombatDifficulty, u32, String)>, crate::game::behavior::GameError> {
     use crate::authoring::control;
     let power_model_version = game_data.run_policy.combat_difficulty.power_model_version;
@@ -1749,23 +1804,20 @@ fn manifested_difficulty_cases(
         for (role_index, entry) in profile.role_tuning.iter().enumerate() {
             control::charge(1, "generated_role_case")?;
             if entry.role
-                == crate::game::data::run_policy_data::CombatNodeDifficultyRole::MonolithRemanifestation
+                == crate::game::data::run_policy_data::CombatNodeDifficultyRole::Revival
             {
-                for stage in [
-                    MonolithRemanifestationStage::Stage2,
-                    MonolithRemanifestationStage::Stage3,
-                ] {
-                    control::charge(1, "generated_monolith_case")?;
-                    push_manifested_difficulty_case(
-                        game_data,
-                        &mut cases,
-                        profile.id.as_str(),
-                        format!("{}::Role({:?})::{stage:?}", profile.id, entry.role),
-                        power_model_version,
-                        MapNodeCombatDifficultyClass::Role(entry.role),
-                        Some(stage),
-                        format!("combat_difficulty.profiles[{profile_index}].role_tuning[{role_index}].tuning"),
-                    );
+                for source in &game_data.pve_data.reward_sources {
+                    let Some(policy) = &source.revival else { continue; };
+                    for stage in [RevivalStage::Stage2, RevivalStage::Stage3] {
+                        let authored = policy.stage(stage);
+                        if authored.encounter_id != encounter_id { continue; }
+                        control::charge(1, "generated_revival_case")?;
+                        push_manifested_difficulty_case(game_data, &mut cases, &profile.id,
+                            format!("{}::Revival::{stage:?}", source.reward_source_id), power_model_version,
+                            MapNodeCombatDifficultyClass::Role(entry.role),
+                            Some(crate::game::revival::RevivalNodeTuning { stage, stat_multiplier_percent: authored.stat_multiplier_percent }),
+                            format!("combat_difficulty.profiles[{profile_index}].role_tuning[{role_index}].tuning"));
+                    }
                 }
             } else {
                 push_manifested_difficulty_case(
@@ -1791,14 +1843,14 @@ fn push_manifested_difficulty_case(
     label: String,
     power_model_version: u32,
     class: MapNodeCombatDifficultyClass,
-    monolith_stage: Option<MonolithRemanifestationStage>,
+    revival: Option<crate::game::revival::RevivalNodeTuning>,
     tuning_path: String,
 ) {
     let mut difficulty = MapNodeCombatDifficulty {
         power_model_version,
         difficulty_profile_id: profile_id.to_string(),
         class,
-        monolith_stage,
+        revival,
         floor_power_anchor: 100,
         target_power: 100,
     };
@@ -1821,6 +1873,32 @@ mod tests {
     use crate::game::data::pve_data::PveEncounterRewardSource;
     use crate::game::data::reward_data::RewardMetadata;
     use crate::game::data::skill_fragment_data::SkillFragmentId;
+
+    #[test]
+    fn compiled_parry_guard_metadata_must_agree_with_graph_declaration() {
+        let source = crate::authoring::node_graph::tests::parry_fixture().to_string();
+        let skills = crate::authoring::node_graph::compile(&source, "r08_strike".into()).unwrap().load_native().unwrap();
+        let base = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/r09/fragments.ron"));
+        for percent in [30,31] {
+            let declared = base.replace("ActiveSkill(forms:", &format!("ActiveSkill(passive_guard: Some((reduction_percent: {percent}, reflection_chance_percent: 100, reflection_percent: 50)), forms:"));
+            let fragments = ron::de::from_str(&declared).unwrap();
+            let result = validate_skill_fragment_skill_references(&fragments, &AbnormalityDatabase::new(vec![]), &skills, &EquipmentDatabase::new(vec![]));
+            assert_eq!(result.is_ok(),percent==30,"{result:?}");
+        }
+    }
+
+    #[test]
+    fn compiled_graph_capacity_must_match_fragment_form() {
+        let source = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/../content_assembler/docs/examples/compiler-preflight/G01.node-graph.json"));
+        let skills = crate::authoring::node_graph::compile(source, "r08_strike".into()).unwrap().load_native().unwrap();
+        let base = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/r09/fragments.ron"));
+        for capacity in [99, 100, 101] {
+            let fragments = ron::de::from_str(&base.replace("resonance_max: 100", &format!("resonance_max: {capacity}"))).unwrap();
+            let result = validate_skill_fragment_skill_references(&fragments, &AbnormalityDatabase::new(vec![]), &skills, &EquipmentDatabase::new(vec![]));
+            if capacity == 100 { result.unwrap(); }
+            else { assert!(result.unwrap_err().field_path.unwrap().ends_with("resonance_max")); }
+        }
+    }
 
     #[test]
     fn r12_passive_guard_requires_bounded_policy_and_parry_in_every_selected_form() {
@@ -1881,7 +1959,9 @@ mod tests {
                 reward_source_id: "source".to_string(),
                 encounter_id: "encounter".to_string(),
                 fragment_id,
-                repeat_reward: RewardEffect::GrantFragmentDust { amount: 5 },
+                first_equipment_ids: vec!["standard_armor".to_owned()],
+                    repeat_rewards: vec![RewardEffect::GrantEquipmentDust { amount: 5 }],
+                    revival: None,
             }],
         );
 

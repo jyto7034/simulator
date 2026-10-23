@@ -1,0 +1,2961 @@
+{
+  "after": {
+    "at_seq": 75,
+    "battle_time_ms": 8001,
+    "deployment": {
+      "battle_time_ms": 8001,
+      "deployed_units": [
+        {
+          "employee_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+          "facing": "right",
+          "position": {
+            "x": 2,
+            "y": 6
+          },
+          "skill_readiness": {
+            "activation_mode": "manual",
+            "corrosion_ready": false,
+            "eligibility": {
+              "disabled_reason_code": "resonance_not_full",
+              "enabled": false
+            },
+            "manual_activation_allowed": false,
+            "resonance_current": 0,
+            "resonance_gain_block_reasons": [],
+            "resonance_max": 1,
+            "resonance_use": null,
+            "selection": "automatic_unit",
+            "skill_id": "u09_family_closure",
+            "target_available": true,
+            "target_required": false
+          },
+          "tactical_state": {
+            "activity": "ready",
+            "base_block_capacity": 1,
+            "defense_focus_damage_reduction_percent": 0,
+            "effective_block_capacity": 1,
+            "forced_defense_remaining_ms": 0,
+            "forced_defense_until_ms": null,
+            "next_rest_tick_ms": null,
+            "relocation_cooldown_until_ms": 0,
+            "relocation_eligibility": {
+              "enabled": true
+            },
+            "stance": "attack",
+            "stance_cooldown_until_ms": 1500,
+            "stance_eligibility": {
+              "attack": {
+                "disabled_reason_code": "already_active",
+                "enabled": false
+              },
+              "defense": {
+                "enabled": true
+              }
+            },
+            "tile_effect": "none",
+            "tile_kind": "ground"
+          },
+          "unit_instance_id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+          "withdraw_eligibility": {
+            "enabled": true
+          }
+        }
+      ],
+      "redeploying_units": [],
+      "unit_deploy_costs": [
+        {
+          "base_deploy_cost": 10,
+          "effective_deploy_cost": 10,
+          "eligibility": {
+            "enabled": true
+          },
+          "employee_uuid": "17c19684-fa92-4904-966b-1e884e4b17a7"
+        },
+        {
+          "base_deploy_cost": 10,
+          "effective_deploy_cost": 10,
+          "eligibility": {
+            "enabled": true
+          },
+          "employee_uuid": "d5f21295-0e74-4f6a-ad1e-bdb92d47e41e"
+        }
+      ]
+    },
+    "field_work_objects": [],
+    "independent_objects": {
+      "active": [],
+      "creations": [],
+      "last_removal": null
+    },
+    "interaction": {
+      "deployment_employee_uuid": null,
+      "focused_unit_instance_id": null,
+      "restore_playback": null,
+      "settings_restore_playback": null
+    },
+    "playback": {
+      "paused": true,
+      "speed": "X1"
+    },
+    "playback_eligibility": {
+      "forced_pause_remaining_ms": null,
+      "pause": {
+        "disabled_reason_code": "already_active",
+        "enabled": false
+      },
+      "resume": {
+        "enabled": true
+      },
+      "speeds": [
+        {
+          "eligibility": {
+            "enabled": true
+          },
+          "speed": "X0_5"
+        },
+        {
+          "eligibility": {
+            "disabled_reason_code": "already_active",
+            "enabled": false
+          },
+          "speed": "X1"
+        },
+        {
+          "eligibility": {
+            "enabled": true
+          },
+          "speed": "X2"
+        },
+        {
+          "eligibility": {
+            "enabled": true
+          },
+          "speed": "X3"
+        }
+      ]
+    },
+    "sustained_effects": {
+      "active": [],
+      "ended": 0,
+      "latest_end": null,
+      "latest_recharge": null,
+      "passive_guards": [],
+      "started": 0
+    },
+    "tactical_focus": null,
+    "tactical_resource": {
+      "current": 18,
+      "maximum": 99,
+      "recovery_per_second": 1
+    },
+    "units": [
+      {
+        "basic_action": {
+          "block_exception_target_ids": [],
+          "blocked_by": null,
+          "blocking": [],
+          "eligible_target_ids": [],
+          "kind": "damage",
+          "preview_available": false,
+          "selected_target_id": null
+        },
+        "control": {
+          "hard_cc_active": false,
+          "hard_cc_release_time_ms": null,
+          "silenced": false,
+          "skill_start_disabled_reason": null
+        },
+        "hud": {
+          "bar_mode": "hp_only",
+          "resonance_current": null,
+          "resonance_max": null,
+          "threat_class": "normal"
+        },
+        "mobility_kind": "ground",
+        "owner": "Player",
+        "position": {
+          "x": 3,
+          "y": 6
+        },
+        "range_previews": {
+          "active_skill": {
+            "available": false,
+            "cast_cells": [],
+            "effect_preview_cells": [],
+            "reason": "no_skill",
+            "requires_manual_target": false,
+            "skill_id": null,
+            "source": "unavailable",
+            "source_id": null,
+            "targeting_kind": null
+          },
+          "basic_attack": {
+            "available": true,
+            "cells": [
+              {
+                "x": 3,
+                "y": 6
+              },
+              {
+                "x": 4,
+                "y": 6
+              }
+            ],
+            "reason": null,
+            "source": "fallback_basic_attack",
+            "source_id": null
+          }
+        },
+        "role": "defense_object",
+        "stats": {
+          "attack": 0,
+          "attack_interval_ms": 1500,
+          "current_health": 350,
+          "defense": 8,
+          "magic_resist": 8,
+          "max_health": 350,
+          "move_speed_units_per_ms": 0
+        },
+        "tactical_state": null,
+        "unit_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+        "unit_source": {
+          "base_uuid": "def00000-0000-0000-0000-000000000002",
+          "kind": "defense_object"
+        },
+        "world_position": {
+          "x": 3.5,
+          "y": 6.5
+        }
+      },
+      {
+        "basic_action": {
+          "block_exception_target_ids": [],
+          "blocked_by": null,
+          "blocking": [],
+          "eligible_target_ids": [],
+          "kind": "damage",
+          "preview_available": false,
+          "selected_target_id": null
+        },
+        "control": {
+          "hard_cc_active": false,
+          "hard_cc_release_time_ms": null,
+          "silenced": false,
+          "skill_start_disabled_reason": null
+        },
+        "hud": {
+          "bar_mode": "hp_only",
+          "resonance_current": null,
+          "resonance_max": null,
+          "threat_class": "normal"
+        },
+        "mobility_kind": "ground",
+        "owner": "Opponent",
+        "position": {
+          "x": 5,
+          "y": 6
+        },
+        "role": "combatant",
+        "stats": {
+          "attack": 1,
+          "attack_interval_ms": 1200,
+          "current_health": 345,
+          "defense": 0,
+          "magic_resist": -5,
+          "max_health": 450,
+          "move_speed_units_per_ms": 3400
+        },
+        "tactical_state": null,
+        "unit_instance_id": "d687a11c-cae4-4f94-a9ea-3013d2b393ee",
+        "unit_source": {
+          "base_uuid": "91000000-0000-4000-8000-000000000002",
+          "kind": "corroded_employee",
+          "profile_id": "corroded_rusher"
+        },
+        "world_position": {
+          "x": 5.315516948699951,
+          "y": 6.487227916717529
+        }
+      },
+      {
+        "basic_action": {
+          "block_exception_target_ids": [],
+          "blocked_by": null,
+          "blocking": [],
+          "eligible_target_ids": [],
+          "kind": "damage",
+          "preview_available": false,
+          "selected_target_id": null
+        },
+        "control": {
+          "hard_cc_active": false,
+          "hard_cc_release_time_ms": null,
+          "silenced": false,
+          "skill_start_disabled_reason": null
+        },
+        "hud": {
+          "bar_mode": "hp_and_resonance",
+          "resonance_current": 0,
+          "resonance_max": 1,
+          "threat_class": "normal"
+        },
+        "mobility_kind": "ground",
+        "owner": "Player",
+        "position": {
+          "x": 2,
+          "y": 6
+        },
+        "range_previews": {
+          "active_skill": {
+            "available": false,
+            "cast_cells": [],
+            "effect_preview_cells": [],
+            "reason": "requires_runtime_target",
+            "requires_manual_target": false,
+            "skill_id": "u09_family_closure",
+            "source": "unavailable",
+            "source_id": null,
+            "targeting_kind": "auto_unit"
+          },
+          "basic_attack": {
+            "available": true,
+            "cells": [
+              {
+                "x": 3,
+                "y": 6
+              }
+            ],
+            "reason": null,
+            "source": "weapon_profile",
+            "source_id": null
+          }
+        },
+        "role": "combatant",
+        "stats": {
+          "attack": 12,
+          "attack_interval_ms": 1500,
+          "current_health": 180,
+          "defense": 5,
+          "magic_resist": 0,
+          "max_health": 180,
+          "move_speed_units_per_ms": 3000
+        },
+        "tactical_state": {
+          "activity": "ready",
+          "base_block_capacity": 1,
+          "defense_focus_damage_reduction_percent": 0,
+          "effective_block_capacity": 1,
+          "forced_defense_remaining_ms": 0,
+          "forced_defense_until_ms": null,
+          "next_rest_tick_ms": null,
+          "relocation_cooldown_until_ms": 0,
+          "relocation_eligibility": {
+            "enabled": true
+          },
+          "stance": "attack",
+          "stance_cooldown_until_ms": 1500,
+          "stance_eligibility": {
+            "attack": {
+              "disabled_reason_code": "already_active",
+              "enabled": false
+            },
+            "defense": {
+              "enabled": true
+            }
+          },
+          "tile_effect": "none",
+          "tile_kind": "ground"
+        },
+        "unit_instance_id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+        "unit_source": {
+          "base_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+          "employee_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+          "kind": "employee"
+        },
+        "world_position": {
+          "x": 2.5,
+          "y": 6.5
+        }
+      }
+    ]
+  },
+  "before": {
+    "at_seq": 68,
+    "battle_time_ms": 8000,
+    "deployment": {
+      "battle_time_ms": 8000,
+      "deployed_units": [
+        {
+          "employee_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+          "facing": "right",
+          "position": {
+            "x": 2,
+            "y": 6
+          },
+          "skill_readiness": {
+            "activation_mode": "manual",
+            "corrosion_ready": false,
+            "eligibility": {
+              "enabled": true
+            },
+            "manual_activation_allowed": true,
+            "resonance_current": 1,
+            "resonance_gain_block_reasons": [],
+            "resonance_max": 1,
+            "resonance_use": null,
+            "selection": "automatic_unit",
+            "skill_id": "u09_family_closure",
+            "target_available": true,
+            "target_required": false
+          },
+          "tactical_state": {
+            "activity": "ready",
+            "base_block_capacity": 1,
+            "defense_focus_damage_reduction_percent": 0,
+            "effective_block_capacity": 1,
+            "forced_defense_remaining_ms": 0,
+            "forced_defense_until_ms": null,
+            "next_rest_tick_ms": null,
+            "relocation_cooldown_until_ms": 0,
+            "relocation_eligibility": {
+              "enabled": true
+            },
+            "stance": "attack",
+            "stance_cooldown_until_ms": 1500,
+            "stance_eligibility": {
+              "attack": {
+                "disabled_reason_code": "already_active",
+                "enabled": false
+              },
+              "defense": {
+                "enabled": true
+              }
+            },
+            "tile_effect": "none",
+            "tile_kind": "ground"
+          },
+          "unit_instance_id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+          "withdraw_eligibility": {
+            "enabled": true
+          }
+        }
+      ],
+      "redeploying_units": [],
+      "unit_deploy_costs": [
+        {
+          "base_deploy_cost": 10,
+          "effective_deploy_cost": 10,
+          "eligibility": {
+            "enabled": true
+          },
+          "employee_uuid": "17c19684-fa92-4904-966b-1e884e4b17a7"
+        },
+        {
+          "base_deploy_cost": 10,
+          "effective_deploy_cost": 10,
+          "eligibility": {
+            "enabled": true
+          },
+          "employee_uuid": "d5f21295-0e74-4f6a-ad1e-bdb92d47e41e"
+        }
+      ]
+    },
+    "field_work_objects": [],
+    "independent_objects": {
+      "active": [],
+      "creations": [],
+      "last_removal": null
+    },
+    "interaction": {
+      "deployment_employee_uuid": null,
+      "focused_unit_instance_id": null,
+      "restore_playback": null,
+      "settings_restore_playback": null
+    },
+    "playback": {
+      "paused": true,
+      "speed": "X1"
+    },
+    "playback_eligibility": {
+      "forced_pause_remaining_ms": null,
+      "pause": {
+        "disabled_reason_code": "already_active",
+        "enabled": false
+      },
+      "resume": {
+        "enabled": true
+      },
+      "speeds": [
+        {
+          "eligibility": {
+            "enabled": true
+          },
+          "speed": "X0_5"
+        },
+        {
+          "eligibility": {
+            "disabled_reason_code": "already_active",
+            "enabled": false
+          },
+          "speed": "X1"
+        },
+        {
+          "eligibility": {
+            "enabled": true
+          },
+          "speed": "X2"
+        },
+        {
+          "eligibility": {
+            "enabled": true
+          },
+          "speed": "X3"
+        }
+      ]
+    },
+    "sustained_effects": {
+      "active": [],
+      "ended": 0,
+      "latest_end": null,
+      "latest_recharge": null,
+      "passive_guards": [],
+      "started": 0
+    },
+    "tactical_focus": null,
+    "tactical_resource": {
+      "current": 18,
+      "maximum": 99,
+      "recovery_per_second": 1
+    },
+    "units": [
+      {
+        "basic_action": {
+          "block_exception_target_ids": [],
+          "blocked_by": null,
+          "blocking": [],
+          "eligible_target_ids": [],
+          "kind": "damage",
+          "preview_available": false,
+          "selected_target_id": null
+        },
+        "control": {
+          "hard_cc_active": false,
+          "hard_cc_release_time_ms": null,
+          "silenced": false,
+          "skill_start_disabled_reason": null
+        },
+        "hud": {
+          "bar_mode": "hp_only",
+          "resonance_current": null,
+          "resonance_max": null,
+          "threat_class": "normal"
+        },
+        "mobility_kind": "ground",
+        "owner": "Player",
+        "position": {
+          "x": 3,
+          "y": 6
+        },
+        "range_previews": {
+          "active_skill": {
+            "available": false,
+            "cast_cells": [],
+            "effect_preview_cells": [],
+            "reason": "no_skill",
+            "requires_manual_target": false,
+            "skill_id": null,
+            "source": "unavailable",
+            "source_id": null,
+            "targeting_kind": null
+          },
+          "basic_attack": {
+            "available": true,
+            "cells": [
+              {
+                "x": 3,
+                "y": 6
+              },
+              {
+                "x": 4,
+                "y": 6
+              }
+            ],
+            "reason": null,
+            "source": "fallback_basic_attack",
+            "source_id": null
+          }
+        },
+        "role": "defense_object",
+        "stats": {
+          "attack": 0,
+          "attack_interval_ms": 1500,
+          "current_health": 350,
+          "defense": 8,
+          "magic_resist": 8,
+          "max_health": 350,
+          "move_speed_units_per_ms": 0
+        },
+        "tactical_state": null,
+        "unit_instance_id": "5c634630-6265-41c8-838b-3e99685462bb",
+        "unit_source": {
+          "base_uuid": "def00000-0000-0000-0000-000000000002",
+          "kind": "defense_object"
+        },
+        "world_position": {
+          "x": 3.5,
+          "y": 6.5
+        }
+      },
+      {
+        "basic_action": {
+          "block_exception_target_ids": [],
+          "blocked_by": null,
+          "blocking": [],
+          "eligible_target_ids": [],
+          "kind": "damage",
+          "preview_available": false,
+          "selected_target_id": null
+        },
+        "control": {
+          "hard_cc_active": false,
+          "hard_cc_release_time_ms": null,
+          "silenced": false,
+          "skill_start_disabled_reason": null
+        },
+        "hud": {
+          "bar_mode": "hp_only",
+          "resonance_current": null,
+          "resonance_max": null,
+          "threat_class": "normal"
+        },
+        "mobility_kind": "ground",
+        "owner": "Opponent",
+        "position": {
+          "x": 5,
+          "y": 6
+        },
+        "role": "combatant",
+        "stats": {
+          "attack": 1,
+          "attack_interval_ms": 1200,
+          "current_health": 450,
+          "defense": 0,
+          "magic_resist": -5,
+          "max_health": 450,
+          "move_speed_units_per_ms": 3400
+        },
+        "tactical_state": null,
+        "unit_instance_id": "d687a11c-cae4-4f94-a9ea-3013d2b393ee",
+        "unit_source": {
+          "base_uuid": "91000000-0000-4000-8000-000000000002",
+          "kind": "corroded_employee",
+          "profile_id": "corroded_rusher"
+        },
+        "world_position": {
+          "x": 5.315516948699951,
+          "y": 6.487227916717529
+        }
+      },
+      {
+        "basic_action": {
+          "block_exception_target_ids": [],
+          "blocked_by": null,
+          "blocking": [],
+          "eligible_target_ids": [],
+          "kind": "damage",
+          "preview_available": false,
+          "selected_target_id": null
+        },
+        "control": {
+          "hard_cc_active": false,
+          "hard_cc_release_time_ms": null,
+          "silenced": false,
+          "skill_start_disabled_reason": null
+        },
+        "hud": {
+          "bar_mode": "hp_and_resonance",
+          "resonance_current": 1,
+          "resonance_max": 1,
+          "threat_class": "normal"
+        },
+        "mobility_kind": "ground",
+        "owner": "Player",
+        "position": {
+          "x": 2,
+          "y": 6
+        },
+        "range_previews": {
+          "active_skill": {
+            "available": false,
+            "cast_cells": [],
+            "effect_preview_cells": [],
+            "reason": "requires_runtime_target",
+            "requires_manual_target": false,
+            "skill_id": "u09_family_closure",
+            "source": "unavailable",
+            "source_id": null,
+            "targeting_kind": "auto_unit"
+          },
+          "basic_attack": {
+            "available": true,
+            "cells": [
+              {
+                "x": 3,
+                "y": 6
+              }
+            ],
+            "reason": null,
+            "source": "weapon_profile",
+            "source_id": null
+          }
+        },
+        "role": "combatant",
+        "stats": {
+          "attack": 12,
+          "attack_interval_ms": 1500,
+          "current_health": 180,
+          "defense": 5,
+          "magic_resist": 0,
+          "max_health": 180,
+          "move_speed_units_per_ms": 3000
+        },
+        "tactical_state": {
+          "activity": "ready",
+          "base_block_capacity": 1,
+          "defense_focus_damage_reduction_percent": 0,
+          "effective_block_capacity": 1,
+          "forced_defense_remaining_ms": 0,
+          "forced_defense_until_ms": null,
+          "next_rest_tick_ms": null,
+          "relocation_cooldown_until_ms": 0,
+          "relocation_eligibility": {
+            "enabled": true
+          },
+          "stance": "attack",
+          "stance_cooldown_until_ms": 1500,
+          "stance_eligibility": {
+            "attack": {
+              "disabled_reason_code": "already_active",
+              "enabled": false
+            },
+            "defense": {
+              "enabled": true
+            }
+          },
+          "tile_effect": "none",
+          "tile_kind": "ground"
+        },
+        "unit_instance_id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+        "unit_source": {
+          "base_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+          "employee_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+          "kind": "employee"
+        },
+        "world_position": {
+          "x": 2.5,
+          "y": 6.5
+        }
+      }
+    ]
+  },
+  "case": "closure",
+  "facts": {
+    "active_actions": [],
+    "actors": [
+      {
+        "actor": "d687a11c-cae4-4f94-a9ea-3013d2b393ee",
+        "summary": {
+          "caused": {
+            "cost_mutations": 0,
+            "damage_hp_lost": 0,
+            "damage_mutations": 0,
+            "damage_strikes": 0,
+            "damaging_strikes": 0,
+            "deaths": 0,
+            "heal_mutations": 0,
+            "healing_delta": 0,
+            "latest_cost": null,
+            "latest_damage": null,
+            "latest_death": null,
+            "latest_heal": null,
+            "latest_nonzero_cost": null,
+            "latest_nonzero_damage": null,
+            "latest_nonzero_heal": null,
+            "latest_resource_change": null,
+            "resource_change_delta": 0,
+            "resource_change_mutations": 0,
+            "resource_spent": 0
+          },
+          "latest_settled_action": null,
+          "received": {
+            "cost_mutations": 0,
+            "damage_hp_lost": 105,
+            "damage_mutations": 2,
+            "damage_strikes": 1,
+            "damaging_strikes": 1,
+            "deaths": 0,
+            "heal_mutations": 0,
+            "healing_delta": 0,
+            "latest_cost": null,
+            "latest_damage": {
+              "hp_after": 345,
+              "hp_before": 420,
+              "modifier_sources": [],
+              "ordinal": 3,
+              "requested_damage": 75,
+              "segments": [
+                {
+                  "calculated_damage": 75,
+                  "damage_type": "True",
+                  "ordinal": 1,
+                  "raw_damage": 75,
+                  "source": {
+                    "action_ordinal": 0,
+                    "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                    "authored": {
+                      "field_path": "action.hit.effect.crsa_effect_1",
+                      "origin": {
+                        "Added": {
+                          "source_definition_id": "u09_family_closure"
+                        }
+                      },
+                      "origin_definition_id": "u09_family_closure",
+                      "site": {
+                        "action": {
+                          "action_id": "hit",
+                          "definition_id": "u09_family_closure"
+                        },
+                        "effect_id": "crsa_effect_1"
+                      },
+                      "source_file": "effective:relic_structural"
+                    },
+                    "cast": {
+                      "cast_seq": 0,
+                      "caster_instance_id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                      "proc_origin": null,
+                      "skill_id": "u09_family_closure"
+                    },
+                    "equipment": null,
+                    "fragment": {
+                      "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+                      "definition_id": "u09_family_closure_fragment",
+                      "form_id": "base",
+                      "skill_id": "u09_family_closure"
+                    },
+                    "relic_effective": {
+                      "employee_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+                      "fingerprint": "2f71edb77dd8eaa3aa885fd6875f2f9c35348bf01335b20ab0e8e2441de83c59",
+                      "generation": {
+                        "contract": {
+                          "authoring": 1,
+                          "catalog_schema": 6,
+                          "execution": 3,
+                          "fingerprint": 1,
+                          "pack_format": 1
+                        },
+                        "semantic_sha256": "e317edb9faa07bd9960a4138884f44f1a6e7e1cabcb8bbe746ffdbd5731c410f"
+                      },
+                      "provider_index": 0
+                    }
+                  }
+                }
+              ],
+              "source": {
+                "action_ordinal": 0,
+                "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                "authored": {
+                  "field_path": "action.hit.effect.crsa_effect_1",
+                  "origin": {
+                    "Added": {
+                      "source_definition_id": "u09_family_closure"
+                    }
+                  },
+                  "origin_definition_id": "u09_family_closure",
+                  "site": {
+                    "action": {
+                      "action_id": "hit",
+                      "definition_id": "u09_family_closure"
+                    },
+                    "effect_id": "crsa_effect_1"
+                  },
+                  "source_file": "effective:relic_structural"
+                },
+                "cast": {
+                  "cast_seq": 0,
+                  "caster_instance_id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                  "proc_origin": null,
+                  "skill_id": "u09_family_closure"
+                },
+                "equipment": null,
+                "fragment": {
+                  "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+                  "definition_id": "u09_family_closure_fragment",
+                  "form_id": "base",
+                  "skill_id": "u09_family_closure"
+                },
+                "relic_effective": {
+                  "employee_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+                  "fingerprint": "2f71edb77dd8eaa3aa885fd6875f2f9c35348bf01335b20ab0e8e2441de83c59",
+                  "generation": {
+                    "contract": {
+                      "authoring": 1,
+                      "catalog_schema": 6,
+                      "execution": 3,
+                      "fingerprint": 1,
+                      "pack_format": 1
+                    },
+                    "semantic_sha256": "e317edb9faa07bd9960a4138884f44f1a6e7e1cabcb8bbe746ffdbd5731c410f"
+                  },
+                  "provider_index": 0
+                }
+              },
+              "strike": 0,
+              "target": "d687a11c-cae4-4f94-a9ea-3013d2b393ee",
+              "time_ms": 8001,
+              "unattributed_modifiers": {
+                "armor_penetration_flat": 0,
+                "armor_penetration_percent": 0,
+                "crit_chance_percent": 0,
+                "crit_damage_percent": 0,
+                "damage_amp_percent": 0,
+                "damage_reduction_percent": 0,
+                "magic_damage_amp_percent": 0,
+                "magic_damage_reduction_percent": 0,
+                "magic_resist_penetration_flat": 0,
+                "magic_resist_penetration_percent": 0,
+                "physical_damage_amp_percent": 0,
+                "physical_damage_reduction_percent": 0,
+                "true_damage_amp_percent": 0,
+                "true_damage_reduction_percent": 0
+              }
+            },
+            "latest_death": null,
+            "latest_heal": null,
+            "latest_nonzero_cost": null,
+            "latest_nonzero_damage": {
+              "hp_after": 345,
+              "hp_before": 420,
+              "modifier_sources": [],
+              "ordinal": 3,
+              "requested_damage": 75,
+              "segments": [
+                {
+                  "calculated_damage": 75,
+                  "damage_type": "True",
+                  "ordinal": 1,
+                  "raw_damage": 75,
+                  "source": {
+                    "action_ordinal": 0,
+                    "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                    "authored": {
+                      "field_path": "action.hit.effect.crsa_effect_1",
+                      "origin": {
+                        "Added": {
+                          "source_definition_id": "u09_family_closure"
+                        }
+                      },
+                      "origin_definition_id": "u09_family_closure",
+                      "site": {
+                        "action": {
+                          "action_id": "hit",
+                          "definition_id": "u09_family_closure"
+                        },
+                        "effect_id": "crsa_effect_1"
+                      },
+                      "source_file": "effective:relic_structural"
+                    },
+                    "cast": {
+                      "cast_seq": 0,
+                      "caster_instance_id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                      "proc_origin": null,
+                      "skill_id": "u09_family_closure"
+                    },
+                    "equipment": null,
+                    "fragment": {
+                      "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+                      "definition_id": "u09_family_closure_fragment",
+                      "form_id": "base",
+                      "skill_id": "u09_family_closure"
+                    },
+                    "relic_effective": {
+                      "employee_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+                      "fingerprint": "2f71edb77dd8eaa3aa885fd6875f2f9c35348bf01335b20ab0e8e2441de83c59",
+                      "generation": {
+                        "contract": {
+                          "authoring": 1,
+                          "catalog_schema": 6,
+                          "execution": 3,
+                          "fingerprint": 1,
+                          "pack_format": 1
+                        },
+                        "semantic_sha256": "e317edb9faa07bd9960a4138884f44f1a6e7e1cabcb8bbe746ffdbd5731c410f"
+                      },
+                      "provider_index": 0
+                    }
+                  }
+                }
+              ],
+              "source": {
+                "action_ordinal": 0,
+                "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                "authored": {
+                  "field_path": "action.hit.effect.crsa_effect_1",
+                  "origin": {
+                    "Added": {
+                      "source_definition_id": "u09_family_closure"
+                    }
+                  },
+                  "origin_definition_id": "u09_family_closure",
+                  "site": {
+                    "action": {
+                      "action_id": "hit",
+                      "definition_id": "u09_family_closure"
+                    },
+                    "effect_id": "crsa_effect_1"
+                  },
+                  "source_file": "effective:relic_structural"
+                },
+                "cast": {
+                  "cast_seq": 0,
+                  "caster_instance_id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                  "proc_origin": null,
+                  "skill_id": "u09_family_closure"
+                },
+                "equipment": null,
+                "fragment": {
+                  "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+                  "definition_id": "u09_family_closure_fragment",
+                  "form_id": "base",
+                  "skill_id": "u09_family_closure"
+                },
+                "relic_effective": {
+                  "employee_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+                  "fingerprint": "2f71edb77dd8eaa3aa885fd6875f2f9c35348bf01335b20ab0e8e2441de83c59",
+                  "generation": {
+                    "contract": {
+                      "authoring": 1,
+                      "catalog_schema": 6,
+                      "execution": 3,
+                      "fingerprint": 1,
+                      "pack_format": 1
+                    },
+                    "semantic_sha256": "e317edb9faa07bd9960a4138884f44f1a6e7e1cabcb8bbe746ffdbd5731c410f"
+                  },
+                  "provider_index": 0
+                }
+              },
+              "strike": 0,
+              "target": "d687a11c-cae4-4f94-a9ea-3013d2b393ee",
+              "time_ms": 8001,
+              "unattributed_modifiers": {
+                "armor_penetration_flat": 0,
+                "armor_penetration_percent": 0,
+                "crit_chance_percent": 0,
+                "crit_damage_percent": 0,
+                "damage_amp_percent": 0,
+                "damage_reduction_percent": 0,
+                "magic_damage_amp_percent": 0,
+                "magic_damage_reduction_percent": 0,
+                "magic_resist_penetration_flat": 0,
+                "magic_resist_penetration_percent": 0,
+                "physical_damage_amp_percent": 0,
+                "physical_damage_reduction_percent": 0,
+                "true_damage_amp_percent": 0,
+                "true_damage_reduction_percent": 0
+              }
+            },
+            "latest_nonzero_heal": null,
+            "latest_resource_change": null,
+            "resource_change_delta": 0,
+            "resource_change_mutations": 0,
+            "resource_spent": 0
+          }
+        }
+      },
+      {
+        "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+        "summary": {
+          "caused": {
+            "cost_mutations": 2,
+            "damage_hp_lost": 105,
+            "damage_mutations": 2,
+            "damage_strikes": 1,
+            "damaging_strikes": 1,
+            "deaths": 0,
+            "heal_mutations": 0,
+            "healing_delta": 0,
+            "latest_cost": {
+              "after": 0,
+              "before": 1,
+              "ordinal": 1,
+              "owner": {
+                "id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                "kind": "unit"
+              },
+              "reason": "cast_reset",
+              "requested_delta": -1,
+              "resource": "resonance",
+              "source": {
+                "action_ordinal": 0,
+                "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                "authored": null,
+                "cast": null,
+                "equipment": null,
+                "fragment": {
+                  "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+                  "definition_id": "u09_family_closure_fragment",
+                  "form_id": "base",
+                  "skill_id": "u09_family_closure"
+                }
+              },
+              "time_ms": 8000
+            },
+            "latest_damage": {
+              "hp_after": 345,
+              "hp_before": 420,
+              "modifier_sources": [],
+              "ordinal": 3,
+              "requested_damage": 75,
+              "segments": [
+                {
+                  "calculated_damage": 75,
+                  "damage_type": "True",
+                  "ordinal": 1,
+                  "raw_damage": 75,
+                  "source": {
+                    "action_ordinal": 0,
+                    "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                    "authored": {
+                      "field_path": "action.hit.effect.crsa_effect_1",
+                      "origin": {
+                        "Added": {
+                          "source_definition_id": "u09_family_closure"
+                        }
+                      },
+                      "origin_definition_id": "u09_family_closure",
+                      "site": {
+                        "action": {
+                          "action_id": "hit",
+                          "definition_id": "u09_family_closure"
+                        },
+                        "effect_id": "crsa_effect_1"
+                      },
+                      "source_file": "effective:relic_structural"
+                    },
+                    "cast": {
+                      "cast_seq": 0,
+                      "caster_instance_id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                      "proc_origin": null,
+                      "skill_id": "u09_family_closure"
+                    },
+                    "equipment": null,
+                    "fragment": {
+                      "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+                      "definition_id": "u09_family_closure_fragment",
+                      "form_id": "base",
+                      "skill_id": "u09_family_closure"
+                    },
+                    "relic_effective": {
+                      "employee_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+                      "fingerprint": "2f71edb77dd8eaa3aa885fd6875f2f9c35348bf01335b20ab0e8e2441de83c59",
+                      "generation": {
+                        "contract": {
+                          "authoring": 1,
+                          "catalog_schema": 6,
+                          "execution": 3,
+                          "fingerprint": 1,
+                          "pack_format": 1
+                        },
+                        "semantic_sha256": "e317edb9faa07bd9960a4138884f44f1a6e7e1cabcb8bbe746ffdbd5731c410f"
+                      },
+                      "provider_index": 0
+                    }
+                  }
+                }
+              ],
+              "source": {
+                "action_ordinal": 0,
+                "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                "authored": {
+                  "field_path": "action.hit.effect.crsa_effect_1",
+                  "origin": {
+                    "Added": {
+                      "source_definition_id": "u09_family_closure"
+                    }
+                  },
+                  "origin_definition_id": "u09_family_closure",
+                  "site": {
+                    "action": {
+                      "action_id": "hit",
+                      "definition_id": "u09_family_closure"
+                    },
+                    "effect_id": "crsa_effect_1"
+                  },
+                  "source_file": "effective:relic_structural"
+                },
+                "cast": {
+                  "cast_seq": 0,
+                  "caster_instance_id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                  "proc_origin": null,
+                  "skill_id": "u09_family_closure"
+                },
+                "equipment": null,
+                "fragment": {
+                  "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+                  "definition_id": "u09_family_closure_fragment",
+                  "form_id": "base",
+                  "skill_id": "u09_family_closure"
+                },
+                "relic_effective": {
+                  "employee_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+                  "fingerprint": "2f71edb77dd8eaa3aa885fd6875f2f9c35348bf01335b20ab0e8e2441de83c59",
+                  "generation": {
+                    "contract": {
+                      "authoring": 1,
+                      "catalog_schema": 6,
+                      "execution": 3,
+                      "fingerprint": 1,
+                      "pack_format": 1
+                    },
+                    "semantic_sha256": "e317edb9faa07bd9960a4138884f44f1a6e7e1cabcb8bbe746ffdbd5731c410f"
+                  },
+                  "provider_index": 0
+                }
+              },
+              "strike": 0,
+              "target": "d687a11c-cae4-4f94-a9ea-3013d2b393ee",
+              "time_ms": 8001,
+              "unattributed_modifiers": {
+                "armor_penetration_flat": 0,
+                "armor_penetration_percent": 0,
+                "crit_chance_percent": 0,
+                "crit_damage_percent": 0,
+                "damage_amp_percent": 0,
+                "damage_reduction_percent": 0,
+                "magic_damage_amp_percent": 0,
+                "magic_damage_reduction_percent": 0,
+                "magic_resist_penetration_flat": 0,
+                "magic_resist_penetration_percent": 0,
+                "physical_damage_amp_percent": 0,
+                "physical_damage_reduction_percent": 0,
+                "true_damage_amp_percent": 0,
+                "true_damage_reduction_percent": 0
+              }
+            },
+            "latest_death": null,
+            "latest_heal": null,
+            "latest_nonzero_cost": {
+              "after": 0,
+              "before": 1,
+              "ordinal": 1,
+              "owner": {
+                "id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                "kind": "unit"
+              },
+              "reason": "cast_reset",
+              "requested_delta": -1,
+              "resource": "resonance",
+              "source": {
+                "action_ordinal": 0,
+                "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                "authored": null,
+                "cast": null,
+                "equipment": null,
+                "fragment": {
+                  "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+                  "definition_id": "u09_family_closure_fragment",
+                  "form_id": "base",
+                  "skill_id": "u09_family_closure"
+                }
+              },
+              "time_ms": 8000
+            },
+            "latest_nonzero_damage": {
+              "hp_after": 345,
+              "hp_before": 420,
+              "modifier_sources": [],
+              "ordinal": 3,
+              "requested_damage": 75,
+              "segments": [
+                {
+                  "calculated_damage": 75,
+                  "damage_type": "True",
+                  "ordinal": 1,
+                  "raw_damage": 75,
+                  "source": {
+                    "action_ordinal": 0,
+                    "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                    "authored": {
+                      "field_path": "action.hit.effect.crsa_effect_1",
+                      "origin": {
+                        "Added": {
+                          "source_definition_id": "u09_family_closure"
+                        }
+                      },
+                      "origin_definition_id": "u09_family_closure",
+                      "site": {
+                        "action": {
+                          "action_id": "hit",
+                          "definition_id": "u09_family_closure"
+                        },
+                        "effect_id": "crsa_effect_1"
+                      },
+                      "source_file": "effective:relic_structural"
+                    },
+                    "cast": {
+                      "cast_seq": 0,
+                      "caster_instance_id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                      "proc_origin": null,
+                      "skill_id": "u09_family_closure"
+                    },
+                    "equipment": null,
+                    "fragment": {
+                      "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+                      "definition_id": "u09_family_closure_fragment",
+                      "form_id": "base",
+                      "skill_id": "u09_family_closure"
+                    },
+                    "relic_effective": {
+                      "employee_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+                      "fingerprint": "2f71edb77dd8eaa3aa885fd6875f2f9c35348bf01335b20ab0e8e2441de83c59",
+                      "generation": {
+                        "contract": {
+                          "authoring": 1,
+                          "catalog_schema": 6,
+                          "execution": 3,
+                          "fingerprint": 1,
+                          "pack_format": 1
+                        },
+                        "semantic_sha256": "e317edb9faa07bd9960a4138884f44f1a6e7e1cabcb8bbe746ffdbd5731c410f"
+                      },
+                      "provider_index": 0
+                    }
+                  }
+                }
+              ],
+              "source": {
+                "action_ordinal": 0,
+                "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                "authored": {
+                  "field_path": "action.hit.effect.crsa_effect_1",
+                  "origin": {
+                    "Added": {
+                      "source_definition_id": "u09_family_closure"
+                    }
+                  },
+                  "origin_definition_id": "u09_family_closure",
+                  "site": {
+                    "action": {
+                      "action_id": "hit",
+                      "definition_id": "u09_family_closure"
+                    },
+                    "effect_id": "crsa_effect_1"
+                  },
+                  "source_file": "effective:relic_structural"
+                },
+                "cast": {
+                  "cast_seq": 0,
+                  "caster_instance_id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                  "proc_origin": null,
+                  "skill_id": "u09_family_closure"
+                },
+                "equipment": null,
+                "fragment": {
+                  "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+                  "definition_id": "u09_family_closure_fragment",
+                  "form_id": "base",
+                  "skill_id": "u09_family_closure"
+                },
+                "relic_effective": {
+                  "employee_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+                  "fingerprint": "2f71edb77dd8eaa3aa885fd6875f2f9c35348bf01335b20ab0e8e2441de83c59",
+                  "generation": {
+                    "contract": {
+                      "authoring": 1,
+                      "catalog_schema": 6,
+                      "execution": 3,
+                      "fingerprint": 1,
+                      "pack_format": 1
+                    },
+                    "semantic_sha256": "e317edb9faa07bd9960a4138884f44f1a6e7e1cabcb8bbe746ffdbd5731c410f"
+                  },
+                  "provider_index": 0
+                }
+              },
+              "strike": 0,
+              "target": "d687a11c-cae4-4f94-a9ea-3013d2b393ee",
+              "time_ms": 8001,
+              "unattributed_modifiers": {
+                "armor_penetration_flat": 0,
+                "armor_penetration_percent": 0,
+                "crit_chance_percent": 0,
+                "crit_damage_percent": 0,
+                "damage_amp_percent": 0,
+                "damage_reduction_percent": 0,
+                "magic_damage_amp_percent": 0,
+                "magic_damage_reduction_percent": 0,
+                "magic_resist_penetration_flat": 0,
+                "magic_resist_penetration_percent": 0,
+                "physical_damage_amp_percent": 0,
+                "physical_damage_reduction_percent": 0,
+                "true_damage_amp_percent": 0,
+                "true_damage_reduction_percent": 0
+              }
+            },
+            "latest_nonzero_heal": null,
+            "latest_resource_change": null,
+            "resource_change_delta": 0,
+            "resource_change_mutations": 0,
+            "resource_spent": 11
+          },
+          "latest_settled_action": {
+            "accepted_at_ms": 8000,
+            "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+            "effects_settled_at_ms": 8001,
+            "facts": {
+              "cost_mutations": 1,
+              "damage_hp_lost": 105,
+              "damage_mutations": 2,
+              "damage_strikes": 1,
+              "damaging_strikes": 1,
+              "deaths": 0,
+              "heal_mutations": 0,
+              "healing_delta": 0,
+              "latest_cost": {
+                "after": 0,
+                "before": 1,
+                "ordinal": 1,
+                "owner": {
+                  "id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                  "kind": "unit"
+                },
+                "reason": "cast_reset",
+                "requested_delta": -1,
+                "resource": "resonance",
+                "source": {
+                  "action_ordinal": 0,
+                  "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                  "authored": null,
+                  "cast": null,
+                  "equipment": null,
+                  "fragment": {
+                    "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+                    "definition_id": "u09_family_closure_fragment",
+                    "form_id": "base",
+                    "skill_id": "u09_family_closure"
+                  }
+                },
+                "time_ms": 8000
+              },
+              "latest_damage": {
+                "hp_after": 345,
+                "hp_before": 420,
+                "modifier_sources": [],
+                "ordinal": 3,
+                "requested_damage": 75,
+                "segments": [
+                  {
+                    "calculated_damage": 75,
+                    "damage_type": "True",
+                    "ordinal": 1,
+                    "raw_damage": 75,
+                    "source": {
+                      "action_ordinal": 0,
+                      "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                      "authored": {
+                        "field_path": "action.hit.effect.crsa_effect_1",
+                        "origin": {
+                          "Added": {
+                            "source_definition_id": "u09_family_closure"
+                          }
+                        },
+                        "origin_definition_id": "u09_family_closure",
+                        "site": {
+                          "action": {
+                            "action_id": "hit",
+                            "definition_id": "u09_family_closure"
+                          },
+                          "effect_id": "crsa_effect_1"
+                        },
+                        "source_file": "effective:relic_structural"
+                      },
+                      "cast": {
+                        "cast_seq": 0,
+                        "caster_instance_id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                        "proc_origin": null,
+                        "skill_id": "u09_family_closure"
+                      },
+                      "equipment": null,
+                      "fragment": {
+                        "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+                        "definition_id": "u09_family_closure_fragment",
+                        "form_id": "base",
+                        "skill_id": "u09_family_closure"
+                      },
+                      "relic_effective": {
+                        "employee_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+                        "fingerprint": "2f71edb77dd8eaa3aa885fd6875f2f9c35348bf01335b20ab0e8e2441de83c59",
+                        "generation": {
+                          "contract": {
+                            "authoring": 1,
+                            "catalog_schema": 6,
+                            "execution": 3,
+                            "fingerprint": 1,
+                            "pack_format": 1
+                          },
+                          "semantic_sha256": "e317edb9faa07bd9960a4138884f44f1a6e7e1cabcb8bbe746ffdbd5731c410f"
+                        },
+                        "provider_index": 0
+                      }
+                    }
+                  }
+                ],
+                "source": {
+                  "action_ordinal": 0,
+                  "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                  "authored": {
+                    "field_path": "action.hit.effect.crsa_effect_1",
+                    "origin": {
+                      "Added": {
+                        "source_definition_id": "u09_family_closure"
+                      }
+                    },
+                    "origin_definition_id": "u09_family_closure",
+                    "site": {
+                      "action": {
+                        "action_id": "hit",
+                        "definition_id": "u09_family_closure"
+                      },
+                      "effect_id": "crsa_effect_1"
+                    },
+                    "source_file": "effective:relic_structural"
+                  },
+                  "cast": {
+                    "cast_seq": 0,
+                    "caster_instance_id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                    "proc_origin": null,
+                    "skill_id": "u09_family_closure"
+                  },
+                  "equipment": null,
+                  "fragment": {
+                    "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+                    "definition_id": "u09_family_closure_fragment",
+                    "form_id": "base",
+                    "skill_id": "u09_family_closure"
+                  },
+                  "relic_effective": {
+                    "employee_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+                    "fingerprint": "2f71edb77dd8eaa3aa885fd6875f2f9c35348bf01335b20ab0e8e2441de83c59",
+                    "generation": {
+                      "contract": {
+                        "authoring": 1,
+                        "catalog_schema": 6,
+                        "execution": 3,
+                        "fingerprint": 1,
+                        "pack_format": 1
+                      },
+                      "semantic_sha256": "e317edb9faa07bd9960a4138884f44f1a6e7e1cabcb8bbe746ffdbd5731c410f"
+                    },
+                    "provider_index": 0
+                  }
+                },
+                "strike": 0,
+                "target": "d687a11c-cae4-4f94-a9ea-3013d2b393ee",
+                "time_ms": 8001,
+                "unattributed_modifiers": {
+                  "armor_penetration_flat": 0,
+                  "armor_penetration_percent": 0,
+                  "crit_chance_percent": 0,
+                  "crit_damage_percent": 0,
+                  "damage_amp_percent": 0,
+                  "damage_reduction_percent": 0,
+                  "magic_damage_amp_percent": 0,
+                  "magic_damage_reduction_percent": 0,
+                  "magic_resist_penetration_flat": 0,
+                  "magic_resist_penetration_percent": 0,
+                  "physical_damage_amp_percent": 0,
+                  "physical_damage_reduction_percent": 0,
+                  "true_damage_amp_percent": 0,
+                  "true_damage_reduction_percent": 0
+                }
+              },
+              "latest_death": null,
+              "latest_heal": null,
+              "latest_nonzero_cost": {
+                "after": 0,
+                "before": 1,
+                "ordinal": 1,
+                "owner": {
+                  "id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                  "kind": "unit"
+                },
+                "reason": "cast_reset",
+                "requested_delta": -1,
+                "resource": "resonance",
+                "source": {
+                  "action_ordinal": 0,
+                  "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                  "authored": null,
+                  "cast": null,
+                  "equipment": null,
+                  "fragment": {
+                    "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+                    "definition_id": "u09_family_closure_fragment",
+                    "form_id": "base",
+                    "skill_id": "u09_family_closure"
+                  }
+                },
+                "time_ms": 8000
+              },
+              "latest_nonzero_damage": {
+                "hp_after": 345,
+                "hp_before": 420,
+                "modifier_sources": [],
+                "ordinal": 3,
+                "requested_damage": 75,
+                "segments": [
+                  {
+                    "calculated_damage": 75,
+                    "damage_type": "True",
+                    "ordinal": 1,
+                    "raw_damage": 75,
+                    "source": {
+                      "action_ordinal": 0,
+                      "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                      "authored": {
+                        "field_path": "action.hit.effect.crsa_effect_1",
+                        "origin": {
+                          "Added": {
+                            "source_definition_id": "u09_family_closure"
+                          }
+                        },
+                        "origin_definition_id": "u09_family_closure",
+                        "site": {
+                          "action": {
+                            "action_id": "hit",
+                            "definition_id": "u09_family_closure"
+                          },
+                          "effect_id": "crsa_effect_1"
+                        },
+                        "source_file": "effective:relic_structural"
+                      },
+                      "cast": {
+                        "cast_seq": 0,
+                        "caster_instance_id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                        "proc_origin": null,
+                        "skill_id": "u09_family_closure"
+                      },
+                      "equipment": null,
+                      "fragment": {
+                        "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+                        "definition_id": "u09_family_closure_fragment",
+                        "form_id": "base",
+                        "skill_id": "u09_family_closure"
+                      },
+                      "relic_effective": {
+                        "employee_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+                        "fingerprint": "2f71edb77dd8eaa3aa885fd6875f2f9c35348bf01335b20ab0e8e2441de83c59",
+                        "generation": {
+                          "contract": {
+                            "authoring": 1,
+                            "catalog_schema": 6,
+                            "execution": 3,
+                            "fingerprint": 1,
+                            "pack_format": 1
+                          },
+                          "semantic_sha256": "e317edb9faa07bd9960a4138884f44f1a6e7e1cabcb8bbe746ffdbd5731c410f"
+                        },
+                        "provider_index": 0
+                      }
+                    }
+                  }
+                ],
+                "source": {
+                  "action_ordinal": 0,
+                  "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                  "authored": {
+                    "field_path": "action.hit.effect.crsa_effect_1",
+                    "origin": {
+                      "Added": {
+                        "source_definition_id": "u09_family_closure"
+                      }
+                    },
+                    "origin_definition_id": "u09_family_closure",
+                    "site": {
+                      "action": {
+                        "action_id": "hit",
+                        "definition_id": "u09_family_closure"
+                      },
+                      "effect_id": "crsa_effect_1"
+                    },
+                    "source_file": "effective:relic_structural"
+                  },
+                  "cast": {
+                    "cast_seq": 0,
+                    "caster_instance_id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                    "proc_origin": null,
+                    "skill_id": "u09_family_closure"
+                  },
+                  "equipment": null,
+                  "fragment": {
+                    "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+                    "definition_id": "u09_family_closure_fragment",
+                    "form_id": "base",
+                    "skill_id": "u09_family_closure"
+                  },
+                  "relic_effective": {
+                    "employee_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+                    "fingerprint": "2f71edb77dd8eaa3aa885fd6875f2f9c35348bf01335b20ab0e8e2441de83c59",
+                    "generation": {
+                      "contract": {
+                        "authoring": 1,
+                        "catalog_schema": 6,
+                        "execution": 3,
+                        "fingerprint": 1,
+                        "pack_format": 1
+                      },
+                      "semantic_sha256": "e317edb9faa07bd9960a4138884f44f1a6e7e1cabcb8bbe746ffdbd5731c410f"
+                    },
+                    "provider_index": 0
+                  }
+                },
+                "strike": 0,
+                "target": "d687a11c-cae4-4f94-a9ea-3013d2b393ee",
+                "time_ms": 8001,
+                "unattributed_modifiers": {
+                  "armor_penetration_flat": 0,
+                  "armor_penetration_percent": 0,
+                  "crit_chance_percent": 0,
+                  "crit_damage_percent": 0,
+                  "damage_amp_percent": 0,
+                  "damage_reduction_percent": 0,
+                  "magic_damage_amp_percent": 0,
+                  "magic_damage_reduction_percent": 0,
+                  "magic_resist_penetration_flat": 0,
+                  "magic_resist_penetration_percent": 0,
+                  "physical_damage_amp_percent": 0,
+                  "physical_damage_reduction_percent": 0,
+                  "true_damage_amp_percent": 0,
+                  "true_damage_reduction_percent": 0
+                }
+              },
+              "latest_nonzero_heal": null,
+              "latest_resource_change": null,
+              "resource_change_delta": 0,
+              "resource_change_mutations": 0,
+              "resource_spent": 1
+            },
+            "ordinal": 0,
+            "outstanding_deliveries": 0,
+            "pending_control_steps": 0,
+            "released_at_ms": 8001,
+            "skill_id": "u09_family_closure",
+            "source": {
+              "action_ordinal": 0,
+              "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+              "authored": null,
+              "cast": null,
+              "equipment": null,
+              "fragment": {
+                "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+                "definition_id": "u09_family_closure_fragment",
+                "form_id": "base",
+                "skill_id": "u09_family_closure"
+              },
+              "relic_effective": {
+                "employee_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+                "fingerprint": "2f71edb77dd8eaa3aa885fd6875f2f9c35348bf01335b20ab0e8e2441de83c59",
+                "generation": {
+                  "contract": {
+                    "authoring": 1,
+                    "catalog_schema": 6,
+                    "execution": 3,
+                    "fingerprint": 1,
+                    "pack_format": 1
+                  },
+                  "semantic_sha256": "e317edb9faa07bd9960a4138884f44f1a6e7e1cabcb8bbe746ffdbd5731c410f"
+                },
+                "provider_index": 0
+              }
+            },
+            "terminal": {
+              "kind": {
+                "kind": "finished"
+              },
+              "time_ms": 8001
+            }
+          },
+          "received": {
+            "cost_mutations": 1,
+            "damage_hp_lost": 0,
+            "damage_mutations": 0,
+            "damage_strikes": 0,
+            "damaging_strikes": 0,
+            "deaths": 0,
+            "heal_mutations": 0,
+            "healing_delta": 0,
+            "latest_cost": {
+              "after": 0,
+              "before": 1,
+              "ordinal": 1,
+              "owner": {
+                "id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                "kind": "unit"
+              },
+              "reason": "cast_reset",
+              "requested_delta": -1,
+              "resource": "resonance",
+              "source": {
+                "action_ordinal": 0,
+                "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                "authored": null,
+                "cast": null,
+                "equipment": null,
+                "fragment": {
+                  "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+                  "definition_id": "u09_family_closure_fragment",
+                  "form_id": "base",
+                  "skill_id": "u09_family_closure"
+                }
+              },
+              "time_ms": 8000
+            },
+            "latest_damage": null,
+            "latest_death": null,
+            "latest_heal": null,
+            "latest_nonzero_cost": {
+              "after": 0,
+              "before": 1,
+              "ordinal": 1,
+              "owner": {
+                "id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                "kind": "unit"
+              },
+              "reason": "cast_reset",
+              "requested_delta": -1,
+              "resource": "resonance",
+              "source": {
+                "action_ordinal": 0,
+                "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                "authored": null,
+                "cast": null,
+                "equipment": null,
+                "fragment": {
+                  "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+                  "definition_id": "u09_family_closure_fragment",
+                  "form_id": "base",
+                  "skill_id": "u09_family_closure"
+                }
+              },
+              "time_ms": 8000
+            },
+            "latest_nonzero_damage": null,
+            "latest_nonzero_heal": null,
+            "latest_resource_change": null,
+            "resource_change_delta": 0,
+            "resource_change_mutations": 0,
+            "resource_spent": 1
+          }
+        }
+      }
+    ],
+    "latest_settled_action": {
+      "accepted_at_ms": 8000,
+      "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+      "effects_settled_at_ms": 8001,
+      "facts": {
+        "cost_mutations": 1,
+        "damage_hp_lost": 105,
+        "damage_mutations": 2,
+        "damage_strikes": 1,
+        "damaging_strikes": 1,
+        "deaths": 0,
+        "heal_mutations": 0,
+        "healing_delta": 0,
+        "latest_cost": {
+          "after": 0,
+          "before": 1,
+          "ordinal": 1,
+          "owner": {
+            "id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+            "kind": "unit"
+          },
+          "reason": "cast_reset",
+          "requested_delta": -1,
+          "resource": "resonance",
+          "source": {
+            "action_ordinal": 0,
+            "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+            "authored": null,
+            "cast": null,
+            "equipment": null,
+            "fragment": {
+              "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+              "definition_id": "u09_family_closure_fragment",
+              "form_id": "base",
+              "skill_id": "u09_family_closure"
+            }
+          },
+          "time_ms": 8000
+        },
+        "latest_damage": {
+          "hp_after": 345,
+          "hp_before": 420,
+          "modifier_sources": [],
+          "ordinal": 3,
+          "requested_damage": 75,
+          "segments": [
+            {
+              "calculated_damage": 75,
+              "damage_type": "True",
+              "ordinal": 1,
+              "raw_damage": 75,
+              "source": {
+                "action_ordinal": 0,
+                "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                "authored": {
+                  "field_path": "action.hit.effect.crsa_effect_1",
+                  "origin": {
+                    "Added": {
+                      "source_definition_id": "u09_family_closure"
+                    }
+                  },
+                  "origin_definition_id": "u09_family_closure",
+                  "site": {
+                    "action": {
+                      "action_id": "hit",
+                      "definition_id": "u09_family_closure"
+                    },
+                    "effect_id": "crsa_effect_1"
+                  },
+                  "source_file": "effective:relic_structural"
+                },
+                "cast": {
+                  "cast_seq": 0,
+                  "caster_instance_id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                  "proc_origin": null,
+                  "skill_id": "u09_family_closure"
+                },
+                "equipment": null,
+                "fragment": {
+                  "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+                  "definition_id": "u09_family_closure_fragment",
+                  "form_id": "base",
+                  "skill_id": "u09_family_closure"
+                },
+                "relic_effective": {
+                  "employee_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+                  "fingerprint": "2f71edb77dd8eaa3aa885fd6875f2f9c35348bf01335b20ab0e8e2441de83c59",
+                  "generation": {
+                    "contract": {
+                      "authoring": 1,
+                      "catalog_schema": 6,
+                      "execution": 3,
+                      "fingerprint": 1,
+                      "pack_format": 1
+                    },
+                    "semantic_sha256": "e317edb9faa07bd9960a4138884f44f1a6e7e1cabcb8bbe746ffdbd5731c410f"
+                  },
+                  "provider_index": 0
+                }
+              }
+            }
+          ],
+          "source": {
+            "action_ordinal": 0,
+            "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+            "authored": {
+              "field_path": "action.hit.effect.crsa_effect_1",
+              "origin": {
+                "Added": {
+                  "source_definition_id": "u09_family_closure"
+                }
+              },
+              "origin_definition_id": "u09_family_closure",
+              "site": {
+                "action": {
+                  "action_id": "hit",
+                  "definition_id": "u09_family_closure"
+                },
+                "effect_id": "crsa_effect_1"
+              },
+              "source_file": "effective:relic_structural"
+            },
+            "cast": {
+              "cast_seq": 0,
+              "caster_instance_id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+              "proc_origin": null,
+              "skill_id": "u09_family_closure"
+            },
+            "equipment": null,
+            "fragment": {
+              "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+              "definition_id": "u09_family_closure_fragment",
+              "form_id": "base",
+              "skill_id": "u09_family_closure"
+            },
+            "relic_effective": {
+              "employee_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+              "fingerprint": "2f71edb77dd8eaa3aa885fd6875f2f9c35348bf01335b20ab0e8e2441de83c59",
+              "generation": {
+                "contract": {
+                  "authoring": 1,
+                  "catalog_schema": 6,
+                  "execution": 3,
+                  "fingerprint": 1,
+                  "pack_format": 1
+                },
+                "semantic_sha256": "e317edb9faa07bd9960a4138884f44f1a6e7e1cabcb8bbe746ffdbd5731c410f"
+              },
+              "provider_index": 0
+            }
+          },
+          "strike": 0,
+          "target": "d687a11c-cae4-4f94-a9ea-3013d2b393ee",
+          "time_ms": 8001,
+          "unattributed_modifiers": {
+            "armor_penetration_flat": 0,
+            "armor_penetration_percent": 0,
+            "crit_chance_percent": 0,
+            "crit_damage_percent": 0,
+            "damage_amp_percent": 0,
+            "damage_reduction_percent": 0,
+            "magic_damage_amp_percent": 0,
+            "magic_damage_reduction_percent": 0,
+            "magic_resist_penetration_flat": 0,
+            "magic_resist_penetration_percent": 0,
+            "physical_damage_amp_percent": 0,
+            "physical_damage_reduction_percent": 0,
+            "true_damage_amp_percent": 0,
+            "true_damage_reduction_percent": 0
+          }
+        },
+        "latest_death": null,
+        "latest_heal": null,
+        "latest_nonzero_cost": {
+          "after": 0,
+          "before": 1,
+          "ordinal": 1,
+          "owner": {
+            "id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+            "kind": "unit"
+          },
+          "reason": "cast_reset",
+          "requested_delta": -1,
+          "resource": "resonance",
+          "source": {
+            "action_ordinal": 0,
+            "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+            "authored": null,
+            "cast": null,
+            "equipment": null,
+            "fragment": {
+              "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+              "definition_id": "u09_family_closure_fragment",
+              "form_id": "base",
+              "skill_id": "u09_family_closure"
+            }
+          },
+          "time_ms": 8000
+        },
+        "latest_nonzero_damage": {
+          "hp_after": 345,
+          "hp_before": 420,
+          "modifier_sources": [],
+          "ordinal": 3,
+          "requested_damage": 75,
+          "segments": [
+            {
+              "calculated_damage": 75,
+              "damage_type": "True",
+              "ordinal": 1,
+              "raw_damage": 75,
+              "source": {
+                "action_ordinal": 0,
+                "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                "authored": {
+                  "field_path": "action.hit.effect.crsa_effect_1",
+                  "origin": {
+                    "Added": {
+                      "source_definition_id": "u09_family_closure"
+                    }
+                  },
+                  "origin_definition_id": "u09_family_closure",
+                  "site": {
+                    "action": {
+                      "action_id": "hit",
+                      "definition_id": "u09_family_closure"
+                    },
+                    "effect_id": "crsa_effect_1"
+                  },
+                  "source_file": "effective:relic_structural"
+                },
+                "cast": {
+                  "cast_seq": 0,
+                  "caster_instance_id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                  "proc_origin": null,
+                  "skill_id": "u09_family_closure"
+                },
+                "equipment": null,
+                "fragment": {
+                  "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+                  "definition_id": "u09_family_closure_fragment",
+                  "form_id": "base",
+                  "skill_id": "u09_family_closure"
+                },
+                "relic_effective": {
+                  "employee_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+                  "fingerprint": "2f71edb77dd8eaa3aa885fd6875f2f9c35348bf01335b20ab0e8e2441de83c59",
+                  "generation": {
+                    "contract": {
+                      "authoring": 1,
+                      "catalog_schema": 6,
+                      "execution": 3,
+                      "fingerprint": 1,
+                      "pack_format": 1
+                    },
+                    "semantic_sha256": "e317edb9faa07bd9960a4138884f44f1a6e7e1cabcb8bbe746ffdbd5731c410f"
+                  },
+                  "provider_index": 0
+                }
+              }
+            }
+          ],
+          "source": {
+            "action_ordinal": 0,
+            "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+            "authored": {
+              "field_path": "action.hit.effect.crsa_effect_1",
+              "origin": {
+                "Added": {
+                  "source_definition_id": "u09_family_closure"
+                }
+              },
+              "origin_definition_id": "u09_family_closure",
+              "site": {
+                "action": {
+                  "action_id": "hit",
+                  "definition_id": "u09_family_closure"
+                },
+                "effect_id": "crsa_effect_1"
+              },
+              "source_file": "effective:relic_structural"
+            },
+            "cast": {
+              "cast_seq": 0,
+              "caster_instance_id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+              "proc_origin": null,
+              "skill_id": "u09_family_closure"
+            },
+            "equipment": null,
+            "fragment": {
+              "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+              "definition_id": "u09_family_closure_fragment",
+              "form_id": "base",
+              "skill_id": "u09_family_closure"
+            },
+            "relic_effective": {
+              "employee_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+              "fingerprint": "2f71edb77dd8eaa3aa885fd6875f2f9c35348bf01335b20ab0e8e2441de83c59",
+              "generation": {
+                "contract": {
+                  "authoring": 1,
+                  "catalog_schema": 6,
+                  "execution": 3,
+                  "fingerprint": 1,
+                  "pack_format": 1
+                },
+                "semantic_sha256": "e317edb9faa07bd9960a4138884f44f1a6e7e1cabcb8bbe746ffdbd5731c410f"
+              },
+              "provider_index": 0
+            }
+          },
+          "strike": 0,
+          "target": "d687a11c-cae4-4f94-a9ea-3013d2b393ee",
+          "time_ms": 8001,
+          "unattributed_modifiers": {
+            "armor_penetration_flat": 0,
+            "armor_penetration_percent": 0,
+            "crit_chance_percent": 0,
+            "crit_damage_percent": 0,
+            "damage_amp_percent": 0,
+            "damage_reduction_percent": 0,
+            "magic_damage_amp_percent": 0,
+            "magic_damage_reduction_percent": 0,
+            "magic_resist_penetration_flat": 0,
+            "magic_resist_penetration_percent": 0,
+            "physical_damage_amp_percent": 0,
+            "physical_damage_reduction_percent": 0,
+            "true_damage_amp_percent": 0,
+            "true_damage_reduction_percent": 0
+          }
+        },
+        "latest_nonzero_heal": null,
+        "latest_resource_change": null,
+        "resource_change_delta": 0,
+        "resource_change_mutations": 0,
+        "resource_spent": 1
+      },
+      "ordinal": 0,
+      "outstanding_deliveries": 0,
+      "pending_control_steps": 0,
+      "released_at_ms": 8001,
+      "skill_id": "u09_family_closure",
+      "source": {
+        "action_ordinal": 0,
+        "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+        "authored": null,
+        "cast": null,
+        "equipment": null,
+        "fragment": {
+          "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+          "definition_id": "u09_family_closure_fragment",
+          "form_id": "base",
+          "skill_id": "u09_family_closure"
+        },
+        "relic_effective": {
+          "employee_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+          "fingerprint": "2f71edb77dd8eaa3aa885fd6875f2f9c35348bf01335b20ab0e8e2441de83c59",
+          "generation": {
+            "contract": {
+              "authoring": 1,
+              "catalog_schema": 6,
+              "execution": 3,
+              "fingerprint": 1,
+              "pack_format": 1
+            },
+            "semantic_sha256": "e317edb9faa07bd9960a4138884f44f1a6e7e1cabcb8bbe746ffdbd5731c410f"
+          },
+          "provider_index": 0
+        }
+      },
+      "terminal": {
+        "kind": {
+          "kind": "finished"
+        },
+        "time_ms": 8001
+      }
+    },
+    "providers": [
+      {
+        "provider": {
+          "definition_uuid": "650e8400-e29b-41d4-a716-446655440030",
+          "persistent_copy_uuid": "e7bed3f4-840e-4221-872d-33d63e4d26fe",
+          "runtime_item_instance_id": "d0c7b8ad-11bc-4e53-9002-c00388503835"
+        },
+        "summary": {
+          "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+          "calculated_damage": 0,
+          "damage_segments": 0,
+          "latest_cost": null,
+          "latest_damage": null,
+          "latest_death": null,
+          "latest_heal": null,
+          "latest_resource_change": null,
+          "modifier_contributions": 0
+        }
+      },
+      {
+        "provider": {
+          "definition_uuid": "650e8400-e29b-41d4-a716-446655440031",
+          "persistent_copy_uuid": "f2bc5267-91e3-4841-8102-b26daa8f913c",
+          "runtime_item_instance_id": "b93397e0-6fa6-49ae-b1d0-582ddf2f0393"
+        },
+        "summary": {
+          "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+          "calculated_damage": 0,
+          "damage_segments": 0,
+          "latest_cost": null,
+          "latest_damage": null,
+          "latest_death": null,
+          "latest_heal": null,
+          "latest_resource_change": null,
+          "modifier_contributions": 0
+        }
+      }
+    ],
+    "summary": {
+      "cost_mutations": 2,
+      "damage_hp_lost": 105,
+      "damage_mutations": 2,
+      "damage_strikes": 1,
+      "damaging_strikes": 1,
+      "deaths": 0,
+      "heal_mutations": 0,
+      "healing_delta": 0,
+      "latest_cost": {
+        "after": 0,
+        "before": 1,
+        "ordinal": 1,
+        "owner": {
+          "id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+          "kind": "unit"
+        },
+        "reason": "cast_reset",
+        "requested_delta": -1,
+        "resource": "resonance",
+        "source": {
+          "action_ordinal": 0,
+          "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+          "authored": null,
+          "cast": null,
+          "equipment": null,
+          "fragment": {
+            "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+            "definition_id": "u09_family_closure_fragment",
+            "form_id": "base",
+            "skill_id": "u09_family_closure"
+          }
+        },
+        "time_ms": 8000
+      },
+      "latest_damage": {
+        "hp_after": 345,
+        "hp_before": 420,
+        "modifier_sources": [],
+        "ordinal": 3,
+        "requested_damage": 75,
+        "segments": [
+          {
+            "calculated_damage": 75,
+            "damage_type": "True",
+            "ordinal": 1,
+            "raw_damage": 75,
+            "source": {
+              "action_ordinal": 0,
+              "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+              "authored": {
+                "field_path": "action.hit.effect.crsa_effect_1",
+                "origin": {
+                  "Added": {
+                    "source_definition_id": "u09_family_closure"
+                  }
+                },
+                "origin_definition_id": "u09_family_closure",
+                "site": {
+                  "action": {
+                    "action_id": "hit",
+                    "definition_id": "u09_family_closure"
+                  },
+                  "effect_id": "crsa_effect_1"
+                },
+                "source_file": "effective:relic_structural"
+              },
+              "cast": {
+                "cast_seq": 0,
+                "caster_instance_id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                "proc_origin": null,
+                "skill_id": "u09_family_closure"
+              },
+              "equipment": null,
+              "fragment": {
+                "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+                "definition_id": "u09_family_closure_fragment",
+                "form_id": "base",
+                "skill_id": "u09_family_closure"
+              },
+              "relic_effective": {
+                "employee_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+                "fingerprint": "2f71edb77dd8eaa3aa885fd6875f2f9c35348bf01335b20ab0e8e2441de83c59",
+                "generation": {
+                  "contract": {
+                    "authoring": 1,
+                    "catalog_schema": 6,
+                    "execution": 3,
+                    "fingerprint": 1,
+                    "pack_format": 1
+                  },
+                  "semantic_sha256": "e317edb9faa07bd9960a4138884f44f1a6e7e1cabcb8bbe746ffdbd5731c410f"
+                },
+                "provider_index": 0
+              }
+            }
+          }
+        ],
+        "source": {
+          "action_ordinal": 0,
+          "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+          "authored": {
+            "field_path": "action.hit.effect.crsa_effect_1",
+            "origin": {
+              "Added": {
+                "source_definition_id": "u09_family_closure"
+              }
+            },
+            "origin_definition_id": "u09_family_closure",
+            "site": {
+              "action": {
+                "action_id": "hit",
+                "definition_id": "u09_family_closure"
+              },
+              "effect_id": "crsa_effect_1"
+            },
+            "source_file": "effective:relic_structural"
+          },
+          "cast": {
+            "cast_seq": 0,
+            "caster_instance_id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+            "proc_origin": null,
+            "skill_id": "u09_family_closure"
+          },
+          "equipment": null,
+          "fragment": {
+            "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+            "definition_id": "u09_family_closure_fragment",
+            "form_id": "base",
+            "skill_id": "u09_family_closure"
+          },
+          "relic_effective": {
+            "employee_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+            "fingerprint": "2f71edb77dd8eaa3aa885fd6875f2f9c35348bf01335b20ab0e8e2441de83c59",
+            "generation": {
+              "contract": {
+                "authoring": 1,
+                "catalog_schema": 6,
+                "execution": 3,
+                "fingerprint": 1,
+                "pack_format": 1
+              },
+              "semantic_sha256": "e317edb9faa07bd9960a4138884f44f1a6e7e1cabcb8bbe746ffdbd5731c410f"
+            },
+            "provider_index": 0
+          }
+        },
+        "strike": 0,
+        "target": "d687a11c-cae4-4f94-a9ea-3013d2b393ee",
+        "time_ms": 8001,
+        "unattributed_modifiers": {
+          "armor_penetration_flat": 0,
+          "armor_penetration_percent": 0,
+          "crit_chance_percent": 0,
+          "crit_damage_percent": 0,
+          "damage_amp_percent": 0,
+          "damage_reduction_percent": 0,
+          "magic_damage_amp_percent": 0,
+          "magic_damage_reduction_percent": 0,
+          "magic_resist_penetration_flat": 0,
+          "magic_resist_penetration_percent": 0,
+          "physical_damage_amp_percent": 0,
+          "physical_damage_reduction_percent": 0,
+          "true_damage_amp_percent": 0,
+          "true_damage_reduction_percent": 0
+        }
+      },
+      "latest_death": null,
+      "latest_heal": null,
+      "latest_nonzero_cost": {
+        "after": 0,
+        "before": 1,
+        "ordinal": 1,
+        "owner": {
+          "id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+          "kind": "unit"
+        },
+        "reason": "cast_reset",
+        "requested_delta": -1,
+        "resource": "resonance",
+        "source": {
+          "action_ordinal": 0,
+          "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+          "authored": null,
+          "cast": null,
+          "equipment": null,
+          "fragment": {
+            "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+            "definition_id": "u09_family_closure_fragment",
+            "form_id": "base",
+            "skill_id": "u09_family_closure"
+          }
+        },
+        "time_ms": 8000
+      },
+      "latest_nonzero_damage": {
+        "hp_after": 345,
+        "hp_before": 420,
+        "modifier_sources": [],
+        "ordinal": 3,
+        "requested_damage": 75,
+        "segments": [
+          {
+            "calculated_damage": 75,
+            "damage_type": "True",
+            "ordinal": 1,
+            "raw_damage": 75,
+            "source": {
+              "action_ordinal": 0,
+              "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+              "authored": {
+                "field_path": "action.hit.effect.crsa_effect_1",
+                "origin": {
+                  "Added": {
+                    "source_definition_id": "u09_family_closure"
+                  }
+                },
+                "origin_definition_id": "u09_family_closure",
+                "site": {
+                  "action": {
+                    "action_id": "hit",
+                    "definition_id": "u09_family_closure"
+                  },
+                  "effect_id": "crsa_effect_1"
+                },
+                "source_file": "effective:relic_structural"
+              },
+              "cast": {
+                "cast_seq": 0,
+                "caster_instance_id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+                "proc_origin": null,
+                "skill_id": "u09_family_closure"
+              },
+              "equipment": null,
+              "fragment": {
+                "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+                "definition_id": "u09_family_closure_fragment",
+                "form_id": "base",
+                "skill_id": "u09_family_closure"
+              },
+              "relic_effective": {
+                "employee_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+                "fingerprint": "2f71edb77dd8eaa3aa885fd6875f2f9c35348bf01335b20ab0e8e2441de83c59",
+                "generation": {
+                  "contract": {
+                    "authoring": 1,
+                    "catalog_schema": 6,
+                    "execution": 3,
+                    "fingerprint": 1,
+                    "pack_format": 1
+                  },
+                  "semantic_sha256": "e317edb9faa07bd9960a4138884f44f1a6e7e1cabcb8bbe746ffdbd5731c410f"
+                },
+                "provider_index": 0
+              }
+            }
+          }
+        ],
+        "source": {
+          "action_ordinal": 0,
+          "actor": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+          "authored": {
+            "field_path": "action.hit.effect.crsa_effect_1",
+            "origin": {
+              "Added": {
+                "source_definition_id": "u09_family_closure"
+              }
+            },
+            "origin_definition_id": "u09_family_closure",
+            "site": {
+              "action": {
+                "action_id": "hit",
+                "definition_id": "u09_family_closure"
+              },
+              "effect_id": "crsa_effect_1"
+            },
+            "source_file": "effective:relic_structural"
+          },
+          "cast": {
+            "cast_seq": 0,
+            "caster_instance_id": "da566deb-6bd4-4f6e-8c39-0f89da0159cb",
+            "proc_origin": null,
+            "skill_id": "u09_family_closure"
+          },
+          "equipment": null,
+          "fragment": {
+            "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+            "definition_id": "u09_family_closure_fragment",
+            "form_id": "base",
+            "skill_id": "u09_family_closure"
+          },
+          "relic_effective": {
+            "employee_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+            "fingerprint": "2f71edb77dd8eaa3aa885fd6875f2f9c35348bf01335b20ab0e8e2441de83c59",
+            "generation": {
+              "contract": {
+                "authoring": 1,
+                "catalog_schema": 6,
+                "execution": 3,
+                "fingerprint": 1,
+                "pack_format": 1
+              },
+              "semantic_sha256": "e317edb9faa07bd9960a4138884f44f1a6e7e1cabcb8bbe746ffdbd5731c410f"
+            },
+            "provider_index": 0
+          }
+        },
+        "strike": 0,
+        "target": "d687a11c-cae4-4f94-a9ea-3013d2b393ee",
+        "time_ms": 8001,
+        "unattributed_modifiers": {
+          "armor_penetration_flat": 0,
+          "armor_penetration_percent": 0,
+          "crit_chance_percent": 0,
+          "crit_damage_percent": 0,
+          "damage_amp_percent": 0,
+          "damage_reduction_percent": 0,
+          "magic_damage_amp_percent": 0,
+          "magic_damage_reduction_percent": 0,
+          "magic_resist_penetration_flat": 0,
+          "magic_resist_penetration_percent": 0,
+          "physical_damage_amp_percent": 0,
+          "physical_damage_reduction_percent": 0,
+          "true_damage_amp_percent": 0,
+          "true_damage_reduction_percent": 0
+        }
+      },
+      "latest_nonzero_heal": null,
+      "latest_resource_change": null,
+      "resource_change_delta": 0,
+      "resource_change_mutations": 0,
+      "resource_spent": 11
+    },
+    "usage": {
+      "accepted_actions": 1,
+      "active_actions": 0,
+      "actor_summaries": 2,
+      "completed_results": 0,
+      "outstanding_deliveries": 0,
+      "provider_summaries": 2,
+      "public_result_reservations": 0,
+      "retained_bytes_bound": 578104,
+      "settled_actions": 1
+    }
+  },
+  "plan": {
+    "capabilities": [
+      {
+        "maximum": 4294967295,
+        "minimum": 0,
+        "numeric": true,
+        "operation": "Damage",
+        "property": "DamageAmount",
+        "runtime_connected": true,
+        "unit": "Hp"
+      },
+      {
+        "maximum": 0,
+        "minimum": 0,
+        "numeric": false,
+        "operation": "Damage",
+        "property": "DamageFootprint",
+        "runtime_connected": true,
+        "unit": "TilePattern"
+      },
+      {
+        "maximum": 4294967295,
+        "minimum": 1,
+        "numeric": true,
+        "operation": "PersonalShieldGrant",
+        "property": "PersonalShieldInitialAmount",
+        "runtime_connected": true,
+        "unit": "Hp"
+      },
+      {
+        "maximum": 4294967295,
+        "minimum": 1,
+        "numeric": true,
+        "operation": "PersonalShieldGrant",
+        "property": "SupportAreaRadius",
+        "runtime_connected": true,
+        "unit": "DataUnits"
+      },
+      {
+        "maximum": 4294967295,
+        "minimum": 1,
+        "numeric": true,
+        "operation": "ChannelAura",
+        "property": "SupportAreaRadius",
+        "runtime_connected": true,
+        "unit": "DataUnits"
+      },
+      {
+        "maximum": 10000,
+        "minimum": 0,
+        "numeric": true,
+        "operation": "ChannelAura",
+        "property": "RegularBasicDamagePercent",
+        "runtime_connected": true,
+        "unit": "PercentPoints"
+      },
+      {
+        "maximum": 10000,
+        "minimum": 0,
+        "numeric": true,
+        "operation": "ChannelAura",
+        "property": "RegularBasicSpeedPoints",
+        "runtime_connected": true,
+        "unit": "SpeedPoints"
+      }
+    ],
+    "causal_capabilities": [
+      {
+        "completion_contract": "native_action_and_finite_delivery",
+        "operation": "Subscribe",
+        "root_contract": "inherit_fact_ancestry_copy_rule_visit",
+        "runtime_connected": true
+      },
+      {
+        "completion_contract": "released_descendants_keep_root",
+        "operation": "Periodic",
+        "root_contract": "independent_owner_occurrence",
+        "runtime_connected": true
+      },
+      {
+        "completion_contract": "native_participant_completion",
+        "operation": "Fork",
+        "root_contract": "immutable_independent_paths",
+        "runtime_connected": true
+      },
+      {
+        "completion_contract": "all_successful_descendants_exactly_once",
+        "operation": "Join",
+        "root_contract": "actual_named_participant_union",
+        "runtime_connected": true
+      },
+      {
+        "completion_contract": "first_positive_actual_strike",
+        "operation": "Wedge",
+        "root_contract": "original_tagged_direct_skill_cast_target",
+        "runtime_connected": true
+      }
+    ],
+    "causal_rules": [],
+    "compile_usage": {
+      "binding_count": 4,
+      "candidate_count": 2,
+      "reserved_bytes": 261821,
+      "work": 15829
+    },
+    "effects": [
+      {
+        "amount": null,
+        "key": {
+          "kind": "original",
+          "site": {
+            "action": {
+              "action_id": "hit",
+              "definition_id": "u09_family_closure"
+            },
+            "effect_id": "original"
+          }
+        },
+        "operation": "Damage",
+        "properties": [
+          {
+            "base": {
+              "Literal": {
+                "Hp": 23
+              }
+            },
+            "contributions": [
+              {
+                "copy_uuid": "5439b51d-d692-4283-9b74-527d6e7ab1f7",
+                "definition_id": "u09_family_seed_relic",
+                "rule_id": "original_add",
+                "variant": "Normal"
+              }
+            ],
+            "final_value": {
+              "Hp": 30
+            },
+            "program": {
+              "add": 7,
+              "replacement": null,
+              "scale_increment_percent": 0
+            },
+            "property": "DamageAmount"
+          }
+        ],
+        "provider_index": 0,
+        "recipe_contributions": [],
+        "recipes": [],
+        "source_creation": null,
+        "tags": [
+          "family_original"
+        ]
+      },
+      {
+        "amount": null,
+        "key": {
+          "anchor": {
+            "action_id": "hit",
+            "definition_id": "u09_family_closure"
+          },
+          "grant_rule_id": "grant",
+          "kind": "generated",
+          "local_action_id": "hit",
+          "local_effect_id": "bonus",
+          "relic_copy_uuid": "5439b51d-d692-4283-9b74-527d6e7ab1f7"
+        },
+        "operation": "Damage",
+        "properties": [
+          {
+            "base": {
+              "Literal": {
+                "Hp": 40
+              }
+            },
+            "contributions": [
+              {
+                "copy_uuid": "dd9bc230-8590-4002-97e0-7be2dd36097c",
+                "definition_id": "u09_family_enhancer_relic",
+                "rule_id": "add",
+                "variant": "Normal"
+              },
+              {
+                "copy_uuid": "dd9bc230-8590-4002-97e0-7be2dd36097c",
+                "definition_id": "u09_family_enhancer_relic",
+                "rule_id": "scale",
+                "variant": "Normal"
+              }
+            ],
+            "final_value": {
+              "Hp": 75
+            },
+            "program": {
+              "add": 10,
+              "replacement": null,
+              "scale_increment_percent": 50
+            },
+            "property": "DamageAmount"
+          }
+        ],
+        "provider_index": 0,
+        "recipe_contributions": [],
+        "recipes": [],
+        "source_creation": null,
+        "tags": [
+          "family_bonus"
+        ]
+      }
+    ],
+    "employee_uuid": "3e6ba351-4fef-475d-9bf3-ec0d6fd118f7",
+    "execution_status": "runtime_supported_prospective_plan",
+    "fingerprint": "2f71edb77dd8eaa3aa885fd6875f2f9c35348bf01335b20ab0e8e2441de83c59",
+    "generation": {
+      "contract": {
+        "authoring": 1,
+        "catalog_schema": 6,
+        "execution": 3,
+        "fingerprint": 1,
+        "pack_format": 1
+      },
+      "semantic_sha256": "e317edb9faa07bd9960a4138884f44f1a6e7e1cabcb8bbe746ffdbd5731c410f"
+    },
+    "providers": [
+      {
+        "Fragment": {
+          "copy_uuid": "7b833dcc-414a-40d3-a87f-e5b8f927918d",
+          "definition_id": "u09_family_closure_fragment",
+          "form_id": "base",
+          "skill_id": "u09_family_closure"
+        }
+      }
+    ],
+    "rules": [
+      {
+        "contribution": {
+          "copy_uuid": "5439b51d-d692-4283-9b74-527d6e7ab1f7",
+          "definition_id": "u09_family_seed_relic",
+          "rule_id": "original_add",
+          "variant": "Normal"
+        },
+        "state": "Active",
+        "targets": [
+          {
+            "effect": {
+              "kind": "original",
+              "site": {
+                "action": {
+                  "action_id": "hit",
+                  "definition_id": "u09_family_closure"
+                },
+                "effect_id": "original"
+              }
+            },
+            "provider_index": 0
+          }
+        ]
+      },
+      {
+        "contribution": {
+          "copy_uuid": "5439b51d-d692-4283-9b74-527d6e7ab1f7",
+          "definition_id": "u09_family_seed_relic",
+          "rule_id": "grant",
+          "variant": "Normal"
+        },
+        "state": "Active",
+        "targets": [
+          {
+            "effect": {
+              "anchor": {
+                "action_id": "hit",
+                "definition_id": "u09_family_closure"
+              },
+              "grant_rule_id": "grant",
+              "kind": "generated",
+              "local_action_id": "hit",
+              "local_effect_id": "bonus",
+              "relic_copy_uuid": "5439b51d-d692-4283-9b74-527d6e7ab1f7"
+            },
+            "provider_index": 0
+          }
+        ]
+      },
+      {
+        "contribution": {
+          "copy_uuid": "dd9bc230-8590-4002-97e0-7be2dd36097c",
+          "definition_id": "u09_family_enhancer_relic",
+          "rule_id": "add",
+          "variant": "Normal"
+        },
+        "state": "Active",
+        "targets": [
+          {
+            "effect": {
+              "anchor": {
+                "action_id": "hit",
+                "definition_id": "u09_family_closure"
+              },
+              "grant_rule_id": "grant",
+              "kind": "generated",
+              "local_action_id": "hit",
+              "local_effect_id": "bonus",
+              "relic_copy_uuid": "5439b51d-d692-4283-9b74-527d6e7ab1f7"
+            },
+            "provider_index": 0
+          }
+        ]
+      },
+      {
+        "contribution": {
+          "copy_uuid": "dd9bc230-8590-4002-97e0-7be2dd36097c",
+          "definition_id": "u09_family_enhancer_relic",
+          "rule_id": "scale",
+          "variant": "Normal"
+        },
+        "state": "Active",
+        "targets": [
+          {
+            "effect": {
+              "anchor": {
+                "action_id": "hit",
+                "definition_id": "u09_family_closure"
+              },
+              "grant_rule_id": "grant",
+              "kind": "generated",
+              "local_action_id": "hit",
+              "local_effect_id": "bonus",
+              "relic_copy_uuid": "5439b51d-d692-4283-9b74-527d6e7ab1f7"
+            },
+            "provider_index": 0
+          }
+        ]
+      }
+    ],
+    "schema_version": 1,
+    "scope": "prospective_loadout",
+    "wedge_rules": []
+  },
+  "query_index": 18,
+  "ready": 31,
+  "resolved": 34
+}

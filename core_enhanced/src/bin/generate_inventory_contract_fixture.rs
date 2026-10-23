@@ -17,6 +17,7 @@ use uuid::Uuid;
 
 fn main() {
     let equipment = EquipmentMetadata {
+        content_family: None,
         id: "fixture_blade".to_string(),
         uuid: Uuid::from_u128(0xE100),
         name: "Fixture Blade".to_string(),

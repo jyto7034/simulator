@@ -1,0 +1,123 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Review Scope/Source Requirement Plan",
+        "Artifact ID": "RSP-CGMV-001",
+        "Content Digest": "sha256:1828adc357e9fcfe9e17d93eea7392d803867d6aead4db0bcd8b9db72a1be2c1"
+      },
+      "payload": {
+        "Evaluated Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CGMV-003",
+          "Content Digest": "sha256:f85f27ff4ececea78daeab4b7526a5ba485dba18ebf90411392259e37bfd8910"
+        },
+        "Requirements": [
+          {
+            "Requirement ID": "COPY",
+            "Required claim": "copy/form/level identity exists; paid investment and material vault absent",
+            "Affected Element IDs": [
+              "PE-CGMV-G20",
+              "PE-CGMV-G21",
+              "PE-CGMV-G22",
+              "PE-CGMV-STORE"
+            ],
+            "Source locators": [
+              "core_enhanced/src/game/resources/inventory.rs",
+              "core_enhanced/src/game/skill_fragment.rs",
+              "core_enhanced/src/game/expedition_lifecycle.rs"
+            ],
+            "Method": "bounded read-only source/symbol inspection"
+          },
+          {
+            "Requirement ID": "RECIPE",
+            "Required claim": "generic recipe validation and armor-only official enhancement require weapon/dust/part purpose cutover",
+            "Affected Element IDs": [
+              "PE-CGMV-G20",
+              "PE-CGMV-G21",
+              "PE-CGMV-G22",
+              "PE-CGMV-AUTHOR"
+            ],
+            "Source locators": [
+              "core_enhanced/src/game/data/equipment_data.rs",
+              "core_enhanced/src/game/data/skill_fragment_data.rs",
+              "core_enhanced/src/game/data/validation.rs",
+              "game_resources/data/equipments/base.ron"
+            ],
+            "Method": "bounded read-only source/symbol inspection"
+          },
+          {
+            "Requirement ID": "PAYMENT",
+            "Required claim": "bag-only bloom/no investment and live equipment remove-grant need same candidate payment/refund",
+            "Affected Element IDs": [
+              "PE-CGMV-G20",
+              "PE-CGMV-G21",
+              "PE-CGMV-G22"
+            ],
+            "Source locators": [
+              "core_enhanced/src/game/world/maintenance.rs",
+              "core_enhanced/src/game/world/grant_state.rs",
+              "core_enhanced/src/game/world/helpers.rs",
+              "core_enhanced/src/game/resources/equipment_loadout.rs"
+            ],
+            "Method": "bounded read-only source/symbol inspection"
+          },
+          {
+            "Requirement ID": "VAULT",
+            "Required claim": "returned/loaned copies and weapon level reset; no material recovery/debit tracking",
+            "Affected Element IDs": [
+              "PE-CGMV-G21",
+              "PE-CGMV-G22",
+              "PE-CGMV-STORE"
+            ],
+            "Source locators": [
+              "core_enhanced/src/game/world/expedition_lifecycle.rs",
+              "core_enhanced/src/game/encounter_compendium.rs",
+              "core_enhanced/src/game/map/progression.rs"
+            ],
+            "Method": "bounded read-only source/symbol inspection"
+          },
+          {
+            "Requirement ID": "STORE",
+            "Required claim": "checkpoint profile exclusion, exact lifecycle paired publish, two restore callers; per-run source delta needs atomic successor",
+            "Affected Element IDs": [
+              "PE-CGMV-STORE",
+              "PE-CGMV-G21",
+              "PE-CGMV-G22",
+              "PE-CGMV-AUTHOR"
+            ],
+            "Source locators": [
+              "core_enhanced/src/game/world/state.rs",
+              "core_enhanced/src/game/world/node_flow.rs",
+              "core_enhanced/src/game/world/active_run.rs",
+              "core_enhanced/src/game/world/active_run/continuation.rs",
+              "core_enhanced/src/application.rs",
+              "game_server/src/persistence/player_profile_store.rs",
+              "game_server/src/persistence/player_profile_store/application_intent.rs"
+            ],
+            "Method": "bounded read-only source/symbol inspection"
+          },
+          {
+            "Requirement ID": "PUBLIC",
+            "Required claim": "normal command/query paths need source selection/confirmation/recovery and ledger views",
+            "Affected Element IDs": [
+              "PE-CGMV-G20",
+              "PE-CGMV-G21",
+              "PE-CGMV-G22",
+              "PE-CGMV-STORE",
+              "PE-CGMV-AUTHOR"
+            ],
+            "Source locators": [
+              "core_enhanced/src/game/behavior.rs",
+              "core_enhanced/src/game/world/facility.rs",
+              "core_enhanced/src/game/world/snapshot.rs",
+              "core_enhanced/src/game/world/application.rs"
+            ],
+            "Method": "bounded read-only source/symbol inspection"
+          }
+        ],
+        "Excluded sources": "Unity/XF and U17 full incubation excluded; no deploy claims"
+      }
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "record_ref": "ATR-CRAR-C2-P06-GEX20-001",
+  "goal_id": "GOAL-CRAR-C2-P06-CHECKPOINT-MIGRATION",
+  "successor_goal_id": "GOAL-CRAR-C2-P07-CORE-PUBLIC-PROJECTION",
+  "captured_date": "2026-08-23",
+  "verdict": "Complete / High",
+  "currentness": "current / expected P07 checkpoint wrapper and rollback privacy cutover",
+  "completion_target_ref": "ATR-CRAR-C2-P06-GEX10-001",
+  "frozen_members": 32,
+  "unchanged_members": 26,
+  "expected_changed_members": [
+    {"path":"src/game/world/active_run.rs","current_sha256":"0cb4585d04d7c1e95d2cf6f4ff1b05bb4b4e7f99b034a2e0ef8b603f34b4951e","disposition":"rollback token/methods become test-only; V5 writer and V4/V5 importers unchanged"},
+    {"path":"src/game/world/tests/checkpoint_validation.rs","current_sha256":"ad394aed58e848b349877d38a798e5868976e1bdff628a1b00c76986d4221404","disposition":"adds actual ApplicationCheckpoint export to fresh CoreApplication continuation round-trip"},
+    {"path":"docs/core_runtime_contract.md","current_sha256":"c01cf2d0e99a94c2320187858ca4634f4bc8577eb9f4a992a13f50c2ab066f0f","disposition":"documents application wrapper while retaining exact P06 V5/V4/checksum contract"},
+    {"path":"tools/application_authority_api_audit/valid/Cargo.lock","current_sha256":"2961a1c2ad286cfd886eecbb18367e2ca378bc41676cd05ccfd1f70ede4da691","disposition":"application caller dependency resolution only"},
+    {"path":"tools/battle_kernel_api_audit/valid/Cargo.lock","current_sha256":"affe0884d729bc38b0d099b886846d2c1c220a5082dd2f13dd916d70e55734eb","disposition":"application caller dependency resolution only"},
+    {"path":"tools/history_result_api_audit/valid/Cargo.lock","current_sha256":"72d97606da0058390d1e41eeb83fee003485f9a45f7d1a71f67c20fdc9567338","disposition":"application caller dependency resolution only"}
+  ],
+  "validation": [
+    "release check exit 0 warnings 0",
+    "current Core 1157 passed, 0 failed, 0 ignored",
+    "ApplicationCheckpoint V5 export to fresh CoreApplication continuation passes",
+    "V4 import, V5 write/checksum/corruption/retry/removal-gate corpus remains green",
+    "public rollback token access rejected by P07 invalid probe"
+  ],
+  "external_scope": "game_server, Unity, sibling resources and external consumers uninspected and unclaimed"
+}

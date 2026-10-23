@@ -567,8 +567,7 @@ impl SkillDatabase {
 
     pub fn from_ron(source_file: &str, input: &str) -> Result<Self, super::live_ron::LiveRonError> {
         let limits = crate::game::value_expr::current_parse_limits();
-        let raw: RawSkillDatabase = parse_value_expr_bounded(source_file, input, &limits, 128)
-            .map_err(|error| enrich_parse_error(input, error))?;
+        let raw = RawSkillDatabase::from_ron_with_limits(source_file, input, &limits, 128)?;
         let mut database = raw.try_into_unvalidated_database().map_err(|error| {
             super::live_ron::LiveRonError::validation(
                 source_file,
@@ -786,6 +785,10 @@ pub(crate) struct RawSkillDatabase {
 #[serde(deny_unknown_fields)]
 #[serde(rename = "SkillDef")]
 pub(crate) struct RawSkillDef {
+    #[serde(default)]
+    action_policy: Option<std::sync::Arc<crate::game::ability::action::ActionPolicy>>,
+    #[serde(default)]
+    resonance_admission: Option<crate::game::ability::resonance::ResonanceAdmission>,
     use_lifetime: crate::game::ability::SkillUseLifetime,
     #[serde(default)]
     flow: Option<std::sync::Arc<crate::game::ability::flow::SkillFlowDef>>,
@@ -852,6 +855,19 @@ impl RawSkillDatabase {
         limits: &crate::game::value_expr::ExprParseLimits,
         max_nesting: usize,
     ) -> Result<Self, super::live_ron::LiveRonError> {
+        // The extension is an explicit format discriminator; malformed graph IR
+        // must never fall back to the ordinary skill catalog parser.
+        let lowered;
+        let input = if source_file.ends_with(".skill-graph.ron") {
+            let graph: crate::authoring::node_graph::PortableGraph =
+                parse_value_expr_bounded(source_file, input, limits, max_nesting)?;
+            lowered = graph.native_ron()
+                .map_err(|cause| super::live_ron::LiveRonError::validation(
+                    source_file, "skills", None::<String>, Some("graph"), cause,
+                ).with_phase(super::live_ron::LiveRonPhase::Compile)
+                 .with_code("graph_artifact_invalid"))?;
+            lowered.as_str()
+        } else { input };
         parse_value_expr_bounded(source_file, input, limits, max_nesting)
             .map_err(|error| enrich_parse_error(input, error))
     }
@@ -917,6 +933,8 @@ impl RawSkillDef {
         preset_index: &HashMap<String, usize>,
     ) -> Result<SkillDef, String> {
         Ok(SkillDef {
+            action_policy: self.action_policy,
+            resonance_admission: self.resonance_admission,
             use_lifetime: self.use_lifetime,
             flow: self.flow,
             id: self.id,
@@ -1084,6 +1102,10 @@ fn validate_skill_contracts_with_context(
                 format!("empty or duplicate skill id '{}'", skill.id),
             ));
         }
+        if let Some(policy) = &skill.action_policy { policy.validate(skill).map_err(|cause| error(format!("{skill_path}.action_policy"),cause))?; }
+        if let Some(policy) = skill.resonance_admission {
+            policy.validate().map_err(|cause| error(format!("{skill_path}.resonance_admission"), cause.into()))?;
+        }
         if skill.steps.is_empty() {
             return Err(error(
                 format!("{skill_path}.steps"),
@@ -1104,13 +1126,14 @@ fn validate_skill_contracts_with_context(
                     SkillCastSelection::AutomaticUnit | SkillCastSelection::PlayerUnit,
                     SkillTarget::EnemySingle { .. } | SkillTarget::AllySingle
                 )
-                | (SkillCastSelection::PlayerTile, SkillTarget::CastTarget)
+                | (SkillCastSelection::PlayerTile | SkillCastSelection::PlayerTilePair | SkillCastSelection::PlayerDirection, SkillTarget::CastTarget)
         ) {
             return Err(error(
                 format!("{skill_path}.cast_targeting.selection"),
                 "selection is incompatible with cast target semantics".to_string(),
             ));
         }
+        if *selection==SkillCastSelection::PlayerDirection && !skill.steps.iter().flat_map(|s| &s.effects).any(|e| matches!(e.op,SkillEffectDef::StatusStrike{..})) {return Err(error(format!("{skill_path}.cast_targeting.selection"),"Direction selection requires an explicit directional execution profile".into()));}
         validate_skill_target_reach(*reach, target_range.as_ref())
             .map_err(|cause| error(format!("{skill_path}.cast_targeting"), cause))?;
         if matches!(reach, SkillTargetReach::Global) && matches!(target, SkillTarget::SelfUnit) {
@@ -1132,7 +1155,7 @@ fn validate_skill_contracts_with_context(
         }
         if matches!(
             selection,
-            SkillCastSelection::PlayerUnit | SkillCastSelection::PlayerTile
+            SkillCastSelection::PlayerUnit | SkillCastSelection::PlayerTile | SkillCastSelection::PlayerTilePair | SkillCastSelection::PlayerDirection
         ) && skill
             .steps
             .iter()
@@ -1191,6 +1214,7 @@ fn validate_skill_contracts_with_context(
                             | SkillEffectDef::Sustained {
                                 definition:
                                     crate::game::ability::sustained::SustainedEffectDef::Control { .. }
+                                    | crate::game::ability::sustained::SustainedEffectDef::HitStatus { .. }
                             }
                     );
                     if !prior_damage || !supported {
@@ -1215,6 +1239,105 @@ fn validate_skill_contracts_with_context(
                     }
                 }
                 match &effect.op {
+                    SkillEffectDef::GuardCounter { program } => {
+                        program.validate().map_err(|message|error(format!("{effect_path}.op.GuardCounter"),message))?;
+                        let bound=references.iter().flat_map(|s|&s.steps).flat_map(|s|&s.effects).any(|e|matches!(&e.op,SkillEffectDef::Sustained{definition:crate::game::ability::sustained::SustainedEffectDef::Parry{counter_skill,guard_charge:Some(charge),..}} if counter_skill==&skill.id && charge.as_ref()==program.charge.as_ref()));
+                        if !bound { return Err(error(effect_path.clone(),"Guard counter must match an authored parry's charge definition".into())); }
+
+                        if skill.flow.is_some() || skill.steps.len()!=1 || step.effects.len()!=1 || step.delay_ms!=0 || skill.focus_time_ms!=0 || !matches!(step.delivery,DeliveryDef::Instant) || !matches!(step.target,SkillTarget::CastTarget) || !matches!(step.repeat,crate::game::ability::SkillStepRepeat::Once) || effect.attached_to.is_some() { return Err(error(effect_path.clone(),"Guard counter requires one immediate cast-target strike".into())); }
+                    }
+                    SkillEffectDef::StatusStrike { program } => {
+                        program.validate().map_err(|message|error(format!("{effect_path}.op.StatusStrike"),message))?;
+                        let selection=matches!(&skill.cast_targeting,crate::game::ability::SkillCastTargetingDef::Explicit{selection:crate::game::ability::SkillCastSelection::PlayerDirection,target:SkillTarget::CastTarget,reach:SkillTargetReach::Pattern,target_range:Some(r),..} if r==&program.range);
+                        let immediate=matches!(skill.flow.as_deref(),Some(crate::game::ability::flow::SkillFlowDef::Action{step_id,wait:crate::game::ability::flow::FlowMilestone::Released,..}) if step_id==&step.id);
+                        if !selection || !immediate || skill.resonance_admission!=Some(program.admission) || skill.steps.len()!=1 || step.effects.len()!=1 || step.delay_ms!=0 || skill.focus_time_ms!=0 || !matches!(skill.use_lifetime,crate::game::ability::SkillUseLifetime::Action) || !matches!(step.target,SkillTarget::SelfUnit) || !matches!(step.delivery,DeliveryDef::Instant) || !matches!(step.repeat,crate::game::ability::SkillStepRepeat::Once) || effect.attached_to.is_some(){return Err(error(effect_path.clone(),"Status strike requires atomic direction selection and one immediate transition strike".into()));}
+                    }
+                    SkillEffectDef::FusionPlacement { program } => {
+                        program.validate().map_err(|message|error(format!("{effect_path}.op.FusionPlacement"),message))?;
+                        let selection=matches!(&skill.cast_targeting,crate::game::ability::SkillCastTargetingDef::Explicit{selection:crate::game::ability::SkillCastSelection::PlayerTile,target:SkillTarget::CastTarget,reach:SkillTargetReach::Pattern,target_range:Some(r),..} if r==&program.selection_range);
+                        let immediate=matches!(skill.flow.as_deref(),Some(crate::game::ability::flow::SkillFlowDef::Action{step_id,wait:crate::game::ability::flow::FlowMilestone::Released,..}) if step_id==&step.id);
+                        if !selection || !immediate || skill.resonance_admission!=Some(program.admission) || skill.steps.len()!=1 || step.effects.len()!=1 || step.delay_ms!=0 || skill.focus_time_ms!=0 || !matches!(skill.use_lifetime,crate::game::ability::SkillUseLifetime::Action) || !matches!(step.target,SkillTarget::SelfUnit) || !matches!(step.delivery,DeliveryDef::Instant) || !matches!(step.repeat,crate::game::ability::SkillStepRepeat::Once) || effect.attached_to.is_some(){return Err(error(effect_path.clone(),"Fusion placement requires atomic tile selection and one immediate independent installation".into()));}
+                    }
+                    SkillEffectDef::PairedAreas { program } => {
+                        program.validate().map_err(|message|error(format!("{effect_path}.op.PairedAreas"),message))?;
+                        let selection=matches!(&skill.cast_targeting,crate::game::ability::SkillCastTargetingDef::Explicit{selection:crate::game::ability::SkillCastSelection::PlayerTilePair,target:SkillTarget::CastTarget,reach:SkillTargetReach::Pattern,target_range:Some(r),..} if r==&program.selection_range);
+                        let immediate=matches!(skill.flow.as_deref(),Some(crate::game::ability::flow::SkillFlowDef::Action{step_id,wait:crate::game::ability::flow::FlowMilestone::Released,..}) if step_id==&step.id);
+                        if !selection || !immediate || skill.resonance_admission!=Some(program.admission) || skill.steps.len()!=1 || step.effects.len()!=1 || step.delay_ms!=0 || skill.focus_time_ms!=0 || !matches!(skill.use_lifetime,crate::game::ability::SkillUseLifetime::Action) || !matches!(step.target,SkillTarget::SelfUnit) || !matches!(step.delivery,DeliveryDef::Instant) || !matches!(step.repeat,crate::game::ability::SkillStepRepeat::Once) || effect.attached_to.is_some(){return Err(error(effect_path.clone(),"Paired areas require atomic pair selection and one immediate independent installation".into()));}
+                    }
+                    SkillEffectDef::PreparedVolley { program } => {
+                        program.validate().map_err(|message|error(format!("{effect_path}.op.PreparedVolley"),message))?;
+                        let immediate_flow=matches!(skill.flow.as_deref(),Some(crate::game::ability::flow::SkillFlowDef::Action{step_id,wait:crate::game::ability::flow::FlowMilestone::Released,..}) if step_id==&step.id);
+                        if skill.resonance_admission!=Some(program.admission)||skill.steps.len()!=1||step.effects.len()!=1||step.delay_ms!=0||skill.focus_time_ms!=0||!immediate_flow||skill.cast_selection()!=crate::game::ability::SkillCastSelection::SelfUnit
+                            ||!matches!(step.target,SkillTarget::SelfUnit)||!matches!(step.delivery,DeliveryDef::Instant)||!matches!(step.repeat,crate::game::ability::SkillStepRepeat::Once)||effect.attached_to.is_some()||!skill.use_lifetime.owns_effect(&step.id,&effect.id){
+                            return Err(error(effect_path.clone(),"Prepared volley requires its declared admission and one owned immediate self action".into()));
+                        }
+                    }
+                    SkillEffectDef::InputPlan { program } => {
+                        program.validate().map_err(|message|error(format!("{effect_path}.op.InputPlan"),message))?;
+                        let immediate_flow=matches!(skill.flow.as_deref(),Some(crate::game::ability::flow::SkillFlowDef::Action{step_id,wait:crate::game::ability::flow::FlowMilestone::Released,..}) if step_id==&step.id);
+                        if skill.resonance_admission!=Some(program.admission)||skill.steps.len()!=1||step.effects.len()!=1||step.delay_ms!=0||skill.focus_time_ms!=0||!immediate_flow||skill.cast_selection()!=crate::game::ability::SkillCastSelection::SelfUnit
+                            ||!matches!(step.target,SkillTarget::SelfUnit)||!matches!(step.delivery,DeliveryDef::Instant)||!matches!(step.repeat,crate::game::ability::SkillStepRepeat::Once)||effect.attached_to.is_some()||!skill.use_lifetime.owns_effect(&step.id,&effect.id){
+                            return Err(error(effect_path.clone(),"Input plan requires its declared admission and one owned immediate self action".into()));
+                        }
+                    }
+                    SkillEffectDef::RelationAction { program } => {
+                        program.validate().map_err(|message|error(format!("{effect_path}.op.RelationAction"),message))?;
+                        let immediate_flow=matches!(skill.flow.as_deref(),Some(crate::game::ability::flow::SkillFlowDef::Action{step_id,wait:crate::game::ability::flow::FlowMilestone::Released,..}) if step_id==&step.id);
+                        let selection=if let Some(range)=&program.selection_range {
+                            matches!(&skill.cast_targeting,crate::game::ability::SkillCastTargetingDef::Explicit{selection:crate::game::ability::SkillCastSelection::PlayerTile,target:SkillTarget::CastTarget,reach:SkillTargetReach::Pattern,target_range:Some(r),air_capable:false} if r==range)
+                        }else{skill.cast_selection()==crate::game::ability::SkillCastSelection::SelfUnit};
+                        if skill.resonance_admission!=Some(program.admission)||skill.steps.len()!=1||step.effects.len()!=1||step.delay_ms!=0||skill.focus_time_ms!=0||!immediate_flow||!selection
+                            ||!matches!(step.target,SkillTarget::SelfUnit)||!matches!(step.delivery,DeliveryDef::Instant)||!matches!(step.repeat,crate::game::ability::SkillStepRepeat::Once)||effect.attached_to.is_some()||!skill.use_lifetime.owns_effect(&step.id,&effect.id){
+                            return Err(error(effect_path.clone(),"Relationship action requires its declared admission/selection and one owned immediate self action".into()));
+                        }
+                    }
+                    SkillEffectDef::CounterChannel { program, root, entry } => {
+                        program.validate().map_err(|message| error(format!("{effect_path}.op.CounterChannel"), message))?;
+                        let e=program.entries.get(*entry).ok_or_else(||error(effect_path.clone(),"Unknown counter menu entry".into()))?;
+                        let immediate_flow = matches!(skill.flow.as_deref(),Some(crate::game::ability::flow::SkillFlowDef::Action {step_id, wait:crate::game::ability::flow::FlowMilestone::Released,..}) if step_id==&step.id);
+                        let declared_selection = matches!(&skill.cast_targeting, crate::game::ability::SkillCastTargetingDef::Explicit {
+                            selection: crate::game::ability::SkillCastSelection::PlayerTile, target: SkillTarget::CastTarget, reach, target_range, air_capable: true
+                        } if *reach == (if e.automatic { SkillTargetReach::Global } else { SkillTargetReach::Pattern }) && *target_range == e.selection_range);
+                        if skill.id!=program.entry_skill_id(root,*entry) || skill.resonance_admission!=Some(e.admission)
+                            || skill.steps.len()!=1 || step.effects.len()!=1 || step.delay_ms!=0 || skill.focus_time_ms!=0 || !immediate_flow || !declared_selection
+                            || skill.cast_selection()!=crate::game::ability::SkillCastSelection::PlayerTile
+                            || !matches!(step.target,SkillTarget::SelfUnit) || !matches!(step.delivery,DeliveryDef::Instant)
+                            || !matches!(step.repeat,crate::game::ability::SkillStepRepeat::Once) || effect.attached_to.is_some()
+                            || !skill.use_lifetime.owns_effect(&step.id,&effect.id) {
+                            return Err(error(effect_path.clone(),"Counter channel requires its declared menu admission and one owned immediate self effect".into()));
+                        }
+                        for i in 0..program.entries.len() {
+                            let id = program.entry_skill_id(root, i);
+                            if !references.iter().find(|s| s.id == id).is_some_and(|s| s.steps.iter().flat_map(|step| &step.effects).any(|effect|
+                                matches!(&effect.op, SkillEffectDef::CounterChannel { program: p, root: r, entry: e } if p == program && r == root && *e == i))) {
+                                return Err(error(effect_path.clone(), format!("Counter menu is missing its matching declared entry '{id}'")));
+                            }
+                        }
+                    }
+                    SkillEffectDef::TileBurst { program } => {
+                        program.validate().map_err(|message| error(format!("{effect_path}.op.TileBurst"), message))?;
+                        let immediate_flow = matches!(skill.flow.as_deref(),Some(crate::game::ability::flow::SkillFlowDef::Action {step_id, wait:crate::game::ability::flow::FlowMilestone::Released,..}) if step_id==&step.id);
+                        if skill.steps.len()!=1 || step.effects.len()!=1 || step.delay_ms!=0 || skill.focus_time_ms!=0 || !immediate_flow
+                            || skill.cast_selection() != crate::game::ability::SkillCastSelection::SelfUnit
+                            || !matches!(step.target, SkillTarget::SelfUnit)
+                            || !matches!(step.delivery, DeliveryDef::Instant)
+                            || !matches!(step.repeat, crate::game::ability::SkillStepRepeat::Once)
+                            || effect.attached_to.is_some() {
+                            return Err(error(format!("{effect_path}.op.TileBurst"), "Tile burst requires one immediate released SelfUnit Instant/Once action without damage attachment".into()));
+                        }
+                    }
+                    SkillEffectDef::PresenceBurst { program } => {
+                        program.validate().map_err(|message| error(format!("{effect_path}.op.PresenceBurst"), message))?;
+                        let immediate_flow = matches!(skill.flow.as_deref(),Some(crate::game::ability::flow::SkillFlowDef::Action {step_id, wait:crate::game::ability::flow::FlowMilestone::Released,..}) if step_id==&step.id);
+                        if skill.steps.len()!=1 || step.effects.len()!=1 || step.delay_ms!=0 || skill.focus_time_ms!=0 || !immediate_flow
+                            || skill.cast_selection() != crate::game::ability::SkillCastSelection::SelfUnit
+                            || !matches!(step.target, SkillTarget::SelfUnit)
+                            || !matches!(step.delivery, DeliveryDef::Instant)
+                            || !matches!(step.repeat, crate::game::ability::SkillStepRepeat::Once)
+                            || effect.attached_to.is_some() {
+                            return Err(error(format!("{effect_path}.op.PresenceBurst"), "Presence burst requires one immediate released SelfUnit Instant/Once action without damage attachment".into()));
+                        }
+                    }
                     SkillEffectDef::CreateObject { definition } => {
                         definition.validate().map_err(|message| {
                             error(format!("{effect_path}.op.CreateObject"), message)
@@ -1363,8 +1486,15 @@ fn validate_skill_contracts_with_context(
                                 return Err(error(format!("{effect_path}.op.Sustained"), "SegmentedShield requires a unique pool producer, Once, without flow or damage attachment".into()));
                             }
                         }
+                        if let crate::game::ability::sustained::SustainedEffectDef::Parry { fragment_guard: Some(_), .. } = definition {
+                            let declarations = skill.steps.iter().flat_map(|s| &s.effects).filter(|e| matches!(&e.op, SkillEffectDef::Sustained { definition: crate::game::ability::sustained::SustainedEffectDef::Parry { fragment_guard: Some(_), .. } })).count();
+                            if declarations != 1 || skill.cast_selection() != crate::game::ability::SkillCastSelection::SelfUnit {
+                                return Err(error(format!("{effect_path}.op.Sustained"), "compiled fragment guard requires exactly one SelfUnit parry declaration".into()));
+                            }
+                        }
                         if let crate::game::ability::sustained::SustainedEffectDef::Parry {
                             counter_skill,
+                            guard_charge,
                             ..
                         } = definition
                         {
@@ -1387,14 +1517,18 @@ fn validate_skill_contracts_with_context(
                                     child.steps[0].target,
                                     crate::game::ability::SkillTarget::CastTarget
                                 )
-                                && child.steps[0].effects.iter().all(|e| {
-                                    matches!(
-                                        e.op,
-                                        SkillEffectDef::Damage { .. }
+                                && if let Some(charge) = guard_charge {
+                                    child.steps[0].effects.len() == 1 && matches!(
+                                        &child.steps[0].effects[0].op,
+                                        SkillEffectDef::GuardCounter { program } if program.charge.as_ref() == charge.as_ref()
+                                    )
+                                } else {
+                                    child.steps[0].effects.iter().all(|e| matches!(
+                                        e.op, SkillEffectDef::Damage { .. }
                                             | SkillEffectDef::DamageExpr { .. }
                                             | SkillEffectDef::ModifyDamage { .. }
-                                    )
-                                });
+                                    ))
+                                };
                             if !valid {
                                 return Err(error(format!("{effect_path}.op.Sustained.counter_skill"), "counter requires a distinct zero-focus immediate CastTarget damage leaf without flow".into()));
                             }
@@ -1402,14 +1536,15 @@ fn validate_skill_contracts_with_context(
                         if let crate::game::ability::sustained::SustainedEffectDef::BasicAttackOverlay { goodbye_skill: Some(id), .. } = definition {
                             let child = references.iter().find(|s| &s.id == id).ok_or_else(|| error(format!("{effect_path}.op.Sustained.goodbye_skill"), format!("missing Goodbye skill '{id}'")))?;
                             let immediate = child.steps.len() == 1 && child.steps[0].delay_ms == 0
-                                && matches!(&child.steps[0].delivery, DeliveryDef::Instant | DeliveryDef::TileArea { area: crate::game::ability::SkillTileAreaDeliveryDef { duration_ms: 0, .. }, .. });
+                                && matches!(&child.steps[0].delivery, DeliveryDef::Instant | DeliveryDef::TileArea { area: crate::game::ability::SkillTileAreaDeliveryDef { duration_ms: 0, emission: None, first_tick_delay_ms: 0, .. }, .. });
                             if id == &skill.id || child.focus_time_ms != 0 || child.flow.is_some() || !immediate {
                                 return Err(error(format!("{effect_path}.op.Sustained.goodbye_skill"), "Goodbye requires a distinct zero-focus skill with one immediate zero-delay step and no flow; reinput executes it atomically".into()));
                             }
                         }
                         if matches!(
                             definition,
-                            crate::game::ability::sustained::SustainedEffectDef::Parry { .. }
+                            crate::game::ability::sustained::SustainedEffectDef::PreparedBasic { .. }
+                            | crate::game::ability::sustained::SustainedEffectDef::Parry { .. }
                             | crate::game::ability::sustained::SustainedEffectDef::ChannelAura { .. }
                             | crate::game::ability::sustained::SustainedEffectDef::BasicAttackOverlay { .. }
                             | crate::game::ability::sustained::SustainedEffectDef::Shield { shared_radius_units: Some(_), .. }
@@ -1526,11 +1661,24 @@ fn validate_skill_contracts_with_context(
                     area.try_validate_runtime_contract().map_err(|cause| {
                         error(format!("{step_path}.delivery.TileArea.area"), cause)
                     })?;
+                    if area.ground_status.is_some() && !step.effects.is_empty() {
+                        return Err(error(format!("{step_path}.effects"), "ground status subscription delivery must not discard ordinary tick effects".into()));
+                    }
+                    if area.mode == crate::game::ability::SkillTileAreaMode::SelectedGround
+                        && (*selection != SkillCastSelection::PlayerTile || step.target != SkillTarget::CastTarget) {
+                        return Err(error(format!("{step_path}.delivery.TileArea.area.mode"),
+                            "selected ground requires PlayerTile selection and CastTarget action".into()));
+                    }
+                    if matches!(area.mode, crate::game::ability::SkillTileAreaMode::ChannelGround { .. })
+                        && (*selection != SkillCastSelection::SelfUnit || step.target != SkillTarget::SelfUnit) {
+                        return Err(error(format!("{step_path}.delivery.TileArea.area.mode"), "channel ground requires self selection and self action".into()));
+                    }
                     let expected_origin = match area.anchor {
                         SkillAreaAnchorSource::Caster => {
                             crate::game::ability::SkillTileAreaOrigin::Caster
                         }
-                        SkillAreaAnchorSource::CastTarget
+                        SkillAreaAnchorSource::AcceptedCastTarget
+            | SkillAreaAnchorSource::CastTarget
                         | SkillAreaAnchorSource::CastTargetStart
                         | SkillAreaAnchorSource::ImpactContext
                         | SkillAreaAnchorSource::ImpactContextStart => {
@@ -1547,6 +1695,7 @@ fn validate_skill_contracts_with_context(
                         ));
                     }
                     if area.anchor != SkillAreaAnchorSource::Caster
+                        && !matches!(area.mode, crate::game::ability::SkillTileAreaMode::SelectedGround | crate::game::ability::SkillTileAreaMode::ChannelGround { .. })
                         && !footprint.is_rotation_invariant()
                     {
                         return Err(error(
@@ -1577,15 +1726,16 @@ fn validate_skill_contracts_with_context(
                 DeliveryDef::Instant => {}
             }
         }
-        // A finite beneficial effect is part of the skill use. Hostile statuses,
+        // A finite beneficial effect or owned channel is part of the skill use. Hostile statuses,
         // periodic damage and permanent changes retain their independent owners.
         let finite_use_effect = |effect: &SkillEffectDef| match effect {
-            SkillEffectDef::ShieldExpr { .. } => true,
+            SkillEffectDef::ShieldExpr { .. } | SkillEffectDef::PreparedVolley { .. } | SkillEffectDef::InputPlan { .. } | SkillEffectDef::RelationAction { .. } | SkillEffectDef::CounterChannel { .. } => true,
             SkillEffectDef::Sustained { definition } => {
                 !definition.is_hostile()
                     && !matches!(
                         definition,
                         crate::game::ability::sustained::SustainedEffectDef::SegmentedShield { .. }
+                        | crate::game::ability::sustained::SustainedEffectDef::PreparedBasic { .. }
                     )
             }
             _ => false,
@@ -1611,7 +1761,7 @@ fn validate_skill_contracts_with_context(
                 return Err(error(
                     format!("{skill_path}.use_lifetime"),
                     format!(
-                        "{}.{} must uniquely reference a finite beneficial effect",
+                        "{}.{} must uniquely reference a finite use-owned effect",
                         reference.step, reference.effect
                     ),
                 ));
@@ -1625,7 +1775,7 @@ fn validate_skill_contracts_with_context(
                 // A recurring independent producer could apply a new lease after
                 // this use ended. This combination needs a separate authoring
                 // model and is rejected rather than silently extending the use.
-                if matches!(&step.delivery, DeliveryDef::TileArea { area, .. } if area.duration_ms > 0)
+                if matches!(&step.delivery, DeliveryDef::TileArea { area, .. } if area.is_independent())
                 {
                     return Err(error(format!("{skill_path}.use_lifetime"),
                         format!("{}.{} finite use effect cannot be produced by an independent persistent area", step.id, effect.id)));
@@ -1796,6 +1946,8 @@ mod tests {
     #[test]
     fn skill_database_rejects_empty_step_skills() {
         let skill = SkillDef {
+            action_policy: None,
+            resonance_admission: None,
             use_lifetime: crate::game::ability::SkillUseLifetime::Action,
             flow: None,
             id: SkillId::from("empty"),
@@ -1818,6 +1970,8 @@ mod tests {
     #[test]
     fn skill_database_rejects_nondefault_homing_collision_contracts() {
         let skill = SkillDef {
+            action_policy: None,
+            resonance_admission: None,
             use_lifetime: crate::game::ability::SkillUseLifetime::Action,
             flow: None,
             id: SkillId::from("homing"),
@@ -1844,6 +1998,8 @@ mod tests {
     #[test]
     fn skill_database_rejects_global_reach_with_authored_target_pattern() {
         let skill = SkillDef {
+            action_policy: None,
+            resonance_admission: None,
             use_lifetime: crate::game::ability::SkillUseLifetime::Action,
             flow: None,
             id: SkillId::from("ambiguous_whole_field"),
@@ -1889,6 +2045,8 @@ mod tests {
     #[test]
     fn skill_database_rejects_incompatible_selection_and_player_retargeting() {
         let incompatible = SkillDef {
+            action_policy: None,
+            resonance_admission: None,
             use_lifetime: crate::game::ability::SkillUseLifetime::Action,
             flow: None,
             id: SkillId::from("incompatible_player_unit"),
@@ -1922,6 +2080,8 @@ mod tests {
         );
 
         let retargeting = SkillDef {
+            action_policy: None,
+            resonance_admission: None,
             use_lifetime: crate::game::ability::SkillUseLifetime::Action,
             flow: None,
             id: SkillId::from("player_unit_retargeting"),
@@ -1965,6 +2125,8 @@ mod tests {
     #[test]
     fn skill_database_rejects_duplicate_step_ids() {
         let skill = SkillDef {
+            action_policy: None,
+            resonance_admission: None,
             use_lifetime: crate::game::ability::SkillUseLifetime::Action,
             flow: None,
             id: SkillId::from("duplicate_steps"),
@@ -1990,6 +2152,8 @@ mod tests {
     #[test]
     fn skill_database_rejects_unknown_buff_references() {
         let skill = SkillDef {
+            action_policy: None,
+            resonance_admission: None,
             use_lifetime: crate::game::ability::SkillUseLifetime::Action,
             flow: None,
             id: SkillId::from("unknown_buff"),
@@ -2036,6 +2200,8 @@ mod tests {
     #[test]
     fn skill_database_rejects_negative_damage_amounts() {
         let skill = SkillDef {
+            action_policy: None,
+            resonance_admission: None,
             use_lifetime: crate::game::ability::SkillUseLifetime::Action,
             flow: None,
             id: SkillId::from("negative_damage"),
@@ -2074,6 +2240,8 @@ mod tests {
     #[test]
     fn skill_database_rejects_modify_damage_without_damage_effect() {
         let skill = SkillDef {
+            action_policy: None,
+            resonance_admission: None,
             use_lifetime: crate::game::ability::SkillUseLifetime::Action,
             flow: None,
             id: SkillId::from("dangling_modify_damage"),
@@ -2115,6 +2283,8 @@ mod tests {
     #[test]
     fn skill_database_rejects_impact_context_anchor_without_prior_spatial_delivery() {
         let skill = SkillDef {
+            action_policy: None,
+            resonance_admission: None,
             use_lifetime: crate::game::ability::SkillUseLifetime::Action,
             flow: None,
             id: SkillId::from("dangling_impact_context"),
@@ -2155,6 +2325,8 @@ mod tests {
                 _ => unreachable!(),
             }
             let skill = SkillDef {
+                action_policy: None,
+                resonance_admission: None,
                 use_lifetime: crate::game::ability::SkillUseLifetime::Action,
                 flow: None,
                 id: SkillId::from(defect),

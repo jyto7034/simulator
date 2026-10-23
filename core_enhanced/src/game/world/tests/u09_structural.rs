@@ -5,6 +5,10 @@ use crate::game::data::relic_data::RelicDatabase;
 use crate::game::enums::Side;
 use crate::game::relic::structural::{authoring::*, EffectiveEffectKey};
 
+mod flow_cases;
+mod publication_cases;
+mod world_state_cases;
+
 const SKILLS: &str = r#"SkillDatabase(skills: [SkillDef(
  id: "tb_strike", name: "TB original", kind: Targeted, focus_time_ms: 0,
  use_lifetime: Action,
@@ -25,8 +29,33 @@ const RELICS: &str = r#"(relics: [(
 )])"#;
 
 fn setup() -> (GameCore, Uuid, Uuid) {
-    let skills = SkillDatabase::from_ron("tb001/skills.ron", SKILLS).unwrap();
-    let fragment = active_skill_fragment("tb_fragment", 0xb002, "tb_strike");
+    setup_with_definitions(ron::de::from_str(RELICS).unwrap(), false)
+}
+
+fn setup_with_definitions(relics: RelicDatabase, alternate: bool) -> (GameCore, Uuid, Uuid) {
+    setup_with_skill_input(relics, alternate, SKILLS)
+}
+
+fn setup_with_skill_input(
+    relics: RelicDatabase,
+    alternate: bool,
+    skills: &str,
+) -> (GameCore, Uuid, Uuid) {
+    let skills = SkillDatabase::from_ron("tb001/skills.ron", skills).unwrap();
+    let mut fragment = active_skill_fragment("tb_fragment", 0xb002, "tb_strike");
+    if alternate {
+        let SkillFragmentEffectDef::ActiveSkill { forms, .. } = &mut fragment.effect else {
+            unreachable!()
+        };
+        let mut form = forms["base"].clone();
+        form.bloom_recipe = Some(
+            crate::game::data::skill_fragment_data::SkillFragmentRecipe {
+                enkephalin: 1,
+                materials: vec![],
+            },
+        );
+        forms.insert("alternate".into(), form);
+    }
     let base = GameCore::new(
         game_data_with_pve_equipment_and_active_skill_fragments(
             vec![],
@@ -35,7 +64,6 @@ fn setup() -> (GameCore, Uuid, Uuid) {
         ),
         0xb001,
     );
-    let relics: RelicDatabase = ron::de::from_str(RELICS).unwrap();
     let mut enemies = base.game_data.abnormality_data.items.clone();
     for enemy in &mut enemies {
         enemy.max_health = 2000;

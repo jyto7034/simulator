@@ -1,0 +1,39 @@
+--- core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/PLAN.md.before
++++ core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/PLAN.md
+@@ -1,11 +1,11 @@
+ # U08 실행 PLAN — GOAL-CRNV-01
+ 
+ 2026-10-06 · 기존 공개/owner/실제 전투 집중25의 유효 범위를 보존하고 E1을 진행 중이다.
+-현재 마지막 실행 source434 / `758179d74cf0bec51270481173856c0ee378d8ee78dcafce9957a60544e96ce1`에서 E005 fresh OS Continue가 통과했다.
+-정상 보상 허용목록 두 kind 교정 이후 기존 보상 회귀3+1건을 보존한다. Continue의 과대 blanket normalization 예약은 실제 sort 경계로 분리했고 기본8MiB·누적무환급·generic projection·encoded Vec/Arc guard는 유지했다.
+-root는 E004/E005의 checkpoint 전체/child 입력 전 필드(parent PID 제외)·content manifest·scenario가 동일함을 실제 확인했다. 같은49,775byte checkpoint의 child 복원은 generation/relic/inventory/fingerprint/history/load/plan oracle를 통과했다.
+-E005 전체 시험은 이후 step47 begin_skill_targeting의 InvalidAction으로 실패했으며 실제 후속 damage/trace까지 성공한 것은 아니다. Astra가 준비시점/전투상태를 확인하여 승인 fixture 범위에서 자율 교정한다.
+-Astra가 단독 test writer/실행을 소유한다. E1 교정→allocation2→신규 Continue2시험 및 durable/Eventowner 회귀→cfg owner count75 집중검사 묶음을 진행한다. Sol 제품/통합 실행은 HOLD다.
++현재 마지막 E1 성공 source435 / `984f8e93da698a55baa2f4c41f53fd9934dc9f3a884e4e522669c552f1bbf53b`에서 E009 전체1/1 PASS다.
++정상 보상·장착·SavePoint/Event/Load·fresh OS Continue 이후 실제 Snapshot Const100 스킬 피해210이 HP422→212로 소비됐다. Original/정상grant fragmentcopy/employee/generation/segment raw·calculated210을 명시 검사하고 trace on/off의 full DamageFact·query를 대조했다.
++E007의 clamp92→0 성공과 E008의4초 무대상 실패는 보존한다. E009는 외부 fixture의 대상maxHP170→500, 준비8초이며 공식 콘텐츠/제품/cap은 그대로다. 최종 public_trial_cli009의35개 산출물 해시를 확인했고 실제 release CLI 실행은 후속 Sol 범위다.
++Continue owner2·allocation2·durable2/UUID1/Eventowner4·행동소유75 검사1 PASS를 회수했다. 새 codec fixture의 두 nonempty set/current·SavePoint canonical 동일성과 누적4,518,759 exact/6단계 one-short 거부·gameplay roots 불변을 검증했다. 이는 실제 heap 계측을 대신하지 않는다.
++현재 Astra가 E2 신규 carrier 시험4파일 묶음(최대7개/parameterized)을 작은 literal 연결부터 작성·집중 실행한다. Sol 제품/통합 실행은 HOLD다. 위 해시는 마지막 검증 경계이며 E2 열린 live source를 대신하지 않는다.
+ 승인 테스트 묶음의 포맷·집중 실행·일반 교정은 Astra가 자율 반복한다. root는 제품·시험 코드를 대신 작성하지 않는다.
+ 전체 U08 완료가 아니다. E1/actual carriers, 최종 기능·성능 및 evidence→impact→adaptation→coverage→자체검증→동결/복원→독립 감사가 남았다.
+ Core StartNewGame은 NotStarted만 허용하고 replace_active_run은 host 확인과 구분한다. 실제 사망 정산은 terminal이고 CompleteCombatResult는 acknowledgement다.
+@@ -14,7 +14,7 @@
+ [OwnedHashMap 정정](../../../../roadmaps/core_first/execution/u08_public_20261006_002/EVENT_OWNER_BOUNDARY_002_CORRECTION.ko.md),
+ [Event 현재 층 수명](../../../../roadmaps/core_first/execution/u08_public_20261006_003/EVENT_LIFETIME_DECISION_001.ko.md),
+ [역할·terminal 계약 정정](../../../../roadmaps/core_first/execution/u08_roles_20261006_002/RECORD.ko.md),
+-[현재 Continue 교정·회수](../../../../roadmaps/core_first/execution/u08_public_20261006_008/RECORD.ko.md)를 따른다.
++[E1·Continue 회수 및 E2 범위](../../../../roadmaps/core_first/execution/u08_public_20261006_009/RECORD.ko.md)를 따른다.
+ 과거 실패·원 작성 이력·감사·target·HANDOFF는 보존한다. 프로세스 가시성은 sandbox namespace에 한정된다.
+ 
+ ## 요청·역할·현재 인수
+--- core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/EXPERIMENT_NOTES.md.before
++++ core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/EXPERIMENT_NOTES.md
+@@ -132,3 +132,8 @@
+ ## Continue 과대 예약 교정 및 동일 child 입력 복원 — 2026-10-06/008
+ 
+ Sol의 두파일 교정은 실제 normalization sort 예약을 분리하고8MiB/누적계량/generic projection/Vec/Arc/codec를 유지했다. E005에서 E004와 정확히 같은 checkpoint·content·scenario의 fresh child Continue가 통과했다. 전체 E005는 그 뒤 step47 조준 시작에서 실패해 E1 전체 PASS는 아니다. Astra가 준비조건을 관찰·교정하고 신규 Continue 누적/one-short/비어 있지 않은 set canonical 경계 시험을 이어간다. [현재 증거·역할·한계](../../../../roadmaps/core_first/execution/u08_public_20261006_008/RECORD.ko.md).
++
++
++## E1 비클램프 실제 피해 및 Continue 경계 회수 — 2026-10-06/009
++
++E009 전체1PASS: HP422→212 정확210과 정상fragment copy/Original/employee/generation/raw·calculated 값을 명시 확인했다. 관측true/Snapshot Const100/trace on-off 범위다. export009의35members를 검증했으며 실제releaseCLI는 남았다. Continue2·allocation2·durable2/UUID1/Event4·owner75검사1 PASS도 raw/source별로 회수했다. 신규Continue 누적4,518,759 exact/6one-short는 enforcement증거이며heap이 아니다. 기존실패·clamp증거는 보존하고 E2 실제carrier/literal observation-off/basic4파일묶음으로 진행한다. [상세·현재 범위](../../../../roadmaps/core_first/execution/u08_public_20261006_009/RECORD.ko.md).

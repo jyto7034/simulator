@@ -1,0 +1,609 @@
+{
+  "record_ref": "ATR-CRAR-C2-P08-GEX10-001",
+  "captured_at_utc": "2026-08-22T21:14:27Z",
+  "handoff_ref": "HA-CRAR-P2G60-002",
+  "goal_set_ref": "GS-CRAR-P2G50-002",
+  "goal_id": "GOAL-CRAR-C2-P08-PERFORMANCE-FINAL-INTEGRATION",
+  "phase_id": "PHASE-CRAR-C2-08-PERFORMANCE-FINAL-INTEGRATION",
+  "execution_nodes": [
+    "WP-CRAR-C2-09",
+    "WP-CRAR-C2-10"
+  ],
+  "policy_ref": "PER-CRAR-008-R6-CODE-REVIEWED",
+  "decision_ref": "DR-CRAR-002-R1",
+  "realization_decision_refs": [
+    "TD-CRAR-018",
+    "TD-CRAR-019"
+  ],
+  "invariant_refs": [
+    "IVA-CRAR-C2-01",
+    "IVA-CRAR-C2-02",
+    "IVA-CRAR-C2-06",
+    "IVA-CRAR-C2-08",
+    "IVA-CRAR-C2-09",
+    "IVA-CRAR-C2-10",
+    "IVA-CRAR-C2-11"
+  ],
+  "repository": {
+    "workspace_locator": "/mnt/f/work/simulator/core_enhanced",
+    "revision": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+    "branch": "cleanup/simulator-dirty-worktree-20260803"
+  },
+  "predecessor_currentness": [
+    {
+      "record_ref": "ATR-CRAR-C2-P01-GEX20-008",
+      "verdict": "Complete / High",
+      "evidence_path": "evidence/P01_SUCCESSOR_AUDIT_TARGET_008.json"
+    },
+    {
+      "record_ref": "ATR-CRAR-C2-P02-GEX20-007",
+      "verdict": "Complete / High",
+      "evidence_path": "evidence/P02_SUCCESSOR_AUDIT_TARGET_007.json"
+    },
+    {
+      "record_ref": "ATR-CRAR-C2-P03-GEX20-006",
+      "verdict": "Complete / High",
+      "evidence_path": "evidence/P03_SUCCESSOR_AUDIT_TARGET_006.json"
+    },
+    {
+      "record_ref": "ATR-CRAR-C2-P04-GEX20-005",
+      "verdict": "Complete / High",
+      "evidence_path": "evidence/P04_SUCCESSOR_AUDIT_TARGET_005.json"
+    },
+    {
+      "record_ref": "ATR-CRAR-C2-P05-GEX20-004",
+      "verdict": "Complete / High",
+      "evidence_path": "evidence/P05_SUCCESSOR_AUDIT_TARGET_004.json"
+    },
+    {
+      "record_ref": "ATR-CRAR-C2-P06-GEX20-002",
+      "verdict": "Complete / High",
+      "evidence_path": "evidence/P06_SUCCESSOR_AUDIT_TARGET_002.json"
+    },
+    {
+      "record_ref": "ATR-CRAR-C2-P07-GEX20-001",
+      "verdict": "Complete / High",
+      "evidence_path": "evidence/P07_SUCCESSOR_AUDIT_TARGET_001.json"
+    }
+  ],
+  "content_members": [
+    {
+      "path": "Cargo.toml",
+      "kind": "core_build_input",
+      "sha256": "0d118334417380f47461c89b50c550bd3af758f705e1ce2ebf6252ae9ecd368b"
+    },
+    {
+      "path": "../Cargo.lock",
+      "kind": "core_build_input",
+      "sha256": "2e5f218d4147b915e4af8362835f9b17bd7de3f21b98c89a290abda20921e969"
+    },
+    {
+      "path": "src/application.rs",
+      "kind": "p08_core_source_or_boundary",
+      "sha256": "631d112435fc48b830cf33a659e8e3d9933cc9ce05f8e87aa845c4a74c77b9a1"
+    },
+    {
+      "path": "src/game/world.rs",
+      "kind": "p08_core_source_or_boundary",
+      "sha256": "adfa59201b744ad6873cf1b68e9bf3053f6725ec20dae106103bf0ad70f059e1"
+    },
+    {
+      "path": "src/game/world/application.rs",
+      "kind": "p08_core_source_or_boundary",
+      "sha256": "7d9c8f707a90ff5c32cf3de2355d4188f2906045248445ccdcac336d56e20df1"
+    },
+    {
+      "path": "src/game/world/state.rs",
+      "kind": "p08_core_source_or_boundary",
+      "sha256": "d7328e466eccbdc6616364b5c86a736430a3accf22c823fec5ae7dfa38aebaab"
+    },
+    {
+      "path": "src/game/world/active_run.rs",
+      "kind": "p08_core_source_or_boundary",
+      "sha256": "f8c02ba347d5d6800413cade30a72a4b34b7a4806fcc145854a27acb9bea72a8"
+    },
+    {
+      "path": "src/game/world/node_flow.rs",
+      "kind": "p08_core_source_or_boundary",
+      "sha256": "79e61208e0a84a81a2b8571d4a45385d32eb54506cf927518648ac44fc421b08"
+    },
+    {
+      "path": "src/game/battle/event_log.rs",
+      "kind": "p08_core_source_or_boundary",
+      "sha256": "3dbd55e505e293bc59bac030086c3863e594cabf837d310ce8aaa92511ffa566"
+    },
+    {
+      "path": "src/game/battle/result_stats.rs",
+      "kind": "p08_core_source_or_boundary",
+      "sha256": "6c75a52b24bf6b610b5f13331bbc0bebfbb70098728639c5e5fb291917be4c70"
+    },
+    {
+      "path": "src/game/battle/recording.rs",
+      "kind": "p08_core_source_or_boundary",
+      "sha256": "d418bac2f711b3ef1df215498707e6c5a7473d1d08ff95bb802b074e2d7d587f"
+    },
+    {
+      "path": "src/game/battle/core/mod.rs",
+      "kind": "p08_core_source_or_boundary",
+      "sha256": "7fa1ef2890ae00aae82aafa48b641f24f9d34aab39941c3343b4bece240b271d"
+    },
+    {
+      "path": "src/game/battle/core/movement/engine.rs",
+      "kind": "p08_core_source_or_boundary",
+      "sha256": "89e753f624927d7c4a057777f85d816f189c019001ea6c76227bed3047fa582f"
+    },
+    {
+      "path": "src/game/battle/core/movement/planner.rs",
+      "kind": "p08_core_source_or_boundary",
+      "sha256": "58ee8b3c4de3b4c3fb12c002353063befee12934322324e0a0b162b977e2d82b"
+    },
+    {
+      "path": "src/game/battle/core/movement/rapier_backend.rs",
+      "kind": "p08_core_source_or_boundary",
+      "sha256": "764124edb49ab1181352f1e9da83b0ef48d2fe517dc64dc32982402fcf153af9"
+    },
+    {
+      "path": "src/game/battle/core/movement/blocking.rs",
+      "kind": "p08_core_source_or_boundary",
+      "sha256": "1fbc2ce8bd7f51e5dd2fd6edd2b30f41d3318672c133fc1e7169c026e1de0417"
+    },
+    {
+      "path": "src/game/battle/core/targeting.rs",
+      "kind": "p08_core_source_or_boundary",
+      "sha256": "0d9308926ce1fe5bea6c5dd0c2da96b42cb66235b10c967597fb2d5287f5457e"
+    },
+    {
+      "path": "src/game/battle/core/target_usefulness.rs",
+      "kind": "p08_core_source_or_boundary",
+      "sha256": "f4ad2c6cf6d5de9474e84667204389dc613d79dcaebae63409ee95fd9313ae80"
+    },
+    {
+      "path": "docs/core_runtime_contract.md",
+      "kind": "p08_canonical_or_execution_evidence",
+      "sha256": "09661c54ee37dba4d31671d3f913567a65466858d9a71ba2f8bcf4814195a421"
+    },
+    {
+      "path": "docs/game_rulebook.md",
+      "kind": "p08_canonical_or_execution_evidence",
+      "sha256": "482e964cc7015945dec29cf28293d58d9e315c8db47ef60e0f4765e3f1a36c6d"
+    },
+    {
+      "path": "docs/architecture/runtime_feature_manifest.v1.json",
+      "kind": "p08_canonical_or_execution_evidence",
+      "sha256": "ed3c4fb81de3fdae080b8f834a8d67edfcb649f1a8f8cf8b17f140a78acf3779"
+    },
+    {
+      "path": "tools/runtime_architecture_preservation/Cargo.toml",
+      "kind": "p01_immutable_or_manifest_validation_tool",
+      "sha256": "70199b62a880bc7924755dd04ddf48c68b82f6096850ee6a320d32854003dda9"
+    },
+    {
+      "path": "tools/runtime_architecture_preservation/Cargo.lock",
+      "kind": "p01_immutable_or_manifest_validation_tool",
+      "sha256": "2ffda73f435af0d3fea27376a204e9044c4d6867e66721f34e66a29ac3d7b03c"
+    },
+    {
+      "path": "tools/runtime_architecture_preservation/src/main.rs",
+      "kind": "p01_immutable_or_manifest_validation_tool",
+      "sha256": "64debfd6546afb617636caf520fcb9e8ee49acc1ee2377306cf8a19afbd8c631"
+    },
+    {
+      "path": "tools/runtime_architecture_preservation/src/bin/verify_feature_manifest.rs",
+      "kind": "p01_immutable_or_manifest_validation_tool",
+      "sha256": "9ad420948292c592f507a6790e8917b98bce8b25ca523b6e0c9bb20d25c65b37"
+    },
+    {
+      "path": "evidence/P01_PERFORMANCE_BASELINE.json",
+      "kind": "p08_or_predecessor_validation_evidence",
+      "sha256": "86ccd5c78b0dcdfab502b1c5842a48c8a9df8963557e36cbf49b3ea5ec2b5848"
+    },
+    {
+      "path": "evidence/P07_AUDIT_TARGET.json",
+      "kind": "p08_or_predecessor_validation_evidence",
+      "sha256": "44d81414fe5c13e143091c9e13085f986428871f01b68359567fda63789859ae"
+    },
+    {
+      "path": "tools/runtime_architecture_final_validation/Cargo.toml",
+      "kind": "p08_permanent_validation_tool",
+      "sha256": "7a791442a385906a90b9c908ddb0b968695a38f312776fd2ba65d60401749ef3"
+    },
+    {
+      "path": "tools/runtime_architecture_final_validation/Cargo.lock",
+      "kind": "p08_permanent_validation_tool",
+      "sha256": "d3936c76d4d1e831506461da803e9194cb5720ae7cca266f43212868eb5549c7"
+    },
+    {
+      "path": "tools/runtime_architecture_final_validation/src/p01_exact_replay.rs",
+      "kind": "p08_permanent_validation_tool",
+      "sha256": "fd6fb76fe06d4df36fae45ee945b12a32fc935a6b084cac4dc92dd8760390a72"
+    },
+    {
+      "path": "tools/runtime_architecture_final_validation/src/final_performance.rs",
+      "kind": "p08_permanent_validation_tool",
+      "sha256": "8a6ca491b6a80b7df34c583e4a1a7879baef5281b4bedf611c9839b7a4025984"
+    },
+    {
+      "path": "tools/runtime_architecture_final_validation/src/public_guards.rs",
+      "kind": "p08_permanent_validation_tool",
+      "sha256": "078f95376522ce698ebf93cc11c59ee3bc5554b0dafe9f903bc12eb7ac07bf9e"
+    },
+    {
+      "path": "tools/runtime_architecture_final_validation/default_fixture_api_audit/Cargo.toml",
+      "kind": "current_core_api_probe",
+      "sha256": "0befa2f0a9eb70f04f62d924ff8291a820707c8a76821ddadcf9e9dbdcfd615e"
+    },
+    {
+      "path": "tools/runtime_architecture_final_validation/default_fixture_api_audit/Cargo.lock",
+      "kind": "current_core_api_probe",
+      "sha256": "d8eddb85163ca7305cf7c4418365574ed5cc62c454c9dfda7894ebb48085abee"
+    },
+    {
+      "path": "tools/runtime_architecture_final_validation/default_fixture_api_audit/src/main.rs",
+      "kind": "current_core_api_probe",
+      "sha256": "707b83705646610c9d952b51a88f1bf9c658bf5e86f4fdd1a555a68c829271fa"
+    },
+    {
+      "path": "docs/goals/current_runtime_architecture_remediation/execution/p08_performance_final_integration/PLAN.md",
+      "kind": "p08_canonical_or_execution_evidence",
+      "sha256": "37b8341079f05ca2ac45a864e99b7a2ff3757b1b12c2973d7f755904988e21a4"
+    },
+    {
+      "path": "docs/goals/current_runtime_architecture_remediation/execution/p08_performance_final_integration/EXPERIMENTS.md",
+      "kind": "p08_canonical_or_execution_evidence",
+      "sha256": "6eba96bd5c59fc1ddd1ba45aaf84b285725e84d36dcfd376e2846a48bd9f1df0"
+    },
+    {
+      "path": "docs/goals/current_runtime_architecture_remediation/execution/p08_performance_final_integration/EXPERIMENT_NOTES.md",
+      "kind": "p08_canonical_or_execution_evidence",
+      "sha256": "81929cabe68943e933200607696c69556908e0ac0c5cfaa2193d39ddb3e1a02a"
+    },
+    {
+      "path": "docs/goals/current_runtime_architecture_remediation/execution/p08_performance_final_integration/FINAL_EVIDENCE_INDEX.md",
+      "kind": "p08_canonical_or_execution_evidence",
+      "sha256": "d8abbe689696e2ea6494d550090647372fccebb092a2353025c50adad2568919"
+    },
+    {
+      "path": "docs/goals/current_runtime_architecture_remediation/execution/p08_performance_final_integration/STRUCTURAL_AUDIT.md",
+      "kind": "p08_canonical_or_execution_evidence",
+      "sha256": "0c39777d6dae5219ce6de034f0615cc71c7bfe19b796484db55967cf4ad3b9cb"
+    },
+    {
+      "path": "evidence/P08_INITIAL_PERFORMANCE_LATENCY.json",
+      "kind": "p08_or_predecessor_validation_evidence",
+      "sha256": "ce358b1b278d628f31e7deaa341bc7ce00e7d3ee50c6414956cfa57fe56efc9c"
+    },
+    {
+      "path": "evidence/P08_INITIAL_PUBLIC_GUARDS.json",
+      "kind": "p08_or_predecessor_validation_evidence",
+      "sha256": "d80bf2c75aabc566f622dad12c7a91dc562fc3c05b75632a5827b0a93c0331fa"
+    },
+    {
+      "path": "evidence/P08_PRE_COW_PUBLIC_STAGING.json",
+      "kind": "p08_or_predecessor_validation_evidence",
+      "sha256": "7838bda79a1f92f08887397e6e5ce55d0d7c4b47d9bcacd76d4ae96a6c21fe14"
+    },
+    {
+      "path": "evidence/P08_PROFILE_NO_BLOCKERS.json",
+      "kind": "p08_or_predecessor_validation_evidence",
+      "sha256": "1b12873d5ca2dfc19d131de11cfa786152483161ee0dd6cca7dbdaba6f55c7df"
+    },
+    {
+      "path": "evidence/P08_PROFILE_SINGLE_SORT.json",
+      "kind": "p08_or_predecessor_validation_evidence",
+      "sha256": "b06a7793b335d4a9ef2b0422bc39ff26786563008c6e718b67569c51821077c6"
+    },
+    {
+      "path": "evidence/P08_FINAL_PERFORMANCE_LATENCY.json",
+      "kind": "p08_or_predecessor_validation_evidence",
+      "sha256": "eb8a25561f3e9ad5040070bacc90279d7966bd7566044e50d932d6d27af11dda"
+    },
+    {
+      "path": "evidence/P08_FINAL_PERFORMANCE_ALLOCATION.json",
+      "kind": "p08_or_predecessor_validation_evidence",
+      "sha256": "71b20b60c0181e372405737fcd20b56d1ab9a4c0f4f28c6aaf381744df1d7fee"
+    },
+    {
+      "path": "evidence/P08_FINAL_P01_EXACT_RESULT.json",
+      "kind": "p08_or_predecessor_validation_evidence",
+      "sha256": "1c8e69493f3f6065e038fe7041aefbab9888ecec9fa522ce457cdcea0f2c6d9d"
+    },
+    {
+      "path": "evidence/P08_PUBLIC_PERFORMANCE_GUARDS.json",
+      "kind": "p08_or_predecessor_validation_evidence",
+      "sha256": "21475b8b52670926f1259e5ac7d8be8119922241b493018c2f1b6de96e9e76a1"
+    },
+    {
+      "path": "evidence/P08_PUBLIC_ALLOCATION_GUARDS.json",
+      "kind": "p08_or_predecessor_validation_evidence",
+      "sha256": "82ece8bc3a3b26d075369076221e71ffe0e3c93d6f477e9a02b7b1ef9d5093f9"
+    },
+    {
+      "path": "evidence/P08_PERFORMANCE_FINAL_INTEGRATION_RECEIPT.json",
+      "kind": "p08_or_predecessor_validation_evidence",
+      "sha256": "b44179c70bb4e815bac4a55d3fb9d7aa7f38f908793ee34a4e5029b34468b13d"
+    },
+    {
+      "path": "docs/goals/current_runtime_architecture_remediation/execution/p01_preservation_observability/SUCCESSOR_CURRENTNESS_AUDIT_008.md",
+      "kind": "p08_canonical_or_execution_evidence",
+      "sha256": "793c5650730d3286729a3f6f683d14e0ee95646c7a3fc40e72c43e9007599f95"
+    },
+    {
+      "path": "evidence/P01_SUCCESSOR_AUDIT_TARGET_008.json",
+      "kind": "p08_or_predecessor_validation_evidence",
+      "sha256": "fca0d4aaa2ec1aa69adb99d894b192a2d0acaba278da127e2b8bffc14e521739"
+    },
+    {
+      "path": "docs/goals/current_runtime_architecture_remediation/execution/p02_validated_data/SUCCESSOR_CURRENTNESS_AUDIT_007.md",
+      "kind": "p08_canonical_or_execution_evidence",
+      "sha256": "48d9785e94d5924746ec72b59687c56362632c4b15cc87c331926461333449d3"
+    },
+    {
+      "path": "evidence/P02_SUCCESSOR_AUDIT_TARGET_007.json",
+      "kind": "p08_or_predecessor_validation_evidence",
+      "sha256": "ae12124d9708dfa576a1fd3924e642a6bfbbd30a1be3ffbbf15c4fd52fc84a25"
+    },
+    {
+      "path": "docs/goals/current_runtime_architecture_remediation/execution/p03_application_authority/SUCCESSOR_CURRENTNESS_AUDIT_006.md",
+      "kind": "p08_canonical_or_execution_evidence",
+      "sha256": "f7fe3cd5aec46bcd873eae5520303e173af56631b212f148d0cd5da976587825"
+    },
+    {
+      "path": "evidence/P03_SUCCESSOR_AUDIT_TARGET_006.json",
+      "kind": "p08_or_predecessor_validation_evidence",
+      "sha256": "f20abd05aa607b74aa4cb8983c3603aa4ce18bdaafaed168a992ae0bea3076d5"
+    },
+    {
+      "path": "docs/goals/current_runtime_architecture_remediation/execution/p04_battle_kernel/SUCCESSOR_CURRENTNESS_AUDIT_005.md",
+      "kind": "p08_canonical_or_execution_evidence",
+      "sha256": "e20598bb145fb5fc3dba27616e2c41747468780f9028cc3332d1f4ab0e0d02c9"
+    },
+    {
+      "path": "evidence/P04_SUCCESSOR_AUDIT_TARGET_005.json",
+      "kind": "p08_or_predecessor_validation_evidence",
+      "sha256": "ac2c7d1ade176e9db247c4244c06fc575431f9aa55525e522b936e0bfda7df84"
+    },
+    {
+      "path": "docs/goals/current_runtime_architecture_remediation/execution/p05_bounded_history_result/SUCCESSOR_CURRENTNESS_AUDIT_004.md",
+      "kind": "p08_canonical_or_execution_evidence",
+      "sha256": "de6b34c724dfee442d66f324944f4a07f2249ba8b8fa0d5de476bff68d348540"
+    },
+    {
+      "path": "evidence/P05_SUCCESSOR_AUDIT_TARGET_004.json",
+      "kind": "p08_or_predecessor_validation_evidence",
+      "sha256": "b17d3a2ce819ffea621f44c4f7a81ed49457c68c04e929217270d606bfbf1cf6"
+    },
+    {
+      "path": "docs/goals/current_runtime_architecture_remediation/execution/p06_checkpoint_migration/SUCCESSOR_CURRENTNESS_AUDIT_002.md",
+      "kind": "p08_canonical_or_execution_evidence",
+      "sha256": "d2d0daf88bd443290054b2b30f065464e90552226c0eb4c09fb2f7e80b0322ea"
+    },
+    {
+      "path": "evidence/P06_SUCCESSOR_AUDIT_TARGET_002.json",
+      "kind": "p08_or_predecessor_validation_evidence",
+      "sha256": "581df8a794e7f5ff2358bcd975e576e5613d6f97359cba63d62941fdd79e0497"
+    },
+    {
+      "path": "docs/goals/current_runtime_architecture_remediation/execution/p07_core_public_projection/SUCCESSOR_CURRENTNESS_AUDIT_001.md",
+      "kind": "p08_canonical_or_execution_evidence",
+      "sha256": "3a1037954433632dedee4881f0b3c599af00ca48bb6377e42271ff9a6e62ba10"
+    },
+    {
+      "path": "evidence/P07_SUCCESSOR_AUDIT_TARGET_001.json",
+      "kind": "p08_or_predecessor_validation_evidence",
+      "sha256": "2d9a91fce9bd9b0086709f188d49004b307f0823d2d71591403d2e29687eee2f"
+    },
+    {
+      "path": "tools/application_authority_api_audit/invalid/Cargo.lock",
+      "kind": "current_core_api_probe",
+      "sha256": "cfbb5c5c47057406e95f866fbd4336fe527abf17d1806f774b6e61bd772df8bd"
+    },
+    {
+      "path": "tools/application_authority_api_audit/invalid/Cargo.toml",
+      "kind": "current_core_api_probe",
+      "sha256": "67726b35db77de81e1088ca5d7ba48a86059157c0109578f02a88443f3aa995f"
+    },
+    {
+      "path": "tools/application_authority_api_audit/invalid/src/main.rs",
+      "kind": "current_core_api_probe",
+      "sha256": "0db03b856fccc7bb2eec626916ff4e0ba9965050106b41d7e18ca2f49d721a17"
+    },
+    {
+      "path": "tools/application_authority_api_audit/valid/Cargo.lock",
+      "kind": "current_core_api_probe",
+      "sha256": "2961a1c2ad286cfd886eecbb18367e2ca378bc41676cd05ccfd1f70ede4da691"
+    },
+    {
+      "path": "tools/application_authority_api_audit/valid/Cargo.toml",
+      "kind": "current_core_api_probe",
+      "sha256": "9210a961d8b30f3ebd02fc6e3ccfaa0d6dce210e9dbf8ff60deaf3129423785d"
+    },
+    {
+      "path": "tools/application_authority_api_audit/valid/src/main.rs",
+      "kind": "current_core_api_probe",
+      "sha256": "77b352fbe43bc7294ad1328e5229c8042bda4f27a5dec08746ffb0c18ce663d2"
+    },
+    {
+      "path": "tools/battle_kernel_api_audit/invalid/Cargo.lock",
+      "kind": "current_core_api_probe",
+      "sha256": "22e0c646026f401491ece6739bafe46f295afb9870e032987e8f5ed4a871e0bf"
+    },
+    {
+      "path": "tools/battle_kernel_api_audit/invalid/Cargo.toml",
+      "kind": "current_core_api_probe",
+      "sha256": "59f50e077f1ac3ec2cf03c96ffe4d50d718efe05e5e8e6264c39d8d54189848d"
+    },
+    {
+      "path": "tools/battle_kernel_api_audit/invalid/src/main.rs",
+      "kind": "current_core_api_probe",
+      "sha256": "6d85ae97567db3e65bf64c1c5a18bf6135d2e516f0a3af12c72f1d1bec895981"
+    },
+    {
+      "path": "tools/battle_kernel_api_audit/valid/Cargo.lock",
+      "kind": "current_core_api_probe",
+      "sha256": "affe0884d729bc38b0d099b886846d2c1c220a5082dd2f13dd916d70e55734eb"
+    },
+    {
+      "path": "tools/battle_kernel_api_audit/valid/Cargo.toml",
+      "kind": "current_core_api_probe",
+      "sha256": "d9452149bd18582b32af196f837fd994b752959df0cad8eb5a608b4cee82eab2"
+    },
+    {
+      "path": "tools/battle_kernel_api_audit/valid/src/main.rs",
+      "kind": "current_core_api_probe",
+      "sha256": "45b3563658dc8d99bcc3607b82e268d58b0d29704d4a97880400d065440837f6"
+    },
+    {
+      "path": "tools/core_public_projection_api_audit/invalid/Cargo.lock",
+      "kind": "current_core_api_probe",
+      "sha256": "76a77315b23a364321cfb45517e7e0090e07215c248d62bd81fd5111e80f1ca1"
+    },
+    {
+      "path": "tools/core_public_projection_api_audit/invalid/Cargo.toml",
+      "kind": "current_core_api_probe",
+      "sha256": "a7b271a094bd6e59d6f849a5bfeca4dfce078ab5a7779d938486e670db551470"
+    },
+    {
+      "path": "tools/core_public_projection_api_audit/invalid/src/main.rs",
+      "kind": "current_core_api_probe",
+      "sha256": "2e7a06bf4e5ee6e7aaaafa565534d6106d882a703d95fd91e764ed1b7650f416"
+    },
+    {
+      "path": "tools/core_public_projection_api_audit/valid/Cargo.lock",
+      "kind": "current_core_api_probe",
+      "sha256": "82cdb58d10faa196ce2d9b48affd5cc05f042540c349d0f8971cf7208824a695"
+    },
+    {
+      "path": "tools/core_public_projection_api_audit/valid/Cargo.toml",
+      "kind": "current_core_api_probe",
+      "sha256": "bd1f0075ca7e53e59181b7d958099238efecc8f24d9769f9138596fa226ad42b"
+    },
+    {
+      "path": "tools/core_public_projection_api_audit/valid/src/main.rs",
+      "kind": "current_core_api_probe",
+      "sha256": "6e3b34ceb51701a19ee1e23fe4a25b5a7a1e92ffb6279ff94153fbdcc12984a8"
+    },
+    {
+      "path": "tools/history_result_api_audit/invalid/Cargo.lock",
+      "kind": "current_core_api_probe",
+      "sha256": "ad4ddb91b2515c60cbf5dceb0209bd0150d2332e34cfb23849580e738d050399"
+    },
+    {
+      "path": "tools/history_result_api_audit/invalid/Cargo.toml",
+      "kind": "current_core_api_probe",
+      "sha256": "269190972fda2e042de95b7eeee457d5dbe024bdb7c92e5168b9ef333bcc5c29"
+    },
+    {
+      "path": "tools/history_result_api_audit/invalid/src/main.rs",
+      "kind": "current_core_api_probe",
+      "sha256": "3edd820e7c44d0588987f3fb0c05d31a10a44a1a9e3b946fef04b58f320a9b95"
+    },
+    {
+      "path": "tools/history_result_api_audit/valid/Cargo.lock",
+      "kind": "current_core_api_probe",
+      "sha256": "72d97606da0058390d1e41eeb83fee003485f9a45f7d1a71f67c20fdc9567338"
+    },
+    {
+      "path": "tools/history_result_api_audit/valid/Cargo.toml",
+      "kind": "current_core_api_probe",
+      "sha256": "93262e38807d9ae8faaa141d3c178e63b7b9bf1d84c7625bd35993bfdb9319d2"
+    },
+    {
+      "path": "tools/history_result_api_audit/valid/src/main.rs",
+      "kind": "current_core_api_probe",
+      "sha256": "031df4c383c441dcb7798bac6fa168d1c0be45f3713f836f42ed6447563b69c2"
+    },
+    {
+      "path": "tools/validated_data_api_audit/invalid/Cargo.lock",
+      "kind": "current_core_api_probe",
+      "sha256": "6af2f6b0443e342bf4a77ba7200d6e07fb06aa661e1460348ff2202284e5189c"
+    },
+    {
+      "path": "tools/validated_data_api_audit/invalid/Cargo.toml",
+      "kind": "current_core_api_probe",
+      "sha256": "b78aceb93fe03bca865878062caf6c28f7186cd8616e7f598f8e84225a7bada8"
+    },
+    {
+      "path": "tools/validated_data_api_audit/invalid/src/main.rs",
+      "kind": "current_core_api_probe",
+      "sha256": "645612a0b1125e4e0098712c267b051a7406283f67b772e4770f84dd63b45b46"
+    },
+    {
+      "path": "tools/validated_data_api_audit/valid/Cargo.lock",
+      "kind": "current_core_api_probe",
+      "sha256": "cd1d9e35da0894487e4a54538ed8c9aba99169a7e42aeb7a2485ee0df00c5308"
+    },
+    {
+      "path": "tools/validated_data_api_audit/valid/Cargo.toml",
+      "kind": "current_core_api_probe",
+      "sha256": "82dcaa2d15bd8b1c1ec9294b21b1be246caf82b667661ed31be3a91eee33cac4"
+    },
+    {
+      "path": "tools/validated_data_api_audit/valid/src/main.rs",
+      "kind": "current_core_api_probe",
+      "sha256": "0a520996d9d24c5c1f0d1702f84ccccff92e1b984cf8f8e737a882be54969b28"
+    }
+  ],
+  "content_member_count": 95,
+  "validation": [
+    {
+      "command": "five frozen P08 performance/public receipts",
+      "result": "all applicable latency/allocation/deterministic/memory/query/size/staging/rollback gates passed"
+    },
+    {
+      "command": "cargo fmt --all -- --check && git diff --check",
+      "result": "exit 0"
+    },
+    {
+      "command": "cargo check -p game_core --release --lib",
+      "result": "exit 0; warnings 0"
+    },
+    {
+      "command": "cargo doc -p game_core --release --no-deps",
+      "result": "exit 0; fixture and forbidden raw public names absent"
+    },
+    {
+      "command": "focused release event/result/movement/checkpoint/application selectors",
+      "result": "8 + 7 + 17 + 15 + 9 = 56 passed; 0 failed"
+    },
+    {
+      "command": "cargo test -p game_core --all-targets",
+      "result": "1159 passed; 0 failed; 0 ignored"
+    },
+    {
+      "command": "runtime feature manifest verifier",
+      "result": "57 features; 10 dimensions; 44 locator contents; composite 5ff7356cb08fb42758257570988ee39e426cbb4ba4f06ed5d3c0346821c8d620; errors 0"
+    },
+    {
+      "command": "five established valid/invalid release probe pairs",
+      "result": "all valid exit 0; all invalid expected exit 101"
+    },
+    {
+      "command": "P08 default fixture invalid release probe",
+      "result": "expected exit 101 / E0599"
+    },
+    {
+      "command": "P08 final structural audit",
+      "result": "unresolved count 0"
+    }
+  ],
+  "unrelated_core_dirty_baseline": {
+    "scope": "core_enhanced paths only; game_server, Unity, sibling resources and external consumers excluded without inspection",
+    "exclusions": "cumulative P01-P08 exact target members, execution/evidence artifacts, audit probe/tool trees and generated target directories",
+    "modified": 92,
+    "deleted": 23,
+    "untracked": 675,
+    "other": 0,
+    "total": 790,
+    "porcelain_sha256": "d9e815c705367387b6a610aa699e2eaa0968172c4c287cb567b822d6be7fd622"
+  },
+  "known_limitations": [
+    "external protocol/schema/consumer measurement and production deployment remain N/A and uninspected",
+    "system perf sampling was unavailable; retained exact-output source-instrumented A/B receipts identify the accepted hotspots",
+    "whole-library Clippy retains the previously recorded unrelated denied never_loop; release check and rustdoc are warning-free"
+  ],
+  "explicit_exclusions": [
+    "COMPLETION_AUDIT.md",
+    "generated target directories",
+    "game_server, Unity, sibling resources and external consumers"
+  ]
+}

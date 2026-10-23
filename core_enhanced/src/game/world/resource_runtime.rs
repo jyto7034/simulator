@@ -171,6 +171,7 @@ impl GameCore {
 
     pub(super) fn validate_run_resources(&self) -> Result<(), GameError> {
         if let Some(run) = &self.state.run {
+            run.credit_ledgers.validate(&self.state.skill_fragments)?;
             let owners = resource_owners(
                 &self.game_data.resource_data,
                 &self.state.roster,
@@ -190,6 +191,8 @@ impl GameCore {
             GameState::RunComplete | GameState::RunFailed { .. } | GameState::GameOver
         );
         if let Some(run) = self.state.run.as_mut() {
+            run.credit_ledgers.reconcile(&self.state.skill_fragments,terminal)?;
+            run.credit_ledgers.validate(&self.state.skill_fragments)?;
             let owners = resource_owners(
                 &self.game_data.resource_data,
                 &self.state.roster,

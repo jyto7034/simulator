@@ -1,0 +1,2706 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "REV-CEDR-ENTRY-001",
+        "Content Digest": "sha256:f04a8919a506ca0b7a9b2bf50032b73148c218c9a6bba8e1bf8adc80510fd47c"
+      },
+      "payload": {
+        "Repository/environment identity": {
+          "repository": "/mnt/f/work/simulator",
+          "HEAD": "2f725172edbffd27c5078d29000a1a2ba6ddc4d9",
+          "dirty": "prior dirty preserved"
+        },
+        "Source Set": [
+          {
+            "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+            "bytes": 14524,
+            "sha256": "aff7193b4cf54b6694dd949e91f3c37fc13f2b2c18da4788e851046a2b0b756d"
+          },
+          {
+            "path": "core_enhanced/src/game/world/node_flow.rs",
+            "bytes": 74232,
+            "sha256": "6b13e4aec7b821aa43e89c99d9f9c436d4053eba9bc08aa7fa8d6bab4ee7596c"
+          },
+          {
+            "path": "core_enhanced/src/game/employee.rs",
+            "bytes": 43626,
+            "sha256": "edcbee17070a3b7c81712c7bdc58ac493f146b66f3281e5c504c811639762c2f"
+          }
+        ],
+        "Exact Source Archive": "P2G_20_SOURCE_001.tar.gz",
+        "Observation command/method": "rg/sed targeted read and CODE_REVIEW.ko.md boundary table",
+        "Observed result": "receipt/first-cost/exhaustion owner; completed-node grace requires entry-cost successor",
+        "Observation timestamp": "2026-10-14T06:19:46.948382+00:00",
+        "Supported claim": "current owner/delta/validation seam, not runtime completion",
+        "Limitations": "runtime tests0; reading scope is named symbols/boundaries, not exhaustive file audit",
+        "Runtime tests executed": 0
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CEDR-ENTRY-001",
+        "Content Digest": "sha256:f70a861dddb4da67daa41642a49bbdadaa77d6bd8e50d8e1a7d0a5825d7343f7"
+      },
+      "payload": {
+        "Evaluated Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-003",
+          "Content Digest": "sha256:f587e0e1dd56595c8f6bf68013d36032de2b0a0dff7dd2e7fbee05418c21b90b"
+        },
+        "Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CEDR-001",
+          "Content Digest": "sha256:d93b9c3ad623c7e0b60b7bb3f1c9298d90290d5db9011173d2ae7b2a9a6ab23b"
+        },
+        "Requirement ID": "ENTRY",
+        "Observed source identity/location/version": [
+          {
+            "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+            "bytes": 14524,
+            "sha256": "aff7193b4cf54b6694dd949e91f3c37fc13f2b2c18da4788e851046a2b0b756d"
+          },
+          {
+            "path": "core_enhanced/src/game/world/node_flow.rs",
+            "bytes": 74232,
+            "sha256": "6b13e4aec7b821aa43e89c99d9f9c436d4053eba9bc08aa7fa8d6bab4ee7596c"
+          },
+          {
+            "path": "core_enhanced/src/game/employee.rs",
+            "bytes": 43626,
+            "sha256": "edcbee17070a3b7c81712c7bdc58ac493f146b66f3281e5c504c811639762c2f"
+          }
+        ],
+        "Disposition": "confirmed",
+        "Observation Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-ENTRY-001",
+            "Content Digest": "sha256:f04a8919a506ca0b7a9b2bf50032b73148c218c9a6bba8e1bf8adc80510fd47c"
+          }
+        ],
+        "Limitation or N/A reason": "static owner/delta confirmed; implementation verification remains",
+        "Observation timestamp": "2026-10-14T06:19:46.948382+00:00"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "REV-CEDR-COMBAT-001",
+        "Content Digest": "sha256:59e380ad3f950b5197e8bdf6a8036660117391e13d4f23e660f9de04c7f4c9a2"
+      },
+      "payload": {
+        "Repository/environment identity": {
+          "repository": "/mnt/f/work/simulator",
+          "HEAD": "2f725172edbffd27c5078d29000a1a2ba6ddc4d9",
+          "dirty": "prior dirty preserved"
+        },
+        "Source Set": [
+          {
+            "path": "core_enhanced/src/game/world/combat.rs",
+            "bytes": 137989,
+            "sha256": "90d52dac049ae4ca866c7a471bdc64fffa5698861c419fa67ba8af141a159342"
+          },
+          {
+            "path": "core_enhanced/src/game/world/state.rs",
+            "bytes": 92891,
+            "sha256": "b77b51b8da45889e4e4d76281cf1694aa214e9b3756b17ab0a6a0c5d350249fb"
+          },
+          {
+            "path": "core_enhanced/src/game/combat_preview/mod.rs",
+            "bytes": 100486,
+            "sha256": "9e184b5ca43efa0e46f669e4d46c47d898943454185033ec903f8851fba37dfc"
+          },
+          {
+            "path": "core_enhanced/src/game/combat_setup/enemy_spawns.rs",
+            "bytes": 13918,
+            "sha256": "1a83e1dc73595ca638e5f4bbf4c88021d3297502afbc1b858adc6bd7bc551c27"
+          },
+          {
+            "path": "core_enhanced/src/game/map/facility_generator.rs",
+            "bytes": 60922,
+            "sha256": "64ff5a2c162f98c2976499f6133b57ee19e1689430c7ea966286d1ff240e6112"
+          },
+          {
+            "path": "core_enhanced/src/game/world/map_encounters.rs",
+            "bytes": 14113,
+            "sha256": "3185cb80fc24e2d902f9e55191c17baea692f691c216d630ceb3f13af7542890"
+          },
+          {
+            "path": "core_enhanced/src/game/data/run_policy_data.rs",
+            "bytes": 65363,
+            "sha256": "69a5cb7e68c8c8688fb48df4100d0c2ede25a969ea13a82497781e99f63263ac"
+          }
+        ],
+        "Exact Source Archive": "P2G_20_SOURCE_001.tar.gz",
+        "Observation command/method": "rg/sed targeted read and CODE_REVIEW.ko.md boundary table",
+        "Observed result": "authored preview/spawn scale and roster-based floor anchor; battle snapshot required",
+        "Observation timestamp": "2026-10-14T06:19:46.948382+00:00",
+        "Supported claim": "current owner/delta/validation seam, not runtime completion",
+        "Limitations": "runtime tests0; reading scope is named symbols/boundaries, not exhaustive file audit",
+        "Runtime tests executed": 0
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CEDR-COMBAT-001",
+        "Content Digest": "sha256:f780f097846bff029e976967918a8f24ec3fd88160f7c44d4adb21984fb94d4a"
+      },
+      "payload": {
+        "Evaluated Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-003",
+          "Content Digest": "sha256:f587e0e1dd56595c8f6bf68013d36032de2b0a0dff7dd2e7fbee05418c21b90b"
+        },
+        "Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CEDR-001",
+          "Content Digest": "sha256:d93b9c3ad623c7e0b60b7bb3f1c9298d90290d5db9011173d2ae7b2a9a6ab23b"
+        },
+        "Requirement ID": "COMBAT",
+        "Observed source identity/location/version": [
+          {
+            "path": "core_enhanced/src/game/world/combat.rs",
+            "bytes": 137989,
+            "sha256": "90d52dac049ae4ca866c7a471bdc64fffa5698861c419fa67ba8af141a159342"
+          },
+          {
+            "path": "core_enhanced/src/game/world/state.rs",
+            "bytes": 92891,
+            "sha256": "b77b51b8da45889e4e4d76281cf1694aa214e9b3756b17ab0a6a0c5d350249fb"
+          },
+          {
+            "path": "core_enhanced/src/game/combat_preview/mod.rs",
+            "bytes": 100486,
+            "sha256": "9e184b5ca43efa0e46f669e4d46c47d898943454185033ec903f8851fba37dfc"
+          },
+          {
+            "path": "core_enhanced/src/game/combat_setup/enemy_spawns.rs",
+            "bytes": 13918,
+            "sha256": "1a83e1dc73595ca638e5f4bbf4c88021d3297502afbc1b858adc6bd7bc551c27"
+          },
+          {
+            "path": "core_enhanced/src/game/map/facility_generator.rs",
+            "bytes": 60922,
+            "sha256": "64ff5a2c162f98c2976499f6133b57ee19e1689430c7ea966286d1ff240e6112"
+          },
+          {
+            "path": "core_enhanced/src/game/world/map_encounters.rs",
+            "bytes": 14113,
+            "sha256": "3185cb80fc24e2d902f9e55191c17baea692f691c216d630ceb3f13af7542890"
+          },
+          {
+            "path": "core_enhanced/src/game/data/run_policy_data.rs",
+            "bytes": 65363,
+            "sha256": "69a5cb7e68c8c8688fb48df4100d0c2ede25a969ea13a82497781e99f63263ac"
+          }
+        ],
+        "Disposition": "confirmed",
+        "Observation Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-COMBAT-001",
+            "Content Digest": "sha256:59e380ad3f950b5197e8bdf6a8036660117391e13d4f23e660f9de04c7f4c9a2"
+          }
+        ],
+        "Limitation or N/A reason": "static owner/delta confirmed; implementation verification remains",
+        "Observation timestamp": "2026-10-14T06:19:46.948382+00:00"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "REV-CEDR-REWARD-001",
+        "Content Digest": "sha256:7b1738846b928a6db338b59ad19b3e3a3c0f528f9f2d7dd515d9897b2650878b"
+      },
+      "payload": {
+        "Repository/environment identity": {
+          "repository": "/mnt/f/work/simulator",
+          "HEAD": "2f725172edbffd27c5078d29000a1a2ba6ddc4d9",
+          "dirty": "prior dirty preserved"
+        },
+        "Source Set": [
+          {
+            "path": "core_enhanced/src/game/combat_setup/rewards.rs",
+            "bytes": 15809,
+            "sha256": "77d8335b2de29762aceebfa8d39a70484eadf34930315e252aed4b54404b22bb"
+          },
+          {
+            "path": "core_enhanced/src/game/reward.rs",
+            "bytes": 24737,
+            "sha256": "1c75349f9b69301e730a9cdb993a266e0dc6ae059824f28ebe0bbfb3ca7abdb1"
+          },
+          {
+            "path": "core_enhanced/src/game/world/combat.rs",
+            "bytes": 137989,
+            "sha256": "90d52dac049ae4ca866c7a471bdc64fffa5698861c419fa67ba8af141a159342"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/runtime_facts.rs",
+            "bytes": 60845,
+            "sha256": "a8278c2c66453f846e28f234ce04483636b05b5e14e8e1df1d8056110a7c2402"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/damage_runtime.rs",
+            "bytes": 48721,
+            "sha256": "b7e744e55acd7d82942bb4de6e4e9bfc2ae925dddfea99181ea33ca21f7e7820"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/runtime_facts.rs",
+            "bytes": 136070,
+            "sha256": "5fa62d9e2ab3f97e92bc29f77dab5939cd52a157ab1bc1869c311c1ec7dd560e"
+          },
+          {
+            "path": "core_enhanced/src/game/data/pve_data.rs",
+            "bytes": 88720,
+            "sha256": "81a3bcc3d6819bb49e3d4549c858495453d1cf8de018db946608791b2c635a19"
+          },
+          {
+            "path": "game_resources/data/run/policy.ron",
+            "bytes": 17549,
+            "sha256": "11acd67720eef4e4eba0d24ca3ff2d1ca7705211b0744a38a06d182c1e2bf0a8"
+          }
+        ],
+        "Exact Source Archive": "P2G_20_SOURCE_001.tar.gz",
+        "Observation command/method": "rg/sed targeted read and CODE_REVIEW.ko.md boundary table",
+        "Observed result": "staged quantity/baseXP rewards and actual damage fact seam; bonus producer absent",
+        "Observation timestamp": "2026-10-14T06:19:46.948382+00:00",
+        "Supported claim": "current owner/delta/validation seam, not runtime completion",
+        "Limitations": "runtime tests0; reading scope is named symbols/boundaries, not exhaustive file audit",
+        "Runtime tests executed": 0
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CEDR-REWARD-001",
+        "Content Digest": "sha256:bff7a161a60f7c3268949470ecb3f91d1202d502cb2fb663f5590cce0a39df2f"
+      },
+      "payload": {
+        "Evaluated Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-003",
+          "Content Digest": "sha256:f587e0e1dd56595c8f6bf68013d36032de2b0a0dff7dd2e7fbee05418c21b90b"
+        },
+        "Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CEDR-001",
+          "Content Digest": "sha256:d93b9c3ad623c7e0b60b7bb3f1c9298d90290d5db9011173d2ae7b2a9a6ab23b"
+        },
+        "Requirement ID": "REWARD",
+        "Observed source identity/location/version": [
+          {
+            "path": "core_enhanced/src/game/combat_setup/rewards.rs",
+            "bytes": 15809,
+            "sha256": "77d8335b2de29762aceebfa8d39a70484eadf34930315e252aed4b54404b22bb"
+          },
+          {
+            "path": "core_enhanced/src/game/reward.rs",
+            "bytes": 24737,
+            "sha256": "1c75349f9b69301e730a9cdb993a266e0dc6ae059824f28ebe0bbfb3ca7abdb1"
+          },
+          {
+            "path": "core_enhanced/src/game/world/combat.rs",
+            "bytes": 137989,
+            "sha256": "90d52dac049ae4ca866c7a471bdc64fffa5698861c419fa67ba8af141a159342"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/runtime_facts.rs",
+            "bytes": 60845,
+            "sha256": "a8278c2c66453f846e28f234ce04483636b05b5e14e8e1df1d8056110a7c2402"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/damage_runtime.rs",
+            "bytes": 48721,
+            "sha256": "b7e744e55acd7d82942bb4de6e4e9bfc2ae925dddfea99181ea33ca21f7e7820"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/runtime_facts.rs",
+            "bytes": 136070,
+            "sha256": "5fa62d9e2ab3f97e92bc29f77dab5939cd52a157ab1bc1869c311c1ec7dd560e"
+          },
+          {
+            "path": "core_enhanced/src/game/data/pve_data.rs",
+            "bytes": 88720,
+            "sha256": "81a3bcc3d6819bb49e3d4549c858495453d1cf8de018db946608791b2c635a19"
+          },
+          {
+            "path": "game_resources/data/run/policy.ron",
+            "bytes": 17549,
+            "sha256": "11acd67720eef4e4eba0d24ca3ff2d1ca7705211b0744a38a06d182c1e2bf0a8"
+          }
+        ],
+        "Disposition": "confirmed",
+        "Observation Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-REWARD-001",
+            "Content Digest": "sha256:7b1738846b928a6db338b59ad19b3e3a3c0f528f9f2d7dd515d9897b2650878b"
+          }
+        ],
+        "Limitation or N/A reason": "static owner/delta confirmed; implementation verification remains",
+        "Observation timestamp": "2026-10-14T06:19:46.948382+00:00"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "REV-CEDR-GOLD-001",
+        "Content Digest": "sha256:a789563334ef61c7e216a835a27349177826145691dab83cab2bf49b291dff2f"
+      },
+      "payload": {
+        "Repository/environment identity": {
+          "repository": "/mnt/f/work/simulator",
+          "HEAD": "2f725172edbffd27c5078d29000a1a2ba6ddc4d9",
+          "dirty": "prior dirty preserved"
+        },
+        "Source Set": [
+          {
+            "path": "core_enhanced/src/game/map/facility_layout.rs",
+            "bytes": 28596,
+            "sha256": "2a86324d7e9973328d38b04c4dee21a71ce1eb95be52719bcf1a2746936b498e"
+          },
+          {
+            "path": "core_enhanced/src/game/world/facility_rooms.rs",
+            "bytes": 15083,
+            "sha256": "87667b6aead651229fec421bdefe56963ec2396e50242990e1d1aa524ce68572"
+          },
+          {
+            "path": "core_enhanced/src/game/map/progression.rs",
+            "bytes": 34196,
+            "sha256": "78f7e405363d4b4efcade2e737013592f21a7f4fc2501f5cc97becfd9b7d85d3"
+          },
+          {
+            "path": "core_enhanced/src/game/world/combat.rs",
+            "bytes": 137989,
+            "sha256": "90d52dac049ae4ca866c7a471bdc64fffa5698861c419fa67ba8af141a159342"
+          }
+        ],
+        "Exact Source Archive": "P2G_20_SOURCE_001.tar.gz",
+        "Observation command/method": "rg/sed targeted read and CODE_REVIEW.ko.md boundary table",
+        "Observed result": "authored graph/room-slot identity and run state; gold plan/seal absent",
+        "Observation timestamp": "2026-10-14T06:19:46.948382+00:00",
+        "Supported claim": "current owner/delta/validation seam, not runtime completion",
+        "Limitations": "runtime tests0; reading scope is named symbols/boundaries, not exhaustive file audit",
+        "Runtime tests executed": 0
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CEDR-GOLD-001",
+        "Content Digest": "sha256:318f18b51e922d09811a2a88d50b1d00a1eb42e4275dcf82cbd0e763777599b5"
+      },
+      "payload": {
+        "Evaluated Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-003",
+          "Content Digest": "sha256:f587e0e1dd56595c8f6bf68013d36032de2b0a0dff7dd2e7fbee05418c21b90b"
+        },
+        "Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CEDR-001",
+          "Content Digest": "sha256:d93b9c3ad623c7e0b60b7bb3f1c9298d90290d5db9011173d2ae7b2a9a6ab23b"
+        },
+        "Requirement ID": "GOLD",
+        "Observed source identity/location/version": [
+          {
+            "path": "core_enhanced/src/game/map/facility_layout.rs",
+            "bytes": 28596,
+            "sha256": "2a86324d7e9973328d38b04c4dee21a71ce1eb95be52719bcf1a2746936b498e"
+          },
+          {
+            "path": "core_enhanced/src/game/world/facility_rooms.rs",
+            "bytes": 15083,
+            "sha256": "87667b6aead651229fec421bdefe56963ec2396e50242990e1d1aa524ce68572"
+          },
+          {
+            "path": "core_enhanced/src/game/map/progression.rs",
+            "bytes": 34196,
+            "sha256": "78f7e405363d4b4efcade2e737013592f21a7f4fc2501f5cc97becfd9b7d85d3"
+          },
+          {
+            "path": "core_enhanced/src/game/world/combat.rs",
+            "bytes": 137989,
+            "sha256": "90d52dac049ae4ca866c7a471bdc64fffa5698861c419fa67ba8af141a159342"
+          }
+        ],
+        "Disposition": "confirmed",
+        "Observation Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-GOLD-001",
+            "Content Digest": "sha256:a789563334ef61c7e216a835a27349177826145691dab83cab2bf49b291dff2f"
+          }
+        ],
+        "Limitation or N/A reason": "static owner/delta confirmed; implementation verification remains",
+        "Observation timestamp": "2026-10-14T06:19:46.948382+00:00"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "REV-CEDR-STORE-001",
+        "Content Digest": "sha256:dfe2b84fa91f90bcb9d1e3ad81d0912d1b8f27a95385a34f41f4e79e8f503723"
+      },
+      "payload": {
+        "Repository/environment identity": {
+          "repository": "/mnt/f/work/simulator",
+          "HEAD": "2f725172edbffd27c5078d29000a1a2ba6ddc4d9",
+          "dirty": "prior dirty preserved"
+        },
+        "Source Set": [
+          {
+            "path": "core_enhanced/src/game/world/active_run.rs",
+            "bytes": 10056,
+            "sha256": "83befce3647a5f257a1489d04b7bf23dc02c914b7015987bbc2010b8b00e49ad"
+          },
+          {
+            "path": "core_enhanced/src/game/world/active_run/continuation.rs",
+            "bytes": 52269,
+            "sha256": "09bbf8e408c4fa0488178e771ef9215eea99e3a9c613580b84b0b1a1b3107c90"
+          },
+          {
+            "path": "core_enhanced/src/game/world/state.rs",
+            "bytes": 92891,
+            "sha256": "b77b51b8da45889e4e4d76281cf1694aa214e9b3756b17ab0a6a0c5d350249fb"
+          },
+          {
+            "path": "core_enhanced/src/game/world/application.rs",
+            "bytes": 23478,
+            "sha256": "0c8e41003847c491efc389d47b69a1dd393315439ee0317b756fde2cb9e1edf2"
+          },
+          {
+            "path": "game_server/src/game/player_game_actor/handlers.rs",
+            "bytes": 163018,
+            "sha256": "8aa8abbb54ac6fbb596017839f4fccb130b2690b1bb6985505648d20cb1cbb0a"
+          }
+        ],
+        "Exact Source Archive": "P2G_20_SOURCE_001.tar.gz",
+        "Observation command/method": "rg/sed targeted read and CODE_REVIEW.ko.md boundary table",
+        "Observed result": "v14 checkpoint/continuation and staged durable boundary; entry snapshot overwritten after costs",
+        "Observation timestamp": "2026-10-14T06:19:46.948382+00:00",
+        "Supported claim": "current owner/delta/validation seam, not runtime completion",
+        "Limitations": "runtime tests0; reading scope is named symbols/boundaries, not exhaustive file audit",
+        "Runtime tests executed": 0
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CEDR-STORE-001",
+        "Content Digest": "sha256:1aec859c38c455cefe36a22aab8a3d3a0ba8067b2426a1f340eddc3758951d2b"
+      },
+      "payload": {
+        "Evaluated Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-003",
+          "Content Digest": "sha256:f587e0e1dd56595c8f6bf68013d36032de2b0a0dff7dd2e7fbee05418c21b90b"
+        },
+        "Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CEDR-001",
+          "Content Digest": "sha256:d93b9c3ad623c7e0b60b7bb3f1c9298d90290d5db9011173d2ae7b2a9a6ab23b"
+        },
+        "Requirement ID": "STORE",
+        "Observed source identity/location/version": [
+          {
+            "path": "core_enhanced/src/game/world/active_run.rs",
+            "bytes": 10056,
+            "sha256": "83befce3647a5f257a1489d04b7bf23dc02c914b7015987bbc2010b8b00e49ad"
+          },
+          {
+            "path": "core_enhanced/src/game/world/active_run/continuation.rs",
+            "bytes": 52269,
+            "sha256": "09bbf8e408c4fa0488178e771ef9215eea99e3a9c613580b84b0b1a1b3107c90"
+          },
+          {
+            "path": "core_enhanced/src/game/world/state.rs",
+            "bytes": 92891,
+            "sha256": "b77b51b8da45889e4e4d76281cf1694aa214e9b3756b17ab0a6a0c5d350249fb"
+          },
+          {
+            "path": "core_enhanced/src/game/world/application.rs",
+            "bytes": 23478,
+            "sha256": "0c8e41003847c491efc389d47b69a1dd393315439ee0317b756fde2cb9e1edf2"
+          },
+          {
+            "path": "game_server/src/game/player_game_actor/handlers.rs",
+            "bytes": 163018,
+            "sha256": "8aa8abbb54ac6fbb596017839f4fccb130b2690b1bb6985505648d20cb1cbb0a"
+          }
+        ],
+        "Disposition": "confirmed",
+        "Observation Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-STORE-001",
+            "Content Digest": "sha256:dfe2b84fa91f90bcb9d1e3ad81d0912d1b8f27a95385a34f41f4e79e8f503723"
+          }
+        ],
+        "Limitation or N/A reason": "static owner/delta confirmed; implementation verification remains",
+        "Observation timestamp": "2026-10-14T06:19:46.948382+00:00"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "REV-CEDR-PUBLIC-001",
+        "Content Digest": "sha256:40ff9eb5217a6f275a805cb496ec3db44836e4496f575c5b6eaac59ff6fb1a40"
+      },
+      "payload": {
+        "Repository/environment identity": {
+          "repository": "/mnt/f/work/simulator",
+          "HEAD": "2f725172edbffd27c5078d29000a1a2ba6ddc4d9",
+          "dirty": "prior dirty preserved"
+        },
+        "Source Set": [
+          {
+            "path": "core_enhanced/src/game/world/facility_rooms.rs",
+            "bytes": 15083,
+            "sha256": "87667b6aead651229fec421bdefe56963ec2396e50242990e1d1aa524ce68572"
+          },
+          {
+            "path": "core_enhanced/src/game/world/snapshot.rs",
+            "bytes": 67374,
+            "sha256": "700df0d4ff225a2eeb1e9b3729618a07b3d4dc669453a13f1e63f46a2dcf4036"
+          },
+          {
+            "path": "core_enhanced/src/game/map/types.rs",
+            "bytes": 24515,
+            "sha256": "e0b049ef45c29c0e636565010958ffdff19fe588768f7a60470ce90624bff830"
+          },
+          {
+            "path": "core_enhanced/src/game/map/facility_layout.rs",
+            "bytes": 28596,
+            "sha256": "2a86324d7e9973328d38b04c4dee21a71ce1eb95be52719bcf1a2746936b498e"
+          },
+          {
+            "path": "core_enhanced/src/game/data/pve_data.rs",
+            "bytes": 88720,
+            "sha256": "81a3bcc3d6819bb49e3d4549c858495453d1cf8de018db946608791b2c635a19"
+          },
+          {
+            "path": "core_enhanced/src/game/data/live_ron.rs",
+            "bytes": 220860,
+            "sha256": "f65cf586037adfe2f726fb4e5299ec213d067d8cdc61488ba2308083143918c3"
+          },
+          {
+            "path": "core_enhanced/src/game/data/validation.rs",
+            "bytes": 83047,
+            "sha256": "5bf0891e3f8632a0bc0947397ab35a9b0fadbcfd25c1eaa7c36f87dfb5dd1f1d"
+          },
+          {
+            "path": "core_enhanced/src/game/data/content_pack/mod.rs",
+            "bytes": 17162,
+            "sha256": "1155196933f7844f63d09381da4e09aea2fc9f323e57c2f985033c16ed574b40"
+          },
+          {
+            "path": "core_enhanced/src/game/behavior.rs",
+            "bytes": 258585,
+            "sha256": "f86b670ae87c1136e60700dc8f48d8c0669d0afe8ba6e20f0ba1793554a8eb66"
+          },
+          {
+            "path": "core_enhanced/src/application.rs",
+            "bytes": 92888,
+            "sha256": "aed66b1c43e302e5ba8efcfbcf55ad7c2b576d2a6ce306103394631075f484a2"
+          }
+        ],
+        "Exact Source Archive": "P2G_20_SOURCE_001.tar.gz",
+        "Observation command/method": "rg/sed targeted read and CODE_REVIEW.ko.md boundary table",
+        "Observed result": "typed loader and public views; cost/status hidden-info authority and actual command consumer",
+        "Observation timestamp": "2026-10-14T06:19:46.948382+00:00",
+        "Supported claim": "current owner/delta/validation seam, not runtime completion",
+        "Limitations": "runtime tests0; reading scope is named symbols/boundaries, not exhaustive file audit",
+        "Runtime tests executed": 0
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CEDR-PUBLIC-001",
+        "Content Digest": "sha256:a14163bac02a0acebb5a58fa55e8cdb7f45b7e2113748d7e106c193f0fdd840f"
+      },
+      "payload": {
+        "Evaluated Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-003",
+          "Content Digest": "sha256:f587e0e1dd56595c8f6bf68013d36032de2b0a0dff7dd2e7fbee05418c21b90b"
+        },
+        "Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CEDR-001",
+          "Content Digest": "sha256:d93b9c3ad623c7e0b60b7bb3f1c9298d90290d5db9011173d2ae7b2a9a6ab23b"
+        },
+        "Requirement ID": "PUBLIC",
+        "Observed source identity/location/version": [
+          {
+            "path": "core_enhanced/src/game/world/facility_rooms.rs",
+            "bytes": 15083,
+            "sha256": "87667b6aead651229fec421bdefe56963ec2396e50242990e1d1aa524ce68572"
+          },
+          {
+            "path": "core_enhanced/src/game/world/snapshot.rs",
+            "bytes": 67374,
+            "sha256": "700df0d4ff225a2eeb1e9b3729618a07b3d4dc669453a13f1e63f46a2dcf4036"
+          },
+          {
+            "path": "core_enhanced/src/game/map/types.rs",
+            "bytes": 24515,
+            "sha256": "e0b049ef45c29c0e636565010958ffdff19fe588768f7a60470ce90624bff830"
+          },
+          {
+            "path": "core_enhanced/src/game/map/facility_layout.rs",
+            "bytes": 28596,
+            "sha256": "2a86324d7e9973328d38b04c4dee21a71ce1eb95be52719bcf1a2746936b498e"
+          },
+          {
+            "path": "core_enhanced/src/game/data/pve_data.rs",
+            "bytes": 88720,
+            "sha256": "81a3bcc3d6819bb49e3d4549c858495453d1cf8de018db946608791b2c635a19"
+          },
+          {
+            "path": "core_enhanced/src/game/data/live_ron.rs",
+            "bytes": 220860,
+            "sha256": "f65cf586037adfe2f726fb4e5299ec213d067d8cdc61488ba2308083143918c3"
+          },
+          {
+            "path": "core_enhanced/src/game/data/validation.rs",
+            "bytes": 83047,
+            "sha256": "5bf0891e3f8632a0bc0947397ab35a9b0fadbcfd25c1eaa7c36f87dfb5dd1f1d"
+          },
+          {
+            "path": "core_enhanced/src/game/data/content_pack/mod.rs",
+            "bytes": 17162,
+            "sha256": "1155196933f7844f63d09381da4e09aea2fc9f323e57c2f985033c16ed574b40"
+          },
+          {
+            "path": "core_enhanced/src/game/behavior.rs",
+            "bytes": 258585,
+            "sha256": "f86b670ae87c1136e60700dc8f48d8c0669d0afe8ba6e20f0ba1793554a8eb66"
+          },
+          {
+            "path": "core_enhanced/src/application.rs",
+            "bytes": 92888,
+            "sha256": "aed66b1c43e302e5ba8efcfbcf55ad7c2b576d2a6ce306103394631075f484a2"
+          }
+        ],
+        "Disposition": "confirmed",
+        "Observation Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-PUBLIC-001",
+            "Content Digest": "sha256:40ff9eb5217a6f275a805cb496ec3db44836e4496f575c5b6eaac59ff6fb1a40"
+          }
+        ],
+        "Limitation or N/A reason": "static owner/delta confirmed; implementation verification remains",
+        "Observation timestamp": "2026-10-14T06:19:46.948382+00:00"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Reviewed Source Basis",
+        "Artifact ID": "RSB-CEDR-001",
+        "Content Digest": "sha256:9d7f89d0bae2d2d0aafb22c2741c786b03ebddf924fa118dafa3dd80c5e11e2e"
+      },
+      "payload": {
+        "Selected Source Set": [
+          {
+            "Source ID": "ENTRY",
+            "Source Observation Ref": {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CEDR-ENTRY-001",
+              "Content Digest": "sha256:f70a861dddb4da67daa41642a49bbdadaa77d6bd8e50d8e1a7d0a5825d7343f7"
+            },
+            "Review Evidence Ref": {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "REV-CEDR-ENTRY-001",
+              "Content Digest": "sha256:f04a8919a506ca0b7a9b2bf50032b73148c218c9a6bba8e1bf8adc80510fd47c"
+            },
+            "Supported claim": "receipt/first-cost/exhaustion owner; completed-node grace requires entry-cost successor",
+            "Disposition": "confirmed"
+          },
+          {
+            "Source ID": "COMBAT",
+            "Source Observation Ref": {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CEDR-COMBAT-001",
+              "Content Digest": "sha256:f780f097846bff029e976967918a8f24ec3fd88160f7c44d4adb21984fb94d4a"
+            },
+            "Review Evidence Ref": {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "REV-CEDR-COMBAT-001",
+              "Content Digest": "sha256:59e380ad3f950b5197e8bdf6a8036660117391e13d4f23e660f9de04c7f4c9a2"
+            },
+            "Supported claim": "authored preview/spawn scale and roster-based floor anchor; battle snapshot required",
+            "Disposition": "confirmed"
+          },
+          {
+            "Source ID": "REWARD",
+            "Source Observation Ref": {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CEDR-REWARD-001",
+              "Content Digest": "sha256:bff7a161a60f7c3268949470ecb3f91d1202d502cb2fb663f5590cce0a39df2f"
+            },
+            "Review Evidence Ref": {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "REV-CEDR-REWARD-001",
+              "Content Digest": "sha256:7b1738846b928a6db338b59ad19b3e3a3c0f528f9f2d7dd515d9897b2650878b"
+            },
+            "Supported claim": "staged quantity/baseXP rewards and actual damage fact seam; bonus producer absent",
+            "Disposition": "confirmed"
+          },
+          {
+            "Source ID": "GOLD",
+            "Source Observation Ref": {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CEDR-GOLD-001",
+              "Content Digest": "sha256:318f18b51e922d09811a2a88d50b1d00a1eb42e4275dcf82cbd0e763777599b5"
+            },
+            "Review Evidence Ref": {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "REV-CEDR-GOLD-001",
+              "Content Digest": "sha256:a789563334ef61c7e216a835a27349177826145691dab83cab2bf49b291dff2f"
+            },
+            "Supported claim": "authored graph/room-slot identity and run state; gold plan/seal absent",
+            "Disposition": "confirmed"
+          },
+          {
+            "Source ID": "STORE",
+            "Source Observation Ref": {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CEDR-STORE-001",
+              "Content Digest": "sha256:1aec859c38c455cefe36a22aab8a3d3a0ba8067b2426a1f340eddc3758951d2b"
+            },
+            "Review Evidence Ref": {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "REV-CEDR-STORE-001",
+              "Content Digest": "sha256:dfe2b84fa91f90bcb9d1e3ad81d0912d1b8f27a95385a34f41f4e79e8f503723"
+            },
+            "Supported claim": "v14 checkpoint/continuation and staged durable boundary; entry snapshot overwritten after costs",
+            "Disposition": "confirmed"
+          },
+          {
+            "Source ID": "PUBLIC",
+            "Source Observation Ref": {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CEDR-PUBLIC-001",
+              "Content Digest": "sha256:a14163bac02a0acebb5a58fa55e8cdb7f45b7e2113748d7e106c193f0fdd840f"
+            },
+            "Review Evidence Ref": {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "REV-CEDR-PUBLIC-001",
+              "Content Digest": "sha256:40ff9eb5217a6f275a805cb496ec3db44836e4496f575c5b6eaac59ff6fb1a40"
+            },
+            "Supported claim": "typed loader and public views; cost/status hidden-info authority and actual command consumer",
+            "Disposition": "confirmed"
+          }
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Artifact",
+        "Artifact ID": "CRA-CEDR-001",
+        "Content Digest": "sha256:c8f056531d8497a7f29be6c0cde3006bcff60bf77b88ffcd22c392872ff3e881"
+      },
+      "payload": {
+        "Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-003",
+          "Content Digest": "sha256:f587e0e1dd56595c8f6bf68013d36032de2b0a0dff7dd2e7fbee05418c21b90b"
+        },
+        "Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CEDR-001",
+          "Content Digest": "sha256:d93b9c3ad623c7e0b60b7bb3f1c9298d90290d5db9011173d2ae7b2a9a6ab23b"
+        },
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CEDR-001",
+          "Content Digest": "sha256:9d7f89d0bae2d2d0aafb22c2741c786b03ebddf924fa118dafa3dd80c5e11e2e"
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-ENTRY-001",
+            "Content Digest": "sha256:f04a8919a506ca0b7a9b2bf50032b73148c218c9a6bba8e1bf8adc80510fd47c"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-COMBAT-001",
+            "Content Digest": "sha256:59e380ad3f950b5197e8bdf6a8036660117391e13d4f23e660f9de04c7f4c9a2"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-REWARD-001",
+            "Content Digest": "sha256:7b1738846b928a6db338b59ad19b3e3a3c0f528f9f2d7dd515d9897b2650878b"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-GOLD-001",
+            "Content Digest": "sha256:a789563334ef61c7e216a835a27349177826145691dab83cab2bf49b291dff2f"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-STORE-001",
+            "Content Digest": "sha256:dfe2b84fa91f90bcb9d1e3ad81d0912d1b8f27a95385a34f41f4e79e8f503723"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-PUBLIC-001",
+            "Content Digest": "sha256:40ff9eb5217a6f275a805cb496ec3db44836e4496f575c5b6eaac59ff6fb1a40"
+          }
+        ],
+        "Review body": {
+          "path": "core_enhanced/docs/goals/core_expedition_deterrence_rewards/CODE_REVIEW.ko.md",
+          "bytes": 8130,
+          "sha256": "0941e03bfac2ec9290f2ce944d8c8f31600825f5c348754abc7483f568c3cffa"
+        },
+        "Element review": [
+          {
+            "element": "PE-CEDR-G13",
+            "required_boundaries": [
+              "ENTRY",
+              "STORE",
+              "PUBLIC"
+            ],
+            "implementation_delta": "CODE_REVIEW.ko.md current/delta row; preserve exact acceptance",
+            "status": "implementable with in-scope atomic cutover"
+          },
+          {
+            "element": "PE-CEDR-G14",
+            "required_boundaries": [
+              "ENTRY",
+              "STORE",
+              "PUBLIC"
+            ],
+            "implementation_delta": "CODE_REVIEW.ko.md current/delta row; preserve exact acceptance",
+            "status": "implementable with in-scope atomic cutover"
+          },
+          {
+            "element": "PE-CEDR-G15",
+            "required_boundaries": [
+              "ENTRY",
+              "STORE",
+              "PUBLIC"
+            ],
+            "implementation_delta": "CODE_REVIEW.ko.md current/delta row; preserve exact acceptance",
+            "status": "implementable with in-scope atomic cutover"
+          },
+          {
+            "element": "PE-CEDR-PWR01",
+            "required_boundaries": [
+              "COMBAT",
+              "STORE",
+              "PUBLIC"
+            ],
+            "implementation_delta": "CODE_REVIEW.ko.md current/delta row; preserve exact acceptance",
+            "status": "implementable with in-scope atomic cutover"
+          },
+          {
+            "element": "PE-CEDR-PWR02",
+            "required_boundaries": [
+              "COMBAT",
+              "REWARD",
+              "STORE",
+              "PUBLIC"
+            ],
+            "implementation_delta": "CODE_REVIEW.ko.md current/delta row; preserve exact acceptance",
+            "status": "implementable with in-scope atomic cutover"
+          },
+          {
+            "element": "PE-CEDR-G16",
+            "required_boundaries": [
+              "GOLD",
+              "STORE",
+              "PUBLIC"
+            ],
+            "implementation_delta": "CODE_REVIEW.ko.md current/delta row; preserve exact acceptance",
+            "status": "implementable with in-scope atomic cutover"
+          },
+          {
+            "element": "PE-CEDR-G17",
+            "required_boundaries": [
+              "COMBAT",
+              "GOLD",
+              "STORE",
+              "PUBLIC"
+            ],
+            "implementation_delta": "CODE_REVIEW.ko.md current/delta row; preserve exact acceptance",
+            "status": "implementable with in-scope atomic cutover"
+          },
+          {
+            "element": "PE-CEDR-G18",
+            "required_boundaries": [
+              "REWARD",
+              "STORE",
+              "PUBLIC"
+            ],
+            "implementation_delta": "CODE_REVIEW.ko.md current/delta row; preserve exact acceptance",
+            "status": "implementable with in-scope atomic cutover"
+          },
+          {
+            "element": "PE-CEDR-G19",
+            "required_boundaries": [
+              "REWARD",
+              "STORE",
+              "PUBLIC"
+            ],
+            "implementation_delta": "CODE_REVIEW.ko.md current/delta row; preserve exact acceptance",
+            "status": "implementable with in-scope atomic cutover"
+          },
+          {
+            "element": "PE-CEDR-PERSISTENCE",
+            "required_boundaries": [
+              "ENTRY",
+              "GOLD",
+              "STORE",
+              "PUBLIC"
+            ],
+            "implementation_delta": "CODE_REVIEW.ko.md current/delta row; preserve exact acceptance",
+            "status": "implementable with in-scope atomic cutover"
+          }
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CEDR-G13-001",
+        "Content Digest": "sha256:9763d4266dd96351fcc713cd2504722d040c0f8d026ad273a26ba757cba39bec"
+      },
+      "payload": {
+        "Review Path": "policy_revision_review",
+        "Input Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-G13-DECIDED-001",
+          "Content Digest": "sha256:0889a08abefc0fda632b5d7f7bcb1a63eb7b7e15c27311ef27d9fb4756d5a0a1"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CEDR-001",
+          "Content Digest": "sha256:c8f056531d8497a7f29be6c0cde3006bcff60bf77b88ffcd22c392872ff3e881"
+        },
+        "Proposed Policy Element Payload": {
+          "Stable Element ID": "PE-CEDR-G13",
+          "Predecessor Policy Element Revision Ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-G13-DECIDED-001",
+            "Content Digest": "sha256:0889a08abefc0fda632b5d7f7bcb1a63eb7b7e15c27311ef27d9fb4756d5a0a1"
+          },
+          "Policy statement": "활동 노드 authored 규정 비용을 같은 identity 최초 입장에 한 번 반영한다. 비용/receipt→Breakdown 유예·사망→소진 선택→활동 순서이며 이동/Start/Gate/재입장/후퇴/완료는 추가 비용이 없다.",
+          "Decision Revision Ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-G13-001",
+            "Content Digest": "sha256:192222588e027654a8a0cd7a3d1eca1d7bf2c3a00377a64a2577d43ceab18042"
+          },
+          "Observable Policy Acceptance": [
+            "A01: 비용2/잔량1과 비용2/잔량0 모두 잔량0·규정 유예2이며, 비용0은 유예 무진행이다. 같은 노드 재입장/정비 반복은 중복 청구하지 않는다.",
+            "A02: 공개 preview는 비용·예상 잔량·무억제 여부·직원별 예상 유예/사망을 실제 입장과 일치하게 표시하고 상태를 변경하지 않는다.",
+            "A03: SavePoint/치료 노드도 비용과 사망을 먼저 확정하고 사망 직원을 그 노드 치료로 되살리지 않는다. 시작/Gate/방 이동은 무료다."
+          ],
+          "Intrinsic status": "code_reviewed"
+        },
+        "Finding disposition": "technical design only; policy meaning unchanged"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CEDR-G13-REVIEWED-001",
+        "Content Digest": "sha256:5419fe09465118b2c1f2e25e4d38c70ee41632ed4946f2f8aff94c5420dfd183"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CEDR-G13",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-G13-DECIDED-001",
+          "Content Digest": "sha256:0889a08abefc0fda632b5d7f7bcb1a63eb7b7e15c27311ef27d9fb4756d5a0a1"
+        },
+        "Policy statement": "활동 노드 authored 규정 비용을 같은 identity 최초 입장에 한 번 반영한다. 비용/receipt→Breakdown 유예·사망→소진 선택→활동 순서이며 이동/Start/Gate/재입장/후퇴/완료는 추가 비용이 없다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CEDR-G13-001",
+          "Content Digest": "sha256:192222588e027654a8a0cd7a3d1eca1d7bf2c3a00377a64a2577d43ceab18042"
+        },
+        "Observable Policy Acceptance": [
+          "A01: 비용2/잔량1과 비용2/잔량0 모두 잔량0·규정 유예2이며, 비용0은 유예 무진행이다. 같은 노드 재입장/정비 반복은 중복 청구하지 않는다.",
+          "A02: 공개 preview는 비용·예상 잔량·무억제 여부·직원별 예상 유예/사망을 실제 입장과 일치하게 표시하고 상태를 변경하지 않는다.",
+          "A03: SavePoint/치료 노드도 비용과 사망을 먼저 확정하고 사망 직원을 그 노드 치료로 되살리지 않는다. 시작/Gate/방 이동은 무료다."
+        ],
+        "Intrinsic status": "code_reviewed"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CEDR-G14-001",
+        "Content Digest": "sha256:4312b277f48d44f851edd137d81e1c7b5e3a2e3df2bf61327a800995d2d4b574"
+      },
+      "payload": {
+        "Review Path": "policy_revision_review",
+        "Input Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-G14-DECIDED-001",
+          "Content Digest": "sha256:a251cbc3ae5b4889f5cbacc3488bad395d5a501188d61f479d9d9c23b311df48"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CEDR-001",
+          "Content Digest": "sha256:c8f056531d8497a7f29be6c0cde3006bcff60bf77b88ffcd22c392872ff3e881"
+        },
+        "Proposed Policy Element Payload": {
+          "Stable Element ID": "PE-CEDR-G14",
+          "Predecessor Policy Element Revision Ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-G14-DECIDED-001",
+            "Content Digest": "sha256:a251cbc3ae5b4889f5cbacc3488bad395d5a501188d61f479d9d9c23b311df48"
+          },
+          "Policy statement": "트라우마100 유예는 규정 첫 입장 비용 누적4 초기값이며 완료노드 카운터를 제거한다. 99이하로 내려가면 폐기하고 재100시 새 유예. 밖에서의 사망은 일반 장비 회수, 전투 사망 방지 미적용.",
+          "Decision Revision Ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-G14-001",
+            "Content Digest": "sha256:6d5560f4a09df3987fa200040a6450614682d578a2dd74ca30a5f778a0bedf1d"
+          },
+          "Observable Policy Acceptance": [
+            "A04: 새 유예4에서 비용1+2+1은 마지막 입장에서 사망한다. 완료/재입장/비용0/황금가지 보충으로 유예가 바뀌지 않는다.",
+            "A05: 트라우마99 치료 뒤100 재진입은 새 유예4이고, 입장 사망은 장비/파편/유물 회수를 수행하며 전투 사망 방지로 취소되지 않는다.",
+            "A06: 입장 사망으로 출전 불가이면 기존 런 실패/복구 자격을 적용한다. 잔량 부족·0에서도 같은 규정 비용으로 사망한다."
+          ],
+          "Intrinsic status": "code_reviewed"
+        },
+        "Finding disposition": "technical design only; policy meaning unchanged"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CEDR-G14-REVIEWED-001",
+        "Content Digest": "sha256:08234232b8b278df0c916f5cce36e4f64e6dae68b82d2d2e3a6e43073ceb60dc"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CEDR-G14",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-G14-DECIDED-001",
+          "Content Digest": "sha256:a251cbc3ae5b4889f5cbacc3488bad395d5a501188d61f479d9d9c23b311df48"
+        },
+        "Policy statement": "트라우마100 유예는 규정 첫 입장 비용 누적4 초기값이며 완료노드 카운터를 제거한다. 99이하로 내려가면 폐기하고 재100시 새 유예. 밖에서의 사망은 일반 장비 회수, 전투 사망 방지 미적용.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CEDR-G14-001",
+          "Content Digest": "sha256:6d5560f4a09df3987fa200040a6450614682d578a2dd74ca30a5f778a0bedf1d"
+        },
+        "Observable Policy Acceptance": [
+          "A04: 새 유예4에서 비용1+2+1은 마지막 입장에서 사망한다. 완료/재입장/비용0/황금가지 보충으로 유예가 바뀌지 않는다.",
+          "A05: 트라우마99 치료 뒤100 재진입은 새 유예4이고, 입장 사망은 장비/파편/유물 회수를 수행하며 전투 사망 방지로 취소되지 않는다.",
+          "A06: 입장 사망으로 출전 불가이면 기존 런 실패/복구 자격을 적용한다. 잔량 부족·0에서도 같은 규정 비용으로 사망한다."
+        ],
+        "Intrinsic status": "code_reviewed"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CEDR-G15-001",
+        "Content Digest": "sha256:d63245ecedb1c3e204b15371804ae9969f016b2b7adadc5dcb4fc3ffd8b66cd9"
+      },
+      "payload": {
+        "Review Path": "policy_revision_review",
+        "Input Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-G15-DECIDED-001",
+          "Content Digest": "sha256:af2646cd143a042c81022595b878d59c85e12796f62377ab4b36d18b348d54ca"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CEDR-001",
+          "Content Digest": "sha256:c8f056531d8497a7f29be6c0cde3006bcff60bf77b88ffcd22c392872ff3e881"
+        },
+        "Proposed Policy Element Payload": {
+          "Stable Element ID": "PE-CEDR-G15",
+          "Predecessor Policy Element Revision Ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-G15-DECIDED-001",
+            "Content Digest": "sha256:af2646cd143a042c81022595b878d59c85e12796f62377ab4b36d18b348d54ca"
+          },
+          "Policy statement": "U12의 >0→0 소진 선택을 재사용한다. 깊이1~2 계속/포기, 깊이3이상 귀환/계속. 해당 활동은 선택 뒤에 시작하며 소진 자체는 실패가 아니다.",
+          "Decision Revision Ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-G15-001",
+            "Content Digest": "sha256:241f154c3ad2e8f086a3afcb71a3d40aeb27bb3160c2cbfeb8b9f348c18affe1"
+          },
+          "Observable Policy Acceptance": [
+            "A07: 깊이2/3 비용 소진 선택을 실제 공개 명령으로 구분한다. 깊이2 귀환은 거절, 계속은 해당 활동, 포기는 실패 정산이다.",
+            "A08: 소진 귀환은 미시작 활동 보상·완료를 주지 않으며 기존 회수품의 정상 성공 귀환은 유지한다.",
+            "A09: 이미0인 상태의 다음 입장/깊이3 도달만으로 선택을 다시 열지 않는다. 보충후 재소진은 새 선택이다."
+          ],
+          "Intrinsic status": "code_reviewed"
+        },
+        "Finding disposition": "technical design only; policy meaning unchanged"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CEDR-G15-REVIEWED-001",
+        "Content Digest": "sha256:0d4060507a36299f141b957e3f4adcac64ccd9a0208a73f8ad9763ebbfd84f10"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CEDR-G15",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-G15-DECIDED-001",
+          "Content Digest": "sha256:af2646cd143a042c81022595b878d59c85e12796f62377ab4b36d18b348d54ca"
+        },
+        "Policy statement": "U12의 >0→0 소진 선택을 재사용한다. 깊이1~2 계속/포기, 깊이3이상 귀환/계속. 해당 활동은 선택 뒤에 시작하며 소진 자체는 실패가 아니다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CEDR-G15-001",
+          "Content Digest": "sha256:241f154c3ad2e8f086a3afcb71a3d40aeb27bb3160c2cbfeb8b9f348c18affe1"
+        },
+        "Observable Policy Acceptance": [
+          "A07: 깊이2/3 비용 소진 선택을 실제 공개 명령으로 구분한다. 깊이2 귀환은 거절, 계속은 해당 활동, 포기는 실패 정산이다.",
+          "A08: 소진 귀환은 미시작 활동 보상·완료를 주지 않으며 기존 회수품의 정상 성공 귀환은 유지한다.",
+          "A09: 이미0인 상태의 다음 입장/깊이3 도달만으로 선택을 다시 열지 않는다. 보충후 재소진은 새 선택이다."
+        ],
+        "Intrinsic status": "code_reviewed"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CEDR-PWR01-001",
+        "Content Digest": "sha256:fabc8e9d1135c7eaad3bd7865786900483dc790a3aff268535a2e8acd7d9419c"
+      },
+      "payload": {
+        "Review Path": "policy_revision_review",
+        "Input Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-PWR01-DECIDED-001",
+          "Content Digest": "sha256:ef5453910c97a95823c331bc7175d05869a9891bf9bb1d4e7a92f00cf550dbc5"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CEDR-001",
+          "Content Digest": "sha256:c8f056531d8497a7f29be6c0cde3006bcff60bf77b88ffcd22c392872ff3e881"
+        },
+        "Proposed Policy Element Payload": {
+          "Stable Element ID": "PE-CEDR-PWR01",
+          "Predecessor Policy Element Revision Ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-PWR01-DECIDED-001",
+            "Content Digest": "sha256:ef5453910c97a95823c331bc7175d05869a9891bf9bb1d4e7a92f00cf550dbc5"
+          },
+          "Policy statement": "적 스탯/웨이브는 작성된 난이도만 따른다. 편성/Certified/런 최고 전투력은 적 강화에 쓰지 않는다. 무억제 전체 적 HP/ATK에 authored 1.5~2배, 부활 단계 배율은 곱한다. 속도/사거리/저지/패턴 불변.",
+          "Decision Revision Ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-PWR01-001",
+            "Content Digest": "sha256:99adf8ee8b707ca4d273ea7a9919c3127b8d91424780615434b19f790d8fd441"
+          },
+          "Observable Policy Acceptance": [
+            "A10: 동일 seed/조우에서 편성·장비·최고전투력만 바꿔도 적 능력치/구성은 같다. 위험도/준비 정보는 유지할 수 있다.",
+            "A11: 일반 적/엘리트/보스/부활의 생성 적과 지연 spawn에서 HP/ATK만 배율 적용되며 속도/사거리/저지/패턴은 불변이다.",
+            "A12: 최초 비용 반영 후 전투 진입시 무억제 자격을 고정한다. 1.5배 부활×1.5배 무억제는2.25배이며 봉인 추가 스탯은 무억제와 중복하지 않는다.",
+            "A13: 조우별 배율은 진입전 공개되고 작성 범위 밖/비정상 제작 입력을 로더가 거절한다. 전투마다 숨겨진 추첨은 없다."
+          ],
+          "Intrinsic status": "code_reviewed"
+        },
+        "Finding disposition": "technical design only; policy meaning unchanged"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CEDR-PWR01-REVIEWED-001",
+        "Content Digest": "sha256:dce46c3cb94e69cbde1ddbe581ba91b91185d9f4a01b5931faf34093791c1e41"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CEDR-PWR01",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-PWR01-DECIDED-001",
+          "Content Digest": "sha256:ef5453910c97a95823c331bc7175d05869a9891bf9bb1d4e7a92f00cf550dbc5"
+        },
+        "Policy statement": "적 스탯/웨이브는 작성된 난이도만 따른다. 편성/Certified/런 최고 전투력은 적 강화에 쓰지 않는다. 무억제 전체 적 HP/ATK에 authored 1.5~2배, 부활 단계 배율은 곱한다. 속도/사거리/저지/패턴 불변.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CEDR-PWR01-001",
+          "Content Digest": "sha256:99adf8ee8b707ca4d273ea7a9919c3127b8d91424780615434b19f790d8fd441"
+        },
+        "Observable Policy Acceptance": [
+          "A10: 동일 seed/조우에서 편성·장비·최고전투력만 바꿔도 적 능력치/구성은 같다. 위험도/준비 정보는 유지할 수 있다.",
+          "A11: 일반 적/엘리트/보스/부활의 생성 적과 지연 spawn에서 HP/ATK만 배율 적용되며 속도/사거리/저지/패턴은 불변이다.",
+          "A12: 최초 비용 반영 후 전투 진입시 무억제 자격을 고정한다. 1.5배 부활×1.5배 무억제는2.25배이며 봉인 추가 스탯은 무억제와 중복하지 않는다.",
+          "A13: 조우별 배율은 진입전 공개되고 작성 범위 밖/비정상 제작 입력을 로더가 거절한다. 전투마다 숨겨진 추첨은 없다."
+        ],
+        "Intrinsic status": "code_reviewed"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CEDR-PWR02-001",
+        "Content Digest": "sha256:8f96eb0c591af9a3a77ac088c67110930d40fa626d91fca25cc97ced7bc76c9b"
+      },
+      "payload": {
+        "Review Path": "policy_revision_review",
+        "Input Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-PWR02-DECIDED-001",
+          "Content Digest": "sha256:c9a69da05e7449b2f97a62abea1eb38fef0fe4ee38edeeaa7d2d750490443b10"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CEDR-001",
+          "Content Digest": "sha256:c8f056531d8497a7f29be6c0cde3006bcff60bf77b88ffcd22c392872ff3e881"
+        },
+        "Proposed Policy Element Payload": {
+          "Stable Element ID": "PE-CEDR-PWR02",
+          "Predecessor Policy Element Revision Ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-PWR02-DECIDED-001",
+            "Content Digest": "sha256:c9a69da05e7449b2f97a62abea1eb38fef0fe4ee38edeeaa7d2d750490443b10"
+          },
+          "Policy statement": "진입 snapshot이 무억제인 전투 승리 시 엔케팔린/가루/파츠/XP의 기존 총량을2배로 한 번 적용한다. 기본 생존XP/보너스 포함, 대상은 유지. 패배 기본XP 유지/후퇴0. 봉인 승리 보충은 snapshot에 영향 없음.",
+          "Decision Revision Ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-PWR02-001",
+            "Content Digest": "sha256:642e18fb90e165a2a783cadb8d8e475654fa487427f2bb9f61ac3fe53eefec56"
+          },
+          "Observable Policy Acceptance": [
+            "A14: 서로 다른 기본·추가·보너스 재료/XP의 합계가 정확히2배이고 실제 참가자/전체생존/선택직원 등 기존 XP 대상과1인당 수량을 유지한다.",
+            "A15: 물품/알/파편/장비/유물/촉매제/선택횟수/황금가지/보충량과 비전투/판매/분쇄/반출은 배율 제외다.",
+            "A16: 패배 기본 생존XP10, 후퇴0. 승리후 억제력 보충·결과재확인·Continue로 누락/중복배율·중복보상이 없다.",
+            "A17: U16-4가 소비할 전투 전체1회 자격/배율 seam을 제공한다. U14는 스트레스 활동 전체 구현 완료를 주장하지 않는다."
+          ],
+          "Intrinsic status": "code_reviewed"
+        },
+        "Finding disposition": "technical design only; policy meaning unchanged"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CEDR-PWR02-REVIEWED-001",
+        "Content Digest": "sha256:8eb2de02dd8c34edd5e8f3b0e47892b25558f6185025d1979c89c70c89ce4b25"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CEDR-PWR02",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-PWR02-DECIDED-001",
+          "Content Digest": "sha256:c9a69da05e7449b2f97a62abea1eb38fef0fe4ee38edeeaa7d2d750490443b10"
+        },
+        "Policy statement": "진입 snapshot이 무억제인 전투 승리 시 엔케팔린/가루/파츠/XP의 기존 총량을2배로 한 번 적용한다. 기본 생존XP/보너스 포함, 대상은 유지. 패배 기본XP 유지/후퇴0. 봉인 승리 보충은 snapshot에 영향 없음.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CEDR-PWR02-001",
+          "Content Digest": "sha256:642e18fb90e165a2a783cadb8d8e475654fa487427f2bb9f61ac3fe53eefec56"
+        },
+        "Observable Policy Acceptance": [
+          "A14: 서로 다른 기본·추가·보너스 재료/XP의 합계가 정확히2배이고 실제 참가자/전체생존/선택직원 등 기존 XP 대상과1인당 수량을 유지한다.",
+          "A15: 물품/알/파편/장비/유물/촉매제/선택횟수/황금가지/보충량과 비전투/판매/분쇄/반출은 배율 제외다.",
+          "A16: 패배 기본 생존XP10, 후퇴0. 승리후 억제력 보충·결과재확인·Continue로 누락/중복배율·중복보상이 없다.",
+          "A17: U16-4가 소비할 전투 전체1회 자격/배율 seam을 제공한다. U14는 스트레스 활동 전체 구현 완료를 주장하지 않는다."
+        ],
+        "Intrinsic status": "code_reviewed"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CEDR-G16-001",
+        "Content Digest": "sha256:38ea52a1cc1c3c903165e5ba05b5248c2402bcee38b525b56f39d182d409783a"
+      },
+      "payload": {
+        "Review Path": "policy_revision_review",
+        "Input Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-G16-DECIDED-001",
+          "Content Digest": "sha256:67e4db97777b07c2f3f0d4488816713b4faadc8db32a20d78c5a1fde191f599c"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CEDR-001",
+          "Content Digest": "sha256:c8f056531d8497a7f29be6c0cde3006bcff60bf77b88ffcd22c392872ff3e881"
+        },
+        "Proposed Policy Element Payload": {
+          "Stable Element ID": "PE-CEDR-G16",
+          "Predecessor Policy Element Revision Ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-G16-DECIDED-001",
+            "Content Digest": "sha256:67e4db97777b07c2f3f0d4488816713b4faadc8db32a20d78c5a1fde191f599c"
+          },
+          "Policy statement": "시설 실제 이동조건에 적합한 복수 작성 배치안 중 새 원정 시작에 하나를 선택해 유지한다. 즉시 조우 고정 일반 보스4종이 정식 대상이며 조건부/부활은 제외. 도달가능·주요 하강 경로 기회와 미탐사 가지 위치 공개를 지킨다.",
+          "Decision Revision Ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-G16-001",
+            "Content Digest": "sha256:2a391b39ff2300baad1c17f019795f340ac3a489a3c1f2d548ce46dd84031223"
+          },
+          "Observable Policy Acceptance": [
+            "A18: 새 원정에서 plan을 선택하고 같은 원정의 재방문/후퇴/저장/Continue에서 plan과 노드 배정이 같다. 경로 선택에 따라 재배정하거나 개별 보스 코인추첨하지 않는다.",
+            "A19: 적합 배치안 부재/잘못된 후보/도달불가/작성 누락을 거절하고 정상 테스트 조우로 배치·진입을 증명한다. 정식4종 본체 전체는 U21이다.",
+            "A20: 미탐사 방에도 가지 위치·회수 여부·현재 경로 도달가능성을 표시하되 숨긴 방/보스 정체를 추가 노출하지 않는다. 모든 가지 회수 가능을 강제하지 않는다."
+          ],
+          "Intrinsic status": "code_reviewed"
+        },
+        "Finding disposition": "technical design only; policy meaning unchanged"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CEDR-G16-REVIEWED-001",
+        "Content Digest": "sha256:72315a6349a742a0328d73dba92842e491d1b8d28aae47381512333c0353a4b4"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CEDR-G16",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-G16-DECIDED-001",
+          "Content Digest": "sha256:67e4db97777b07c2f3f0d4488816713b4faadc8db32a20d78c5a1fde191f599c"
+        },
+        "Policy statement": "시설 실제 이동조건에 적합한 복수 작성 배치안 중 새 원정 시작에 하나를 선택해 유지한다. 즉시 조우 고정 일반 보스4종이 정식 대상이며 조건부/부활은 제외. 도달가능·주요 하강 경로 기회와 미탐사 가지 위치 공개를 지킨다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CEDR-G16-001",
+          "Content Digest": "sha256:2a391b39ff2300baad1c17f019795f340ac3a489a3c1f2d548ce46dd84031223"
+        },
+        "Observable Policy Acceptance": [
+          "A18: 새 원정에서 plan을 선택하고 같은 원정의 재방문/후퇴/저장/Continue에서 plan과 노드 배정이 같다. 경로 선택에 따라 재배정하거나 개별 보스 코인추첨하지 않는다.",
+          "A19: 적합 배치안 부재/잘못된 후보/도달불가/작성 누락을 거절하고 정상 테스트 조우로 배치·진입을 증명한다. 정식4종 본체 전체는 U21이다.",
+          "A20: 미탐사 방에도 가지 위치·회수 여부·현재 경로 도달가능성을 표시하되 숨긴 방/보스 정체를 추가 노출하지 않는다. 모든 가지 회수 가능을 강제하지 않는다."
+        ],
+        "Intrinsic status": "code_reviewed"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CEDR-G17-001",
+        "Content Digest": "sha256:15104e786c5165f181d4f96b3df89aea66be2f01790b89c60d55f8cd7bce6162"
+      },
+      "payload": {
+        "Review Path": "policy_revision_review",
+        "Input Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-G17-DECIDED-001",
+          "Content Digest": "sha256:ca932a1f14b451fc8654fb035273e04b9369835597f5022c627f405aa7e1f1f4"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CEDR-001",
+          "Content Digest": "sha256:c8f056531d8497a7f29be6c0cde3006bcff60bf77b88ffcd22c392872ff3e881"
+        },
+        "Proposed Policy Element Payload": {
+          "Stable Element ID": "PE-CEDR-G17",
+          "Predecessor Policy Element Revision Ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-G17-DECIDED-001",
+            "Content Digest": "sha256:ca932a1f14b451fc8654fb035273e04b9369835597f5022c627f405aa7e1f1f4"
+          },
+          "Policy statement": "봉인 해제는 강화 전투를 시작하며 승리시에만 가지/억제력 보충을 노드 결과와 함께 확정한다. 무억제 추가 스탯 중복 금지. 후퇴는 봉인 복원·비용/유예 유지, 알 부활은 가지/보충 없음.",
+          "Decision Revision Ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-G17-001",
+            "Content Digest": "sha256:21a611ba07232e1256598870e9298fea3c55062d94ca21608205bb0417ba7e75"
+          },
+          "Observable Policy Acceptance": [
+            "A21: 억제/무억제 두 상태에서 봉인 진입→승리의 스탯과 수량보상을 확인한다. 해제만으로 가지/보충을 지급하지 않는다.",
+            "A22: 후퇴는 봉인 미해제 상태·전투 손실을 복원하되 입장비용/유예/입장사망/후퇴횟수는 유지한다. 반복 승리/재접속 중복 지급을 막는다.",
+            "A23: 패배/부활 전투는 황금가지/보충을 지급하지 않는다. 원래 시설 봉인승리의 보충으로 유예를 되돌리지 않는다."
+          ],
+          "Intrinsic status": "code_reviewed"
+        },
+        "Finding disposition": "technical design only; policy meaning unchanged"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CEDR-G17-REVIEWED-001",
+        "Content Digest": "sha256:64f9c9976dc58b5a992a86c6c8836a23fc0c0c9279d3c2b36dd80551325d2ea7"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CEDR-G17",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-G17-DECIDED-001",
+          "Content Digest": "sha256:ca932a1f14b451fc8654fb035273e04b9369835597f5022c627f405aa7e1f1f4"
+        },
+        "Policy statement": "봉인 해제는 강화 전투를 시작하며 승리시에만 가지/억제력 보충을 노드 결과와 함께 확정한다. 무억제 추가 스탯 중복 금지. 후퇴는 봉인 복원·비용/유예 유지, 알 부활은 가지/보충 없음.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CEDR-G17-001",
+          "Content Digest": "sha256:21a611ba07232e1256598870e9298fea3c55062d94ca21608205bb0417ba7e75"
+        },
+        "Observable Policy Acceptance": [
+          "A21: 억제/무억제 두 상태에서 봉인 진입→승리의 스탯과 수량보상을 확인한다. 해제만으로 가지/보충을 지급하지 않는다.",
+          "A22: 후퇴는 봉인 미해제 상태·전투 손실을 복원하되 입장비용/유예/입장사망/후퇴횟수는 유지한다. 반복 승리/재접속 중복 지급을 막는다.",
+          "A23: 패배/부활 전투는 황금가지/보충을 지급하지 않는다. 원래 시설 봉인승리의 보충으로 유예를 되돌리지 않는다."
+        ],
+        "Intrinsic status": "code_reviewed"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CEDR-G18-001",
+        "Content Digest": "sha256:e989095e51fe913caaed0fe8bda7458eb4a030f22ea33c1d378f54e3db0a03ad"
+      },
+      "payload": {
+        "Review Path": "policy_revision_review",
+        "Input Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-G18-DECIDED-001",
+          "Content Digest": "sha256:cef6dcc2b13ac563a137f1f7dac5b217ea80a27caefde11d11cb6b7f4c13ae8f"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CEDR-001",
+          "Content Digest": "sha256:c8f056531d8497a7f29be6c0cde3006bcff60bf77b88ffcd22c392872ff3e881"
+        },
+        "Proposed Policy Element Payload": {
+          "Stable Element ID": "PE-CEDR-G18",
+          "Predecessor Policy Element Revision Ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-G18-DECIDED-001",
+            "Content Digest": "sha256:cef6dcc2b13ac563a137f1f7dac5b217ea80a27caefde11d11cb6b7f4c13ae8f"
+          },
+          "Policy statement": "직원은 레벨1/XP0, 레벨당100XP·기본생존10 초기값. 실제 참가·생존 직원 기본XP1회, 패배 포함/후퇴 제외. 주력 중반3/최종전전6은 초기 성장 목표로 기록하며 깊이에 자동 성장하지 않는다.",
+          "Decision Revision Ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-G18-001",
+            "Content Digest": "sha256:df0bf819901c9f2027b631adb7d587fe63f8b06e3e59136c0f7d88b2e295eebc"
+          },
+          "Observable Policy Acceptance": [
+            "A24: 실제 참가 생존 직원에게 중복배치와 무관하게 기본XP1회, 미참가/Dead 제외. 승리 무억제만20, 패배10, 후퇴0이다.",
+            "A25: 한번 지급으로 여러 레벨과 잔여XP를 보존한다. 일반 authored 성장 경로의 중반 목표를 관측하고 최종보스 플레이 검증은 제외로 기록한다."
+          ],
+          "Intrinsic status": "code_reviewed"
+        },
+        "Finding disposition": "technical design only; policy meaning unchanged"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CEDR-G18-REVIEWED-001",
+        "Content Digest": "sha256:ce585c5037c0dc627675c1aa6929d6710e59f63efe14490bc5c45c43948e133e"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CEDR-G18",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-G18-DECIDED-001",
+          "Content Digest": "sha256:cef6dcc2b13ac563a137f1f7dac5b217ea80a27caefde11d11cb6b7f4c13ae8f"
+        },
+        "Policy statement": "직원은 레벨1/XP0, 레벨당100XP·기본생존10 초기값. 실제 참가·생존 직원 기본XP1회, 패배 포함/후퇴 제외. 주력 중반3/최종전전6은 초기 성장 목표로 기록하며 깊이에 자동 성장하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CEDR-G18-001",
+          "Content Digest": "sha256:df0bf819901c9f2027b631adb7d587fe63f8b06e3e59136c0f7d88b2e295eebc"
+        },
+        "Observable Policy Acceptance": [
+          "A24: 실제 참가 생존 직원에게 중복배치와 무관하게 기본XP1회, 미참가/Dead 제외. 승리 무억제만20, 패배10, 후퇴0이다.",
+          "A25: 한번 지급으로 여러 레벨과 잔여XP를 보존한다. 일반 authored 성장 경로의 중반 목표를 관측하고 최종보스 플레이 검증은 제외로 기록한다."
+        ],
+        "Intrinsic status": "code_reviewed"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CEDR-G19-001",
+        "Content Digest": "sha256:bcd559cb5651aeac187317134d140ca9058805f33afb9cd5996a8e6725006c39"
+      },
+      "payload": {
+        "Review Path": "policy_revision_review",
+        "Input Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-G19-DECIDED-001",
+          "Content Digest": "sha256:353fb96a43e911a8d08a5f3d3394b19ddcd46b850a01732425ee770b51ed859f"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CEDR-001",
+          "Content Digest": "sha256:c8f056531d8497a7f29be6c0cde3006bcff60bf77b88ffcd22c392872ff3e881"
+        },
+        "Proposed Policy Element Payload": {
+          "Stable Element ID": "PE-CEDR-G19",
+          "Predecessor Policy Element Revision Ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-G19-DECIDED-001",
+            "Content Digest": "sha256:353fb96a43e911a8d08a5f3d3394b19ddcd46b850a01732425ee770b51ed859f"
+          },
+          "Policy statement": "일반전 엔케팔린/가루를 난이도별로 작성한다. 작성된 주환상체 ClearWithin/DecisiveDamage는 실제 시간·단일 공격 원천의 비DOT 실효피해로 판정하여 승리 때 목표별1회 지급한다.",
+          "Decision Revision Ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-G19-001",
+            "Content Digest": "sha256:7fe05d38441c8584db83556123c8eaec34694188eb382d06a06751bffa9de08d"
+          },
+          "Observable Policy Acceptance": [
+            "A26: 같은 방 Easy20/Standard50/Hard30 초기 혼합과 난이도별 재화/가루를 정상 콘텐츠로 확인한다. 편성전투력 연동은 없다.",
+            "A27: ClearWithin 경계 이내/초과를 실제 전투시간으로, DecisiveDamage는 주환상체 최대HP 비율 경계/초과·다중타격·DOT 구별을 실제 action 결과로 검증한다.",
+            "A28: 여러 번 조건 달성해도 목표당1회이며 패배/후퇴는 보너스0, 보너스XP는 모든 살아있는 직원 각자 전액·Dead제외·파편자격 불변이다."
+          ],
+          "Intrinsic status": "code_reviewed"
+        },
+        "Finding disposition": "technical design only; policy meaning unchanged"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CEDR-G19-REVIEWED-001",
+        "Content Digest": "sha256:22c51d5955cbeb1deb51023e8c1ff94f89abdf1377e892ac777fbe1a9811510b"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CEDR-G19",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-G19-DECIDED-001",
+          "Content Digest": "sha256:353fb96a43e911a8d08a5f3d3394b19ddcd46b850a01732425ee770b51ed859f"
+        },
+        "Policy statement": "일반전 엔케팔린/가루를 난이도별로 작성한다. 작성된 주환상체 ClearWithin/DecisiveDamage는 실제 시간·단일 공격 원천의 비DOT 실효피해로 판정하여 승리 때 목표별1회 지급한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CEDR-G19-001",
+          "Content Digest": "sha256:7fe05d38441c8584db83556123c8eaec34694188eb382d06a06751bffa9de08d"
+        },
+        "Observable Policy Acceptance": [
+          "A26: 같은 방 Easy20/Standard50/Hard30 초기 혼합과 난이도별 재화/가루를 정상 콘텐츠로 확인한다. 편성전투력 연동은 없다.",
+          "A27: ClearWithin 경계 이내/초과를 실제 전투시간으로, DecisiveDamage는 주환상체 최대HP 비율 경계/초과·다중타격·DOT 구별을 실제 action 결과로 검증한다.",
+          "A28: 여러 번 조건 달성해도 목표당1회이며 패배/후퇴는 보너스0, 보너스XP는 모든 살아있는 직원 각자 전액·Dead제외·파편자격 불변이다."
+        ],
+        "Intrinsic status": "code_reviewed"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CEDR-PERSISTENCE-001",
+        "Content Digest": "sha256:7312f9a5933c3d4b3aa5f44200f1244b67de6f1bfb3e34174d24e38fe105c67a"
+      },
+      "payload": {
+        "Review Path": "policy_revision_review",
+        "Input Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-PERSISTENCE-DECIDED-001",
+          "Content Digest": "sha256:d653a7ff7586fd9f9c2a5591f6e1b9805866d914718dd7a1ea487144fe32d403"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CEDR-001",
+          "Content Digest": "sha256:c8f056531d8497a7f29be6c0cde3006bcff60bf77b88ffcd22c392872ff3e881"
+        },
+        "Proposed Policy Element Payload": {
+          "Stable Element ID": "PE-CEDR-PERSISTENCE",
+          "Predecessor Policy Element Revision Ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-PERSISTENCE-DECIDED-001",
+            "Content Digest": "sha256:d653a7ff7586fd9f9c2a5591f6e1b9805866d914718dd7a1ea487144fe32d403"
+          },
+          "Policy statement": "기존 U04/U12/U13 지원 저장/복원과 동일 노드identity에서 비용·유예·봉인·배율을 함께 다룬다. 미확정 노드 종료Continue는 입장전 복원, 후퇴는 입장후 유지, 승패확정은 결과 유지. 구저장 원본은 명시거절/보호한다.",
+          "Decision Revision Ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-PERSISTENCE-001",
+            "Content Digest": "sha256:6c017002033f2371faf6eaae526670252543901db8eacb882bf8ab5518e27520"
+          },
+          "Observable Policy Acceptance": [
+            "A29: 새프로세스 미확정 노드Continue는 비용/receipt/유예/입장사망/봉인을 입장전으로 복원하고 이미 사용한 후퇴횟수는 되돌리지 않는다.",
+            "A30: 승패/노드 소비 확정 뒤 Continue/재확인은 보상/가지/비용을 반복하지 않는다. SavePoint는 비용·상태를 함께 과거로 복원한다.",
+            "A31: 실제 지원 경로 IO실패/재시도에서 부분 비용/보상/가지 상태가 노출되지 않고 지원하지 않는 구저장 원본은 보호한다. 외부 임의변조 전용 방어는 범위 제외다."
+          ],
+          "Intrinsic status": "code_reviewed"
+        },
+        "Finding disposition": "technical design only; policy meaning unchanged"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CEDR-PERSISTENCE-REVIEWED-001",
+        "Content Digest": "sha256:8e8104911115506a599fc26fb9088a9c49bdce67931720179f12296a1547cb9e"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CEDR-PERSISTENCE",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-PERSISTENCE-DECIDED-001",
+          "Content Digest": "sha256:d653a7ff7586fd9f9c2a5591f6e1b9805866d914718dd7a1ea487144fe32d403"
+        },
+        "Policy statement": "기존 U04/U12/U13 지원 저장/복원과 동일 노드identity에서 비용·유예·봉인·배율을 함께 다룬다. 미확정 노드 종료Continue는 입장전 복원, 후퇴는 입장후 유지, 승패확정은 결과 유지. 구저장 원본은 명시거절/보호한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CEDR-PERSISTENCE-001",
+          "Content Digest": "sha256:6c017002033f2371faf6eaae526670252543901db8eacb882bf8ab5518e27520"
+        },
+        "Observable Policy Acceptance": [
+          "A29: 새프로세스 미확정 노드Continue는 비용/receipt/유예/입장사망/봉인을 입장전으로 복원하고 이미 사용한 후퇴횟수는 되돌리지 않는다.",
+          "A30: 승패/노드 소비 확정 뒤 Continue/재확인은 보상/가지/비용을 반복하지 않는다. SavePoint는 비용·상태를 함께 과거로 복원한다.",
+          "A31: 실제 지원 경로 IO실패/재시도에서 부분 비용/보상/가지 상태가 노출되지 않고 지원하지 않는 구저장 원본은 보호한다. 외부 임의변조 전용 방어는 범위 제외다."
+        ],
+        "Intrinsic status": "code_reviewed"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CEDR-004",
+        "Content Digest": "sha256:b2d071f404a8c87efefed99a654cc780c7b1d1ca532119f966f4786ba74fd3e1"
+      },
+      "payload": {
+        "Predecessor Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-003",
+          "Content Digest": "sha256:f587e0e1dd56595c8f6bf68013d36032de2b0a0dff7dd2e7fbee05418c21b90b"
+        },
+        "Predecessor Final Policy Freeze Ref": null,
+        "Approved metadata and scope": {
+          "Working Policy Document ID": "WPD-CEDR-20261014",
+          "Policy Topic": "U14 입장 비용·억제력·Breakdown·황금가지·고정 보상 난이도",
+          "Requested Result": "U14 범위 P2G 준비와 구현·자체검증, 기본 최종 감사 인계에서 종료. 중간 단계검토 opt-in 없음.",
+          "Target Project/Repository": "/mnt/f/work/simulator",
+          "Target Documentation Root": "core_enhanced/docs",
+          "Policy Directory Name": "core_expedition_deterrence_rewards",
+          "User-Approved Scope": [
+            {
+              "id": "IN-U14",
+              "disposition": "in",
+              "meaning": "U14 G13/G14/G15/PWR01/PWR02/G16/G17/G18/G19 및 선행 U04/U12/U13 소비 경계와 정상 공개·저장·제작 경로",
+              "approval": {
+                "ref": "USER-20261014-U14-START",
+                "exact_text": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 을 읽은 뒤 u14 작업에 착수해줘.",
+                "date": "2026-10-14",
+                "interpretation": "U14 범위 P2G 준비와 구현·자체검증, 기본 최종 감사 인계에서 종료. 중간 단계검토 opt-in 없음."
+              }
+            },
+            {
+              "id": "OUT-U14",
+              "disposition": "out",
+              "meaning": "로드맵 U14 명시적 제외, Unity/개별 최종보스 본체, 후속 U16/U17/U19/U21 독립 기능 전체와 자동 독립감사",
+              "approval": {
+                "ref": "USER-20261014-U14-START",
+                "exact_text": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 을 읽은 뒤 u14 작업에 착수해줘.",
+                "date": "2026-10-14",
+                "interpretation": "U14 범위 P2G 준비와 구현·자체검증, 기본 최종 감사 인계에서 종료. 중간 단계검토 opt-in 없음."
+              }
+            }
+          ]
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CEDR-001",
+          "Content Digest": "sha256:ec4068130e832147a0410b229654398b8cde1fefd746f7b075000d8a69814154"
+        },
+        "Current Policy Element Revision Map": {
+          "PE-CEDR-G13": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-G13-REVIEWED-001",
+            "Content Digest": "sha256:5419fe09465118b2c1f2e25e4d38c70ee41632ed4946f2f8aff94c5420dfd183"
+          },
+          "PE-CEDR-G14": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-G14-REVIEWED-001",
+            "Content Digest": "sha256:08234232b8b278df0c916f5cce36e4f64e6dae68b82d2d2e3a6e43073ceb60dc"
+          },
+          "PE-CEDR-G15": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-G15-REVIEWED-001",
+            "Content Digest": "sha256:0d4060507a36299f141b957e3f4adcac64ccd9a0208a73f8ad9763ebbfd84f10"
+          },
+          "PE-CEDR-G16": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-G16-REVIEWED-001",
+            "Content Digest": "sha256:72315a6349a742a0328d73dba92842e491d1b8d28aae47381512333c0353a4b4"
+          },
+          "PE-CEDR-G17": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-G17-REVIEWED-001",
+            "Content Digest": "sha256:64f9c9976dc58b5a992a86c6c8836a23fc0c0c9279d3c2b36dd80551325d2ea7"
+          },
+          "PE-CEDR-G18": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-G18-REVIEWED-001",
+            "Content Digest": "sha256:ce585c5037c0dc627675c1aa6929d6710e59f63efe14490bc5c45c43948e133e"
+          },
+          "PE-CEDR-G19": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-G19-REVIEWED-001",
+            "Content Digest": "sha256:22c51d5955cbeb1deb51023e8c1ff94f89abdf1377e892ac777fbe1a9811510b"
+          },
+          "PE-CEDR-PERSISTENCE": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-PERSISTENCE-REVIEWED-001",
+            "Content Digest": "sha256:8e8104911115506a599fc26fb9088a9c49bdce67931720179f12296a1547cb9e"
+          },
+          "PE-CEDR-PWR01": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-PWR01-REVIEWED-001",
+            "Content Digest": "sha256:dce46c3cb94e69cbde1ddbe581ba91b91185d9f4a01b5931faf34093791c1e41"
+          },
+          "PE-CEDR-PWR02": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-PWR02-REVIEWED-001",
+            "Content Digest": "sha256:8eb2de02dd8c34edd5e8f3b0e47892b25558f6185025d1979c89c70c89ce4b25"
+          }
+        },
+        "Decision Revision Ref Set": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-G13-001",
+            "Content Digest": "sha256:192222588e027654a8a0cd7a3d1eca1d7bf2c3a00377a64a2577d43ceab18042"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-G14-001",
+            "Content Digest": "sha256:6d5560f4a09df3987fa200040a6450614682d578a2dd74ca30a5f778a0bedf1d"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-G15-001",
+            "Content Digest": "sha256:241f154c3ad2e8f086a3afcb71a3d40aeb27bb3160c2cbfeb8b9f348c18affe1"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-PWR01-001",
+            "Content Digest": "sha256:99adf8ee8b707ca4d273ea7a9919c3127b8d91424780615434b19f790d8fd441"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-PWR02-001",
+            "Content Digest": "sha256:642e18fb90e165a2a783cadb8d8e475654fa487427f2bb9f61ac3fe53eefec56"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-G16-001",
+            "Content Digest": "sha256:2a391b39ff2300baad1c17f019795f340ac3a489a3c1f2d548ce46dd84031223"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-G17-001",
+            "Content Digest": "sha256:21a611ba07232e1256598870e9298fea3c55062d94ca21608205bb0417ba7e75"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-G18-001",
+            "Content Digest": "sha256:df0bf819901c9f2027b631adb7d587fe63f8b06e3e59136c0f7d88b2e295eebc"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-G19-001",
+            "Content Digest": "sha256:7fe05d38441c8584db83556123c8eaec34694188eb382d06a06751bffa9de08d"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEDR-PERSISTENCE-001",
+            "Content Digest": "sha256:6c017002033f2371faf6eaae526670252543901db8eacb882bf8ab5518e27520"
+          }
+        ],
+        "Open Policy Question Ref Set": [],
+        "Post-Freeze Change/Closure basis": null
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CEDR-G13-001",
+        "Content Digest": "sha256:864ee24962c3059fe91b66344617ec0bb47229bb78c99aaf368bbec4e19944bb"
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-004",
+          "Content Digest": "sha256:b2d071f404a8c87efefed99a654cc780c7b1d1ca532119f966f4786ba74fd3e1"
+        },
+        "Bound Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-004",
+          "Content Digest": "sha256:b2d071f404a8c87efefed99a654cc780c7b1d1ca532119f966f4786ba74fd3e1"
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-G13-REVIEWED-001",
+          "Content Digest": "sha256:5419fe09465118b2c1f2e25e4d38c70ee41632ed4946f2f8aff94c5420dfd183"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CEDR-001",
+          "Content Digest": "sha256:c8f056531d8497a7f29be6c0cde3006bcff60bf77b88ffcd22c392872ff3e881"
+        },
+        "Review Path": "policy_revision_review",
+        "Predecessor Code Review Binding Ref": null,
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CEDR-001",
+          "Content Digest": "sha256:9d7f89d0bae2d2d0aafb22c2741c786b03ebddf924fa118dafa3dd80c5e11e2e"
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-ENTRY-001",
+            "Content Digest": "sha256:f04a8919a506ca0b7a9b2bf50032b73148c218c9a6bba8e1bf8adc80510fd47c"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-STORE-001",
+            "Content Digest": "sha256:dfe2b84fa91f90bcb9d1e3ad81d0912d1b8f27a95385a34f41f4e79e8f503723"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-PUBLIC-001",
+            "Content Digest": "sha256:40ff9eb5217a6f275a805cb496ec3db44836e4496f575c5b6eaac59ff6fb1a40"
+          }
+        ],
+        "Covered Required Claim/Boundary Set": [
+          "ENTRY",
+          "STORE",
+          "PUBLIC"
+        ],
+        "Target Current-Element-Map Match Evidence": {
+          "element": "PE-CEDR-G13",
+          "exact_ref_equal": true
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CEDR-G14-001",
+        "Content Digest": "sha256:1f6dede60742100a0cbb6571ce47aca5f18def8219ecab0b7ce8a298889d485d"
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-004",
+          "Content Digest": "sha256:b2d071f404a8c87efefed99a654cc780c7b1d1ca532119f966f4786ba74fd3e1"
+        },
+        "Bound Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-004",
+          "Content Digest": "sha256:b2d071f404a8c87efefed99a654cc780c7b1d1ca532119f966f4786ba74fd3e1"
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-G14-REVIEWED-001",
+          "Content Digest": "sha256:08234232b8b278df0c916f5cce36e4f64e6dae68b82d2d2e3a6e43073ceb60dc"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CEDR-001",
+          "Content Digest": "sha256:c8f056531d8497a7f29be6c0cde3006bcff60bf77b88ffcd22c392872ff3e881"
+        },
+        "Review Path": "policy_revision_review",
+        "Predecessor Code Review Binding Ref": null,
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CEDR-001",
+          "Content Digest": "sha256:9d7f89d0bae2d2d0aafb22c2741c786b03ebddf924fa118dafa3dd80c5e11e2e"
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-ENTRY-001",
+            "Content Digest": "sha256:f04a8919a506ca0b7a9b2bf50032b73148c218c9a6bba8e1bf8adc80510fd47c"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-STORE-001",
+            "Content Digest": "sha256:dfe2b84fa91f90bcb9d1e3ad81d0912d1b8f27a95385a34f41f4e79e8f503723"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-PUBLIC-001",
+            "Content Digest": "sha256:40ff9eb5217a6f275a805cb496ec3db44836e4496f575c5b6eaac59ff6fb1a40"
+          }
+        ],
+        "Covered Required Claim/Boundary Set": [
+          "ENTRY",
+          "STORE",
+          "PUBLIC"
+        ],
+        "Target Current-Element-Map Match Evidence": {
+          "element": "PE-CEDR-G14",
+          "exact_ref_equal": true
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CEDR-G15-001",
+        "Content Digest": "sha256:acfe1535becdcd26317f51a3fd5cfb2bb23708d07300649cc4eff430d58b633f"
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-004",
+          "Content Digest": "sha256:b2d071f404a8c87efefed99a654cc780c7b1d1ca532119f966f4786ba74fd3e1"
+        },
+        "Bound Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-004",
+          "Content Digest": "sha256:b2d071f404a8c87efefed99a654cc780c7b1d1ca532119f966f4786ba74fd3e1"
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-G15-REVIEWED-001",
+          "Content Digest": "sha256:0d4060507a36299f141b957e3f4adcac64ccd9a0208a73f8ad9763ebbfd84f10"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CEDR-001",
+          "Content Digest": "sha256:c8f056531d8497a7f29be6c0cde3006bcff60bf77b88ffcd22c392872ff3e881"
+        },
+        "Review Path": "policy_revision_review",
+        "Predecessor Code Review Binding Ref": null,
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CEDR-001",
+          "Content Digest": "sha256:9d7f89d0bae2d2d0aafb22c2741c786b03ebddf924fa118dafa3dd80c5e11e2e"
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-ENTRY-001",
+            "Content Digest": "sha256:f04a8919a506ca0b7a9b2bf50032b73148c218c9a6bba8e1bf8adc80510fd47c"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-STORE-001",
+            "Content Digest": "sha256:dfe2b84fa91f90bcb9d1e3ad81d0912d1b8f27a95385a34f41f4e79e8f503723"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-PUBLIC-001",
+            "Content Digest": "sha256:40ff9eb5217a6f275a805cb496ec3db44836e4496f575c5b6eaac59ff6fb1a40"
+          }
+        ],
+        "Covered Required Claim/Boundary Set": [
+          "ENTRY",
+          "STORE",
+          "PUBLIC"
+        ],
+        "Target Current-Element-Map Match Evidence": {
+          "element": "PE-CEDR-G15",
+          "exact_ref_equal": true
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CEDR-PWR01-001",
+        "Content Digest": "sha256:0571e74ab8e5a60adcd7afbc3367f8f8d656c68829987debd221245e580307a1"
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-004",
+          "Content Digest": "sha256:b2d071f404a8c87efefed99a654cc780c7b1d1ca532119f966f4786ba74fd3e1"
+        },
+        "Bound Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-004",
+          "Content Digest": "sha256:b2d071f404a8c87efefed99a654cc780c7b1d1ca532119f966f4786ba74fd3e1"
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-PWR01-REVIEWED-001",
+          "Content Digest": "sha256:dce46c3cb94e69cbde1ddbe581ba91b91185d9f4a01b5931faf34093791c1e41"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CEDR-001",
+          "Content Digest": "sha256:c8f056531d8497a7f29be6c0cde3006bcff60bf77b88ffcd22c392872ff3e881"
+        },
+        "Review Path": "policy_revision_review",
+        "Predecessor Code Review Binding Ref": null,
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CEDR-001",
+          "Content Digest": "sha256:9d7f89d0bae2d2d0aafb22c2741c786b03ebddf924fa118dafa3dd80c5e11e2e"
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-COMBAT-001",
+            "Content Digest": "sha256:59e380ad3f950b5197e8bdf6a8036660117391e13d4f23e660f9de04c7f4c9a2"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-STORE-001",
+            "Content Digest": "sha256:dfe2b84fa91f90bcb9d1e3ad81d0912d1b8f27a95385a34f41f4e79e8f503723"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-PUBLIC-001",
+            "Content Digest": "sha256:40ff9eb5217a6f275a805cb496ec3db44836e4496f575c5b6eaac59ff6fb1a40"
+          }
+        ],
+        "Covered Required Claim/Boundary Set": [
+          "COMBAT",
+          "STORE",
+          "PUBLIC"
+        ],
+        "Target Current-Element-Map Match Evidence": {
+          "element": "PE-CEDR-PWR01",
+          "exact_ref_equal": true
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CEDR-PWR02-001",
+        "Content Digest": "sha256:bdd2c059648dc2ddb76797ebfd2ae476cf4a062276ef726d59b818e477c85b87"
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-004",
+          "Content Digest": "sha256:b2d071f404a8c87efefed99a654cc780c7b1d1ca532119f966f4786ba74fd3e1"
+        },
+        "Bound Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-004",
+          "Content Digest": "sha256:b2d071f404a8c87efefed99a654cc780c7b1d1ca532119f966f4786ba74fd3e1"
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-PWR02-REVIEWED-001",
+          "Content Digest": "sha256:8eb2de02dd8c34edd5e8f3b0e47892b25558f6185025d1979c89c70c89ce4b25"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CEDR-001",
+          "Content Digest": "sha256:c8f056531d8497a7f29be6c0cde3006bcff60bf77b88ffcd22c392872ff3e881"
+        },
+        "Review Path": "policy_revision_review",
+        "Predecessor Code Review Binding Ref": null,
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CEDR-001",
+          "Content Digest": "sha256:9d7f89d0bae2d2d0aafb22c2741c786b03ebddf924fa118dafa3dd80c5e11e2e"
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-COMBAT-001",
+            "Content Digest": "sha256:59e380ad3f950b5197e8bdf6a8036660117391e13d4f23e660f9de04c7f4c9a2"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-REWARD-001",
+            "Content Digest": "sha256:7b1738846b928a6db338b59ad19b3e3a3c0f528f9f2d7dd515d9897b2650878b"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-STORE-001",
+            "Content Digest": "sha256:dfe2b84fa91f90bcb9d1e3ad81d0912d1b8f27a95385a34f41f4e79e8f503723"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-PUBLIC-001",
+            "Content Digest": "sha256:40ff9eb5217a6f275a805cb496ec3db44836e4496f575c5b6eaac59ff6fb1a40"
+          }
+        ],
+        "Covered Required Claim/Boundary Set": [
+          "COMBAT",
+          "REWARD",
+          "STORE",
+          "PUBLIC"
+        ],
+        "Target Current-Element-Map Match Evidence": {
+          "element": "PE-CEDR-PWR02",
+          "exact_ref_equal": true
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CEDR-G16-001",
+        "Content Digest": "sha256:965e07ecbfe7721104507f4464d89e3fd25f74a39db636167a8aede1c4191d27"
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-004",
+          "Content Digest": "sha256:b2d071f404a8c87efefed99a654cc780c7b1d1ca532119f966f4786ba74fd3e1"
+        },
+        "Bound Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-004",
+          "Content Digest": "sha256:b2d071f404a8c87efefed99a654cc780c7b1d1ca532119f966f4786ba74fd3e1"
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-G16-REVIEWED-001",
+          "Content Digest": "sha256:72315a6349a742a0328d73dba92842e491d1b8d28aae47381512333c0353a4b4"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CEDR-001",
+          "Content Digest": "sha256:c8f056531d8497a7f29be6c0cde3006bcff60bf77b88ffcd22c392872ff3e881"
+        },
+        "Review Path": "policy_revision_review",
+        "Predecessor Code Review Binding Ref": null,
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CEDR-001",
+          "Content Digest": "sha256:9d7f89d0bae2d2d0aafb22c2741c786b03ebddf924fa118dafa3dd80c5e11e2e"
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-GOLD-001",
+            "Content Digest": "sha256:a789563334ef61c7e216a835a27349177826145691dab83cab2bf49b291dff2f"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-STORE-001",
+            "Content Digest": "sha256:dfe2b84fa91f90bcb9d1e3ad81d0912d1b8f27a95385a34f41f4e79e8f503723"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-PUBLIC-001",
+            "Content Digest": "sha256:40ff9eb5217a6f275a805cb496ec3db44836e4496f575c5b6eaac59ff6fb1a40"
+          }
+        ],
+        "Covered Required Claim/Boundary Set": [
+          "GOLD",
+          "STORE",
+          "PUBLIC"
+        ],
+        "Target Current-Element-Map Match Evidence": {
+          "element": "PE-CEDR-G16",
+          "exact_ref_equal": true
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CEDR-G17-001",
+        "Content Digest": "sha256:7c975ed810715192a452fb55d84220e2914344252cfb803e634d9c6554fa022c"
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-004",
+          "Content Digest": "sha256:b2d071f404a8c87efefed99a654cc780c7b1d1ca532119f966f4786ba74fd3e1"
+        },
+        "Bound Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-004",
+          "Content Digest": "sha256:b2d071f404a8c87efefed99a654cc780c7b1d1ca532119f966f4786ba74fd3e1"
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-G17-REVIEWED-001",
+          "Content Digest": "sha256:64f9c9976dc58b5a992a86c6c8836a23fc0c0c9279d3c2b36dd80551325d2ea7"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CEDR-001",
+          "Content Digest": "sha256:c8f056531d8497a7f29be6c0cde3006bcff60bf77b88ffcd22c392872ff3e881"
+        },
+        "Review Path": "policy_revision_review",
+        "Predecessor Code Review Binding Ref": null,
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CEDR-001",
+          "Content Digest": "sha256:9d7f89d0bae2d2d0aafb22c2741c786b03ebddf924fa118dafa3dd80c5e11e2e"
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-COMBAT-001",
+            "Content Digest": "sha256:59e380ad3f950b5197e8bdf6a8036660117391e13d4f23e660f9de04c7f4c9a2"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-GOLD-001",
+            "Content Digest": "sha256:a789563334ef61c7e216a835a27349177826145691dab83cab2bf49b291dff2f"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-STORE-001",
+            "Content Digest": "sha256:dfe2b84fa91f90bcb9d1e3ad81d0912d1b8f27a95385a34f41f4e79e8f503723"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-PUBLIC-001",
+            "Content Digest": "sha256:40ff9eb5217a6f275a805cb496ec3db44836e4496f575c5b6eaac59ff6fb1a40"
+          }
+        ],
+        "Covered Required Claim/Boundary Set": [
+          "COMBAT",
+          "GOLD",
+          "STORE",
+          "PUBLIC"
+        ],
+        "Target Current-Element-Map Match Evidence": {
+          "element": "PE-CEDR-G17",
+          "exact_ref_equal": true
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CEDR-G18-001",
+        "Content Digest": "sha256:5b107fb8f5964c66733153518f1408ab0043f59292272db27c955d3744167906"
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-004",
+          "Content Digest": "sha256:b2d071f404a8c87efefed99a654cc780c7b1d1ca532119f966f4786ba74fd3e1"
+        },
+        "Bound Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-004",
+          "Content Digest": "sha256:b2d071f404a8c87efefed99a654cc780c7b1d1ca532119f966f4786ba74fd3e1"
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-G18-REVIEWED-001",
+          "Content Digest": "sha256:ce585c5037c0dc627675c1aa6929d6710e59f63efe14490bc5c45c43948e133e"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CEDR-001",
+          "Content Digest": "sha256:c8f056531d8497a7f29be6c0cde3006bcff60bf77b88ffcd22c392872ff3e881"
+        },
+        "Review Path": "policy_revision_review",
+        "Predecessor Code Review Binding Ref": null,
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CEDR-001",
+          "Content Digest": "sha256:9d7f89d0bae2d2d0aafb22c2741c786b03ebddf924fa118dafa3dd80c5e11e2e"
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-REWARD-001",
+            "Content Digest": "sha256:7b1738846b928a6db338b59ad19b3e3a3c0f528f9f2d7dd515d9897b2650878b"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-STORE-001",
+            "Content Digest": "sha256:dfe2b84fa91f90bcb9d1e3ad81d0912d1b8f27a95385a34f41f4e79e8f503723"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-PUBLIC-001",
+            "Content Digest": "sha256:40ff9eb5217a6f275a805cb496ec3db44836e4496f575c5b6eaac59ff6fb1a40"
+          }
+        ],
+        "Covered Required Claim/Boundary Set": [
+          "REWARD",
+          "STORE",
+          "PUBLIC"
+        ],
+        "Target Current-Element-Map Match Evidence": {
+          "element": "PE-CEDR-G18",
+          "exact_ref_equal": true
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CEDR-G19-001",
+        "Content Digest": "sha256:955a74ca1d26430dc3f78d1663b31053626addc2e40210c5b87fc22a29c1bcf8"
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-004",
+          "Content Digest": "sha256:b2d071f404a8c87efefed99a654cc780c7b1d1ca532119f966f4786ba74fd3e1"
+        },
+        "Bound Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-004",
+          "Content Digest": "sha256:b2d071f404a8c87efefed99a654cc780c7b1d1ca532119f966f4786ba74fd3e1"
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-G19-REVIEWED-001",
+          "Content Digest": "sha256:22c51d5955cbeb1deb51023e8c1ff94f89abdf1377e892ac777fbe1a9811510b"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CEDR-001",
+          "Content Digest": "sha256:c8f056531d8497a7f29be6c0cde3006bcff60bf77b88ffcd22c392872ff3e881"
+        },
+        "Review Path": "policy_revision_review",
+        "Predecessor Code Review Binding Ref": null,
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CEDR-001",
+          "Content Digest": "sha256:9d7f89d0bae2d2d0aafb22c2741c786b03ebddf924fa118dafa3dd80c5e11e2e"
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-REWARD-001",
+            "Content Digest": "sha256:7b1738846b928a6db338b59ad19b3e3a3c0f528f9f2d7dd515d9897b2650878b"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-STORE-001",
+            "Content Digest": "sha256:dfe2b84fa91f90bcb9d1e3ad81d0912d1b8f27a95385a34f41f4e79e8f503723"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-PUBLIC-001",
+            "Content Digest": "sha256:40ff9eb5217a6f275a805cb496ec3db44836e4496f575c5b6eaac59ff6fb1a40"
+          }
+        ],
+        "Covered Required Claim/Boundary Set": [
+          "REWARD",
+          "STORE",
+          "PUBLIC"
+        ],
+        "Target Current-Element-Map Match Evidence": {
+          "element": "PE-CEDR-G19",
+          "exact_ref_equal": true
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CEDR-PERSISTENCE-001",
+        "Content Digest": "sha256:0620dcb98f71a68314153f16fd2b19495b4aadb568e4f6f13d200167d5cdcdd7"
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-004",
+          "Content Digest": "sha256:b2d071f404a8c87efefed99a654cc780c7b1d1ca532119f966f4786ba74fd3e1"
+        },
+        "Bound Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-004",
+          "Content Digest": "sha256:b2d071f404a8c87efefed99a654cc780c7b1d1ca532119f966f4786ba74fd3e1"
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEDR-PERSISTENCE-REVIEWED-001",
+          "Content Digest": "sha256:8e8104911115506a599fc26fb9088a9c49bdce67931720179f12296a1547cb9e"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CEDR-001",
+          "Content Digest": "sha256:c8f056531d8497a7f29be6c0cde3006bcff60bf77b88ffcd22c392872ff3e881"
+        },
+        "Review Path": "policy_revision_review",
+        "Predecessor Code Review Binding Ref": null,
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CEDR-001",
+          "Content Digest": "sha256:9d7f89d0bae2d2d0aafb22c2741c786b03ebddf924fa118dafa3dd80c5e11e2e"
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-ENTRY-001",
+            "Content Digest": "sha256:f04a8919a506ca0b7a9b2bf50032b73148c218c9a6bba8e1bf8adc80510fd47c"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-GOLD-001",
+            "Content Digest": "sha256:a789563334ef61c7e216a835a27349177826145691dab83cab2bf49b291dff2f"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-STORE-001",
+            "Content Digest": "sha256:dfe2b84fa91f90bcb9d1e3ad81d0912d1b8f27a95385a34f41f4e79e8f503723"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-PUBLIC-001",
+            "Content Digest": "sha256:40ff9eb5217a6f275a805cb496ec3db44836e4496f575c5b6eaac59ff6fb1a40"
+          }
+        ],
+        "Covered Required Claim/Boundary Set": [
+          "ENTRY",
+          "GOLD",
+          "STORE",
+          "PUBLIC"
+        ],
+        "Target Current-Element-Map Match Evidence": {
+          "element": "PE-CEDR-PERSISTENCE",
+          "exact_ref_equal": true
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Review Batch",
+        "Artifact ID": "RB-CEDR-001",
+        "Content Digest": "sha256:e171be32c7d379ab67f0ee8e5bb1288f4f6eb3e42dad82d72c357292a09bbb53"
+      },
+      "payload": {
+        "Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-003",
+          "Content Digest": "sha256:f587e0e1dd56595c8f6bf68013d36032de2b0a0dff7dd2e7fbee05418c21b90b"
+        },
+        "Result Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEDR-004",
+          "Content Digest": "sha256:b2d071f404a8c87efefed99a654cc780c7b1d1ca532119f966f4786ba74fd3e1"
+        },
+        "Candidate Review Envelope Ref Set": [
+          {
+            "Artifact Type": "Candidate Review Envelope",
+            "Artifact ID": "CRE-CEDR-G13-001",
+            "Content Digest": "sha256:9763d4266dd96351fcc713cd2504722d040c0f8d026ad273a26ba757cba39bec"
+          },
+          {
+            "Artifact Type": "Candidate Review Envelope",
+            "Artifact ID": "CRE-CEDR-G14-001",
+            "Content Digest": "sha256:4312b277f48d44f851edd137d81e1c7b5e3a2e3df2bf61327a800995d2d4b574"
+          },
+          {
+            "Artifact Type": "Candidate Review Envelope",
+            "Artifact ID": "CRE-CEDR-G15-001",
+            "Content Digest": "sha256:d63245ecedb1c3e204b15371804ae9969f016b2b7adadc5dcb4fc3ffd8b66cd9"
+          },
+          {
+            "Artifact Type": "Candidate Review Envelope",
+            "Artifact ID": "CRE-CEDR-PWR01-001",
+            "Content Digest": "sha256:fabc8e9d1135c7eaad3bd7865786900483dc790a3aff268535a2e8acd7d9419c"
+          },
+          {
+            "Artifact Type": "Candidate Review Envelope",
+            "Artifact ID": "CRE-CEDR-PWR02-001",
+            "Content Digest": "sha256:8f96eb0c591af9a3a77ac088c67110930d40fa626d91fca25cc97ced7bc76c9b"
+          },
+          {
+            "Artifact Type": "Candidate Review Envelope",
+            "Artifact ID": "CRE-CEDR-G16-001",
+            "Content Digest": "sha256:38ea52a1cc1c3c903165e5ba05b5248c2402bcee38b525b56f39d182d409783a"
+          },
+          {
+            "Artifact Type": "Candidate Review Envelope",
+            "Artifact ID": "CRE-CEDR-G17-001",
+            "Content Digest": "sha256:15104e786c5165f181d4f96b3df89aea66be2f01790b89c60d55f8cd7bce6162"
+          },
+          {
+            "Artifact Type": "Candidate Review Envelope",
+            "Artifact ID": "CRE-CEDR-G18-001",
+            "Content Digest": "sha256:e989095e51fe913caaed0fe8bda7458eb4a030f22ea33c1d378f54e3db0a03ad"
+          },
+          {
+            "Artifact Type": "Candidate Review Envelope",
+            "Artifact ID": "CRE-CEDR-G19-001",
+            "Content Digest": "sha256:bcd559cb5651aeac187317134d140ca9058805f33afb9cd5996a8e6725006c39"
+          },
+          {
+            "Artifact Type": "Candidate Review Envelope",
+            "Artifact ID": "CRE-CEDR-PERSISTENCE-001",
+            "Content Digest": "sha256:7312f9a5933c3d4b3aa5f44200f1244b67de6f1bfb3e34174d24e38fe105c67a"
+          }
+        ],
+        "Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CEDR-001",
+          "Content Digest": "sha256:d93b9c3ad623c7e0b60b7bb3f1c9298d90290d5db9011173d2ae7b2a9a6ab23b"
+        },
+        "Source Observation Ref Set": [
+          {
+            "Artifact Type": "Source Observation",
+            "Artifact ID": "SO-CEDR-ENTRY-001",
+            "Content Digest": "sha256:f70a861dddb4da67daa41642a49bbdadaa77d6bd8e50d8e1a7d0a5825d7343f7"
+          },
+          {
+            "Artifact Type": "Source Observation",
+            "Artifact ID": "SO-CEDR-COMBAT-001",
+            "Content Digest": "sha256:f780f097846bff029e976967918a8f24ec3fd88160f7c44d4adb21984fb94d4a"
+          },
+          {
+            "Artifact Type": "Source Observation",
+            "Artifact ID": "SO-CEDR-REWARD-001",
+            "Content Digest": "sha256:bff7a161a60f7c3268949470ecb3f91d1202d502cb2fb663f5590cce0a39df2f"
+          },
+          {
+            "Artifact Type": "Source Observation",
+            "Artifact ID": "SO-CEDR-GOLD-001",
+            "Content Digest": "sha256:318f18b51e922d09811a2a88d50b1d00a1eb42e4275dcf82cbd0e763777599b5"
+          },
+          {
+            "Artifact Type": "Source Observation",
+            "Artifact ID": "SO-CEDR-STORE-001",
+            "Content Digest": "sha256:1aec859c38c455cefe36a22aab8a3d3a0ba8067b2426a1f340eddc3758951d2b"
+          },
+          {
+            "Artifact Type": "Source Observation",
+            "Artifact ID": "SO-CEDR-PUBLIC-001",
+            "Content Digest": "sha256:a14163bac02a0acebb5a58fa55e8cdb7f45b7e2113748d7e106c193f0fdd840f"
+          }
+        ],
+        "Code Review Artifact Ref Set": [
+          {
+            "Artifact Type": "Code Review Artifact",
+            "Artifact ID": "CRA-CEDR-001",
+            "Content Digest": "sha256:c8f056531d8497a7f29be6c0cde3006bcff60bf77b88ffcd22c392872ff3e881"
+          }
+        ],
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CEDR-001",
+          "Content Digest": "sha256:9d7f89d0bae2d2d0aafb22c2741c786b03ebddf924fa118dafa3dd80c5e11e2e"
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-ENTRY-001",
+            "Content Digest": "sha256:f04a8919a506ca0b7a9b2bf50032b73148c218c9a6bba8e1bf8adc80510fd47c"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-COMBAT-001",
+            "Content Digest": "sha256:59e380ad3f950b5197e8bdf6a8036660117391e13d4f23e660f9de04c7f4c9a2"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-REWARD-001",
+            "Content Digest": "sha256:7b1738846b928a6db338b59ad19b3e3a3c0f528f9f2d7dd515d9897b2650878b"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-GOLD-001",
+            "Content Digest": "sha256:a789563334ef61c7e216a835a27349177826145691dab83cab2bf49b291dff2f"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-STORE-001",
+            "Content Digest": "sha256:dfe2b84fa91f90bcb9d1e3ad81d0912d1b8f27a95385a34f41f4e79e8f503723"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CEDR-PUBLIC-001",
+            "Content Digest": "sha256:40ff9eb5217a6f275a805cb496ec3db44836e4496f575c5b6eaac59ff6fb1a40"
+          }
+        ],
+        "Result Current code_reviewed Policy Element Revision Ref Set": [
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-G13-REVIEWED-001",
+            "Content Digest": "sha256:5419fe09465118b2c1f2e25e4d38c70ee41632ed4946f2f8aff94c5420dfd183"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-G14-REVIEWED-001",
+            "Content Digest": "sha256:08234232b8b278df0c916f5cce36e4f64e6dae68b82d2d2e3a6e43073ceb60dc"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-G15-REVIEWED-001",
+            "Content Digest": "sha256:0d4060507a36299f141b957e3f4adcac64ccd9a0208a73f8ad9763ebbfd84f10"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-G16-REVIEWED-001",
+            "Content Digest": "sha256:72315a6349a742a0328d73dba92842e491d1b8d28aae47381512333c0353a4b4"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-G17-REVIEWED-001",
+            "Content Digest": "sha256:64f9c9976dc58b5a992a86c6c8836a23fc0c0c9279d3c2b36dd80551325d2ea7"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-G18-REVIEWED-001",
+            "Content Digest": "sha256:ce585c5037c0dc627675c1aa6929d6710e59f63efe14490bc5c45c43948e133e"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-G19-REVIEWED-001",
+            "Content Digest": "sha256:22c51d5955cbeb1deb51023e8c1ff94f89abdf1377e892ac777fbe1a9811510b"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-PERSISTENCE-REVIEWED-001",
+            "Content Digest": "sha256:8e8104911115506a599fc26fb9088a9c49bdce67931720179f12296a1547cb9e"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-PWR01-REVIEWED-001",
+            "Content Digest": "sha256:dce46c3cb94e69cbde1ddbe581ba91b91185d9f4a01b5931faf34093791c1e41"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEDR-PWR02-REVIEWED-001",
+            "Content Digest": "sha256:8eb2de02dd8c34edd5e8f3b0e47892b25558f6185025d1979c89c70c89ce4b25"
+          }
+        ],
+        "Result-basis Code Review Binding Ref Set": [
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEDR-G13-001",
+            "Content Digest": "sha256:864ee24962c3059fe91b66344617ec0bb47229bb78c99aaf368bbec4e19944bb"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEDR-G14-001",
+            "Content Digest": "sha256:1f6dede60742100a0cbb6571ce47aca5f18def8219ecab0b7ce8a298889d485d"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEDR-G15-001",
+            "Content Digest": "sha256:acfe1535becdcd26317f51a3fd5cfb2bb23708d07300649cc4eff430d58b633f"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEDR-PWR01-001",
+            "Content Digest": "sha256:0571e74ab8e5a60adcd7afbc3367f8f8d656c68829987debd221245e580307a1"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEDR-PWR02-001",
+            "Content Digest": "sha256:bdd2c059648dc2ddb76797ebfd2ae476cf4a062276ef726d59b818e477c85b87"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEDR-G16-001",
+            "Content Digest": "sha256:965e07ecbfe7721104507f4464d89e3fd25f74a39db636167a8aede1c4191d27"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEDR-G17-001",
+            "Content Digest": "sha256:7c975ed810715192a452fb55d84220e2914344252cfb803e634d9c6554fa022c"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEDR-G18-001",
+            "Content Digest": "sha256:5b107fb8f5964c66733153518f1408ab0043f59292272db27c955d3744167906"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEDR-G19-001",
+            "Content Digest": "sha256:955a74ca1d26430dc3f78d1663b31053626addc2e40210c5b87fc22a29c1bcf8"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEDR-PERSISTENCE-001",
+            "Content Digest": "sha256:0620dcb98f71a68314153f16fd2b19495b4aadb568e4f6f13d200167d5cdcdd7"
+          }
+        ],
+        "Outcome": "complete; all10current elements have owner/delta/seam; no open material choice"
+      }
+    }
+  ]
+}

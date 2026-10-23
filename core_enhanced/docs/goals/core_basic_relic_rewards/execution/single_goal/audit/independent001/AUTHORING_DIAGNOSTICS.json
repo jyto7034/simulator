@@ -1,0 +1,66 @@
+{
+  "passed": true,
+  "valid_exit": 0,
+  "rejected_cases": [
+    {
+      "case": "missing_id",
+      "raw": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/runs/authoring002/missing_id/stderr.log",
+      "expected_diagnostic": "unknown relic reward candidate 'absent'",
+      "matched": true
+    },
+    {
+      "case": "duplicate_id",
+      "raw": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/runs/authoring002/duplicate_id/stderr.log",
+      "expected_diagnostic": "zero weight or duplicate relic reward candidate",
+      "matched": true
+    },
+    {
+      "case": "zero_weight",
+      "raw": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/runs/authoring002/zero_weight/stderr.log",
+      "expected_diagnostic": "zero weight or duplicate relic reward candidate",
+      "matched": true
+    },
+    {
+      "case": "weight_overflow",
+      "raw": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/runs/authoring002/weight_overflow/stderr.log",
+      "expected_diagnostic": "relic reward weight sum overflow",
+      "matched": true
+    },
+    {
+      "case": "zero_threshold",
+      "raw": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/runs/authoring002/zero_threshold/stderr.log",
+      "expected_diagnostic": "positive and strictly increasing",
+      "matched": true
+    },
+    {
+      "case": "equal_threshold",
+      "raw": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/runs/authoring002/equal_threshold/stderr.log",
+      "expected_diagnostic": "positive and strictly increasing",
+      "matched": true
+    },
+    {
+      "case": "decreasing_threshold",
+      "raw": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/runs/authoring002/decreasing_threshold/stderr.log",
+      "expected_diagnostic": "positive and strictly increasing",
+      "matched": true
+    },
+    {
+      "case": "threshold_shape",
+      "raw": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/runs/authoring002/threshold_shape/stderr.log",
+      "expected_diagnostic": "invalid length 2",
+      "matched": true
+    },
+    {
+      "case": "unsupported_grade",
+      "raw": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/runs/authoring002/unsupported_grade/stderr.log",
+      "expected_diagnostic": "unsupported relic reward grade 'legendary'",
+      "matched": true
+    },
+    {
+      "case": "wrong_activity_category",
+      "raw": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/runs/authoring002/wrong_activity_category/stderr.log",
+      "expected_diagnostic": "relic reward type requires Reward category",
+      "matched": true
+    }
+  ]
+}

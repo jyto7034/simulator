@@ -1,0 +1,7 @@
+{
+  "CARGO_HOME": "/tmp/wp02-cargo-home",
+  "U12_G11_INPUTS": null,
+  "U12_G11_INPUTS_SHA256": null,
+  "default_features": true,
+  "unix_socket_test": "separate supported environment; known sandbox EPERM"
+}

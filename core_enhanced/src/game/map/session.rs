@@ -8,6 +8,7 @@ use crate::game::map::types::{MapNode, MapNodeCategory, MapNodeId, MapNodeKindId
 /// selected node identity/routing category plus the authored payload needed to
 /// resume or confirm the current node; it is not a hidden runtime-only state bag.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct NodeSession {
     pub node_id: MapNodeId,
     pub kind_id: MapNodeKindId,

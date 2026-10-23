@@ -1,0 +1,17 @@
+{
+  "binary": "/tmp/u15-cost-slim-target/debug/u16_independent_first_purchase",
+  "binary_sha256": "0a8138dfa79eb985bc83f3135375e6e816fdb32f037222ff1a47e9b02c0fc4d3",
+  "source_sha256": "2b2ca35323d04c5f55806ebb28005378f9a159550d50f0583276f2270d5b0452",
+  "cargo_lock_sha256": "8b0f7ca8bb2a6fa23361e2cfdf0ecd55421f30e1fc54448c58b64883af288a4a",
+  "source_target": "u16_1_current_001",
+  "profile": "dev opt0/debug0, runtime-observation; diagnostic only, not normal host approval",
+  "build_command": "env PATH=/home/blast/.cargo/bin:$PATH CARGO_HOME=/tmp/wp02-cargo-home CARGO_TARGET_DIR=/tmp/u15-cost-slim-target CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_DEV_INCREMENTAL=false cargo build --offline --locked --manifest-path core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/audit/independent001/probe/Cargo.toml",
+  "run_argv": [
+    "/tmp/u15-cost-slim-target/debug/u16_independent_first_purchase",
+    "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/normal_inputs003/admission.json",
+    "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/test_parts/host_replays002/pilot.json",
+    "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/audit/independent001/FIRST_PURCHASE.json"
+  ],
+  "build_exit": 0,
+  "run_exit": 0
+}

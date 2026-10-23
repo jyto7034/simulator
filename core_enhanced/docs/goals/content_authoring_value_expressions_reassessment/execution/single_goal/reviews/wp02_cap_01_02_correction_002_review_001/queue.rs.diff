@@ -1,0 +1,101 @@
+--- /tmp/r06-cap-format-review.BXS2CH/core_enhanced/src/game/battle/core/queue.rs	1970-01-01 09:00:00.000000000 +0900
++++ /mnt/f/work/simulator/core_enhanced/src/game/battle/core/queue.rs	2026-09-26 14:27:31.087363100 +0900
+@@ -110,9 +110,12 @@
+ ) -> Result<(), crate::game::behavior::GameError> {
+     if bucket.len() == bucket.capacity() {
+         let capacity = crate::game::battle::runtime_control::admitted_buffer_capacity(
+-            bucket.len(), bucket.capacity(),
++            bucket.len(),
++            bucket.capacity(),
+             control::container_capacity_limit(Resource::BucketEvents).unwrap_or(usize::MAX),
+-            std::mem::size_of::<QueuedEvent>(), 64, site,
++            std::mem::size_of::<QueuedEvent>(),
++            64,
++            site,
+         )?;
+         bucket.reserve_exact(capacity - bucket.len());
+     }
+@@ -227,33 +230,52 @@
+         let movement = |time_ms| BattleEvent::ContinuousMovementTick { time_ms };
+         let mut queue = EventQueue::new();
+         assert_eq!(queue.0.capacity(), 0);
+-        for time in [4, 2, 3, 1] { queue.push(movement(time)); }
++        for time in [4, 2, 3, 1] {
++            queue.push(movement(time));
++        }
+         assert_eq!(queue.0.capacity(), 4);
+         let slot = std::mem::size_of::<QueuedEvent>();
+         let source_admission = RuntimeFactSource::default().retained_extent().unwrap();
+         let minimum_bytes = 5 * slot + 64;
+         let before_extent = queue.slot_extent().unwrap();
+-        native::run(RuntimeFactLimits { max_retained_bytes: before_extent + source_admission + minimum_bytes,
+-            ..Default::default() }, || {
+-            native::seed_retained_extent(before_extent)?;
+-            queue.push(movement(5));
+-            native::poll()
+-        }).unwrap();
++        native::run(
++            RuntimeFactLimits {
++                max_retained_bytes: before_extent + source_admission + minimum_bytes,
++                ..Default::default()
++            },
++            || {
++                native::seed_retained_extent(before_extent)?;
++                queue.push(movement(5));
++                native::poll()
++            },
++        )
++        .unwrap();
+         assert_eq!(queue.0.capacity(), 5);
+         let mut copy = queue.clone();
+         assert_eq!(copy.0.capacity(), copy.len());
+         assert_eq!(queue.len(), 5);
+ 
+         let before_extent = queue.slot_extent().unwrap();
+-        let error = native::run(RuntimeFactLimits { max_retained_bytes: before_extent + source_admission + 6 * slot + 63,
+-            ..Default::default() }, || {
+-            native::seed_retained_extent(before_extent)?;
+-            queue.push(movement(6));
+-            native::poll()
+-        }).unwrap_err();
+-        assert!(matches!(error, crate::game::behavior::GameError::BattleRuntimeFault(
+-            BattleRuntimeFault { code: RuntimeFaultCode::RetainedByteLimit,
+-                site: "queued_event_slots", .. })));
++        let error = native::run(
++            RuntimeFactLimits {
++                max_retained_bytes: before_extent + source_admission + 6 * slot + 63,
++                ..Default::default()
++            },
++            || {
++                native::seed_retained_extent(before_extent)?;
++                queue.push(movement(6));
++                native::poll()
++            },
++        )
++        .unwrap_err();
++        assert!(matches!(
++            error,
++            crate::game::behavior::GameError::BattleRuntimeFault(BattleRuntimeFault {
++                code: RuntimeFaultCode::RetainedByteLimit,
++                site: "queued_event_slots",
++                ..
++            })
++        ));
+         assert_eq!(queue.len(), 5);
+         queue.push(movement(6));
+         assert_eq!(queue.len(), 6);
+@@ -492,9 +514,12 @@
+         // Reallocation preserves the heap's existing array and equal-key order.
+         if self.0.len() == self.0.capacity() {
+             let capacity = match crate::game::battle::runtime_control::admitted_buffer_capacity(
+-                self.0.len(), self.0.capacity(),
++                self.0.len(),
++                self.0.capacity(),
+                 control::container_capacity_limit(Resource::PendingEvents).unwrap_or(usize::MAX),
+-                std::mem::size_of::<QueuedEvent>(), 64, "queued_event_slots",
++                std::mem::size_of::<QueuedEvent>(),
++                64,
++                "queued_event_slots",
+             ) {
+                 Ok(capacity) => capacity,
+                 Err(_) => return,

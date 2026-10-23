@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/home/blast/.cargo/bin/cargo",
+    "test",
+    "--manifest-path",
+    "/tmp/integration-triage17-20261014/core_enhanced/Cargo.toml",
+    "--offline",
+    "--target-dir",
+    "/mnt/f/work/simulator/.cache/u12-vault-cost-target",
+    "--tests",
+    "--no-fail-fast",
+    "--",
+    "u08_public",
+    "every_live_starter_and_recruit_has_its_active_training_set"
+  ],
+  "exit_code": 101,
+  "seconds": 289.41029297100613,
+  "stdout": "diagnostic001.stdout.log",
+  "stderr": "diagnostic001.stderr.log"
+}

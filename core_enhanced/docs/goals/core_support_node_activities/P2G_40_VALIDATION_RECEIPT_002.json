@@ -1,0 +1,216 @@
+{
+  "schema_version": "p2g40.phase_plan_validation_receipt/v1",
+  "phase_plan_validation_receipt_ref": "PVR-CSNA-002",
+  "evaluated_phase_plan": {
+    "ref": "PP-CSNA-002",
+    "path": "core_enhanced/docs/goals/core_support_node_activities/P2G_40_PHASE_PLAN_002.json",
+    "sha256": "d5afea1673f10b0e6d157b6e9b359b9ada9c7e6280710c8e30c2b76623ed5b00"
+  },
+  "bound_final_policy_freeze": {
+    "ref": "FPF-CSNA-001",
+    "path": "core_enhanced/docs/goals/core_support_node_activities/P2G_30_FREEZE_001.json",
+    "sha256": "56dc6e84914daee72d23195da5d1ab9c2dc610f54e5ac16ff454fcba43f1eaf3"
+  },
+  "validator": {
+    "method_version": "p2g40-receipt-validator/1.2.0",
+    "invocation": "node core_enhanced/docs/tools/validate_p2g40_receipt.mjs --plan <plan> --freeze <freeze> --receipt <receipt>",
+    "methods": [
+      "sha256sum exact-input binding",
+      "stable selector set comparison",
+      "Tarjan SCC and atomic-group condensation audit",
+      "final-execution-node cardinality comparison",
+      "phase/audit/integration row cardinality comparison"
+    ]
+  },
+  "freeze_prerequisite_repair_basis_exact_match": {
+    "result": "passed",
+    "working_revision_ref": "WR-CSNA-004",
+    "review_batch_ref": "RB-CSNA-001",
+    "reviewed_source_basis_ref": "RSB-CSNA-001",
+    "code_review_binding_count": 5,
+    "bound_final_policy_freeze_ref": "FPF-CSNA-001",
+    "applicable_p2g40_obligation_key_count": 0,
+    "resolution_record_ref_count": 0,
+    "obligation_supersession_record_ref_count": 0
+  },
+  "selector_resolution": {
+    "result": "passed",
+    "resolved_unique_count": 5,
+    "missing_count": 0,
+    "ambiguous_count": 0,
+    "extra_count": 0,
+    "exact_resolution": [
+      {
+        "element_id": "PE-CSNA-AUTHOR",
+        "policy_element_revision_ref": "PER-CSNA-AUTHOR-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CSNA-G23",
+        "policy_element_revision_ref": "PER-CSNA-G23-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CSNA-G24",
+        "policy_element_revision_ref": "PER-CSNA-G24-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CSNA-G25",
+        "policy_element_revision_ref": "PER-CSNA-G25-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CSNA-STORE",
+        "policy_element_revision_ref": "PER-CSNA-STORE-REVIEWED-001"
+      }
+    ]
+  },
+  "primary_phase_coverage": {
+    "result": "passed",
+    "covered_count": 5,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0,
+    "assignments": [
+      {
+        "element_id": "PE-CSNA-G23",
+        "phase_id": "PHASE-CSNA-01"
+      },
+      {
+        "element_id": "PE-CSNA-G24",
+        "phase_id": "PHASE-CSNA-01"
+      },
+      {
+        "element_id": "PE-CSNA-G25",
+        "phase_id": "PHASE-CSNA-01"
+      },
+      {
+        "element_id": "PE-CSNA-STORE",
+        "phase_id": "PHASE-CSNA-01"
+      },
+      {
+        "element_id": "PE-CSNA-AUTHOR",
+        "phase_id": "PHASE-CSNA-01"
+      }
+    ]
+  },
+  "work_package_atomic_group_partition": {
+    "result": "passed",
+    "work_package_count": 6,
+    "atomic_group_count": 1,
+    "atomic_group_member_count": 3,
+    "standalone_work_package_count": 3,
+    "missing_count": 0,
+    "duplicate_or_overlap_count": 0,
+    "atomic_groups": {
+      "AG-CSNA-RUN": [
+        "WP-CSNA-SHOP",
+        "WP-CSNA-STORE",
+        "WP-CSNA-PUBLIC"
+      ]
+    },
+    "standalone_work_packages": [
+      "WP-CSNA-EVENT",
+      "WP-CSNA-CONSUMABLE",
+      "WP-CSNA-VERIFY"
+    ]
+  },
+  "dependency_graph": {
+    "result": "passed",
+    "work_package_node_count": 6,
+    "edge_count": 9,
+    "cyclic_scc_count": 1,
+    "cyclic_scc_disposition_count": 1,
+    "cyclic_sccs": [
+      [
+        "WP-CSNA-PUBLIC",
+        "WP-CSNA-SHOP",
+        "WP-CSNA-STORE"
+      ]
+    ],
+    "final_execution_node_count": 4,
+    "condensation_edge_count": 3,
+    "condensation_acyclic": true
+  },
+  "final_execution_node_to_phase_cardinality": {
+    "result": "passed",
+    "final_execution_node_count": 4,
+    "assigned_once_count": 4,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "ordered_phase_count": 1,
+    "assignment": {
+      "AG-CSNA-RUN": "PHASE-CSNA-01",
+      "WP-CSNA-EVENT": "PHASE-CSNA-01",
+      "WP-CSNA-CONSUMABLE": "PHASE-CSNA-01",
+      "WP-CSNA-VERIFY": "PHASE-CSNA-01"
+    }
+  },
+  "intermediate_state_audit_row_completeness": {
+    "result": "passed",
+    "ordered_phase_count": 1,
+    "audit_row_count": 1,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0
+  },
+  "parallelization_evidence_check": {
+    "result": "not_claimed",
+    "plan_disposition": "none approved",
+    "approved_pair_count": 0
+  },
+  "integration_validation_ownership_coverage": {
+    "result": "passed",
+    "required_acceptance_count": 5,
+    "mapped_count": 5,
+    "assigned_execution_node_count": 5,
+    "existing_read_only_count": 0,
+    "audit_local_read_only_count": 0,
+    "missing_owner_count": 0,
+    "invalid_seam_disposition_count": 0
+  },
+  "goal_structure_fact_check": {
+    "result": "passed",
+    "ordered_phase_count": 1,
+    "expected": "single_phase",
+    "actual": "single_phase"
+  },
+  "failure_summary": [],
+  "overall_result": "passed",
+  "structural_input_evidence": {
+    "scope": "references, coverage, graph, validation ownership; semantic review remains separate",
+    "exact_freeze_ref": {
+      "Artifact Type": "Final Policy Freeze",
+      "Artifact ID": "FPF-CSNA-001",
+      "Content Digest": "sha256:0c01ece127ced2dbcacc591b9c823d571343059a416006db576c2a737ce06699"
+    },
+    "exact_plan_ref": {
+      "Artifact Type": "Phase Plan",
+      "Artifact ID": "PP-CSNA-002",
+      "Content Digest": "sha256:f1de57f650b565850bfcc47d7b8108752f5f84083e8e44de6c8438ad53c56897"
+    },
+    "resolved_artifact_sources": [
+      {
+        "path": "core_enhanced/docs/goals/core_support_node_activities/P2G_00_INITIAL_001.json",
+        "sha256": "83c4756ead1b6aace5faa358edb3a01a3d495f75c7ec12aa4065c79c66236c94"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_support_node_activities/P2G_10_DECISIONS_001.json",
+        "sha256": "320fa11a683c7c3dcef2d3b1aae066b1bc922c1265e3371bb17297f155e1f77c"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_support_node_activities/P2G_10_OPEN_001.json",
+        "sha256": "4b66a89450cae0a949f8358efe3162fc757669ff7ed093cc27c50f0c68a348f6"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_support_node_activities/P2G_20_REVIEW_001.json",
+        "sha256": "beae47b0e9388c0d1a72f7ff38a5ea557c9b369bd5d339b02a50c4f1915728dc"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_support_node_activities/P2G_20_SOURCE_PLAN_001.json",
+        "sha256": "544e9b6cf98a4f550b1886b93cfd2d8b02b2e858e5f4348400c6f9740d40ce13"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_support_node_activities/P2G_30_FREEZE_001.json",
+        "sha256": "56dc6e84914daee72d23195da5d1ab9c2dc610f54e5ac16ff454fcba43f1eaf3"
+      }
+    ]
+  }
+}

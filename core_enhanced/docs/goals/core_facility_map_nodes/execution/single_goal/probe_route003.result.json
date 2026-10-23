@@ -1,0 +1,14 @@
+{
+  "command": [
+    "env",
+    "U13_PROBE_INPUTS=/mnt/f/work/simulator/core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/test_parts/public_inputs002",
+    "U13_COMMAND_TRACE=/tmp/u13_local_evidence004/route_commands.jsonl",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/artifacts/probe008/u13_facility_consumer",
+    "route",
+    "/tmp/u13_local_evidence004/route"
+  ],
+  "exit_code": 0,
+  "seconds": 3.3883831600032863,
+  "stdout": "probe_route003.stdout.log",
+  "stderr": "probe_route003.stderr.log"
+}

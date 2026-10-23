@@ -44,6 +44,7 @@ impl BattleCore {
                     && effective_basic_heal_amount(source).is_some()
                     && target.is_active()
                     && target.role != crate::game::battle::types::BattleUnitRole::IndependentWall
+                    && !self.stress_protected_target(target.instance_id)
                     && source.owner == target.owner
                     && target.stats.current_health < target.stats.max_health
                     && self.is_basic_attack_target_in_range(actor, target.instance_id)
@@ -85,7 +86,7 @@ impl BattleCore {
     ) {
         let source = self.runtime_fact_source.clone();
         let valid = self.use_attack_can_execute(&source)
-            && !self.channel_active(actor)
+            && !self.channel_pauses_basic(actor)
             && self
                 .active_hard_cc_release_time_ms(actor, time_ms)
                 .is_none()

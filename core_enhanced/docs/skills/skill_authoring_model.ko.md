@@ -27,6 +27,7 @@
 아래 구성·타입 이름·예시는 이 방향을 구체화한 **설계안**이다. 사용자 합의와 같은 지위로 자동 승격하지 않는다.
 현재 schema에서 실행 가능한 RON이라고 주장하지 않으며, 기존 동결 Plan을 이 문서로 덮어쓰지 않는다.
 기술 구조는 구현 기준 후보로 제시하고, 원문 미정 gameplay는 §10에서 따로 관리한다.
+후반의 U07·[U09 작성 포트](#u09-구조-유물-작성-포트)는 구현된 기능의 별도 참조다. §1–12의 설계 예시와 구분한다.
 
 입력은 [콘텐츠 원문](abnormality_skill_fragments_design_notes.md)과
 [전체 콘텐츠 검토·공개 범위 합의](../goals/content_authoring_value_expressions_reassessment/execution/single_goal/handoffs/AUTHORING_SYSTEM_CONTENT_REVIEW_20260927.ko.md)다.
@@ -808,3 +809,241 @@ wall HP를 사용한다. 산출 0·overflow·비용 후 HP0은 거절한다. 비
 녹아내리는 사랑 선택형 보상, 전용 장비 전체와 개별 최종보스 구현을 지원한다고 뜻하지 않는다.
 초기 수치의 위임 근거·제한은 [U07 정책](../goals/core_independent_objects/WORKING_POLICY.ko.md), 실제 실행 근거는
 [U07 검증 기록](../goals/core_independent_objects/execution/single_goal/EXPERIMENTS.md)을 따른다.
+
+## U09 구조 유물 작성 포트
+
+이 절은 현재 Core의 작성 schema와 공개 소비 경계를 설명한다. 유물의 장착·활성·침식 정책은
+[유물 규칙](../game_rules/relics.md)이 소유한다. 아래 RON은 `RelicDefinition.rules`의 원소 예시이며,
+유물의 필수 정의 필드와 실제 provider/skill/action을 포함한 콘텐츠 팩 안에서 검증해야 한다.
+대표 시험의 피해 40→75, 개인 보호량 450·825 같은 수치는 공식 콘텐츠 밸런스가 아니다.
+이 참조는 U09 Goal 전체의 검증·최종 완료 판정도 대신하지 않는다.
+
+### 규칙·선택·활성
+
+[`RelicDefinition`](../../src/game/data/relic_data.rs)의 기존 `effects`는 U08 피해 증폭이며,
+`rules`는 구조 유물 규칙이다. 침식형의 `corruption.rules`는 그 사본의 Corrupt 상태에서 사용한다.
+정의·rule·grant·recipe의 미지 필드는 거절하며, ID·태그·참조·단위·합성 범위와 실제 runtime capability를
+publication에서 검증한다. Rule ID는 정의 안에서, grant의 effect/step ID는 각 로컬 범위에서 유일해야 한다.
+
+[`RelicRuleDef`](../../src/game/relic/structural/authoring.rs)는 `id`, `selector`, `when`, `apply`로 구성한다.
+생략한 selector는 제한 없는 선택, 생략한 when은 `Always`다.
+`selector.provider`의 `equipment_id`·`fragment_id`·`form_id`와 `selector.effect`의
+`all_tags`·`op`·`has_property`는 같은 실제 provider/effect에 대한 AND 조건이다.
+`form_id`에는 정확한 `fragment_id`도 필요하며 일반 태그로 파편·장비·form 지정 조건을 대체할 수 없다.
+조건은 `Always`, `SameEffect(...)`, `Exists(...)`, `All([...])`, `Any([...])`, `Not(...)`다.
+`Exists`는 현재 구성의 존재하는 효과를 읽고, `SameEffect`는 그 규칙이 선택한 효과를 읽는다.
+
+원래 효과와 무조건 grant에서 시작하여 새 태그·속성으로 활성 조건을 다시 판정한다.
+시작점 없는 양의 순환은 스스로 활성화하지 않는다. 음의 조건이나 구조 속성 의존성에 분층할 수 없는
+순환이 있으면 typed 오류로 거절한다. 슬롯 순서로 활성 결과를 결정하거나 부정 조건을 무시하지 않는다.
+실제 장착 가능한 장비 조합과 합법 form을 함께 검증하며 서로 같이 장착할 수 없는 provider를 합치지 않는다.
+
+### Typed Edit와 capability
+
+`apply: Edit(property: ..., operation: ...)`는 `Add(TypedRelicValue)`,
+`Scale(increment_percent: ...)`, `Replace(TypedRelicValue)`를 사용한다.
+서로 다른 `Replace` 값은 충돌이며 동일한 값은 허용한다. Replace 또는 원래 값을 기준으로 Add를 합산한 뒤
+Scale 증가율을 합산하여 `(base + add) × (100 + scale) / 100`을 checked 정수 연산으로 적용한다.
+단위 불일치·overflow·음수 배율·consumer 범위 초과는 오류이며 묵시적으로 clamp하지 않는다.
+
+현재 공개 [`structural_capabilities()`](../../src/game/relic/structural/capabilities.rs)는 다음과 같다.
+
+| op | property | 단위와 consumer 범위 |
+| --- | --- | --- |
+| Damage | DamageAmount | `Hp`, 0–4,294,967,295 |
+| Damage | DamageFootprint | `TilePattern`, numeric Edit 없이 Recipe만 사용 |
+| PersonalShieldGrant | PersonalShieldInitialAmount | `Hp`, 1–4,294,967,295 |
+| PersonalShieldGrant·ChannelAura | SupportAreaRadius | `DataUnits`, 1–4,294,967,295 |
+| ChannelAura | RegularBasicDamagePercent | `PercentPoints`, 0–10,000 |
+| ChannelAura | RegularBasicSpeedPoints | `SpeedPoints`, 0–10,000 |
+
+Heal·HealthCost grant가 있다고 임의 Heal 속성·장비 내부 bonus·subscriber를 Edit할 권한이 생기지 않는다.
+피해 표현식은 기존 typed 평가·narrowing을 거친 뒤 해당 효과의 구조 편집과 U08 피해 증폭을 적용한다.
+다음은 실제 외부 대표의 `hit` action에 유한 피해 효과를 더하는 rule과 그 새 태그를 편집하는 rule이다.
+
+```ron
+(id: "grant",
+ selector: (provider: (fragment_id: Some("u09_public_fragment"))),
+ apply: Grant(InlineEffects(action_id: "hit", effects: [
+     (id: "bonus", tags: ["bonus"], op: Damage(amount: 40, damage_type: True)),
+ ]))),
+(id: "bonus_add", selector: (effect: (all_tags: ["bonus"])),
+ apply: Edit(property: DamageAmount, operation: Add(Hp(10)))),
+(id: "bonus_scale", selector: (effect: (all_tags: ["bonus"])),
+ apply: Edit(property: DamageAmount, operation: Scale(increment_percent: 50))),
+```
+
+이 예시의 결과는 `(40 + 10) × 150 / 100 = 75`이며 원래 효과와 별도 identity를 유지한다.
+완전한 정의 예시는 [외부 대표 relic RON](../goals/core_relic_structural_activation/execution/single_goal/test_parts/runtime_validation001/public030/content/official/data/relics/base.ron)에 있다.
+
+### Finite Grant·개인 보호·Recipe
+
+Grant body는 `InlineEffects(action_id, effects)` 또는
+`FiniteFlow(anchor_action_id, steps, flow)`다. 기존 action anchor를 사용하며 grant가 다시 rule·subscriber·
+template를 생성하는 문법은 없다. Primitive는 `Damage`, `DamageExpr`, `Heal`, `HealExpr`,
+`HealthCost`, `PersonalShieldGrant`로 닫혀 있다. Flow도 기존 compiler의 유한 반복·대기·결과 읽기
+계약을 통과해야 한다. 생성 identity는 유물 사본·variant·rule·provider·원래 anchor·로컬 action/effect를
+구별하며 짧은 실행 alias나 DTO만으로 같은 사본을 식별하지 않는다.
+
+아래는 실제 대표의 `bite` 피해 해결 결과가 양수일 때 로컬 회복을 수행하는 FiniteFlow rule이다.
+
+```ron
+(id: "heal_child",
+ selector: (provider: (fragment_id: Some("u09_family_monk_fragment"))),
+ apply: Grant(FiniteFlow(
+     anchor_action_id: "bite",
+     steps: [(id: "heal_once", target: SelfUnit, delivery: Instant,
+              effects: [(id: "heal", op: Heal(amount: 7))])],
+     flow: Branch(
+         id: "hp_check",
+         condition: EffectCompare(node_id: "bite", effect_id: "bite_damage",
+                                  metric: HpLost, comparison: Greater, value: Hp(0)),
+         then_node: Action(id: "heal_action", step_id: "heal_once", wait: EffectsSettled),
+         else_node: Wait(id: "no_heal", duration_ms: 0),
+     ),
+ ))),
+```
+
+`PersonalShieldGrant(definition: (...))`는 `amount: AmountExpr`, 양수 `duration_ms`, `priority`,
+`recipients`를 작성한다. 수혜자는 `PlayerEmployeesAtRelease(radius_units: ...)` 또는
+`SelectedPlayerEmployeeAtRelease(authored_reach_units: ...)`이며 범위·reach는 양수다.
+AmountExpr의 기존 Snapshot/Live 시점을 유지하고 수혜자·member 집합을 원천 생성량 식으로 읽지 않는다.
+부여 원천의 amount를 한 번 평가한 뒤 선택된 각 직원에 독립된 보호량을 부여한다.
+선택형은 접수 때 고정한 실제 직원 identity와 방출 때 자격·reach를 재검증한다.
+선택적 `source_creation: Some((operations: [...] ))`는 해당 amount 뒤에 typed Add/Scale/Replace를 적용하는
+명시 작성 프로그램이며 숨겨진 장비 보호막 bonus가 아니다. 개인 보호는 별도 source/effect 그룹으로
+관리하고 기존 `RechargeShield`의 최신 보호막 선택에 합류하지 않는다.
+
+| `apply: Recipe(...)` | 현재 소비 경계 |
+| --- | --- |
+| `DamageFootprint(footprint: (...))` | 선택한 Damage 효과의 tile pattern만 바꿈. 공유 전달을 복제하거나 다른 효과 범위를 바꾸지 않음 |
+| `FixedRecipientSupport` | 기존 ChannelAura를 접수 때 선택한 자기 외 실제 직원에게 고정. 원래 data-unit reach로 자격을 검증하며 종료된 연결을 재탐색하지 않음 |
+| `RegularBasicSupport(damage_percent: ..., speed_points: ...)` | ChannelAura의 일반 기본 공격 계수. 두 값은 0–10,000이며 skill·추가 공격으로 확대하지 않음 |
+| `PersonalShieldSingle(initial_amount: (...))` | 개인 보호의 원래 reach를 유지하며 단일 직원 선택과 별도 AmountExpr로 전환. SupportAreaRadius 편집을 선택 reach 증가로 사용하지 않음 |
+
+같은 효과에 상충하는 Recipe나 한 skill의 상충하는 선택 reach는 publication에서 거절한다.
+실제 recipe RON 예시는 [대표 family RON](../goals/core_relic_structural_activation/execution/single_goal/test_parts/runtime_validation001/fixtures/family_relics.ron),
+소비 경계는 [effective lowering](../../src/game/relic/structural/execution.rs)과
+[개인 보호·고정 지원 consumer](../../src/game/battle/core/sustained/structural.rs)를 따른다.
+
+### 공개 조회·금액 투영·저장
+
+공개 Core 명령은 `RequestRelicEffectivePlan { employee_uuid }`, JSON 이름은
+`request_relic_effective_plan`이다. 실행 중인 run과 실제 직원의 현재 장착 구성을 읽으며 구조 규칙이 없으면
+`RelicEffectivePlan { result: None }`을 반환한다. 결과가 있으면 `schema_version: 1`,
+`scope: "prospective_loadout"`, `execution_status: "runtime_supported_prospective_plan"`과
+generation·employee·fingerprint·providers·Active/Pending/Dormant rule·present effects·typed properties·recipes·
+capabilities·compile_usage를 설명한다. 이 owned DTO는 prospective 설명이며 행동·자원·실행 owner를 제공하지 않는다.
+
+실제 소비 후의 authoring `preview_amount`·`explain_amount`는 저장한 불변 evaluation frame과 정확한
+source/site를 재평가하고 구조 binding 뒤 numeric binding을 적용하여 원래 소비 결과와 비교한다.
+`typed_base_amount`·`narrowed_base_amount`·trace는 원래 식의 값이며,
+`effective_relic_amount`는 두 binding 중 하나라도 있으면 기록된 amount 평가 단계의 구조→numeric 합성값을 제공한다.
+개인 보호의 후행 `source_creation` 프로그램과 수혜자별 pool 생성량까지 이 필드에 포함한다고 가정하지 않는다.
+피해의 경우에도 적의 방어·저항을 적용한 실제 HP 손실과 다르다. 아직 그 scope에서 평가하지 않은 효과는
+`unavailable`/`not_yet_evaluated`이며 현재 World를 재구성해 소비값을 만들어내지 않는다.
+구현은 [amount query](../../src/authoring/amount_query.rs)를 따른다.
+
+Checkpoint는 유물 사본·variant·장착 등 원래 run 상태를 보존하고 derived effective plan·fingerprint·
+execution template·binding owner를 저장하지 않는다. Continue는 저장된 content identity와 현재 검증 generation의
+일치를 요구한다. 같은 identity의 새 generation에서도 복원된 실제 loadout으로 plan을 다시 구성하고
+새 전투 접수 경계에 불변 owner를 결속한다. 다른 content identity는 기존 상태를 보존한 채 거절한다.
+일반 저장·rollback 계약은 [Runtime 계약](../core_runtime_contract.md#trusted-runtime-safety-profile)을 따른다.
+
+
+## U10 원인 연쇄 작성 포트
+
+기존 `RelicDefinition.rules`에 `Subscribe`, `Periodic`, `Wedge`를 작성한다. 실제 schema는
+[authoring.rs](../../src/game/relic/structural/authoring.rs), 정상 정의 예시는
+[relic_causal_examples.ron](examples/relic_causal_examples.ron)을 따른다. 예시 ID·피해량·간격은 작성 설명용이며
+공식 `깊은 쐐기` live 콘텐츠나 최종 밸런스가 아니다. 구현·시험·검토 상태는
+[U10 실행 기록](../goals/core_relic_causal_chains/execution/single_goal/EXPERIMENTS.md)에 별도로 기록한다.
+
+### 실제 사건과 selector
+
+`Subscribe((event: DamageHpLost(perspective: Dealt), source: (...), payload: ...))`는
+실제로 확정한 양수 HP 손실 fact마다 반응한다. `Dealt`는 착용자가 실제 원천 actor인 피해,
+`Taken`은 착용자가 실제 수혜 대상인 피해, `Any`는 해당 사실의 방향을 제한하지 않는다.
+한 strike의 여러 Damage segment도 각각 HP를 줄였다면 개별 fact다. Wedge의 strike 집계와 구별한다.
+0 피해·완전 흡수·무적, Heal·HealthCost는 이 사건을 만들지 않는다.
+다른 사건은 `Death`, `Kill`, `AllyDeath`이며 실제 victim·killer·살아 있는 같은 편 직원을 사용한다.
+Death payload는 사망한 owner를 원천으로 실행할 수 있고, 다른 사건의 owner 생존 검사는 기존 native 접수 경계를 따른다.
+
+`selector.provider`는 착용자의 captured prospective provider 구성에 대한 조건이다.
+`selector.effect`와 `when: SameEffect(...)`는 같은 실제 Damage fact의 원천 효과를 판정한다.
+`Subscribe.source`는 그 실제 피해의 `target: AnyDamage/SkillDamage/BasicAttackDamage`,
+`damage_type`, `all_tags`, `equipment_id`·`fragment_id`·`form_id`를 판정한다.
+한 segment의 태그와 다른 segment의 피해 종류를 합쳐 조건을 만족시키지 않는다.
+`Exists`는 owner plan의 실제 present effect 그래프를 읽는다. 파편이 없어도 기본 selector와 `Always`는 사용할 수 있다.
+
+Query의 `rules[].state`는 정적 조건이 참이면 `Active`, 실제 event predicate가 남으면
+`Pending { reason: ActualEventPredicate }`, 정적 조건이 거짓이면 기존 `Dormant` 사유를 반환한다.
+`All[false, unknown]`는 Dormant이고 `Any[true, unknown]`는 등록 가능하다. 이 설명은 미래 적중의 보증이 아니다.
+
+### 유한 payload·갈래·실제 합류
+
+`Program((steps: [...], flow: Some(...)))`은 기존 Skill/Flow/Delivery compiler를 사용한다.
+flow를 생략하면 각 step의 `EffectsSettled`를 기다리는 Sequence다. Step은 고유 `id`, `delay_ms`,
+`target`, 기존 `delivery`, 고유 effect ID·tags·typed op를 가진다. Target은 `Owner`, `EventSource`,
+`EventTarget`, `Killer`로 닫혀 있으며 원천 사실의 실제 unit을 고정한다. 없거나 사용할 수 없는 unit을
+자동 선택으로 대체하지 않는다. Delivery의 Instant·Projectile·TileArea와 명시 Flow의 유한 반복·대기는
+기존 검증과 수명 계약을 그대로 통과해야 한다.
+
+Primitive는 `Damage`, `DamageExpr`, `Heal`, `HealExpr`, `HealthCost`, `PersonalShieldGrant`,
+`ModifyResonance`, `Resources`, `ApplyBuff`다. Buff/resource 참조도 실제 catalog에서 검증한다.
+이 문법으로 새 subscription 정의나 연쇄 root 초기화 권한을 만들 수 없다.
+
+`Fork(branches: [(id: ..., program: ...), ...])`의 각 갈래는 부모의 방문 기록을 복사하고 이후 독립적으로 진행한다.
+`Join(branches: [...], then: (...))`은 작성한 각 참가자의 실제 유한 descendant가 성공적으로 끝나기를 기다린다.
+미완료 참가자의 취소는 then 성공 receipt가 아니다. 모든 성공 참가자의 방문 기록을 합집합으로 이어받아
+then을 한 번 실행한다. 같은 시각의 비참가자나 일반 Flow Parallel을 Join 참가자로 간주하지 않는다.
+branch ID `then`도 허용하며 continuation과 다른 private program/site identity를 가진다.
+
+방문 identity는 `(유물 copy_uuid, authored subscription rule.id)`다. 같은 정의의 두 사본과 같은 사본의
+서로 다른 rule은 구별한다. 다른 owner·variant·plan Arc·generation·payload 로컬 alias로 교체해도 같은
+사본의 같은 rule을 이미 방문한 연쇄가 다시 들어갈 권한은 생기지 않는다. Fork는 부모 기록을 상속하고
+Join은 실제 참가 기록만 합친다. Join 자체의 then payload 실행과 subscription gate는 별개다.
+
+### 독립 Periodic과 파생 전달
+
+`Periodic(interval_ms: 3000, payload: ...)`은 양수 간격의 owner producer다. 각 발생이 새 root이며
+producer의 owner/provider·owner-only 조건을 검사한다. 실제 triggering fact가 없으므로
+`selector.effect` 또는 `SameEffect`가 들어간 when은 중첩 Not/All/Any 안에서도 typed 작성 오류다.
+착용·형태·owner 변경과 사망·철수는 해당 producer의 queued wake를 정리한다.
+이미 접수한 child의 지연·투사체·장판·buff tick은 원래 root·방문 기록·structural/numeric owner를 보존하며,
+시간 경과나 tick 자체로 기록을 초기화하지 않는다.
+
+### Wedge와 기존 금액 단계
+
+`Wedge(increment_percent: 10)`는 명시한 `selector.effect.all_tags`와 원본 direct skill Damage site에 적용한다.
+정식 `다중타격` tag ID는 미정이며 예제 `multi_hit`도 configurable 작성 값이다. Step 개수로 태그를
+추론하거나 untagged 콘텐츠를 자동 변경하지 않는다. 태그된 한 step도 첫 타격 n=1을 확인하는 예시가 될 수 있다.
+DOT·persistent area·기본 공격·proc·유물 child·Corrosion을 태그만으로 원본 direct strike로 만들지 않는다.
+
+진행은 captured copy+rule+cast+실제 target마다 구별한다. 첫 유효 후보는 n=1이며 같은 실제 strike의
+segment는 같은 n을 사용한다. 실제 양수 HP 손실이 생긴 strike에서 한 번 확정한다. 0·무적·완전 흡수는
+n을 소비하지 않는다. 동시에 발생한 별도 strike는 각각 처리하고 새 cast는 새 진행을 사용한다.
+
+기존 U09 program은 U08 flat·percent를 이미 같은 `Add`·`Scale`에 정규화한다. 그 원래 base와
+signed typed `Replace → Add → Scale`, 범위 검사 및 마지막 한 번의 절삭을 보존한다. Wedge는
+`Scale` 비율에 `Σ(n×Wedge_percent)`를 추가하며, 기존 합성을 마친 값에 비율을 다시 곱하거나
+U08 contribution을 이중 적용하지 않는다. 예를 들어 base100, Replace80, Add-20, Scale-50과
+U08 flat20·percent25가 함께 있으면 기본 query amount는60이다. Wedge10의 실제 n1은
+`(80-20+20) × (100-50+25+10) / 100 = 68`, n2는76이다. 기존 Wedge 없는 범위 오류를
+추가 비율로 구제하지 않는다. U08 `compose_damage`의 비음수 입력 계약도 그대로 유지한다.
+Authoring `effective_relic_amount`는 기록된 구조→numeric 평가 단계의 값이며 후행 actual strike Wedge 진행·
+방어·저항·실제 HP 손실을 모두 담는 필드로 해석하지 않는다.
+
+### 원천 관찰·자원·저장
+
+반응 child의 `RuntimeFactSource.actor/cast/authored`는 새 실제 행동을 설명한다. 별도 `causal_cause`는
+원 root와 현재 triggering fact 각각의 actor·equipment·fragment·cast·authored 및 실제 killer·event target·
+owner·copy/definition/variant/rule을 설명한다. 이 immutable 관찰은 private plan·action/delivery/resource token을
+노출하거나 원 provider의 실행 권한을 복원하지 않는다. 재귀 원인 역사는 저장하지 않는다.
+`BattleCore::causal_runtime_snapshot()`은 현재 live contexts·causes·Join 참가 상태·Wedge/Periodic 수를 owned 값으로 제공한다.
+bounded event log와 optional trace의 유실은 이 실행 상태의 근거가 아니다.
+
+새 owner·queue·ancestry·Join·progress·관찰 복사는 기존 native work/clone/retained admission과 후보 rollback을 따른다.
+한도 실패를 정상 완료 receipt로 바꾸거나 공통 발동 횟수 제한·새 기본 profile을 추가하지 않는다.
+이 상태는 live transient candidate/clone 상태이며 disk checkpoint에 실행 가능한 연쇄나 Join receipt를 저장하지 않는다.
+Continue는 원래 저장된 loadout과 같은 content identity에서 derived plan을 다시 구성한다.

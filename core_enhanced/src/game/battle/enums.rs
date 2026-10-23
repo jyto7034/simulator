@@ -18,6 +18,13 @@ use super::scenario::ScenarioGroupId;
 /// `base_uuid`(메타데이터 참조용)와 혼동하지 않도록 주의하세요.
 #[derive(Debug, Clone, PartialEq)]
 pub enum BattleEvent {
+    /// Private causal program and independent periodic producer wakes.
+    CausalInvoke {
+        time_ms: u64,
+    },
+    CausalPeriodic {
+        time_ms: u64,
+    },
     SpawnGroup {
         time_ms: u64,
         group_id: ScenarioGroupId,
@@ -95,6 +102,20 @@ pub enum BattleEvent {
         cause: BattleEventCause,
     },
     /// 공명(=마나) 만땅 시 자동 시전 시작
+    TileBurstWave { time_ms: u64, id: u64 },
+    CounterGain { time_ms: u64, source: Uuid, generation: u64 },
+    ShotStockTick { time_ms:u64, source:Uuid },
+    HostileCohortTick { time_ms:u64, source:Uuid },
+    ShotFlightTick { time_ms:u64 },
+    StatusMobileTick { time_ms:u64 },
+    MobileEffectsTick { time_ms: u64 },
+    PairedAreaTick {time_ms:u64,id:u64},
+    PreparedVolleyTick {time_ms:u64,source:Uuid,generation:u64},
+    VolleyFlightTick {time_ms:u64},
+    RelationGain { time_ms: u64, source: Uuid, generation: u64 },
+    RelationActionTick { time_ms: u64, source: Uuid, generation: u64 },
+    CounterChannelTick { time_ms: u64, source: Uuid, generation: u64 },
+    PresenceTick { time_ms: u64, source: Uuid, host: UnitInstanceId, generation: u64 },
     SustainedExpiry {
         time_ms: u64,
         activation: u64,
@@ -215,6 +236,8 @@ crate::authoring::clone_shape::enum_shape!(BattleEvent {
     units: [],
     tuples: [],
     records: [
+        CausalInvoke { time_ms },
+        CausalPeriodic { time_ms },
         SpawnGroup {
             time_ms,
             group_id,
@@ -289,6 +312,20 @@ crate::authoring::clone_shape::enum_shape!(BattleEvent {
             step_id,
             cause
         },
+        TileBurstWave { time_ms, id },
+        CounterGain { time_ms, source, generation },
+        ShotStockTick { time_ms, source },
+        HostileCohortTick { time_ms, source },
+        ShotFlightTick { time_ms },
+        StatusMobileTick {time_ms},
+        MobileEffectsTick {time_ms},
+        PairedAreaTick {time_ms,id},
+        PreparedVolleyTick {time_ms,source,generation},
+        VolleyFlightTick {time_ms},
+        RelationGain { time_ms, source, generation },
+        RelationActionTick { time_ms, source, generation },
+        CounterChannelTick { time_ms, source, generation },
+        PresenceTick { time_ms, source, host, generation },
         SustainedExpiry {
             time_ms,
             activation
@@ -402,7 +439,9 @@ impl BattleEvent {
     /// 이벤트 발생 시간(ms)
     pub fn time_ms(&self) -> u64 {
         match self {
-            BattleEvent::AttackStart { time_ms, .. }
+            BattleEvent::CausalInvoke { time_ms }
+            | BattleEvent::CausalPeriodic { time_ms }
+            | BattleEvent::AttackStart { time_ms, .. }
             | BattleEvent::SpawnGroup { time_ms, .. }
             | BattleEvent::AttackResolve { time_ms, .. }
             | BattleEvent::BasicHealResolve { time_ms, .. }
@@ -411,6 +450,13 @@ impl BattleEvent {
             | BattleEvent::SkillProjectileImpact { time_ms, .. }
             | BattleEvent::SkillAreaTick { time_ms, .. }
             | BattleEvent::SkillAreaExpire { time_ms, .. }
+            | BattleEvent::ShotStockTick {time_ms,..} | BattleEvent::HostileCohortTick {time_ms,..} | BattleEvent::ShotFlightTick {time_ms} | BattleEvent::StatusMobileTick {time_ms} | BattleEvent::MobileEffectsTick {time_ms} | BattleEvent::PairedAreaTick {time_ms,..} | BattleEvent::PreparedVolleyTick {time_ms,..} | BattleEvent::VolleyFlightTick {time_ms}
+            | BattleEvent::RelationGain { time_ms, .. }
+            | BattleEvent::RelationActionTick { time_ms, .. }
+            | BattleEvent::CounterGain { time_ms, .. }
+            | BattleEvent::CounterChannelTick { time_ms, .. }
+            | BattleEvent::TileBurstWave { time_ms, .. }
+            | BattleEvent::PresenceTick { time_ms, .. }
             | BattleEvent::SustainedExpiry { time_ms, .. }
             | BattleEvent::SkillFlowWake { time_ms, .. }
             | BattleEvent::CorrosionBoundary { time_ms }
@@ -439,6 +485,14 @@ impl BattleEvent {
         match self {
             // Scenario spawns must materialize before same-timestamp attacks,
             // casts, or movement ticks can observe the board.
+            BattleEvent::PairedAreaTick {..} | BattleEvent::PreparedVolleyTick {..} => 1,
+            BattleEvent::VolleyFlightTick {..} | BattleEvent::ShotFlightTick {..} => 2,
+            BattleEvent::ShotStockTick {..} => 6,
+            BattleEvent::HostileCohortTick {..} => 22,
+            BattleEvent::StatusMobileTick {..} => 25,
+            BattleEvent::MobileEffectsTick {..} => 24,
+            BattleEvent::CausalInvoke { .. } => 20,
+            BattleEvent::CausalPeriodic { .. } => 21,
             BattleEvent::SpawnGroup { .. } => 0,
             // Projectile advances first so collision impacts are resolved before new actions.
             BattleEvent::BasicAttackProjectileAdvance { .. } => 1,
@@ -466,6 +520,7 @@ impl BattleEvent {
             // Boss Task checks the same absolute timeout boundary.
             BattleEvent::BossRuntimeWake { .. } => 17,
             BattleEvent::BossSummonWake { .. } => 18,
+            BattleEvent::RelationGain { .. } | BattleEvent::RelationActionTick { .. } | BattleEvent::CounterGain { .. } | BattleEvent::CounterChannelTick { .. } | BattleEvent::TileBurstWave { .. } | BattleEvent::PresenceTick { .. } => 6,
             BattleEvent::SustainedExpiry { .. } => 0,
             BattleEvent::SkillFlowWake { .. } => 16,
             BattleEvent::CorrosionBoundary { .. } => 19,
@@ -497,6 +552,7 @@ impl BattleEvent {
             BattleEvent::RestTick { .. } => 13,
             BattleEvent::ForcedDefenseEnd { .. } => 27,
             BattleEvent::IndependentObjectExpiry { .. } => 28,
+            BattleEvent::StatusMobileTick {..} | BattleEvent::MobileEffectsTick {..} | BattleEvent::PairedAreaTick {..} | BattleEvent::PreparedVolleyTick {..} | BattleEvent::VolleyFlightTick {..} | BattleEvent::ShotFlightTick {..} | BattleEvent::ShotStockTick {..} | BattleEvent::HostileCohortTick {..} | BattleEvent::RelationGain { .. } | BattleEvent::RelationActionTick { .. } | BattleEvent::CounterGain { .. } | BattleEvent::CounterChannelTick { .. } | BattleEvent::TileBurstWave { .. } | BattleEvent::PresenceTick { .. } => 32,
             BattleEvent::SustainedExpiry { .. } => 24,
             BattleEvent::SkillFlowWake { .. } => 23,
             BattleEvent::CorrosionBoundary { .. } => 22,
@@ -509,6 +565,8 @@ impl BattleEvent {
             BattleEvent::BossRuntimeWake { .. } => 18,
             BattleEvent::BossSummonWake { .. } => 19,
             BattleEvent::WaveTriggerWake { .. } => 20,
+            BattleEvent::CausalInvoke { .. } => 29,
+            BattleEvent::CausalPeriodic { .. } => 30,
         }
     }
 
@@ -871,6 +929,12 @@ mod tests {
             fact_source: Default::default(),
             skill_cast_source: None,
             value_expr_capture: None,
+            prepared_basic: None,
+            weapon_growth: None,
+            presence_capture: None,
+            reactive_capture: None,
+            mobile_capture: None,
+            weapon_mark_capture: None,
             source_id,
             source_side: Side::Player,
             source_attack: 10,

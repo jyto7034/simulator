@@ -1,0 +1,14 @@
+[
+  {
+    "name": "application::fault_tests::terminal_observation_keeps_failure_work_and_lease_without_a_fake_commit_or_repeat",
+    "detail": "thread 'application::fault_tests::terminal_observation_keeps_failure_work_and_lease_without_a_fake_commit_or_repeat' (1213383) panicked at core_enhanced/src/application/fault_tests.rs:96:56:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: BattleRuntimeFault, code: \"battle_runtime_work_limit\", details: ApplicationDocument(Object {\"code\": String(\"work_limit\"), \"limit\": Number(1000), \"requested\": Number(1084), \"site\": String(\"battle_entry_snapshot_owner\")}) }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+  },
+  {
+    "name": "runtime_measurement::playback::tests::cmrp_script_preserved_u07_actor_trap_wall_reach_normal_public_combat",
+    "detail": "thread 'runtime_measurement::playback::tests::cmrp_script_preserved_u07_actor_trap_wall_reach_normal_public_combat' (1213557) panicked at game_server/src/runtime_measurement/playback.rs:1088:14:\ncalled `Result::unwrap()` on an `Err` value: LiveRonError { code: \"content_contract_unsupported\", phase: Structure, source_file: \"official/pack.ron\", domain: \"pack_manifest\", object_id: Some(\"official\"), action_id: None, effect_id: None, field_path: Some(\"contract\"), cause: \"only the current complete content contract is supported\", related_sources: [], pack_id: Some(\"official\"), catalog_kind: None, definition_kind: None, position: None, parser_reason: None, expected: Some(Object {\"authoring\": Number(1), \"catalog_schema\": Number(6), \"execution\": Number(3), \"fingerprint\": Number(1), \"pack_format\": Number(1)}), actual: Some(Object {\"authoring\": Number(1), \"catalog_schema\": Number(5), \"execution\": Number(2), \"fingerprint\": Number(1), \"pack_format\": Number(1)}) }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+  },
+  {
+    "name": "runtime_measurement::playback::tests::cmrp_playback_normal_external_combat_modes_keep_typed_results_and_gameplay",
+    "detail": "thread 'runtime_measurement::playback::tests::cmrp_playback_normal_external_combat_modes_keep_typed_results_and_gameplay' (1213556) panicked at game_server/src/runtime_measurement/playback.rs:1018:58:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }"
+  }
+]

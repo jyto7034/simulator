@@ -1,0 +1,569 @@
+{
+  "goal": "GOAL-CGMV-01",
+  "implementation_self_validation": "complete",
+  "goal_complete": false,
+  "acceptance": [
+    {
+      "id": "A01",
+      "requirement": "Weapon-only validated recipes; checked max and preview/execution parity",
+      "disposition": "satisfied",
+      "evidence": [
+        "runs/focused005.log",
+        "runs/authoring001/RESULT.json"
+      ],
+      "oracle": "u15_refund_overflow_and_weapon_maximum_refuse_without_partial_destruction"
+    },
+    {
+      "id": "A02",
+      "requirement": "Aggregate recipe amounts and atomic currency/material/copy payment",
+      "disposition": "satisfied",
+      "evidence": [
+        "runs/focused005.log",
+        "runs/normal_host001/phase2/RESULT.json",
+        "runs/authoring001/RESULT.json"
+      ],
+      "oracle": "u15_currency_shortage_refuses_before_any_material_or_copy_changes; allocation negatives"
+    },
+    {
+      "id": "A03",
+      "requirement": "Unlocked form selection, transfer and repeated awaken preserve paid ledger; free grants empty",
+      "disposition": "satisfied",
+      "evidence": [
+        "runs/focused005.log"
+      ],
+      "oracle": "u15_selected_payment_query_is_read_only_and_matches_actual_paid_sources; existing fragment grant tests in core002"
+    },
+    {
+      "id": "A04",
+      "requirement": "Multiple maintenance operations charge entry once; no Safezone maintenance",
+      "disposition": "satisfied",
+      "evidence": [
+        "runs/focused005.log",
+        "runs/normal_host001/phase2/RESULT.json"
+      ],
+      "oracle": "u15_mixed_payment_refund_and_repeated_savepoint_restore_move_all_roots_together; Core existing safezone/capability regressions"
+    },
+    {
+      "id": "A05",
+      "requirement": "Aggregate paid quantities then floor50%; recipe changes do not reprice old investment",
+      "disposition": "satisfied",
+      "evidence": [
+        "runs/focused005.log",
+        "runs/normal_host001/phase5/RESULT.json"
+      ],
+      "oracle": "paid dust9 refunds4; parts5/3 refund2/1; returned copy after recipe change fixture"
+    },
+    {
+      "id": "A06",
+      "requirement": "Free growth has zero paid refund; copy/owner isolation and repeated destroy refusal",
+      "disposition": "satisfied",
+      "evidence": [
+        "runs/focused005.log",
+        "runs/normal_host001/phase5/RESULT.json"
+      ],
+      "oracle": "u15_weapon_paid_totals_confirmation_and_free_growth_are_distinct; transfer/selected form ledger equality"
+    },
+    {
+      "id": "A07",
+      "requirement": "Equipped destruction quote requires confirmation; atomic unbind/remove/base+refund and no duplicate",
+      "disposition": "satisfied",
+      "evidence": [
+        "runs/focused005.log",
+        "runs/normal_host001/phase3/RESULT.json",
+        "runs/normal_host001/phase5/RESULT.json"
+      ],
+      "oracle": "both equipment and fragment owner/public negatives"
+    },
+    {
+      "id": "A08",
+      "requirement": "Returned weapon resets level and investment; same returned fragment retains actual paid ledger",
+      "disposition": "satisfied",
+      "evidence": [
+        "runs/focused005.log",
+        "runs/normal_host001/phase4/RESULT.json",
+        "runs/normal_host001/phase5/RESULT.json"
+      ],
+      "oracle": "public Return/reloan identity and refund assertions"
+    },
+    {
+      "id": "A09",
+      "requirement": "Explicit carried/warehouse allocations; no automatic fallback; exact rows",
+      "disposition": "satisfied",
+      "evidence": [
+        "runs/focused005.log",
+        "runs/normal_host001/phase2/RESULT.json"
+      ],
+      "oracle": "duplicate, wrong total, insufficient source and legacy carried-only refusal"
+    },
+    {
+      "id": "A10",
+      "requirement": "Read-only exact-source quote and investment/refund projections match actual execution",
+      "disposition": "satisfied",
+      "evidence": [
+        "runs/focused005.log",
+        "runs/normal_host001/phase2/RESULT.json",
+        "runs/normal_host001/phase3/RESULT.json"
+      ],
+      "oracle": "u15_selected_payment_query_is_read_only_and_matches_actual_paid_sources"
+    },
+    {
+      "id": "A11",
+      "requirement": "Explicit return part total0..2 and catalyst0..1; no dust and no auto selection",
+      "disposition": "satisfied",
+      "evidence": [
+        "runs/focused005.log",
+        "runs/normal_host001/phase1/RESULT.json",
+        "runs/normal_host001/phase7/RESULT.json"
+      ],
+      "oracle": "host pre-return aggregate3/catalyst2/dust/duplicate reject; empty return leaves warehouse unchanged"
+    },
+    {
+      "id": "A12",
+      "requirement": "Abandon keeps spent warehouse debits settled, untouched vault stays; carried refund not auto-stored",
+      "disposition": "satisfied",
+      "evidence": [
+        "runs/focused005.log",
+        "runs/normal_host001/phase6/RESULT.json",
+        "runs/normal_host001/phase7/RESULT.json"
+      ],
+      "oracle": "phase6 actual saved completed branch; phase7 independent actual branch"
+    },
+    {
+      "id": "A13",
+      "requirement": "Shared catalyst payment/quote/rewind port, without U17 incubation",
+      "disposition": "satisfied",
+      "evidence": [
+        "runs/focused005.log"
+      ],
+      "oracle": "u15_catalyst_common_payment_quote_commit_and_rewind_share_sources_without_incubation; owner seam only"
+    },
+    {
+      "id": "A14",
+      "requirement": "SavePoint restores paid result and consumption together, preserving precheckpoint spending",
+      "disposition": "satisfied",
+      "evidence": [
+        "runs/focused005.log",
+        "runs/normal_host001/phase3/RESULT.json"
+      ],
+      "oracle": "repeat3 owner loads and public load/redo; u15_restore_keeps_precheckpoint_warehouse_spend_and_first_copy_investment"
+    },
+    {
+      "id": "A15",
+      "requirement": "Fresh unfinished Continue rewinds; fresh completed Continue keeps transactions",
+      "disposition": "satisfied",
+      "evidence": [
+        "runs/normal_host001/phase3/RESULT.json",
+        "runs/normal_host001/phase4/RESULT.json"
+      ],
+      "oracle": "separate OS processes with actual active/profile stores"
+    },
+    {
+      "id": "A16",
+      "requirement": "Restore adjusts expedition debit difference; unrelated vault assets/knowledge survive",
+      "disposition": "satisfied",
+      "evidence": [
+        "runs/focused005.log",
+        "runs/normal_host001/phase3/RESULT.json",
+        "runs/normal_host001/phase4/RESULT.json"
+      ],
+      "oracle": "state.rs reconcile_warehouse; active_run.rs separate exactly-one-transaction lifecycle token"
+    },
+    {
+      "id": "A17",
+      "requirement": "Real filesystem failure is atomic and retry commits once",
+      "disposition": "satisfied",
+      "evidence": [
+        "runs/normal_host001/phase2/IO_FAILURE.json",
+        "runs/normal_host001/phase3/IO_FAILURE.json",
+        "runs/normal_host001/phase4/IO_FAILURE.json"
+      ],
+      "oracle": "mixed bloom / SavePoint restore / Return journal temp directory failure; all memory and disk unchanged before retry"
+    },
+    {
+      "id": "A18",
+      "requirement": "Original real version5 profile explicitly rejected, all original bytes retained",
+      "disposition": "satisfied",
+      "evidence": [
+        "runs/old_save_reject002/RESULT.json"
+      ],
+      "oracle": "actual U14 host saved originals copied without manufacturing payload or checksum"
+    },
+    {
+      "id": "A19",
+      "requirement": "Supported external multi-part/duplicate/currency RON succeeds; invalid authored boundaries reject",
+      "disposition": "satisfied",
+      "evidence": [
+        "runs/authoring001/RESULT.json",
+        "runs/normal_host001/phase2/RESULT.json"
+      ],
+      "oracle": "valid1 and invalid9 public packaging/loading cases"
+    },
+    {
+      "id": "A20",
+      "requirement": "Public command, query, normal admission, paired stores and fresh processes agree",
+      "disposition": "satisfied",
+      "evidence": [
+        "runs/public_phase1_002/RESULT.json",
+        "runs/public_phase2_002/RESULT.json",
+        "runs/public_phase3_002/RESULT.json",
+        "runs/public_phase4_002/RESULT.json",
+        "runs/public_phase5_003/RESULT.json",
+        "runs/public_phase6_003/RESULT.json",
+        "runs/normal_host001/RESULT.json"
+      ],
+      "oracle": "six public diagnostic processes plus seven actual default-host processes;165 host commands"
+    },
+    {
+      "id": "A21",
+      "requirement": "Actual timing/heap/release and equal-workload before/after, native counters separately reviewed",
+      "disposition": "satisfied",
+      "evidence": [
+        "runs/current_cost001/summary.json",
+        "runs/paired_cost001/RESULT.json",
+        "runs/paid_cost001/RESULT.json",
+        "NORMAL_LIMIT_REVIEW_003.json",
+        "runs/g11-native001.log"
+      ],
+      "oracle": "9 current +18 paired +6 paid; no automatic cap increase; memory recovery exact; diagnostic not final SLO"
+    }
+  ],
+  "dimensions": [
+    {
+      "id": "success",
+      "disposition": "satisfied",
+      "acceptance_refs": [
+        "A01",
+        "A08",
+        "A20"
+      ],
+      "evidence": [
+        "runs/focused005.log",
+        "runs/authoring001/RESULT.json",
+        "runs/focused005.log",
+        "runs/normal_host001/phase4/RESULT.json",
+        "runs/normal_host001/phase5/RESULT.json",
+        "runs/public_phase1_002/RESULT.json",
+        "runs/public_phase2_002/RESULT.json",
+        "runs/public_phase3_002/RESULT.json",
+        "runs/public_phase4_002/RESULT.json",
+        "runs/public_phase5_003/RESULT.json",
+        "runs/public_phase6_003/RESULT.json",
+        "runs/normal_host001/RESULT.json"
+      ]
+    },
+    {
+      "id": "invalid_input",
+      "disposition": "satisfied",
+      "acceptance_refs": [
+        "A01",
+        "A09",
+        "A11",
+        "A19"
+      ],
+      "evidence": [
+        "runs/focused005.log",
+        "runs/authoring001/RESULT.json",
+        "runs/focused005.log",
+        "runs/normal_host001/phase2/RESULT.json",
+        "runs/focused005.log",
+        "runs/normal_host001/phase1/RESULT.json",
+        "runs/normal_host001/phase7/RESULT.json",
+        "runs/authoring001/RESULT.json",
+        "runs/normal_host001/phase2/RESULT.json"
+      ]
+    },
+    {
+      "id": "failure_rollback",
+      "disposition": "satisfied",
+      "acceptance_refs": [
+        "A02",
+        "A07",
+        "A17"
+      ],
+      "evidence": [
+        "runs/focused005.log",
+        "runs/normal_host001/phase2/RESULT.json",
+        "runs/authoring001/RESULT.json",
+        "runs/focused005.log",
+        "runs/normal_host001/phase3/RESULT.json",
+        "runs/normal_host001/phase5/RESULT.json",
+        "runs/normal_host001/phase2/IO_FAILURE.json",
+        "runs/normal_host001/phase3/IO_FAILURE.json",
+        "runs/normal_host001/phase4/IO_FAILURE.json"
+      ]
+    },
+    {
+      "id": "retry_idempotency",
+      "disposition": "satisfied",
+      "acceptance_refs": [
+        "A03",
+        "A05",
+        "A06",
+        "A14",
+        "A17"
+      ],
+      "evidence": [
+        "runs/focused005.log",
+        "runs/focused005.log",
+        "runs/normal_host001/phase5/RESULT.json",
+        "runs/focused005.log",
+        "runs/normal_host001/phase5/RESULT.json",
+        "runs/focused005.log",
+        "runs/normal_host001/phase3/RESULT.json",
+        "runs/normal_host001/phase2/IO_FAILURE.json",
+        "runs/normal_host001/phase3/IO_FAILURE.json",
+        "runs/normal_host001/phase4/IO_FAILURE.json"
+      ]
+    },
+    {
+      "id": "ordering_concurrency",
+      "disposition": "satisfied",
+      "acceptance_refs": [
+        "A02",
+        "A07",
+        "A16",
+        "A17"
+      ],
+      "evidence": [
+        "runs/focused005.log",
+        "runs/normal_host001/phase2/RESULT.json",
+        "runs/authoring001/RESULT.json",
+        "runs/focused005.log",
+        "runs/normal_host001/phase3/RESULT.json",
+        "runs/normal_host001/phase5/RESULT.json",
+        "runs/focused005.log",
+        "runs/normal_host001/phase3/RESULT.json",
+        "runs/normal_host001/phase4/RESULT.json",
+        "runs/normal_host001/phase2/IO_FAILURE.json",
+        "runs/normal_host001/phase3/IO_FAILURE.json",
+        "runs/normal_host001/phase4/IO_FAILURE.json"
+      ]
+    },
+    {
+      "id": "boundary_empty_max",
+      "disposition": "satisfied",
+      "acceptance_refs": [
+        "A01",
+        "A05",
+        "A11",
+        "A21"
+      ],
+      "evidence": [
+        "runs/focused005.log",
+        "runs/authoring001/RESULT.json",
+        "runs/focused005.log",
+        "runs/normal_host001/phase5/RESULT.json",
+        "runs/focused005.log",
+        "runs/normal_host001/phase1/RESULT.json",
+        "runs/normal_host001/phase7/RESULT.json",
+        "runs/current_cost001/summary.json",
+        "runs/paired_cost001/RESULT.json",
+        "runs/paid_cost001/RESULT.json",
+        "NORMAL_LIMIT_REVIEW_003.json",
+        "runs/g11-native001.log"
+      ]
+    },
+    {
+      "id": "disconnect_restart_persistence",
+      "disposition": "satisfied",
+      "acceptance_refs": [
+        "A08",
+        "A14",
+        "A15",
+        "A18"
+      ],
+      "evidence": [
+        "runs/focused005.log",
+        "runs/normal_host001/phase4/RESULT.json",
+        "runs/normal_host001/phase5/RESULT.json",
+        "runs/focused005.log",
+        "runs/normal_host001/phase3/RESULT.json",
+        "runs/normal_host001/phase3/RESULT.json",
+        "runs/normal_host001/phase4/RESULT.json",
+        "runs/old_save_reject002/RESULT.json"
+      ]
+    },
+    {
+      "id": "live_data",
+      "disposition": "satisfied",
+      "acceptance_refs": [
+        "A01",
+        "A19"
+      ],
+      "evidence": [
+        "runs/focused005.log",
+        "runs/authoring001/RESULT.json",
+        "runs/authoring001/RESULT.json",
+        "runs/normal_host001/phase2/RESULT.json"
+      ]
+    },
+    {
+      "id": "producer_consumer",
+      "disposition": "satisfied",
+      "acceptance_refs": [
+        "A10",
+        "A13",
+        "A20"
+      ],
+      "evidence": [
+        "runs/focused005.log",
+        "runs/normal_host001/phase2/RESULT.json",
+        "runs/normal_host001/phase3/RESULT.json",
+        "runs/focused005.log",
+        "runs/public_phase1_002/RESULT.json",
+        "runs/public_phase2_002/RESULT.json",
+        "runs/public_phase3_002/RESULT.json",
+        "runs/public_phase4_002/RESULT.json",
+        "runs/public_phase5_003/RESULT.json",
+        "runs/public_phase6_003/RESULT.json",
+        "runs/normal_host001/RESULT.json"
+      ]
+    },
+    {
+      "id": "legacy_fallback_absence",
+      "disposition": "satisfied",
+      "acceptance_refs": [
+        "A05",
+        "A09",
+        "A16",
+        "A18"
+      ],
+      "evidence": [
+        "runs/focused005.log",
+        "runs/normal_host001/phase5/RESULT.json",
+        "runs/focused005.log",
+        "runs/normal_host001/phase2/RESULT.json",
+        "runs/focused005.log",
+        "runs/normal_host001/phase3/RESULT.json",
+        "runs/normal_host001/phase4/RESULT.json",
+        "runs/old_save_reject002/RESULT.json"
+      ]
+    }
+  ],
+  "integration_acceptance": [
+    {
+      "id": "IVA-CGMV-G20",
+      "disposition": "satisfied",
+      "acceptance_refs": [
+        "A01",
+        "A02",
+        "A03",
+        "A04"
+      ],
+      "evidence": [
+        "runs/focused005.log",
+        "runs/authoring001/RESULT.json",
+        "runs/focused005.log",
+        "runs/normal_host001/phase2/RESULT.json",
+        "runs/authoring001/RESULT.json",
+        "runs/focused005.log",
+        "runs/focused005.log",
+        "runs/normal_host001/phase2/RESULT.json"
+      ]
+    },
+    {
+      "id": "IVA-CGMV-G21",
+      "disposition": "satisfied",
+      "acceptance_refs": [
+        "A05",
+        "A06",
+        "A07",
+        "A08"
+      ],
+      "evidence": [
+        "runs/focused005.log",
+        "runs/normal_host001/phase5/RESULT.json",
+        "runs/focused005.log",
+        "runs/normal_host001/phase5/RESULT.json",
+        "runs/focused005.log",
+        "runs/normal_host001/phase3/RESULT.json",
+        "runs/normal_host001/phase5/RESULT.json",
+        "runs/focused005.log",
+        "runs/normal_host001/phase4/RESULT.json",
+        "runs/normal_host001/phase5/RESULT.json"
+      ]
+    },
+    {
+      "id": "IVA-CGMV-G22",
+      "disposition": "satisfied",
+      "acceptance_refs": [
+        "A09",
+        "A10",
+        "A11",
+        "A12",
+        "A13"
+      ],
+      "evidence": [
+        "runs/focused005.log",
+        "runs/normal_host001/phase2/RESULT.json",
+        "runs/focused005.log",
+        "runs/normal_host001/phase2/RESULT.json",
+        "runs/normal_host001/phase3/RESULT.json",
+        "runs/focused005.log",
+        "runs/normal_host001/phase1/RESULT.json",
+        "runs/normal_host001/phase7/RESULT.json",
+        "runs/focused005.log",
+        "runs/normal_host001/phase6/RESULT.json",
+        "runs/normal_host001/phase7/RESULT.json",
+        "runs/focused005.log"
+      ]
+    },
+    {
+      "id": "IVA-CGMV-STORE",
+      "disposition": "satisfied",
+      "acceptance_refs": [
+        "A14",
+        "A15",
+        "A16",
+        "A17",
+        "A18"
+      ],
+      "evidence": [
+        "runs/focused005.log",
+        "runs/normal_host001/phase3/RESULT.json",
+        "runs/normal_host001/phase3/RESULT.json",
+        "runs/normal_host001/phase4/RESULT.json",
+        "runs/focused005.log",
+        "runs/normal_host001/phase3/RESULT.json",
+        "runs/normal_host001/phase4/RESULT.json",
+        "runs/normal_host001/phase2/IO_FAILURE.json",
+        "runs/normal_host001/phase3/IO_FAILURE.json",
+        "runs/normal_host001/phase4/IO_FAILURE.json",
+        "runs/old_save_reject002/RESULT.json"
+      ]
+    },
+    {
+      "id": "IVA-CGMV-AUTHOR",
+      "disposition": "satisfied",
+      "acceptance_refs": [
+        "A19",
+        "A20",
+        "A21"
+      ],
+      "evidence": [
+        "runs/authoring001/RESULT.json",
+        "runs/normal_host001/phase2/RESULT.json",
+        "runs/public_phase1_002/RESULT.json",
+        "runs/public_phase2_002/RESULT.json",
+        "runs/public_phase3_002/RESULT.json",
+        "runs/public_phase4_002/RESULT.json",
+        "runs/public_phase5_003/RESULT.json",
+        "runs/public_phase6_003/RESULT.json",
+        "runs/normal_host001/RESULT.json",
+        "runs/current_cost001/summary.json",
+        "runs/paired_cost001/RESULT.json",
+        "runs/paid_cost001/RESULT.json",
+        "NORMAL_LIMIT_REVIEW_003.json",
+        "runs/g11-native001.log"
+      ]
+    }
+  ],
+  "known_limits": [
+    "GEX20 completion audit not performed; Goal not Complete; U16 not started.",
+    "D02 weapon costs/modifiers are authored initial values, not completed balance.",
+    "U17 actual incubation remains out of scope; catalyst common port is owner-seam evidence.",
+    "Cost tests use finite authored fixtures and dev opt0/debug0; no release/device gameplay SLO. Native missing counters remain null, RSS auxiliary, requested allocator bytes distinct from retained accounting.",
+    "Six inherited ignored Core tests remain ignored; no single all-green full invocation is claimed; exact reuse/closure in BASELINE_REUSE.json.",
+    "External arbitrary save/checksum/memory mutation excluded by roadmap1.9; current version5 rejection uses actual historical saves."
+  ]
+}

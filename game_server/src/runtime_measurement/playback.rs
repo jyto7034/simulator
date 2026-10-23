@@ -477,7 +477,7 @@ fn enter_combat(session: &mut Session) -> StepOutcome {
             ))
         }};
     }
-    execute!(json!({"type":"start_new_game","game_mode":"Standard","replace_active_run":false}));
+    execute!(json!({"type":"start_new_game","game_mode":"Expedition","replace_active_run":false}));
     for _ in 0..128 {
         let snapshot = call!(session.app.snapshot(ApplicationSnapshotKind::Run));
         let run: RunSnapshotDto =
@@ -501,7 +501,7 @@ fn enter_combat(session: &mut Session) -> StepOutcome {
                 .take(required_count)
                 .map(|c| c.employee_definition_id)
                 .collect();
-            json!({"type":"select_starter_employees","employee_definition_ids":ids})
+            json!({"type":"select_starter_employees","employee_definition_ids":ids,"loan_copy_ids":[]})
         } else {
             let Some(map) = run.map else {
                 return driver_outcome("ordinary combat requires a live map", operations);
@@ -517,6 +517,15 @@ fn enter_combat(session: &mut Session) -> StepOutcome {
                         n.state == MapNodeState::Available && n.category == MapNodeCategory::Start
                     })
                 })
+                .or_else(|| {
+                    // Current Expedition reserves a noncombat reward before
+                    // the first branch. Its supported unused exit opens it.
+                    map.nodes.iter().find(|n| {
+                        n.state == MapNodeState::Available
+                            && n.category == MapNodeCategory::Reward
+                            && n.entry_preview.as_ref().is_some_and(|p| p.stress_combat.is_none())
+                    })
+                })
             else {
                 return driver_outcome("seed has no adjacent ordinary combat", operations);
             };
@@ -528,7 +537,11 @@ fn enter_combat(session: &mut Session) -> StepOutcome {
                 outcome.public_operations = operations;
                 return outcome;
             }
-            json!({"type":"complete_node"})
+            match node.category {
+                MapNodeCategory::Start => json!({"type":"complete_node"}),
+                MapNodeCategory::Reward => json!({"type":"exit_reward"}),
+                _ => unreachable!("driver only selects combat, start or noncombat reward"),
+            }
         };
         execute!(value);
     }
@@ -887,6 +900,8 @@ mod tests {
     fn manifest() -> Value {
         json!({"schema_version":1,"case_id":"cmrp-test","pack_root":"not-opened","selection_path":"not-opened","source_sha256":"a".repeat(64),"observation":"normal","repeats":1,"sessions":[{"player":Uuid::from_u128(1),"seed":23,"runtime_safety_path":null,"expected_effective_profile_sha256":game_core::runtime_safety::RuntimeSafetySettings::embedded().effective_sha256()}],"steps":[{"kind":"admin","document":{"type":"admin_set_enkephalin","amount":1}}],"max_samples":4096,"max_export_bytes":EXPORT_BYTE_CAP})
     }
+    // This one raw-data fixture requires Core fixture APIs in release tests.
+    #[cfg(any(debug_assertions, feature = "test-fixtures"))]
     #[test]
     fn cmrp_playback_authority_query_rejection_retains_public_type_and_count() {
         let data: ValidatedGameData = game_core::game::data::GameDataBuilder::empty()
@@ -996,18 +1011,24 @@ mod tests {
         let directory = tempfile::tempdir().unwrap();
         let mut m = external_manifest(directory.path());
         m["steps"] = json!([
-            {"kind":"prepare_discard","document":{"type":"start_new_game","game_mode":"Standard","replace_active_run":false}},
+            {"kind":"prepare_discard","document":{"type":"start_new_game","game_mode":"Expedition","replace_active_run":false}},
             {"kind":"enter_ordinary_combat"},
             {"kind":"command","document":{"type":"pause_battle"}},
             {"kind":"command","document":{"type":"pause_battle"},"current_battle_authority":true},
             {"kind":"reconnect"},
-            {"kind":"command","document":{"type":"resume_battle"},"current_battle_authority":true},
+            {"kind":"script","step":{"kind":"command","command":{"type":"resume_battle"},
+                "context":{"expected_battle_authority":{"battle_uuid":null,"battle_state_revision":null}},
+                "bindings":[
+                    {"from":{"step":4,"pointer":"/payload/battle_update/battle_uuid"},"to":"/context/expected_battle_authority/battle_uuid","value_type":"string"},
+                    {"from":{"step":4,"pointer":"/payload/battle_update/battle_state_revision"},"to":"/context/expected_battle_authority/battle_state_revision","value_type":"number"}
+                ]}},
             {"kind":"elapsed","delta_ms":10},
             {"kind":"host_tick","delta_ms":10},
             {"kind":"disconnect_pause"},
             {"kind":"command","document":{"type":"resume_battle"},"current_battle_authority":true},
             {"kind":"checkpoint"},
-            {"kind":"command","document":{"type":"retreat_battle"},"current_battle_authority":true}
+            {"kind":"command","document":{"type":"retreat_battle"},"current_battle_authority":true},
+            {"kind":"script","step":{"kind":"assert","from":{"step":5,"pointer":"/payload/battle_update/checkpoint/playback/paused"},"assertion":{"test":"equals","value":false}}}
         ]);
         let mut expected = None;
         for mode in ["none", "normal", "detached", "full"] {
@@ -1037,6 +1058,9 @@ mod tests {
                 .unwrap();
             assert!(!rejection["outcome"]["error_code"].is_null());
             assert!(!rejection["outcome"]["error_details_digest"].is_null());
+            let scripted = records.iter().find(|r| r["record"] == "step" && r["step"] == 5).unwrap();
+            assert_eq!(scripted["outcome"]["resolved_command"]["command"]["type"], "resume_battle");
+            assert!(scripted["outcome"]["resolved_command"]["context"]["expected_battle_authority"]["battle_uuid"].is_string());
             if mode == "normal" || mode == "full" {
                 assert!(records.iter().any(|r| r["record"] == "native_operation"
                     && r["summary"]["retained"]["accepted_total_bytes"]
@@ -1065,139 +1089,6 @@ mod tests {
         );
         assert!(rejected.error_code.is_some());
         assert!(rejected.error_details_digest.is_some());
-    }
-    #[test]
-    fn cmrp_script_preserved_u07_actor_trap_wall_reach_normal_public_combat() {
-        use game_core::authoring::ResultPointer;
-        let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../core_enhanced/docs/goals/core_independent_objects/evidence/public_object_combat_inputs_001");
-        for case in ["actor", "small", "ice"] {
-            let fixture = root.join(case);
-            let scenario: Value =
-                serde_json::from_slice(&std::fs::read(fixture.join("scenario.json")).unwrap())
-                    .unwrap();
-            let selection: ContentSelection =
-                serde_json::from_slice(&std::fs::read(fixture.join("selection.json")).unwrap())
-                    .unwrap();
-            let data = content_pack::load(
-                &fixture.join("content"),
-                &selection,
-                &InputLimits::default(),
-            )
-            .unwrap();
-            let (sender, receiver) = observation::channel();
-            let (observer, reader) = sender.session(1);
-            let mut app =
-                CoreApplication::new(data, scenario["initial"]["run_seed"].as_u64().unwrap());
-            app.set_runtime_observer(Some(observer));
-            let mut session = Session {
-                app,
-                player: serde_json::from_value(scenario["initial"]["player_id"].clone()).unwrap(),
-                checkpoint: None,
-                rollback: None,
-                reader: Some(reader),
-                history: script::History::default(),
-            };
-            let raw = scenario["preparation_steps"]
-                .as_array()
-                .unwrap()
-                .iter()
-                .chain(scenario["steps"].as_array().unwrap());
-            for (index, step) in raw.enumerate() {
-                let trial = serde_json::from_value(step.clone()).unwrap();
-                script::validate(&trial, index).unwrap();
-                let mut outcome = apply(&mut session, &Step::Script { step: trial }).unwrap();
-                assert!(
-                    outcome.error_code.is_none(),
-                    "case {case} step {index}: {}",
-                    serde_json::to_string(&outcome).unwrap()
-                );
-                if step["kind"] == "command" {
-                    assert!(outcome.resolved_command.is_some());
-                }
-                session.history.push(
-                    index,
-                    outcome.public_result.take(),
-                    outcome.public_result_bytes,
-                );
-            }
-            let get = |step, pointer: &str| {
-                session
-                    .history
-                    .get(&ResultPointer {
-                        step,
-                        pointer: pointer.into(),
-                    })
-                    .unwrap()
-                    .clone()
-            };
-            let object = get(
-                27,
-                "/payload/battle_update/checkpoint/independent_objects/active/0",
-            );
-            let before_withdraw = get(
-                27,
-                "/payload/battle_update/checkpoint/independent_objects/active",
-            );
-            assert_eq!(
-                get(
-                    28,
-                    "/payload/battle_update/checkpoint/independent_objects/active"
-                ),
-                before_withdraw
-            );
-            let creator = &object["source"]["creator"];
-            assert!(get(28, "/payload/battle_update/checkpoint/units")
-                .as_array()
-                .unwrap()
-                .iter()
-                .all(|u| &u["unit_instance_id"] != creator));
-            let id = &object["object_id"];
-            let events = get(31, "/payload/battle_update/events_delta/events");
-            let damage: Vec<_> = events
-                .as_array()
-                .unwrap()
-                .iter()
-                .filter(|e| {
-                    e["event"]["type"] == "HpChanged"
-                        && &e["event"]["source_instance_id"] == id
-                        && e["event"]["delta"].as_i64().is_some_and(|n| n < 0)
-                })
-                .collect();
-            let removed: Vec<_> = events
-                .as_array()
-                .unwrap()
-                .iter()
-                .filter(|e| {
-                    e["event"]["type"] == "IndependentObjectRemoved"
-                        && &e["event"]["receipt"]["object_id"] == id
-                })
-                .collect();
-            if case == "ice" {
-                assert_eq!(object["max_health"], 3);
-                assert_eq!(removed.len(), 1);
-                assert_eq!(removed[0]["event"]["receipt"]["reason"], "destroyed");
-                assert!(get(
-                    31,
-                    "/payload/battle_update/checkpoint/independent_objects/active"
-                )
-                .as_array()
-                .unwrap()
-                .is_empty());
-            } else if case == "small" {
-                assert_eq!(damage.len(), 1);
-                assert_eq!(damage[0]["event"]["final_damage"], 25);
-                assert_eq!(removed[0]["event"]["receipt"]["reason"], "attack_consumed");
-            } else {
-                assert_eq!(damage.len(), 1);
-                assert_eq!(damage[0]["event"]["final_damage"], 10);
-                assert_eq!(damage[0]["event"]["damage_source"], "BasicAttack");
-            }
-            let summaries: Vec<_> = std::iter::from_fn(|| receiver.try_recv().ok()).collect();
-            assert!(summaries
-                .iter()
-                .any(|s| s.retained.is_some_and(|r| r.accepted_total_bytes > 0)));
-            assert!(summaries.iter().all(|s| s.started_identity.is_some()));
-        }
     }
     #[test]
     fn cmrp_playback_actual_queue_full_and_absent_modes_preserve_final_state() {

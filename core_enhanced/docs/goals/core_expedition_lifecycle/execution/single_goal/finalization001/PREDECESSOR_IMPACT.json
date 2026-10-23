@@ -1,0 +1,51 @@
+{
+  "source_sha256": "e1b51302c484c16dcc1837c60ac385398460bb854f2c0708996b5b0b3fc6371e",
+  "source": {
+    "path": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/finalization001/FINAL_SOURCE_MANIFEST_001.json",
+    "bytes": 1296479,
+    "sha256": "54c4c6eff977b3eb9945a80bbbd6db978cf115a790a142c12b94ffa888506874"
+  },
+  "rows": [
+    {
+      "id": "U03",
+      "affected_contract": "exclusive prepared application draft and publication rollback",
+      "groups": [
+        "G02",
+        "G04",
+        "G05",
+        "G09",
+        "G11"
+      ],
+      "reuse": "Draft ownership architecture unchanged; current loan/grant collision, terminal and cost discard boundaries executed."
+    },
+    {
+      "id": "U04",
+      "affected_contract": "paired profile/active intent, CAS, backup and accepted recovery",
+      "groups": [
+        "G08",
+        "G09"
+      ],
+      "reuse": "Current schemas/instance/ownership were revalidated in actual fresh process crash consumers; later test-only edits do not alter persistence."
+    },
+    {
+      "id": "U07M",
+      "affected_contract": "clone shape, bounded work/retained slots, real heap and recovery",
+      "groups": [
+        "G11"
+      ],
+      "reuse": "Current expanded vault fixture12 stages x9 fresh children plus exact/short/cancel/discard/commit and final release; no production changes since measurement."
+    },
+    {
+      "id": "U11",
+      "affected_contract": "normal CoreBuildIdentity, issuer calibration/adoption/cache/required save",
+      "groups": [
+        "G10"
+      ],
+      "reuse": "Final exact worker pair and each actual host rebind supported identity; normal local/server and full60 consume current approval. Missing required and stale criterion refusals reuse unchanged producer/consumer bodies."
+    }
+  ],
+  "unrelated_dirty_preserved": [
+    "core_enhanced/docs/skills/run_relic_content_design_notes.ko.md"
+  ],
+  "independent_audit": "pending_nonparticipant_required"
+}

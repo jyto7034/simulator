@@ -1,0 +1,607 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Review Scope/Source Requirement Plan",
+        "Artifact ID": "RSP-CMVA-002",
+        "Content Digest": "sha256:b3b20dc0e9b8dd7bc375a4de487b121bf52e9d1ef1eda7b6694415dbf2371a20"
+      },
+      "payload": {
+        "Bound Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CMVA-002",
+          "Content Digest": "sha256:836ccec142fbe2c35cd99069d8ea8ffbaf900d6c6b0269806431728ab0bba4a3"
+        },
+        "Requirement Set": [
+          {
+            "Requirement ID": "RQ01",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-01-DECIDED-001",
+                "Content Digest": "sha256:9a9ce9a275222d2aff54829352b3a9806c53c1c76b32971295e4e7c0edeb93c8"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-02-DECIDED-001",
+                "Content Digest": "sha256:743325629c150350c12e3a98a016ef5d7ce5f0472c3e3d7a9325940481abd24b"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-06-DECIDED-001",
+                "Content Digest": "sha256:17b998bf906b86c6171906b9c4ed251e16f197d88ced112fe0c910cf04667b96"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-07-DECIDED-001",
+                "Content Digest": "sha256:0d90dc4f48f866cc8a23ecbb99ee15aea4d82c0cfcf56157ed3aecc04cbdfc18"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-08-DECIDED-001",
+                "Content Digest": "sha256:4968ffd2f4af74c6eead413afd0527e3ef5cdaad34a9bd69af9fb42ee7f55119"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-13-DECIDED-001",
+                "Content Digest": "sha256:df06214649a670103baa141844826dd17c147ad0e844476347f124c1866d6be3"
+              }
+            ],
+            "Required claim/boundary": "Authored mod/pack identity, dependency resolution, validated immutable generation and compiler capability identity",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/game/data",
+                "core_enhanced/src/authoring"
+              ],
+              "dirty_basis": "Exact current bytes; preserve dirty state and prohibit product/test writes during review"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CMVA-002",
+                "Content Digest": "sha256:836ccec142fbe2c35cd99069d8ea8ffbaf900d6c6b0269806431728ab0bba4a3"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "Follow filesystem/input bytes through resolver/compiler/snapshot to actual public consumer; distinguish static validation from measured approval and identify atomic mod grouping gap.",
+            "Investigation owner": "Root Astra; existing independent test-author read-only findings reused for RQ05"
+          },
+          {
+            "Requirement ID": "RQ02",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-02-DECIDED-001",
+                "Content Digest": "sha256:743325629c150350c12e3a98a016ef5d7ce5f0472c3e3d7a9325940481abd24b"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-03-DECIDED-001",
+                "Content Digest": "sha256:9080542683161b02cad8e2ccd1eec5302b5eb8cd68831026369244e6461c6ece"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-04-DECIDED-001",
+                "Content Digest": "sha256:6817ac87dc428df44e1180765294372b678989212273933c8461a4711ba3152d"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-05-DECIDED-001",
+                "Content Digest": "sha256:23efd6f819ac4e67b659c5ce9f1e14200ff722e4edbd3770f2762bdbda59a99c"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-13-DECIDED-001",
+                "Content Digest": "sha256:df06214649a670103baa141844826dd17c147ad0e844476347f124c1866d6be3"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-14-DECIDED-001",
+                "Content Digest": "sha256:921df93c720dc1ed73f0ae8457f1e532001f1e85dddb5d672f8bcfc2db41829d"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-15-DECIDED-001",
+                "Content Digest": "sha256:00838a68be8fb6aaded7b9fb0401889fd0e88694d4e9adeae65cbfcc6ac51c93"
+              }
+            ],
+            "Required claim/boundary": "Public trial lifecycle, reachable execution coverage and bounded measurement/calibration",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/authoring",
+                "core_enhanced/tools/authoring_trial_api_probe",
+                "game_server/src/runtime_measurement",
+                "core_enhanced/src/game/battle/runtime_control",
+                "config/runtime_safety.ron"
+              ],
+              "dirty_basis": "Exact current bytes; preserve dirty state and prohibit product/test writes during review"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CMVA-002",
+                "Content Digest": "sha256:836ccec142fbe2c35cd99069d8ea8ffbaf900d6c6b0269806431728ab0bba4a3"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "Read normal trial preparation/advance/result, scenario caps and metrics consumers; identify stress preparation and criteria gaps. No numeric calibration or runtime PASS is inferred from static code.",
+            "Investigation owner": "Root Astra; existing independent test-author read-only findings reused for RQ05"
+          },
+          {
+            "Requirement ID": "RQ03",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-06-DECIDED-001",
+                "Content Digest": "sha256:17b998bf906b86c6171906b9c4ed251e16f197d88ced112fe0c910cf04667b96"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-07-DECIDED-001",
+                "Content Digest": "sha256:0d90dc4f48f866cc8a23ecbb99ee15aea4d82c0cfcf56157ed3aecc04cbdfc18"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-08-DECIDED-001",
+                "Content Digest": "sha256:4968ffd2f4af74c6eead413afd0527e3ef5cdaad34a9bd69af9fb42ee7f55119"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-09-DECIDED-001",
+                "Content Digest": "sha256:ab33bed22a1b71c3127b56f8169363623bfaa84e69a41bf19d256b8460019c50"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-11-DECIDED-001",
+                "Content Digest": "sha256:0a545e5ccce52ef545f696add61cab689129a4dad29ec2c9f85b3f5fe7712fd1"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-12-DECIDED-001",
+                "Content Digest": "sha256:432b704c77c779e2311070d037157aafbf7e17d9a4bfc65e6542915f746b3096"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-14-DECIDED-001",
+                "Content Digest": "sha256:921df93c720dc1ed73f0ae8457f1e532001f1e85dddb5d672f8bcfc2db41829d"
+              }
+            ],
+            "Required claim/boundary": "Host issuer approval, actual bootstrap/Apply, selection concurrency, cancellation and fault authority",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "game_server/src",
+                "core_enhanced/src/application.rs",
+                "core_enhanced/src/application",
+                "core_enhanced/src/game/world"
+              ],
+              "dirty_basis": "Exact current bytes; preserve dirty state and prohibit product/test writes during review"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CMVA-002",
+                "Content Digest": "sha256:836ccec142fbe2c35cd99069d8ea8ffbaf900d6c6b0269806431728ab0bba4a3"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "Trace host configuration through live actor/Core, generation injection/commit, player transport and public mutation gates. Identify where owner-only approval must be enforced without blessing foreign receipt data.",
+            "Investigation owner": "Root Astra; existing independent test-author read-only findings reused for RQ05"
+          },
+          {
+            "Requirement ID": "RQ04",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-08-DECIDED-001",
+                "Content Digest": "sha256:4968ffd2f4af74c6eead413afd0527e3ef5cdaad34a9bd69af9fb42ee7f55119"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-09-DECIDED-001",
+                "Content Digest": "sha256:ab33bed22a1b71c3127b56f8169363623bfaa84e69a41bf19d256b8460019c50"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-10-DECIDED-001",
+                "Content Digest": "sha256:04180446cde7873912962379ff8bff60b9b8c8d639284e9eedb08fa560856ad9"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-11-DECIDED-001",
+                "Content Digest": "sha256:0a545e5ccce52ef545f696add61cab689129a4dad29ec2c9f85b3f5fe7712fd1"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-14-DECIDED-001",
+                "Content Digest": "sha256:921df93c720dc1ed73f0ae8457f1e532001f1e85dddb5d672f8bcfc2db41829d"
+              }
+            ],
+            "Required claim/boundary": "Durable required-mod identity, incompatible load protection and generation lifetime",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "game_server/src/persistence",
+                "core_enhanced/src/game/world/active_run.rs",
+                "core_enhanced/src/application"
+              ],
+              "dirty_basis": "Exact current bytes; preserve dirty state and prohibit product/test writes during review"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CMVA-002",
+                "Content Digest": "sha256:836ccec142fbe2c35cd99069d8ea8ffbaf900d6c6b0269806431728ab0bba4a3"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "Trace actual save encode/load/version/backup/write-protection and Core restore consumers. Find missing-mod restoration positive seam and atomic failure preservation; no silent migration.",
+            "Investigation owner": "Root Astra; existing independent test-author read-only findings reused for RQ05"
+          },
+          {
+            "Requirement ID": "RQ05",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-01-DECIDED-001",
+                "Content Digest": "sha256:9a9ce9a275222d2aff54829352b3a9806c53c1c76b32971295e4e7c0edeb93c8"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-02-DECIDED-001",
+                "Content Digest": "sha256:743325629c150350c12e3a98a016ef5d7ce5f0472c3e3d7a9325940481abd24b"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-03-DECIDED-001",
+                "Content Digest": "sha256:9080542683161b02cad8e2ccd1eec5302b5eb8cd68831026369244e6461c6ece"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-04-DECIDED-001",
+                "Content Digest": "sha256:6817ac87dc428df44e1180765294372b678989212273933c8461a4711ba3152d"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-05-DECIDED-001",
+                "Content Digest": "sha256:23efd6f819ac4e67b659c5ce9f1e14200ff722e4edbd3770f2762bdbda59a99c"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-06-DECIDED-001",
+                "Content Digest": "sha256:17b998bf906b86c6171906b9c4ed251e16f197d88ced112fe0c910cf04667b96"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-07-DECIDED-001",
+                "Content Digest": "sha256:0d90dc4f48f866cc8a23ecbb99ee15aea4d82c0cfcf56157ed3aecc04cbdfc18"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-08-DECIDED-001",
+                "Content Digest": "sha256:4968ffd2f4af74c6eead413afd0527e3ef5cdaad34a9bd69af9fb42ee7f55119"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-09-DECIDED-001",
+                "Content Digest": "sha256:ab33bed22a1b71c3127b56f8169363623bfaa84e69a41bf19d256b8460019c50"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-10-DECIDED-001",
+                "Content Digest": "sha256:04180446cde7873912962379ff8bff60b9b8c8d639284e9eedb08fa560856ad9"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-11-DECIDED-001",
+                "Content Digest": "sha256:0a545e5ccce52ef545f696add61cab689129a4dad29ec2c9f85b3f5fe7712fd1"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-12-DECIDED-001",
+                "Content Digest": "sha256:432b704c77c779e2311070d037157aafbf7e17d9a4bfc65e6542915f746b3096"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-13-DECIDED-001",
+                "Content Digest": "sha256:df06214649a670103baa141844826dd17c147ad0e844476347f124c1866d6be3"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-14-DECIDED-001",
+                "Content Digest": "sha256:921df93c720dc1ed73f0ae8457f1e532001f1e85dddb5d672f8bcfc2db41829d"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-15-DECIDED-001",
+                "Content Digest": "sha256:00838a68be8fb6aaded7b9fb0401889fd0e88694d4e9adeae65cbfcc6ac51c93"
+              }
+            ],
+            "Required claim/boundary": "Acceptance seams and relevant predecessor regression coverage",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/authoring/trial/tests",
+                "core_enhanced/src/application",
+                "core_enhanced/src/game/data",
+                "game_server/src",
+                "core_enhanced/tools"
+              ],
+              "dirty_basis": "Exact current bytes; preserve dirty state and prohibit product/test writes during review"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CMVA-002",
+                "Content Digest": "sha256:836ccec142fbe2c35cd99069d8ea8ffbaf900d6c6b0269806431728ab0bba4a3"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "Read applicable tests/helpers and normal API/CLI examples; reuse prior independent test-author risk analysis, select impact-based tests without claiming any U11 run.",
+            "Investigation owner": "Root Astra; existing independent test-author read-only findings reused for RQ05"
+          },
+          {
+            "Requirement ID": "RQ06",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-01-DECIDED-001",
+                "Content Digest": "sha256:9a9ce9a275222d2aff54829352b3a9806c53c1c76b32971295e4e7c0edeb93c8"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-02-DECIDED-001",
+                "Content Digest": "sha256:743325629c150350c12e3a98a016ef5d7ce5f0472c3e3d7a9325940481abd24b"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-03-DECIDED-001",
+                "Content Digest": "sha256:9080542683161b02cad8e2ccd1eec5302b5eb8cd68831026369244e6461c6ece"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-04-DECIDED-001",
+                "Content Digest": "sha256:6817ac87dc428df44e1180765294372b678989212273933c8461a4711ba3152d"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-05-DECIDED-001",
+                "Content Digest": "sha256:23efd6f819ac4e67b659c5ce9f1e14200ff722e4edbd3770f2762bdbda59a99c"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-06-DECIDED-001",
+                "Content Digest": "sha256:17b998bf906b86c6171906b9c4ed251e16f197d88ced112fe0c910cf04667b96"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-07-DECIDED-001",
+                "Content Digest": "sha256:0d90dc4f48f866cc8a23ecbb99ee15aea4d82c0cfcf56157ed3aecc04cbdfc18"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-08-DECIDED-001",
+                "Content Digest": "sha256:4968ffd2f4af74c6eead413afd0527e3ef5cdaad34a9bd69af9fb42ee7f55119"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-09-DECIDED-001",
+                "Content Digest": "sha256:ab33bed22a1b71c3127b56f8169363623bfaa84e69a41bf19d256b8460019c50"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-10-DECIDED-001",
+                "Content Digest": "sha256:04180446cde7873912962379ff8bff60b9b8c8d639284e9eedb08fa560856ad9"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-11-DECIDED-001",
+                "Content Digest": "sha256:0a545e5ccce52ef545f696add61cab689129a4dad29ec2c9f85b3f5fe7712fd1"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-12-DECIDED-001",
+                "Content Digest": "sha256:432b704c77c779e2311070d037157aafbf7e17d9a4bfc65e6542915f746b3096"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-13-DECIDED-001",
+                "Content Digest": "sha256:df06214649a670103baa141844826dd17c147ad0e844476347f124c1866d6be3"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-14-DECIDED-001",
+                "Content Digest": "sha256:921df93c720dc1ed73f0ae8457f1e532001f1e85dddb5d672f8bcfc2db41829d"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-15-DECIDED-001",
+                "Content Digest": "sha256:00838a68be8fb6aaded7b9fb0401889fd0e88694d4e9adeae65cbfcc6ac51c93"
+              }
+            ],
+            "Required claim/boundary": "Current approved policy and prerequisite contract/completion evidence",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/docs/goals/core_mod_validation_apply",
+                "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_002_pass001",
+                "core_enhanced/docs/core_runtime_contract.md",
+                "core_enhanced/docs/data_loading_contract.md",
+                "core_enhanced/docs/roadmaps/core_first"
+              ],
+              "dirty_basis": "Exact current bytes; preserve dirty state and prohibit product/test writes during review"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CMVA-002",
+                "Content Digest": "sha256:836ccec142fbe2c35cd99069d8ea8ffbaf900d6c6b0269806431728ab0bba4a3"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "Bind exact WR002/decisions/acceptance and intake/prerequisite completed contracts; use current U10 limits and explicit measured-calibration delegation, preserve historical results.",
+            "Investigation owner": "Root Astra; existing independent test-author read-only findings reused for RQ05"
+          },
+          {
+            "Requirement ID": "RQ07",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-01-DECIDED-001",
+                "Content Digest": "sha256:9a9ce9a275222d2aff54829352b3a9806c53c1c76b32971295e4e7c0edeb93c8"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-02-DECIDED-001",
+                "Content Digest": "sha256:743325629c150350c12e3a98a016ef5d7ce5f0472c3e3d7a9325940481abd24b"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-03-DECIDED-001",
+                "Content Digest": "sha256:9080542683161b02cad8e2ccd1eec5302b5eb8cd68831026369244e6461c6ece"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-04-DECIDED-001",
+                "Content Digest": "sha256:6817ac87dc428df44e1180765294372b678989212273933c8461a4711ba3152d"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-05-DECIDED-001",
+                "Content Digest": "sha256:23efd6f819ac4e67b659c5ce9f1e14200ff722e4edbd3770f2762bdbda59a99c"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-06-DECIDED-001",
+                "Content Digest": "sha256:17b998bf906b86c6171906b9c4ed251e16f197d88ced112fe0c910cf04667b96"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-07-DECIDED-001",
+                "Content Digest": "sha256:0d90dc4f48f866cc8a23ecbb99ee15aea4d82c0cfcf56157ed3aecc04cbdfc18"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-08-DECIDED-001",
+                "Content Digest": "sha256:4968ffd2f4af74c6eead413afd0527e3ef5cdaad34a9bd69af9fb42ee7f55119"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-09-DECIDED-001",
+                "Content Digest": "sha256:ab33bed22a1b71c3127b56f8169363623bfaa84e69a41bf19d256b8460019c50"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-10-DECIDED-001",
+                "Content Digest": "sha256:04180446cde7873912962379ff8bff60b9b8c8d639284e9eedb08fa560856ad9"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-11-DECIDED-001",
+                "Content Digest": "sha256:0a545e5ccce52ef545f696add61cab689129a4dad29ec2c9f85b3f5fe7712fd1"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-12-DECIDED-001",
+                "Content Digest": "sha256:432b704c77c779e2311070d037157aafbf7e17d9a4bfc65e6542915f746b3096"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-13-DECIDED-001",
+                "Content Digest": "sha256:df06214649a670103baa141844826dd17c147ad0e844476347f124c1866d6be3"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-14-DECIDED-001",
+                "Content Digest": "sha256:921df93c720dc1ed73f0ae8457f1e532001f1e85dddb5d672f8bcfc2db41829d"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CMVA-15-DECIDED-001",
+                "Content Digest": "sha256:00838a68be8fb6aaded7b9fb0401889fd0e88694d4e9adeae65cbfcc6ac51c93"
+              }
+            ],
+            "Required claim/boundary": "Released/deployed installations, Unity management UI and individual final bosses",
+            "Source type/role": "Released/Deployed Actual and excluded consumers",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [],
+              "dirty_basis": "Exact current bytes; preserve dirty state and prohibit product/test writes during review"
+            },
+            "Applicability/Necessity": "not_applicable",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CMVA-002",
+                "Content Digest": "sha256:836ccec142fbe2c35cd99069d8ea8ffbaf900d6c6b0269806431728ab0bba4a3"
+              },
+              "Scope selectors": [
+                "O02"
+              ]
+            },
+            "Validation requirement": "No released/deployed compatibility or operational state claim; workspace Core/API/server implementation only, Unity/final bosses excluded by intake.",
+            "Investigation owner": "Root Astra; existing independent test-author read-only findings reused for RQ05"
+          }
+        ],
+        "Review stage": "candidate source plan before per-element formal review; no code_reviewed outcome",
+        "Plan revision reason": "Source location correction only before any per-element review publication: root config/runtime_safety.ron and world/active_run.rs. Claims, acceptance, applicability and WR002 unchanged; source plan001 preserved.",
+        "Predecessor Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CMVA-001",
+          "Content Digest": "sha256:dfa207ba676f3cfe3eeb573f29202113eab6519ea55d71760f6ec033275d0364"
+        }
+      }
+    }
+  ]
+}

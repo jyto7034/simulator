@@ -10,7 +10,7 @@ use game_core::{
     },
 };
 use serde_json::{json, Value};
-use std::{fs, io::Write, path::Path, sync::OnceLock};
+use std::{collections::BTreeMap, fs, io::Write, path::Path, sync::OnceLock};
 use uuid::Uuid;
 
 fn slots(state: &RelicStateDto, employee: Uuid) -> [Option<Uuid>; 3] {
@@ -71,7 +71,7 @@ fn finish_start(app: &mut CoreApplication) -> Vec<Uuid> {
                 .collect();
             command(
                 app,
-                json!({"type":"select_starter_employees", "employee_definition_ids":ids}),
+                json!({"type":"select_starter_employees", "employee_definition_ids":ids, "loan_copy_ids":[]}),
             );
             continue;
         }
@@ -92,6 +92,13 @@ fn u08_public_successful_transfer_moves_exact_copy_and_only_its_employee_contrib
             equip_weapon(&mut app, employee, "u08_public_weapon");
         }
         let copy = grant_relic(&mut app, "u08_public_blend");
+        // Keep the former registration smoke's exact first-grant/slot oracle.
+        equip_relic(&mut app, copy, first, 0);
+        let initial = relic_state(&mut app);
+        assert_eq!(initial.copies.len(), 1);
+        assert_eq!(initial.copies[0].copy_uuid, copy);
+        assert_eq!(initial.loadouts[0].employee_uuid, first);
+        assert_eq!(initial.loadouts[0].slots, [Some(copy), None, None]);
         equip_relic(&mut app, copy, first, 2);
         if corrupt {
             admin(
@@ -187,12 +194,12 @@ fn u08_public_abandon_then_new_run_resets_copies_slots_catalysts_and_equipment_d
     assert_eq!(initial.resources.relic_corruption_catalysts, 4);
     assert_eq!(initial.resources.equipment_dust, 23);
 
-    // The flag confirms host durable replacement; it does not bypass the core
-    // active-run gate. Abandon is the normal public transition to NotStarted.
+    // Use an otherwise valid start request so this rejection proves the
+    // active-run gate. Abandon is the public transition to NotStarted.
     let before_rejected_start = public_roots(&app);
     assert!(execute(
         &mut app,
-        json!({"type":"start_new_game", "game_mode":"Standard", "replace_active_run":true})
+        json!({"type":"start_new_game", "game_mode":"Expedition", "replace_active_run":false})
     )
     .is_err());
     assert_eq!(public_roots(&app), before_rejected_start);
@@ -201,7 +208,7 @@ fn u08_public_abandon_then_new_run_resets_copies_slots_catalysts_and_equipment_d
     assert!(app.export_active_run_checkpoint().unwrap().is_none());
     command(
         &mut app,
-        json!({"type":"start_new_game", "game_mode":"Standard", "replace_active_run":true}),
+        json!({"type":"start_new_game", "game_mode":"Expedition", "replace_active_run":false}),
     );
     let new_employees = finish_start(&mut app);
     let reset = relic_state(&mut app);
@@ -224,10 +231,84 @@ fn u08_public_abandon_then_new_run_resets_copies_slots_catalysts_and_equipment_d
     let bytes = saved.core_payload_json().to_vec();
     let mut restored = CoreApplication::new(content().data.clone(), 0xa508d);
     restored
+        .install_authoritative_player_profile(
+            snapshot(&app, ApplicationSnapshotKind::PlayerProfile).into(),
+        )
+        .unwrap();
+    restored
         .continue_from_active_run_checkpoint(PLAYER, &saved)
         .unwrap();
     assert_eq!(saved.core_payload_json(), bytes);
     assert_eq!(json!(relic_state(&mut restored)), json!(reset));
+}
+
+fn authored_lifecycle_templates(original: &[u8]) -> Vec<u8> {
+    use game_core::game::data::event_data::EventId;
+    use game_core::game::map::{
+        FacilityActivityDefinition, FacilityContentSupport, FacilityReservation,
+        FacilityRoomConnection, FacilitySizeAllocation, FacilityTemplateDatabase, MapEdgeDirection,
+        MapNodeKindId, MapNodePayload, MapSlotId, MapTemplateId,
+    };
+
+    let mut catalog: FacilityTemplateDatabase = ron::de::from_bytes(original).unwrap();
+    let mut layout = catalog
+        .layouts
+        .iter()
+        .find(|layout| layout.expedition_default)
+        .unwrap()
+        .clone();
+    let entrance = layout.room(&layout.entrance_room_id).unwrap().clone();
+    let mut room = layout.room(&layout.initial_room_id).unwrap().clone();
+    room.id = "u08_event_room".into();
+    room.template_id = Some(MapTemplateId::new("facility_6A"));
+    room.name = "Relic continuation fixture".into();
+    room.reservations = vec![FacilityReservation {
+        slot_id: MapSlotId::new("1"),
+        activity_id: "u08_double_corruption".into(),
+    }];
+    room.omen_slot = None;
+    room.elite_slots.clear();
+    room.safe_access_slots = vec![MapSlotId::new("1")];
+    room.slot_display.clear();
+
+    layout.id = "u08_relic_continuation_v1".into();
+    layout.initial_room_id = room.id.clone();
+    layout.connections = vec![FacilityRoomConnection {
+        from: entrance.id.clone(),
+        to: room.id.clone(),
+        direction: MapEdgeDirection::ForwardOnly,
+        condition: None,
+    }];
+    layout.rooms = vec![entrance, room];
+    layout.golden_bough_plans.clear();
+    for activity in &mut layout.activities {
+        activity.golden_bough_candidate = false;
+    }
+    layout.activities.push(FacilityActivityDefinition {
+        id: "u08_double_corruption".into(),
+        label: "Two free corruption choices".into(),
+        kind_id: MapNodeKindId::new("event_sealed_archive"),
+        payload: MapNodePayload::Event {
+            event_id: Some(EventId::new("u08_public_double_corruption")),
+        },
+        support: FacilityContentSupport::Supported,
+        condition: None,
+        reward_activity: None,
+        first_entry_cost: Some(0),
+        golden_bough_candidate: false,
+    });
+    // Slot 1 is adjacent to S in the official 6A template. Other slots retain
+    // normal allocation and the current facility difficulty contract.
+    layout.allocation.support_counts = BTreeMap::from([(0, 100)]);
+    layout.allocation.one_reserved_support_counts = BTreeMap::from([(1, 100)]);
+    layout.allocation.sizes = vec![FacilitySizeAllocation {
+        size: 6,
+        event_counts: BTreeMap::from([(0, 100)]),
+        reward_counts: BTreeMap::from([(0, 100)]),
+        elite_percent_by_depth: BTreeMap::from([(1, 0)]),
+    }];
+    catalog.layouts = vec![layout];
+    ron::ser::to_string(&catalog).unwrap().into_bytes()
 }
 
 fn copy_lifecycle_content(source: &Path, destination: &Path, relative: &Path) {
@@ -240,18 +321,14 @@ fn copy_lifecycle_content(source: &Path, destination: &Path, relative: &Path) {
             copy_lifecycle_content(source, destination, &child);
             continue;
         }
+        let original = fs::read(entry.path()).unwrap();
         let replacement = match child.to_str().unwrap() {
-            "official/data/map/facility_templates.ron" => Some(
-                include_bytes!("../fixtures/u08/lifecycle001/facility_templates.ron").as_slice(),
-            ),
-            "official/data/map/node_assignment_profiles.ron" => Some(
-                include_bytes!("../fixtures/u08/lifecycle001/node_assignment_profiles.ron")
-                    .as_slice(),
-            ),
+            "official/data/map/facility_templates.ron" => {
+                Some(authored_lifecycle_templates(&original))
+            }
             _ => None,
         };
-        let original = fs::read(entry.path()).unwrap();
-        let bytes = replacement.unwrap_or(&original);
+        let bytes = replacement.as_deref().unwrap_or(&original);
         fs::OpenOptions::new()
             .write(true)
             .create_new(true)
@@ -302,7 +379,7 @@ fn event_node(app: &mut CoreApplication) -> Value {
         .as_array()
         .unwrap()
         .iter()
-        .find(|node| node["slot_id"] == "records_annex")
+        .find(|node| node["slot_id"] == "1")
         .unwrap()
         .clone();
     assert_eq!(node["category"], "Event");
@@ -317,7 +394,7 @@ fn u08_public_unfinished_event_continue_rewinds_variants_and_history_but_keeps_p
     let mut app = CoreApplication::new(fixture.data.clone(), 0xa508d1);
     command(
         &mut app,
-        json!({"type":"start_new_game", "game_mode":"Standard", "replace_active_run":false}),
+        json!({"type":"start_new_game", "game_mode":"Expedition", "replace_active_run":false}),
     );
     let employees = finish_start(&mut app);
     for employee in &employees[..2] {
@@ -383,6 +460,11 @@ fn u08_public_unfinished_event_continue_rewinds_variants_and_history_but_keeps_p
     );
     let mut fresh = CoreApplication::new(fixture.data.clone(), 0xa508d2);
     fresh
+        .install_authoritative_player_profile(
+            snapshot(&app, ApplicationSnapshotKind::PlayerProfile).into(),
+        )
+        .unwrap();
+    fresh
         .continue_from_active_run_checkpoint(PLAYER, &unfinished)
         .unwrap();
     assert_eq!(unfinished.core_payload_json(), pre_entry_bytes);
@@ -435,6 +517,11 @@ fn u08_public_unfinished_event_continue_rewinds_variants_and_history_but_keeps_p
     let committed = json!(relic_state(&mut fresh));
     assert_eq!(committed["resources"], before_state["resources"]);
     let mut after_completion = CoreApplication::new(fixture.data.clone(), 0xa508d3);
+    after_completion
+        .install_authoritative_player_profile(
+            snapshot(&fresh, ApplicationSnapshotKind::PlayerProfile).into(),
+        )
+        .unwrap();
     after_completion
         .continue_from_active_run_checkpoint(PLAYER, &complete)
         .unwrap();

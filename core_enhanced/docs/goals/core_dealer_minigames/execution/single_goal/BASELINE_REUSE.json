@@ -1,0 +1,49 @@
+{
+  "initial": "U16-2 independent001 historical Complete/High,2196 unique; immutable target retained",
+  "full_invocation": {
+    "raw": "runs/core005.log",
+    "named_pass": 2138,
+    "failed": [
+      "game::behavior::tests::every_behavior_result_has_exact_old_command_projection_contract",
+      "game::data::content_pack::snapshot::tests::unix::socket_inputs_return_errors"
+    ],
+    "ignored": 6,
+    "summaries": [
+      "test result: FAILED. 2138 passed; 2 failed; 6 ignored; 0 measured; 0 filtered out; finished in 265.65s"
+    ]
+  },
+  "closure": "current focused00735 closes exact DealerState projection failure and covers final principal fallback/public rule/action changes; socket EPERM replaced only by unchanged permitted-environment exact test",
+  "current_unique_default_core_pass_coverage": 2213,
+  "calculation": "2138 full library +1 corrected projection +1 added other-rarity test +72 integration +1 unchanged socket =2213; focused overlaps excluded",
+  "existing_ignored": 6,
+  "known_current_failures": 0,
+  "full_green_single_invocation_claimed": false,
+  "socket_reuse": {
+    "raw": "core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/runs/socket002.log",
+    "unchanged_files": [
+      {
+        "path": "core_enhanced/src/game/data/content_pack/snapshot.rs",
+        "sha256": "1d8385801c044259777a51451749d7dfb71b01173304bc44bbcec9156b2b6259"
+      },
+      {
+        "path": "core_enhanced/src/game/data/content_pack/snapshot/tests.rs",
+        "sha256": "501dc9be882b2283fd710606f9bf29fea4ba715816cdf38e28b4ffd26cc2a5cb"
+      }
+    ],
+    "basis": "identical snapshot/open source and test; filesystem socket refusal occurs before dealer layout/session; sandbox EPERM is environment limitation, old actual permitted run passed"
+  },
+  "native_g11_reuse": {
+    "raw": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/runs/native001.log",
+    "passed": 4,
+    "basis": "native feature/profile implementation and G11 scenarios unchanged; optional dealer None and false explanation flag preserve old normalized/serialized owner. core005 current default G11 all4 pass; current new active dealer validated via actual host and9 measured replays."
+  },
+  "server_persistence_reuse": {
+    "raw": "core_enhanced/docs/goals/core_support_node_activities/execution/single_goal/runs/server001.log",
+    "passed": 31,
+    "unchanged_server_files": 36,
+    "basis": "server implementation/tests byte-identical to actual pre-mutation baseline; all old command arms preserved. final prepared consumers compile85-command/56-result boundary; current21 fresh host processes153commands and4actualIO failures exercise new dealer state with unchanged paired writer/reader."
+  },
+  "post_full_changes": "Only added dealer metadata/affordability/allowed_actions and fallback principal policy plus new test and exhaustive result fixture corrected after core005. focused00735 exercises all17new cases, all8U16-2,9facility,1result fixture. Existing dealerNone and false flag path unaffected; fresh72integration and current final normal/instrumented builds cover shared boundary. No product/test/data changes after final builds.",
+  "prepared_binary_nonimpact_delta": null,
+  "predecessor_continuity": "No U16-2 implementation or frozen artifacts edited. New common command/session/layout/VN/relic-return delta is judged by requested U16-3 independent GEX20; inherited verdict is not a fresh recertification."
+}

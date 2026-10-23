@@ -1,0 +1,1372 @@
+{
+  "format": "node-graph",
+  "version": 1,
+  "id": "15d191aa-2de3-4f15-85ca-46e934ce8ca9",
+  "name": "래티씨아 · 기본형 친구 배치·합체",
+  "nodes": [
+    {
+      "id": "00384325-ed89-4573-a35b-dccd8af25c01",
+      "kind": "skill-resonance-admit",
+      "title": "원자적 접수·비용 확정",
+      "position": {
+        "x": 2680,
+        "y": 2036.5
+      },
+      "values": {},
+      "note": "",
+      "frame": "eb998544-7dd3-4b3c-a632-66880c42d3e4"
+    },
+    {
+      "id": "0064ad28-ed4b-4cfe-854d-0d59802a519e",
+      "kind": "skill-equipment-condition",
+      "title": "압축 화약 · 장착 여부",
+      "position": {
+        "x": 40,
+        "y": 4058.2
+      },
+      "values": {
+        "copies": "once",
+        "definition": "explosion-vulnerability",
+        "slot": "relic",
+        "variant": "normal"
+      },
+      "note": "",
+      "frame": "632e66dc-0558-41be-9d99-ed02d150c412"
+    },
+    {
+      "id": "00a2e10d-ba17-46ba-9937-0b44b6e78b63",
+      "kind": "skill-range",
+      "title": "설치 위치 1칸 · 상하좌우와 중심",
+      "position": {
+        "x": 40,
+        "y": 1134
+      },
+      "values": {
+        "includeAnchor": true,
+        "pattern": ".X.\nX@X\n.X."
+      },
+      "note": "",
+      "frame": "d1cbe72f-8010-497e-ac57-3c1f23aa9f95"
+    },
+    {
+      "id": "10b7bc7b-3dbc-41e3-9483-aa8a040857d2",
+      "kind": "skill-request",
+      "title": "파편 시전 입력",
+      "position": {
+        "x": 920,
+        "y": 2826.2
+      },
+      "values": {},
+      "note": "",
+      "frame": "eb998544-7dd3-4b3c-a632-66880c42d3e4"
+    },
+    {
+      "id": "1645746d-7564-4fd7-b5e6-f26892846e18",
+      "kind": "skill-damage-bonus",
+      "title": "큰 친구 추가 위력 · 미정",
+      "position": {
+        "x": 480,
+        "y": 338
+      },
+      "values": {
+        "bonus": ""
+      },
+      "note": "",
+      "frame": "d1cbe72f-8010-497e-ac57-3c1f23aa9f95"
+    },
+    {
+      "id": "1819524e-a312-43ed-beb2-c9f1e0e52aef",
+      "kind": "skill-modifier-range",
+      "title": "넓어진 지평 → 큰 친구 폭발 범위 길이 2배 · 한 번",
+      "position": {
+        "x": 1280,
+        "y": 4884.7
+      },
+      "values": {
+        "mode": "replace"
+      },
+      "note": "",
+      "frame": "632e66dc-0558-41be-9d99-ed02d150c412"
+    },
+    {
+      "id": "1cc1bb35-cc96-4999-964b-3d669e9fe723",
+      "kind": "skill-target-selection",
+      "title": "입력 대상 선택",
+      "position": {
+        "x": 480,
+        "y": 2830.2
+      },
+      "values": {
+        "mode": "player-tile"
+      },
+      "note": "",
+      "frame": "eb998544-7dd3-4b3c-a632-66880c42d3e4"
+    },
+    {
+      "id": "21009f42-2526-4f2c-904c-b21afbc916a9",
+      "kind": "skill-modifier-duration",
+      "title": "긴 호흡 → 선물 지속 시간",
+      "position": {
+        "x": 480,
+        "y": 3557.2
+      },
+      "values": {
+        "percent": 25
+      },
+      "note": "",
+      "frame": "632e66dc-0558-41be-9d99-ed02d150c412"
+    },
+    {
+      "id": "243475bd-e10d-47c0-a309-52885754375e",
+      "kind": "skill-seconds",
+      "title": "대기 수명 · 미정",
+      "position": {
+        "x": 40,
+        "y": 116
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "d1cbe72f-8010-497e-ac57-3c1f23aa9f95"
+    },
+    {
+      "id": "270f09a5-ca48-45e9-87a6-1052409cfcc3",
+      "kind": "skill-resonance-cost",
+      "title": "수동 · 공명 전량 소비",
+      "position": {
+        "x": 1800,
+        "y": 1939.2
+      },
+      "values": {
+        "minimumCost": "",
+        "mode": "all",
+        "percent": ""
+      },
+      "note": "",
+      "frame": "eb998544-7dd3-4b3c-a632-66880c42d3e4"
+    },
+    {
+      "id": "2ce56aa5-ef16-41dc-9131-a5e67b4101f5",
+      "kind": "skill-range",
+      "title": "작은 친구 폭발 범위 · 미정",
+      "position": {
+        "x": 40,
+        "y": 876
+      },
+      "values": {
+        "includeAnchor": false,
+        "pattern": ""
+      },
+      "note": "",
+      "frame": "d1cbe72f-8010-497e-ac57-3c1f23aa9f95"
+    },
+    {
+      "id": "3141f7bb-b00b-4a17-8bdf-b868cd3850e0",
+      "kind": "skill-action-entry",
+      "title": "접수할 행동 정의",
+      "position": {
+        "x": 1800,
+        "y": 2453.2
+      },
+      "values": {
+        "interruption": "standard",
+        "start": "immediate"
+      },
+      "note": "",
+      "frame": "eb998544-7dd3-4b3c-a632-66880c42d3e4"
+    },
+    {
+      "id": "3bb7b34a-56f6-4485-81e3-ae0851b2d9ba",
+      "kind": "skill-seconds",
+      "title": "선물 지속 시간",
+      "position": {
+        "x": 40,
+        "y": 3174.2
+      },
+      "values": {
+        "value": 10
+      },
+      "note": "",
+      "frame": "81e7b4e8-8b22-4965-8bba-dba8b679e621"
+    },
+    {
+      "id": "414f78f9-4779-4b79-a722-dd34e85204bd",
+      "kind": "skill-fusion-count-power",
+      "title": "3마리분 이상 실제 누적 수 비례",
+      "position": {
+        "x": 920,
+        "y": 320
+      },
+      "values": {
+        "baseline": 2,
+        "percent": ""
+      },
+      "note": "",
+      "frame": "d1cbe72f-8010-497e-ac57-3c1f23aa9f95"
+    },
+    {
+      "id": "4161891c-bff5-4b47-899a-f5ab3a41432a",
+      "kind": "skill-fusion-tier",
+      "title": "2마리분 이상",
+      "position": {
+        "x": 1360,
+        "y": 604
+      },
+      "values": {
+        "minimum": 2
+      },
+      "note": "",
+      "frame": "d1cbe72f-8010-497e-ac57-3c1f23aa9f95"
+    },
+    {
+      "id": "42a12e3f-f3f9-4af4-805f-ef3bffb6abd9",
+      "kind": "skill-resonance-settings",
+      "title": "사본 공명 저장 설정",
+      "position": {
+        "x": 920,
+        "y": 2284.9380952380952
+      },
+      "values": {},
+      "note": "",
+      "frame": "eb998544-7dd3-4b3c-a632-66880c42d3e4"
+    },
+    {
+      "id": "5b0aad9d-d8f3-4b3d-8b02-c211a5db722b",
+      "kind": "skill-resonance-amount",
+      "title": "최대 공명 · 미정",
+      "position": {
+        "x": 480,
+        "y": 2266.9380952380952
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "eb998544-7dd3-4b3c-a632-66880c42d3e4"
+    },
+    {
+      "id": "668735b8-330e-4575-a497-257d1715c883",
+      "kind": "skill-run-action",
+      "title": "접수한 행동 실행·종료",
+      "position": {
+        "x": 3120,
+        "y": 1858
+      },
+      "values": {},
+      "note": "",
+      "frame": "eb998544-7dd3-4b3c-a632-66880c42d3e4"
+    },
+    {
+      "id": "66d5c73f-1aa0-4c1b-a390-6bd7760e07dd",
+      "kind": "skill-range",
+      "title": "이 형상의 확대 타일 · 미정",
+      "position": {
+        "x": 840,
+        "y": 4037.2
+      },
+      "values": {
+        "includeAnchor": false,
+        "pattern": ""
+      },
+      "note": "",
+      "frame": "632e66dc-0558-41be-9d99-ed02d150c412"
+    },
+    {
+      "id": "67833ccd-b846-4612-9e55-ecf23539fc85",
+      "kind": "skill-resonance-read",
+      "title": "이번 요청의 공명 조회",
+      "position": {
+        "x": 1360,
+        "y": 2277.2714285714287
+      },
+      "values": {},
+      "note": "",
+      "frame": "eb998544-7dd3-4b3c-a632-66880c42d3e4"
+    },
+    {
+      "id": "6c857be0-9f3f-47e0-b589-cc1869c73b57",
+      "kind": "skill-mobile-variant",
+      "title": "큰 친구 · 같은 감지·이동 · 위력·범위 증가",
+      "position": {
+        "x": 920,
+        "y": 578
+      },
+      "values": {},
+      "note": "",
+      "frame": "d1cbe72f-8010-497e-ac57-3c1f23aa9f95"
+    },
+    {
+      "id": "6ffe57f5-0e21-48d2-a2a4-2755abb66be7",
+      "kind": "skill-modifier-mobile-vulnerability",
+      "title": "사냥의 낙인 → 작은 친구 · 비저지 함정 · 1칸 감지",
+      "position": {
+        "x": 1280,
+        "y": 3576.7
+      },
+      "values": {
+        "percent": ""
+      },
+      "note": "",
+      "frame": "632e66dc-0558-41be-9d99-ed02d150c412"
+    },
+    {
+      "id": "7dd2b0a4-01a1-4920-bc06-340094b2d9a2",
+      "kind": "skill-fusion-tier",
+      "title": "3마리분 이상",
+      "position": {
+        "x": 1800,
+        "y": 338
+      },
+      "values": {
+        "minimum": 3
+      },
+      "note": "",
+      "frame": "d1cbe72f-8010-497e-ac57-3c1f23aa9f95"
+    },
+    {
+      "id": "7e040127-bf9e-4474-bd32-b381f048f733",
+      "kind": "skill-range",
+      "title": "이 형상의 확대 타일 · 미정",
+      "position": {
+        "x": 840,
+        "y": 4295.2
+      },
+      "values": {
+        "includeAnchor": false,
+        "pattern": ""
+      },
+      "note": "",
+      "frame": "632e66dc-0558-41be-9d99-ed02d150c412"
+    },
+    {
+      "id": "7f68f52a-5d93-42e4-86f4-b4332c7090fd",
+      "kind": "skill-equipment-condition",
+      "title": "긴 호흡 · 장착 여부",
+      "position": {
+        "x": 40,
+        "y": 3578.2
+      },
+      "values": {
+        "copies": "once",
+        "definition": "long-breath",
+        "slot": "relic",
+        "variant": "normal"
+      },
+      "note": "",
+      "frame": "632e66dc-0558-41be-9d99-ed02d150c412"
+    },
+    {
+      "id": "80612c2a-18a7-4461-8525-f541fc5a879d",
+      "kind": "skill-seconds",
+      "title": "소환 피해 약화의 독립 수명",
+      "position": {
+        "x": 840,
+        "y": 3557.2
+      },
+      "values": {
+        "value": 5
+      },
+      "note": "",
+      "frame": "632e66dc-0558-41be-9d99-ed02d150c412"
+    },
+    {
+      "id": "885a4290-0355-4989-a068-c2332afcb309",
+      "kind": "skill-modifier-range",
+      "title": "넓어진 지평 → 작은 친구 폭발 범위 · 미정",
+      "position": {
+        "x": 1280,
+        "y": 4481.7
+      },
+      "values": {
+        "mode": "replace"
+      },
+      "note": "",
+      "frame": "632e66dc-0558-41be-9d99-ed02d150c412"
+    },
+    {
+      "id": "88ad52c7-5626-465d-8193-2fa6ec9f47ac",
+      "kind": "skill-weapon-power",
+      "title": "작은 친구 무기 Attack 계수 · 미정",
+      "position": {
+        "x": 40,
+        "y": 338
+      },
+      "values": {
+        "coefficient": ""
+      },
+      "note": "",
+      "frame": "d1cbe72f-8010-497e-ac57-3c1f23aa9f95"
+    },
+    {
+      "id": "8cdda26b-42d3-4127-beee-f6d31f8dec26",
+      "kind": "skill-resonance-requirement",
+      "title": "수동 · 공명 만충",
+      "position": {
+        "x": 1800,
+        "y": 2755.2
+      },
+      "values": {
+        "mode": "full"
+      },
+      "note": "",
+      "frame": "eb998544-7dd3-4b3c-a632-66880c42d3e4"
+    },
+    {
+      "id": "93059c52-a0d3-433a-bafb-48d577d86613",
+      "kind": "skill-fusion-tier",
+      "title": "1마리분 이상",
+      "position": {
+        "x": 1800,
+        "y": 723
+      },
+      "values": {
+        "minimum": 1
+      },
+      "note": "",
+      "frame": "d1cbe72f-8010-497e-ac57-3c1f23aa9f95"
+    },
+    {
+      "id": "95c5c3f8-1769-491f-a8d7-cb73dac14a53",
+      "kind": "skill-fusion-family",
+      "title": "같은 타일 1 / 2 / 3+ 단위 합체",
+      "position": {
+        "x": 2240,
+        "y": 586
+      },
+      "values": {
+        "maxTiles": "",
+        "maxUnits": ""
+      },
+      "note": "",
+      "frame": "d1cbe72f-8010-497e-ac57-3c1f23aa9f95"
+    },
+    {
+      "id": "9762bb40-f050-47fc-9190-6c2126ea8f47",
+      "kind": "skill-modifier-mobile-power",
+      "title": "압축 화약 → 작은 친구 · 비저지 함정 · 1칸 감지",
+      "position": {
+        "x": 480,
+        "y": 4037.2
+      },
+      "values": {
+        "percent": ""
+      },
+      "note": "",
+      "frame": "632e66dc-0558-41be-9d99-ed02d150c412"
+    },
+    {
+      "id": "a6d6a25c-ba60-4f08-b957-a4a2c59b49f9",
+      "kind": "skill-fusion-death-seed",
+      "title": "유물이 있을 때만 선물 → 사망 위치 1단위",
+      "position": {
+        "x": 480,
+        "y": 3187.2
+      },
+      "values": {
+        "relic": "red-thread"
+      },
+      "note": "",
+      "frame": "81e7b4e8-8b22-4965-8bba-dba8b679e621"
+    },
+    {
+      "id": "a99ba3d6-db1a-460d-8ad6-76c12de87233",
+      "kind": "skill-modifier-mobile-power",
+      "title": "압축 화약 → 큰 친구 · 같은 감지·이동 · 위력·범위 증가",
+      "position": {
+        "x": 480,
+        "y": 4303.2
+      },
+      "values": {
+        "percent": ""
+      },
+      "note": "",
+      "frame": "632e66dc-0558-41be-9d99-ed02d150c412"
+    },
+    {
+      "id": "aac2a013-3290-4259-958c-d873acf94065",
+      "kind": "skill-place-fusion-plan",
+      "title": "작은 친구 1 + 작은 친구 1",
+      "position": {
+        "x": 40,
+        "y": 1496
+      },
+      "values": {
+        "adjacent": 1,
+        "primary": 1
+      },
+      "note": "",
+      "frame": "92535abc-ba5a-465f-8ec2-3d942aa1e220"
+    },
+    {
+      "id": "b4ee2e16-05ce-496a-9b42-e447f9988510",
+      "kind": "skill-equipment-condition",
+      "title": "넓어진 지평 · 장착 여부",
+      "position": {
+        "x": 840,
+        "y": 4553.2
+      },
+      "values": {
+        "copies": "once",
+        "definition": "widened-horizon",
+        "slot": "relic",
+        "variant": "normal"
+      },
+      "note": "",
+      "frame": "632e66dc-0558-41be-9d99-ed02d150c412"
+    },
+    {
+      "id": "b697b49d-faa2-4afc-9729-1c22b0e8feb9",
+      "kind": "skill-modifier-mobile-power",
+      "title": "압축 화약 → 특별한 친구 · 실제 누적 수 보존",
+      "position": {
+        "x": 480,
+        "y": 4569.2
+      },
+      "values": {
+        "percent": ""
+      },
+      "note": "",
+      "frame": "632e66dc-0558-41be-9d99-ed02d150c412"
+    },
+    {
+      "id": "b88714b7-a507-4027-ab08-362fcec0a89b",
+      "kind": "skill-resonance-qualify",
+      "title": "대상·공명·자원 자격 검사",
+      "position": {
+        "x": 2240,
+        "y": 2120
+      },
+      "values": {},
+      "note": "",
+      "frame": "eb998544-7dd3-4b3c-a632-66880c42d3e4"
+    },
+    {
+      "id": "d4406a0d-9893-4fc3-be6d-3b111efa83d1",
+      "kind": "skill-modifier-range",
+      "title": "넓어진 지평 → 큰 친구 폭발 범위 · 미정",
+      "position": {
+        "x": 1280,
+        "y": 4074.7
+      },
+      "values": {
+        "mode": "replace"
+      },
+      "note": "",
+      "frame": "632e66dc-0558-41be-9d99-ed02d150c412"
+    },
+    {
+      "id": "d5e6ccf0-db71-4d76-920e-5eee045db039",
+      "kind": "skill-scaled-range",
+      "title": "큰 친구 폭발 범위 길이 2배 · 한 번",
+      "position": {
+        "x": 920,
+        "y": 98
+      },
+      "values": {
+        "factor": 2
+      },
+      "note": "",
+      "frame": "d1cbe72f-8010-497e-ac57-3c1f23aa9f95"
+    },
+    {
+      "id": "d826cd0e-c7b8-49e6-b834-da7531b90dfd",
+      "kind": "skill-seconds",
+      "title": "도약·폭발 지연 · 미정",
+      "position": {
+        "x": 40,
+        "y": 654
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "d1cbe72f-8010-497e-ac57-3c1f23aa9f95"
+    },
+    {
+      "id": "dabf4e87-8638-4ca2-9299-e603953db6bf",
+      "kind": "skill-range",
+      "title": "이 형상의 확대 타일 · 미정",
+      "position": {
+        "x": 840,
+        "y": 4847.2
+      },
+      "values": {
+        "includeAnchor": false,
+        "pattern": ""
+      },
+      "note": "",
+      "frame": "632e66dc-0558-41be-9d99-ed02d150c412"
+    },
+    {
+      "id": "dcee6b09-41ec-4acd-b4b1-fa74a316c491",
+      "kind": "skill-mobile-variant",
+      "title": "특별한 친구 · 실제 누적 수 보존",
+      "position": {
+        "x": 1360,
+        "y": 312
+      },
+      "values": {},
+      "note": "",
+      "frame": "d1cbe72f-8010-497e-ac57-3c1f23aa9f95"
+    },
+    {
+      "id": "eadb3b09-74bc-4ae3-a7f1-bb9f5d362b5d",
+      "kind": "skill-mobile-effect",
+      "title": "작은 친구 · 비저지 함정 · 1칸 감지",
+      "position": {
+        "x": 480,
+        "y": 599
+      },
+      "values": {
+        "damageType": "magic",
+        "motion": "wait-leap",
+        "speed": ""
+      },
+      "note": "",
+      "frame": "d1cbe72f-8010-497e-ac57-3c1f23aa9f95"
+    },
+    {
+      "id": "f5b2f55c-d123-46c9-8882-5339721e5fec",
+      "kind": "skill-range",
+      "title": "큰 친구 폭발 범위 · 미정",
+      "position": {
+        "x": 480,
+        "y": 80
+      },
+      "values": {
+        "includeAnchor": false,
+        "pattern": ""
+      },
+      "note": "",
+      "frame": "d1cbe72f-8010-497e-ac57-3c1f23aa9f95"
+    },
+    {
+      "id": "f65c613b-878d-4d39-b487-7c025161dc4e",
+      "kind": "skill-equipment-condition",
+      "title": "사냥의 낙인 · 장착 여부",
+      "position": {
+        "x": 840,
+        "y": 3779.2
+      },
+      "values": {
+        "copies": "once",
+        "definition": "summon-vulnerability",
+        "slot": "relic",
+        "variant": "normal"
+      },
+      "note": "",
+      "frame": "632e66dc-0558-41be-9d99-ed02d150c412"
+    },
+    {
+      "id": "f7c07db8-5728-48eb-9877-37682d7b244f",
+      "kind": "skill-range",
+      "title": "대상 선택 범위 · 미정",
+      "position": {
+        "x": 40,
+        "y": 2812.2
+      },
+      "values": {
+        "includeAnchor": false,
+        "pattern": ""
+      },
+      "note": "",
+      "frame": "eb998544-7dd3-4b3c-a632-66880c42d3e4"
+    }
+  ],
+  "edges": [
+    {
+      "id": "028d8873-1b1b-4de0-a2f8-f29f12ddce47",
+      "source": {
+        "node": "d5e6ccf0-db71-4d76-920e-5eee045db039",
+        "port": "range"
+      },
+      "target": {
+        "node": "dcee6b09-41ec-4acd-b4b1-fa74a316c491",
+        "port": "range"
+      }
+    },
+    {
+      "id": "02eaa4f6-6f60-4fdf-aec8-326184cb61d1",
+      "source": {
+        "node": "10b7bc7b-3dbc-41e3-9483-aa8a040857d2",
+        "port": "out"
+      },
+      "target": {
+        "node": "b88714b7-a507-4027-ab08-362fcec0a89b",
+        "port": "in"
+      }
+    },
+    {
+      "id": "08dc7da5-5435-4667-9ab7-20a67043ede8",
+      "source": {
+        "node": "10b7bc7b-3dbc-41e3-9483-aa8a040857d2",
+        "port": "request"
+      },
+      "target": {
+        "node": "b88714b7-a507-4027-ab08-362fcec0a89b",
+        "port": "request"
+      }
+    },
+    {
+      "id": "09748e02-8271-4852-bf3e-6fe7fe8806b6",
+      "source": {
+        "node": "eadb3b09-74bc-4ae3-a7f1-bb9f5d362b5d",
+        "port": "profile"
+      },
+      "target": {
+        "node": "9762bb40-f050-47fc-9190-6c2126ea8f47",
+        "port": "target"
+      }
+    },
+    {
+      "id": "0f11f0d1-380b-4d29-8415-65ae18e8864a",
+      "source": {
+        "node": "00384325-ed89-4573-a35b-dccd8af25c01",
+        "port": "out"
+      },
+      "target": {
+        "node": "668735b8-330e-4575-a497-257d1715c883",
+        "port": "in"
+      }
+    },
+    {
+      "id": "117d67af-20fb-4d1c-b6a4-361505990ee6",
+      "source": {
+        "node": "7f68f52a-5d93-42e4-86f4-b4332c7090fd",
+        "port": "condition"
+      },
+      "target": {
+        "node": "21009f42-2526-4f2c-904c-b21afbc916a9",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "166d8122-1684-43af-b8c2-bfccb2306420",
+      "source": {
+        "node": "67833ccd-b846-4612-9e55-ecf23539fc85",
+        "port": "snapshot"
+      },
+      "target": {
+        "node": "b88714b7-a507-4027-ab08-362fcec0a89b",
+        "port": "snapshot"
+      }
+    },
+    {
+      "id": "1dc13d0b-1776-47fd-9679-faa95fd80313",
+      "source": {
+        "node": "42a12e3f-f3f9-4af4-805f-ef3bffb6abd9",
+        "port": "settings"
+      },
+      "target": {
+        "node": "67833ccd-b846-4612-9e55-ecf23539fc85",
+        "port": "settings"
+      }
+    },
+    {
+      "id": "221feab4-258a-4665-81d0-27f02e8cd2b9",
+      "source": {
+        "node": "6c857be0-9f3f-47e0-b589-cc1869c73b57",
+        "port": "profile"
+      },
+      "target": {
+        "node": "4161891c-bff5-4b47-899a-f5ab3a41432a",
+        "port": "profile"
+      }
+    },
+    {
+      "id": "27767d0e-23b8-4c50-a750-2404c14b4f96",
+      "source": {
+        "node": "f7c07db8-5728-48eb-9877-37682d7b244f",
+        "port": "range"
+      },
+      "target": {
+        "node": "1cc1bb35-cc96-4999-964b-3d669e9fe723",
+        "port": "range"
+      }
+    },
+    {
+      "id": "2e58bba3-3b32-46e6-90a6-d49accb3e063",
+      "source": {
+        "node": "1cc1bb35-cc96-4999-964b-3d669e9fe723",
+        "port": "selection"
+      },
+      "target": {
+        "node": "10b7bc7b-3dbc-41e3-9483-aa8a040857d2",
+        "port": "selection"
+      }
+    },
+    {
+      "id": "30f1f1a0-a262-49f5-91e1-8a62181b79d0",
+      "source": {
+        "node": "4161891c-bff5-4b47-899a-f5ab3a41432a",
+        "port": "tier"
+      },
+      "target": {
+        "node": "95c5c3f8-1769-491f-a8d7-cb73dac14a53",
+        "port": "tiers"
+      }
+    },
+    {
+      "id": "339c1bfe-b80d-48de-a039-45d550fe4fd8",
+      "source": {
+        "node": "f65c613b-878d-4d39-b487-7c025161dc4e",
+        "port": "condition"
+      },
+      "target": {
+        "node": "6ffe57f5-0e21-48d2-a2a4-2755abb66be7",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "33c83a2b-11dd-4bfd-b789-599c34cf80aa",
+      "source": {
+        "node": "1645746d-7564-4fd7-b5e6-f26892846e18",
+        "port": "power"
+      },
+      "target": {
+        "node": "414f78f9-4779-4b79-a722-dd34e85204bd",
+        "port": "base"
+      }
+    },
+    {
+      "id": "3624c5f2-acc2-41e2-abea-ff0837ccb586",
+      "source": {
+        "node": "414f78f9-4779-4b79-a722-dd34e85204bd",
+        "port": "power"
+      },
+      "target": {
+        "node": "dcee6b09-41ec-4acd-b4b1-fa74a316c491",
+        "port": "power"
+      }
+    },
+    {
+      "id": "372a661a-dfd2-4bde-93e3-b234e65f7cd7",
+      "source": {
+        "node": "6c857be0-9f3f-47e0-b589-cc1869c73b57",
+        "port": "profile"
+      },
+      "target": {
+        "node": "a99ba3d6-db1a-460d-8ad6-76c12de87233",
+        "port": "target"
+      }
+    },
+    {
+      "id": "3965fd9c-b981-4365-a010-bcf5d045676e",
+      "source": {
+        "node": "aac2a013-3290-4259-958c-d873acf94065",
+        "port": "plan"
+      },
+      "target": {
+        "node": "3141f7bb-b00b-4a17-8bdf-b868cd3850e0",
+        "port": "plan"
+      }
+    },
+    {
+      "id": "3f235106-bec8-4778-afba-aa4e817ccc8c",
+      "source": {
+        "node": "0064ad28-ed4b-4cfe-854d-0d59802a519e",
+        "port": "condition"
+      },
+      "target": {
+        "node": "a99ba3d6-db1a-460d-8ad6-76c12de87233",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "4c071206-1939-4a63-8a18-b2c3e0d02dfe",
+      "source": {
+        "node": "00a2e10d-ba17-46ba-9937-0b44b6e78b63",
+        "port": "range"
+      },
+      "target": {
+        "node": "eadb3b09-74bc-4ae3-a7f1-bb9f5d362b5d",
+        "port": "detection"
+      }
+    },
+    {
+      "id": "4ccd65d5-57f9-4da8-9cab-07ccbee4ed70",
+      "source": {
+        "node": "243475bd-e10d-47c0-a309-52885754375e",
+        "port": "value"
+      },
+      "target": {
+        "node": "eadb3b09-74bc-4ae3-a7f1-bb9f5d362b5d",
+        "port": "lifetime"
+      }
+    },
+    {
+      "id": "50cb578c-5b90-4048-a538-c380f49d0ef6",
+      "source": {
+        "node": "270f09a5-ca48-45e9-87a6-1052409cfcc3",
+        "port": "cost"
+      },
+      "target": {
+        "node": "b88714b7-a507-4027-ab08-362fcec0a89b",
+        "port": "cost"
+      }
+    },
+    {
+      "id": "52f5f4e0-f83b-4512-98a9-24be71fbed9f",
+      "source": {
+        "node": "2ce56aa5-ef16-41dc-9131-a5e67b4101f5",
+        "port": "range"
+      },
+      "target": {
+        "node": "885a4290-0355-4989-a068-c2332afcb309",
+        "port": "target"
+      }
+    },
+    {
+      "id": "5468a62c-751b-447b-aef4-a6f8abdc0b63",
+      "source": {
+        "node": "95c5c3f8-1769-491f-a8d7-cb73dac14a53",
+        "port": "family"
+      },
+      "target": {
+        "node": "a6d6a25c-ba60-4f08-b957-a4a2c59b49f9",
+        "port": "family"
+      }
+    },
+    {
+      "id": "65eee018-0744-4efa-8d61-d590c4140c61",
+      "source": {
+        "node": "b88714b7-a507-4027-ab08-362fcec0a89b",
+        "port": "out"
+      },
+      "target": {
+        "node": "00384325-ed89-4573-a35b-dccd8af25c01",
+        "port": "in"
+      }
+    },
+    {
+      "id": "6a8329e3-f217-453b-9ceb-803c0d6da7b3",
+      "source": {
+        "node": "dcee6b09-41ec-4acd-b4b1-fa74a316c491",
+        "port": "profile"
+      },
+      "target": {
+        "node": "7dd2b0a4-01a1-4920-bc06-340094b2d9a2",
+        "port": "profile"
+      }
+    },
+    {
+      "id": "6b36e248-86f1-4051-9da9-e7ee1d47e2ad",
+      "source": {
+        "node": "0064ad28-ed4b-4cfe-854d-0d59802a519e",
+        "port": "condition"
+      },
+      "target": {
+        "node": "b697b49d-faa2-4afc-9729-1c22b0e8feb9",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "75bf56d4-db36-4541-bc77-705784a0b074",
+      "source": {
+        "node": "eadb3b09-74bc-4ae3-a7f1-bb9f5d362b5d",
+        "port": "profile"
+      },
+      "target": {
+        "node": "6c857be0-9f3f-47e0-b589-cc1869c73b57",
+        "port": "base"
+      }
+    },
+    {
+      "id": "79778808-31fe-4837-83d9-df0e1525c548",
+      "source": {
+        "node": "b4ee2e16-05ce-496a-9b42-e447f9988510",
+        "port": "condition"
+      },
+      "target": {
+        "node": "885a4290-0355-4989-a068-c2332afcb309",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "79edc8f8-eb7c-4056-b224-2f80513357df",
+      "source": {
+        "node": "7e040127-bf9e-4474-bd32-b381f048f733",
+        "port": "range"
+      },
+      "target": {
+        "node": "885a4290-0355-4989-a068-c2332afcb309",
+        "port": "replacement"
+      }
+    },
+    {
+      "id": "7a30b3de-1c4d-41ba-bb42-7de3fe277325",
+      "source": {
+        "node": "b88714b7-a507-4027-ab08-362fcec0a89b",
+        "port": "permit"
+      },
+      "target": {
+        "node": "00384325-ed89-4573-a35b-dccd8af25c01",
+        "port": "permit"
+      }
+    },
+    {
+      "id": "7ee24634-0158-4c20-a651-4aee689b9753",
+      "source": {
+        "node": "f5b2f55c-d123-46c9-8882-5339721e5fec",
+        "port": "range"
+      },
+      "target": {
+        "node": "6c857be0-9f3f-47e0-b589-cc1869c73b57",
+        "port": "range"
+      }
+    },
+    {
+      "id": "8027dc70-b872-411b-b2f5-ef6306b51760",
+      "source": {
+        "node": "3bb7b34a-56f6-4485-81e3-ae0851b2d9ba",
+        "port": "value"
+      },
+      "target": {
+        "node": "21009f42-2526-4f2c-904c-b21afbc916a9",
+        "port": "target"
+      }
+    },
+    {
+      "id": "8467b9d4-ed94-4400-b3ab-8cb72416849b",
+      "source": {
+        "node": "eadb3b09-74bc-4ae3-a7f1-bb9f5d362b5d",
+        "port": "profile"
+      },
+      "target": {
+        "node": "93059c52-a0d3-433a-bafb-48d577d86613",
+        "port": "profile"
+      }
+    },
+    {
+      "id": "847d5d15-1399-4ed8-93e7-e8d5b5d419e6",
+      "source": {
+        "node": "10b7bc7b-3dbc-41e3-9483-aa8a040857d2",
+        "port": "request"
+      },
+      "target": {
+        "node": "67833ccd-b846-4612-9e55-ecf23539fc85",
+        "port": "request"
+      }
+    },
+    {
+      "id": "86b2ab9a-5e4c-421e-9eaa-1c56a67f2ca0",
+      "source": {
+        "node": "6c857be0-9f3f-47e0-b589-cc1869c73b57",
+        "port": "profile"
+      },
+      "target": {
+        "node": "dcee6b09-41ec-4acd-b4b1-fa74a316c491",
+        "port": "base"
+      }
+    },
+    {
+      "id": "8a3bda36-e376-45ce-ad19-d47716d12ad3",
+      "source": {
+        "node": "d826cd0e-c7b8-49e6-b834-da7531b90dfd",
+        "port": "value"
+      },
+      "target": {
+        "node": "eadb3b09-74bc-4ae3-a7f1-bb9f5d362b5d",
+        "port": "delay"
+      }
+    },
+    {
+      "id": "9bb66bc5-5436-4cd5-ae0d-79ba189ffc9f",
+      "source": {
+        "node": "0064ad28-ed4b-4cfe-854d-0d59802a519e",
+        "port": "condition"
+      },
+      "target": {
+        "node": "9762bb40-f050-47fc-9190-6c2126ea8f47",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "9c5527a1-84fc-4a23-8891-3768547b7c65",
+      "source": {
+        "node": "f5b2f55c-d123-46c9-8882-5339721e5fec",
+        "port": "range"
+      },
+      "target": {
+        "node": "d4406a0d-9893-4fc3-be6d-3b111efa83d1",
+        "port": "target"
+      }
+    },
+    {
+      "id": "9d3b8133-3eeb-405b-b6d8-024985e23510",
+      "source": {
+        "node": "88ad52c7-5626-465d-8193-2fa6ec9f47ac",
+        "port": "power"
+      },
+      "target": {
+        "node": "eadb3b09-74bc-4ae3-a7f1-bb9f5d362b5d",
+        "port": "power"
+      }
+    },
+    {
+      "id": "9de8d167-3096-4819-877e-cfaf4e13aa1b",
+      "source": {
+        "node": "eadb3b09-74bc-4ae3-a7f1-bb9f5d362b5d",
+        "port": "profile"
+      },
+      "target": {
+        "node": "6ffe57f5-0e21-48d2-a2a4-2755abb66be7",
+        "port": "target"
+      }
+    },
+    {
+      "id": "9e60de49-4366-4daa-85ef-e83cf5e60a60",
+      "source": {
+        "node": "80612c2a-18a7-4461-8525-f541fc5a879d",
+        "port": "value"
+      },
+      "target": {
+        "node": "6ffe57f5-0e21-48d2-a2a4-2755abb66be7",
+        "port": "duration"
+      }
+    },
+    {
+      "id": "a3693f5a-524c-4206-9b40-ce4e05e05814",
+      "source": {
+        "node": "00384325-ed89-4573-a35b-dccd8af25c01",
+        "port": "use"
+      },
+      "target": {
+        "node": "668735b8-330e-4575-a497-257d1715c883",
+        "port": "use"
+      }
+    },
+    {
+      "id": "ac2e6412-26f8-413e-ba66-509bc697ebc7",
+      "source": {
+        "node": "5b0aad9d-d8f3-4b3d-8b02-c211a5db722b",
+        "port": "value"
+      },
+      "target": {
+        "node": "42a12e3f-f3f9-4af4-805f-ef3bffb6abd9",
+        "port": "capacity"
+      }
+    },
+    {
+      "id": "ae065c0c-392e-47f8-9b04-4a24efdb9bbc",
+      "source": {
+        "node": "dabf4e87-8638-4ca2-9299-e603953db6bf",
+        "port": "range"
+      },
+      "target": {
+        "node": "1819524e-a312-43ed-beb2-c9f1e0e52aef",
+        "port": "replacement"
+      }
+    },
+    {
+      "id": "b076aaea-0bda-45cf-9bd4-40583ca5d58f",
+      "source": {
+        "node": "b4ee2e16-05ce-496a-9b42-e447f9988510",
+        "port": "condition"
+      },
+      "target": {
+        "node": "1819524e-a312-43ed-beb2-c9f1e0e52aef",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "b1f23dc9-fe88-4bb9-8888-b69020bbf8b3",
+      "source": {
+        "node": "d5e6ccf0-db71-4d76-920e-5eee045db039",
+        "port": "range"
+      },
+      "target": {
+        "node": "1819524e-a312-43ed-beb2-c9f1e0e52aef",
+        "port": "target"
+      }
+    },
+    {
+      "id": "b287ba08-2d40-4814-807d-2bb1d41e7deb",
+      "source": {
+        "node": "88ad52c7-5626-465d-8193-2fa6ec9f47ac",
+        "port": "power"
+      },
+      "target": {
+        "node": "1645746d-7564-4fd7-b5e6-f26892846e18",
+        "port": "base"
+      }
+    },
+    {
+      "id": "b3884551-2f78-4803-9b6f-5db04cc55d65",
+      "source": {
+        "node": "93059c52-a0d3-433a-bafb-48d577d86613",
+        "port": "tier"
+      },
+      "target": {
+        "node": "95c5c3f8-1769-491f-a8d7-cb73dac14a53",
+        "port": "tiers"
+      }
+    },
+    {
+      "id": "b62c540d-5f97-4b48-9d7f-aa5d2a6e0f2f",
+      "source": {
+        "node": "b4ee2e16-05ce-496a-9b42-e447f9988510",
+        "port": "condition"
+      },
+      "target": {
+        "node": "d4406a0d-9893-4fc3-be6d-3b111efa83d1",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "b6743645-e946-400b-8271-a0600a6e9f1d",
+      "source": {
+        "node": "66d5c73f-1aa0-4c1b-a390-6bd7760e07dd",
+        "port": "range"
+      },
+      "target": {
+        "node": "d4406a0d-9893-4fc3-be6d-3b111efa83d1",
+        "port": "replacement"
+      }
+    },
+    {
+      "id": "b8e5c4a2-a685-43fd-b044-6cb097adc31b",
+      "source": {
+        "node": "dcee6b09-41ec-4acd-b4b1-fa74a316c491",
+        "port": "profile"
+      },
+      "target": {
+        "node": "b697b49d-faa2-4afc-9729-1c22b0e8feb9",
+        "port": "target"
+      }
+    },
+    {
+      "id": "c7547be6-4376-4ffe-8880-cf14fbdd3331",
+      "source": {
+        "node": "67833ccd-b846-4612-9e55-ecf23539fc85",
+        "port": "snapshot"
+      },
+      "target": {
+        "node": "270f09a5-ca48-45e9-87a6-1052409cfcc3",
+        "port": "snapshot"
+      }
+    },
+    {
+      "id": "d97a8aa3-7650-4665-88c5-621a848c0659",
+      "source": {
+        "node": "f5b2f55c-d123-46c9-8882-5339721e5fec",
+        "port": "range"
+      },
+      "target": {
+        "node": "d5e6ccf0-db71-4d76-920e-5eee045db039",
+        "port": "base"
+      }
+    },
+    {
+      "id": "db9f62bb-4219-4b78-85bb-2070a09fe0ff",
+      "source": {
+        "node": "95c5c3f8-1769-491f-a8d7-cb73dac14a53",
+        "port": "family"
+      },
+      "target": {
+        "node": "aac2a013-3290-4259-958c-d873acf94065",
+        "port": "family"
+      }
+    },
+    {
+      "id": "e1ab8ade-e168-4a4b-8412-4d88e7c625e6",
+      "source": {
+        "node": "3141f7bb-b00b-4a17-8bdf-b868cd3850e0",
+        "port": "program"
+      },
+      "target": {
+        "node": "668735b8-330e-4575-a497-257d1715c883",
+        "port": "program"
+      }
+    },
+    {
+      "id": "e48e20e0-3688-4683-8431-af56298b1655",
+      "source": {
+        "node": "3141f7bb-b00b-4a17-8bdf-b868cd3850e0",
+        "port": "program"
+      },
+      "target": {
+        "node": "b88714b7-a507-4027-ab08-362fcec0a89b",
+        "port": "program"
+      }
+    },
+    {
+      "id": "e4a68841-7c0a-4831-abfc-30e689dbe369",
+      "source": {
+        "node": "8cdda26b-42d3-4127-beee-f6d31f8dec26",
+        "port": "requirement"
+      },
+      "target": {
+        "node": "b88714b7-a507-4027-ab08-362fcec0a89b",
+        "port": "requirement"
+      }
+    },
+    {
+      "id": "f347d992-245a-4761-ba23-72c325e75484",
+      "source": {
+        "node": "1645746d-7564-4fd7-b5e6-f26892846e18",
+        "port": "power"
+      },
+      "target": {
+        "node": "6c857be0-9f3f-47e0-b589-cc1869c73b57",
+        "port": "power"
+      }
+    },
+    {
+      "id": "f560ee1f-8f89-433f-a5ab-834ecfad3a69",
+      "source": {
+        "node": "2ce56aa5-ef16-41dc-9131-a5e67b4101f5",
+        "port": "range"
+      },
+      "target": {
+        "node": "eadb3b09-74bc-4ae3-a7f1-bb9f5d362b5d",
+        "port": "range"
+      }
+    },
+    {
+      "id": "f9324308-5b3b-45ca-9cdf-a5288aff7a2d",
+      "source": {
+        "node": "7dd2b0a4-01a1-4920-bc06-340094b2d9a2",
+        "port": "tier"
+      },
+      "target": {
+        "node": "95c5c3f8-1769-491f-a8d7-cb73dac14a53",
+        "port": "tiers"
+      }
+    },
+    {
+      "id": "fc60f493-1303-48a5-b571-af61d324cfcb",
+      "source": {
+        "node": "3bb7b34a-56f6-4485-81e3-ae0851b2d9ba",
+        "port": "value"
+      },
+      "target": {
+        "node": "a6d6a25c-ba60-4f08-b957-a4a2c59b49f9",
+        "port": "duration"
+      }
+    }
+  ],
+  "frames": [
+    {
+      "id": "632e66dc-0558-41be-9d99-ed02d150c412",
+      "title": "장착 유물 → 폭발·선물 변경 · 감지/대기/도약 유지"
+    },
+    {
+      "id": "81e7b4e8-8b22-4965-8bba-dba8b679e621",
+      "title": "아직 남은 선물 장착 조건 · 직접 시전과 별도 사망 생성"
+    },
+    {
+      "id": "92535abc-ba5a-465f-8ec2-3d942aa1e220",
+      "title": "선택 타일 + 인접 한 곳 · 공간 부족은 합산"
+    },
+    {
+      "id": "d1cbe72f-8010-497e-ac57-3c1f23aa9f95",
+      "title": "같은 소유자·사본·타일의 누적 수 · 이동·감지 재사용"
+    },
+    {
+      "id": "eb998544-7dd3-4b3c-a632-66880c42d3e4",
+      "title": "시작 → 대상·공명 자격 → 비용 확정 → 행동 → 종료"
+    }
+  ]
+}

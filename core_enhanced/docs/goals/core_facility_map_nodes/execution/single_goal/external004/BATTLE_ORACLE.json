@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "source": "battle/trace.jsonl",
+  "preview_and_actual_setup_equal": [
+    "encounter_id",
+    "mission_variant",
+    "node_type",
+    "routes",
+    "deployment_zones",
+    "width",
+    "height",
+    "tiles",
+    "valid_tiles",
+    "static_obstacles"
+  ],
+  "actual_victory": true,
+  "actual_deployed_employees": 3,
+  "actual_kills": 2,
+  "registered_actual_profiles": [
+    "corroded_guard",
+    "corroded_marksman"
+  ],
+  "simulation_ms": 20150,
+  "hidden_wave_and_summon_negative": "test013 live_cwbs and consuming_victory/every_defeat cases"
+}

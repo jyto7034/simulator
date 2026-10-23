@@ -194,6 +194,7 @@ mod tests {
             .unwrap();
         let employee_creator = side == Side::Player && !skills.skills.is_empty();
         let weapon = crate::game::data::equipment_data::EquipmentMetadata {
+            content_family: None,
             id: "creation_fixture_sword".into(),
             uuid: Uuid::from_u128(300),
             name: "Creation fixture sword".into(),
@@ -258,6 +259,7 @@ mod tests {
                     equipment_layout: None,
                     equipped_items: if employee_creator {
                         vec![crate::game::battle::types::BattleEquipmentBinding {
+            weapon_stage: Default::default(),
                             base_uuid: Uuid::from_u128(300),
                             persistent_copy_uuid: None,
                             slot: None,

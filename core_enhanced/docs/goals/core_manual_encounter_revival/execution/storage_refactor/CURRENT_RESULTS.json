@@ -1,0 +1,533 @@
+{
+  "self_validation_passed": true,
+  "audit_performed": false,
+  "tests": [
+    {
+      "log": "runs/core-lib-008.log",
+      "passed": 2159,
+      "failed": 1,
+      "ignored": 6
+    },
+    {
+      "log": "runs/socket-009.log",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "log": "runs/native-u17-010.log",
+      "passed": 25,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "log": "runs/server-persistence-011.log",
+      "passed": 29,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "log": "runs/native-storage-012.log",
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "log": "runs/native-shared-013.log",
+      "passed": 45,
+      "failed": 0,
+      "ignored": 0
+    }
+  ],
+  "socket_disposition": "sandbox EPERM; same test separately passed outside sandbox; raw failure preserved",
+  "public": {
+    "normal-forward": {
+      "passed": true,
+      "choices": 3,
+      "milestones": [
+        "elite_repeat",
+        "first_boss_result",
+        "after_shop",
+        "save_before_hatch",
+        "Stage2_hatched",
+        "retreat1",
+        "retreat2",
+        "Stage2_result",
+        "Stage2_choice_pending",
+        "Stage2_choice_selected",
+        "Stage2_claimed",
+        "Stage3_hatched",
+        "Stage3_result",
+        "Stage3_choice_pending",
+        "Stage3_choice_selected",
+        "Stage3_claimed",
+        "completed"
+      ],
+      "scope": "continuous public commands; actual manual combat and published stores"
+    },
+    "normal-fresh": {
+      "passed": true,
+      "source": "/tmp/u17-full-flow-27w13kk_",
+      "results": [
+        {
+          "milestone": "Stage2_hatched",
+          "passed": true,
+          "pid": 83
+        },
+        {
+          "milestone": "retreat1",
+          "passed": true,
+          "pid": 90
+        },
+        {
+          "milestone": "retreat2",
+          "passed": true,
+          "pid": 97
+        },
+        {
+          "milestone": "Stage2_result",
+          "passed": true,
+          "pid": 104
+        },
+        {
+          "milestone": "Stage2_choice_pending",
+          "passed": true,
+          "pid": 111
+        },
+        {
+          "milestone": "Stage2_choice_selected",
+          "passed": true,
+          "pid": 118
+        },
+        {
+          "milestone": "Stage2_claimed",
+          "passed": true,
+          "pid": 125
+        },
+        {
+          "milestone": "Stage3_result",
+          "passed": true,
+          "pid": 132
+        },
+        {
+          "milestone": "Stage3_choice_selected",
+          "passed": true,
+          "pid": 139
+        },
+        {
+          "milestone": "Stage3_claimed",
+          "passed": true,
+          "pid": 146
+        },
+        {
+          "milestone": "unfinished_normal_then_hatch",
+          "passed": true,
+          "pid": 160
+        },
+        {
+          "milestone": "actual_savepoint_before_hatch",
+          "passed": true,
+          "pid": 167
+        },
+        {
+          "milestone": "actual_savepoint_after_hatch_and_same_floor_return",
+          "passed": true,
+          "pid": 174
+        },
+        {
+          "milestone": "savepoint_after_fresh_reader",
+          "passed": true,
+          "pid": 181
+        }
+      ]
+    },
+    "normal-io": {
+      "passed": true,
+      "source_trace": "/tmp/u17-full-flow-27w13kk_/host/trace.jsonl",
+      "failures": [
+        {
+          "source_index": 44,
+          "kind": "tick",
+          "terminal": true
+        },
+        {
+          "source_index": 45,
+          "kind": "complete_combat_result",
+          "terminal": false
+        },
+        {
+          "source_index": 112,
+          "kind": "tick",
+          "terminal": true
+        },
+        {
+          "source_index": 113,
+          "kind": "complete_combat_result",
+          "terminal": false
+        },
+        {
+          "source_index": 157,
+          "kind": "tick",
+          "terminal": true
+        },
+        {
+          "source_index": 158,
+          "kind": "complete_combat_result",
+          "terminal": false
+        },
+        {
+          "source_index": 204,
+          "kind": "tick",
+          "terminal": true
+        },
+        {
+          "source_index": 205,
+          "kind": "complete_combat_result",
+          "terminal": false
+        },
+        {
+          "source_index": 209,
+          "kind": "exit_shop",
+          "terminal": false
+        },
+        {
+          "source_index": 214,
+          "kind": "hatch_encounter",
+          "terminal": false
+        },
+        {
+          "source_index": 264,
+          "kind": "tick",
+          "terminal": true
+        },
+        {
+          "source_index": 265,
+          "kind": "complete_combat_result",
+          "terminal": false
+        },
+        {
+          "source_index": 268,
+          "kind": "claim_reward",
+          "terminal": false
+        },
+        {
+          "source_index": 272,
+          "kind": "hatch_encounter",
+          "terminal": false
+        },
+        {
+          "source_index": 326,
+          "kind": "tick",
+          "terminal": true
+        },
+        {
+          "source_index": 327,
+          "kind": "complete_combat_result",
+          "terminal": false
+        },
+        {
+          "source_index": 330,
+          "kind": "claim_reward",
+          "terminal": false
+        }
+      ],
+      "duplicate_hatch_rejections": [
+        214,
+        272
+      ],
+      "scope": "generic host asserts entire Core roots and active/profile file bytes unchanged on actual OS21 journal publication failure; identical retry matches successful public route"
+    },
+    "expanded-forward": {
+      "passed": true,
+      "choices": 64,
+      "milestones": [
+        "elite_repeat",
+        "first_boss_result",
+        "after_shop",
+        "save_before_hatch",
+        "Stage2_hatched",
+        "retreat1",
+        "retreat2",
+        "Stage2_result",
+        "Stage2_choice_pending",
+        "Stage2_choice_selected",
+        "Stage2_claimed",
+        "Stage3_hatched",
+        "Stage3_result",
+        "Stage3_choice_pending",
+        "Stage3_choice_selected",
+        "Stage3_claimed",
+        "completed"
+      ],
+      "scope": "continuous public commands; actual manual combat and published stores"
+    },
+    "expanded-fresh": {
+      "passed": true,
+      "source": "/tmp/u17-full-flow-29b3zo7l",
+      "results": [
+        {
+          "milestone": "Stage2_hatched",
+          "passed": true,
+          "pid": 275
+        },
+        {
+          "milestone": "retreat1",
+          "passed": true,
+          "pid": 282
+        },
+        {
+          "milestone": "retreat2",
+          "passed": true,
+          "pid": 289
+        },
+        {
+          "milestone": "Stage2_result",
+          "passed": true,
+          "pid": 296
+        },
+        {
+          "milestone": "Stage2_choice_pending",
+          "passed": true,
+          "pid": 303
+        },
+        {
+          "milestone": "Stage2_choice_selected",
+          "passed": true,
+          "pid": 310
+        },
+        {
+          "milestone": "Stage2_claimed",
+          "passed": true,
+          "pid": 317
+        },
+        {
+          "milestone": "Stage3_result",
+          "passed": true,
+          "pid": 324
+        },
+        {
+          "milestone": "Stage3_choice_selected",
+          "passed": true,
+          "pid": 331
+        },
+        {
+          "milestone": "Stage3_claimed",
+          "passed": true,
+          "pid": 338
+        },
+        {
+          "milestone": "unfinished_normal_then_hatch",
+          "passed": true,
+          "pid": 352
+        },
+        {
+          "milestone": "actual_savepoint_before_hatch",
+          "passed": true,
+          "pid": 359
+        },
+        {
+          "milestone": "actual_savepoint_after_hatch_and_same_floor_return",
+          "passed": true,
+          "pid": 366
+        },
+        {
+          "milestone": "savepoint_after_fresh_reader",
+          "passed": true,
+          "pid": 373
+        }
+      ]
+    },
+    "expanded-io": {
+      "passed": true,
+      "source_trace": "/tmp/u17-full-flow-29b3zo7l/host/trace.jsonl",
+      "failures": [
+        {
+          "source_index": 44,
+          "kind": "tick",
+          "terminal": true
+        },
+        {
+          "source_index": 45,
+          "kind": "complete_combat_result",
+          "terminal": false
+        },
+        {
+          "source_index": 112,
+          "kind": "tick",
+          "terminal": true
+        },
+        {
+          "source_index": 113,
+          "kind": "complete_combat_result",
+          "terminal": false
+        },
+        {
+          "source_index": 157,
+          "kind": "tick",
+          "terminal": true
+        },
+        {
+          "source_index": 158,
+          "kind": "complete_combat_result",
+          "terminal": false
+        },
+        {
+          "source_index": 204,
+          "kind": "tick",
+          "terminal": true
+        },
+        {
+          "source_index": 205,
+          "kind": "complete_combat_result",
+          "terminal": false
+        },
+        {
+          "source_index": 209,
+          "kind": "exit_shop",
+          "terminal": false
+        },
+        {
+          "source_index": 214,
+          "kind": "hatch_encounter",
+          "terminal": false
+        },
+        {
+          "source_index": 264,
+          "kind": "tick",
+          "terminal": true
+        },
+        {
+          "source_index": 265,
+          "kind": "complete_combat_result",
+          "terminal": false
+        },
+        {
+          "source_index": 268,
+          "kind": "claim_reward",
+          "terminal": false
+        },
+        {
+          "source_index": 272,
+          "kind": "hatch_encounter",
+          "terminal": false
+        },
+        {
+          "source_index": 326,
+          "kind": "tick",
+          "terminal": true
+        },
+        {
+          "source_index": 327,
+          "kind": "complete_combat_result",
+          "terminal": false
+        },
+        {
+          "source_index": 330,
+          "kind": "claim_reward",
+          "terminal": false
+        }
+      ],
+      "duplicate_hatch_rejections": [
+        214,
+        272
+      ],
+      "scope": "generic host asserts entire Core roots and active/profile file bytes unchanged on actual OS21 journal publication failure; identical retry matches successful public route"
+    },
+    "terminal": {
+      "passed": true,
+      "results": [
+        {
+          "kind": "return",
+          "writer_pid": 5,
+          "reader_pid": 12,
+          "passed": true,
+          "scope": "actual terminal publish, preaccept IO refusal and same retry, fresh profile/no active run, no duplicate grant"
+        },
+        {
+          "kind": "abandon",
+          "writer_pid": 19,
+          "reader_pid": 26,
+          "passed": true,
+          "scope": "actual terminal publish, preaccept IO refusal and same retry, fresh profile/no active run, no duplicate grant"
+        }
+      ]
+    },
+    "old_writer_fresh": {
+      "passed": true,
+      "source": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_manual_encounter_revival/execution/single_goal/runs/current001/normal",
+      "results": [
+        {
+          "milestone": "Stage2_hatched",
+          "passed": true,
+          "pid": 5
+        },
+        {
+          "milestone": "retreat1",
+          "passed": true,
+          "pid": 12
+        },
+        {
+          "milestone": "retreat2",
+          "passed": true,
+          "pid": 19
+        },
+        {
+          "milestone": "Stage2_result",
+          "passed": true,
+          "pid": 26
+        },
+        {
+          "milestone": "Stage2_choice_pending",
+          "passed": true,
+          "pid": 33
+        },
+        {
+          "milestone": "Stage2_choice_selected",
+          "passed": true,
+          "pid": 40
+        },
+        {
+          "milestone": "Stage2_claimed",
+          "passed": true,
+          "pid": 47
+        },
+        {
+          "milestone": "Stage3_result",
+          "passed": true,
+          "pid": 54
+        },
+        {
+          "milestone": "Stage3_choice_selected",
+          "passed": true,
+          "pid": 61
+        },
+        {
+          "milestone": "Stage3_claimed",
+          "passed": true,
+          "pid": 68
+        },
+        {
+          "milestone": "unfinished_normal_then_hatch",
+          "passed": true,
+          "pid": 82
+        },
+        {
+          "milestone": "actual_savepoint_before_hatch",
+          "passed": true,
+          "pid": 89
+        },
+        {
+          "milestone": "actual_savepoint_after_hatch_and_same_floor_return",
+          "passed": true,
+          "pid": 96
+        },
+        {
+          "milestone": "savepoint_after_fresh_reader",
+          "passed": true,
+          "pid": 103
+        }
+      ]
+    }
+  },
+  "scope": "policy-preserving U17 storage follow-up; original U17 target untouched"
+}

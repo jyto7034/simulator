@@ -47,6 +47,7 @@ fn finish_started_briefing(core: &mut GameCore, player: Uuid, start: BehaviorRes
         player,
         PlayerBehavior::SelectStarterEmployees {
             employee_definition_ids,
+            loan_copy_ids: vec![],
         },
     )
     .unwrap();
@@ -119,7 +120,7 @@ fn external_b_start_pins_actual_battle_resource_and_export_while_a_remains_pinne
         .execute_with_transport_context_and_generation(
             player,
             PlayerBehavior::StartNewGame {
-                game_mode: GameMode::Standard,
+                game_mode: GameMode::Expedition,
                 replace_active_run: false,
             },
             None,
@@ -164,7 +165,7 @@ fn fixture_b_late_briefing_preparation_failure_preserves_complete_a_authority_on
     let b: crate::game::data::ValidatedGameData = GameDataBuilder::empty()
         .with_employee_definitions(test_employee_definition_database())
         .with_visual_novels(test_hq_briefing_visual_novel_database())
-        .with_equipment(vec![starter_weapon_meta(), starter_equipment_meta()])
+        .with_equipment(equipment_with_starter_assets(Vec::new()))
         .with_skill_fragment_data(Arc::new(SkillFragmentDatabase::new(vec![
             SkillFragmentMetadata::starter_basic_attack(),
         ])))
@@ -184,7 +185,7 @@ fn fixture_b_late_briefing_preparation_failure_preserves_complete_a_authority_on
             .execute_with_transport_context_and_generation(
                 Uuid::from_u128(0xCB04),
                 PlayerBehavior::StartNewGame {
-                    game_mode: GameMode::Standard,
+                    game_mode: GameMode::Expedition,
                     replace_active_run: false,
                 },
                 None,
@@ -399,6 +400,10 @@ fn valid_external_remove_updates_namespaced_lookup_registry_recipe_and_reward_ac
             reward_pool_id: Some("left::pool".into()),
         },
     );
+    // This fixture exercises the legacy authored reward pool, not a facility relic activity.
+    if let Some(rooms) = core.state.run.as_mut().unwrap().facility_run_state.rooms.as_mut() {
+        if let Some(metadata) = rooms.activity_metadata.get_mut(&node) { metadata.reward_activity = None; }
+    }
     core.execute(player, PlayerBehavior::SelectMapNode { node_id: node })
         .unwrap();
     let result = core

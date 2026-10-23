@@ -1,0 +1,138 @@
+[
+  {
+    "test": "every_live_starter_and_recruit_has_its_active_training_set",
+    "run": "integration_021",
+    "in_original_138": false,
+    "first_failure": "stale weapon expectation: shield versus greatsword",
+    "raw_failure": "thread 'every_live_starter_and_recruit_has_its_active_training_set' (1802) panicked at core_enhanced/tests/ron_loading.rs:468:9:\nassertion `left == right` failed\n  left: \"standard_training_shield\"\n right: \"standard_training_greatsword\"\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+    "later_assertions": "not reached; not assessed as a product defect"
+  },
+  {
+    "test": "sell::u08_public_empty_relic_state_omits_the_derived_unsellable_list",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "thread 'sell::u08_public_empty_relic_state_omits_the_derived_unsellable_list' (1064) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect"
+  },
+  {
+    "test": "prospective::u08_public_plan_canonical_copy_order_survives_slot_permutation_and_rejects_final_overflow",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "thread 'prospective::u08_public_plan_canonical_copy_order_survives_slot_permutation_and_rejects_final_overflow' (1058) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect"
+  },
+  {
+    "test": "sell::u08_public_shop_rejects_all_relic_variants_and_loadouts_with_a_specific_reason",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "thread 'sell::u08_public_shop_rejects_all_relic_variants_and_loadouts_with_a_specific_reason' (1066) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect"
+  },
+  {
+    "test": "sell::u08_public_relic_does_not_bypass_the_existing_disabled_shop_sale_policy",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "thread 'sell::u08_public_relic_does_not_bypass_the_existing_disabled_shop_sale_policy' (1065) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect"
+  },
+  {
+    "test": "prospective::u08_public_plan_uses_real_fragment_form_and_weapon_provider_without_cross_borrowing",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "thread 'prospective::u08_public_plan_uses_real_fragment_form_and_weapon_provider_without_cross_borrowing' (1063) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect"
+  },
+  {
+    "test": "prospective::u08_public_plan_split_tags_unresolved_target_and_heal_basic_are_distinct",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "thread 'prospective::u08_public_plan_split_tags_unresolved_target_and_heal_basic_are_distinct' (1061) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect"
+  },
+  {
+    "test": "prospective::u08_public_external_fixture_registers_new_definitions_before_app_setup",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "thread 'prospective::u08_public_external_fixture_registers_new_definitions_before_app_setup' (1057) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect"
+  },
+  {
+    "test": "lifecycle::u08_public_abandon_then_new_run_resets_copies_slots_catalysts_and_equipment_dust",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "thread 'lifecycle::u08_public_abandon_then_new_run_resets_copies_slots_catalysts_and_equipment_dust' (1054) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect"
+  },
+  {
+    "test": "prospective::u08_public_plan_two_employees_same_skill_and_queries_preserve_all_public_roots",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "thread 'prospective::u08_public_plan_two_employees_same_skill_and_queries_preserve_all_public_roots' (1062) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+    "later_assertions": "not reached; not assessed as a product defect"
+  },
+  {
+    "test": "event::u08_public_event_rejects_wrong_authority_and_follows_the_committed_employee_check_branch",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "thread 'event::u08_public_event_rejects_wrong_authority_and_follows_the_committed_employee_check_branch' (1053) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect"
+  },
+  {
+    "test": "event::u08_public_event_empty_candidates_still_allow_decline_and_exact_historical_retry",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "thread 'event::u08_public_event_empty_candidates_still_allow_decline_and_exact_historical_retry' (1051) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect"
+  },
+  {
+    "test": "lifecycle::u08_public_successful_transfer_moves_exact_copy_and_only_its_employee_contributions",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "thread 'lifecycle::u08_public_successful_transfer_moves_exact_copy_and_only_its_employee_contributions' (1055) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect"
+  },
+  {
+    "test": "prospective::u08_public_plan_missing_weapon_has_no_fabricated_stats_or_damage_provider",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "thread 'prospective::u08_public_plan_missing_weapon_has_no_fabricated_stats_or_damage_provider' (1060) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect"
+  },
+  {
+    "test": "event::u08_public_event_normal_reward_grants_feed_multiple_free_exact_copy_selections",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "U08_PUBLIC_CONTENT root=/tmp/u08-public-5bcc50b4-1a4a-4d70-a90b-b447307078db generation=ae834a76490e10af163202c1c171c9183de35d2c7407dbb2f6ad9b1ebcf7b2fb\n\nthread 'event::u08_public_event_normal_reward_grants_feed_multiple_free_exact_copy_selections' (1052) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect"
+  },
+  {
+    "test": "prospective::u08_public_plan_corrupt_penalty_matches_roster_and_preserves_certified_power",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "thread 'prospective::u08_public_plan_corrupt_penalty_matches_roster_and_preserves_certified_power' (1059) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect"
+  },
+  {
+    "test": "lifecycle::u08_public_unfinished_event_continue_rewinds_variants_and_history_but_keeps_pre_entry_paid_cost",
+    "run": "integration_remaining_023",
+    "in_original_138": false,
+    "first_failure": "removed Standard mode in public start fixture",
+    "raw_failure": "U08_LIFECYCLE_CONTENT root=/tmp/u08-lifecycle-39ef45ee-2579-4dd1-9abe-e2775a1d2f83 generation=f52c8cfe57d41c605b94f19ef6b9c133d14fc45e0008c01fd9cb2568eeff0675 parent_generation=ae834a76490e10af163202c1c171c9183de35d2c7407dbb2f6ad9b1ebcf7b2fb\n\nthread 'lifecycle::u08_public_unfinished_event_continue_rewinds_variants_and_history_but_keeps_pre_entry_paid_cost' (1056) panicked at core_enhanced/tests/u08_relic_public/support.rs:156:33:\ncommand {\"game_mode\":\"Standard\",\"replace_active_run\":false,\"type\":\"start_new_game\"}: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }",
+    "later_assertions": "not reached; not assessed as a product defect"
+  }
+]

@@ -1,0 +1,10 @@
+--- frozen012/core_enhanced/docs/README.md
++++ current/core_enhanced/docs/README.md
+@@ -52,6 +52,7 @@
+ | 과거 룰북 | [과거 게임 룰북](archive/game_rulebook_legacy_2026-10-04.md) | 역사적 비교와 최신 정책이 명시적으로 계승한 공통 규칙. 새 정책·구현 결과의 동기화 대상 아님 | 과거 정책과 변경 배경을 확인할 때 |
+ | 전장 이미지 제작 가이드 | [전장 컨셉아트 이미지 생성 가이드](ui-layout/battlefield-image-generation-guide.ko.md) | 1타일 규격, 폐허 분위기, 경로 오버레이 제외와 이미지 저장 위치 | 전장 배경 컨셉아트를 생성할 때 |
+ | 전장 설계 참고 | [명일방주 전장 구조와 난이도 설계 참고](battlefields/arknights_difficulty_design_reference.ko.md) | 실제 스테이지 사례·출처, 난도 발생 원리의 해석과 일반 침식체 전장 적용 후보 | 전장 풀의 동선·배치 영역·지원 범위와 난도 차이를 설계할 때 |
++| 시설 노드 구성 검토 | [공용 구간 방별 노드 구성 검토안](ui-layout/facility-upper-node-composition-v1.ko.md) | 지도 시안 1~3층의 방별 예약·배정 후보·일반전 수요 계산. 새 수치는 검토안이며 gameplay canonical을 대체하지 않음 | 전장 풀 수량을 산정하기 전에 공용 구간의 활동 구성을 검토할 때 |
+ | Combat-domain canonical | [skill_target_contract.md](skill_target_contract.md) | 스킬/평타 타겟팅, 타일 범위, 자동 적대 타겟, cast/step/projectile/TileArea 의미 | 스킬·범위·자동 시전·면역 대상 판정을 바꿀 때 |
+ | Runtime canonical | [core_runtime_contract.md](core_runtime_contract.md) | 결정론/RNG, runtime state, event log/checkpoint, battle record/result, VN runtime, actor identity | core runtime 불변식이나 projection ownership을 바꿀 때 |
+ | Data canonical | [data_loading_contract.md](data_loading_contract.md) | live RON authoring, embedded loader ownership, fixture, validation, live file 색인 | RON schema/content, loader, validation 경계를 바꿀 때 |

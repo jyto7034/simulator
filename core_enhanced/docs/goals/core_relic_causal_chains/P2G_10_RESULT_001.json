@@ -1,0 +1,562 @@
+{
+  "stage": "P2G-10",
+  "status": "complete",
+  "evaluation_basis": {
+    "Input Working Revision Ref": {
+      "Artifact Type": "Working Revision",
+      "Artifact ID": "WR-CRCE-001",
+      "Content Digest": "sha256:ed1c57b5421abb93ad5e86b22ea9215cb136d2498f488726c86747d304cf57f0"
+    },
+    "Exact User-Approved Target Scope/Change Request": null,
+    "Policy Intake Snapshot Ref": {
+      "Artifact Type": "Policy Intake Snapshot",
+      "Artifact ID": "PIS-CRCE-001",
+      "Content Digest": "sha256:ce831909b2265ef846aa8325477cf5506577563a9c3a8565b3fd1cc64fe286ef"
+    }
+  },
+  "result_working_revision_ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CRCE-002",
+    "Content Digest": "sha256:3f3697c6bf41b0c1b1553b67b4a9bde786d368c65331d776078bded4fe8b7517"
+  },
+  "produced_disposition_refs": [
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-01-001",
+      "Content Digest": "sha256:6055b7c238b59b61ef79668bb7f63ec0322398bd0646dff7edae13defb447f34"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-02-001",
+      "Content Digest": "sha256:3474f507e241f750e19d271d6a68ef6e981559f9b31eee2b4d73c944d284c346"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-03-001",
+      "Content Digest": "sha256:a748f12ba2001c02b7b9cdff7312a09b0d151f3c80a599822ef8f481e9f5fc00"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-04-001",
+      "Content Digest": "sha256:035d2fc153c474fb76b73362dbc0e7619c5fe73c6300915a1d8994e9829846c7"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-05-001",
+      "Content Digest": "sha256:6458a23544c841332ac27da115c31d3c89b80134ee7ce901b9306bee9adc7702"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-06-001",
+      "Content Digest": "sha256:95e9eb6b8b58ceaacc96d197de6a878dce745ef5bc21ecdd5ff62d54f685f217"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-07-001",
+      "Content Digest": "sha256:c1de09b96a5e2218ac97f9880b4f0f0c30c72b39f68986d534839f0084c32eeb"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-08-001",
+      "Content Digest": "sha256:e907c8938e5d8080d1544a98a0be6d04099beff12c0d80969a75ab9d31d68230"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-09-001",
+      "Content Digest": "sha256:431373e8a946cb310a08b407e90930993142795f3576291d653f8ac928d3f89c"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-10-001",
+      "Content Digest": "sha256:1d8ddb6bd1d4872983cf2cd42cb216fd2686b52d93e29766d5165c3ad207ffdb"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-11-001",
+      "Content Digest": "sha256:6e916be2dc4085fb68db5caf7f76751ea6cc46ac5a38ab9a205286195b432d6f"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-12-001",
+      "Content Digest": "sha256:c605785b1716ca12786f6ecab3ef2800868181226aee0cee7905056ac19c4a16"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-13-001",
+      "Content Digest": "sha256:3e2a777af6ddbbbb9698b76f5e0ce0c1a15f99b6e93613fc8f53db878a0f9cf4"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-14-001",
+      "Content Digest": "sha256:f0511336fa9cdbad6ceb79669ff37dcf0c5effd30b1cf2c4411e3feaabd631a6"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-15-001",
+      "Content Digest": "sha256:31c8ab33ffd3de2c5a40b525b3e7a79c93245a0edb728b4a4d35f274501ebce9"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-16-001",
+      "Content Digest": "sha256:1949f8bed6983fcdd83b8f3c374c5891d03022176069a430505ecca358fb21fc"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-17-001",
+      "Content Digest": "sha256:33a792c9c19e3834e047f510ad48a2a03933410f8624cf9e127d4944ee127193"
+    }
+  ],
+  "current_disposition_effective_view": [
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-01-001",
+      "Content Digest": "sha256:6055b7c238b59b61ef79668bb7f63ec0322398bd0646dff7edae13defb447f34"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-02-001",
+      "Content Digest": "sha256:3474f507e241f750e19d271d6a68ef6e981559f9b31eee2b4d73c944d284c346"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-03-001",
+      "Content Digest": "sha256:a748f12ba2001c02b7b9cdff7312a09b0d151f3c80a599822ef8f481e9f5fc00"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-04-001",
+      "Content Digest": "sha256:035d2fc153c474fb76b73362dbc0e7619c5fe73c6300915a1d8994e9829846c7"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-05-001",
+      "Content Digest": "sha256:6458a23544c841332ac27da115c31d3c89b80134ee7ce901b9306bee9adc7702"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-06-001",
+      "Content Digest": "sha256:95e9eb6b8b58ceaacc96d197de6a878dce745ef5bc21ecdd5ff62d54f685f217"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-07-001",
+      "Content Digest": "sha256:c1de09b96a5e2218ac97f9880b4f0f0c30c72b39f68986d534839f0084c32eeb"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-08-001",
+      "Content Digest": "sha256:e907c8938e5d8080d1544a98a0be6d04099beff12c0d80969a75ab9d31d68230"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-09-001",
+      "Content Digest": "sha256:431373e8a946cb310a08b407e90930993142795f3576291d653f8ac928d3f89c"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-10-001",
+      "Content Digest": "sha256:1d8ddb6bd1d4872983cf2cd42cb216fd2686b52d93e29766d5165c3ad207ffdb"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-11-001",
+      "Content Digest": "sha256:6e916be2dc4085fb68db5caf7f76751ea6cc46ac5a38ab9a205286195b432d6f"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-12-001",
+      "Content Digest": "sha256:c605785b1716ca12786f6ecab3ef2800868181226aee0cee7905056ac19c4a16"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-13-001",
+      "Content Digest": "sha256:3e2a777af6ddbbbb9698b76f5e0ce0c1a15f99b6e93613fc8f53db878a0f9cf4"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-14-001",
+      "Content Digest": "sha256:f0511336fa9cdbad6ceb79669ff37dcf0c5effd30b1cf2c4411e3feaabd631a6"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-15-001",
+      "Content Digest": "sha256:31c8ab33ffd3de2c5a40b525b3e7a79c93245a0edb728b4a4d35f274501ebce9"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-16-001",
+      "Content Digest": "sha256:1949f8bed6983fcdd83b8f3c374c5891d03022176069a430505ecca358fb21fc"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CD-CRCE-17-001",
+      "Content Digest": "sha256:33a792c9c19e3834e047f510ad48a2a03933410f8624cf9e127d4944ee127193"
+    }
+  ],
+  "current_element_revision_map": {
+    "PE-CRCE-01": {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRCE-01-DECIDED-001",
+      "Content Digest": "sha256:a506c1ad2625569fc346afcddfaa12a974fa2564fea0d7d0c04ae7a346e2938c"
+    },
+    "PE-CRCE-02": {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRCE-02-DECIDED-001",
+      "Content Digest": "sha256:93262c109994ac2b80666c3928b7c2fec5080c6452bbaaf00a7bac6499e1ad28"
+    },
+    "PE-CRCE-03": {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRCE-03-DECIDED-001",
+      "Content Digest": "sha256:e0579cae216355a0376f4f5ef47231c4caac48a0089b395aa7b676f8c0ab3f1b"
+    },
+    "PE-CRCE-04": {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRCE-04-DECIDED-001",
+      "Content Digest": "sha256:ef4869825eac34affc1771bb15a8334e22adb2c17d765d6d918cbb9c6942ec9b"
+    },
+    "PE-CRCE-05": {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRCE-05-DECIDED-001",
+      "Content Digest": "sha256:1002df545d2198eefbde02f1a914b63ff53f4b9450e558e3ed9137982644632b"
+    },
+    "PE-CRCE-06": {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRCE-06-DECIDED-001",
+      "Content Digest": "sha256:6b4480605f802552dbbd8be97f89d45869a75dfad38c82fe7fa153057fcf7b57"
+    },
+    "PE-CRCE-07": {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRCE-07-DECIDED-001",
+      "Content Digest": "sha256:8e0fc70b5263986c02b38da3614d25f46d6e18d08a4cf12a47e135b6454d24c3"
+    },
+    "PE-CRCE-08": {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRCE-08-DECIDED-001",
+      "Content Digest": "sha256:165054f5f3f2f1ec714bcdc8f7806edb92cb2d12b095c1a60f9976ba77b59b54"
+    },
+    "PE-CRCE-09": {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRCE-09-DECIDED-001",
+      "Content Digest": "sha256:5eee633bf756c054efb849186e8b4894d6e67a005c3c88862fd04dca18138774"
+    },
+    "PE-CRCE-10": {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRCE-10-DECIDED-001",
+      "Content Digest": "sha256:2da08189bc64960b35ae0ba67cb69f0ef4dfd206994e9c0a2fb51a9a061c5dbb"
+    },
+    "PE-CRCE-11": {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRCE-11-DECIDED-001",
+      "Content Digest": "sha256:104d106f590d7af498a9b7616324ebb98aa951da4c0221aefaacbb14994fd5f6"
+    },
+    "PE-CRCE-12": {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRCE-12-DECIDED-001",
+      "Content Digest": "sha256:1d8bda3c6d5714f6e819a2524bc8f63b1360340bf8689acd95ce6f21e9efc14f"
+    },
+    "PE-CRCE-13": {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRCE-13-DECIDED-001",
+      "Content Digest": "sha256:33129a01637e1a1fbcdfa311fffa345291186a13e888201c736ceb53609af69f"
+    },
+    "PE-CRCE-14": {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CRCE-14-DECIDED-001",
+      "Content Digest": "sha256:ccdcb4cf33183574b3b4acc8fdf3bfb98317034f1fd204fb9e56749a1bc1683a"
+    }
+  },
+  "current_decision_revision_ref_set": [
+    {
+      "Artifact Type": "Decision Revision",
+      "Artifact ID": "DR-CRCE-01-001",
+      "Content Digest": "sha256:890a5acd1cd2dcfc99b6ce450bf9913040e91088f7a7b58fd6934d079a7560ba"
+    },
+    {
+      "Artifact Type": "Decision Revision",
+      "Artifact ID": "DR-CRCE-02-001",
+      "Content Digest": "sha256:a4e886d4a76b0535d41accc5ec4f14d2d1e8af88a6858eb87700e6d08e439a9c"
+    },
+    {
+      "Artifact Type": "Decision Revision",
+      "Artifact ID": "DR-CRCE-03-001",
+      "Content Digest": "sha256:87581447964ca4640c987f8c86752133a445fe195e1c679f16b71b70258db461"
+    },
+    {
+      "Artifact Type": "Decision Revision",
+      "Artifact ID": "DR-CRCE-04-001",
+      "Content Digest": "sha256:eb833cda6c67a481831098e705f20adab9a376319a02d731f087f13571bb0aba"
+    },
+    {
+      "Artifact Type": "Decision Revision",
+      "Artifact ID": "DR-CRCE-05-001",
+      "Content Digest": "sha256:b56cc5f5fb550652ce98a257d26efd1c1aec91dbaa6978fa7c85afa34389daeb"
+    },
+    {
+      "Artifact Type": "Decision Revision",
+      "Artifact ID": "DR-CRCE-06-001",
+      "Content Digest": "sha256:58c42d03d3e7af6aa63e895c7e785a9d9815c0cfc4cf2f27e37365bb3be2c868"
+    },
+    {
+      "Artifact Type": "Decision Revision",
+      "Artifact ID": "DR-CRCE-07-001",
+      "Content Digest": "sha256:4c2c378c4264dd4211d711d81a9f5fbdbb88bcb56abcd02e38ccb7f1a78b0a9a"
+    },
+    {
+      "Artifact Type": "Decision Revision",
+      "Artifact ID": "DR-CRCE-08-001",
+      "Content Digest": "sha256:91b44bd977fc63485a1e374cdec6a3db0f4e6e1419d10c93582943dd95962f52"
+    },
+    {
+      "Artifact Type": "Decision Revision",
+      "Artifact ID": "DR-CRCE-09-001",
+      "Content Digest": "sha256:11492c0c8428ad8966d0386fbe68058edae1d44dd4c10e51bb7257e1e58177ba"
+    },
+    {
+      "Artifact Type": "Decision Revision",
+      "Artifact ID": "DR-CRCE-10-001",
+      "Content Digest": "sha256:ba9bb927cef83f620d4a2519a617cb3f735115384feea98bc6d1c5ac72072bab"
+    },
+    {
+      "Artifact Type": "Decision Revision",
+      "Artifact ID": "DR-CRCE-11-001",
+      "Content Digest": "sha256:0efdab156588b5cbc3ee5a2ba4fd65a5f20ca5d02d406e2574c2bb2984a768e8"
+    },
+    {
+      "Artifact Type": "Decision Revision",
+      "Artifact ID": "DR-CRCE-12-001",
+      "Content Digest": "sha256:3b07bf3b2faba43627250317f267bb422e8191691e6806b6b9771849a190c45e"
+    },
+    {
+      "Artifact Type": "Decision Revision",
+      "Artifact ID": "DR-CRCE-13-001",
+      "Content Digest": "sha256:e158c548f2946fa808481ce4d20d5835685c21b2d8192225fb2b958774e4da36"
+    },
+    {
+      "Artifact Type": "Decision Revision",
+      "Artifact ID": "DR-CRCE-14-001",
+      "Content Digest": "sha256:ce73179c0d6747637849621eabbe4fa29c85c0dc37e25a4125167730a32c10f1"
+    }
+  ],
+  "open_policy_question_ref_set": [],
+  "finding_triage_log": [
+    {
+      "candidate": "C-CRCE-01",
+      "primary_classification": "material_policy",
+      "disposition": "decided",
+      "decision_ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRCE-01-001",
+        "Content Digest": "sha256:890a5acd1cd2dcfc99b6ce450bf9913040e91088f7a7b58fd6934d079a7560ba"
+      },
+      "authority_basis": "H04 explicit broad gameplay delegation; ordinary five-condition route is not asserted for novel Deep Wedge hit eligibility. Existing agreements/scope/data preserved.",
+      "reason": "기존 실제 결과와 source 계약을 새 subscriber에도 적용한다."
+    },
+    {
+      "candidate": "C-CRCE-02",
+      "primary_classification": "material_policy",
+      "disposition": "decided",
+      "decision_ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRCE-02-001",
+        "Content Digest": "sha256:a4e886d4a76b0535d41accc5ec4f14d2d1e8af88a6858eb87700e6d08e439a9c"
+      },
+      "authority_basis": "H04 explicit broad gameplay delegation; ordinary five-condition route is not asserted for novel Deep Wedge hit eligibility. Existing agreements/scope/data preserved.",
+      "reason": "사본·효과 정체성 보존에서 도출한다."
+    },
+    {
+      "candidate": "C-CRCE-03",
+      "primary_classification": "material_policy",
+      "disposition": "decided",
+      "decision_ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRCE-03-001",
+        "Content Digest": "sha256:87581447964ca4640c987f8c86752133a445fe195e1c679f16b71b70258db461"
+      },
+      "authority_basis": "H04 explicit broad gameplay delegation; ordinary five-condition route is not asserted for novel Deep Wedge hit eligibility. Existing agreements/scope/data preserved.",
+      "reason": "명시 합의 적용."
+    },
+    {
+      "candidate": "C-CRCE-04",
+      "primary_classification": "material_policy",
+      "disposition": "decided",
+      "decision_ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRCE-04-001",
+        "Content Digest": "sha256:eb833cda6c67a481831098e705f20adab9a376319a02d731f087f13571bb0aba"
+      },
+      "authority_basis": "H04 explicit broad gameplay delegation; ordinary five-condition route is not asserted for novel Deep Wedge hit eligibility. Existing agreements/scope/data preserved.",
+      "reason": "합류의 실제 참여·단일 후속 결과 의미에서 도출."
+    },
+    {
+      "candidate": "C-CRCE-05",
+      "primary_classification": "material_policy",
+      "disposition": "decided",
+      "decision_ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRCE-05-001",
+        "Content Digest": "sha256:b56cc5f5fb550652ce98a257d26efd1c1aec91dbaa6978fa7c85afa34389daeb"
+      },
+      "authority_basis": "H04 explicit broad gameplay delegation; ordinary five-condition route is not asserted for novel Deep Wedge hit eligibility. Existing agreements/scope/data preserved.",
+      "reason": "원인 기준 명시 합의 적용."
+    },
+    {
+      "candidate": "C-CRCE-06",
+      "primary_classification": "material_policy",
+      "disposition": "decided",
+      "decision_ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRCE-06-001",
+        "Content Digest": "sha256:58c42d03d3e7af6aa63e895c7e785a9d9815c0cfc4cf2f27e37365bb3be2c868"
+      },
+      "authority_basis": "H04 explicit broad gameplay delegation; ordinary five-condition route is not asserted for novel Deep Wedge hit eligibility. Existing agreements/scope/data preserved.",
+      "reason": "기존 carrier/owner 수명과 로그 비권위 원칙 적용."
+    },
+    {
+      "candidate": "C-CRCE-07",
+      "primary_classification": "material_policy",
+      "disposition": "decided",
+      "decision_ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRCE-07-001",
+        "Content Digest": "sha256:4c2c378c4264dd4211d711d81a9f5fbdbb88bcb56abcd02e38ccb7f1a78b0a9a"
+      },
+      "authority_basis": "H04 explicit broad gameplay delegation; ordinary five-condition route is not asserted for novel Deep Wedge hit eligibility. Existing agreements/scope/data preserved.",
+      "reason": "기존 장비 의미 보존."
+    },
+    {
+      "candidate": "C-CRCE-08",
+      "primary_classification": "material_policy",
+      "disposition": "decided",
+      "decision_ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRCE-08-001",
+        "Content Digest": "sha256:91b44bd977fc63485a1e374cdec6a3db0f4e6e1419d10c93582943dd95962f52"
+      },
+      "authority_basis": "H04 explicit broad gameplay delegation; ordinary five-condition route is not asserted for novel Deep Wedge hit eligibility. Existing agreements/scope/data preserved.",
+      "reason": "기존 suppression과 새 피해자별 사망을 함께 보존. U19 미래 침식 정책은 미확정 범위로 남긴다."
+    },
+    {
+      "candidate": "C-CRCE-09",
+      "primary_classification": "material_policy",
+      "disposition": "decided",
+      "decision_ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRCE-09-001",
+        "Content Digest": "sha256:11492c0c8428ad8966d0386fbe68058edae1d44dd4c10e51bb7257e1e58177ba"
+      },
+      "authority_basis": "H04 explicit broad gameplay delegation; ordinary five-condition route is not asserted for novel Deep Wedge hit eligibility. Existing agreements/scope/data preserved.",
+      "reason": "새 경로도 기존 공명 권한을 따른다."
+    },
+    {
+      "candidate": "C-CRCE-10",
+      "primary_classification": "material_policy",
+      "disposition": "decided",
+      "decision_ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRCE-10-001",
+        "Content Digest": "sha256:ba9bb927cef83f620d4a2519a617cb3f735115384feea98bc6d1c5ac72072bab"
+      },
+      "authority_basis": "H04 explicit broad gameplay delegation; ordinary five-condition route is not asserted for novel Deep Wedge hit eligibility. Existing agreements/scope/data preserved.",
+      "reason": "D04 합의 산술·귀속 적용. 수치 10%p는 시험 예시이며 정식 밸런스 확정 아님."
+    },
+    {
+      "candidate": "C-CRCE-11",
+      "primary_classification": "material_policy",
+      "disposition": "decided",
+      "decision_ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRCE-11-001",
+        "Content Digest": "sha256:0efdab156588b5cbc3ee5a2ba4fd65a5f20ca5d02d406e2574c2bb2984a768e8"
+      },
+      "authority_basis": "H04 explicit broad gameplay delegation; ordinary five-condition route is not asserted for novel Deep Wedge hit eligibility. Existing agreements/scope/data preserved.",
+      "reason": "AI broad-delegated gameplay 결정: U09 HP-loss 사건과 같은 관찰 가능한 유효성으로 일관화하되 보호막만 맞은 접촉을 쐐기 적중으로 인정하는 대안과 구분한다."
+    },
+    {
+      "candidate": "C-CRCE-12",
+      "primary_classification": "material_policy",
+      "disposition": "decided",
+      "decision_ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRCE-12-001",
+        "Content Digest": "sha256:3b07bf3b2faba43627250317f267bb422e8191691e6806b6b9771849a190c45e"
+      },
+      "authority_basis": "H04 explicit broad gameplay delegation; ordinary five-condition route is not asserted for novel Deep Wedge hit eligibility. Existing agreements/scope/data preserved.",
+      "reason": "기존 released payload 수명에서 도출한 AI 위임 결정."
+    },
+    {
+      "candidate": "C-CRCE-13",
+      "primary_classification": "material_policy",
+      "disposition": "decided",
+      "decision_ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRCE-13-001",
+        "Content Digest": "sha256:e158c548f2946fa808481ce4d20d5835685c21b2d8192225fb2b958774e4da36"
+      },
+      "authority_basis": "H04 explicit broad gameplay delegation; ordinary five-condition route is not asserted for novel Deep Wedge hit eligibility. Existing agreements/scope/data preserved.",
+      "reason": "기존 자원 계약을 새 상태에 적용."
+    },
+    {
+      "candidate": "C-CRCE-14",
+      "primary_classification": "material_policy",
+      "disposition": "decided",
+      "decision_ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CRCE-14-001",
+        "Content Digest": "sha256:ce73179c0d6747637849621eabbe4fa29c85c0dc37e25a4125167730a32c10f1"
+      },
+      "authority_basis": "H04 explicit broad gameplay delegation; ordinary five-condition route is not asserted for novel Deep Wedge hit eligibility. Existing agreements/scope/data preserved.",
+      "reason": "기존 공공 경로·저장 책임을 현재 기능에도 적용."
+    },
+    {
+      "candidate": "C-CRCE-15",
+      "primary_classification": "out_of_scope",
+      "disposition": "out_of_scope",
+      "reason": "현재 U10 실제 사건 소비 구현은 D04 설명 fixture를 사용하며 정식 밸런스 채택이 아니다. 희귀 등급 기존 합의 유지."
+    },
+    {
+      "candidate": "C-CRCE-16",
+      "primary_classification": "out_of_scope",
+      "disposition": "out_of_scope",
+      "reason": "현재 U10은 기존 suppression의 전달/소비를 보존하고 미도입 후속 콘텐츠의 정책을 확정하지 않는다."
+    },
+    {
+      "candidate": "C-CRCE-17",
+      "primary_classification": "technical_decision",
+      "disposition": "not_a_policy_element",
+      "reason": "구현 수단은 P2G20/40 실제 소유·자원 검토에서 선택한다."
+    }
+  ],
+  "policy_source_evidence": {
+    "intake": "P2G_00_INITIAL_001.json + INTAKE_SOURCE_001.tar.gz; IN-006 relics 60–92; IN-007 equipment-and-fragments 43–60; IN-011 H04 99–111,134–153,173–188; IN-002 U10/C07/C08; IN-013 H06 death-chain review",
+    "D04": {
+      "path": "core_enhanced/docs/skills/run_relic_content_design_notes.ko.md",
+      "sha256": "e1e9f48aab7f94159f3b27350b3854d184dac263ecce43994f89d997088f663e",
+      "span": "725–815 深い 쐐기 / 깊은 쐐기",
+      "preserved_in": "P2G_10_SOURCE_001.tar.gz",
+      "capture": "linked policy source from intake roadmap, not new user raw input"
+    }
+  },
+  "authority": "Novel PE11 hit eligibility chosen by Root under H04 broad gameplay delegation; not represented as direct user choice or ordinary-five-conditions-derived fact. All decisions stay within U10/R16 and preserve explicit agreements.",
+  "exit_evidence": {
+    "in_scope_elements": 14,
+    "identified_candidates": 17,
+    "promoted": 14,
+    "out_of_scope": 2,
+    "not_a_policy_element": 1,
+    "decision_lineages": 14,
+    "open_questions": 0,
+    "each_current_element_has_decision_and_nonempty_acceptance": true,
+    "one_current_leaf_per_lineage": true,
+    "initial_open_predecessors_preserved": true,
+    "candidate_basis_exact": true,
+    "raw_input_changed": false,
+    "scope_changed": false,
+    "post_freeze_changes": [],
+    "is_p2g10_complete": true
+  },
+  "limitations": [
+    "Policy closure only; no P2G20 source review completion, implementation, tests or runtime PASS claimed.",
+    "P2G20 may discover material conflict; return to immutable P2G10 successor if meaning changes."
+  ],
+  "next": "P2G-20 under existing continuous authorization"
+}

@@ -166,7 +166,12 @@ fn setup(lethal_enemy: bool) -> (GameCore, Uuid, Uuid, Uuid, [Uuid; 3]) {
     }
     let data = GameDataBuilder::from_validated(&base)
         .with_abnormalities(enemies)
-        .with_equipment(equipment)
+        .with_equipment_data(Arc::new(crate::game::data::equipment_data::EquipmentDatabase::with_all(
+            equipment,
+            base.equipment_data.materials.clone(),
+            base.equipment_data.dismantle_recipes.clone(),
+            base.equipment_data.enhancement_recipes.clone(),
+        )))
         .with_pve(PveEncounterDatabase::new_with_reward_sources(
             encounters,
             base.pve_data.reward_sources.clone(),

@@ -24,6 +24,7 @@ pub fn starter_basic_attack_fragment_id() -> SkillFragmentId {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct OwnedFragment {
+    pub investment: crate::game::material_economy::MaterialInvestment,
     pub copy_uuid: Uuid,
     pub definition_id: SkillFragmentId,
     #[serde(deserialize_with = "bounded::forms")]
@@ -32,6 +33,7 @@ pub struct OwnedFragment {
     pub equipped_to: Option<Uuid>,
 }
 crate::authoring::clone_shape::struct_shape!(OwnedFragment {
+    investment,
     copy_uuid,
     definition_id,
     unlocked_forms,
@@ -106,6 +108,9 @@ impl Default for SkillFragmentPolicy {
 }
 
 impl SkillFragmentInventory {
+    pub(crate) fn record_investment(&mut self, uuid: Uuid, paid: &crate::game::material_economy::MaterialInvestment) -> Result<(), GameError> {
+        self.copies.get_mut(&uuid).ok_or(GameError::InvalidAction)?.investment.record(paid)
+    }
     pub(crate) fn import_legacy_history(
         &mut self,
         history: BTreeMap<SkillFragmentId, LegacyFragmentProgress>,
@@ -128,6 +133,26 @@ impl SkillFragmentInventory {
     }
     pub fn new() -> Self {
         Self::default()
+    }
+
+    pub(crate) fn import_owned_copy(
+        &mut self,
+        copy: OwnedFragment,
+        database: &SkillFragmentDatabase,
+        policy: &SkillFragmentPolicy,
+    ) -> Result<(), GameError> {
+        if self.copies.len() >= policy.max_copies.min(MAX_OWNED_FRAGMENTS)
+            || self.copies.contains_key(&copy.copy_uuid) || copy.equipped_to.is_some() {
+            return Err(GameError::InvalidAction);
+        }
+        let id = copy.copy_uuid;
+        let mut candidate = Self::new();
+        candidate.copies.insert(id, copy);
+        if !candidate.validate_checkpoint_state(database, policy) {
+            return Err(GameError::InvalidAction);
+        }
+        self.copies.insert(id, candidate.copies.remove(&id).expect("validated owned copy"));
+        Ok(())
     }
     pub fn copies(&self) -> impl Iterator<Item = &OwnedFragment> {
         self.copies.values()
@@ -183,6 +208,7 @@ impl SkillFragmentInventory {
         self.copies.insert(
             copy_uuid,
             OwnedFragment {
+                investment: Default::default(),
                 copy_uuid,
                 definition_id: metadata.id.clone(),
                 unlocked_forms: BTreeSet::from([BASE_FRAGMENT_FORM.to_string()]),

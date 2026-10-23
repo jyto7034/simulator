@@ -24,7 +24,8 @@ impl Handler<FaultProbe> for PlayerGameActor {
 fn fault_data() -> Arc<GameDataBase> {
     let raw = std::str::from_utf8(game_core::runtime_safety::EMBEDDED_RUNTIME_SAFETY_RON)
         .unwrap()
-        .replacen("max_work: 10000000", "max_work: 1000", 1);
+        // Admit current entry; a 60-second tick still exercises real refusal.
+        .replacen("max_work: 10000000", "max_work: 3000", 1);
     defense_game_data_with_profile(
         None,
         Arc::new(
@@ -93,20 +94,11 @@ async fn real_tick_fault_blocks_late_ticks_management_reconnect_and_stop_writes_
     let active = Arc::new(Mutex::new(
         ActiveRunStore::open(dir.path().join("active")).unwrap(),
     ));
-    let mut profile = PlayerProfilePersistence::bootstrap(
-        PlayerProfileStore::open(dir.path().join("profile")).unwrap(),
-    );
-    let initial_profile = game_core::game::encounter_compendium::PlayerProfileState {
-        highest_floor_reached: 2,
-        ..Default::default()
-    };
-    profile.merge_and_persist(initial_profile);
-    let profile = Arc::new(Mutex::new(profile));
     let data = fault_data();
     let player = Uuid::from_u128(0xf003);
-    let mut core = game_core_waiting_on_live_defense_node_with_data(player, data.clone());
+    let mut core = game_core_waiting_on_tutorial_defense_node_with_data(player, data.clone());
     // Capture a genuine save-point checkpoint through the existing public admin port.
-    let mut saved = game_core_waiting_on_live_defense_node_with_data(player, data.clone());
+    let mut saved = game_core_waiting_on_tutorial_defense_node_with_data(player, data.clone());
     saved
         .execute_fixture(player, command!(CancelSelectedNode))
         .unwrap();
@@ -130,6 +122,11 @@ async fn real_tick_fault_blocks_late_ticks_management_reconnect_and_stop_writes_
         .unwrap()
         .publish(&StoredCheckpoint::from(&checkpoint))
         .unwrap();
+    let profile_store = PlayerProfileStore::open(dir.path().join("profile")).unwrap();
+    let mut initial_profile = player_profile_fixture(&saved);
+    initial_profile.highest_floor_reached = 2;
+    profile_store.publish(&initial_profile).unwrap();
+    let profile = Arc::new(Mutex::new(PlayerProfilePersistence::bootstrap(profile_store)));
     core.prepare_non_battle_command(player, command!(ConfirmEnterNode), Default::default())
         .unwrap()
         .commit();
@@ -183,7 +180,7 @@ async fn real_tick_fault_blocks_late_ticks_management_reconnect_and_stop_writes_
             command!(RetryPlayerProfile),
             command!(ResetPlayerProfile),
             command!(StartNewGame {
-                game_mode: GameMode::Standard,
+                game_mode: GameMode::Expedition,
                 replace_active_run: true
             }),
         ] {
@@ -315,15 +312,13 @@ async fn real_tick_fault_blocks_late_ticks_management_reconnect_and_stop_writes_
 #[actix_web::test]
 async fn fault_is_per_actor_and_other_player_ticks_commands_and_real_saves_continue() {
     let dir = tempfile::tempdir().unwrap();
-    let active = Arc::new(Mutex::new(
-        ActiveRunStore::open(dir.path().join("active")).unwrap(),
-    ));
-    let profile = Arc::new(Mutex::new(PlayerProfilePersistence::bootstrap(
-        PlayerProfileStore::open(dir.path().join("profile")).unwrap(),
-    )));
     let balance = LoadBalanceActor::new().start();
     let player_a = Uuid::from_u128(0xf031);
-    let mut a = game_core_waiting_on_live_defense_node_with_data(player_a, fault_data());
+    let mut a = game_core_waiting_on_tutorial_defense_node_with_data(player_a, fault_data());
+    let active_a = Arc::new(Mutex::new(
+        ActiveRunStore::open(dir.path().join("a")).unwrap(),
+    ));
+    let profile_a = persisted_profile_fixture(&dir.path().join("a"), &a);
     a.execute_fixture(player_a, command!(ConfirmEnterNode))
         .unwrap();
     assert_eq!(
@@ -331,13 +326,17 @@ async fn fault_is_per_actor_and_other_player_ticks_commands_and_real_saves_conti
         "battle_runtime_work_limit"
     );
     let actor_a = PlayerGameActor::new(player_a, a, balance.clone())
-        .with_active_run_store(active.clone())
-        .with_player_profile_persistence(profile.clone())
+        .with_active_run_store(active_a)
+        .with_player_profile_persistence(profile_a)
         .start();
     let player_b = Uuid::from_u128(0xf032);
     let mut b = game_core_waiting_on_live_defense_node(player_b);
     b.execute_fixture(player_b, command!(ConfirmEnterNode))
         .unwrap();
+    let active = Arc::new(Mutex::new(
+        ActiveRunStore::open(dir.path().join("b")).unwrap(),
+    ));
+    let profile = persisted_profile_fixture(&dir.path().join("b"), &b);
     let actor_b = PlayerGameActor::new(player_b, b, balance)
         .with_active_run_store(active.clone())
         .with_player_profile_persistence(profile)
@@ -414,7 +413,7 @@ async fn new_owner_continue_keeps_existing_missing_and_invalid_save_refusals() {
         if invalid {
             store
                 .publish(&StoredCheckpoint {
-                    core_payload_json: br#"{"version":11,"invalid_core_checkpoint":true}"#.to_vec(),
+                    core_payload_json: br#"{"version":12,"invalid_core_checkpoint":true}"#.to_vec(),
                     loads_used: 2,
                     run_peak_certified_power: 1,
                 })

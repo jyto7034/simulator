@@ -17,6 +17,7 @@ use crate::game::{
     value_expr::ValueExprCatalog,
 };
 use std::{collections::BTreeMap, sync::Arc};
+use super::support::SelectedSupportReach;
 
 #[derive(Clone)]
 pub(crate) struct EffectiveProviderPlan {
@@ -26,7 +27,7 @@ pub(crate) struct EffectiveProviderPlan {
     pub effects: Vec<(EffectSite, usize)>,
     /// Selection is fixed at cast acceptance; this is authored data-unit reach,
     /// not a TileRangePattern or an increased shared protection radius.
-    pub selected_recipient_reach: Option<u32>,
+    pub selected_recipient_reach: Option<SelectedSupportReach>,
     pub selected_recipient_excludes_caster: bool,
 }
 fn error(cause: impl Into<String>) -> RelicPlanError {
@@ -40,10 +41,24 @@ fn value(effect: &EffectiveEffect, property: RelicProperty) -> Option<u32> {
         .and_then(|p| p.final_value)
         .and_then(|v| u32::try_from(v.value()).ok())
 }
+fn merge_selected_recipient_reach(
+    selected: &mut Option<SelectedSupportReach>,
+    contribution: Option<SelectedSupportReach>,
+) -> Result<(), RelicPlanError> {
+    let Some(reach) = contribution else {
+        return Ok(());
+    };
+    // One provider's original and generated selected consumers must agree.
+    if selected.as_ref().is_some_and(|old| *old != reach) {
+        return Err(error("selected support reach conflict"));
+    }
+    *selected = Some(reach);
+    Ok(())
+}
 fn overlay(
     op: &mut SkillEffectDef,
     effect: &EffectiveEffect,
-) -> Result<Option<u32>, RelicPlanError> {
+) -> Result<Option<SelectedSupportReach>, RelicPlanError> {
     let mut reach = None;
     match op {
         SkillEffectDef::PersonalShieldGrant { definition } => {
@@ -77,10 +92,13 @@ fn overlay(
                 *radius_units = radius;
             }
             if let PersonalShieldRecipientsDef::SelectedPlayerEmployeeAtRelease {
-                authored_reach_units,
+                authored_reach_units: _,
             } = definition.recipients
             {
-                reach = Some(authored_reach_units);
+                reach = Some(super::support::selection_recipe(effect).unwrap_or_else(|| super::support::shield_reach(definition)));
+                if let Some(SelectedSupportReach::Pattern { range, .. }) = &reach {
+                    definition.support = Some(super::support::SupportPolicyDef { range: Arc::clone(range), conversion: None });
+                }
             }
         }
         SkillEffectDef::Sustained {
@@ -91,7 +109,7 @@ fn overlay(
                 .iter()
                 .any(|r| matches!(r, StructuralRecipeDef::FixedRecipientSupport))
             {
-                reach = Some(aura.radius_units);
+                reach = Some(super::support::selection_recipe(effect).unwrap_or(SelectedSupportReach::Radius(aura.radius_units)));
             }
             if let Some(radius) = value(effect, RelicProperty::SupportAreaRadius) {
                 aura.radius_units = radius;
@@ -106,6 +124,9 @@ fn overlay(
             }
         }
         _ => {}
+    }
+    if super::support::selection_recipe(effect).is_some() && reach.is_none() {
+        return Err(error("support selection pattern requires an executable selected support consumer"));
     }
     Ok(reach)
 }
@@ -512,6 +533,7 @@ pub(super) fn lower(
             .ok_or_else(|| error("provider skill unavailable"))?;
         compiler::admit_serialized_copy(original, work)?;
         let mut skill = original.clone();
+        super::action::apply(&mut skill,provider,&plan.action_modifiers,work)?;
         let original_flow = data
             .skill_data
             .compiled_flow(skill.id.as_str())
@@ -541,12 +563,7 @@ pub(super) fn lower(
                 .iter()
                 .any(|recipe| matches!(recipe, StructuralRecipeDef::FixedRecipientSupport));
             let reach = overlay(&mut skill.steps[*step].effects[*effect].op, effective)?;
-            if let Some(reach) = reach {
-                if selected_recipient_reach.is_some_and(|old| old != reach) {
-                    return Err(error("selected support reach conflict"));
-                }
-                selected_recipient_reach = Some(reach);
-            }
+            merge_selected_recipient_reach(&mut selected_recipient_reach, reach)?;
             address.push((
                 skill.steps[*step].effects[*effect]
                     .source()
@@ -597,9 +614,7 @@ pub(super) fn lower(
                         rename_amount(&mut effect.op, &aliases, work)?;
                         effect.tags = effective.tags.clone();
                         let reach = overlay(&mut effect.op, effective)?;
-                        if let Some(reach) = reach {
-                            selected_recipient_reach = Some(reach);
-                        }
+                        merge_selected_recipient_reach(&mut selected_recipient_reach, reach)?;
                         bind_generated(&skill, &grant.anchor.action_id, &mut effect);
                         address.push((effect.source().unwrap().site.clone(), index));
                         skill.steps[anchor_step].effects.push(effect);
@@ -636,9 +651,8 @@ pub(super) fn lower(
                                 AuthoredSkillEffect::new(alias, compiler::primitive(&declared.op));
                             rename_amount(&mut effect.op, &aliases, work)?;
                             effect.tags = effective.tags.clone();
-                            if let Some(reach) = overlay(&mut effect.op, effective)? {
-                                selected_recipient_reach = Some(reach);
-                            }
+                            let reach = overlay(&mut effect.op, effective)?;
+                            merge_selected_recipient_reach(&mut selected_recipient_reach, reach)?;
                             bind_generated(&skill, &id, &mut effect);
                             address.push((effect.source().unwrap().site.clone(), index));
                             effects.push(effect);

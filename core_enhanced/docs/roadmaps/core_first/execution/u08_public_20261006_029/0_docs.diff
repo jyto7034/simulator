@@ -1,0 +1,11 @@
+--- core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/PLAN.md before029
++++ core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/PLAN.md after029
+@@ -1,4 +1,8 @@
+ # U08 실행 PLAN — GOAL-CRNV-01
++
++U08 현재 시험 이관029: compile.rs 단일 제품 교정을 source438/f0062433으로 인수했고 scoped fmt·offline/locked lib check가 통과했다. main Astra가 승인된 5파일/9selector 및 새 공개 CLI 재현을 단독 작성·집중 실행한다. Sol은 writer0/runner0으로 반환했다. 추가 compile work는 기존 한도에 계상하며 cap·workload·기존 기대값은 유지한다. 새 최종source와 harness005를 닫은 뒤 통합007을 실행한다. 전체 기능·성능·독립 감사·U09는 아직 미완료다. 아래028은 제품 교정 전 인수 이력이다.
++
++기록: core_first/execution/u08_public_20261006_029/RECORD.json. 시험 설계와 실제 제품 교정은 evidence/r06_test_design001 및 evidence/r06_product_correction001을 따른다.
+ 
+ U08 현재 교정028: R06 선행 수용 조건 검토에서 공개 콘텐츠 사전 검증 누락을 실제 재현했다. AuthoredMembers의 Magnitude/Milliseconds 혼합 값을 Sum/Max로 읽는 식에 외부 Source Attack 참조를 추가하면, 단독 정적 식과 달리 validation이 성공하고 generation identity가 발급된다. 원래 publication 전 UnitMismatch 거부 요건은 바꾸지 않는다. source438/380e에서 7개 공개 CLI 조건 중 2개가 거부 oracle을 위반했다. 정적 거부2·동일unit 정상2·원fixture 정상1은 충족했다. 초기 관측 도구의 stderr 파싱 누락은 원본을 보존하고 실제 raw를 재해석했으며 제품 재실행 없이 구분했다.
+ 

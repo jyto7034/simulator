@@ -1,0 +1,18 @@
+{
+  "root": "/mnt/f/work/simulator",
+  "changed_files": [
+    "core_enhanced/src/game/data/content_pack/tests.rs",
+    "core_enhanced/src/game/world/tests/mod.rs",
+    "core_enhanced/src/authoring/resolve.rs",
+    "core_enhanced/src/application.rs",
+    "core_enhanced/src/authoring/tests.rs",
+    "core_enhanced/src/game/battle/core/commands.rs",
+    "core_enhanced/src/game/behavior.rs",
+    "core_enhanced/src/game/world/application.rs",
+    "core_enhanced/src/game/world/tests/checkpoint_validation.rs",
+    "core_enhanced/src/game/world/tests/facility.rs",
+    "core_enhanced/src/game/world/tests/u08_relics.rs"
+  ],
+  "purpose": "Expose downstream assertions behind known invalid legacy fixture/count/version gates; original workspace unchanged",
+  "not_a_product_fix": true
+}

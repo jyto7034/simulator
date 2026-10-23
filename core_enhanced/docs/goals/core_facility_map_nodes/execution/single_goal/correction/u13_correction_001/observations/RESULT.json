@@ -1,0 +1,117 @@
+{
+  "correction": "u13_correction_001",
+  "observations": [
+    {
+      "activity": {
+        "condition": null,
+        "deterrence_already_exhausted": false,
+        "display": {
+          "asset_id": "facility/slot/9B/5",
+          "x": 900,
+          "y": 715
+        },
+        "exhausts_deterrence": false,
+        "first_entry_cost": 1,
+        "label": null,
+        "node_id": "20455fda-46e5-4217-a6e9-765906644187",
+        "reward_activity": null,
+        "support": {
+          "Unsupported": {
+            "reason": "미확인 고유 조우 실행 미지원"
+          }
+        }
+      },
+      "case": "hidden_official",
+      "explored": false,
+      "facility_map_node": {
+        "category": "Boss",
+        "difficulty_band": "NormalBoss",
+        "id": "20455fda-46e5-4217-a6e9-765906644187",
+        "kind_id": "boss_abnormality",
+        "payload": {
+          "Encounter": {
+            "encounter_id": null
+          }
+        },
+        "slot_id": "5",
+        "state": "Unavailable",
+        "visibility": "Revealed"
+      },
+      "loader_rejected": false,
+      "public_map_node": {
+        "category": "Boss",
+        "difficulty_band": "NormalBoss",
+        "id": "20455fda-46e5-4217-a6e9-765906644187",
+        "kind_id": "boss_abnormality",
+        "payload": {
+          "Encounter": {
+            "encounter_id": null
+          }
+        },
+        "relative_threat": "VeryHigh",
+        "slot_id": "5",
+        "state": "Unavailable",
+        "visibility": "Revealed"
+      }
+    },
+    {
+      "activity": {
+        "condition": null,
+        "deterrence_already_exhausted": false,
+        "display": {
+          "asset_id": "facility/slot/9B/5",
+          "x": 900,
+          "y": 715
+        },
+        "exhausts_deterrence": false,
+        "first_entry_cost": 1,
+        "label": null,
+        "node_id": "20455fda-46e5-4217-a6e9-765906644187",
+        "reward_activity": null,
+        "support": {
+          "Unsupported": {
+            "reason": "미확인 고유 조우 실행 미지원"
+          }
+        }
+      },
+      "case": "hidden_concrete",
+      "explored": false,
+      "facility_map_node": {
+        "category": "Boss",
+        "difficulty_band": "NormalBoss",
+        "id": "20455fda-46e5-4217-a6e9-765906644187",
+        "kind_id": "boss_abnormality",
+        "payload": {
+          "Encounter": {
+            "encounter_id": null
+          }
+        },
+        "slot_id": "5",
+        "state": "Unavailable",
+        "visibility": "Revealed"
+      },
+      "loader_rejected": false,
+      "public_map_node": {
+        "category": "Boss",
+        "difficulty_band": "NormalBoss",
+        "id": "20455fda-46e5-4217-a6e9-765906644187",
+        "kind_id": "boss_abnormality",
+        "payload": {
+          "Encounter": {
+            "encounter_id": null
+          }
+        },
+        "relative_threat": "VeryHigh",
+        "slot_id": "5",
+        "state": "Unavailable",
+        "visibility": "Revealed"
+      }
+    },
+    {
+      "case": "wrong_normal_role",
+      "error": "data/map/facility_templates.ron [facility_layouts] object 'official_facility_v1': allocation role 'normal' activity 'maintenance' has incompatible semantics",
+      "loader_rejected": true
+    }
+  ],
+  "passed": true
+}

@@ -89,7 +89,7 @@ impl BattleCore {
         };
         let cast = source.cast.as_ref().ok_or(GameError::InvalidAction)?;
         let runtime = if let DeliveryDef::TileArea { area, .. } = &step.delivery {
-            if area.duration_ms > 0 {
+            if area.is_independent() {
                 control::charge(self.active_areas.len() as u64, "effect_area_owner_lookup")?;
                 Some(
                     self.active_areas
@@ -150,9 +150,10 @@ impl BattleCore {
                 self.sample_unit_world_position_at(cast.caster_instance_id, time_ms)
                     .map_or(tile, |position| position.project_to_tile())
             };
-            let facing = self
-                .tile_area_projection_facing(cast.caster_instance_id, footprint)
-                .ok_or(GameError::InvalidAction)?;
+            let facing = match &step.delivery {
+                DeliveryDef::TileArea { area, .. } => self.tile_area_facing(cast.caster_instance_id, footprint, area),
+                _ => self.tile_area_projection_facing(cast.caster_instance_id, footprint),
+            }.ok_or(GameError::InvalidAction)?;
             let (filter, include) = match &step.delivery {
                 DeliveryDef::TileArea { area, .. } => (area.hit_targets, area.include_caster),
                 DeliveryDef::Instant => (SkillHitTargetFilter::Enemies, false),

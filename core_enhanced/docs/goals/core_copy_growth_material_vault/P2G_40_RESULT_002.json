@@ -1,0 +1,12 @@
+{
+  "stage": "P2G-40",
+  "status": "complete",
+  "phase_plan_ref": {
+    "Artifact Type": "Phase Plan",
+    "Artifact ID": "PP-CGMV-002",
+    "Content Digest": "sha256:000adf5aeeb1c112a513434563e5d90f56504a28c7cb7b6ccb7616ed110c4848"
+  },
+  "validation_receipt": "P2G_40_VALIDATION_RECEIPT_002.json",
+  "validation_result": "passed",
+  "semantic_review": "21acceptance/5elements; COPY/PAY/STORE/AUTHOR atomic, PUBLIC/VERIFY same Phase; no gameplay test claim"
+}

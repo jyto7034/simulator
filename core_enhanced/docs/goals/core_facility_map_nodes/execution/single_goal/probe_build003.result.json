@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/home/blast/.cargo/bin/cargo",
+    "build",
+    "--manifest-path",
+    "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/test_parts/facility_probe/Cargo.toml",
+    "--release",
+    "--offline",
+    "--target-dir",
+    ".cache/u12-vault-cost-target",
+    "-j",
+    "2"
+  ],
+  "exit_code": 101,
+  "seconds": 261.3356811249978,
+  "stdout": "probe_build003.stdout.log",
+  "stderr": "probe_build003.stderr.log"
+}

@@ -183,7 +183,8 @@ impl ValueExprCatalog {
                         | SkillEffectDef::ModifyStats { .. }
                         | SkillEffectDef::ApplyBuff { .. }
                         | SkillEffectDef::InterruptCast
-                        | SkillEffectDef::ExtraAttack { .. } => continue,
+                        | SkillEffectDef::GuardCounter { .. } | SkillEffectDef::StatusStrike { .. } | SkillEffectDef::FusionPlacement { .. } | SkillEffectDef::PairedAreas { .. } | SkillEffectDef::PreparedVolley { .. } | SkillEffectDef::InputPlan { .. } | SkillEffectDef::RelationAction { .. } | SkillEffectDef::CounterChannel { .. } | SkillEffectDef::TileBurst { .. } | SkillEffectDef::PresenceBurst { .. }
+        | SkillEffectDef::ExtraAttack { .. } => continue,
                     };
                     let source = effect.source().ok_or_else(|| {
                         crate::game::data::live_ron::LiveRonError::validation(
@@ -340,7 +341,7 @@ pub(crate) fn delivery_capabilities(
                     (false, true, false, true, max_lifetime_ms.is_some())
                 }
             },
-            DeliveryDef::TileArea { area, .. } => (false, true, false, true, area.duration_ms > 0),
+            DeliveryDef::TileArea { area, .. } => (false, true, false, true, area.is_independent()),
         };
     DeliveryCapabilities {
         snapshot: true,

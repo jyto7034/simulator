@@ -1,0 +1,310 @@
+{
+  "schema": "U10_FIXED_INPUT_HANDOFF_V1",
+  "source_sha256": "76aba953d84c644d3659b553e50f99f342c5826c709952c1fe808984ebfc340d",
+  "reviewer": "/root, confirmed gpt-6-astra/high",
+  "semantic_currentness_review": "Root actual full source/diff reviews accepted PRODUCT001\u2013009 and explicit limited predecessor reuse, final46 default16/publicload/CMRP/restore, retained003 legacy8 refusal rollback versus current nominal16 four-mode success, original PC strict002 FAIL plus separate independently authored causal-empty successor PASS and43 negatives, and original R05 raw101 inherited concurrent peak warning with summary0/no other hard failures. First whole-Goal audit target001 remains Not Complete/High/open2. Root actual C001\u2013004 fixture/source/proof reviews and complete actual raw/result reviews accepted F01 normal basic10/counter8+5/child7 plus dead World and missing native scheduler guard branches, and F02 actual Corrosion with active causal owner, normal Death/Kill/AllyDeath controls, preserved released DOT and wave behavior. Correction named9 is tests001five +tests002three +tests004one, not a fresh nine-test pass; all three failed parents remain failed. Test-only source/registration/helper additions justify scoped reuse of unchanged final46/PC/R05; no product/config/runtime/performance repeat. Root actual F002 tools/full delta/source-nonimpact/prose review and generated001 all28 sentences/19 seams/10 dimensions/3 nodes/288 predecessor rows including PE-CRNV-08.2 row-specific supplement accepted; Root closed final PLAN self-validation clause and current four documents. Sole Sol binding-only generated002 recollection changed only timestamps and latest PLAN source_review bytes/hash, actual semantic equality recorded. All functional/performance evidence is available; generic generated pending wording is preserved as pre-audit output and remaining obligations are fresh isolated restoration and nonparticipant independent completion. This handoff is self-verification acceptance for freeze, not an independent Complete verdict.",
+  "active_input_writers": 0,
+  "active_functional_runners": 0,
+  "active_performance_runners": 0,
+  "generated": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/generated002/COVERAGE.json",
+      "bytes": 61021,
+      "sha256": "ff2dbe10968f429ff73bc3f73db99497d5284b136b8aa40bcf591fc295722bc1"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/generated002/EVIDENCE_SELECTION.json",
+      "bytes": 163643,
+      "sha256": "aac972f3f9c5c3e7e835e021d387e7be1c7c1cc72b761621fa160a600bccea3f"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/generated002/PREDECESSOR_IMPACT.json",
+      "bytes": 1315521,
+      "sha256": "9abfa0d22991b199ca2b11186f8caf91d8cb1f7385b67efdeb447f896ca789f8"
+    }
+  ],
+  "documents": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/PLAN.md",
+      "bytes": 26869,
+      "sha256": "ab944a123fced2e2d67190a3976114efb468c38da501c8d32e09b2e5d4f08dc9"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/EXPERIMENT_NOTES.md",
+      "bytes": 43406,
+      "sha256": "6f7546e1a8a18d02c8611b9dd0c51a8abe293ae5c8bd2ead1224bd5c2082b9c3"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/EXPERIMENTS.md",
+      "bytes": 15919,
+      "sha256": "44a8a712d4c049a0e49921be454c795fee3d8681e67606ee6328a894efa99819"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/STATE_INVENTORY.md",
+      "bytes": 9773,
+      "sha256": "0ba028a5fb933d742b9e278420210b09fb3a295700ea4850335d3216f8398291"
+    },
+    {
+      "path": "core_enhanced/docs/core_runtime_contract.md",
+      "bytes": 203181,
+      "sha256": "50a13df5cb5cb8dc2b57396519586423bdaa2ae76481c4427a5bb14ae93f3f93"
+    }
+  ],
+  "current_source": {
+    "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/CURRENT_SOURCE.json",
+    "bytes": 101309,
+    "sha256": "7f5f4dc2cd89350557a158d424527688e45d04952f82c0618cbbe095819832b7"
+  },
+  "runtime_source_members": 533,
+  "currentness_product_records": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_RESULT_004.json",
+      "bytes": 12329,
+      "sha256": "e53098ea78c975d66f1482d09d3f41dae41c508994914b4c5e0ea59556f3e6da"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/FINALIZATION_RESULT_003.json",
+      "bytes": 6183,
+      "sha256": "f2af50f3c7ea260ced39da585754dcc9106e5914182d1be10d4898d8b56f7e9e"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/FINALIZATION_RESULT_004.json",
+      "bytes": 6731,
+      "sha256": "17f348a665b95b9dd9cac300d045adbed321c080d390202930953014b063f1b1"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/FINALIZATION_INPUT_003_BEFORE.json",
+      "bytes": 11312,
+      "sha256": "1ddf5d0b36d3642b0598e53f0ca8ff3a3c1caf3ed9bb3f939ddca74241c96a6d"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/FINALIZATION_INPUT_003_AFTER.json",
+      "bytes": 11471,
+      "sha256": "a617c5d8ed3ee019503a6efbe463a39b311ffece993c9830d7f0c7d7d487e556"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/FINALIZATION_INPUT_004_BEFORE.json",
+      "bytes": 12116,
+      "sha256": "c0baaade2cca7f3bd7e79486479820c5ea49f4fc4c235d201dfd5162d28470e7"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/FINALIZATION_INPUT_004_AFTER.json",
+      "bytes": 11952,
+      "sha256": "1bd477819ade32898dc1a545f51ee8ff7cee80741083eb2f8aaa38c25cf57633"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/SOURCE_NONIMPACT_001.json",
+      "bytes": 3153,
+      "sha256": "1e67d5b25c1467b73a034a46c493eda90f2f40a7d5d17faea360ebe7acb88789"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/AUTHOR_HANDOFF_001.json",
+      "bytes": 7372,
+      "sha256": "7984d4ef7cead5739a34a9bac758a633e58c08b0c99d9ee4183dbf204ea824fa"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/AUTHOR_HANDOFF_002.json",
+      "bytes": 8875,
+      "sha256": "42a1e9be0c8b8cabbae97a0ae22bbfa821cdb4f3783944875bec2742d4fe7d40"
+    }
+  ],
+  "preserved_intermediate_document_preimages": {
+    "mapping": {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/FINALIZATION_DOCS_PREIMAGE_003/MAPPING.json",
+      "bytes": 2621,
+      "sha256": "023b1cd56f74fcfb82437fe44173eec6bda5854f8bfe5fc993d73e41cee30153"
+    },
+    "copies": [
+      {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/FINALIZATION_DOCS_PREIMAGE_003/PLAN.md",
+        "bytes": 24599,
+        "sha256": "987a02b0843e0f1b08d372d473ad1cd1efa9cb53a999e4e86fd366e611df7104"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/FINALIZATION_DOCS_PREIMAGE_003/EXPERIMENT_NOTES.md",
+        "bytes": 42461,
+        "sha256": "3ce0690684ebaf886575e862b6c000cde45b0f392ceee6ddf8c88a81f3e5e669"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/FINALIZATION_DOCS_PREIMAGE_003/EXPERIMENTS.md",
+        "bytes": 15271,
+        "sha256": "cdeb84a4199a12057263b0efc62a5a3c5301509733e2cca4cd0fd312219599b3"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/FINALIZATION_DOCS_PREIMAGE_003/STATE_INVENTORY.md",
+        "bytes": 9773,
+        "sha256": "0ba028a5fb933d742b9e278420210b09fb3a295700ea4850335d3216f8398291"
+      }
+    ],
+    "scope": "Direct nonrecursive copies preserve exact intermediate Root document bytes bound by original author handoffs/generated001; old original paths/hashes are in mapping, not flattened as current references. This is historical evidence preservation, not substitution for original497 restoration baseline."
+  },
+  "superseded_collection": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/generated001/EVIDENCE_SELECTION.json",
+      "bytes": 163643,
+      "sha256": "de615368cb5bb613129a00c65dedddcf62110593cd66f08868faa6786671ac4a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/generated001/PREDECESSOR_IMPACT.json",
+      "bytes": 1315521,
+      "sha256": "33a8ab6e14daf7041cf304ba6a04cdd4b414fd0d752d97a2f5c4598d7e5d15a6"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/generated001/COVERAGE.json",
+      "bytes": 61021,
+      "sha256": "3cc97023ea9d2d4c2b7af474ffbb0ebd8d813bc54a3b858f97d5e375bde6c910"
+    }
+  ],
+  "preserved_failed_joint_batches": [
+    {
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_audit_joint_tests001.json",
+        "bytes": 215795,
+        "sha256": "57803f4768245c1b02223a82d1a73b85d011537660739f1add6af5722a4aa66a"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_audit_joint_tests001.log",
+        "bytes": 4163,
+        "sha256": "3d10656208293784c471ec46a80e8e69e7e9edaf13485c80cdedce5478a648ea"
+      },
+      "source_archive": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/source_versions/da0901bc44665d5f2ff90ee4b3f662db170df95d707c92980313d89f51b63de1.tar.gz",
+        "bytes": 2200638,
+        "sha256": "1e38bab22661430b3d37d27c92301d258c70e9d5a54a3a1261831be177f20246"
+      },
+      "exit_code": 101,
+      "original_whole_failure_preserved": true
+    },
+    {
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_audit_joint_tests002.json",
+        "bytes": 215172,
+        "sha256": "a4dab8ddac50d306f0985944294d11203e06101839e75114e6fc6e45e1e29f34"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_audit_joint_tests002.log",
+        "bytes": 1319,
+        "sha256": "efb9af59e6aa083f6ad8e4f01c371787dd519cabd68fa86656e20d1f6cbe3dbd"
+      },
+      "source_archive": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/source_versions/730710e294ea2c26716af442f9f89da109cbda32a9e18aa23e8253b0da1708f0.tar.gz",
+        "bytes": 2201174,
+        "sha256": "f31b6ef8c762660e52a001f6bab7742a3ed907da3237b0a8049cd5e105f216e0"
+      },
+      "exit_code": 101,
+      "original_whole_failure_preserved": true
+    },
+    {
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_audit_joint_tests003.json",
+        "bytes": 214743,
+        "sha256": "a743f8d0fc59ea85a19a7975dadb82c8fd2a19f5da6e235c9d2524b2f859cc50"
+      },
+      "raw": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_audit_joint_tests003.log",
+        "bytes": 936,
+        "sha256": "11e138029be67cee67e07a01345d9fbfdf183371ef07014afd42591f1f68031e"
+      },
+      "source_archive": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/source_versions/dfe631ecac266166589ec649895348c1671d21e6ccf00d0690d8b38b7157a957.tar.gz",
+        "bytes": 2201555,
+        "sha256": "3deb7fe4f44876ff0b7aa5d3c7c6810eb33d5babce13182c7b24f5953ebb8ae4"
+      },
+      "exit_code": 101,
+      "original_whole_failure_preserved": true
+    }
+  ],
+  "prior_failed_independent_attempt": {
+    "target_manifest": {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/target/u10_current_001/MANIFEST.json",
+      "bytes": 218265,
+      "sha256": "c24c6e90c48b81f432deeaf78258bb6b0e5110bd5b770d0851927c4b37961c95"
+    },
+    "audit_artifacts": [
+      {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_001_pass001/AUDIT_CLOSURE.json",
+        "bytes": 6445,
+        "sha256": "54982e7f52243c64fd230e20acd5816cf6b1b3af99eedda47cd4f957b00de33f"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_001_pass001/COMPLETION_AUDIT.md",
+        "bytes": 7518,
+        "sha256": "c773beb1469ab56ecfdc83a46821de38a49db6114bb1024f40e95f6bf8fcc102"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_001_pass001/CONDITION_REVIEW.json",
+        "bytes": 59228,
+        "sha256": "e44965ced5816a9f6ee98727a1f680710388b73d3a70759c592134983c453e3f"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_001_pass001/ENTRY_CURRENTNESS.json",
+        "bytes": 719,
+        "sha256": "95f5219a1a731173cda76a7b83a7916b5d69aa8daed7eae13149201e03803fd6"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_001_pass001/EVIDENCE_REVIEW.json",
+        "bytes": 73590,
+        "sha256": "f3022f93d8ac867c25ffe9ede8caac8944314129aca519a7a52dc4409caded51"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_001_pass001/EXIT_CURRENTNESS.json",
+        "bytes": 1226,
+        "sha256": "efe285d72916a2c2cf9fda89e61686bef71e7df5bc0571298007938a328a1867"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_001_pass001/FINDINGS.json",
+        "bytes": 8031,
+        "sha256": "bfeba679448eac5551cb5c049a861f39b0af57d4b2764446353f7b6588469f84"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_001_pass001/PREDECESSOR_REVIEW.json",
+        "bytes": 824733,
+        "sha256": "a60ff3b806e60cdccbcc6c0ca0c193bec308d8477a067061ae0f4701f8b3f6d6"
+      }
+    ],
+    "original_target_archives": [
+      {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/target/u10_current_001/SOURCE_BEFORE.tar.gz",
+        "bytes": 2232034,
+        "sha256": "9179a412ffe7db6b8e6d8e05cbaffeb4bf6ac1209d50167440e883a59a8ecdf4"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/target/u10_current_001/SOURCE_AFTER.tar.gz",
+        "bytes": 2357035,
+        "sha256": "30ba61479350a07adffb81040db66ef3b64824e2cb472a87db7c83ad90a8fc04"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/target/u10_current_001/RECORDS.tar.gz",
+        "bytes": 14610979,
+        "sha256": "3ecd1c8667a1765168247a92f3c35e1d4b41e553a4335e8a77da2844b8b9239d"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/target/u10_current_001/REFERENCES.tar.gz",
+        "bytes": 1070367,
+        "sha256": "0e46c7215079e6d1829a800816ed91c64b60378f92e3006dffd306cd78c3bdec"
+      }
+    ],
+    "disposition": "Immutable target001 and original Not Complete/High/open2 whole-Goal audit preserved. Prepared freeze verifies old four archives against their independent exact member manifests; this handoff does not retroactively close old findings or award successor completion. MANIFEST is referenced by path/bytes/hash only; old source_files are not inlined as current source expectations."
+  },
+  "roles": {
+    "product_and_sole_executor": "/root/u09_execution_continue, confirmed gpt-6.1-sol/xhigh; reused assigned role",
+    "independent_test_author": "/root/u09_tests_continue, confirmed gpt-6-astra/high; authored tests/fixtures/oracles/tools, execution0",
+    "completion_auditor": "/root/u09_independent_audit029, confirmed gpt-6-astra/high; prior closed U09/U10 independent audits only, no U10 plan/product/test/execution participation; reuse for successor whole-Goal re-audit after exact frozen MANIFEST"
+  },
+  "freeze_command": [
+    "python3",
+    "-B",
+    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/freeze_target.py",
+    "--source-manifest",
+    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/CURRENT_SOURCE.json",
+    "--generated",
+    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/generated002",
+    "--handoff",
+    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/HANDOFF_001.json",
+    "--target",
+    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/target/u10_current_002"
+  ],
+  "freeze_limits": "Direct unwrapped execution, outside-U10-goal stdout/stderr/exit capture. Original495 U09 plus2 selected P2G20 preimages=497 before; fixed current runtime533 plus canonical restoration scope after. Exact source/records/reference archives and isolated forward/reverse bytes/membership; no workspace reverse patch, no runtime/measurement rerun, no default/accounting/policy change. All prior source/evidence/archives/failed target/audit and unrelated dirty preserved.",
+  "outside_capture_directory": "core_enhanced/docs/roadmaps/core_first/execution/u10_freeze_20261010_003",
+  "completion": "Pending nonparticipant whole-Goal audit; self-verification and restoration do not award Complete/High/open0"
+}

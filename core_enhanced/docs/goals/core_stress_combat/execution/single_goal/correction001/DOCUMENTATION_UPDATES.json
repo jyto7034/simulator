@@ -1,0 +1,31 @@
+{
+  "utc": "2026-10-15T07:35:26.384726+00:00",
+  "preserved_handoff": "core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_20261015_050.ko.md",
+  "updates": [
+    {
+      "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/EXPERIMENTS.md",
+      "before_sha256": "f70bbccf9fd3f1b2ccb929bc1b6c636905a45ce0a7c5ec57f26304cf4bbb46df",
+      "after_sha256": "888de0e15aafba956067990589681ed928064e34fe75ef952b359b1331aec7bd"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/PLAN.md",
+      "before_sha256": "9fd33b2fc2cee27b578884b9ca5aecc65bf86b7111c63350520fb360e66e6ec8",
+      "after_sha256": "4b7589d60c940fd59e107f3b5c3517a5aa5402b353553a587d32f8f8fe49d518"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_LATEST.ko.md",
+      "before_sha256": "3710da02538e78fecdec54792bc97cf083d381152e9e9611046c0abb22d0c353",
+      "after_sha256": "e25d271e3a22fe737aa0c4d152d0829e819194d1fa8d84453c4ffe15e24b485e"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/EXECUTION_HISTORY.ko.md",
+      "before_sha256": "309ea3cbd9c6f37e5140f8f1a5e54a29a5b203d28495b16c244596f7092219f8",
+      "after_sha256": "8869a1b849546a6b47d2dc448fd8caa573d71eb0529a8e36a93cb8f41a750755"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "before_sha256": "7e6d27c949e75c68576873b4f1d4958e623672f62f21a37f9df81366ba4e1d2f",
+      "after_sha256": "5b7e083cde1203f20dbe5ede3826f733887d952ae786148d7e7d0e3d13f4c461"
+    }
+  ]
+}

@@ -14,6 +14,7 @@ use game_core::game::{
         GameDataBase,
     },
     employee::{EmployeeDefinition, EventAptitude},
+    map::GameMode,
 };
 use serde_json::json;
 use uuid::Uuid;
@@ -129,7 +130,7 @@ fn main() {
             player_id,
             ApplicationCommand::from_document(ApplicationDocument::new(json!({
                 "type": "start_new_game",
-                "game_mode": "Standard",
+                "game_mode": GameMode::Expedition,
                 "replace_active_run": false,
             })))
             .expect("fixture start command must validate"),
@@ -162,6 +163,7 @@ fn main() {
             ApplicationCommand::from_document(ApplicationDocument::new(json!({
                 "type": "select_starter_employees",
                 "employee_definition_ids": starter_ids,
+                "loan_copy_ids": [],
             })))
             .expect("fixture starter command must validate"),
             ApplicationExecutionContext::default(),

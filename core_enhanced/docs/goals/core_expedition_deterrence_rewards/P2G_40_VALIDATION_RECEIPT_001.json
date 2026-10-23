@@ -1,0 +1,256 @@
+{
+  "schema_version": "p2g40.phase_plan_validation_receipt/v1",
+  "phase_plan_validation_receipt_ref": "PVR-CEDR-001",
+  "evaluated_phase_plan": {
+    "ref": "PP-CEDR-001",
+    "path": "core_enhanced/docs/goals/core_expedition_deterrence_rewards/P2G_40_PHASE_PLAN_001.json",
+    "sha256": "4efda0555bd65f06631c1684fc9d23960eaf9ad2685b9b8b6ea3a1634df6205f"
+  },
+  "bound_final_policy_freeze": {
+    "ref": "FPF-CEDR-001",
+    "path": "core_enhanced/docs/goals/core_expedition_deterrence_rewards/P2G_30_FREEZE_001.json",
+    "sha256": "cba6d7185ba76d26a4516c14ac66631e7a78c43485068634051a0c4f3a0366af"
+  },
+  "validator": {
+    "method_version": "p2g40-receipt-validator/1.2.0",
+    "invocation": "node core_enhanced/docs/tools/validate_p2g40_receipt.mjs --plan <plan> --freeze <freeze> --receipt <receipt>",
+    "methods": [
+      "sha256sum exact-input binding",
+      "stable selector set comparison",
+      "Tarjan SCC and atomic-group condensation audit",
+      "final-execution-node cardinality comparison",
+      "phase/audit/integration row cardinality comparison"
+    ]
+  },
+  "freeze_prerequisite_repair_basis_exact_match": {
+    "result": "passed",
+    "working_revision_ref": "WR-CEDR-004",
+    "review_batch_ref": "RB-CEDR-001",
+    "reviewed_source_basis_ref": "RSB-CEDR-001",
+    "code_review_binding_count": 10,
+    "bound_final_policy_freeze_ref": "FPF-CEDR-001",
+    "applicable_p2g40_obligation_key_count": 0,
+    "resolution_record_ref_count": 0,
+    "obligation_supersession_record_ref_count": 0
+  },
+  "selector_resolution": {
+    "result": "passed",
+    "resolved_unique_count": 10,
+    "missing_count": 0,
+    "ambiguous_count": 0,
+    "extra_count": 0,
+    "exact_resolution": [
+      {
+        "element_id": "PE-CEDR-G13",
+        "policy_element_revision_ref": "PER-CEDR-G13-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CEDR-G14",
+        "policy_element_revision_ref": "PER-CEDR-G14-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CEDR-G15",
+        "policy_element_revision_ref": "PER-CEDR-G15-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CEDR-G16",
+        "policy_element_revision_ref": "PER-CEDR-G16-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CEDR-G17",
+        "policy_element_revision_ref": "PER-CEDR-G17-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CEDR-G18",
+        "policy_element_revision_ref": "PER-CEDR-G18-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CEDR-G19",
+        "policy_element_revision_ref": "PER-CEDR-G19-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CEDR-PERSISTENCE",
+        "policy_element_revision_ref": "PER-CEDR-PERSISTENCE-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CEDR-PWR01",
+        "policy_element_revision_ref": "PER-CEDR-PWR01-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CEDR-PWR02",
+        "policy_element_revision_ref": "PER-CEDR-PWR02-REVIEWED-001"
+      }
+    ]
+  },
+  "primary_phase_coverage": {
+    "result": "passed",
+    "covered_count": 10,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0,
+    "assignments": [
+      {
+        "element_id": "PE-CEDR-G13",
+        "phase_id": "PHASE-CEDR-01"
+      },
+      {
+        "element_id": "PE-CEDR-G14",
+        "phase_id": "PHASE-CEDR-01"
+      },
+      {
+        "element_id": "PE-CEDR-G15",
+        "phase_id": "PHASE-CEDR-01"
+      },
+      {
+        "element_id": "PE-CEDR-PWR01",
+        "phase_id": "PHASE-CEDR-01"
+      },
+      {
+        "element_id": "PE-CEDR-PWR02",
+        "phase_id": "PHASE-CEDR-01"
+      },
+      {
+        "element_id": "PE-CEDR-G16",
+        "phase_id": "PHASE-CEDR-01"
+      },
+      {
+        "element_id": "PE-CEDR-G17",
+        "phase_id": "PHASE-CEDR-01"
+      },
+      {
+        "element_id": "PE-CEDR-G18",
+        "phase_id": "PHASE-CEDR-01"
+      },
+      {
+        "element_id": "PE-CEDR-G19",
+        "phase_id": "PHASE-CEDR-01"
+      },
+      {
+        "element_id": "PE-CEDR-PERSISTENCE",
+        "phase_id": "PHASE-CEDR-01"
+      }
+    ]
+  },
+  "work_package_atomic_group_partition": {
+    "result": "passed",
+    "work_package_count": 6,
+    "atomic_group_count": 1,
+    "atomic_group_member_count": 4,
+    "standalone_work_package_count": 2,
+    "missing_count": 0,
+    "duplicate_or_overlap_count": 0,
+    "atomic_groups": {
+      "AG-CEDR-RUN": [
+        "WP-CEDR-ENTRY",
+        "WP-CEDR-BATTLE",
+        "WP-CEDR-GOLD",
+        "WP-CEDR-STORE"
+      ]
+    },
+    "standalone_work_packages": [
+      "WP-CEDR-PUBLIC",
+      "WP-CEDR-VERIFY"
+    ]
+  },
+  "dependency_graph": {
+    "result": "passed",
+    "work_package_node_count": 6,
+    "edge_count": 11,
+    "cyclic_scc_count": 1,
+    "cyclic_scc_disposition_count": 1,
+    "cyclic_sccs": [
+      [
+        "WP-CEDR-BATTLE",
+        "WP-CEDR-ENTRY",
+        "WP-CEDR-GOLD",
+        "WP-CEDR-STORE"
+      ]
+    ],
+    "final_execution_node_count": 3,
+    "condensation_edge_count": 2,
+    "condensation_acyclic": true
+  },
+  "final_execution_node_to_phase_cardinality": {
+    "result": "passed",
+    "final_execution_node_count": 3,
+    "assigned_once_count": 3,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "ordered_phase_count": 1,
+    "assignment": {
+      "AG-CEDR-RUN": "PHASE-CEDR-01",
+      "WP-CEDR-PUBLIC": "PHASE-CEDR-01",
+      "WP-CEDR-VERIFY": "PHASE-CEDR-01"
+    }
+  },
+  "intermediate_state_audit_row_completeness": {
+    "result": "passed",
+    "ordered_phase_count": 1,
+    "audit_row_count": 1,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0
+  },
+  "parallelization_evidence_check": {
+    "result": "not_claimed",
+    "plan_disposition": "none approved",
+    "approved_pair_count": 0
+  },
+  "integration_validation_ownership_coverage": {
+    "result": "passed",
+    "required_acceptance_count": 10,
+    "mapped_count": 10,
+    "assigned_execution_node_count": 10,
+    "existing_read_only_count": 0,
+    "audit_local_read_only_count": 0,
+    "missing_owner_count": 0,
+    "invalid_seam_disposition_count": 0
+  },
+  "goal_structure_fact_check": {
+    "result": "passed",
+    "ordered_phase_count": 1,
+    "expected": "single_phase",
+    "actual": "single_phase"
+  },
+  "failure_summary": [],
+  "overall_result": "passed",
+  "structural_input_evidence": {
+    "scope": "references, coverage, graph, validation ownership; semantic review remains separate",
+    "exact_freeze_ref": {
+      "Artifact Type": "Final Policy Freeze",
+      "Artifact ID": "FPF-CEDR-001",
+      "Content Digest": "sha256:452294e14c278fa9b25942bc7f87477a0f7270254976715d96c4518c7468f31e"
+    },
+    "exact_plan_ref": {
+      "Artifact Type": "Phase Plan",
+      "Artifact ID": "PP-CEDR-001",
+      "Content Digest": "sha256:bf45bd5ccd88b1bfafb6fafe7785b6888cd6562b9d08bb47188fc699ca046ed2"
+    },
+    "resolved_artifact_sources": [
+      {
+        "path": "core_enhanced/docs/goals/core_expedition_deterrence_rewards/P2G_00_INITIAL_001.json",
+        "sha256": "8ffaf8ff75734104f30c0d16c5299cba07439ad231a8003efdd6c9ca033210bc"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_expedition_deterrence_rewards/P2G_10_DECISIONS_001.json",
+        "sha256": "fb02a4f1b68f91e913b9c85f014e4efe2c47367f4d5dd3618e18508ee4313ae0"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_expedition_deterrence_rewards/P2G_10_OPEN_001.json",
+        "sha256": "224a7516481034e19c6d1b67f28bec4630228a8c1009dfdba6a99f7f3e34542e"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_expedition_deterrence_rewards/P2G_20_REVIEW_001.json",
+        "sha256": "59296066e2ea21d882bed3efa042e3d72671eecb6143fe6fc796d31d693ad1fc"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_expedition_deterrence_rewards/P2G_20_SOURCE_PLAN_001.json",
+        "sha256": "22409ad3e33a4d605187b562e1743283ac6035cc1db7f376b842fa8d02bc3bbd"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_expedition_deterrence_rewards/P2G_30_FREEZE_001.json",
+        "sha256": "cba6d7185ba76d26a4516c14ac66631e7a78c43485068634051a0c4f3a0366af"
+      }
+    ]
+  }
+}

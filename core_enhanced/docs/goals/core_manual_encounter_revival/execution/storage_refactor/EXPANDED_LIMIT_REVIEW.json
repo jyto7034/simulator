@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "source": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_manual_encounter_revival/execution/storage_refactor/runs/expanded-calibration001.stdout",
+  "sha256": "38819154c303247fdeb7a43c83b0255685e80e2c076522d78f6a21367d1f9dbc",
+  "limits": {
+    "max_elapsed_ns": 6000000000,
+    "max_native_work": 233000000,
+    "max_requested_heap_bytes": 1342177280,
+    "max_rss_bytes": 1610612736
+  },
+  "limits_changed": false,
+  "summary": {
+    "plain": {
+      "samples": 12,
+      "max_elapsed_ns": 660410332,
+      "max_native_work": null,
+      "max_requested_heap_bytes": null,
+      "max_rss_bytes": null
+    },
+    "instrumented": {
+      "samples": 12,
+      "max_elapsed_ns": 762717618,
+      "max_native_work": 7531830,
+      "max_requested_heap_bytes": 24580682,
+      "max_rss_bytes": 52899840
+    }
+  },
+  "scope": "finite diagnostic scenario; plain missing counters remain null; no final gameplay SLO claim"
+}

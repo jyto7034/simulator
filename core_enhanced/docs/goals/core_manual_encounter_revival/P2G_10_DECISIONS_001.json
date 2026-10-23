@@ -1,0 +1,576 @@
+{
+  "created_at": "2026-10-15T13:47:01.365369+00:00",
+  "elements": [
+    {
+      "id": "PE-CMER-G27",
+      "title": "수동 조우와 최초 보상",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMER-G27-DECIDED-001",
+        "Content Digest": "sha256:beb138f2455afa10df65a85dc626f95124a72a5543e2aefcd475ca95a32dc61c"
+      },
+      "source": "ROADMAP U17/G27; growth-and-rewards 파편 획득과 반복 전투/숙달 소탕"
+    },
+    {
+      "id": "PE-CMER-G28",
+      "title": "알 부화와 명시적 출처 지불",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMER-G28-DECIDED-001",
+        "Content Digest": "sha256:6e6f0b66d9dc7fc642b96331ae4bfa70ae7ff286abdc4d54f457db3cebc3bc5a"
+      },
+      "source": "ROADMAP U17/G28; growth-and-rewards 알과 촉매제/부화 확정과 제압·도망; equipment-and-fragments 재료 공용 창고"
+    },
+    {
+      "id": "PE-CMER-G29",
+      "title": "단계 보상과 선택 권리",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMER-G29-DECIDED-001",
+        "Content Digest": "sha256:f19cad1f98d331e7af76a1f21dd9dca99e4e41357bd1aebd86e68e5b4169595c"
+      },
+      "source": "ROADMAP U17/G29; growth-and-rewards 파편 획득과 반복 전투; results-and-save 결과 확정과 노드 소비"
+    },
+    {
+      "id": "PE-CMER-RESTORE",
+      "title": "후퇴·복원·노드 수명",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMER-RESTORE-DECIDED-001",
+        "Content Digest": "sha256:cf38d55ff9618c3f0e08b90ef8511a6626854565ea657d9b9a5c186e867dce9c"
+      },
+      "source": "ROADMAP U17/U04/U12/U13; growth-and-rewards 부화 확정과 제압·도망; results-and-save 저장과 복구"
+    },
+    {
+      "id": "PE-CMER-LEGACY",
+      "title": "구 명령·저장 이행",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMER-LEGACY-DECIDED-001",
+        "Content Digest": "sha256:2a48bc6f0d45c7832bb50d1ef56d7b2cb18a9534294cc2dbc0b61f8143d4dee8"
+      },
+      "source": "ROADMAP U17/D01/USER11; growth-and-rewards 모노리스/숙달 비교 기준"
+    },
+    {
+      "id": "PE-CMER-AUTHOR",
+      "title": "제작·공개 소비자·비용",
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMER-AUTHOR-DECIDED-001",
+        "Content Digest": "sha256:3b0b8da368c4f1f98d2f57978c83487f59c4f1a84091ea18904fa87123c1b90d"
+      },
+      "source": "ROADMAP U17 노드 RON/§1.9/§8.4; 실행지침 §4/§6"
+    }
+  ],
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CMER-G27-001",
+        "Content Digest": "sha256:546f0ab02057d183721c1fa3c46733631a1c7e80e8c976127f46b47f46681dd2"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CMER-G27"
+        ],
+        "Decision maker": "existing approved rulebook and user U17 scope",
+        "Exact user approval ref": {
+          "request": {
+            "ref": "USER-20261015-U17-START",
+            "exact_text": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u17 작업에 착수해줄래?",
+            "date": "2026-10-15",
+            "interpretation": "U17 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+          },
+          "intake": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CMER-001",
+            "Content Digest": "sha256:30bc59413be78e3899f717f1f26f53b8c6c365f648e4c19b386bf14d21dac4ac"
+          },
+          "exact_existing_policy": "ROADMAP U17/G27; growth-and-rewards 파편 획득과 반복 전투/숙달 소탕"
+        },
+        "Decision": "원정별 종류별 최초 보상은 보유량과 독립이다. 엘리트는 첫 승리 파편+장비, 이후 작성된 반복 보상만 지급하고 매번 수동 전투한다. 일반 보스와 최종보스의 기존 예외 및 도감·영구 기록을 보존한다.",
+        "Observable Policy Acceptance": [
+          "A01: 엘리트 첫 승리에 작성 파편과 장비를 지급하고, 파편 분쇄/상실 후 반복 승리에도 최초 보상을 재지급하지 않는다. 새 원정에서만 최초 원장을 초기화한다.",
+          "A02: 엘리트 자연 반복 후보는 숙달/격파횟수에 의존하지 않고 알·자동 강화·소탕을 생산하지 않는다. 깊이/지역의 작성 난이도와 기존 노드 예약을 유지한다.",
+          "A03: 일반 보스 첫 승리에 작성 파편과 원정 전용 알을 지급하고 최종보스에 알을 추가하지 않는다. 마탄 무보상 등 고유 계약을 유지한다."
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMER-G27-DECIDED-001",
+        "Content Digest": "sha256:beb138f2455afa10df65a85dc626f95124a72a5543e2aefcd475ca95a32dc61c"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CMER-G27",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CMER-G27-OPEN-001",
+          "Content Digest": "sha256:456e76d7782a9cd91ec01546e35f1917884297c4c23992cd72aa369f0e2bce89"
+        },
+        "Policy statement": "원정별 종류별 최초 보상은 보유량과 독립이다. 엘리트는 첫 승리 파편+장비, 이후 작성된 반복 보상만 지급하고 매번 수동 전투한다. 일반 보스와 최종보스의 기존 예외 및 도감·영구 기록을 보존한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CMER-G27-001",
+          "Content Digest": "sha256:546f0ab02057d183721c1fa3c46733631a1c7e80e8c976127f46b47f46681dd2"
+        },
+        "Observable Policy Acceptance": [
+          "A01: 엘리트 첫 승리에 작성 파편과 장비를 지급하고, 파편 분쇄/상실 후 반복 승리에도 최초 보상을 재지급하지 않는다. 새 원정에서만 최초 원장을 초기화한다.",
+          "A02: 엘리트 자연 반복 후보는 숙달/격파횟수에 의존하지 않고 알·자동 강화·소탕을 생산하지 않는다. 깊이/지역의 작성 난이도와 기존 노드 예약을 유지한다.",
+          "A03: 일반 보스 첫 승리에 작성 파편과 원정 전용 알을 지급하고 최종보스에 알을 추가하지 않는다. 마탄 무보상 등 고유 계약을 유지한다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CMER-G28-001",
+        "Content Digest": "sha256:f5a95d1ab42114e20338fb5668384654e60301b51287079f8cfad1f7053395bd"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CMER-G28"
+        ],
+        "Decision maker": "existing approved rulebook and user U17 scope",
+        "Exact user approval ref": {
+          "request": {
+            "ref": "USER-20261015-U17-START",
+            "exact_text": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u17 작업에 착수해줄래?",
+            "date": "2026-10-15",
+            "interpretation": "U17 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+          },
+          "intake": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CMER-001",
+            "Content Digest": "sha256:30bc59413be78e3899f717f1f26f53b8c6c365f648e4c19b386bf14d21dac4ac"
+          },
+          "exact_existing_policy": "ROADMAP U17/G28; growth-and-rewards 알과 촉매제/부화 확정과 제압·도망; equipment-and-fragments 재료 공용 창고"
+        },
+        "Decision": "부화 확정은 알·명시 소지/창고 촉매 소비·순수 미해결 일반전 노드 전환을 하나로 적용하며 전투를 시작하지 않는다. 부활 단계와 무억제 배율은 곱한다.",
+        "Observable Policy Acceptance": [
+          "A04: 부화 전 취소/부족/잘못된 대상은 알·소지/창고 촉매·노드·UUID를 바꾸지 않는다. 성공 시 전환과 출처별 비용만 원자 확정하고 전투·후퇴횟수를 시작하지 않는다.",
+          "A05: 예약/전조/봉인/이미 해결/다른 부화 노드를 대체하지 않는다. Gate 유일 경로라는 이유로 금지하거나 우회로를 생성하지 않는다.",
+          "A06: 현재 소지 또는 창고 촉매를 명시 선택하며 출처별 보유/소비를 공개한다. 별도 사전 반입과 원정별 사용 상한을 추가하지 않는다. 기존 일반 상인의 공용 촉매 공급을 연결한다.",
+          "A07: 단계별 authored 강화와 보상을 진입 전 공개한다. 부활 강화×무억제 강화, 수량형 보상2배와 물품/선택 횟수 불변을 유지한다. 구 모노리스150/200%를 고정 규칙으로 계승하지 않는다."
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMER-G28-DECIDED-001",
+        "Content Digest": "sha256:6e6f0b66d9dc7fc642b96331ae4bfa70ae7ff286abdc4d54f457db3cebc3bc5a"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CMER-G28",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CMER-G28-OPEN-001",
+          "Content Digest": "sha256:cef9898590c805c379865676a93ee4fd07a07b96278ac90f42e6cb84639894e0"
+        },
+        "Policy statement": "부화 확정은 알·명시 소지/창고 촉매 소비·순수 미해결 일반전 노드 전환을 하나로 적용하며 전투를 시작하지 않는다. 부활 단계와 무억제 배율은 곱한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CMER-G28-001",
+          "Content Digest": "sha256:f5a95d1ab42114e20338fb5668384654e60301b51287079f8cfad1f7053395bd"
+        },
+        "Observable Policy Acceptance": [
+          "A04: 부화 전 취소/부족/잘못된 대상은 알·소지/창고 촉매·노드·UUID를 바꾸지 않는다. 성공 시 전환과 출처별 비용만 원자 확정하고 전투·후퇴횟수를 시작하지 않는다.",
+          "A05: 예약/전조/봉인/이미 해결/다른 부화 노드를 대체하지 않는다. Gate 유일 경로라는 이유로 금지하거나 우회로를 생성하지 않는다.",
+          "A06: 현재 소지 또는 창고 촉매를 명시 선택하며 출처별 보유/소비를 공개한다. 별도 사전 반입과 원정별 사용 상한을 추가하지 않는다. 기존 일반 상인의 공용 촉매 공급을 연결한다.",
+          "A07: 단계별 authored 강화와 보상을 진입 전 공개한다. 부활 강화×무억제 강화, 수량형 보상2배와 물품/선택 횟수 불변을 유지한다. 구 모노리스150/200%를 고정 규칙으로 계승하지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CMER-G29-001",
+        "Content Digest": "sha256:d76871f622aab0d19cdca062937bfc20ffee9900720df792f0c831f97a5a5871"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CMER-G29"
+        ],
+        "Decision maker": "existing approved rulebook and user U17 scope",
+        "Exact user approval ref": {
+          "request": {
+            "ref": "USER-20261015-U17-START",
+            "exact_text": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u17 작업에 착수해줄래?",
+            "date": "2026-10-15",
+            "interpretation": "U17 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+          },
+          "intake": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CMER-001",
+            "Content Digest": "sha256:30bc59413be78e3899f717f1f26f53b8c6c365f648e4c19b386bf14d21dac4ac"
+          },
+          "exact_existing_policy": "ROADMAP U17/G29; growth-and-rewards 파편 획득과 반복 전투; results-and-save 결과 확정과 노드 소비"
+        },
+        "Decision": "두 번째 승리는 전용 장비 선택·파츠·다음 알, 세 번째는 파츠·장비 선택만 지급한다. 승리 즉시 보상/격파/노드 소비/선택 권리를 고정하고 실제 선택을 나중에 처리한다.",
+        "Observable Policy Acceptance": [
+          "A08: 첫 알로2단계, 다음 알로3단계 전투만 열며3단계 승리에는 알이 없다. 패배에는 성공 보상/격파/알을 주지 않고 비용도 반환하지 않는다.",
+          "A09: 2/3단계 장비 후보·선택 대기 권리는 결과 즉시 저장하며 후보를 재추첨하지 않는다. 후보 부족은 실제 후보,0개는 안내 후 생략하며 대체 보상이나 새 중복 제한을 만들지 않는다.",
+          "A10: 장비 선택/결과 확인/재접속/동일 명령 재시도에서 보상은 한 번만 지급한다. 앞선 선택과 다른 부위도 고를 수 있는 authored 후보를 제공한다.",
+          "A11: 알 부활한 봉인 보스에는 황금가지와 억제력 보충을 주지 않는다. 엘리트/보스에 유물을 자동 추가하지 않는다."
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMER-G29-DECIDED-001",
+        "Content Digest": "sha256:f19cad1f98d331e7af76a1f21dd9dca99e4e41357bd1aebd86e68e5b4169595c"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CMER-G29",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CMER-G29-OPEN-001",
+          "Content Digest": "sha256:b47b6a87eca34f623123d56b03fb57ec0a7c6edd6f485394fce9a1a899b43ed4"
+        },
+        "Policy statement": "두 번째 승리는 전용 장비 선택·파츠·다음 알, 세 번째는 파츠·장비 선택만 지급한다. 승리 즉시 보상/격파/노드 소비/선택 권리를 고정하고 실제 선택을 나중에 처리한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CMER-G29-001",
+          "Content Digest": "sha256:d76871f622aab0d19cdca062937bfc20ffee9900720df792f0c831f97a5a5871"
+        },
+        "Observable Policy Acceptance": [
+          "A08: 첫 알로2단계, 다음 알로3단계 전투만 열며3단계 승리에는 알이 없다. 패배에는 성공 보상/격파/알을 주지 않고 비용도 반환하지 않는다.",
+          "A09: 2/3단계 장비 후보·선택 대기 권리는 결과 즉시 저장하며 후보를 재추첨하지 않는다. 후보 부족은 실제 후보,0개는 안내 후 생략하며 대체 보상이나 새 중복 제한을 만들지 않는다.",
+          "A10: 장비 선택/결과 확인/재접속/동일 명령 재시도에서 보상은 한 번만 지급한다. 앞선 선택과 다른 부위도 고를 수 있는 authored 후보를 제공한다.",
+          "A11: 알 부활한 봉인 보스에는 황금가지와 억제력 보충을 주지 않는다. 엘리트/보스에 유물을 자동 추가하지 않는다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CMER-RESTORE-001",
+        "Content Digest": "sha256:eb2d634881471f835c9777817d7a9a382564cb15279540ca315a47a173b53e65"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CMER-RESTORE"
+        ],
+        "Decision maker": "existing approved rulebook and user U17 scope",
+        "Exact user approval ref": {
+          "request": {
+            "ref": "USER-20261015-U17-START",
+            "exact_text": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u17 작업에 착수해줄래?",
+            "date": "2026-10-15",
+            "interpretation": "U17 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+          },
+          "intake": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CMER-001",
+            "Content Digest": "sha256:30bc59413be78e3899f717f1f26f53b8c6c365f648e4c19b386bf14d21dac4ac"
+          },
+          "exact_existing_policy": "ROADMAP U17/U04/U12/U13; growth-and-rewards 부화 확정과 제압·도망; results-and-save 저장과 복구"
+        },
+        "Decision": "수동 후퇴는 부화 후 전투 진입 상태로 복원하며 부화비와 최초 입장비를 유지한다. 미확정 노드 Continue와 SavePoint는 해당 경계의 조우/알/소지/창고를 같이 복원한다.",
+        "Observable Policy Acceptance": [
+          "A12: 부화 후 보류/수동 후퇴는 동일 노드·단계·지불을 유지한다. 후퇴는 최대2회, 두 번째 후퇴 후 마지막 도전 가능, 승패 즉시 노드 소비와 실패 통과를 유지한다.",
+          "A13: 노드 입장 전에 확정된 부화는 fresh Continue에 남고 미확정 노드 안 부화는 원래 조우/알/소지·창고 촉매와 함께 입장 전으로 복원한다. 같은 프로세스 재접속은 현재 상태를 유지한다.",
+          "A14: 부화 전/후 SavePoint는 각각 당시 노드/알/촉매/선택 권리를 복원한다. 창고 전체를 덮어쓰지 않고 해당 원정의 출처별 debit을 기존 U15 방식으로 복원한다.",
+          "A15: 같은 층 연결 재방문은 같은 미해결 부화를 유지하고 하강 뒤에는 남긴 환상체를 다음 방/원정으로 옮기지 않는다. 입장/재진입 비용을 중복 청구하지 않는다.",
+          "A16: 실제 저장 IO 실패는 부화/비용/결과/권리의 부분 확정을 남기지 않고 정상 동일 명령 재시도가 가능하다."
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMER-RESTORE-DECIDED-001",
+        "Content Digest": "sha256:cf38d55ff9618c3f0e08b90ef8511a6626854565ea657d9b9a5c186e867dce9c"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CMER-RESTORE",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CMER-RESTORE-OPEN-001",
+          "Content Digest": "sha256:88157adf34e13eb38802ace37d7cba58e005461cec67c6a395bf0d791586077d"
+        },
+        "Policy statement": "수동 후퇴는 부화 후 전투 진입 상태로 복원하며 부화비와 최초 입장비를 유지한다. 미확정 노드 Continue와 SavePoint는 해당 경계의 조우/알/소지/창고를 같이 복원한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CMER-RESTORE-001",
+          "Content Digest": "sha256:eb2d634881471f835c9777817d7a9a382564cb15279540ca315a47a173b53e65"
+        },
+        "Observable Policy Acceptance": [
+          "A12: 부화 후 보류/수동 후퇴는 동일 노드·단계·지불을 유지한다. 후퇴는 최대2회, 두 번째 후퇴 후 마지막 도전 가능, 승패 즉시 노드 소비와 실패 통과를 유지한다.",
+          "A13: 노드 입장 전에 확정된 부화는 fresh Continue에 남고 미확정 노드 안 부화는 원래 조우/알/소지·창고 촉매와 함께 입장 전으로 복원한다. 같은 프로세스 재접속은 현재 상태를 유지한다.",
+          "A14: 부화 전/후 SavePoint는 각각 당시 노드/알/촉매/선택 권리를 복원한다. 창고 전체를 덮어쓰지 않고 해당 원정의 출처별 debit을 기존 U15 방식으로 복원한다.",
+          "A15: 같은 층 연결 재방문은 같은 미해결 부화를 유지하고 하강 뒤에는 남긴 환상체를 다음 방/원정으로 옮기지 않는다. 입장/재진입 비용을 중복 청구하지 않는다.",
+          "A16: 실제 저장 IO 실패는 부화/비용/결과/권리의 부분 확정을 남기지 않고 정상 동일 명령 재시도가 가능하다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CMER-LEGACY-001",
+        "Content Digest": "sha256:6908194138b6b3df8e7c1faf5f1df37bc02cfc59d856e05d00cfdef528d39529"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CMER-LEGACY"
+        ],
+        "Decision maker": "existing approved rulebook and user U17 scope",
+        "Exact user approval ref": {
+          "request": {
+            "ref": "USER-20261015-U17-START",
+            "exact_text": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u17 작업에 착수해줄래?",
+            "date": "2026-10-15",
+            "interpretation": "U17 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+          },
+          "intake": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CMER-001",
+            "Content Digest": "sha256:30bc59413be78e3899f717f1f26f53b8c6c365f648e4c19b386bf14d21dac4ac"
+          },
+          "exact_existing_policy": "ROADMAP U17/D01/USER11; growth-and-rewards 모노리스/숙달 비교 기준"
+        },
+        "Decision": "구 숙달·소탕·모노리스 소비를 공개 활성 경로에서 제거한다. 기존 개발 저장은 원본을 보존하고 미지원 형식으로 명시 거절한다. 조용한 재해석/자동변환을 하지 않는다.",
+        "Observable Policy Acceptance": [
+          "A17: 구 모노리스/소탕 명령은 typed rejection이며 활성 action/query/상점에는 제안하지 않는다. 새 저장/복원에 구 진행이 살아나지 않는다.",
+          "A18: 구형 지원 저장 원본은 불변으로 보존하고 version/typed 오류로 명시 거절한다. 새 지원 형식은 현재 진행·도감·영구 기록·선택 권리를 왕복 보존한다.",
+          "A19: 튜토리얼 전용 보상·자산/영구 기록 격리와 선행 U04/U12/U13/U14/U15/U16 기능의 영향 회귀를 유지한다."
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMER-LEGACY-DECIDED-001",
+        "Content Digest": "sha256:2a48bc6f0d45c7832bb50d1ef56d7b2cb18a9534294cc2dbc0b61f8143d4dee8"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CMER-LEGACY",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CMER-LEGACY-OPEN-001",
+          "Content Digest": "sha256:ab31d71eb4646459cb8d17f631e116ce59d0646006369d22d058c7926cb70095"
+        },
+        "Policy statement": "구 숙달·소탕·모노리스 소비를 공개 활성 경로에서 제거한다. 기존 개발 저장은 원본을 보존하고 미지원 형식으로 명시 거절한다. 조용한 재해석/자동변환을 하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CMER-LEGACY-001",
+          "Content Digest": "sha256:6908194138b6b3df8e7c1faf5f1df37bc02cfc59d856e05d00cfdef528d39529"
+        },
+        "Observable Policy Acceptance": [
+          "A17: 구 모노리스/소탕 명령은 typed rejection이며 활성 action/query/상점에는 제안하지 않는다. 새 저장/복원에 구 진행이 살아나지 않는다.",
+          "A18: 구형 지원 저장 원본은 불변으로 보존하고 version/typed 오류로 명시 거절한다. 새 지원 형식은 현재 진행·도감·영구 기록·선택 권리를 왕복 보존한다.",
+          "A19: 튜토리얼 전용 보상·자산/영구 기록 격리와 선행 U04/U12/U13/U14/U15/U16 기능의 영향 회귀를 유지한다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CMER-AUTHOR-001",
+        "Content Digest": "sha256:a05942f06da022a515b6a3904bd2c3c4e393f08770d06fa4ce2ce4398b55c91d"
+      },
+      "payload": {
+        "Predecessor Decision Revision Ref": null,
+        "Affected Element IDs": [
+          "PE-CMER-AUTHOR"
+        ],
+        "Decision maker": "existing approved rulebook and user U17 scope",
+        "Exact user approval ref": {
+          "request": {
+            "ref": "USER-20261015-U17-START",
+            "exact_text": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u17 작업에 착수해줄래?",
+            "date": "2026-10-15",
+            "interpretation": "U17 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+          },
+          "intake": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CMER-001",
+            "Content Digest": "sha256:30bc59413be78e3899f717f1f26f53b8c6c365f648e4c19b386bf14d21dac4ac"
+          },
+          "exact_existing_policy": "ROADMAP U17 노드 RON/§1.9/§8.4; 실행지침 §4/§6"
+        },
+        "Decision": "등록한 최초/반복/부화 보상·촉매 recipe·단계 강화는 실제 loader/검증/공개 명령/query/저장 소비자로 이어져야 한다. 대표 정상 원정과 확장 workload의 비용을 측정한다.",
+        "Observable Policy Acceptance": [
+          "A20: 정상 RON으로 대표 일반전·엘리트·일반보스·2/3단계 부화와 장비 선택을 디버그 지급 없이 수행한다. 잘못된 분류/참조/recipe/보상 조합은 loader에서 거절한다.",
+          "A21: 공개 CoreApplication과 실제 host writer/새 프로세스 reader에서 부화·수동 전투·후퇴·결과·선택·복원을 검증하고 query의 비용/단계/후보가 실행과 일치한다.",
+          "A22: 대표 정상/확장 입력의 전체 연산 시간·실제 메모리 peak/회수·내부 work를 구분해 관측한다. 지원 작성 오류와 실행 한도 실패 원자성을 확인하고 외부 임의 변조 방어는 제외한다."
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMER-AUTHOR-DECIDED-001",
+        "Content Digest": "sha256:3b0b8da368c4f1f98d2f57978c83487f59c4f1a84091ea18904fa87123c1b90d"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CMER-AUTHOR",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CMER-AUTHOR-OPEN-001",
+          "Content Digest": "sha256:b5e603056c8928b1c0cf041a5dbb0fdcc067d6140060164329603eb2868447bf"
+        },
+        "Policy statement": "등록한 최초/반복/부화 보상·촉매 recipe·단계 강화는 실제 loader/검증/공개 명령/query/저장 소비자로 이어져야 한다. 대표 정상 원정과 확장 workload의 비용을 측정한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CMER-AUTHOR-001",
+          "Content Digest": "sha256:a05942f06da022a515b6a3904bd2c3c4e393f08770d06fa4ce2ce4398b55c91d"
+        },
+        "Observable Policy Acceptance": [
+          "A20: 정상 RON으로 대표 일반전·엘리트·일반보스·2/3단계 부화와 장비 선택을 디버그 지급 없이 수행한다. 잘못된 분류/참조/recipe/보상 조합은 loader에서 거절한다.",
+          "A21: 공개 CoreApplication과 실제 host writer/새 프로세스 reader에서 부화·수동 전투·후퇴·결과·선택·복원을 검증하고 query의 비용/단계/후보가 실행과 일치한다.",
+          "A22: 대표 정상/확장 입력의 전체 연산 시간·실제 메모리 peak/회수·내부 work를 구분해 관측한다. 지원 작성 오류와 실행 한도 실패 원자성을 확인하고 외부 임의 변조 방어는 제외한다."
+        ],
+        "Intrinsic status": "decided"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CMER-003",
+        "Content Digest": "sha256:feb53f6636959b4b3736992afa1ceb5a3fb5bf5b49438b1d4a666e2c1544cb80"
+      },
+      "payload": {
+        "Predecessor Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CMER-002",
+          "Content Digest": "sha256:e5d7d35ef2a3a1cb377a3c8b1e4ab65bd004fde0a8f83f113cd02154ed7ca602"
+        },
+        "Predecessor Final Policy Freeze Ref": null,
+        "Approved metadata and scope": {
+          "Working Policy Document ID": "WPD-CMER-20261015",
+          "Policy Topic": "U17 수동 조우·최초 보상·알 부화·반복 이행",
+          "Requested Result": "U17 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음.",
+          "Target Project/Repository": "/mnt/f/work/simulator",
+          "Target Documentation Root": "core_enhanced/docs",
+          "Policy Directory Name": "core_manual_encounter_revival",
+          "User-Approved Scope": [
+            {
+              "id": "IN-U17",
+              "disposition": "in",
+              "meaning": "U17 G27/G28/G29: 종류별 원정별 최초 보상·엘리트 자연 반복·일반 보스 알 부화·선택 보상·소지/창고 촉매·진입/후퇴/결과/복원·구명령/저장 명시 거절·query와 consumer 검증",
+              "approval": {
+                "ref": "USER-20261015-U17-START",
+                "exact_text": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u17 작업에 착수해줄래?",
+                "date": "2026-10-15",
+                "interpretation": "U17 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+              }
+            },
+            {
+              "id": "OUT-U17",
+              "disposition": "out",
+              "meaning": "U17 명시 제외: 엘리트 알·격파횟수 자동강화·파편 상실 후 최초권리 재개방·부화 자동전투·후퇴 추가부화비·마탄 무보상 예외 제거·구저장 임의삭제. U18 이후 카드·Unity·개별최종보스·자동 감사 제외",
+              "approval": {
+                "ref": "USER-20261015-U17-START",
+                "exact_text": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u17 작업에 착수해줄래?",
+                "date": "2026-10-15",
+                "interpretation": "U17 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+              }
+            }
+          ]
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CMER-001",
+          "Content Digest": "sha256:30bc59413be78e3899f717f1f26f53b8c6c365f648e4c19b386bf14d21dac4ac"
+        },
+        "Current Policy Element Revision Map": {
+          "PE-CMER-G27": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMER-G27-DECIDED-001",
+            "Content Digest": "sha256:beb138f2455afa10df65a85dc626f95124a72a5543e2aefcd475ca95a32dc61c"
+          },
+          "PE-CMER-G28": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMER-G28-DECIDED-001",
+            "Content Digest": "sha256:6e6f0b66d9dc7fc642b96331ae4bfa70ae7ff286abdc4d54f457db3cebc3bc5a"
+          },
+          "PE-CMER-G29": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMER-G29-DECIDED-001",
+            "Content Digest": "sha256:f19cad1f98d331e7af76a1f21dd9dca99e4e41357bd1aebd86e68e5b4169595c"
+          },
+          "PE-CMER-RESTORE": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMER-RESTORE-DECIDED-001",
+            "Content Digest": "sha256:cf38d55ff9618c3f0e08b90ef8511a6626854565ea657d9b9a5c186e867dce9c"
+          },
+          "PE-CMER-LEGACY": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMER-LEGACY-DECIDED-001",
+            "Content Digest": "sha256:2a48bc6f0d45c7832bb50d1ef56d7b2cb18a9534294cc2dbc0b61f8143d4dee8"
+          },
+          "PE-CMER-AUTHOR": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMER-AUTHOR-DECIDED-001",
+            "Content Digest": "sha256:3b0b8da368c4f1f98d2f57978c83487f59c4f1a84091ea18904fa87123c1b90d"
+          }
+        },
+        "Decision Revision Ref Set": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMER-G27-001",
+            "Content Digest": "sha256:546f0ab02057d183721c1fa3c46733631a1c7e80e8c976127f46b47f46681dd2"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMER-G28-001",
+            "Content Digest": "sha256:f5a95d1ab42114e20338fb5668384654e60301b51287079f8cfad1f7053395bd"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMER-G29-001",
+            "Content Digest": "sha256:d76871f622aab0d19cdca062937bfc20ffee9900720df792f0c831f97a5a5871"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMER-RESTORE-001",
+            "Content Digest": "sha256:eb2d634881471f835c9777817d7a9a382564cb15279540ca315a47a173b53e65"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMER-LEGACY-001",
+            "Content Digest": "sha256:6908194138b6b3df8e7c1faf5f1df37bc02cfc59d856e05d00cfdef528d39529"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMER-AUTHOR-001",
+            "Content Digest": "sha256:a05942f06da022a515b6a3904bd2c3c4e393f08770d06fa4ce2ce4398b55c91d"
+          }
+        ],
+        "Open Policy Question Ref Set": [],
+        "Post-Freeze Change/Closure basis": null
+      }
+    }
+  ],
+  "Finding Triage Log": [
+    {
+      "classification": "material_policy",
+      "topic": "구저장",
+      "disposition": "D01/USER11 명시 거절/원본 보존을 적용하며 변환 선택을 재질문하지 않는다."
+    },
+    {
+      "classification": "material_policy",
+      "topic": "부활 배율과 선택 후보",
+      "disposition": "D04 사용자 결정의 부활×무억제, USER12 실제 후보/0개 생략을 적용한다."
+    },
+    {
+      "classification": "technical_decision",
+      "topic": "상태 경계",
+      "disposition": "U04 선택 권리와 U15 출처 지불을 재사용한다. P2G20에서 실제 owner 연결을 검토한다."
+    }
+  ]
+}

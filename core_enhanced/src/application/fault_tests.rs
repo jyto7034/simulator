@@ -26,7 +26,7 @@ fn waiting_with_data(data: ValidatedGameData) -> CoreApplication {
     let mut app = CoreApplication::new(data, 23);
     execute(
         &mut app,
-        json!({"type":"start_new_game","game_mode":"Standard","replace_active_run":false}),
+        json!({"type":"start_new_game","game_mode":"Tutorial","replace_active_run":false}),
     )
     .unwrap();
     for _ in 0..128 {
@@ -59,7 +59,7 @@ fn waiting_with_data(data: ValidatedGameData) -> CoreApplication {
                 .collect();
             execute(
                 &mut app,
-                json!({"type":"select_starter_employees","employee_definition_ids":ids}),
+                json!({"type":"select_starter_employees","employee_definition_ids":ids,"loan_copy_ids":[]}),
             )
             .unwrap();
             continue;
@@ -109,9 +109,21 @@ fn committed_battle(app: &CoreApplication) -> Value {
         .clone()
 }
 
+// Scope a trusted test budget to the operation whose fault is under test.
+// Startup now accounts for its own Continue codec and must not consume this
+// deliberately tiny tick budget before the battle has even been entered.
+fn limited_work<T>(max_work: u64, operation: impl FnOnce() -> Result<T, ApplicationError>)
+    -> Result<T, ApplicationError>
+{
+    use crate::game::battle::runtime_control as native;
+    native::run(native::RuntimeFactLimits { max_work, ..Default::default() },
+        || Ok(operation())).map_err(ApplicationError::from_domain)?
+}
+
 #[test]
 fn native_fault_preserves_last_root_first_cause_and_every_public_mutation_gate() {
-    let mut app = waiting(1000);
+    // Admit the current entry snapshot; the long Elapsed operation below must still fault.
+    let mut app = waiting(10_000_000);
     let token = app.capture_persistence_rollback().unwrap().unwrap();
     let checkpoint = ApplicationCheckpoint::new(Vec::new(), 0, 0);
     let generation = ValidatedGameData::load_live_embedded().unwrap();
@@ -119,7 +131,7 @@ fn native_fault_preserves_last_root_first_cause_and_every_public_mutation_gate()
     let before = app.core.get_run_snapshot_json().unwrap();
     let battle = committed_battle(&app);
     let resources = serde_json::to_value(app.run_resources()).unwrap();
-    let error = app.advance_active_battle_by(60_000, 0).unwrap_err();
+    let error = limited_work(3000, || app.advance_active_battle_by(60_000, 0)).unwrap_err();
     assert_eq!(error.code(), "battle_runtime_work_limit");
     let first = *app.battle_fault().unwrap();
     assert_eq!(first.operation, BattleFaultOperation::Elapsed);
@@ -150,7 +162,7 @@ fn native_fault_preserves_last_root_first_cause_and_every_public_mutation_gate()
         rejected(app.prepare_command_with_generation(
             Uuid::nil(),
             command(
-                json!({"type":"start_new_game","game_mode":"Standard","replace_active_run":true}),
+                json!({"type":"start_new_game","game_mode":"Tutorial","replace_active_run":true}),
             ),
             Default::default(),
             Some(generation.clone()),
@@ -168,7 +180,7 @@ fn native_fault_preserves_last_root_first_cause_and_every_public_mutation_gate()
         rejected(app.prepare_non_battle_command(
             Uuid::nil(),
             command(
-                json!({"type":"start_new_game","game_mode":"Standard","replace_active_run":true}),
+                json!({"type":"start_new_game","game_mode":"Tutorial","replace_active_run":true}),
             ),
             Default::default(),
         ));
@@ -184,7 +196,7 @@ fn native_fault_preserves_last_root_first_cause_and_every_public_mutation_gate()
         rejected(app.execute_with_generation(
             Uuid::nil(),
             command(
-                json!({"type":"start_new_game","game_mode":"Standard","replace_active_run":true}),
+                json!({"type":"start_new_game","game_mode":"Tutorial","replace_active_run":true}),
             ),
             Default::default(),
             generation.clone(),
@@ -252,7 +264,9 @@ fn normal_refusals_queries_and_profile_errors_do_not_fault() {
 #[test]
 fn terminal_observation_keeps_failure_work_and_lease_without_a_fake_commit_or_repeat() {
     use crate::runtime_observation::{self as obs, Outcome};
-    let mut app = waiting(1000);
+    // Same finite profile as the normal Elapsed fault regression: entry succeeds,
+    // while the 60-second operation still exceeds its work allowance.
+    let mut app = waiting(10_000_000);
     let (sender, receiver) = obs::channel();
     let (observer, reader) = sender.session(301);
     app.set_runtime_observer(Some(observer));
@@ -261,9 +275,10 @@ fn terminal_observation_keeps_failure_work_and_lease_without_a_fake_commit_or_re
     let live = reader.snapshot(false).unwrap();
     assert!(live.current.battle.is_some());
     assert_eq!(
-        app.advance_active_battle_by(60_000, 0).unwrap_err().code(),
+        limited_work(3000, || app.advance_active_battle_by(60_000, 0)).unwrap_err().code(),
         "battle_runtime_work_limit"
     );
+    assert_eq!(app.battle_fault().unwrap().operation, BattleFaultOperation::Elapsed);
     let failure = receiver.try_recv().unwrap();
     assert_eq!(failure.outcome, Outcome::Rejected);
     assert!(failure.work > 0);
@@ -834,12 +849,11 @@ fn u04_prepared_command_and_host_tick_drop_preserve_roots_and_commit_matches_imm
 
 #[test]
 fn u04_prepared_host_tick_fault_retains_first_origin_and_original_authority() {
-    let mut app = waiting(1000);
+    let mut app = waiting(10_000_000);
     enter(&mut app);
     let before = app.core.get_run_snapshot_json().unwrap();
     let battle = committed_battle(&app);
-    let error = app
-        .prepare_active_battle_for_host_tick(60_000, 0)
+    let error = limited_work(2000, || app.prepare_active_battle_for_host_tick(60_000, 0))
         .err()
         .expect("actual work refusal");
     assert_eq!(error.code(), "battle_runtime_work_limit");

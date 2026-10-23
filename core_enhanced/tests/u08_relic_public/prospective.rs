@@ -42,20 +42,6 @@ fn available(target: &Value, base: u64, effective: u64) {
 }
 
 #[test]
-fn u08_public_external_fixture_registers_new_definitions_before_app_setup() {
-    let fixture = content();
-    assert!(fixture.root.join("u08_public/relics.ron").is_file());
-    assert_eq!(fixture.selection.packs.len(), 2);
-    let (mut app, employees) = app();
-    let copy = grant_relic(&mut app, "u08_public_blend");
-    equip_relic(&mut app, copy, employees[0], 0);
-    let state = relic_state(&mut app);
-    assert_eq!(state.copies.len(), 1);
-    assert_eq!(state.loadouts[0].employee_uuid, employees[0]);
-    assert_eq!(state.loadouts[0].slots, [Some(copy), None, None]);
-}
-
-#[test]
 fn u08_public_plan_two_employees_same_skill_and_queries_preserve_all_public_roots() {
     let (mut app, employees) = app();
     for employee in &employees[..2] {

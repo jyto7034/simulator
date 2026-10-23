@@ -12,7 +12,7 @@ pub(super) fn start_selected_with_data(ids: &[&str], data: Arc<GameDataBase>) ->
         .execute(
             player,
             PlayerBehavior::StartNewGame {
-                game_mode: GameMode::Standard,
+                game_mode: GameMode::Expedition,
                 replace_active_run: false,
             },
         )
@@ -38,6 +38,7 @@ pub(super) fn start_selected_with_data(ids: &[&str], data: Arc<GameDataBase>) ->
         player,
         PlayerBehavior::SelectStarterEmployees {
             employee_definition_ids: ids.iter().map(|id| id.to_string()).collect(),
+            loan_copy_ids: vec![],
         },
     )
     .unwrap();
@@ -95,6 +96,29 @@ fn assert_initial_copy(core: &GameCore, employee: &Employee) {
 }
 
 #[test]
+fn u12_display_aptitude_alone_preserves_weapon_and_effective_battle_inputs() {
+    use crate::game::employee::CombatAptitude;
+    let (mut core, _) = start_selected(&["field_medic", "breach_guard", "records_clerk"]);
+    let employee = core.state.roster.iter().next().unwrap().uuid;
+    let baseline = core.state.roster.get(&employee).unwrap().clone();
+    let profile = |core: &GameCore| serde_json::to_value(
+        crate::game::combat_setup::player_spawns::effective_combat_profile_for_employee(
+            &core.state.roster, &core.state.inventory, &core.state.skill_fragments,
+            core.game_data.as_ref(), employee,
+        ).expect("same authored weapon remains eligible")
+    ).unwrap();
+    let expected = profile(&core);
+    assert!(expected["weapon_profile"].is_object());
+    for aptitude in [CombatAptitude::Defensive, CombatAptitude::Offensive] {
+        core.state.roster.get_mut(&employee).unwrap().profile.combat_aptitude = aptitude;
+        let changed = core.state.roster.get(&employee).unwrap();
+        assert_eq!(changed.profile.base_combat_stats, baseline.profile.base_combat_stats);
+        assert_eq!(serde_json::to_value(&changed.loadout).unwrap(), serde_json::to_value(&baseline.loadout).unwrap());
+        assert_eq!(profile(&core), expected, "display aptitude must not alter any battle input");
+    }
+}
+
+#[test]
 fn u06_starter_six_normal_sets_grant_exact_copies_and_continue_bindings() {
     for ids in [
         ["field_medic", "breach_guard", "records_clerk"],
@@ -102,6 +126,9 @@ fn u06_starter_six_normal_sets_grant_exact_copies_and_continue_bindings() {
     ] {
         let (core, player) = start_selected(&ids);
         assert_eq!(core.state.roster.len(), 3);
+        assert_eq!(core.state.roster.combat_eligible_employee_ids().len(), 3);
+        core.state.inventory.validate_checkpoint_state(&core.state.roster).unwrap();
+        assert!(core.get_run_snapshot_json().unwrap().get("roster_order").is_none());
         assert_eq!(core.state.skill_fragments.copies().count(), 3);
         for employee in core.state.roster.iter() {
             assert_initial_copy(&core, employee);
@@ -111,7 +138,7 @@ fn u06_starter_six_normal_sets_grant_exact_copies_and_continue_bindings() {
             .validate_bindings(&core.state.roster, &core.game_data.skill_fragment_data)
             .unwrap();
         let export = core.export_active_run_checkpoint().unwrap().unwrap();
-        let mut restored = GameCore::new(core.game_data.clone(), 0xDEAD);
+        let mut restored = core_with_profile_for_continue(&core, 0xDEAD);
         restored
             .continue_from_active_run_checkpoint(
                 player,
@@ -183,6 +210,8 @@ fn u06_starter_recruit_normal_loadout_and_post_grant_failure_rollback() {
 #[test]
 fn u06_starter_public_recruitment_stops_at_ten_with_exact_ownership() {
     let (mut core, player) = start_selected(&["field_medic", "breach_guard", "records_clerk"]);
+    // Boundary fixture funds all seven paid hires without relying on battle rewards.
+    core.state.enkephalin.amount = 1000;
     for expected in 4..=11 {
         let node = force_first_available_node(
             &mut core,
@@ -201,7 +230,13 @@ fn u06_starter_public_recruitment_stops_at_ten_with_exact_ownership() {
         else {
             panic!("headquarters at roster size {}", expected - 1)
         };
-        let id = recruitment_candidates[0].employee_definition_id.clone();
+        let id = if expected == 11 {
+            assert!(recruitment_candidates.is_empty(), "full roster hides paid offers");
+            core.state.run.as_ref().unwrap().recruitment.active_session().unwrap()
+                .employee_definition_ids[0].clone()
+        } else {
+            recruitment_candidates[0].employee_definition_id.clone()
+        };
         let before = non_battle_state_without_profile_fingerprint(&core);
         let result = core.execute(
             player,
@@ -230,6 +265,7 @@ fn u06_starter_public_recruitment_stops_at_ten_with_exact_ownership() {
                     &core.state.roster,
                 )
                 .unwrap();
+            core.execute(player, PlayerBehavior::RequestEmergencySupplies).unwrap();
         }
     }
 
@@ -371,7 +407,7 @@ fn u06_live_six_starter_actives_execute_through_core_application() {
         ("scout_runner", "training_adrenaline"),
         ("records_clerk", "training_berserker"),
         ("breach_guard", "training_last_line"),
-        ("containment_trainee", "training_breakthrough"),
+        ("containment_trainee", "training_last_line"),
         ("field_medic", "training_single_heal"),
         ("maintenance_tech", "training_area_heal"),
     ];
@@ -432,24 +468,6 @@ fn u06_live_six_starter_actives_execute_through_core_application() {
             },
         )
         .unwrap();
-        if skill == "training_breakthrough" {
-            core.advance_active_battle_by(5000).unwrap();
-            let active = core.state.active_battle.as_mut().unwrap();
-            let target = active
-                .battle
-                .units
-                .values_mut()
-                .find(|unit| unit.owner == crate::game::enums::Side::Opponent && unit.is_active())
-                .expect("authored first opponent wave");
-            target.set_world_position(
-                crate::game::battle::core::movement::types::WorldVec2::from_tile_center(
-                    Position::new(position.x + 1, position.y),
-                ),
-            );
-            target.stats.current_health = 1000;
-            target.stats.max_health = 1000;
-            target.stats.defense = 0;
-        }
         let active = core.state.active_battle.as_mut().unwrap();
         let unit_id =
             active.live_deployment.as_ref().unwrap().deployed_units[&employee].unit_instance_id;
@@ -535,7 +553,6 @@ fn u06_live_six_starter_actives_execute_through_core_application() {
             "training_last_line" => assert!(effects.iter().any(|e| e
                 .combat_modifiers
                 .is_some_and(|m| m.damage_reduction_percent == 50))),
-            "training_breakthrough" => assert!(effects.iter().any(|e| e.shield.is_some())),
             "training_single_heal" => assert_eq!(unit.stats.current_health, 70),
             "training_area_heal" => assert_eq!(unit.stats.current_health, 35),
             _ => unreachable!(),

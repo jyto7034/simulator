@@ -1,0 +1,46 @@
+{
+  "source": "/tmp/u13_local_evidence004",
+  "copy_verified": true,
+  "files": [
+    {
+      "path": "route_commands.jsonl",
+      "bytes": 11194800,
+      "sha256": "2d351113b3d60620d78322361f2dc4d3ed5a32ec33e3d7696842b812e541983a"
+    },
+    {
+      "path": "battle_start.jsonl",
+      "bytes": 1046829,
+      "sha256": "45fdb7db438657a81bfaef85dc403223d112f0b942ac6c9cc4dbf6d067dc5bba"
+    },
+    {
+      "path": "route/RESULT.json",
+      "bytes": 179197,
+      "sha256": "220e018df90a8808f41b3a20baa5127f40f92ecf464d8db6c2fec34344ceba40"
+    },
+    {
+      "path": "route/resumed.json",
+      "bytes": 907869,
+      "sha256": "fdf8bf146d165bfcc1a8fc08a25690a0f3153e8facf6f0474af0426d94b219ab"
+    },
+    {
+      "path": "route/saved.json",
+      "bytes": 1481756,
+      "sha256": "7c67dbe3164364b160faec1ac758be997cbdebe4485ea662ae9a99e6d10eaf6d"
+    },
+    {
+      "path": "battle/RESULT.json",
+      "bytes": 889663,
+      "sha256": "e1b9af14340ee7fe4e8b1fa51a016816c04230fcd9c39efd38a16c3d68789d91"
+    },
+    {
+      "path": "battle/trace.jsonl",
+      "bytes": 6348065,
+      "sha256": "72c87a3556bad5c1473740b9573db676e63325c3959b0671fabd53c20abe5343"
+    },
+    {
+      "path": "battle/BRIEFING.json",
+      "bytes": 153775,
+      "sha256": "f5c8d4234c89a87e14ce7b008a4ef6c40d8b8dba56b4fae4cce7e5b6bd6b8960"
+    }
+  ]
+}

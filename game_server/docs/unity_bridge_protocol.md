@@ -28,8 +28,8 @@ Command behavior payloads use `type` with `snake_case` values.
 Examples:
 
 ```json
-{ "type": "start_new_game", "game_mode": "Standard" }
-{ "type": "select_starter_employees", "employee_definition_ids": ["field_medic", "breach_guard", "records_clerk"] }
+{ "type": "start_new_game", "game_mode": "Expedition", "replace_active_run": false }
+{ "type": "select_starter_employees", "employee_definition_ids": ["field_medic", "breach_guard", "records_clerk"], "loan_copy_ids": [] }
 { "type": "recruit_employee", "employee_definition_id": "hq_field_medic" }
 { "type": "request_map_data" }
 { "type": "select_map_node", "node_id": "..." }
@@ -65,6 +65,26 @@ Removed phase/suppression-era request names are not part of the active bridge:
 - `exit_combat_reward`
 
 Use the current node-map, live-battle and result-acknowledgement requests instead.
+
+## Tutorial, Expedition And Exact Assets
+
+The only supported game_mode values are `Tutorial` and `Expedition`. Fresh profiles can start Expedition.
+Start uses replace_active_run false from title or a confirmed terminal; an active run requires explicit abandon.
+Tutorial uses its authored three-employee preset and leaves the permanent profile unchanged across completion,
+failure, restore and briefing skip_tutorial. Expedition selects three of six role-balanced starter definitions and
+requires loan_copy_ids even when empty. Zero to two loan UUIDs move actual vault copies into active ownership.
+
+HQ recruitment candidates are current paid offers: authored price/available currency, depth, remaining session
+hires, roster limit and valid initial weapon all apply to query and command. The server forwards these candidates;
+it does not turn a hidden or rejected offer into a free hire. Current tuning is price100, two hires/session and depth1–4.
+The role enum is independent of Profile role text. EmployeePsychology/trust/memory input and projection are removed.
+
+choose_expedition_continuation sends choice `Return`, `Continue` or `Abandon` as allowed by Core's saved cause/depth.
+At depth1–2 exhaustion permits Continue/Abandon; depth3+ exhaustion and real Gates permit Continue/Return.
+First-entry receipts prevent repeated deterrence charges and the choice precedes pending activity rewards.
+Success moves actual carried copies to vault, resets ordinary weapon enhancement to zero, clears employee ownership
+and ends active Continue. Failure/abandon discard active copies while keeping earlier vault assets. The first return
+story uses acknowledge_first_return_story; the server does not infer acknowledgement from showing a screen.
 
 ## Response Shape And Battle Ordering
 
@@ -117,11 +137,13 @@ The load-balance actor owns one process-shared local-install profile persistence
 transport-player map. Bootstrap injects the durable profile into each new `CoreApplication`. Commands
 and `AttachSession` merge the readable shared permanent union before using Core's current state;
 reconnect does not reconstruct discoveries or replace the union with a smaller actor-local profile.
-The player profile remains version 3. Battle traces are never persistence input.
+The profile uses strict envelope version 4. Knowledge merges monotonically; expedition sequence, active binding,
+vault and first-return story use exact authoritative installation and accepted paired adoption. Actor AttachSession
+installs current shared lifecycle rather than unioning asset ownership. Battle traces are never persistence input.
 
 With active-run and profile stores configured, mutations and automatic battle ticks prepare one
 exclusive Core candidate. The host uses profile-then-active lock order and accepts
-`application_commit.pending.json` containing the successor profile and active document or terminal
+`application_commit.pending.json` (journal version 3) containing the successor profile and active document or terminal
 tombstone before committing the prepared Core root. Persistence failure before intent acceptance
 returns `application_persistence_failed` and discards the candidate. Once the intent is renamed into
 place, later sync/publication/cleanup failure keeps the accepted Core result and reports the
@@ -133,7 +155,7 @@ idempotently. Reset cannot discard a pending intent. Projection or socket delive
 cancel accepted gameplay. See the [Core durable boundary](../../core_enhanced/docs/core_runtime_contract.md#durable-active-run-host-boundary)
 for the exact preparation and publication contract.
 
-The active-run store uses strict envelope version 5 containing Core continuation version 11, with a
+The active-run store uses strict envelope version 7 containing Core continuation version 12, with a
 checksum and opaque generation UUID. Conditional publication compares the actor's expected
 generation with the current generation; a stale writer receives `active_run_revision_conflict`
 without publishing its candidate. Tombstones retain a generation, so an actor that observed an old
@@ -151,7 +173,7 @@ monotonic `loads_used`/run peak. Explicit SavePoint rewind restores its own anch
 while load use and peak do not decrease.
 
 These storage schemas are not Unity wire DTOs. Unsupported active/profile/current/backup or journal
-versions, including old V4/V9 saves and the retired Standard-only journal, are protected before
+versions, including prior active V5/V6, profile V3, continuation V11 and journal V1/V2, are protected before
 Continue, reset, recovery or new-run publication. They are not silently migrated, overwritten,
 deleted or replaced with empty state. Ordinary corruption and unsupported versions have distinct
 recovery outcomes. Core import validates checksum, content identity, required fields, seed,
@@ -160,8 +182,9 @@ result/choice/phase context before mutation. Restore validates the chosen checkp
 explicit load additionally requires the live run seed. The host does not repair or rebind an
 inconsistent payload.
 
-When only profile persistence is configured and active-run persistence is absent, the retained
-profile-only path publishes the shared union after direct Core execution. A profile write failure
+When only profile persistence is configured and active-run persistence is absent, a prepared mutation that
+changes expedition lifecycle is rejected before Core commit. Profile-invariant Tutorial operations remain supported.
+For knowledge-only changes the retained profile-only path publishes the shared knowledge union after Core execution. A profile write failure
 then leaves gameplay committed, marks the profile dirty and emits `player_profile_save_failed`
 once on the clean-to-dirty transition; retry writes the full in-memory union. This mode is distinct
 from the paired-store accepted-intent/recovery-pending contract above. Protected/fatal states retain
@@ -360,7 +383,7 @@ Actual damage uses the original captured Core source, with the existing basic au
 composition. Render the projection rather than replaying its arithmetic as battle authority.
 
 Current and SavePoint Relic ownership, materials, UUID stream and Event history are part of Core's
-strict save graph. Host ActiveRun V5 wraps external continuation V11; standalone Core payload V12
+strict save graph. Host ActiveRun V7 wraps external continuation V12; standalone Core payload V13
 is a separate encoder format. Continue does not restore a paused live battle. See the
 [Core Relic contract](../../core_enhanced/docs/core_runtime_contract.md#relic-copies-numeric-authority-and-save-graph)
 for immutable generation lifetime and the limited meaning of test-only Weak observations.

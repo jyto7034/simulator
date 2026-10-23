@@ -1,0 +1,33 @@
+{
+  "status": "requested_138_corrected",
+  "original_cases": 138,
+  "current_corresponding_cases": 139,
+  "all_original_cases_resolved": true,
+  "source_delta_files": 35,
+  "production_behavior_changes": 0,
+  "default_library_unique_latest": {
+    "passed": 2097,
+    "failed": 0,
+    "existing_ignored": 6
+  },
+  "runtime_observation_selected": {
+    "passed": 23,
+    "failed": 0
+  },
+  "external_cli": {
+    "complete_scenarios": 12,
+    "embedded_default_profile": 6,
+    "existing_authoring_development_profile": 6,
+    "preserved_default_limit_refusal": 1
+  },
+  "additional_integration": {
+    "passed": 56,
+    "failed": 17,
+    "original_138_members": 0
+  },
+  "whole_repository_green": false,
+  "final_delta": "final_focus_018.diff",
+  "matrix": "CORRECTION_MATRIX.json",
+  "report": "REPORT.ko.md",
+  "running_sessions": 0
+}

@@ -1,0 +1,9 @@
+--- core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_031/docs_before/0_PLAN.md
++++ core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/PLAN.md
+@@ -1,4 +1,6 @@
+ # U08 실행 PLAN — GOAL-CRNV-01
++
++**2026-10-06 추가 관측 인수031:** U08 통합007 진행·추가관측031: Core 기본/fixture 각각1967, observation1986 PASS의 원raw를 확인했다. 원57필수역할에 Resource A/B 공개 Sum4사례를 한 optional execution으로 추가한다. 기존49기능 종료 후fresh007 binary로 실행하며 선택58=기능50+성능8, PC/R05 각각50기능 quiescence를 요구한다. source438/4c7bbd31·기존1322입력·030/007 BEFORE는 보존하고 새115입력은별도결속한다. 전체U08·독립감사·U09는미완료이며 연속실행을계속한다. [인수 기록](../../../../roadmaps/core_first/execution/u08_public_20261006_031/RECORD.ko.md)
+ 
+ U08 현재 통합 인수030: R06 공개 사전 검증 결함을 compile.rs 한 파일에서 교정하고 5개 시험 파일에 9개 시험을 추가했다. source438/4c7bbd31에서 최종 포맷·관련 회귀가 통과했고, 각 집중 검사를 포함한42회 시험 실행과 동일7개CLI입력의 oracle이 충족됐다. 정상3개 콘텐츠 identity도 보존됐다. 중간source 집중 결과와 시험 준비 오류3건은 원본 그대로 유지한다. 전체 기능·성능·독립 감사·U09는 아직 미완료다.
+ 

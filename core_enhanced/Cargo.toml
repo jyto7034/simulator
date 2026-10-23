@@ -6,6 +6,12 @@ description = "card backend"
 autobins = false
 
 [[bin]]
+name = "compile_node_graph"
+path = "src/bin/compile_node_graph.rs"
+test = false
+bench = false
+
+[[bin]]
 name = "author_content"
 path = "src/bin/author_content.rs"
 test = false
@@ -59,11 +65,17 @@ serde = { version = "1.0", features = ["derive", "rc"] }
 serde_json = "1.0"
 serde_path_to_error = "0.1"
 sha2 = "0.10.9"
+hmac = "=0.12.1"
+fs2 = "0.4"
 tracing = "0.1.41"
 uuid = { version = "1.14.0", features = ["v4", "serde"] }
 
+[build-dependencies]
+sha2 = "0.10.9"
+serde_json = "1.0"
+
 [target.'cfg(unix)'.dependencies]
-rustix = { version = "=1.0.7", features = ["fs"] }
+rustix = { version = "=1.0.7", features = ["fs", "process"] }
 
 [features]
 # Event-log validation/replay tests will be redesigned; keep them opt-in for now.

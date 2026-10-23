@@ -1,0 +1,232 @@
+@import "tailwindcss";
+@import "./tag-colors.css";
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+/* Palette: bone paper, archive ink and brass — the in-game UI's lamp-lit wood and brass frames. */
+@theme {
+  --color-paper: #f4f0e8;
+  --color-surface: #fcfaf6;
+  --color-raised: #ffffff;
+  --color-ink: #1d1b17;
+  --color-muted: #6a6355;
+  --color-faint: #8f8675;
+  --color-line: #e3dbcc;
+  --color-line-strong: #cec3ae;
+  --color-tint: #efe8db;
+  --color-brand: #8b5e1a;
+  --color-brass: #b8862f;
+  --color-night: #16140f;
+  --color-field-line: #d8ceba;
+  --color-chip-ink: #5e5443;
+  --color-notice: #f5ebd5;
+  --color-notice-ink: #6b521d;
+  --color-quote: #f1ebdf;
+  --color-quote-ink: #4f4739;
+  --color-code: #ece5d7;
+  --color-details: #f3ede2;
+  --color-button-hover: #8b5e1a;
+  --color-danger: #9a3329;
+  --font-sans: "Pretendard Variable", "Pretendard", "Noto Sans KR", "Malgun Gothic", system-ui, sans-serif;
+  --font-serif: "Noto Serif KR", "Nanum Myeongjo", "Batang", serif;
+  --font-mono: "JetBrains Mono", "Cascadia Code", "SFMono-Regular", Consolas, "D2Coding", monospace;
+  --shadow-card: 0 1px 0 rgb(29 27 23 / .04), 0 1px 3px rgb(29 27 23 / .06);
+  --shadow-lift: 0 2px 4px rgb(29 27 23 / .05), 0 14px 32px -12px rgb(29 27 23 / .22);
+  --animate-overlay-in: overlay-in 180ms ease-out;
+  --animate-dialog-in: dialog-in 220ms cubic-bezier(.2, .8, .2, 1);
+  --animate-drawer-in: drawer-in 240ms cubic-bezier(.2, .8, .2, 1);
+  @keyframes overlay-in { from { opacity: 0; } }
+  @keyframes dialog-in { from { opacity: 0; transform: translate(-50%, -48%) scale(.97); } }
+  @keyframes drawer-in { from { transform: translateX(-100%); } }
+}
+@layer base {
+  html { scroll-padding-top: 96px; color-scheme: light; }
+  html[data-theme="dark"] {
+    color-scheme: dark;
+    --color-paper: #0e0d0b;
+    --color-surface: #161511;
+    --color-raised: #1c1a15;
+    --color-ink: #ede6d7;
+    --color-muted: #a69d8b;
+    --color-faint: #7d7564;
+    --color-line: #2b2821;
+    --color-line-strong: #3d3930;
+    --color-tint: #211f19;
+    --color-brand: #dcb169;
+    --color-brass: #c99a4b;
+    --color-night: #090807;
+    --color-field-line: #3a362d;
+    --color-chip-ink: #d4c8af;
+    --color-notice: #261f13;
+    --color-notice-ink: #e2c98f;
+    --color-quote: #1b1914;
+    --color-quote-ink: #d3c9b5;
+    --color-code: #25221b;
+    --color-details: #19170f;
+    --color-button-hover: #a87b34;
+    --color-danger: #e38476;
+    --shadow-card: 0 1px 0 rgb(0 0 0 / .3);
+    --shadow-lift: 0 2px 4px rgb(0 0 0 / .3), 0 18px 40px -14px rgb(0 0 0 / .7);
+  }
+  body {
+    @apply m-0 bg-paper font-sans text-ink antialiased;
+    font-feature-settings: "ss06";
+    /* Wrap Hangul at word boundaries; long identifiers may still break anywhere. */
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+    background-image: radial-gradient(1200px 520px at 85% -10%, color-mix(in srgb, var(--color-brass) 9%, transparent), transparent 70%);
+    background-repeat: no-repeat;
+  }
+  /* Paper grain; a static data image so it costs one decode and no request. */
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: 60; pointer-events: none; opacity: .045; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  [data-theme="dark"] body::before { opacity: .06; mix-blend-mode: screen; }
+  ::selection { background: color-mix(in srgb, var(--color-brass) 32%, transparent); }
+  button, a, input, select, summary { -webkit-tap-highlight-color: transparent; }
+  button, summary { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--color-brass); outline-offset: 3px; border-radius: 4px; }
+  a { text-underline-offset: 4px; }
+  input[type="search"]::-webkit-search-cancel-button { filter: grayscale(1); opacity: .5; }
+  select.field { appearance: none; background-repeat: no-repeat; background-position: right .75rem center; background-size: 12px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%238f8675' stroke-width='1.6'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5'/%3E%3C/svg%3E"); }
+  input[type="checkbox"] { accent-color: var(--color-brand); }
+}
+@layer components {
+  /* Collections */
+  .collection-card {
+    --collection-border: var(--color-line);
+    position: relative;
+    isolation: isolate;
+    box-shadow: var(--shadow-card);
+    transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+  }
+  .collection-card::before {
+    content: ""; position: absolute; inset: 0 0 auto; height: 2px; z-index: -1;
+    background: linear-gradient(90deg, var(--accent, var(--color-brass)), transparent 70%); opacity: 0; transition: opacity 180ms ease;
+  }
+  /* The card is the preview control; links remain above this unstyled hit area. */
+  .collection-preview { position: absolute; inset: 0; border: 0; border-radius: inherit; padding: 0; background: transparent; cursor: pointer; }
+  .collection-preview:focus-visible { outline: none; }
+  .collection-card a { position: relative; z-index: 1; }
+  .collection-card:has(.collection-preview:focus-visible) {
+    --collection-border: var(--color-brand);
+    box-shadow: 0 0 0 2px var(--color-brand);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .collection-card:hover {
+      transform: translateY(-3px);
+      --collection-border: var(--color-brand);
+      box-shadow: var(--shadow-lift);
+    }
+    .collection-card:hover::before { opacity: 1; }
+    .collection-card:hover .card-title { color: var(--color-brand); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .collection-card { transition: none; }
+    .collection-card:hover { transform: none; }
+  }
+
+  /* Category accents for icon tiles; quiet enough to sit beside tag colors. */
+  .accent-abnormalities { --accent: #a03a2e; } .accent-fragments { --accent: #2b7a78; } .accent-equipment { --accent: #5a6878; }
+  .accent-relics { --accent: #b07d22; } .accent-tags { --accent: #6d4c8f; } .accent-rules { --accent: #3f5a3f; }
+  .accent-principles { --accent: #7a6a3a; } .accent-ui { --accent: #39608a; } .accent-history { --accent: #77706a; }
+  [data-theme="dark"] :is(.accent-abnormalities) { --accent: #e0806f; } [data-theme="dark"] .accent-fragments { --accent: #6cc2bb; }
+  [data-theme="dark"] .accent-equipment { --accent: #9fb0c4; } [data-theme="dark"] .accent-relics { --accent: #e0b25c; }
+  [data-theme="dark"] .accent-tags { --accent: #b99ad8; } [data-theme="dark"] .accent-rules { --accent: #9cc09a; }
+  [data-theme="dark"] .accent-principles { --accent: #cdbb83; } [data-theme="dark"] .accent-ui { --accent: #8fb5dd; }
+  [data-theme="dark"] .accent-history { --accent: #b3aba2; }
+  .icon-tile { @apply grid shrink-0 place-items-center rounded-lg; color: var(--accent, var(--color-brand)); background: color-mix(in srgb, var(--accent, var(--color-brand)) 11%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, var(--color-brand)) 22%, transparent); }
+
+  .skip-link { @apply fixed -top-24 left-3 z-100 rounded bg-surface p-3 text-sm focus:top-3; }
+  .page-title { @apply font-serif text-[30px] leading-[1.25] font-bold tracking-[-.02em] text-balance md:text-[40px]; }
+  .page-lead { @apply mt-4 mb-7 max-w-3xl text-[15px] leading-7 text-muted text-pretty; }
+  .eyebrow { @apply flex items-center gap-2.5 font-mono text-[10.5px] font-medium tracking-[.18em] text-brand uppercase; }
+  .eyebrow::before { content: ""; @apply block h-px w-7 bg-current opacity-70; }
+  .mono-label { @apply font-mono text-[10.5px] tracking-[.14em] text-faint uppercase; }
+  /* Korean labels: wide mono tracking breaks Hangul apart, so they get their own quieter style. */
+  .kicker { @apply text-[11.5px] font-medium tracking-[.01em] text-faint; }
+  .eyebrow-ko { @apply font-sans text-[12px] font-semibold tracking-[.02em] normal-case; }
+  .field { @apply rounded-lg border border-field-line bg-surface px-3.5 py-2.5 text-sm text-ink shadow-[inset_0_1px_2px_rgb(0_0_0/.03)] transition-[border-color,box-shadow] outline-none placeholder:text-faint; }
+  .field:hover { border-color: var(--color-line-strong); }
+  select.field { padding-right: 2.25rem; }
+  .field:focus, .field:focus-visible { border-color: var(--color-brass); box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brass) 22%, transparent); outline: none; }
+  .icon-button { @apply grid size-9 shrink-0 place-items-center rounded-lg border border-line bg-surface text-muted transition-colors hover:border-brand hover:text-brand; }
+  .button-primary { @apply inline-flex items-center justify-center gap-2.5 rounded-lg bg-ink px-4.5 py-2.5 text-[13px] font-medium text-paper transition-colors hover:bg-button-hover; }
+  .button-ghost { @apply inline-flex items-center justify-center gap-2 rounded-lg border border-line-strong px-4 py-2.5 text-[13px] text-ink transition-colors hover:border-brand hover:text-brand; }
+  .chip { @apply rounded-md border border-line bg-tint px-2 py-1 text-[11px] leading-relaxed text-chip-ink transition-colors hover:border-brand hover:text-brand; }
+  .notice { @apply relative rounded-lg border border-[color-mix(in_srgb,var(--color-brass)_30%,transparent)] bg-notice px-5 py-4 pl-6 text-[13px] leading-6 text-notice-ink; }
+  .notice::before { content: ""; @apply absolute inset-y-3 left-0 w-[3px] rounded-r bg-brass; }
+  .panel { @apply rounded-xl border border-line bg-surface shadow-(--shadow-card); }
+  .kbd { @apply inline-grid h-5 min-w-5 place-items-center rounded border border-line-strong bg-tint px-1 font-mono text-[10px] text-faint; }
+  .segmented { @apply inline-flex max-w-full gap-0.5 rounded-lg border border-line bg-surface p-1 shadow-(--shadow-card); }
+  .segmented > button { @apply inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-xs text-muted transition-colors hover:text-ink; }
+  .segmented > button[aria-pressed="true"] { @apply bg-ink font-medium text-paper hover:text-paper; }
+  .theme-sun { display: none; }
+  [data-theme="dark"] .theme-sun { display: block; }
+  [data-theme="dark"] .theme-moon { display: none; }
+
+  /* Navigation: dark archive rail with a brass index marker. */
+  .nav-link { @apply relative my-px flex items-center gap-3 rounded-md px-3 py-[7px] text-[13px] text-[#bdb4a1] transition-colors hover:bg-white/[.04] hover:text-[#f3ecdc]; }
+  .nav-link svg { @apply size-[18px] shrink-0 opacity-80; }
+  .nav-active { @apply bg-[#c99a4b]/[.12] text-[#f6e8c8]; }
+  .nav-active::before { content: ""; @apply absolute inset-y-1.5 -left-3 w-[3px] rounded-r bg-[#d6a85a]; }
+  .nav-active svg { @apply text-[#e0b467] opacity-100; }
+  .nav-count { @apply ml-auto font-mono text-[10px] tabular-nums text-[#857c6a]; }
+  .nav-active .nav-count { @apply text-[#d6a85a]; }
+  .nav-label { @apply mt-6 mb-1.5 px-3 text-[11px] font-medium tracking-[.02em] text-[#7b7362]; }
+
+  /* Long-form documents */
+  .wiki-prose { @apply min-w-0 text-[14.5px] leading-[1.85] break-words text-pretty md:text-[15px]; overflow-wrap: anywhere; }
+  .wiki-prose > :first-child { margin-top: 0; }
+  .wiki-prose p { @apply my-3.5; }
+  .wiki-prose h2 { @apply relative mt-12 mb-4 border-b border-line pb-3 font-serif text-[23px] leading-snug font-bold tracking-[-.01em]; }
+  .wiki-prose h2::after { content: ""; @apply absolute -bottom-px left-0 h-[2px] w-12 bg-brass; }
+  .wiki-prose h3 { @apply mt-8 mb-3 text-[17.5px] font-semibold tracking-[-.01em]; }
+  .wiki-prose h3::before { content: ""; @apply mr-2.5 inline-block size-1.5 -translate-y-[3px] rotate-45 bg-brass; }
+  .wiki-prose h4,.wiki-prose h5 { @apply mt-6 mb-2 text-[15.5px] font-semibold; }
+  .wiki-prose a { @apply text-brand underline decoration-[color-mix(in_srgb,var(--color-brand)_35%,transparent)] decoration-1 underline-offset-[5px] transition-colors hover:decoration-brand; }
+  .wiki-prose strong { @apply font-semibold text-ink; }
+  .wiki-prose ul { @apply my-4 list-disc pl-6 marker:text-brass; }
+  .wiki-prose ol { @apply my-4 list-decimal pl-6 marker:font-mono marker:text-[12px] marker:text-faint; }
+  .wiki-prose li { @apply my-1.5 pl-1; }
+  .wiki-prose li>p { @apply my-1; }
+  .wiki-prose blockquote { @apply relative my-6 rounded-lg border border-line bg-quote px-5 py-1 pl-6 text-[13.5px] leading-7 text-quote-ink; }
+  .wiki-prose blockquote::before { content: ""; @apply absolute inset-y-3 left-0 w-[3px] rounded-r bg-line-strong; }
+  .wiki-prose code { @apply rounded-[5px] border border-line bg-code px-[5px] py-px font-mono text-[.84em]; }
+  .wiki-prose pre { @apply my-5 max-w-full overflow-auto rounded-lg border border-line bg-code p-4 text-[12.5px] leading-6; }
+  .wiki-prose pre code { @apply whitespace-pre border-0 bg-transparent p-0; }
+  .wiki-prose .table-wrap { @apply my-6 max-w-full overflow-x-auto rounded-lg border border-line bg-surface shadow-(--shadow-card); }
+  .wiki-prose table { @apply w-full min-w-[480px] border-collapse text-[13px] leading-6; }
+  .wiki-prose th,.wiki-prose td { @apply border-b border-line px-4 py-2.5 text-left align-top; }
+  .wiki-prose th { @apply bg-tint text-[12px] font-semibold tracking-wide text-chip-ink; }
+  .wiki-prose td + td, .wiki-prose th + th { @apply border-l border-l-line; }
+  .wiki-prose tbody tr:last-child td { @apply border-b-0; }
+  .wiki-prose tbody tr:hover td { background: color-mix(in srgb, var(--color-brass) 5%, transparent); }
+  .wiki-prose details { @apply my-5 rounded-lg border border-line bg-details px-4 py-3 text-[13.5px]; }
+  .wiki-prose details[open] { @apply pb-4; }
+  .wiki-prose summary { @apply font-medium text-muted transition-colors hover:text-brand; }
+  .wiki-prose img { @apply max-h-[650px] max-w-full rounded-lg border border-line object-contain; }
+  .wiki-prose hr { @apply my-10 border-0 text-center; height: 1px; background: linear-gradient(90deg, transparent, var(--color-line-strong), transparent); }
+  .wiki-prose .anchor { @apply block scroll-mt-24; }
+  .toc-link { @apply relative -ml-px block border-l-2 border-transparent py-1.5 pl-3 text-[12px] leading-relaxed text-muted transition-colors hover:text-ink; }
+  .toc-link[aria-current="true"] { @apply border-brass font-medium text-ink; }
+}
+@media (prefers-reduced-motion: reduce) { *,*::before,*::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
+@media print {
+  html[data-theme] {
+    color-scheme: light;
+    --color-paper: white; --color-surface: white; --color-ink: #1d1b17;
+    --color-muted: #6a6355; --color-line: #e3dbcc; --color-tint: #efe8db;
+    --color-brand: #8b5e1a; --color-chip-ink: #5e5443;
+    --color-notice: #f5ebd5; --color-notice-ink: #6b521d;
+    --color-quote: #f1ebdf; --color-quote-ink: #4f4739;
+    --color-code: #ece5d7; --color-details: #f3ede2;
+  }
+  header,body>div aside,footer,.skip-link,body::before { display:none!important; }
+  .lg\:ml-64 { margin-left:0!important; }
+  body,main { background:white!important; }
+  main { max-width:none!important; padding:0!important; }
+  .wiki-prose { font-size:11px!important; }
+  .wiki-prose .table-wrap { overflow:visible!important; box-shadow:none!important; }
+}

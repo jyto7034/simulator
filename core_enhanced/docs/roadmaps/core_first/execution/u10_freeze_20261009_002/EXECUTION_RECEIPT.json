@@ -1,0 +1,71 @@
+{
+  "schema": "U10_DIRECT_FREEZE_EXECUTION_RECEIPT_V1",
+  "command": [
+    "python3",
+    "-B",
+    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization001/freeze_target.py",
+    "--source-manifest",
+    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization001/CURRENT_SOURCE.json",
+    "--generated",
+    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization001/generated002",
+    "--handoff",
+    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization001/HANDOFF_002.json",
+    "--target",
+    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/target/u10_current_001"
+  ],
+  "cwd": "/mnt/f/work/simulator",
+  "started_at_utc": "2026-10-09T13:08:37Z",
+  "collected_at_utc": "2026-10-09T13:13:58.393582+00:00",
+  "exit_code": 0,
+  "stdout": {
+    "path": "core_enhanced/docs/roadmaps/core_first/execution/u10_freeze_20261009_002/stdout.log",
+    "bytes": 261,
+    "sha256": "235eee8bcc947177a0555f95b20ff447bc6b8ebfc053f030effa1b58a23983ec"
+  },
+  "stderr": {
+    "path": "core_enhanced/docs/roadmaps/core_first/execution/u10_freeze_20261009_002/stderr.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "tool": {
+    "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization001/freeze_target.py",
+    "bytes": 22875,
+    "sha256": "554959468b680b81a3b21b97cf7b89a6a7d16b977f960d3032940e89a36aa37a"
+  },
+  "handoff": {
+    "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization001/HANDOFF_002.json",
+    "bytes": 10512,
+    "sha256": "8d99628c116378130e9b9b33765fe391f88e33d1759e56b8546b07eca7497c57"
+  },
+  "manifest": {
+    "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/target/u10_current_001/MANIFEST.json",
+    "bytes": 218265,
+    "sha256": "c24c6e90c48b81f432deeaf78258bb6b0e5110bd5b770d0851927c4b37961c95"
+  },
+  "restore_verification": {
+    "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/target/u10_current_001/RESTORE_VERIFICATION.json",
+    "bytes": 2316,
+    "sha256": "4537baf2bf9325222180f8e2364385efebac8245bc0391148fd9440abac6b29c"
+  },
+  "source_sha256": "02e185fad4820f3366c465af9904284fc33394d5f6d59ec65e0dc33710d329ac",
+  "restoration_before_sha256": "4223935c6ec0dc1107dc39a05cf05b6fe562da6e06844e66e65a57d77d3d50d1",
+  "restoration_after_sha256": "881388914a7dd1f51277ea3daa9f9585f4c2ee132d36365b73370745198f7fc1",
+  "runtime_source_members": 532,
+  "restore_before_members": 497,
+  "restore_after_members": 542,
+  "changed_members": 85,
+  "added_members": 45,
+  "deleted_members": 0,
+  "isolated_forward_membership_and_bytes_match": true,
+  "isolated_reverse_membership_and_bytes_match": true,
+  "workspace_reverse_patch_applied": false,
+  "original_failed_execution_preserved": {
+    "path": "core_enhanced/docs/roadmaps/core_first/execution/u10_freeze_20261009_001/EXECUTION_RECEIPT.json",
+    "bytes": 2323,
+    "sha256": "7ec8c277f816acfd72b9f925978dd1cf2fd89817d382618705da70f2941aee66"
+  },
+  "execution_mode": "Direct unwrapped shell invocation with outside-goal stdout/stderr redirection; no parent command collector",
+  "currentness": "freeze_target checked existing scanner equality, all source/records/references/archive identities before/after; Root and author input writers0 throughout",
+  "independent_completion": "pending nonparticipant whole-Goal audit; frozen target proves restoration only",
+  "target_input_writers": 0
+}

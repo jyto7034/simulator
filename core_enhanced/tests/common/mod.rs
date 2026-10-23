@@ -125,6 +125,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
     let reward_uuid = Uuid::from_u128(2);
 
     let equipment1 = EquipmentMetadata {
+        content_family: None,
         id: "test_weapon_1".to_string(),
         uuid: Uuid::from_u128(0xE000_0001),
         name: "Test Weapon".to_string(),
@@ -141,6 +142,7 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
         event_choice_keys: vec![],
     };
     let equipment2 = EquipmentMetadata {
+        content_family: None,
         id: "test_armor_1".to_string(),
         uuid: Uuid::from_u128(0xE000_0002),
         name: "Test Armor".to_string(),
@@ -159,6 +161,8 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
 
     let skill_id = SkillId::from("test_skill");
     let skills_db = SkillDatabase::new(vec![SkillDef {
+        action_policy: None,
+        resonance_admission: None,
         use_lifetime: game_core::game::ability::SkillUseLifetime::Action,
         flow: None,
         id: skill_id.clone(),
@@ -261,6 +265,8 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
                     equipment_id: equipment.id.clone(),
                 },
                 quantity: 1,
+            base_price: None,
+            guaranteed: false,
                 weight: 1,
                 repeatable: false,
                 buy_percent: None,
@@ -309,6 +315,8 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
 
     let pve_db = PveEncounterDatabase::new(vec![
         PveEncounter {
+            deterrence_tuning: Default::default(),
+            bonus_objectives: Vec::new(),
             id: "pve_test_1".to_string(),
             encounter_class: PveEncounterClass::Elite,
             primary_abnormality_id: Some(abnormality1.id.clone()),
@@ -337,6 +345,8 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
             static_obstacles: vec![],
         },
         PveEncounter {
+            deterrence_tuning: Default::default(),
+            bonus_objectives: Vec::new(),
             id: "pve_test_2".to_string(),
             encounter_class: PveEncounterClass::Elite,
             primary_abnormality_id: Some(abnormality2.id.clone()),
@@ -365,6 +375,8 @@ pub fn create_test_game_data() -> Arc<GameDataBase> {
             static_obstacles: vec![],
         },
         PveEncounter {
+            deterrence_tuning: Default::default(),
+            bonus_objectives: Vec::new(),
             id: "pve_test_3".to_string(),
             encounter_class: PveEncounterClass::Elite,
             primary_abnormality_id: Some(abnormality3.id.clone()),

@@ -124,35 +124,7 @@ impl GameCore {
         let next =
             self.active_visual_novel_choice_next(&session_id, &current_scene_id, &choice_id)?;
 
-        let monolith_exchange = self
-            .state
-            .visual_novel
-            .active
-            .as_ref()
-            .is_some_and(|session| {
-                session.session_id == session_id
-                    && session.vn_id.as_str() == self.run_policy().monolith.exchange_visual_novel_id
-            });
-        let next_monolith = if monolith_exchange {
-            let mut state = self.run_state()?.monolith.clone();
-            match choice_id.as_str() {
-                "accept" => {
-                    state
-                        .accept_exchange(self.run_policy().monolith.residual_exchange_threshold)
-                        .map_err(|_| GameError::InvalidAction)?;
-                }
-                "decline" => {
-                    state
-                        .decline_exchange()
-                        .map_err(|_| GameError::InvalidAction)?;
-                }
-                _ => return Err(GameError::InvalidAction),
-            }
-            Some(state)
-        } else {
-            None
-        };
-
+        let dealer_action = self.dealer_visual_novel_choice(&session_id, &choice_id)?;
         let outcome = match next {
             VisualNovelChoiceNext::Scene { scene_id } => {
                 let active = self
@@ -167,10 +139,9 @@ impl GameCore {
             }
             VisualNovelChoiceNext::End => self.finish_active_visual_novel_session()?,
         };
-        if let Some(monolith) = next_monolith {
-            self.run_state_mut()?.monolith = monolith;
-        }
+
         self.apply_visual_novel_progression_outcome(&outcome)?;
+        if let Some((revision, action)) = dealer_action { self.handle_dealer_action(revision, action)?; }
 
         Ok(BehaviorResult::VisualNovelState {
             visual_novel: self.visual_novel_snapshot_dto()?,
@@ -245,7 +216,12 @@ impl GameCore {
                         _ => return Ok(()),
                     };
                     self.prepare_starter_employee_candidates()?;
-                    self.transition_to(GameState::SelectingStarterEmployees)?;
+                    if game_mode == crate::game::map::GameMode::Tutorial {
+                        let preset = self.run_policy().tutorial_employee_definition_ids.clone();
+                        self.handle_select_starter_employees(preset, Vec::new())?;
+                    } else {
+                        self.transition_to(GameState::SelectingStarterEmployees)?;
+                    }
                     tracing::info!(
                         "HQ briefing VN completed; starter employee selection opened for {:?} mode",
                         game_mode

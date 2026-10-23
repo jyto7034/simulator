@@ -212,50 +212,29 @@ impl Handler<ExecutePlayerBehavior> for PlayerGameActor {
         );
         if query {
             self.sync_player_profile_from_persistence_for_snapshot()?;
-        } else {
+        } else if !matches!(host_recovery, Some(HostRecoveryAction::ResetActiveRun)) {
             self.sync_player_profile_from_persistence()?;
         }
         if matches!(host_recovery, Some(HostRecoveryAction::ResetActiveRun)) {
-            let store = self.active_run_store.clone().ok_or_else(|| {
-                PlayerGameActorError::new(
-                    "active_run_persistence_unavailable",
-                    "Active-run persistence is unavailable",
-                )
-            })?;
-            {
-                let store = store.lock().map_err(|_| {
-                    PlayerGameActorError::new(
-                        "active_run_lock_poisoned",
-                        "Active-run persistence lock is poisoned",
-                    )
-                })?;
-                match store.load() {
-                    Err(error) if error.is_corrupt() => store.reset_corrupt().map_err(|error| {
-                        PlayerGameActorError::new(
-                            "active_run_persistence_failed",
-                            error.to_string(),
-                        )
-                    })?,
-                    Err(error) => {
-                        return Err(PlayerGameActorError::new(
-                            "active_run_original_protected",
-                            error.to_string(),
-                        ))
-                    }
-                    Ok(_) => {
-                        return Err(PlayerGameActorError::new(
-                            "active_run_reset_not_required",
-                            "Active-run reset is only available for corrupt data",
-                        ));
-                    }
-                }
-            }
+            if !self.game_core.is_not_started() { return Err(PlayerGameActorError::new("active_run_reset_requires_title", "Corrupt active reset requires title state")); }
+            let store = self.active_run_store.clone().ok_or_else(|| PlayerGameActorError::new("active_run_persistence_unavailable", "Active store is unavailable"))?;
+            let persistence = self.player_profile_persistence.clone().ok_or_else(|| PlayerGameActorError::new("player_profile_persistence_unavailable", "Paired active reset requires profile persistence"))?;
+            let mut profile = persistence.lock().map_err(|_| PlayerGameActorError::new("player_profile_lock_poisoned", "Profile lock is poisoned"))?;
+            let active = store.lock().map_err(|_| PlayerGameActorError::new("active_run_lock_poisoned", "Active lock is poisoned"))?;
+            let mut next_profile = profile.profile().map_err(|e| PlayerGameActorError::new("player_profile_recovery_required", e))?;
+            next_profile.lifecycle.active_expedition = None;
+            let prepared = self.game_core.prepare_authoritative_profile_install(ApplicationDocument::new(serde_json::to_value(next_profile).map_err(|e| PlayerGameActorError::new("serialization_failed", e.to_string()))?))?;
+            let accepted = profile.accept_corrupt_active_reset(&active).map_err(|e| PlayerGameActorError::new("active_run_reset_failed", e.to_string()))?;
+            prepared.commit();
+            self.active_run_revision = Some(accepted.revision);
+            drop(active);
+            drop(profile);
             let execution_result = CommandExecutionResult {
                 response: PlayerGameServerMessage::CommandResult {
                     request_id: msg.request_id,
                     ok: true,
                     result_type: "ActiveRunReset".to_string(),
-                    payload: serde_json::json!({}),
+                    payload: serde_json::json!({ "recovery_pending": accepted.recovery_pending }),
                 },
                 side_messages: Vec::new(),
                 state_snapshot: Some(self.build_state_snapshot()?),
@@ -288,8 +267,8 @@ impl Handler<ExecutePlayerBehavior> for PlayerGameActor {
                 {
                     Ok(ActiveRunLoad::Loaded { .. }) => {
                         return Err(PlayerGameActorError::new(
-                            "active_run_replacement_confirmation_required",
-                            "Starting a new run will replace the existing active run",
+                            "active_run_requires_continue_and_abandon",
+                            "Continue and explicitly abandon the saved expedition before starting a new run",
                         ));
                     }
                     Ok(ActiveRunLoad::Missing) => {}
@@ -337,6 +316,9 @@ impl Handler<ExecutePlayerBehavior> for PlayerGameActor {
                 .continue_from_active_run_checkpoint(self.player_id, &checkpoint.to_application());
             if result.is_ok() {
                 self.active_run_revision = Some(loaded.revision);
+                if let Some(required) = loaded.required_configuration {
+                    self.active_required = Some(required);
+                }
             }
             result
         } else {
@@ -350,20 +332,25 @@ impl Handler<ExecutePlayerBehavior> for PlayerGameActor {
                     }
                 }),
             };
-            if active_store.is_some() && !query {
+            if (active_store.is_some() || profile_persistence.is_some()) && !query {
+                let staged = if is_new_game { self.approved_host.as_ref().map(|host| host.future_generation()).transpose().map_err(|e| PlayerGameActorError::new("approved_selection_unavailable", e.to_string()))? } else { None };
+                let required = staged.as_ref().map(|(_, r)| r.clone()).or_else(|| self.active_required.clone());
+                let generation = staged.map(|(g, _)| g);
                 match self
                     .game_core
-                    .prepare_command(self.player_id, msg.behavior, context)
+                    .prepare_command_with_generation(self.player_id, msg.behavior, context, generation)
                 {
                     Ok(prepared) => {
-                        let (result, pending) = publish_prepared_application(
+                        let (result, pending) = publish_prepared_application_bound(
                             prepared,
+                            self.approved_persistence.as_ref(), required.as_ref(),
                             active_store.as_ref(),
                             profile_persistence.as_ref(),
                             &mut self.active_run_revision,
                             checkpoint_before.as_ref(),
                             is_new_game,
                         )?;
+                        self.active_required = required;
                         durable_recovery_pending = pending;
                         Ok(result)
                     }
@@ -453,8 +440,9 @@ impl Handler<ExecuteAdminCommand> for PlayerGameActor {
         let before = self.game_core.export_active_run_checkpoint()?;
         let (result, recovery_pending) = if active.is_some() {
             let prepared = self.game_core.prepare_admin_command(msg.command)?;
-            publish_prepared_application(
+            publish_prepared_application_bound(
                 prepared,
+                self.approved_persistence.as_ref(), self.active_required.as_ref(),
                 active.as_ref(),
                 profile.as_ref(),
                 &mut self.active_run_revision,
@@ -561,7 +549,7 @@ impl PlayerGameActor {
         };
         if let Some(profile) = profile {
             self.game_core
-                .merge_player_profile(ApplicationDocument::new(
+                .install_authoritative_player_profile(ApplicationDocument::new(
                     serde_json::to_value(profile).map_err(|error| {
                         PlayerGameActorError::new("serialization_failed", error.to_string())
                     })?,
@@ -573,28 +561,19 @@ impl PlayerGameActor {
 
     fn sync_player_profile_from_persistence(&mut self) -> Result<(), PlayerGameActorError> {
         self.game_core.ensure_battle_not_faulted()?;
-        let Some(persistence) = self.player_profile_persistence.as_ref() else {
-            return Ok(());
-        };
-        let profile = persistence
-            .lock()
-            .map_err(|_| {
-                PlayerGameActorError::new(
-                    "player_profile_lock_poisoned",
-                    "Player profile persistence lock is poisoned",
-                )
-            })?
-            .profile()
-            .map_err(|issue| {
-                PlayerGameActorError::new("player_profile_recovery_required", issue)
-            })?;
-        self.game_core
-            .merge_player_profile(ApplicationDocument::new(
-                serde_json::to_value(profile).map_err(|error| {
-                    PlayerGameActorError::new("serialization_failed", error.to_string())
-                })?,
-            ))
-            .map_err(PlayerGameActorError::from)
+        let Some(persistence) = self.player_profile_persistence.as_ref() else { return Ok(()); };
+        let persistence = persistence.lock().map_err(|_| PlayerGameActorError::new("player_profile_lock_poisoned", "Player profile persistence lock is poisoned"))?;
+        let profile = persistence.profile().map_err(|issue| PlayerGameActorError::new("player_profile_recovery_required", issue))?;
+        if let Some(active) = self.active_run_store.as_ref() {
+            let active = active.lock().map_err(|_| PlayerGameActorError::new("active_run_lock_poisoned", "Active store lock is poisoned"))?;
+            if self.active_run_revision.is_none() {
+                let snapshot = active.snapshot().map_err(|e| PlayerGameActorError::new("active_run_load_failed", e.to_string()))?;
+                self.active_run_revision = Some(snapshot.revision);
+            }
+        }
+        self.game_core.install_authoritative_player_profile(ApplicationDocument::new(
+            serde_json::to_value(profile).map_err(|e| PlayerGameActorError::new("serialization_failed", e.to_string()))?
+        )).map_err(PlayerGameActorError::from)
     }
 
     fn persist_player_profile(
@@ -604,7 +583,7 @@ impl PlayerGameActor {
         let Some(persistence) = self.player_profile_persistence.as_ref() else {
             return Ok(PlayerProfilePersistOutcome::Unchanged);
         };
-        Ok(persistence
+        persistence
             .lock()
             .map_err(|_| {
                 PlayerGameActorError::new(
@@ -612,7 +591,8 @@ impl PlayerGameActor {
                     "Player profile persistence lock is poisoned",
                 )
             })?
-            .merge_and_persist(self.read_player_profile()?))
+            .merge_and_persist(self.read_player_profile()?)
+            .map_err(|e| PlayerGameActorError::new("player_profile_persistence_failed", e.to_string()))
     }
 
     fn handle_player_profile_management(
@@ -644,6 +624,11 @@ impl PlayerGameActor {
                 )
             })?;
             if reset {
+                if let Some(active) = self.active_run_store.as_ref() {
+                    let active = active.lock().map_err(|_| PlayerGameActorError::new("active_run_lock_poisoned", "Active lock is poisoned"))?;
+                    let snapshot = active.snapshot().map_err(|e| PlayerGameActorError::new("active_run_requires_explicit_recovery", e.to_string()))?;
+                    if snapshot.checkpoint.is_some() { return Err(PlayerGameActorError::new("profile_reset_would_orphan_active_run", "Continue and explicitly abandon the saved run before resetting the profile")); }
+                }
                 if matches!(
                     persistence.state(),
                     PlayerProfilePersistenceState::ApplicationRecoveryPending { .. }
@@ -689,11 +674,11 @@ impl PlayerGameActor {
                 })?;
                 recovered_from_backup = persistence.take_recovery_notification();
             } else {
-                persist_outcome = persistence.retry();
+                persist_outcome = persistence.retry().map_err(|e| PlayerGameActorError::new("player_profile_persistence_failed", e.to_string()))?;
             }
             if let Ok(profile) = persistence.profile() {
                 self.game_core
-                    .merge_player_profile(ApplicationDocument::new(
+                    .install_authoritative_player_profile(ApplicationDocument::new(
                         serde_json::to_value(profile).map_err(|error| {
                             PlayerGameActorError::new("serialization_failed", error.to_string())
                         })?,
@@ -1004,8 +989,9 @@ impl PlayerGameActor {
                 .game_core
                 .prepare_active_battle_for_host_tick(delta_ms, battle_event_after_seq)
             {
-                Ok(prepared) => publish_prepared_application(
+                Ok(prepared) => publish_prepared_application_bound(
                     prepared,
+                    self.approved_persistence.as_ref(), self.active_required.as_ref(),
                     active_store.as_ref(),
                     profile_persistence.as_ref(),
                     &mut self.active_run_revision,
@@ -1082,7 +1068,8 @@ impl PlayerGameActor {
     }
 }
 
-#[cfg(test)]
+// Legacy raw-data fixtures require Core fixture APIs in release tests.
+#[cfg(all(test, any(debug_assertions, feature = "test-fixtures")))]
 mod tests {
     mod durable;
     mod fault;
@@ -1197,11 +1184,15 @@ mod tests {
         (addr, disconnects, messages)
     }
 
-    fn starter_test_loadout() -> EmployeeInitialLoadout {
+    fn starter_test_loadout(index: usize) -> EmployeeInitialLoadout {
         EmployeeInitialLoadout {
             active_skill_fragment_id: None,
             equipment_ids: vec![
-                "standard_training_sword".to_string(),
+                match index / 2 {
+                    0 => "standard_training_sword",
+                    1 => "standard_training_shield",
+                    _ => "standard_training_healing_staff",
+                }.to_string(),
                 "standard_armor".to_string(),
             ],
             baseline_skill_fragment_ids: vec![SkillFragmentId::from(
@@ -1218,9 +1209,14 @@ mod tests {
                 format!("recruit_{index}")
             },
             name: format!("Candidate {index}"),
+            role: match index / 2 {
+                0 => game_core::game::employee::EmployeeRole::Dealer,
+                1 => game_core::game::employee::EmployeeRole::Tank,
+                _ => game_core::game::employee::EmployeeRole::Healer,
+            },
             starter_eligible,
             initial_loadout: if starter_eligible {
-                starter_test_loadout()
+                starter_test_loadout(index)
             } else {
                 EmployeeInitialLoadout::default()
             },
@@ -1241,6 +1237,7 @@ mod tests {
 
     fn starter_test_equipment() -> EquipmentMetadata {
         EquipmentMetadata {
+            content_family: None,
             id: "standard_armor".to_string(),
             uuid: Uuid::parse_str("650e8400-e29b-41d4-a716-446655440031")
                 .expect("standard armor uuid should be valid"),
@@ -1267,6 +1264,7 @@ mod tests {
             incoming_damage_reduction_percent: 10,
         });
         EquipmentMetadata {
+            content_family: None,
             id: "standard_training_sword".to_string(),
             uuid: Uuid::parse_str("650e8400-e29b-41d4-a716-446655440030")
                 .expect("standard training sword uuid should be valid"),
@@ -1315,8 +1313,24 @@ mod tests {
 
     fn starter_policy_game_data_builder() -> GameDataBuilder {
         let (visual_novels, visual_novel_triggers) = test_hq_briefing_visual_novel_fixture();
+        let mut policy = game_core::game::data::run_policy_data::RunPolicyData::builtin();
+        policy.tutorial_employee_definition_ids = vec!["candidate_0".into(), "candidate_2".into(), "candidate_4".into()];
+        let mut shield = starter_test_weapon();
+        shield.id = "standard_training_shield".into();
+        shield.uuid = Uuid::from_u128(0x650e_8400_e29b_41d4_a716_4466_5544_9032);
+        shield.weapon_profile.as_mut().unwrap().weapon_archetype = game_core::game::data::equipment_data::WeaponArchetype::Shield;
+        let mut staff = starter_test_weapon();
+        staff.id = "standard_training_healing_staff".into();
+        staff.uuid = Uuid::from_u128(0x650e_8400_e29b_41d4_a716_4466_5544_9033);
+        let profile = staff.weapon_profile.as_mut().unwrap();
+        profile.weapon_archetype = game_core::game::data::equipment_data::WeaponArchetype::Staff;
+        profile.range_role = game_core::game::data::equipment_data::WeaponRangeRole::Ranged;
+        profile.action = game_core::game::data::abnormality_data::BasicAttackAction::Heal {
+            flat: 8, spell_power_percent: 100, footprint: None,
+        };
         GameDataBuilder::empty()
-            .with_equipment(vec![starter_test_weapon(), starter_test_equipment()])
+            .with_run_policy(policy)
+            .with_equipment(vec![starter_test_weapon(), starter_test_equipment(), shield, staff])
             .with_skill_fragments(SkillFragmentDatabase::new(vec![
                 starter_test_skill_fragment(),
             ]))
@@ -1336,12 +1350,12 @@ mod tests {
             VisualNovelTriggerDatabase::new(vec![
                 test_run_start_visual_novel_trigger(
                     "run_start_standard_hq_briefing",
-                    GameMode::Standard,
+                    GameMode::Tutorial,
                     standard_vn_id,
                 ),
                 test_run_start_visual_novel_trigger(
                     "run_start_endless_hq_briefing",
-                    GameMode::Endless,
+                    GameMode::Expedition,
                     endless_vn_id,
                 ),
             ]),
@@ -1381,7 +1395,7 @@ mod tests {
     }
 
     fn empty_game_data() -> Arc<GameDataBase> {
-        let definitions = (0..5)
+        let definitions = (0..6)
             .map(|index| test_employee_definition(index, true))
             .collect();
 
@@ -1408,6 +1422,8 @@ mod tests {
         let base = game_core::game::data::ValidatedGameData::load_live_embedded()
             .map(|data| data.into_fixture_database_arc())
             .expect("embedded live gameplay RON must be valid");
+        let mut policy = base.run_policy.as_ref().clone();
+        policy.tutorial_employee_definition_ids = vec!["candidate_0".into(), "candidate_2".into(), "candidate_4".into()];
         let mut pve_encounters = base.pve_data.encounters.clone();
         if let Some(survive_timer_ms) = survive_timer_ms {
             for encounter in &mut pve_encounters {
@@ -1450,7 +1466,7 @@ mod tests {
                 .with_pve(PveEncounterDatabase::new(pve_encounters))
                 .with_boss_runtime_data(base.boss_runtime_data.clone())
                 .with_boss_omen_data(base.boss_omen_data.clone())
-                .with_run_policy_data(base.run_policy.clone())
+                .with_run_policy(policy)
                 .with_skill_data(base.skill_data.clone())
                 .with_buff_data(base.buff_data.clone())
                 .with_skill_fragment_data(base.skill_fragment_data.clone())
@@ -1529,7 +1545,7 @@ mod tests {
             )
             .unwrap(),
         );
-        let mut limited = game_core_waiting_on_live_defense_node_with_data(
+        let mut limited = game_core_waiting_on_tutorial_defense_node_with_data(
             player,
             defense_game_data_with_profile(None, profile),
         );
@@ -1592,7 +1608,7 @@ mod tests {
             .execute_fixture(
                 player_id,
                 command!(StartNewGame {
-                    game_mode: GameMode::Standard,
+                    game_mode: GameMode::Expedition,
                     replace_active_run: false,
                 }),
             )
@@ -1631,6 +1647,7 @@ mod tests {
             player_id,
             command!(SelectStarterEmployees {
                 employee_definition_ids,
+                loan_copy_ids: Vec::<Uuid>::new(),
             }),
         )
         .expect("default starter employee selection should start the run")
@@ -1651,84 +1668,77 @@ mod tests {
         player_id: Uuid,
         game_data: Arc<GameDataBase>,
     ) -> CoreApplication {
-        for seed in 0..1_000 {
-            let mut core = CoreApplication::new(game_data.clone(), seed);
-            let selected = start_new_game_with_default_starters(&mut core, player_id);
-            assert_eq!(
-                selected.kind(),
-                ApplicationResultKind::StarterEmployeesSelected
-            );
-            let mut map: game_core::game::map::MapViewDto =
-                serde_json::from_value(selected.payload().as_value()["map"].clone()).unwrap();
-
-            for _ in 0..3 {
-                let available_node_ids = map
-                    .nodes
-                    .iter()
-                    .filter(|node| {
-                        node.state == MapNodeState::Available
-                            && node.category == MapNodeCategory::Combat
-                    })
-                    .map(|node| node.id)
-                    .collect::<Vec<_>>();
-                for node_id in available_node_ids {
-                    let preview = core
-                        .execute_fixture(player_id, command!(SelectMapNode { node_id }))
-                        .expect("available node preview should succeed");
-                    let is_live_defense = preview.kind() == ApplicationResultKind::NodePreview
-                        && preview.payload().as_value()["combat_preview"]["node_type"]
-                            == serde_json::to_value(CombatNodeType::Defense).unwrap();
-                    if is_live_defense {
-                        return core;
-                    }
-
-                    core.execute_fixture(player_id, command!(CancelSelectedNode))
-                        .expect("non-defense node preview should be cancellable");
-                }
-
-                let Some(start_node_id) = map
-                    .nodes
-                    .iter()
-                    .find(|node| {
-                        node.state == MapNodeState::Available
-                            && node.category == MapNodeCategory::Start
-                    })
-                    .map(|node| node.id)
-                else {
-                    break;
-                };
-                let preview = core
-                    .execute_fixture(
-                        player_id,
-                        command!(SelectMapNode {
-                            node_id: start_node_id,
-                        }),
-                    )
-                    .expect("start node preview should succeed");
-                assert_eq!(preview.kind(), ApplicationResultKind::NodePreview);
-                assert_eq!(
-                    preview.payload().as_value()["category"],
-                    serde_json::to_value(MapNodeCategory::Start).unwrap()
-                );
-                let entered = core
-                    .execute_fixture(player_id, command!(ConfirmEnterNode))
-                    .expect("start node confirm should succeed");
-                assert_eq!(entered.kind(), ApplicationResultKind::NodeEntered);
-                assert_eq!(
-                    entered.payload().as_value()["category"],
-                    serde_json::to_value(MapNodeCategory::Start).unwrap()
-                );
-                let completed = core
-                    .execute_fixture(player_id, command!(CompleteNode))
-                    .expect("start node complete should succeed");
-                assert_eq!(completed.kind(), ApplicationResultKind::NodeCompleted);
-                let next_map =
-                    serde_json::from_value(completed.payload().as_value()["map"].clone()).unwrap();
-                map = next_map;
+        // The current Expedition starts behind the reserved early reward.
+        // A seed cannot remove that prerequisite; take its public unused exit.
+        let mut core = CoreApplication::new(game_data, 0);
+        start_new_game_with_default_starters(&mut core, player_id);
+        let map = core.run_snapshot_fixture().map.unwrap();
+        let reward = map.nodes.iter().find(|node| node.slot_id.as_str() == "2")
+            .expect("official initial room has its reserved reward");
+        assert_eq!(reward.category, MapNodeCategory::Reward);
+        assert_eq!(reward.state, MapNodeState::Available);
+        let reward_id = reward.id;
+        core.execute_fixture(player_id, command!(SelectMapNode { node_id: reward_id })).unwrap();
+        core.execute_fixture(player_id, command!(ConfirmEnterNode)).unwrap();
+        core.execute_fixture(player_id, command!(ExitReward)).unwrap();
+        let map = core.run_snapshot_fixture().map.unwrap();
+        assert_eq!(map.nodes.iter().find(|node| node.id == reward_id).unwrap().state,
+            MapNodeState::Completed, "unused reward exit must open the real route");
+        for node in map.nodes.iter().filter(|node| {
+            node.state == MapNodeState::Available && node.category == MapNodeCategory::Combat
+        }) {
+            let preview = core.execute_fixture(player_id, command!(SelectMapNode { node_id: node.id })).unwrap();
+            assert_eq!(preview.kind(), ApplicationResultKind::NodePreview);
+            if preview.payload().as_value()["combat_preview"]["node_type"]
+                == serde_json::to_value(CombatNodeType::Defense).unwrap()
+            {
+                return core;
             }
+            core.execute_fixture(player_id, command!(CancelSelectedNode)).unwrap();
         }
+        panic!("fixed current Expedition route must expose a Defense preview after early reward");
+    }
 
-        panic!("expected at least one generated run seed to start near a live Defense node");
+    // Tiny immutable native profiles cannot admit the Expedition reward's
+    // checkpoint serialization. The supported Tutorial starts at combat and
+    // isolates battle-entry/tick refusal without changing a running profile.
+    fn game_core_waiting_on_tutorial_defense_node_with_data(
+        player: Uuid,
+        data: Arc<GameDataBase>,
+    ) -> CoreApplication {
+        let mut core = CoreApplication::new(data, 0);
+        core.execute_fixture(player, command!(StartNewGame {
+            game_mode: GameMode::Tutorial, replace_active_run: false,
+        })).unwrap();
+        for _ in 0..16 {
+            let snapshot = core.run_snapshot_fixture();
+            if let Some(vn) = snapshot.visual_novel {
+                assert!(vn.choices.is_empty(), "fixture Tutorial briefing has no choices");
+                core.execute_fixture(player, command!(AdvanceVisualNovel {
+                    session_id: vn.session_id, current_scene_id: vn.current_scene_id,
+                })).unwrap();
+                continue;
+            }
+            let map = snapshot.map.expect("Tutorial briefing must create its map");
+            let node = map.nodes.iter().find(|n| n.state == MapNodeState::Available
+                && n.category == MapNodeCategory::Combat).expect("current Tutorial starts at combat");
+            let preview = core.execute_fixture(player, command!(SelectMapNode { node_id: node.id })).unwrap();
+            assert_eq!(preview.payload().as_value()["combat_preview"]["node_type"],
+                serde_json::to_value(CombatNodeType::Defense).unwrap());
+            return core;
+        }
+        panic!("Tutorial fixture briefing exceeded its finite bound");
+    }
+
+    fn player_profile_fixture(core: &CoreApplication) -> game_core::game::encounter_compendium::PlayerProfileState {
+        serde_json::from_value(core.snapshot(ApplicationSnapshotKind::PlayerProfile)
+            .unwrap().read_model().as_value().clone()).unwrap()
+    }
+
+    fn persisted_profile_fixture(root: &std::path::Path, core: &CoreApplication) -> Arc<Mutex<PlayerProfilePersistence>> {
+        let store = PlayerProfileStore::open(root).unwrap();
+        store.publish(&player_profile_fixture(core)).unwrap();
+        Arc::new(Mutex::new(PlayerProfilePersistence::bootstrap(store)))
     }
 
     #[test]
@@ -1816,7 +1826,7 @@ mod tests {
                     .execute_fixture(
                         player_id,
                         command!(StartNewGame {
-                            game_mode: GameMode::Standard,
+                            game_mode: GameMode::Tutorial,
                             replace_active_run: false,
                         }),
                     )
@@ -1850,7 +1860,7 @@ mod tests {
         let store = ActiveRunStore::open(directory.path()).unwrap();
         let checkpoint = |loads_used| ActiveRunCheckpointExport {
             core_payload_json: serde_json::to_vec(
-                &serde_json::json!({"version":11,"fixture_value":loads_used}),
+                &serde_json::json!({"version":12,"fixture_value":loads_used}),
             )
             .unwrap(),
             loads_used,
@@ -1963,7 +1973,7 @@ mod tests {
         if matches!(state, SnapshotOverlayCompendium::Dirty) {
             std::fs::create_dir(directory.path().join("player_profile.tmp")).unwrap();
             assert_eq!(
-                persistence.merge_and_persist(profile("dirty")),
+                persistence.merge_and_persist(profile("dirty")).unwrap(),
                 PlayerProfilePersistOutcome::BecameDirty
             );
         }
@@ -2185,7 +2195,7 @@ mod tests {
                 session_id,
                 request_id: "req-1".to_string(),
                 behavior: command!(StartNewGame {
-                    game_mode: GameMode::Standard,
+                    game_mode: GameMode::Tutorial,
                     replace_active_run: false,
                 }),
                 battle_authority: None,
@@ -2314,7 +2324,7 @@ mod tests {
             .lock()
             .unwrap()
             .publish(&ActiveRunCheckpointExport {
-                core_payload_json: br#"{"version":11,"fixture":"pending-standard-completion"}"#
+                core_payload_json: br#"{"version":12,"fixture":"pending-standard-completion"}"#
                     .to_vec(),
                 loads_used: 0,
                 run_peak_certified_power: 100,
@@ -2333,7 +2343,7 @@ mod tests {
                 expected,
                 None,
                 &game_core::game::encounter_compendium::PlayerProfileState {
-                    standard_tutorial_completed: true,
+                    highest_floor_reached: 7,
                     ..Default::default()
                 },
             )
@@ -2396,8 +2406,8 @@ mod tests {
             PlayerProfilePersistenceState::Clean
         ));
         assert_eq!(
-            retried.state_snapshot.unwrap()["player_profile"]["standard_tutorial_completed"],
-            true
+            retried.state_snapshot.unwrap()["player_profile"]["highest_floor_reached"],
+            7
         );
     }
 
@@ -2501,8 +2511,8 @@ mod tests {
                 session_id,
                 request_id: "independent-profile-publish".to_string(),
                 behavior: command!(StartNewGame {
-                    game_mode: GameMode::Standard,
-                    replace_active_run: true,
+                    game_mode: GameMode::Tutorial,
+                    replace_active_run: false,
                 }),
                 battle_authority: None,
                 battle_side_message: BattleSideMessageKind::BattleUpdate,
@@ -2542,31 +2552,19 @@ mod tests {
         let active_store = Arc::new(Mutex::new(
             ActiveRunStore::open(active_directory.path()).unwrap(),
         ));
-        active_store
-            .lock()
-            .unwrap()
-            .publish(&ActiveRunCheckpointExport {
-                core_payload_json: br#"{"version":11,"fixture":"existing-active-run"}"#.to_vec(),
-                loads_used: 0,
-                run_peak_certified_power: 100,
-            })
-            .unwrap();
+
 
         let profile_directory = tempfile::tempdir().unwrap();
-        let profile_persistence = Arc::new(Mutex::new(PlayerProfilePersistence::bootstrap(
-            PlayerProfileStore::open(profile_directory.path()).unwrap(),
-        )));
+        // Attach installs the durable profile authoritatively. Seed knowledge
+        // through that store, not through an in-memory value Attach replaces.
+        let profile_store = PlayerProfileStore::open(profile_directory.path()).unwrap();
+        profile_store.publish(&game_core::game::encounter_compendium::EncounterCompendiumProfileState {
+            registered_ids: std::collections::BTreeSet::from(["durable_before_recovery".to_string()]),
+            ..Default::default()
+        }).unwrap();
+        let profile_persistence = Arc::new(Mutex::new(PlayerProfilePersistence::bootstrap(profile_store)));
         std::fs::create_dir(profile_directory.path().join("player_profile.tmp")).unwrap();
-        let mut core = CoreApplication::new(empty_game_data(), 7);
-        core.merge_compendium_fixture(
-            game_core::game::encounter_compendium::EncounterCompendiumProfileState {
-                registered_ids: std::collections::BTreeSet::from([
-                    "dirty_but_committed_in_memory".to_string()
-                ]),
-                ..Default::default()
-            },
-        )
-        .unwrap();
+        let core = CoreApplication::new(empty_game_data(), 7);
 
         let load_balance = LoadBalanceActor::new().start();
         let actor = PlayerGameActor::new(Uuid::new_v4(), core, load_balance)
@@ -2590,8 +2588,8 @@ mod tests {
                 session_id,
                 request_id: "profile-failure-independent".to_string(),
                 behavior: command!(StartNewGame {
-                    game_mode: GameMode::Standard,
-                    replace_active_run: true,
+                    game_mode: GameMode::Tutorial,
+                    replace_active_run: false,
                 }),
                 battle_authority: None,
                 battle_side_message: BattleSideMessageKind::BattleUpdate,
@@ -2606,7 +2604,7 @@ mod tests {
         );
         assert!(matches!(
             active_store.lock().unwrap().load().unwrap(),
-            ActiveRunLoad::Loaded { .. }
+            ActiveRunLoad::Missing
         ));
         assert!(result.side_messages.iter().any(|message| matches!(message,
             PlayerGameServerMessage::Notification { notification_type, .. }
@@ -2646,7 +2644,7 @@ mod tests {
             .unwrap()
             .encounter_compendium
             .registered_ids
-            .contains("dirty_but_committed_in_memory"));
+            .contains("durable_before_recovery"));
     }
 
     #[actix_web::test]
@@ -2718,151 +2716,57 @@ mod tests {
     }
 
     #[actix_web::test]
-    async fn local_active_run_is_projected_and_requires_explicit_new_run_replacement() {
+    async fn local_active_run_requires_continue_then_abandon_before_new_start() {
         let directory = tempfile::tempdir().unwrap();
+        let player = Uuid::from_u128(0xC120);
+        let data = defense_game_data();
+        let mut source = CoreApplication::new(data.clone(), 0);
+        start_new_game_with_default_starters(&mut source, player);
+        let checkpoint = source.export_active_run_checkpoint().unwrap().unwrap();
         let store = Arc::new(Mutex::new(ActiveRunStore::open(directory.path()).unwrap()));
-        store
-            .lock()
-            .unwrap()
-            .publish(&ActiveRunCheckpointExport {
-                core_payload_json: br#"{"version":11,"fixture":"opaque-core-payload"}"#.to_vec(),
-                loads_used: 2,
-                run_peak_certified_power: 100,
-            })
-            .unwrap();
-        let load_balance = LoadBalanceActor::new().start();
-        let actor = PlayerGameActor::new(
-            Uuid::new_v4(),
-            CoreApplication::new(empty_game_data(), 7),
-            load_balance,
-        )
-        .with_player_profile_persistence(Arc::new(Mutex::new(PlayerProfilePersistence::bootstrap(
-            PlayerProfileStore::open(directory.path()).unwrap(),
-        ))))
-        .with_active_run_store(store.clone())
-        .start();
+        store.lock().unwrap().publish(&ActiveRunCheckpointExport::from(&checkpoint)).unwrap();
+        let profile_store = PlayerProfileStore::open(directory.path()).unwrap();
+        let profile: game_core::game::encounter_compendium::PlayerProfileState = serde_json::from_value(
+            source.snapshot(ApplicationSnapshotKind::PlayerProfile).unwrap().read_model().as_value().clone()
+        ).unwrap();
+        profile_store.publish(&profile).unwrap();
+        let active_before = std::fs::read(directory.path().join("active_run.json")).unwrap();
+        let profile_before = std::fs::read(directory.path().join("player_profile.json")).unwrap();
+        let actor = PlayerGameActor::new(player, CoreApplication::new(data, 7), LoadBalanceActor::new().start())
+            .with_player_profile_persistence(Arc::new(Mutex::new(PlayerProfilePersistence::bootstrap(profile_store))))
+            .with_active_run_store(store.clone())
+            .start();
         let (probe, _, _) = spawn_probe();
-        let session_id = Uuid::new_v4();
-
-        let attach = actor
-            .send(AttachSession {
-                session_id,
-                socket: probe.clone().recipient(),
-                control: probe.recipient(),
-            })
-            .await
-            .unwrap()
-            .unwrap();
-        assert_eq!(
-            attach.state_snapshot["active_run_continue"]["available"],
-            true
-        );
-        assert!(attach.state_snapshot["action_capabilities"]
-            .as_array()
-            .unwrap()
-            .iter()
+        let session_id = Uuid::from_u128(0xC121);
+        let attached = actor.send(AttachSession {
+            session_id, socket: probe.clone().recipient(), control: probe.recipient(),
+        }).await.unwrap().unwrap();
+        assert_eq!(attached.state_snapshot["active_run_continue"]["available"], true);
+        assert!(attached.state_snapshot["action_capabilities"].as_array().unwrap().iter()
             .any(|capability| capability["action"] == "ContinueRun"));
-
-        let error = actor
-            .send(ExecutePlayerBehavior {
-                session_id,
-                request_id: "replace-check".to_string(),
-                behavior: command!(StartNewGame {
-                    game_mode: GameMode::Standard,
-                    replace_active_run: false,
-                }),
-                battle_authority: None,
-                battle_side_message: BattleSideMessageKind::BattleUpdate,
-            })
-            .await
-            .unwrap()
-            .unwrap_err();
-        assert_eq!(error.code, "active_run_replacement_confirmation_required");
-
-        actor
-            .send(ExecutePlayerBehavior {
-                session_id,
-                request_id: "replace-confirmed".to_string(),
-                behavior: command!(StartNewGame {
-                    game_mode: GameMode::Standard,
-                    replace_active_run: true,
-                }),
-                battle_authority: None,
-                battle_side_message: BattleSideMessageKind::BattleUpdate,
-            })
-            .await
-            .unwrap()
-            .unwrap();
-        assert_eq!(
-            store.lock().unwrap().load().unwrap(),
-            ActiveRunLoad::Missing
-        );
-    }
-
-    #[actix_web::test]
-    async fn corrupt_local_active_run_requires_explicit_reset() {
-        let directory = tempfile::tempdir().unwrap();
-        let store = Arc::new(Mutex::new(ActiveRunStore::open(directory.path()).unwrap()));
-        store
-            .lock()
-            .unwrap()
-            .publish(&ActiveRunCheckpointExport {
-                core_payload_json: br#"{"version":11,"fixture":"opaque-core-payload"}"#.to_vec(),
-                loads_used: 0,
-                run_peak_certified_power: 100,
-            })
-            .unwrap();
-        std::fs::write(directory.path().join("active_run.json"), b"corrupt").unwrap();
-        std::fs::write(
-            directory.path().join("active_run.backup.json"),
-            b"corrupt backup",
-        )
-        .unwrap();
-        let load_balance = LoadBalanceActor::new().start();
-        let actor = PlayerGameActor::new(
-            Uuid::new_v4(),
-            CoreApplication::new(empty_game_data(), 7),
-            load_balance,
-        )
-        .with_active_run_store(store)
-        .start();
-        let (probe, _, _) = spawn_probe();
-        let session_id = Uuid::new_v4();
-
-        let attach = actor
-            .send(AttachSession {
-                session_id,
-                socket: probe.clone().recipient(),
-                control: probe.recipient(),
-            })
-            .await
-            .unwrap()
-            .unwrap();
-        assert_eq!(
-            attach.state_snapshot["active_run_continue"]["reset_required"],
-            true
-        );
-
-        let reset = actor
-            .send(ExecutePlayerBehavior {
-                session_id,
-                request_id: "reset-corrupt".to_string(),
-                behavior: command!(ResetActiveRun),
-                battle_authority: None,
-                battle_side_message: BattleSideMessageKind::BattleUpdate,
-            })
-            .await
-            .unwrap()
-            .unwrap();
-        assert!(matches!(
-            reset.response,
-            PlayerGameServerMessage::CommandResult { ref result_type, .. }
-                if result_type == "ActiveRunReset"
-        ));
-        assert_eq!(
-            reset.state_snapshot.unwrap()["active_run_continue"]["available"],
-            false
-        );
+        for (replacement, expected) in [(false, "active_run_requires_continue_and_abandon"), (true, "context_irrelevant")] {
+            let error = actor.send(ExecutePlayerBehavior {
+                session_id, request_id: "reject-replacement".into(),
+                behavior: command!(StartNewGame { game_mode: GameMode::Expedition, replace_active_run: replacement }),
+                battle_authority: None, battle_side_message: BattleSideMessageKind::BattleUpdate,
+            }).await.unwrap().unwrap_err();
+            assert_eq!(error.code, expected);
+            assert_eq!(std::fs::read(directory.path().join("active_run.json")).unwrap(), active_before);
+            assert_eq!(std::fs::read(directory.path().join("player_profile.json")).unwrap(), profile_before);
+        }
+        for behavior in [command!(ContinueRun), command!(AbandonRun)] {
+            actor.send(ExecutePlayerBehavior {
+                session_id, request_id: "continue-then-abandon".into(), behavior,
+                battle_authority: None, battle_side_message: BattleSideMessageKind::BattleUpdate,
+            }).await.unwrap().unwrap();
+        }
+        assert_eq!(store.lock().unwrap().load().unwrap(), ActiveRunLoad::Missing);
+        let started = actor.send(ExecutePlayerBehavior {
+            session_id, request_id: "new-expedition".into(),
+            behavior: command!(StartNewGame { game_mode: GameMode::Expedition, replace_active_run: false }),
+            battle_authority: None, battle_side_message: BattleSideMessageKind::BattleUpdate,
+        }).await.unwrap().unwrap();
+        assert_eq!(started.state_snapshot.unwrap()["game_state"], "pre_run_briefing");
     }
 
     #[actix_web::test]
@@ -3887,6 +3791,13 @@ fn publish_prepared_application<T>(
     force_revision: bool,
 ) -> Result<(T, bool), PlayerGameActorError> {
     let Some(active_store) = active_store else {
+        if let Some(persistence) = profile_persistence {
+            let profile = persistence.lock().map_err(|_| PlayerGameActorError::new("player_profile_lock_poisoned", "Profile lock is poisoned"))?;
+            let current = profile.profile().map_err(|e| PlayerGameActorError::new("player_profile_recovery_required", e))?;
+            if prepared.player_profile().lifecycle != current.lifecycle {
+                return Err(PlayerGameActorError::new("paired_active_persistence_required", "Expedition ownership changes require paired active/profile persistence"));
+            }
+        }
         return Ok((prepared.commit(), false));
     };
     let profile_persistence = profile_persistence.ok_or_else(|| {
@@ -3904,32 +3815,16 @@ fn publish_prepared_application<T>(
     let current_profile = profile
         .profile()
         .map_err(|issue| PlayerGameActorError::new("application_recovery_required", issue))?;
-    let mut merged = current_profile.clone();
-    merged.merge(prepared.player_profile().clone());
-    let changed = force_revision
-        || prepared.terminal()
-        || prepared.checkpoint() != checkpoint_before
-        || merged != current_profile;
-    if !changed {
+    let mut merged = prepared.player_profile().clone();
+    merged.validate_persisted().map_err(|e| PlayerGameActorError::new("invalid_player_profile", e))?;
+    merged.merge_knowledge(&current_profile);
+    let active = active_store.lock().map_err(|_| PlayerGameActorError::new("active_run_lock_poisoned", "Active store lock is poisoned"))?;
+    let expected = expected_revision.unwrap_or(uuid::Uuid::nil());
+    let actual = active.snapshot().map_err(|e| PlayerGameActorError::new("active_run_load_failed", e.to_string()))?.revision;
+    if expected != actual { return Err(PlayerGameActorError::new("active_run_revision_conflict", format!("expected {expected}, actual {actual}"))); }
+    if !force_revision && !prepared.terminal() && prepared.checkpoint() == checkpoint_before && merged == current_profile {
         return Ok((prepared.commit(), false));
     }
-    let active = active_store.lock().map_err(|_| {
-        PlayerGameActorError::new(
-            "active_run_lock_poisoned",
-            "Active-run persistence lock is poisoned",
-        )
-    })?;
-    let expected = match expected_revision {
-        Some(revision) => *revision,
-        None => {
-            active
-                .snapshot()
-                .map_err(|error| {
-                    PlayerGameActorError::new("active_run_load_failed", error.to_string())
-                })?
-                .revision
-        }
-    };
     let checkpoint = prepared.checkpoint().map(StoredCheckpoint::from);
     let accepted = profile.accept_application(&active, expected, checkpoint.as_ref(), &merged).map_err(|error| {
         let code = if matches!(error, crate::persistence::player_profile_store::PlayerProfileStoreError::ActiveRun(
@@ -3940,4 +3835,21 @@ fn publish_prepared_application<T>(
     })?;
     *expected_revision = Some(accepted.revision);
     Ok((prepared.commit(), accepted.recovery_pending))
+}
+
+fn publish_prepared_application_bound<T>(
+    prepared: game_core::application::PreparedApplication<'_, T>,
+    approved: Option<&std::sync::Arc<crate::mod_admission::ApprovedPersistence>>,
+    required: Option<&game_core::mod_validation::RequiredConfiguration>,
+    active_store: Option<&std::sync::Arc<std::sync::Mutex<crate::persistence::active_run_store::ActiveRunStore>>>,
+    profile_persistence: Option<&std::sync::Arc<std::sync::Mutex<crate::persistence::player_profile_store::PlayerProfilePersistence>>>,
+    expected_revision: &mut Option<crate::persistence::active_run_store::ActiveRunRevision>,
+    checkpoint_before: Option<&game_core::application::ApplicationCheckpoint>, force_revision: bool,
+) -> Result<(T, bool), PlayerGameActorError> {
+    if let Some(approved) = approved {
+        let required = required.ok_or_else(|| PlayerGameActorError::new("required_configuration_missing", "approved actor has no pinned configuration"))?;
+        approved.publish(prepared, required, expected_revision, checkpoint_before, force_revision).map_err(|e| PlayerGameActorError::new("application_persistence_failed", e))
+    } else {
+        publish_prepared_application(prepared, active_store, profile_persistence, expected_revision, checkpoint_before, force_revision)
+    }
 }

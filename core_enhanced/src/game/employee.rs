@@ -14,7 +14,6 @@ use crate::game::{
         run_policy_data::RunPolicyData,
         skill_fragment_data::{SkillFragmentDatabase, SkillFragmentId},
     },
-    employee_psychology::EmployeePsychology,
     growth::GrowthStack,
     skill_fragment::{SkillFragmentInventory, SkillFragmentLoadout},
 };
@@ -50,6 +49,13 @@ pub enum EmployeeSocialDisposition {
     Obedient,
     Defiant,
     Comradely,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
+pub enum EmployeeRole {
+    Dealer,
+    Tank,
+    Healer,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -128,6 +134,7 @@ impl Default for EmployeeProfile {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct EmployeeDefinition {
+    pub role: EmployeeRole,
     pub employee_definition_id: String,
     pub name: String,
     pub starter_eligible: bool,
@@ -429,24 +436,26 @@ pub enum BreakdownCounter {
     #[default]
     Inactive,
     Active {
-        remaining_nodes: u32,
+        remaining_cost: u32,
         entered_node: Option<crate::game::map::MapNodeId>,
     },
 }
 crate::authoring::clone_shape::copy_shape!(BreakdownCounter);
 impl BreakdownCounter {
-    pub fn remaining_nodes(self) -> Option<u32> {
+    pub fn remaining_cost(self) -> Option<u32> {
         match self {
             Self::Inactive => None,
             Self::Active {
-                remaining_nodes, ..
-            } => Some(remaining_nodes),
+                remaining_cost, ..
+            } => Some(remaining_cost),
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Employee {
+    pub role: EmployeeRole,
     pub uuid: Uuid,
     pub employee_definition_id: String,
     pub name: String,
@@ -459,10 +468,12 @@ pub struct Employee {
     pub skill_fragments: SkillFragmentLoadout,
     pub active_consumable_modifier: Option<ActiveConsumableModifier>,
     pub combat_profile: EmployeeCombatProfile,
-    pub psychology: EmployeePsychology,
 }
 
+crate::authoring::clone_shape::copy_shape!(EmployeeRole, EmployeePersonality, EmployeeRiskDisposition, EmployeeSocialDisposition, CombatAptitude, EventAptitude, EmployeeBaseCombatStats);
+crate::authoring::clone_shape::struct_shape!(EmployeeInitialLoadout { equipment_ids, baseline_skill_fragment_ids, active_skill_fragment_id });
 crate::authoring::clone_shape::struct_shape!(Employee {
+    role,
     uuid,
     employee_definition_id,
     name,
@@ -475,7 +486,6 @@ crate::authoring::clone_shape::struct_shape!(Employee {
     skill_fragments,
     active_consumable_modifier,
     combat_profile,
-    psychology,
 });
 crate::authoring::clone_shape::struct_shape!(EmployeeLoadout { item_slot });
 crate::authoring::clone_shape::struct_shape!(EmployeeCombatProfile {
@@ -523,7 +533,7 @@ impl Employee {
             ),
             growth_stacks: GrowthStack::new(),
         };
-        Self::with_profile_and_skill_fragments(
+        let mut employee = Self::with_profile_and_skill_fragments(
             uuid,
             definition.employee_definition_id.clone(),
             definition.name.clone(),
@@ -535,7 +545,9 @@ impl Employee {
                     .baseline_skill_fragment_ids
                     .clone(),
             ),
-        )
+        );
+        employee.role = definition.role;
+        employee
     }
 
     fn with_profile_and_skill_fragments(
@@ -548,6 +560,7 @@ impl Employee {
     ) -> Self {
         Self {
             uuid,
+            role: EmployeeRole::Dealer,
             employee_definition_id: employee_definition_id.into(),
             name: name.into(),
             profile,
@@ -559,7 +572,6 @@ impl Employee {
             skill_fragments,
             active_consumable_modifier: None,
             combat_profile,
-            psychology: EmployeePsychology::default(),
         }
     }
 
@@ -568,27 +580,24 @@ impl Employee {
             self.breakdown = BreakdownCounter::Inactive;
         } else if matches!(self.breakdown, BreakdownCounter::Inactive) {
             self.breakdown = BreakdownCounter::Active {
-                remaining_nodes: limit,
+                remaining_cost: limit,
                 entered_node: node,
             };
         }
     }
-    pub fn complete_breakdown_node(
+    /// Consume a new node's regulated entry cost, even when deterrence is already zero.
+    /// The expedition receipt owner calls this once; completing or reentering a node
+    /// never advances the grace period.
+    pub fn consume_breakdown_entry_cost(
         &mut self,
         limit: u32,
+        cost: u32,
         node: Option<crate::game::map::MapNodeId>,
     ) {
         self.reconcile_breakdown(limit, node);
-        if let BreakdownCounter::Active {
-            remaining_nodes,
-            entered_node,
-        } = &mut self.breakdown
-        {
-            if node.is_some() && *entered_node == node {
-                return;
-            }
-            *remaining_nodes = remaining_nodes.saturating_sub(1);
-            if *remaining_nodes == 0 {
+        if let BreakdownCounter::Active { remaining_cost, .. } = &mut self.breakdown {
+            *remaining_cost = remaining_cost.saturating_sub(cost);
+            if *remaining_cost == 0 {
                 // Noncombat collapse: no incapacitation trauma, injury roll or DeathPrevent.
                 self.condition.physical_damage = MAX_PHYSICAL_DAMAGE;
                 self.breakdown = BreakdownCounter::Inactive;
@@ -693,11 +702,14 @@ impl Employee {
     }
 
     pub fn add_experience_with_policy(&mut self, amount: u32, policy: &RunPolicyData) {
-        self.experience = self.experience.saturating_add(amount);
-        while self.experience >= policy.xp_required_for_next_level(self.level) {
-            self.experience -= policy.xp_required_for_next_level(self.level);
+        // Two u32 amounts need a wider sum until level costs are consumed.
+        let mut experience = u64::from(self.experience) + u64::from(amount);
+        while experience >= u64::from(policy.xp_required_for_next_level(self.level)) {
+            experience -= u64::from(policy.xp_required_for_next_level(self.level));
             self.level = self.level.saturating_add(1);
         }
+        // The remainder is below a validated positive u32 level cost.
+        self.experience = experience as u32;
     }
 
     pub fn apply_incapacitation(&mut self, trauma_amount: u32) -> IncapacitationOutcome {
@@ -889,6 +901,52 @@ mod tests {
         assert_eq!(employee.level, 3);
         assert_eq!(employee.experience, 50);
         assert_eq!(employee.battle_tier(&policy), crate::game::enums::Tier::II);
+    }
+
+    #[test]
+    fn experience_accumulation_keeps_survival_xp_before_large_reward() {
+        let mut policy = RunPolicyData::builtin();
+        policy.growth.xp_required_per_level = vec![1_000_000_000];
+        let mut employee = Employee::new(Uuid::from_u128(1), "xp_boundary", "XP Boundary");
+
+        employee.add_experience_with_policy(20, &policy);
+        employee.add_experience_with_policy(u32::MAX - 1, &policy);
+
+        // 20 + 4,294,967,294 = four level costs + 294,967,314.
+        assert_eq!((employee.level, employee.experience), (5, 294_967_314));
+    }
+
+    #[test]
+    fn experience_accumulation_preserves_two_large_grants() {
+        let mut policy = RunPolicyData::builtin();
+        policy.growth.xp_required_per_level = vec![u32::MAX];
+        let mut employee = Employee::new(Uuid::from_u128(1), "xp_boundary", "XP Boundary");
+
+        employee.add_experience_with_policy(u32::MAX - 1, &policy);
+        assert_eq!((employee.level, employee.experience), (1, u32::MAX - 1));
+        employee.add_experience_with_policy(u32::MAX, &policy);
+
+        // Two grants total 8,589,934,589: one level cost and 4,294,967,294 left.
+        assert_eq!((employee.level, employee.experience), (2, u32::MAX - 1));
+    }
+
+    #[test]
+    fn experience_accumulation_keeps_authored_curve_boundaries_and_tail() {
+        let mut policy = RunPolicyData::builtin();
+        policy.growth.xp_required_per_level = vec![7, 11, 13];
+        let mut employee = Employee::new(Uuid::from_u128(1), "xp_curve", "XP Curve");
+
+        for (amount, expected) in [
+            (0, (1, 0)),
+            (6, (1, 6)),
+            (1, (2, 0)),
+            (37, (5, 0)),
+            (12, (5, 12)),
+            (1, (6, 0)),
+        ] {
+            employee.add_experience_with_policy(amount, &policy);
+            assert_eq!((employee.level, employee.experience), expected);
+        }
     }
 
     #[test]
@@ -1202,6 +1260,7 @@ mod tests {
     #[test]
     fn employee_from_definition_preserves_authored_profile_and_combat_values() {
         let definition = EmployeeDefinition {
+            role: EmployeeRole::Tank,
             employee_definition_id: "authored_employee".to_string(),
             name: "Authored Employee".to_string(),
             starter_eligible: false,
@@ -1228,6 +1287,7 @@ mod tests {
         let employee = Employee::from_definition(Uuid::from_u128(42), &definition);
 
         assert_eq!(employee.employee_definition_id, "authored_employee");
+        assert_eq!(employee.role, EmployeeRole::Tank);
         assert_eq!(employee.profile, definition.profile);
         assert_eq!(employee.combat_profile.battle_profile.stats.max_health, 135);
         assert_eq!(employee.combat_profile.battle_profile.stats.attack, 17);
@@ -1268,30 +1328,35 @@ mod tests {
 mod breakdown_tests {
     use super::*;
     #[test]
-    fn r09_breakdown_completed_nodes_recovery_reentry_and_no_combat_death_prevent() {
+    fn u14_breakdown_regulated_cost_recovery_reentry_and_serialization() {
         let mut employee = Employee::new(Uuid::from_u128(9), "counter", "Counter");
-        let n1 = Some(crate::game::map::MapNodeId::new(Uuid::from_u128(91)));
-        let n2 = Some(crate::game::map::MapNodeId::new(Uuid::from_u128(92)));
+        let node = Some(crate::game::map::MapNodeId::new(Uuid::from_u128(91)));
         employee.condition.trauma = 100;
-        employee.reconcile_breakdown(2, n1);
-        employee.complete_breakdown_node(2, n1);
-        assert_eq!(employee.breakdown.remaining_nodes(), Some(2));
-        employee.complete_breakdown_node(2, n2);
-        assert_eq!(employee.breakdown.remaining_nodes(), Some(1));
+        employee.reconcile_breakdown(4, node);
+        employee.consume_breakdown_entry_cost(4, 0, node);
+        assert_eq!(employee.breakdown.remaining_cost(), Some(4));
+        employee.consume_breakdown_entry_cost(4, 2, node);
+        assert_eq!(employee.breakdown.remaining_cost(), Some(2));
         employee.condition.reduce_trauma(1);
-        employee.complete_breakdown_node(2, None);
+        employee.reconcile_breakdown(4, None);
         assert_eq!(employee.breakdown, BreakdownCounter::Inactive);
-        assert!(employee.is_alive());
         employee.condition.add_trauma(1);
-        employee.reconcile_breakdown(2, n2);
-        assert_eq!(employee.breakdown.remaining_nodes(), Some(2));
-        employee.complete_breakdown_node(2, n1);
+        employee.reconcile_breakdown(4, node);
+        assert_eq!(employee.breakdown.remaining_cost(), Some(4));
+        employee.consume_breakdown_entry_cost(4, 3, node);
         let encoded = serde_json::to_vec(&employee).unwrap();
         let mut restored: Employee = serde_json::from_slice(&encoded).unwrap();
-        assert_eq!(restored.breakdown.remaining_nodes(), Some(1));
-        restored.complete_breakdown_node(2, None);
+        assert_eq!(restored.breakdown.remaining_cost(), Some(1));
+        restored.consume_breakdown_entry_cost(4, 2, None);
         assert!(!restored.is_alive());
         assert_eq!(restored.condition.trauma, 100);
         assert_eq!(restored.breakdown, BreakdownCounter::Inactive);
+        let mut sequence=Employee::new(Uuid::from_u128(10),"sequence","Sequence");
+        sequence.condition.trauma=100;
+        for (cost,remaining) in [(1,3),(2,1),(1,0)] {
+            sequence.consume_breakdown_entry_cost(4,cost,None);
+            assert_eq!(sequence.is_alive(),remaining>0);
+            assert_eq!(sequence.breakdown.remaining_cost(),(remaining>0).then_some(remaining));
+        }
     }
 }

@@ -13,8 +13,10 @@ use crate::game::{
 const RECRUITMENT_QUEUE_SEED_NAMESPACE: u64 = 0x5245_4352_5549_5451;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct RecruitmentSessionState {
     pub node_id: MapNodeId,
+    pub recruits_used: u8,
     pub employee_definition_ids: Vec<String>,
 }
 
@@ -94,6 +96,7 @@ impl RecruitmentState {
             .collect();
         self.active_session = Some(RecruitmentSessionState {
             node_id,
+            recruits_used: 0,
             employee_definition_ids,
         });
         Ok(self.active_session.as_ref().expect("session was inserted"))
@@ -103,21 +106,12 @@ impl RecruitmentState {
         &mut self,
         employee_definition_id: &str,
     ) -> Result<(), GameError> {
-        let session = self.active_session.take().ok_or(GameError::InvalidAction)?;
-        if !session
-            .employee_definition_ids
-            .iter()
-            .any(|id| id == employee_definition_id)
-        {
-            self.active_session = Some(session);
-            return Err(GameError::InvalidAction);
-        }
-        self.queue.extend(
-            session
-                .employee_definition_ids
-                .into_iter()
-                .filter(|id| id != employee_definition_id),
-        );
+        let session = self.active_session.as_mut().ok_or(GameError::InvalidAction)?;
+        if session.recruits_used >= 2 { return Err(GameError::InvalidAction); }
+        let index = session.employee_definition_ids.iter().position(|id| id == employee_definition_id)
+            .ok_or(GameError::InvalidAction)?;
+        session.employee_definition_ids.remove(index);
+        session.recruits_used += 1;
         Ok(())
     }
 
@@ -143,6 +137,7 @@ impl RecruitmentState {
             }
         }
         if let Some(session) = self.active_session() {
+            if session.recruits_used > 2 { return Err(invalid_ownership()); }
             for id in &session.employee_definition_ids {
                 if !catalog.contains(id.as_str()) || !owned.insert(id.as_str()) {
                     return Err(invalid_ownership());
@@ -179,6 +174,7 @@ mod tests {
             .map(|index| EmployeeDefinition {
                 employee_definition_id: format!("employee_{index}"),
                 name: format!("Employee {index}"),
+                role: crate::game::employee::EmployeeRole::Dealer,
                 starter_eligible: index < 3,
                 initial_loadout: EmployeeInitialLoadout::default(),
                 profile: EmployeeProfile::default(),
@@ -226,6 +222,10 @@ mod tests {
         );
 
         state.recruit_from_active_session(&offered[1]).unwrap();
+        assert_eq!(state.active_session().unwrap().recruits_used, 1);
+        assert_eq!(state.active_session().unwrap().employee_definition_ids, vec![offered[0].clone(), offered[2].clone()]);
+        assert_eq!(state.queue_definition_ids().collect::<Vec<_>>(), original[3..].iter().map(String::as_str).collect::<Vec<_>>());
+        state.return_active_session_to_tail().unwrap();
         let remaining = state.queue_definition_ids().collect::<Vec<_>>();
         let expected = original[3..]
             .iter()

@@ -1,0 +1,89 @@
+{
+  "stage": "P2G-30",
+  "status": "complete",
+  "final_policy_freeze_ref": {
+    "Artifact Type": "Final Policy Freeze",
+    "Artifact ID": "FPF-CMER-001",
+    "Content Digest": "sha256:310832cad4a43d369bf2a96941d942195c11b2f5738fc0a2a37e5f2a1c2ce166"
+  },
+  "freeze_membership": [
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CMER-001",
+        "Content Digest": "sha256:310832cad4a43d369bf2a96941d942195c11b2f5738fc0a2a37e5f2a1c2ce166"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMER-AUTHOR-REVIEWED-001",
+        "Content Digest": "sha256:b2e9e4325574856cb3b9bcc91fc92bf8e4a0b5f5a4d97c7e32d90b6aa7485dda"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CMER-001",
+        "Content Digest": "sha256:310832cad4a43d369bf2a96941d942195c11b2f5738fc0a2a37e5f2a1c2ce166"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMER-G27-REVIEWED-001",
+        "Content Digest": "sha256:eaabe5ce0d9e0daa932dfa99dbe58821499355acb5d1afa177a3d611672e5880"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CMER-001",
+        "Content Digest": "sha256:310832cad4a43d369bf2a96941d942195c11b2f5738fc0a2a37e5f2a1c2ce166"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMER-G28-REVIEWED-001",
+        "Content Digest": "sha256:e52464ebd1f7e141d826b544cac7e46a37ddb704b878321e51c7182ee0257e89"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CMER-001",
+        "Content Digest": "sha256:310832cad4a43d369bf2a96941d942195c11b2f5738fc0a2a37e5f2a1c2ce166"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMER-G29-REVIEWED-001",
+        "Content Digest": "sha256:1c645026d61c5b43024dae647057c930046f7621d60efd20e61dcc0814f98f8f"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CMER-001",
+        "Content Digest": "sha256:310832cad4a43d369bf2a96941d942195c11b2f5738fc0a2a37e5f2a1c2ce166"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMER-LEGACY-REVIEWED-001",
+        "Content Digest": "sha256:16c7bb904c4f4eb5557963a011c7fb5748f463474f17d982135d6ae4a8e72752"
+      }
+    },
+    {
+      "Final Policy Freeze Ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CMER-001",
+        "Content Digest": "sha256:310832cad4a43d369bf2a96941d942195c11b2f5738fc0a2a37e5f2a1c2ce166"
+      },
+      "Policy Element Revision Ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMER-RESTORE-REVIEWED-001",
+        "Content Digest": "sha256:8d5ecbbdf23000893d54c044d22818e77ae5d56d83823d597b40aabe67f611a2"
+      }
+    }
+  ],
+  "checks": {
+    "members_exact_current_map": true,
+    "acceptance_unchanged": true,
+    "all_bindings_same_working_revision": true,
+    "open_questions": 0
+  }
+}

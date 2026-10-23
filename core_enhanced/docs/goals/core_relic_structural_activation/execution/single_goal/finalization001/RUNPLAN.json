@@ -1,0 +1,17 @@
+{
+  "schema":"U09_FINALIZATION_MECHANICAL_RUNPLAN_V1",
+  "status":"authored_not_executed",
+  "executor":"Assigned Sol sole runner only; independent test author must not run this collector or test/validator commands",
+  "inputs":["EVIDENCE_INPUT.json","COVERAGE_INPUT.json","PREDECESSOR_BINDINGS.json","PREDECESSOR_REVIEW.ko.md","../PLAN.md","current fixed source manifest","late explicit results binding when available"],
+  "command":["python3","core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/finalization001/collect_finalization.py","--source-manifest","<current INPUT manifest with files and sha256>","--late-bindings","<optional LATE_BINDINGS.json; omit option until authored>","--output","core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/finalization001/generated001"],
+  "output_contract":"Fresh directory only. EVIDENCE_SELECTION.json retains exact selected PASS blocks plus enclosing failures/source refs; PREDECESSOR_IMPACT.json retains191+32+31 exact IDs/literals/owners/pointers/digests plus split Root judgments; COVERAGE.json carries34 current FPF002 literals,17seams,10dimensions and3nodes. No collector success is an independent completion verdict.",
+  "late_binding_schema":{
+    "receipts":[{"id":"impact_server4","receipt":"<execution-relative closed receipt>","raw_format":"generic_combined_log","selected_count":4,"scope":"feature-corrected exact4 host cases"},{"id":"literal_gap_extensions","receipt":"<execution-relative corrected rv005 receipt>","raw_format":"generic_combined_log","selected_count":2,"scope":"independently authored PE10/11 boundary tables"}],
+    "artifacts":[{"id":"authoring_preset","path":"<execution-relative wrapper receipt>","command_indices":[0],"scope":"exact successful effective-profile parse and validate command index"}],
+    "composites":[{"id":"current_impact_69","members":["impact_core64","impact_observation1","impact_server4"],"scope":"69 selected impact cases, assembled without reexecuting unaffected successful configurations"}]
+  },
+  "pending_material":"PC/R05 final result bindings, exact frozen restore and final audit will be added explicitly after actual evidence. Independent completion stays pending during self-verification; no circular requirement that the future auditor approve before reviewing the evidence.",
+  "mechanical_checks":"Input artifact hashes/counts/status, exact nonzero selected tests, no selected failed rows, current manifest files match workspace, complete exact ID arrays and real affected paths. Every raw source relationship still needs Root semantic review and eventual nonparticipant audit.",
+  "on_failure":"Preserve stdout/stderr/exit. Parser/path/schema/count errors return to independent author; do not edit expectations or historical artifacts. Source drift requires handoff/rebinding, never silent latest-input substitution.",
+  "scope_limit":"No hidden test execution, source formatting, publication or performance measurement in this collector. Do not use prior U08 full-suite/58-role finalization validators as U09 requirements. Test selection follows the explicit current impact roster and reviewed U09 evidence."
+}

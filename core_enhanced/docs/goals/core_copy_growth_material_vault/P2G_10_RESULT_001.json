@@ -1,0 +1,51 @@
+{
+  "stage": "P2G-10",
+  "status": "complete",
+  "result_working_revision_ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CGMV-003",
+    "Content Digest": "sha256:f85f27ff4ececea78daeab4b7526a5ba485dba18ebf90411392259e37bfd8910"
+  },
+  "intake_snapshot_ref": {
+    "Artifact Type": "Policy Intake Snapshot",
+    "Artifact ID": "PIS-CGMV-001",
+    "Content Digest": "sha256:302013f5224b7d83b691e900ffb45eb723fb8de42bbf39264c1b19351753edac"
+  },
+  "candidate_dispositions": [
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CPED-CGMV-G20-001",
+      "Content Digest": "sha256:49755d75e30cdbf9960fbe1df45e347fbeb61c0d5eae0119790b13c4fb92e89a"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CPED-CGMV-G21-001",
+      "Content Digest": "sha256:8911f05aa31dc86424a52a5bab3eded6c659a69231a0b8b3a4e90a4b918aca00"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CPED-CGMV-G22-001",
+      "Content Digest": "sha256:7b5327db4d80327fb89fa1a52f301edbee20ceb5a44fa2293f4e42b95b2ac96a"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CPED-CGMV-STORE-001",
+      "Content Digest": "sha256:13afa307f8bf4e0dfd7d3b2c8de71bd3339728989274bdfe7555ebd35052e6eb"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CPED-CGMV-AUTHOR-001",
+      "Content Digest": "sha256:491b601f47c1d08e949973c1d843471f69fac11368cf18f823664ca5ca04455e"
+    }
+  ],
+  "elements": 5,
+  "acceptance": 21,
+  "open_questions": 0,
+  "checks": {
+    "scope_coverage": "G20/G21/G22 and shared restoration/authoring",
+    "all_decisions_approved": true,
+    "all_acceptance_nonempty": true,
+    "no_product_implementation_claim": true
+  },
+  "next": "P2G-20 exact current source review"
+}

@@ -1,0 +1,56 @@
+--- /mnt/f/work/simulator/core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/finalization001/freeze_target.py
++++ /tmp/u11-freezer-order-fix-author-20261012-01/freeze_target.py
+@@ -60,6 +60,11 @@
+     return hashlib.sha256(json.dumps(value, sort_keys=True).encode()).hexdigest()
+ 
+ 
++def baseline_digest(value):
++    # U11 intake bound its literal-path-ordered baseline with compact JSON.
++    return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
++
++
+ def resolve(name):
+     path = Path(name)
+     path = (path if path.is_absolute() else ROOT / path).resolve()
+@@ -90,7 +95,7 @@
+ 
+ def rows(root):
+     return [{"path": str(p.relative_to(root)), "sha256": sha(p), "bytes": p.stat().st_size}
+-            for p in sorted(root.rglob("*")) if p.is_file()]
++            for p in sorted(root.rglob("*"), key=lambda p: str(p.relative_to(root))) if p.is_file()]
+ 
+ 
+ def archive_exact(path, expected_rows):
+@@ -226,11 +231,11 @@
+         doc_preimages.append({"destination": row["path"], "preimage": row,
+                              "archive": baseline["extra_preimage"]["archive"],
+                              "current": ref(row["path"]) if (ROOT / row["path"]).is_file() else None})
+-    before = [before_by_path[p] for p in sorted(before_by_path, key=Path)]
++    before = [before_by_path[p] for p in sorted(before_by_path)]
+     assert len(before) == 559 and before == read(check_ref(baseline["current_preimages"]))
+-    assert digest(before) == baseline["restoration_sha256"]
++    assert baseline_digest(before) == baseline["restoration_sha256"]
+     scope = set(before_by_path) | {r["path"] for r in current["files"]}
+-    after = [ref(p) for p in sorted(scope, key=Path) if (ROOT / p).is_file()]
++    after = [ref(p) for p in sorted(scope) if (ROOT / p).is_file()]
+     external, references, archived_members, historical_references = {}, {}, {}, {}
+ 
+     def add_reference(row):
+@@ -382,7 +387,7 @@
+                 stream.write(result.stdout + result.stderr)
+             assert result.returncode == 0, result.stderr.decode(errors="replace")
+             assert rows(b) == expected, "Isolated restoration membership or bytes mismatch"
+-    write(target / "RESTORE_VERIFICATION.json", {"before_sha256": digest(before), "after_sha256": digest(after),
++    write(target / "RESTORE_VERIFICATION.json", {"before_sha256": baseline_digest(before), "before_digest_format": "sorted-key compact JSON; original U11 baseline", "after_sha256": digest(after),
+         "forward_membership_and_bytes_match": True, "reverse_membership_and_bytes_match": True,
+         "isolated_only": True, "workspace_reverse_patch_applied": False, "baseline": ref(BASELINE),
+         "canonical_document_preimages": doc_preimages, "before_member_count": 559, "preexisting_authoring_dev_profile_preserved": True,
+@@ -416,7 +421,7 @@
+     write(target / "MANIFEST.json", {"schema": "U11_FROZEN_SELF_VERIFICATION_TARGET_V1", "goal": "GOAL-CMVA-01", "goal_set": "GS-CMVA-001",
+         "state": "Frozen self-verification target; independent nonparticipant audit pending",
+         "source_sha256": current["sha256"], "source_manifest": ref(source_path),
+-        "before_files": before, "source_files": after, "before_sha256": digest(before), "restoration_source_sha256": digest(after),
++        "before_files": before, "source_files": after, "before_sha256": baseline_digest(before), "before_digest_format": "sorted-key compact JSON; original U11 baseline", "restoration_source_sha256": digest(after),
+         "changed": [r["path"] for r in after if before_by_path.get(r["path"]) != r],
+         "added": sorted({r["path"] for r in after} - set(before_by_path)), "deleted": sorted(set(before_by_path) - {r["path"] for r in after}),
+         "selection": ref(generated / "EVIDENCE_SELECTION.json"), "coverage": ref(generated / "COVERAGE.json"),

@@ -1,0 +1,64 @@
+{
+  "authored_graph": {
+    "room_count": 89,
+    "activity_rooms_compared": 88,
+    "activity_slots": 846,
+    "room_field_differences": [],
+    "connections": 139,
+    "missing_connections": [],
+    "extra_connections": []
+  },
+  "test_reuse": {
+    "test013.stdout.log": [
+      "test result: ok. 119 passed; 0 failed; 0 ignored; 0 measured; 1969 filtered out; finished in 48.38s"
+    ],
+    "test012.stdout.log": [
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2087 filtered out; finished in 5.04s"
+    ],
+    "test014.stdout.log": [
+      "test result: FAILED. 10 passed; 2 failed; 0 ignored; 0 measured; 2076 filtered out; finished in 5.45s"
+    ],
+    "server_test001.stdout.log": [
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 119 filtered out; finished in 0.05s"
+    ]
+  },
+  "continue": {
+    "exact_public_roots_and_checkpoint_equal": true,
+    "writer": 14
+  },
+  "normal_host": {
+    "actual_execution_exit0": 30,
+    "actual_result_passed": 30,
+    "individual_passed_admissions": 30
+  },
+  "battle": {
+    "briefing_actual_equal": {
+      "encounter_id": true,
+      "mission_variant": true,
+      "node_type": true,
+      "width": true,
+      "height": true,
+      "tiles": true,
+      "valid_tiles": true,
+      "routes": true,
+      "deployment_zones": true,
+      "static_obstacles": true
+    },
+    "host_ticks": 202,
+    "real_deploy_commands": 3,
+    "finished": true,
+    "registered_profiles": [
+      "corroded_guard",
+      "corroded_marksman"
+    ],
+    "scope": "Raw command/setup/final registration cross-check; source and selected negative compendium tests establish excluded wave/summon semantics."
+  },
+  "archive_restore_review": {
+    "source_members": 695,
+    "baseline_members": 650,
+    "operations": 82,
+    "archived_source_manifest_bytes_equal": true,
+    "guarded_forward_and_reverse_equal": true,
+    "mode": "in-memory independent re-evaluation; GEX10 isolated filesystem restore is reused"
+  }
+}

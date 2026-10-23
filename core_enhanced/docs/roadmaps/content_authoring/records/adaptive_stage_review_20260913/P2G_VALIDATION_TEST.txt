@@ -1,0 +1,48 @@
+Command: node --test core_enhanced/docs/tools/p2g_validation.test.mjs
+Exit code: 0
+
+✔ explicit Unicode element IDs and opaque revisions; CLI generation/default/idempotence (125.819943ms)
+✔ reject Plan: missing primary (6.786494ms)
+✔ reject Plan: duplicate primary (1.738875ms)
+✔ reject Plan: unknown selector (1.583534ms)
+✔ reject Plan: dangling edge (1.806868ms)
+✔ reject Plan: cycle without atomic owner (1.288179ms)
+✔ reject Plan: reversed Phase order (1.348917ms)
+✔ reject Plan: duplicate execution owner (1.48896ms)
+✔ reject Plan: unknown group member (1.428513ms)
+✔ reject Plan: overlapping groups (1.577494ms)
+✔ reject Plan: missing audit (0.990626ms)
+✔ reject Plan: integration wrong existing Phase (0.965611ms)
+✔ reject Plan: integration missing node (1.019007ms)
+✔ reject Plan: empty integration map (1.04655ms)
+✔ reject Plan: missing explicit repair set (0.936775ms)
+✔ reject Plan: wrong prerequisite revision (1.326616ms)
+✔ reject Plan: wrong Goal structure (0.982184ms)
+✔ reject Freeze: missing member (1.054311ms)
+✔ reject Freeze: duplicate member (0.941657ms)
+✔ reject Freeze: wrong typed Ref (1.044586ms)
+✔ reject Freeze: wrong digest (1.231682ms)
+✔ reject Freeze: missing artifact (1.325643ms)
+✔ reject Freeze: ambiguous artifact (0.858462ms)
+✔ reject Freeze: duplicate stable ID (0.948873ms)
+✔ reject Freeze: not reviewed (1.025757ms)
+✔ reject Freeze: changed acceptance projection (0.972089ms)
+✔ reject Freeze: reference cycle (0.828934ms)
+✔ same Ref but changed source bytes invalidate Receipt (2.359296ms)
+✔ tampered counts and immutable target cannot be blessed or overwritten (2.863397ms)
+✔ atomic SCC condenses into one node and Phase (1.834986ms)
+✔ actual Topic: six exact members and all Phase nodes resolve without renaming (967.554244ms)
+✔ legacy immutable Receipt: current_runtime_architecture_remediation/P2G_40_CORE_ONLY_PHASE_PLAN_VALIDATION_RECEIPT_002.json (38.112433ms)
+✔ legacy immutable Receipt: current_runtime_architecture_remediation/P2G_40_PHASE_PLAN_VALIDATION_RECEIPT.json (34.099658ms)
+✔ legacy immutable Receipt: conditional_wave_and_boss_summon_policy/P2G_40_PHASE_PLAN_VALIDATION_RECEIPT_002.json (33.746775ms)
+✔ legacy immutable Receipt: conditional_wave_and_boss_summon_policy/P2G_40_PHASE_PLAN_VALIDATION_RECEIPT_003.json (33.031541ms)
+✔ P2G-50 directly consumes JSON upstream and rejects a changed resolution source (338.810105ms)
+✔ P2G-50 historical complete Goal Set still validates with its immutable Receipt (76.284353ms)
+ℹ tests 37
+ℹ suites 0
+ℹ pass 37
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1797.748442

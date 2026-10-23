@@ -1,5 +1,100 @@
 # Simulator 개발 현황 — 단일 진입점
 
+**2026-10-16 U18 착수 / 정책 답변 대기:** 실행 지시서·카드와 래티씨아/붉은 실타래 설계를 대조했다. 연결 소유 범위·거리/개수·접촉/교차 의미에 사용자 의논이 필요하여 제품 구현·시험 전에 대기한다. 제안은 미승인, U18 미완료. [현재 기록](../core_first/execution/U18_POLICY_CHECKPOINT_20261016_001.ko.md), [인계](../core_first/execution/HANDOFF_LATEST.ko.md). 아래는 당시 이력이다.
+
+**2026-10-16 U17 독립 감사 완료 — Complete / High:** 원래 기능과 저장·복원 후속의 수용22·차원10·IVA6·실행node3 및 후속 계약을 구현 비참여 실행자가 직접 감사했다. 열린 완료 차단0/확인된 범위 내 제품 finding0. 새 집중31pass/공개 Continue4process·상태/heap회수 PASS, 기존 Core유효2160/ignore6·native/서버29·정상/확장host·실제IO·비용12process를 raw/binding으로 검산했다. 조합 target `u17_independent_current_001` source1090/evidence1791·제품source516목록 입출구 확인, 제품/동결원본 불변. U18미착수. [감사](../../goals/core_manual_encounter_revival/execution/independent_audit_20261016_001/COMPLETION_AUDIT.md), [현재인계](../core_first/execution/HANDOFF_LATEST.ko.md). 아래는 당시 이력이다.
+
+**2026-10-16 U17 후속 저장·복원 구현·자체검증 종료 / 감사 요청 대기:** 공통 checkpoint 복사·설치/도메인 해석/완료 수명, 비유물 포함 저장 계량, 중복 codec 생산 제거를 적용했다. Core 유효2160pass/6ignore(소켓 권한 재실행 포함), native25·6·45/서버29, 정상·확장 각각333명령/fresh14/IO17 및 이전 writer 저장fresh14, terminal2·비용12process PASS. 기본 한도/V17 유지, 별도 target u17_storage_001 source626/evidence1103/delta123 보관·정역복원 PASS. 감사·GoalComplete·U18 미실행. [결과](../../goals/core_manual_encounter_revival/execution/storage_refactor/CURRENT_RESULTS.json), [고정 target](../../goals/core_manual_encounter_revival/execution/storage_refactor/target/u17_storage_001/AUDIT_TARGET_RECORD.json), [최신 인계](../core_first/execution/HANDOFF_LATEST.ko.md). 아래는 당시 이력이다.
+
+**2026-10-16 U17 후속 리팩토링 인수 준비:** 다른 AI가 이어받도록 [최신 인수인계](../core_first/execution/HANDOFF_LATEST.ko.md)에 코드 검토 근거·작업 순서·검증/재현 경로·보존 조건을 보강했다. 후속 구현·새 시험·감사는 미착수이며 기존 U17 동결 결과와 감사 요청 대기를 유지한다.
+
+**2026-10-16 U17 저장·복원 리팩토링 후속 등록:** 사용자 결정으로 생성·복원 규칙 공유, 공통 fresh 복원 시험, 영속/임시 상태 수명, 복원별 보존 정책과 비용 계량 정리를 U17 후속 작업으로 배정했다. 사용자 착수 요청에 따라 [후속 구현·검증](../../goals/core_manual_encounter_revival/execution/storage_refactor/PLAN.md)을 진행 중이다. 기존 U17 동결 target/GEX-10 및 감사 요청 대기를 보존한다. [후속 범위·완료 기준](../core_first/ROADMAP.ko.md#u17-후속--저장복원-계약과-상태-수명-리팩토링), [현재 인계](../core_first/execution/HANDOFF_LATEST.ko.md).
+
+**2026-10-16 U17 구현·자체검증 종료 / 감사 요청 대기:** 최초 원장·수동 반복·알2/3단계·명시 촉매출처·장비선택·후퇴/저장을 구현했다. 관련기본223/native35, 정상/확장333명령씩, fresh14·실제IO17실패재시도·비용12프로세스 근거 PASS. 전체회귀38실패를 교정해 Core유효2231/서버96/probe11(단일full-green 아님). target u17_current_001 source979/evidence688/delta420 보관일치·정역복원 PASS, 수용22/차원10/IVA6/node3 결속. 감사·GoalComplete·U18미실행. [GEX10](../../goals/core_manual_encounter_revival/execution/single_goal/GEX_10_RESULT_001.json), [현재인계](../core_first/execution/HANDOFF_LATEST.ko.md). 아래는 당시 이력이다.
+
+**2026-10-15 U16 현재 판정 — Complete / High:** 사용자 “문서로만 기록하고, 넘어가자” 결정으로 극단적인 제작 XP 입력의 F-U16-FINAL-001을 비차단 개선 기록으로 전환했다. 열린 완료차단0/비차단기록1, 기존 P2·필수 교정/재감사 지정 철회. 기존 감사와 정상/대표 확장 검증을 재사용하며 제품·시험변경0/새실행0/U17미착수다. 과거 Not Complete 판정과 원시 증거는 보존한다. [현재 판정](../core_first/execution/u16_final_audit_20261015_001/CURRENT_DISPOSITION.ko.md), [최신인계](../core_first/execution/HANDOFF_LATEST.ko.md). 아래는 당시 이력이다.
+
+**2026-10-15 U16 최종 종합 감사 — Not Complete:** 지원 RON의 작은 XP요구량/큰 보상에서 공통 레벨업 반복이 비용계량 없이 커지는 F-U16-FINAL-001(P2)을 공개 Core 경로로 재현했다. 3변형×52연산, 정산0.111/0.518/4.397초와 work877508/878235/878418. 새집중45pass/0fail/0ignore, 과거4묶음 원시검산 통과·입출구4810파일불변. U16-4 A10/전체U16 완료는 교정·재감사 전까지 미충족. 제품수정0/U17미착수. [감사](../core_first/execution/u16_final_audit_20261015_001/COMPLETION_AUDIT.md), [최신인계](../core_first/execution/HANDOFF_LATEST.ko.md). 아래는 당시 이력이다.
+
+**2026-10-15 실패 테스트 교정·중복 제거 완료:** 기존 실패29개 중26개 교정·통과, 외부 변조/중복3개 제거. 기본 서버 고유96pass/22ignore의 유효 합성 근거, 최종 계측 영향96pass/0fail/1ignore(exit0,416.58초). 이전 미실행 feature2개 포함. Core 기본2228/probe11 및 단독 exporter heap1은 비영향 재사용. 시험/fixture·선택 계측기6파일 수정, 기본 제품한도 불변. 전체 재실행/새 독립감사로 표기하지 않으며 U17 미착수. [교정 기록](../core_first/execution/test_correction_20261015_001/RECORD.ko.md), [최신 인계](../core_first/execution/HANDOFF_LATEST.ko.md). 아래는 당시 이력이다.
+
+**2026-10-15 사용자 요청 전체 테스트 종료 — 실패 남음:** 기본 Rust workspace2311통과/26실패/28ignore(exit101,약32분); Core2228통과/실패0, 서버26실패 중21개는 공통전투 준비1000seed 소진. 문서0시험(exit0), 추가계측 선택45통과/3실패. 제품·시험 변경 없음, 앞선 메시지 교정 항목 통과. 전체green 미주장. [전체 실행 기록](../core_first/execution/full_tests_20261015_001/RECORD.ko.md), [최신 인계](../core_first/execution/HANDOFF_LATEST.ko.md). 아래는 당시 이력이다.
+
+**2026-10-15 기존 서버 node-flow fixture 실패 교정 완료:** 필수loan_copy_ids의 정상빈배열/사본2개와 누락거절을 기존검사에 연결했다. 메시지9pass/0fail/0ignore(exit0); 제품코드불변, 시험함수1개변경. U16-4 감사004의 현재성은 proven non-impacting delta, 과거target/판정/실패로그보존. 전체서버green은미주장. [교정기록](../../goals/core_stress_combat/execution/single_goal/server_fixture_correction001/RECORD.ko.md), [최신인계](../core_first/execution/HANDOFF_LATEST.ko.md). 아래는 당시 이력이다.
+
+**2026-10-15 U16-4 비참여 최종 감사004 — Complete / High:** 고정target u164_current_001 수용10/차원10/IVA5/node2 충족, 새제품finding0·열린완료차단0. 새격리53pass/0fail/0ignore, 승인host5process41연산/실제IO2재시도, 정상52·확장33연산비용재생각1회/요청heap정확회수. source920/evidence550 입출구불변. 기존Core2222/ignore6 및host/비용을비영향재사용하며 기존서버fixture1실패는보존. 전체U16/U21/Unity완료아님, U17미착수. [감사004](../../goals/core_stress_combat/execution/single_goal/independent_audit004/COMPLETION_AUDIT.md), [최신인계](../core_first/execution/HANDOFF_LATEST.ko.md). 아래는 당시 이력이다.
+
+**2026-10-15 U16-4 GEX10 종료 / 비참여 최종감사 인계:** 정상host17프로세스192연산·실제IO4경로재시도·경계4검사·정상/확장비용6회PASS/요청heap정확회수. 수용10/차원10/IVA5/node2 결속, target source920/evidence550/delta353 보관일치·정역복원PASS. 기존서버fixture1실패는비영향으로보존. 필수비참여최종감사미인수/GoalComplete아님/U17미착수. [최종검토](../../goals/core_stress_combat/execution/single_goal/COMPLETION_REVIEW.ko.md), [GEX10](../../goals/core_stress_combat/execution/single_goal/GEX_10_RESULT_001.json), [최신인계](../core_first/execution/HANDOFF_LATEST.ko.md). 아래는 당시 이력이다.
+
+**2026-10-15 U16-4 독립 재감사003 — Not Complete:** XP 소실 F-U164-IA002를 닫고 IA001 종료도 유지했다. 새 격리 실행49통과/0실패/0ignore, 확인 범위의 새 제품 결함0. 정상host/실제저장/수명·동시각/비용/최종화는 잔여다. [독립감사003](../../goals/core_stress_combat/execution/single_goal/independent_audit003/COMPLETION_AUDIT.md), [최신인계](../core_first/execution/HANDOFF_LATEST.ko.md). 아래는 당시 이력이다.
+
+**2026-10-15 U16-4 F-U164-IA001 교정·영향검증 완료 / Goal Not Complete:** 잔고별누적보상/무억제2배한도검사, 가루alias합산·재료분리를반영했다. focused16/ron25통과, 이전오류pack거절·경계pack승인과실제5라운드정산대조. 정상host/저장/비용/최종화·별도재감사는잔여. [교정검토](../../goals/core_stress_combat/execution/single_goal/correction001/CORRECTION_REVIEW.ko.md), [최신인계](../core_first/execution/HANDOFF_LATEST.ko.md). 아래는당시이력이다.
+
+**2026-10-15 U16-4 현재 구현 독립 감사 — Not Complete:** 지원 작성 입력의 누적보상 합계가 u32를 초과해5라운드 정산이 실패하는 F-U164-IA001(P2)을 재현했다. focused12pass/1fail·오류재현진단1pass; 제품수정없음. 정상host/저장/비용·교정/최종동결/정역복원/완료감사는잔여. [독립감사](../../goals/core_stress_combat/execution/single_goal/independent_audit001/COMPLETION_AUDIT.md), [최신인계](../core_first/execution/HANDOFF_LATEST.ko.md). 아래는 당시 이력이다.
+
+**2026-10-15 U16-4 사용자 요청 재검토 완료 / Goal 미완료:** 지속 보호막·후반보상배율 overflow·미래actor라운드 의존 결함을 교정했다. Core고유2222pass/ignore6, 서버메시지8pass·선행fixture불일치1fail. 정상host·실제IO/SavePoint·비용·최종고정·비참여감사는잔여. [재검토](../../goals/core_stress_combat/execution/single_goal/IMPLEMENTATION_REVIEW.ko.md), [최신인계](../core_first/execution/HANDOFF_LATEST.ko.md). 아래는 당시 이력이다.
+
+**2026-10-15 U16-3 독립 감사 완료:** `u16_3_current_001` **Complete / High / 열린 완료 차단0 / 확인된 범위 내 제품 결함0**. 구현후비참여서브에이전트가수용21·차원10·IVA5·실행node2, source814/evidence639입출구현재성을확인했다. 감사새host2process20commands/실제IO1재시도·freshContinue통과; 기존Core고유2213/ignore6, 정상host21process153commands/IO4, 작성1/14거절, 비용9회1152창정확회수와격리정역복원을독립검산. 기본한도불변, 제품·동결기록불변. U16-4/전체U16/U21/Unity/최종SLO완료아님. [독립감사](../../goals/core_dealer_minigames/execution/single_goal/COMPLETION_AUDIT.md), [최신인계](../core_first/execution/HANDOFF_LATEST.ko.md). 아래는당시이력이다.
+
+**2026-10-15 U16-3 구현·자체검증 종료 / 독립감사 진행:** target `u16_3_current_001` source814/evidence639/delta251 격리정역복원 통과. Core고유2213/ignore6, host21freshprocess153commands/실제IO4재시도, 작성1/14거절, 비용9회정확회수. 기본한도불변. 사용자명시요청에따라구현비참여서브에이전트GEX20에착수했다. Goal Complete는미판정. [GEX10](../../goals/core_dealer_minigames/execution/single_goal/GEX_10_RESULT_001.json), [최신인계](../core_first/execution/HANDOFF_LATEST.ko.md). 아래는당시이력이다.
+
+**2026-10-15 U16-3 구현·검증 진행:** P2G/GEX 인수와 세 미니게임/딜러VN/갬빗/담보/정산/상점/복원 연결 작성, focused16통과. 전체영향회귀·정상host/IO/비용·최종동결은진행중이며Complete가아니다. 사용자명시요청에따라구현완료후비참여서브에이전트독립감사를수행한다. [PLAN](../../goals/core_dealer_minigames/execution/single_goal/PLAN.md), [현재 인계](../core_first/execution/HANDOFF_LATEST.ko.md). 아래는 당시 이력이다.
+
+**2026-10-15 U16-2 독립 감사 완료:** `u16_2_current_001` **Complete / High / 열린 완료 차단0 / 확인된 범위 내 제품 결함0**. 수용17·차원10·통합5·실행node2, source953/evidence774 입구·출구 일치. 이번 집중17통과·실제host5process27명령/OS21 5회와 재시도, 기존Core고유2196/ignore6·host/작성/비용/정역복원을 독립 검산·재사용했다. 제품·시험·동결기록 불변. 전체U16 및 U16-3/4·U21·Unity·최종SLO 완료가 아니며 후속 자동착수 없음. [독립 감사](../../goals/core_basic_relic_rewards/execution/single_goal/COMPLETION_AUDIT.md), [현재 인계](../core_first/execution/HANDOFF_LATEST.ko.md). 아래는 당시 이력이다.
+
+**2026-10-15 U16-2 구현·자체검증 종료 / 독립 감사 요청 대기:** 단순선택·장비가루투자·유물2→1합성의 작성/조회/명령/공통지급/완료/저장을 구현했다. 수용17·차원10·통합5, Core고유2196(재사용/교정 포함,ignore6), 실제host23프로세스107명령/OS21 8회·재시도, 정상/확장 비용·정확회수 통과. 기본native16MiB 유지;300종 stress pack의 기본authoring10M거절과 별도64M측정은 구분한다. target u16_2_current_001 source953/evidence774/delta390 정역복원 완료. 정식감사·Goal Complete·U16-3/4는 미실행. [GEX10 결과](../../goals/core_basic_relic_rewards/execution/single_goal/GEX_10_RESULT_001.json), [최신 인계](../core_first/execution/HANDOFF_LATEST.ko.md). 아래는 당시 이력이다.
+
+**2026-10-15 U16-2 착수:** 기본 유물보상3종의 P2G/GEX 인수와 구현을 진행했다. 수용17/차원10/통합5의 구조검증 통과, focused8/8통과. 정상host/저장IO/비용·통합검증과최종동결은진행중이며 Goal Complete가 아니다. [PLAN](../../goals/core_basic_relic_rewards/execution/single_goal/PLAN.md), [최신 인계](../core_first/execution/HANDOFF_LATEST.ko.md). 아래는 당시 이력이다.
+
+**2026-10-15 U16-1 독립 감사 완료:** `u16_1_current_001` **Complete / High / 열린 완료 차단0 / 확인된 제품 결함0**. 수용18·차원10·통합5·실행node4, source1006/evidence963 입구·출구 일치를 확인했다. 기존Core2188 coverage/ignore6·native4/server31·host15프로세스84명령/실제IO4·비용을 독립 검산해 재사용하고 공개 구매/조회1process14명령을 추가 확인했다. 제품·기존시험·동결자료불변. 전체 U16 완료가 아니며 U16-2/3/4는 후속 요청 범위다. [독립 감사](../../goals/core_support_node_activities/execution/single_goal/COMPLETION_AUDIT.md), [현재 인계](../core_first/execution/HANDOFF_LATEST.ko.md). 아래 기록은 당시 이력이다.
+
+**2026-10-15 U16-1 구현·자체검증 종료 / 감사 요청 대기:** 상점·HQ·Event·소비품을 구현·검증하고 실제 확장 저장에서 발견한 Continue 예약 과대계산을 수정했다. 기존16MiB 유지, 수용18/차원10/통합5, Core고유2188 coverage(재사용/교정 포함·ignore6)/native4/server31, 최종host15프로세스84명령/실제IO4회·재시도 통과. target u16_1_current_001 source1006/evidence963/delta443 정역복원 완료. 정식감사·Goal Complete는 미실행이며 U16-2/3/4는 후속 묶음이다. [GEX10 결과](../../goals/core_support_node_activities/execution/single_goal/GEX_10_RESULT_001.json), [최신 인계](../core_first/execution/HANDOFF_LATEST.ko.md). 아래 기록은 당시 이력이다.
+
+**2026-10-14 U15 독립 감사 완료:** `u15_current_001` **Complete / High / 열린 완료 차단0**. 21수용·10차원·5통합·3node를 직접 검토했다. 기존 귀환 IO로 기록된 과다회수 거절은 E-U15-001로 분류하고, 독립5프로세스/133명령에서 유효 귀환의 실제IO·불변·재시도·새프로세스 재대여까지 확인하여 닫았다. 기존 Core2180 coverage/ignore6·native4·server29 및 비용33프로세스는 원시 근거로 재사용했다. 제품/동결입력 불변, U16 미착수. [감사 보고서](../../goals/core_copy_growth_material_vault/execution/single_goal/COMPLETION_AUDIT.md), [최신 인계](../core_first/execution/HANDOFF_LATEST.ko.md). 아래 기록은 당시 이력이다.
+
+**2026-10-14 U15 구현·자체검증 종료 / 감사 요청 대기:** 무기·개화 실제투자/50%환급·명시출처·선택귀환·원정소비차이복원을 구현했다. Core고유2180통과 coverage(재사용·교정 포함, 기존ignore6), native4·서버29, 공개6/일반host7프로세스·실제IO3건, 제작valid1/invalid9, 구profile5원본보존, 비용33프로세스 통과. 21수용/10차원/5통합과 target/source780/evidence751/delta250 정역복원 결속. 정식감사·Goal Complete·U16 없음. [GEX10 결과](../../goals/core_copy_growth_material_vault/execution/single_goal/GEX_10_RESULT_001.json), [최신 인계](../core_first/execution/HANDOFF_LATEST.ko.md). 아래는 당시 이력.
+
+**2026-10-14 U15 착수:** 사용자 요청으로 사본 성장·실제투자 환급·창고재료소비의 P2G/GEX 인수 완료, 구현 pass001 진행. 구조검증5요소/21수용/10차원/5통합 통과, 아직 기능검증 완료 아님. [현재 PLAN](../../goals/core_copy_growth_material_vault/execution/single_goal/PLAN.md), [최신 인계](../core_first/execution/HANDOFF_LATEST.ko.md). 아래는 당시 이력.
+
+**2026-10-14 기본 Core 전체 재검증 완료:** 기본feature 전체target 및 별도 소켓 실행에서 단위2,097+통합72=**총2,169통과·실패0·기존ignore6**. G11 기본 입력 경로를 현행 manifest로 정합화해 환경변수 지정 없이4개 모두 통과했다. doc명령exit0/시험0. [실행 근거](../../testing/core_full_verification_20261014_001/REPORT.ko.md), [최신 인계](../core_first/execution/HANDOFF_LATEST.ko.md). 제품로직·과거U14기록보존, U15미착수. 아래는 각 당시 이력이다.
+
+**2026-10-14 추가 통합 실패17개 교정 완료:** 유지16·고유 assertion 통합 후 smoke제거1을 적용했다. 원17→현재16 대응 모두 통과, 변경 통합2target40/40통과. 다른6target32 및 기존 lib/계측/CLI는 비영향 근거 재사용이며 통합 커버리지 합집합72다. 현재 원정 시작·실제 Event/Continue 준비·장비 명세를 정합화했고 제품 로직/공식 데이터는 불변이다. [교정 보고서](../../testing/integration_failure_correction_20261014_001/REPORT.ko.md), [최신 인계](../core_first/execution/HANDOFF_LATEST.ko.md). U14 이력 유지·U15 미착수. 아래는 각 당시 이력이다.
+
+**2026-10-14 추가 통합 실패17개 분류 완료:** 원인·목적·실제 assertion 중복을 확인했다. 최초 구형시작16·장비기대1이며, 후속 공통준비14·생명주기복합준비2·기대/문서정합화1이다. 격리 최소 보정15개 전체 assertion 통과·2개 후속 미검증. 유지16·고유검증 통합후 smoke제거1·무조건삭제0 권고이며 원본 교정/삭제는 미적용이다. [분류 보고서](../../testing/integration_failure_triage_20261014_001/REPORT.ko.md), [최신 인계](../core_first/execution/HANDOFF_LATEST.ko.md). 기존138 교정 및 U14 이력 유지, U15 미착수. 아래는 각 당시 이력이다.
+
+**2026-10-14 기존 Core 실패138 교정 완료:** 원138의 현재139개 대응 사례가 모두 통과했다. 테스트/fixture35파일을 교정하고 중복 시작 장비 assertion은 U06에 통합, Continue 정상 재계산은 유지, Unix socket은 허용 환경에서 검증했다. 기본 lib 고유2,097통과/기존ignore6·계측선택23통과·외부CLI12완주. 추가 통합은56통과/원138밖17실패로 전체 green은 아니다. [교정 보고서와 잔여](../../testing/core_baseline_failure_correction_20261014_001/REPORT.ko.md), [최신 인계](../core_first/execution/HANDOFF_LATEST.ko.md). 제품 실행 로직·과거 U14 동결 기록은 보존하고 U15는 미착수다. 아래는 각 당시 이력이다.
+
+**2026-10-14 기존 Core 실패138 진단 완료:** 원본138/138실패 재현. 최초 원인은 구형 준비109·기대값28·환경1이며 확정 제품결함0이다. 격리 준비/기대값 보정으로 고유65개 본래 assertion 통과, 나머지 테스트측72개 후속 전체동작은 미확인. 원본 대체후보12/12통과. 유지135·통합후중복제거1·정상유지/변조분기제거1·환경분리1 권고이며 실제 교정/삭제는 미적용이다. [진단과 개별판정](../../testing/core_baseline_failure_triage_20261014_001/REPORT.ko.md), [최신 인계](../core_first/execution/HANDOFF_LATEST.ko.md). 원본 source713 동일, U14 완료 판정 유지·U15 미착수. 아래는 각 당시 이력이다.
+
+**2026-10-14 U14 독립 재감사 Complete / High / 열린 완료 차단0:** target002에서 F-U14-001(방별 봉인 공개)과 C-U14-002(정상 보충 저장 상한)를 닫았다. 새 공개3/3·실제SavePoint2/2 및 새프로세스 복원,31수용·10차원·10통합 통과. 교정Core99·G11기본4/계측4·서버/host·성장/비용은 원시근거/변경영향 확인 후 재사용·검산했다. source713/evidence600+980 입구·출구 동일, 제품수정0. [현재 독립 감사](../../goals/core_expedition_deterrence_rewards/execution/single_goal/COMPLETION_AUDIT.md), [closure](../../goals/core_expedition_deterrence_rewards/execution/single_goal/audit/u14_independent_002/AUDIT_CLOSURE.json), [최신 인계](../core_first/execution/HANDOFF_LATEST.ko.md). 전체Core138 기존실패·공식고유보스/U16/Unity/최종SLO 등 한계는 유지하며 U15는 미착수다. 아래 기록은 각 당시 이력이다.
+
+**2026-10-14 U14 교정·자체검증 완료 / 비참여 재감사 대기:** F-U14-001 방문방의 봉인 preview와 검증 중 발견한 C-U14-002 정상 보충 후 초기값 초과 checkpoint 복원을 교정했다. Core99/99·G11기본4/계측4·공개3사례/새프로세스6회·비용/메모리회수6/6 통과. [교정 결과](../../goals/core_expedition_deterrence_rewards/execution/single_goal/correction/u14_correction_001/RESULT.json), [successor u14_current_002 및 정역복원](../../goals/core_expedition_deterrence_rewards/execution/single_goal/target/u14_current_002/AUDIT_TARGET_RECORD.json), [현재 인계](../core_first/execution/HANDOFF_LATEST.ko.md). source713/새 evidence600/delta21을 고정하고 기존 target001/source704/evidence980/Not Complete 감사는 보존했다. 현재 실행자가 교정에 참여했으므로 별도 비참여 독립 판정이 남아 있다. Goal Complete·U15 미실행이며 아래는 당시 이력이다.
+
+**2026-10-14 U14 독립 감사 Not Complete / 열린 finding1건:** `u14_current_001`의 GEX-20에서 정상 제작/public 방 이동으로 F-U14-001을 재현했다. 다른 방문 방의 미회수 봉인 보스가 봉인 없음·HP/ATK100%로 표시되고 복귀하면150%로 바뀐다. A13/public consumer 미충족. [당시 감사·반례·31수용 판정](../../goals/core_expedition_deterrence_rewards/execution/single_goal/audit/u14_independent_002/PREDECESSOR_COMPLETION_AUDIT.md), [최신 인계](../core_first/execution/HANDOFF_LATEST.ko.md). 기존82/G11/서버/host 증거와12승·계량6표본을 확인했으며 source704/evidence980은 출구까지 동일하다. 제품 교정·Goal Complete·U15는 미실행이다. 다음은 별도 요청의 U14 교정/독립 재감사이며 아래 구현 완료 표시는 당시 이력이다.
+
+
+**2026-10-14 U14 구현·자체검증 종료 / 감사 요청 대기:** 입장비용·유예4·사망/복원, 고정 난이도·무억제 HP/ATK/승리수량, 황금가지·봉인·실전성과를 구현했다. Core82/82·G11기본4/계측4·서버29/29·승인호스트30+10단계·실제12승 성장·메모리회수6/6이 통과했다. 기존138실패는 변경전 재현으로 분리하며 전체 green은 주장하지 않는다. [결과](../../goals/core_expedition_deterrence_rewards/execution/single_goal/GEX_10_RESULT_001.json), [고정 target과 복원](../../goals/core_expedition_deterrence_rewards/execution/single_goal/target/u14_current_001/AUDIT_TARGET_RECORD.json), [최신 인계](../core_first/execution/HANDOFF_LATEST.ko.md). 독립 감사·Goal Complete·U15는 미실행이다. 아래 항목은 각 당시 이력이다.
+
+현재 실행 위치·권한 상태·다음 행동은 [최신 인수인계](../core_first/execution/HANDOFF_LATEST.ko.md)에서 확인한다. 상세 작업·역할은 그 문서가 연결한 PLAN, 실제 실행은 EXPERIMENTS가 소유한다. [상시 규칙](../core_first/execution/CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md)은 역할·품질·문서별 읽기 조건을 정한다. 이 문서는 로드맵 진행 근거를 연결하며 별도 현재 상태 장부를 두지 않는다. 아래 날짜별 상태는 당시 이력이다.
+
+**2026-10-14 U13 최종 독립 재감사 완료:** `u13_current_002`는 **Complete / High / 열린 완료 차단0**이다. F-U13-001/002를 닫고30수용·10통합·10차원·5실행 node를 검토했다. 독립 공개7사례, 현재 코드 공개 소비자의 이동/새 프로세스 Continue/SavePoint, 공식·확장 비용6표본이 통과했다. 교정Core121/121 및 변경 없는 승인호스트/codec/IO/선행 증거는 원시 결과와 적용 범위를 대조해 재사용했다. [최종 감사·정확한 증거](../../goals/core_facility_map_nodes/execution/single_goal/COMPLETION_AUDIT.md), [현재 인수인계](../core_first/execution/HANDOFF_LATEST.ko.md)를 따른다. 과거 Normal 승인 정체성과 U16/U20/공식 전체 플레이 등 제외 범위는 유지하며 U14는 미착수다. 아래 기록은 각 당시 이력이다.
+
+**2026-10-14 U13 교정 완료 / 재감사 미실행 당시 이력:** F-U13-001/002 공개 정보 경계·배정 역할 validation을 교정했다. 관련 Core121/121·공개 반례3/3 통과, successor u13_current_002(source701/evidence169/delta15) 정역복원 통과. [교정 결과](../../goals/core_facility_map_nodes/execution/single_goal/correction/u13_correction_001/RESULT.json). 사용자 “교정만, 감사는 하지말고” 지시에 따라 종료하며 Goal Complete/새 감사 판정/U14를 주장하지 않는다. 아래 독립 감사 기록은 target001의 과거 판정이다. [현재 인수인계](../core_first/execution/HANDOFF_LATEST.ko.md).
+
+**2026-10-14 U13 독립 감사 Not Complete 당시 이력:** `u13_current_001` 최종 독립 GEX-20에서 열린 finding2건을 확인했다. 지원 제작/public 경로의 미탐사 고정조우ID 노출(F-U13-001), 잘못된 일반전 역할 참조 수용에 따른 정비6/일반전0(F-U13-002)이다. [감사·반례·30수용 검토](../../goals/core_facility_map_nodes/execution/single_goal/audit/u13_independent_002/PREDECESSOR_COMPLETION_AUDIT.md)는 당시 판정이다. 기존Core119/119·서버1/1·승인호스트30단계·source695/evidence1082/정역복원 증거는 해당 범위에서 유효하며 Goal Complete를 뜻하지 않는다. 제품·동결기록은 보존했고, 다음은 U13 GEX-10 교정·successor 재감사다. [최신 인수인계](../core_first/execution/HANDOFF_LATEST.ko.md). U14 미착수.
+
+**2026-10-13 U12 현재 범위 재판단 완료:** 사용자 검증 범위 결정에 따라 F-U12-001을 외부 임의 변조로 재분류하고, 이전 독립 감사의 남은 필수 검토를 완료했다. 현재 판정은 **Complete / High / 열린 완료 차단0**이다. 38수용·19통합·10차원·3node와 관련 source/원시 실행/선행 회귀를 확인했다. 과거 Not Complete와 동결 원본은 보존하며 제품 수정·전체 재감사/시험 재실행을 주장하지 않는다. [현재 독립 판정과 근거](../../goals/core_expedition_lifecycle/post_audit/u12_scope_reassessment_001/COMPLETION_AUDIT.md). 사용자 경계에 따라 U12에서 종료하고 U13은 시작하지 않는다.
+
+**2026-10-13 U12 자체 검증·동결:** 튜토리얼·원정 수명과 정상 승인 local/server 저장·복구,최종 회귀/비용 검증을 마치고38수용·19통합·10차원·3node를 target/u12_current_002에 결속했다. 격리 정역복원과 최종 현재성은 통과했다. 필수 비참여 독립 감사는 미실행이므로 U12 전체 완료는 아니다. 단독 실행 지침에 따라 이 경계에서 중단하며, 사용자 요청상 U12 완료 후에도 후속 로드맵에 자동 착수하지 않는다. [현재 인수인계와 정확 증거](../core_first/execution/HANDOFF_LATEST.ko.md).
+
+**2026-10-12 기억·신뢰 제거 합의 재확인:** 사용자가 두 시스템의 완전 제거를 재확인했다. 이전 기억 보존 해석과 OPQ-CEXL-001의 보존/생성 질문을 철회하고 PS01/PS02·U12/U28/U32/U26-B의 현재 계약을 맞췄다. 고정 성격·condition·영구 진행 기록과 미지원 구저장 원본은 보호한다. [정정 근거와 범위](../core_first/execution/u12_psychology_removal_20261012_001/RECORD.ko.md). 제품 제거/검증 완료를 뜻하지 않는다.
+
+**2026-10-12 U11 완료 인수:** 비참여 Astra high의 전체 독립 감사001이 Complete / High / 열린 finding0으로 종료됐다. 30수용 문장·20통합·10차원·3node·선행316행과 실제 mod 검증/승인/cache/Apply/저장·fault 경계를 인수했다. 격리 정·역복원 및 출구 소스4,732·기록13,860·대상15개 파일의 일치를 확인했다. 개발용 계량 기준과 bounded workload, 원 실패·PC/R05 한계는 유지한다. [완료 근거·현재 locator](../core_first/execution/u11_closure_20261012_001/RESULT.ko.md)를 인수하여 U12 튜토리얼·원정 수명·신뢰 제거/개인 상태 보존의 정책·현재 코드 검토로 이어간다. 아래 상태는 당시 이력이다.
+
+**2026-10-10 U10 완료 인수:** 전체 독립 재감사002는 Complete / High / 열린 finding0이다. 실제 기본 공격·장비 반격·활성 유물 공존과 Corrosion 억제의 두 검증 공백을 보완했고, 28문장·19통합·10차원·3node·선행288행을 재판정했다. 격리 정·역복원과 감사 입구·출구2,499개 참조의 일치를 확인했다. 원 실패와 PC 고정비용·R05 peak 경고를 보존한다. [완료 근거·현재 locator](../core_first/execution/u10_closure_20261010_001/RESULT.ko.md)를 인수하여 U11 실험실 검증→실제 mod 적용의 정책·현재 코드 검토로 이어간다. 아래 상태는 당시 이력이다.
+
+**2026-10-09 U09 완료 인수:** 전체 독립 재감사038은 Complete / High / 열린 finding0이며, 사거리 충돌 F01과 접수 계획의 대상 수명 결함을 닫았다. 격리 정·역복원 및 감사 입구·출구 2,735개 참조의 일치를 확인했다. 기존 실패와 R05 peak 경고·측정 한계를 보존한다. [완료 근거·현재 locator](../core_first/execution/u09_closure_20261009_001/RESULT.ko.md)를 인수하여 U10 실제 사건 기반 유물·장비 연쇄의 정책·현재 코드 검토로 이어간다. 아래 과거 상태와 동결 기록은 당시 이력이며, 시험용 개인 보호량을 공식 밸런스로 확정하지 않는다.
+
 **2026-10-07 포큐버스 정책 변경:** 사용자 합의에 따라 공용 잔량을 시전 시 범위 내 아군별 개인 방어막으로 바꾼다. U09/C06·C04의 단일화 사례도 여러 개인 방어막 → 한 명의 강화 방어막으로 갱신하며 개인 보호량·일반/침식 배율은 재조정한다. [변경 범위와 U09 인수 사항](../core_first/execution/porccubus_personal_shield_20261007_001/RECORD.ko.md)을 따른다. 문서 정책 반영이며 제품 구현·기존 동결 증거의 재검증 완료를 뜻하지 않는다.
 
 **2026-10-07 U08 완료 인수:** 전체 독립 재감사013은 Complete / High / 열린 finding0이며, 감사 출구 현재성과 격리 정·역 복원을 확인했다. R05 peak 경고와 측정 한계를 유지한다. [완료 근거·현재 locator](../core_first/execution/u08_closure_20261007_001/RESULT.ko.md)를 인수하여 U09 유한 활성·속성 변형의 정책·현재 코드 검토를 시작한다. 아래 U08 준비·실행 문구는 당시 이력이며 동결 기록은 보존한다.
@@ -54,12 +149,12 @@ P2G r8 / GEX gex-r8 / 운영안 v2.1.3은 네 단계와 완료 기준을 유지�
 [이름 변경·동결 기록 경로 대응표](../core_first/execution/rulebook_path_migration_20261004_001/RECORD.ko.md)를 함께 인수한다.
 제품 소스·기존 감사 원본은 변경하지 않았으며 아래 완료·진행 이력을 소급 변경하지 않는다.
 
-2026-10-07 · v1.165 · 현재 개발 주작업: **U08 독립 완료 인수·U09 정책 및 현재 코드 검토**.
-[재개 인수](../core_first/execution/u06_resume_20261005_001/INTAKE.ko.md)에서 [중지 당시 인수인계](../core_first/execution/HANDOFF_20261005.ko.md)를 이어받았으며 현재 위치는 아래 실행 PLAN이 소유한다.
-[활성 로드맵](../core_first/ROADMAP.ko.md), [연속 실행 위임](../core_first/execution/CONTINUOUS_REQUEST_20261004.ko.md),
+2026-10-07 · v1.165 · 당시 개발 주작업(이력): **U08 독립 완료 인수·U09 정책 및 현재 코드 검토**.
+[재개 인수](../core_first/execution/u06_resume_20261005_001/INTAKE.ko.md)에서 [중지 당시 인수인계](../core_first/execution/HANDOFF_20261005.ko.md)를 이어받았던 이력이다. 아래 링크는 당시 인수 근거이며 기본 재개 경로가 아니다.
+당시 인수 근거는 [활성 로드맵](../core_first/ROADMAP.ko.md), [과거 연속 실행 위임](../core_first/execution/CONTINUOUS_REQUEST_20261004.ko.md),
 [U01 완료 인수](../core_first/execution/u01_closure_20261004_001/RESULT.ko.md),
 [U02 Master 독립 감사](../../goals/core_runtime_safety_observability/post_audit/master_20261004_002/COMPLETION_AUDIT.md),
-[U02 완료·검증·남은 경고](../core_first/execution/u02_closure_20261004_001/RESULT.ko.md)를 따른다.
+[U02 완료·검증·남은 경고](../core_first/execution/u02_closure_20261004_001/RESULT.ko.md)에 보존한다.
 U02 S1 설정·공개 host와 S2 bounded 관측은 각각 독립 Complete / High이며 Master GEX-30도 통과했다.
 기존 감사와 실패 원본은 보존했다. U03의 전투 fault 지속 상태·재접속·저장 보호도 독립 Complete / High로 종료했다.
 R13~R16 요구는 활성 Core 우선 순서의 해당 owner에 인수한다.

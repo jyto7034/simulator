@@ -29,6 +29,10 @@ impl SkillFragmentId {
     pub fn as_str(&self) -> &str {
         &self.0
     }
+
+    pub(crate) fn retained_text_capacity(&self) -> usize {
+        self.0.capacity()
+    }
 }
 
 impl From<&str> for SkillFragmentId {

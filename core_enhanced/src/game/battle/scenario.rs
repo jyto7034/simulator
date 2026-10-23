@@ -85,6 +85,8 @@ pub struct FieldWorkObjectDef {
 
 #[derive(Debug, Clone)]
 pub struct BattleFieldSpec {
+    /// Union of every authored path, independent of spawned waves.
+    pub walkable_paths: Vec<Position>,
     pub width: u8,
     pub height: u8,
     /// Empty means every tile inside width x height is valid.
@@ -284,6 +286,7 @@ crate::authoring::clone_shape::struct_shape!(BattleScenario {
     boss_runtime,
 });
 crate::authoring::clone_shape::struct_shape!(BattleFieldSpec {
+    walkable_paths,
     width,
     height,
     valid_tiles,
@@ -456,6 +459,7 @@ impl BattleScenario {
     pub fn empty(field_size: (u8, u8)) -> Self {
         Self {
             battlefield: BattleFieldSpec {
+            walkable_paths: Vec::new(),
                 object_placement: None,
                 width: field_size.0,
                 height: field_size.1,
@@ -562,6 +566,13 @@ impl BattleScenario {
             }
         }
 
+        let mut paths = HashSet::new();
+        for position in &self.battlefield.walkable_paths {
+            self.validate_position(*position, "walkable path tile")?;
+            if obstacle_positions.contains(position) || !paths.insert(*position) {
+                return Err(invalid_scenario("walkable path tiles must be unique valid terrain"));
+            }
+        }
         if let Some(domain) = &self.battlefield.object_placement {
             let mut ground = HashSet::new();
             let mut reserved = HashSet::new();

@@ -135,6 +135,7 @@ pub(super) fn explain_effect<'a>(
         | SkillEffectDef::ModifyStats { .. }
         | SkillEffectDef::ApplyBuff { .. }
         | SkillEffectDef::InterruptCast
+        | SkillEffectDef::GuardCounter { .. } | SkillEffectDef::StatusStrike { .. } | SkillEffectDef::FusionPlacement { .. } | SkillEffectDef::PairedAreas { .. } | SkillEffectDef::PreparedVolley { .. } | SkillEffectDef::InputPlan { .. } | SkillEffectDef::RelationAction { .. } | SkillEffectDef::CounterChannel { .. } | SkillEffectDef::TileBurst { .. } | SkillEffectDef::PresenceBurst { .. }
         | SkillEffectDef::ExtraAttack { .. } => None,
     };
     let Some(expected_kind) = expected_kind else {

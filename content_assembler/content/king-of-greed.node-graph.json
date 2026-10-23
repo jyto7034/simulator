@@ -1,0 +1,1445 @@
+{
+  "format": "node-graph",
+  "version": 1,
+  "id": "e66428dd-0aa4-409c-893e-327003addc89",
+  "name": "탐욕의 왕 · 황금의 지평선",
+  "nodes": [
+    {
+      "id": "015f1f09-c667-4503-8950-87a63f2bc99b",
+      "kind": "skill-damage-recovery",
+      "title": "모든 귀속 피해 → 상태 보유 적 사망",
+      "position": {
+        "x": 920,
+        "y": 287
+      },
+      "values": {},
+      "note": "",
+      "frame": "2e36026f-bf87-436a-9556-cfeaa039f97d"
+    },
+    {
+      "id": "01723947-5fd7-4170-b72e-2271c8396e71",
+      "kind": "skill-equipment-condition",
+      "title": "무아지경 · 장착 여부",
+      "position": {
+        "x": 1640,
+        "y": 3815.0952380952376
+      },
+      "values": {
+        "copies": "once",
+        "definition": "unbroken-trance",
+        "slot": "relic",
+        "variant": "normal"
+      },
+      "note": "",
+      "frame": "61bb6817-5d52-4e77-8ae3-058d26d8315b"
+    },
+    {
+      "id": "12f29cb7-2531-4012-a262-233745544892",
+      "kind": "skill-seconds",
+      "title": "최대 전개 뒤 유지 유예 · 미정",
+      "position": {
+        "x": 480,
+        "y": 1090
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "4eb5c6d7-6d9b-4e49-b189-13c2c0771e1d"
+    },
+    {
+      "id": "187e5ec8-25cb-48e6-866f-98669eec1809",
+      "kind": "skill-resonance-admit",
+      "title": "원자적 접수·비용 확정",
+      "position": {
+        "x": 2240,
+        "y": 1507.5619047619048
+      },
+      "values": {},
+      "note": "",
+      "frame": "4eb5c6d7-6d9b-4e49-b189-13c2c0771e1d"
+    },
+    {
+      "id": "1c1ccda7-e45c-4233-b3ab-fc7303775776",
+      "kind": "skill-serial-projectiles",
+      "title": "한 발 정산 완료까지 대기 → 다음 표적",
+      "position": {
+        "x": 1280,
+        "y": 2895.4619047619044
+      },
+      "values": {},
+      "note": "",
+      "frame": "0f7cda47-c11c-433b-9b79-1c13ad49b5b7"
+    },
+    {
+      "id": "2270e229-2013-45ca-9a76-6ad9a52bb97f",
+      "kind": "skill-range",
+      "title": "보구 표적 선택 범위 · 미정",
+      "position": {
+        "x": 400,
+        "y": 2450.2619047619046
+      },
+      "values": {
+        "includeAnchor": false,
+        "pattern": ""
+      },
+      "note": "",
+      "frame": "0f7cda47-c11c-433b-9b79-1c13ad49b5b7"
+    },
+    {
+      "id": "265541f5-6927-44a7-8e65-b7a5b087d59f",
+      "kind": "skill-resonance-qualify",
+      "title": "대상·공명·자원 자격 검사",
+      "position": {
+        "x": 1800,
+        "y": 1591.0619047619048
+      },
+      "values": {},
+      "note": "",
+      "frame": "4eb5c6d7-6d9b-4e49-b189-13c2c0771e1d"
+    },
+    {
+      "id": "33517876-61ab-4dfe-8829-ddbc46d2bc2c",
+      "kind": "skill-seconds",
+      "title": "끝없는 금고 · HP 비용 매초",
+      "position": {
+        "x": 1640,
+        "y": 4109.095238095238
+      },
+      "values": {
+        "value": 1
+      },
+      "note": "",
+      "frame": "61bb6817-5d52-4e77-8ae3-058d26d8315b"
+    },
+    {
+      "id": "351b6e06-49db-47d0-97c2-36eba7adf6d5",
+      "kind": "skill-hit-status",
+      "title": "왕의 위압 · 보구 범위의 기절",
+      "position": {
+        "x": 480,
+        "y": 4847.095238095238
+      },
+      "values": {
+        "effect": "stun",
+        "percent": ""
+      },
+      "note": "",
+      "frame": "61bb6817-5d52-4e77-8ae3-058d26d8315b"
+    },
+    {
+      "id": "3b981cb0-a1b0-4f8c-b238-6e86ad3e0558",
+      "kind": "skill-seconds",
+      "title": "첫 포탈 생성 간격 · 미정",
+      "position": {
+        "x": 480,
+        "y": 1534
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "4eb5c6d7-6d9b-4e49-b189-13c2c0771e1d"
+    },
+    {
+      "id": "3dfeae65-5fc0-4f06-b9eb-e108053bdda3",
+      "kind": "skill-range",
+      "title": "보구 착탄 효과 범위 · 미정",
+      "position": {
+        "x": 400,
+        "y": 2721.4619047619044
+      },
+      "values": {
+        "includeAnchor": false,
+        "pattern": ""
+      },
+      "note": "",
+      "frame": "0f7cda47-c11c-433b-9b79-1c13ad49b5b7"
+    },
+    {
+      "id": "443ddc96-66e5-4c99-8368-5a351ca43450",
+      "kind": "skill-modifier-interruption",
+      "title": "무아지경 → 포탈 전개·사출 시작 설정",
+      "position": {
+        "x": 2080,
+        "y": 3788.5952380952376
+      },
+      "values": {},
+      "note": "",
+      "frame": "61bb6817-5d52-4e77-8ae3-058d26d8315b"
+    },
+    {
+      "id": "44fbe5fa-b516-4b61-9c98-fe25250b20a8",
+      "kind": "skill-portal-freeze",
+      "title": "추가 전개·붕괴 중지 후 남은 발수 고정",
+      "position": {
+        "x": 840,
+        "y": 3367.2619047619046
+      },
+      "values": {},
+      "note": "",
+      "frame": "0f7cda47-c11c-433b-9b79-1c13ad49b5b7"
+    },
+    {
+      "id": "464284fe-61d9-434a-b9ed-2276e83d3437",
+      "kind": "skill-seconds",
+      "title": "전개 시작부터 발사 기한 · 미정",
+      "position": {
+        "x": 480,
+        "y": 868
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "4eb5c6d7-6d9b-4e49-b189-13c2c0771e1d"
+    },
+    {
+      "id": "47933596-3ccb-40d3-a7a5-e8696b637297",
+      "kind": "skill-run-portals",
+      "title": "전개부터 사출까지 하나의 집중",
+      "position": {
+        "x": 2680,
+        "y": 795.5
+      },
+      "values": {},
+      "note": "",
+      "frame": "4eb5c6d7-6d9b-4e49-b189-13c2c0771e1d"
+    },
+    {
+      "id": "487bb688-d8e1-4bfe-bc46-d986bd845164",
+      "kind": "skill-modifier-projectile-multihit",
+      "title": "깊은 쐐기 → 보구 한 발 · 실제 투사체 착탄 범위",
+      "position": {
+        "x": 480,
+        "y": 4109.095238095238
+      },
+      "values": {
+        "cap": 20,
+        "step": 2
+      },
+      "note": "",
+      "frame": "61bb6817-5d52-4e77-8ae3-058d26d8315b"
+    },
+    {
+      "id": "4903f897-d07e-4bd1-ad04-4d5ec435ba57",
+      "kind": "skill-target-selection",
+      "title": "차징 시작은 자기 자신",
+      "position": {
+        "x": 40,
+        "y": 2057.2619047619046
+      },
+      "values": {
+        "mode": "self"
+      },
+      "note": "",
+      "frame": "4eb5c6d7-6d9b-4e49-b189-13c2c0771e1d"
+    },
+    {
+      "id": "4b382af0-4ce3-4aac-b227-41807ed7644a",
+      "kind": "skill-portal-policy",
+      "title": "전개 속도와 독립된 발사 기한",
+      "position": {
+        "x": 920,
+        "y": 672
+      },
+      "values": {
+        "maximum": ""
+      },
+      "note": "",
+      "frame": "4eb5c6d7-6d9b-4e49-b189-13c2c0771e1d"
+    },
+    {
+      "id": "53edc9f9-08b8-4331-b678-d37413ee9a2a",
+      "kind": "skill-modifier-grant",
+      "title": "두 겹의 수확 → 모든 귀속 피해 → 상태 보유 적 사망",
+      "position": {
+        "x": 480,
+        "y": 3788.5952380952376
+      },
+      "values": {
+        "factor": 2
+      },
+      "note": "",
+      "frame": "61bb6817-5d52-4e77-8ae3-058d26d8315b"
+    },
+    {
+      "id": "5a217836-a652-420d-9348-7dbde0ef56ca",
+      "kind": "skill-modifier-continuous-volley",
+      "title": "끝없는 금고 → 포탈 전개·사출 시작 설정",
+      "position": {
+        "x": 2080,
+        "y": 4294.895238095238
+      },
+      "values": {
+        "percent": 5
+      },
+      "note": "",
+      "frame": "61bb6817-5d52-4e77-8ae3-058d26d8315b"
+    },
+    {
+      "id": "5a24746d-212b-40db-8e7b-cf9226ff4b48",
+      "kind": "skill-modifier-range",
+      "title": "넓어진 지평 → 보구 착탄 효과 범위 · 미정",
+      "position": {
+        "x": 1280,
+        "y": 4146.595238095238
+      },
+      "values": {
+        "mode": "replace"
+      },
+      "note": "",
+      "frame": "61bb6817-5d52-4e77-8ae3-058d26d8315b"
+    },
+    {
+      "id": "6fcdba2d-8201-4735-901f-83ec7e231cba",
+      "kind": "skill-credit-ledger",
+      "title": "기본 지급 10 · 자동 대여 한도 20",
+      "position": {
+        "x": 480,
+        "y": 80
+      },
+      "values": {
+        "creditLimit": 20,
+        "grant": 10
+      },
+      "note": "",
+      "frame": "2e36026f-bf87-436a-9556-cfeaa039f97d"
+    },
+    {
+      "id": "6fdfafa4-3a45-48b5-b400-5e71f4b9366b",
+      "kind": "skill-equipment-condition",
+      "title": "깊은 쐐기 · 장착 여부",
+      "position": {
+        "x": 40,
+        "y": 4136.095238095238
+      },
+      "values": {
+        "copies": "once",
+        "definition": "deep-wedge",
+        "slot": "relic",
+        "variant": "normal"
+      },
+      "note": "",
+      "frame": "61bb6817-5d52-4e77-8ae3-058d26d8315b"
+    },
+    {
+      "id": "7d051e62-61f9-4824-981c-4f33a0a0cdc4",
+      "kind": "skill-resonance-cost",
+      "title": "수동 · 공명 전량 소비",
+      "position": {
+        "x": 1360,
+        "y": 1410.2619047619046
+      },
+      "values": {
+        "minimumCost": "",
+        "mode": "all",
+        "percent": ""
+      },
+      "note": "",
+      "frame": "4eb5c6d7-6d9b-4e49-b189-13c2c0771e1d"
+    },
+    {
+      "id": "7e3bec7b-a4b0-46ae-8a66-a5882db2ca2d",
+      "kind": "skill-request",
+      "title": "황금의 지평선 차징 입력",
+      "position": {
+        "x": 480,
+        "y": 2053.2619047619046
+      },
+      "values": {},
+      "note": "",
+      "frame": "4eb5c6d7-6d9b-4e49-b189-13c2c0771e1d"
+    },
+    {
+      "id": "80026097-a9a4-42bd-9ccd-d241f18e2ca7",
+      "kind": "skill-equipment-condition",
+      "title": "끝없는 금고 · 장착 여부",
+      "position": {
+        "x": 1640,
+        "y": 4553.095238095238
+      },
+      "values": {
+        "copies": "once",
+        "definition": "king-of-greed-endless-treasury",
+        "slot": "relic",
+        "variant": "normal"
+      },
+      "note": "",
+      "frame": "61bb6817-5d52-4e77-8ae3-058d26d8315b"
+    },
+    {
+      "id": "826f23e9-bce3-4a44-ade7-df7147c33459",
+      "kind": "skill-modifier-duration",
+      "title": "긴 호흡 → 회수 상태 5~10초 · 정확한 값 미정",
+      "position": {
+        "x": 1280,
+        "y": 3788.5952380952376
+      },
+      "values": {
+        "percent": 25
+      },
+      "note": "",
+      "frame": "61bb6817-5d52-4e77-8ae3-058d26d8315b"
+    },
+    {
+      "id": "86714015-0588-465b-9c6f-d1eb1f4872ba",
+      "kind": "skill-damage-amount",
+      "title": "보구 한 발 위력 · 미정",
+      "position": {
+        "x": 400,
+        "y": 3201.4619047619044
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "0f7cda47-c11c-433b-9b79-1c13ad49b5b7"
+    },
+    {
+      "id": "9349cb30-2bc7-4e16-ae85-d375776aa891",
+      "kind": "skill-equipment-condition",
+      "title": "두 겹의 수확 · 장착 여부",
+      "position": {
+        "x": 40,
+        "y": 3791.5952380952376
+      },
+      "values": {
+        "copies": "once",
+        "definition": "double-harvest",
+        "slot": "relic",
+        "variant": "normal"
+      },
+      "note": "",
+      "frame": "61bb6817-5d52-4e77-8ae3-058d26d8315b"
+    },
+    {
+      "id": "9d1e0d2f-ae7b-408f-94fb-9b776e4b22a2",
+      "kind": "skill-range",
+      "title": "이 형상의 확대 타일 · 미정",
+      "position": {
+        "x": 840,
+        "y": 4109.095238095238
+      },
+      "values": {
+        "includeAnchor": false,
+        "pattern": ""
+      },
+      "note": "",
+      "frame": "61bb6817-5d52-4e77-8ae3-058d26d8315b"
+    },
+    {
+      "id": "a3c6eabe-b353-4fe7-911b-fdce1fdd2d5e",
+      "kind": "skill-damage-mark",
+      "title": "자기 출처 회수 상태 · 비중첩",
+      "position": {
+        "x": 480,
+        "y": 338
+      },
+      "values": {},
+      "note": "",
+      "frame": "2e36026f-bf87-436a-9556-cfeaa039f97d"
+    },
+    {
+      "id": "a66570c5-142e-4900-aa05-af39788b1f01",
+      "kind": "skill-seconds",
+      "title": "왕의 위압 · 기절 지속 시간 미정",
+      "position": {
+        "x": 40,
+        "y": 4928.095238095238
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "61bb6817-5d52-4e77-8ae3-058d26d8315b"
+    },
+    {
+      "id": "b0f8dc46-8e89-4d9e-9165-15afd6213a19",
+      "kind": "skill-seconds",
+      "title": "오래된 포탈 붕괴 간격 · 미정",
+      "position": {
+        "x": 480,
+        "y": 646
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "4eb5c6d7-6d9b-4e49-b189-13c2c0771e1d"
+    },
+    {
+      "id": "b175aa9e-b203-467c-8eee-13884c819b0d",
+      "kind": "skill-portal-stop-input",
+      "title": "차징·사출 직접 종료 · 미방출 무환불",
+      "position": {
+        "x": 40,
+        "y": 2387.2619047619046
+      },
+      "values": {},
+      "note": "",
+      "frame": "0f7cda47-c11c-433b-9b79-1c13ad49b5b7"
+    },
+    {
+      "id": "b8a95821-5fb0-4b50-adc1-c3f2d2448c35",
+      "kind": "skill-resonance-amount",
+      "title": "최대 공명 · 미정",
+      "position": {
+        "x": 40,
+        "y": 1738
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "4eb5c6d7-6d9b-4e49-b189-13c2c0771e1d"
+    },
+    {
+      "id": "bbb8486b-8203-4bb2-a8bc-263860634472",
+      "kind": "skill-equipment-condition",
+      "title": "넓어진 지평 · 장착 여부",
+      "position": {
+        "x": 840,
+        "y": 4367.095238095238
+      },
+      "values": {
+        "copies": "once",
+        "definition": "widened-horizon",
+        "slot": "relic",
+        "variant": "normal"
+      },
+      "note": "",
+      "frame": "61bb6817-5d52-4e77-8ae3-058d26d8315b"
+    },
+    {
+      "id": "bf0a1070-fd0c-4df6-a91e-51d71fb4ab5d",
+      "kind": "skill-seconds",
+      "title": "끝없는 금고 · 정산 뒤 사출 간격 미정",
+      "position": {
+        "x": 1640,
+        "y": 4331.095238095238
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "61bb6817-5d52-4e77-8ae3-058d26d8315b"
+    },
+    {
+      "id": "bfa0b85d-de65-42d5-8de8-af382532440b",
+      "kind": "skill-portal-release-request",
+      "title": "추가 공명 없는 사출 재입력",
+      "position": {
+        "x": 400,
+        "y": 3454.5952380952376
+      },
+      "values": {},
+      "note": "",
+      "frame": "0f7cda47-c11c-433b-9b79-1c13ad49b5b7"
+    },
+    {
+      "id": "ccfa0f46-fb6a-4d81-acbe-09e9d190290c",
+      "kind": "skill-resonance-settings",
+      "title": "사본 공명 저장 설정",
+      "position": {
+        "x": 480,
+        "y": 1756
+      },
+      "values": {},
+      "note": "",
+      "frame": "4eb5c6d7-6d9b-4e49-b189-13c2c0771e1d"
+    },
+    {
+      "id": "d6e4fffd-73b3-4872-b93f-acd527979d31",
+      "kind": "skill-projectile-profile",
+      "title": "보구 한 발 · 실제 투사체 착탄 범위",
+      "position": {
+        "x": 840,
+        "y": 2689.2619047619046
+      },
+      "values": {
+        "air": "include",
+        "damageType": "physical",
+        "delivery": "impact",
+        "hits": "",
+        "obstacle": "stop",
+        "pierce": "unresolved",
+        "range": "",
+        "speed": "",
+        "tracking": "homing",
+        "width": ""
+      },
+      "note": "",
+      "frame": "0f7cda47-c11c-433b-9b79-1c13ad49b5b7"
+    },
+    {
+      "id": "dc0a6d0b-570f-4b9d-b09a-4d2acbec8f37",
+      "kind": "skill-projectile-results",
+      "title": "적중·빗나감 모두 개별 정산",
+      "position": {
+        "x": 1720,
+        "y": 2943.6619047619047
+      },
+      "values": {},
+      "note": "",
+      "frame": "0f7cda47-c11c-433b-9b79-1c13ad49b5b7"
+    },
+    {
+      "id": "df99b84a-e7c4-4de1-94f2-8f139dc17f2a",
+      "kind": "skill-seconds",
+      "title": "마지막 포탈 생성 간격 · 미정",
+      "position": {
+        "x": 480,
+        "y": 1312
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "4eb5c6d7-6d9b-4e49-b189-13c2c0771e1d"
+    },
+    {
+      "id": "e0c52346-e4f6-4292-abe7-814f8d96f5be",
+      "kind": "skill-seconds",
+      "title": "보구 최대 비행 시간 · 미정",
+      "position": {
+        "x": 400,
+        "y": 2979.4619047619044
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "0f7cda47-c11c-433b-9b79-1c13ad49b5b7"
+    },
+    {
+      "id": "e4cf15a4-7acf-429a-867b-24d0551d08cb",
+      "kind": "skill-equipment-condition",
+      "title": "왕의 위압 · 장착 여부",
+      "position": {
+        "x": 480,
+        "y": 5149.095238095238
+      },
+      "values": {
+        "copies": "once",
+        "definition": "king-of-greed-stunning-treasures",
+        "slot": "relic",
+        "variant": "normal"
+      },
+      "note": "",
+      "frame": "61bb6817-5d52-4e77-8ae3-058d26d8315b"
+    },
+    {
+      "id": "e7c58593-8f1e-4ac3-882b-882e51cf1674",
+      "kind": "skill-resonance-read",
+      "title": "이번 요청의 공명 조회",
+      "position": {
+        "x": 920,
+        "y": 1748.3333333333333
+      },
+      "values": {},
+      "note": "",
+      "frame": "4eb5c6d7-6d9b-4e49-b189-13c2c0771e1d"
+    },
+    {
+      "id": "e9bd13bc-16b1-4c8b-999f-6168057d319b",
+      "kind": "skill-enemy-selector",
+      "title": "자기 상태 없음 → 루트 진행도 우선",
+      "position": {
+        "x": 840,
+        "y": 2387.2619047619046
+      },
+      "values": {
+        "air": "include",
+        "order": "unmarked-route"
+      },
+      "note": "",
+      "frame": "0f7cda47-c11c-433b-9b79-1c13ad49b5b7"
+    },
+    {
+      "id": "eaacf9c8-91b8-4a57-a8af-d8c4fc1800c3",
+      "kind": "skill-resonance-requirement",
+      "title": "수동 · 공명 만충",
+      "position": {
+        "x": 1360,
+        "y": 1924.2619047619046
+      },
+      "values": {
+        "mode": "full"
+      },
+      "note": "",
+      "frame": "4eb5c6d7-6d9b-4e49-b189-13c2c0771e1d"
+    },
+    {
+      "id": "ecd6e09e-b9e3-4b00-b46a-a9d62f935400",
+      "kind": "skill-equipment-condition",
+      "title": "긴 호흡 · 장착 여부",
+      "position": {
+        "x": 840,
+        "y": 3791.5952380952376
+      },
+      "values": {
+        "copies": "once",
+        "definition": "long-breath",
+        "slot": "relic",
+        "variant": "normal"
+      },
+      "note": "",
+      "frame": "61bb6817-5d52-4e77-8ae3-058d26d8315b"
+    },
+    {
+      "id": "fc289506-7189-4208-b3ef-308ea51b9844",
+      "kind": "skill-modifier-projectile-status",
+      "title": "왕의 위압 → 보구 한 발 · 실제 투사체 착탄 범위",
+      "position": {
+        "x": 920,
+        "y": 4915.595238095238
+      },
+      "values": {},
+      "note": "",
+      "frame": "61bb6817-5d52-4e77-8ae3-058d26d8315b"
+    },
+    {
+      "id": "fec6df9a-065b-427b-9c9b-c0a44d3e29e1",
+      "kind": "skill-seconds",
+      "title": "회수 상태 5~10초 · 정확한 값 미정",
+      "position": {
+        "x": 40,
+        "y": 320
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "2e36026f-bf87-436a-9556-cfeaa039f97d"
+    },
+    {
+      "id": "ff418319-08eb-4ad7-b218-6f00814322d4",
+      "kind": "skill-resource-credit",
+      "title": "사망 한 번당 재고 +1 · 빚 우선 정산",
+      "position": {
+        "x": 1360,
+        "y": 154.5
+      },
+      "values": {
+        "amount": 1
+      },
+      "note": "",
+      "frame": "2e36026f-bf87-436a-9556-cfeaa039f97d"
+    },
+    {
+      "id": "ff55db2e-1ebb-4d9b-bc42-0106f2c4273e",
+      "kind": "skill-portal-program",
+      "title": "포탈 전개·사출 시작 설정",
+      "position": {
+        "x": 1360,
+        "y": 785
+      },
+      "values": {},
+      "note": "",
+      "frame": "4eb5c6d7-6d9b-4e49-b189-13c2c0771e1d"
+    }
+  ],
+  "edges": [
+    {
+      "id": "0699a974-46ba-40d5-be97-1b2733c987b0",
+      "source": {
+        "node": "01723947-5fd7-4170-b72e-2271c8396e71",
+        "port": "condition"
+      },
+      "target": {
+        "node": "443ddc96-66e5-4c99-8368-5a351ca43450",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "08bb4566-765a-4077-8eea-077c078f4706",
+      "source": {
+        "node": "d6e4fffd-73b3-4872-b93f-acd527979d31",
+        "port": "profile"
+      },
+      "target": {
+        "node": "487bb688-d8e1-4bfe-bc46-d986bd845164",
+        "port": "target"
+      }
+    },
+    {
+      "id": "0c5d5db7-5a68-40c6-bde6-32ef9234d0dc",
+      "source": {
+        "node": "a3c6eabe-b353-4fe7-911b-fdce1fdd2d5e",
+        "port": "mark"
+      },
+      "target": {
+        "node": "e9bd13bc-16b1-4c8b-999f-6168057d319b",
+        "port": "mark"
+      }
+    },
+    {
+      "id": "152835b6-7c1c-4c33-80a5-e90ed5a5c6fd",
+      "source": {
+        "node": "7d051e62-61f9-4824-981c-4f33a0a0cdc4",
+        "port": "cost"
+      },
+      "target": {
+        "node": "265541f5-6927-44a7-8e65-b7a5b087d59f",
+        "port": "cost"
+      }
+    },
+    {
+      "id": "2ba9dd6e-d536-41a3-ac90-26b7d964ac53",
+      "source": {
+        "node": "6fcdba2d-8201-4735-901f-83ec7e231cba",
+        "port": "bank"
+      },
+      "target": {
+        "node": "ff418319-08eb-4ad7-b218-6f00814322d4",
+        "port": "bank"
+      }
+    },
+    {
+      "id": "2d1b0eb1-52e0-45a7-91c6-60f660bde9b6",
+      "source": {
+        "node": "1c1ccda7-e45c-4233-b3ab-fc7303775776",
+        "port": "batch"
+      },
+      "target": {
+        "node": "dc0a6d0b-570f-4b9d-b09a-4d2acbec8f37",
+        "port": "batch"
+      }
+    },
+    {
+      "id": "337e1e5d-1841-4592-9d79-95e348353a2b",
+      "source": {
+        "node": "fec6df9a-065b-427b-9c9b-c0a44d3e29e1",
+        "port": "value"
+      },
+      "target": {
+        "node": "826f23e9-bce3-4a44-ade7-df7147c33459",
+        "port": "target"
+      }
+    },
+    {
+      "id": "347f6fbf-696f-4234-b011-e671549108ea",
+      "source": {
+        "node": "ff55db2e-1ebb-4d9b-bc42-0106f2c4273e",
+        "port": "program"
+      },
+      "target": {
+        "node": "265541f5-6927-44a7-8e65-b7a5b087d59f",
+        "port": "program"
+      }
+    },
+    {
+      "id": "3dc402b1-2b9e-457e-8ed9-c21c7fadc13f",
+      "source": {
+        "node": "47933596-3ccb-40d3-a7a5-e8696b637297",
+        "port": "charge"
+      },
+      "target": {
+        "node": "bfa0b85d-de65-42d5-8de8-af382532440b",
+        "port": "charge"
+      }
+    },
+    {
+      "id": "464aa8e3-bd89-4a96-94af-721ff0747975",
+      "source": {
+        "node": "bfa0b85d-de65-42d5-8de8-af382532440b",
+        "port": "right"
+      },
+      "target": {
+        "node": "44fbe5fa-b516-4b61-9c98-fe25250b20a8",
+        "port": "right"
+      }
+    },
+    {
+      "id": "4b1bef3b-35ea-4c9e-b801-76ce2fef9fce",
+      "source": {
+        "node": "b8a95821-5fb0-4b50-adc1-c3f2d2448c35",
+        "port": "value"
+      },
+      "target": {
+        "node": "ccfa0f46-fb6a-4d81-acbe-09e9d190290c",
+        "port": "capacity"
+      }
+    },
+    {
+      "id": "57ccf1bb-c810-487e-a181-383d800085c2",
+      "source": {
+        "node": "ecd6e09e-b9e3-4b00-b46a-a9d62f935400",
+        "port": "condition"
+      },
+      "target": {
+        "node": "826f23e9-bce3-4a44-ade7-df7147c33459",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "5942c3c2-8830-4dd6-a7b4-e05e1a18a90e",
+      "source": {
+        "node": "464284fe-61d9-434a-b9ed-2276e83d3437",
+        "port": "value"
+      },
+      "target": {
+        "node": "4b382af0-4ce3-4aac-b227-41807ed7644a",
+        "port": "deadline"
+      }
+    },
+    {
+      "id": "5fc0c97a-3dce-4a43-b18d-07a5f3efc35b",
+      "source": {
+        "node": "bfa0b85d-de65-42d5-8de8-af382532440b",
+        "port": "out"
+      },
+      "target": {
+        "node": "44fbe5fa-b516-4b61-9c98-fe25250b20a8",
+        "port": "in"
+      }
+    },
+    {
+      "id": "60b9be31-6cd2-43aa-8c7f-0254bee948d8",
+      "source": {
+        "node": "3dfeae65-5fc0-4f06-b9eb-e108053bdda3",
+        "port": "range"
+      },
+      "target": {
+        "node": "d6e4fffd-73b3-4872-b93f-acd527979d31",
+        "port": "area"
+      }
+    },
+    {
+      "id": "69f57cf4-6bb8-40fe-bc41-8bff006dd55d",
+      "source": {
+        "node": "ccfa0f46-fb6a-4d81-acbe-09e9d190290c",
+        "port": "settings"
+      },
+      "target": {
+        "node": "e7c58593-8f1e-4ac3-882b-882e51cf1674",
+        "port": "settings"
+      }
+    },
+    {
+      "id": "6c395867-952e-4561-8435-881816d38f4e",
+      "source": {
+        "node": "b0f8dc46-8e89-4d9e-9165-15afd6213a19",
+        "port": "value"
+      },
+      "target": {
+        "node": "4b382af0-4ce3-4aac-b227-41807ed7644a",
+        "port": "decay"
+      }
+    },
+    {
+      "id": "6e6500af-c9bc-426b-953a-7da14ba2ef79",
+      "source": {
+        "node": "d6e4fffd-73b3-4872-b93f-acd527979d31",
+        "port": "profile"
+      },
+      "target": {
+        "node": "fc289506-7189-4208-b3ef-308ea51b9844",
+        "port": "target"
+      }
+    },
+    {
+      "id": "6ee14254-fc37-479e-9610-e24a83766b9c",
+      "source": {
+        "node": "4b382af0-4ce3-4aac-b227-41807ed7644a",
+        "port": "policy"
+      },
+      "target": {
+        "node": "ff55db2e-1ebb-4d9b-bc42-0106f2c4273e",
+        "port": "policy"
+      }
+    },
+    {
+      "id": "7d703ab5-7e43-4cda-b2b8-d27697ad361f",
+      "source": {
+        "node": "015f1f09-c667-4503-8950-87a63f2bc99b",
+        "port": "grant"
+      },
+      "target": {
+        "node": "ff418319-08eb-4ad7-b218-6f00814322d4",
+        "port": "grant"
+      }
+    },
+    {
+      "id": "7e0b7bb9-0ab4-4ed5-81cf-79ec5136694a",
+      "source": {
+        "node": "187e5ec8-25cb-48e6-866f-98669eec1809",
+        "port": "use"
+      },
+      "target": {
+        "node": "47933596-3ccb-40d3-a7a5-e8696b637297",
+        "port": "use"
+      }
+    },
+    {
+      "id": "7fa0742c-8c03-4492-9332-0dc8a931caea",
+      "source": {
+        "node": "df99b84a-e7c4-4de1-94f2-8f139dc17f2a",
+        "port": "value"
+      },
+      "target": {
+        "node": "4b382af0-4ce3-4aac-b227-41807ed7644a",
+        "port": "last"
+      }
+    },
+    {
+      "id": "7fe25ee4-4bda-4dec-8447-0f1e3edd3750",
+      "source": {
+        "node": "187e5ec8-25cb-48e6-866f-98669eec1809",
+        "port": "out"
+      },
+      "target": {
+        "node": "47933596-3ccb-40d3-a7a5-e8696b637297",
+        "port": "in"
+      }
+    },
+    {
+      "id": "8379c234-eae0-48b7-bc5d-f025c2fc9356",
+      "source": {
+        "node": "44fbe5fa-b516-4b61-9c98-fe25250b20a8",
+        "port": "out"
+      },
+      "target": {
+        "node": "1c1ccda7-e45c-4233-b3ab-fc7303775776",
+        "port": "in"
+      }
+    },
+    {
+      "id": "83a2813f-ab30-4154-999a-491b70289a8d",
+      "source": {
+        "node": "015f1f09-c667-4503-8950-87a63f2bc99b",
+        "port": "out"
+      },
+      "target": {
+        "node": "ff418319-08eb-4ad7-b218-6f00814322d4",
+        "port": "in"
+      }
+    },
+    {
+      "id": "84c0a6a5-7ae1-4c14-ba06-eac4485308dc",
+      "source": {
+        "node": "47933596-3ccb-40d3-a7a5-e8696b637297",
+        "port": "charge"
+      },
+      "target": {
+        "node": "b175aa9e-b203-467c-8eee-13884c819b0d",
+        "port": "charge"
+      }
+    },
+    {
+      "id": "87b78b88-c971-43c4-ab35-e5924c0fbc35",
+      "source": {
+        "node": "a66570c5-142e-4900-aa05-af39788b1f01",
+        "port": "value"
+      },
+      "target": {
+        "node": "351b6e06-49db-47d0-97c2-36eba7adf6d5",
+        "port": "duration"
+      }
+    },
+    {
+      "id": "88a211d0-0810-4d99-9a3a-d5806d8bdba0",
+      "source": {
+        "node": "bf0a1070-fd0c-4df6-a91e-51d71fb4ab5d",
+        "port": "value"
+      },
+      "target": {
+        "node": "5a217836-a652-420d-9348-7dbde0ef56ca",
+        "port": "interval"
+      }
+    },
+    {
+      "id": "8f89ed3e-6f73-44a9-a852-db0a08146e1b",
+      "source": {
+        "node": "6fdfafa4-3a45-48b5-b400-5e71f4b9366b",
+        "port": "condition"
+      },
+      "target": {
+        "node": "487bb688-d8e1-4bfe-bc46-d986bd845164",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "93c3ccc0-3a90-4ca3-9ba5-d5dfa54f0bc1",
+      "source": {
+        "node": "ff55db2e-1ebb-4d9b-bc42-0106f2c4273e",
+        "port": "program"
+      },
+      "target": {
+        "node": "443ddc96-66e5-4c99-8368-5a351ca43450",
+        "port": "program"
+      }
+    },
+    {
+      "id": "963d30d1-94c3-468e-a07a-8e1bec1bc518",
+      "source": {
+        "node": "e7c58593-8f1e-4ac3-882b-882e51cf1674",
+        "port": "snapshot"
+      },
+      "target": {
+        "node": "265541f5-6927-44a7-8e65-b7a5b087d59f",
+        "port": "snapshot"
+      }
+    },
+    {
+      "id": "96cffd0d-b445-4a1e-82d9-ea7065496a66",
+      "source": {
+        "node": "7e3bec7b-a4b0-46ae-8a66-a5882db2ca2d",
+        "port": "out"
+      },
+      "target": {
+        "node": "265541f5-6927-44a7-8e65-b7a5b087d59f",
+        "port": "in"
+      }
+    },
+    {
+      "id": "9848baa8-b735-4284-8fbe-01edffa4d963",
+      "source": {
+        "node": "e7c58593-8f1e-4ac3-882b-882e51cf1674",
+        "port": "snapshot"
+      },
+      "target": {
+        "node": "7d051e62-61f9-4824-981c-4f33a0a0cdc4",
+        "port": "snapshot"
+      }
+    },
+    {
+      "id": "9f091778-b446-4649-ab37-f06b27881c36",
+      "source": {
+        "node": "265541f5-6927-44a7-8e65-b7a5b087d59f",
+        "port": "out"
+      },
+      "target": {
+        "node": "187e5ec8-25cb-48e6-866f-98669eec1809",
+        "port": "in"
+      }
+    },
+    {
+      "id": "a07eab48-6c3b-45da-8266-7e97413f86af",
+      "source": {
+        "node": "ff55db2e-1ebb-4d9b-bc42-0106f2c4273e",
+        "port": "program"
+      },
+      "target": {
+        "node": "5a217836-a652-420d-9348-7dbde0ef56ca",
+        "port": "target"
+      }
+    },
+    {
+      "id": "a5525cf8-463b-4e06-88d2-f2882ef601e8",
+      "source": {
+        "node": "e4cf15a4-7acf-429a-867b-24d0551d08cb",
+        "port": "condition"
+      },
+      "target": {
+        "node": "fc289506-7189-4208-b3ef-308ea51b9844",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "b974a28f-5393-488d-b48c-c9148bb23bf1",
+      "source": {
+        "node": "3dfeae65-5fc0-4f06-b9eb-e108053bdda3",
+        "port": "range"
+      },
+      "target": {
+        "node": "5a24746d-212b-40db-8e7b-cf9226ff4b48",
+        "port": "target"
+      }
+    },
+    {
+      "id": "b9afc389-8769-423d-8ae3-f639d0f62a6d",
+      "source": {
+        "node": "33517876-61ab-4dfe-8829-ddbc46d2bc2c",
+        "port": "value"
+      },
+      "target": {
+        "node": "5a217836-a652-420d-9348-7dbde0ef56ca",
+        "port": "costInterval"
+      }
+    },
+    {
+      "id": "ba5844c0-e0cd-48a1-a424-a6298b279530",
+      "source": {
+        "node": "9d1e0d2f-ae7b-408f-94fb-9b776e4b22a2",
+        "port": "range"
+      },
+      "target": {
+        "node": "5a24746d-212b-40db-8e7b-cf9226ff4b48",
+        "port": "replacement"
+      }
+    },
+    {
+      "id": "bb182bc1-cf84-4337-b27c-f902dd4456f3",
+      "source": {
+        "node": "265541f5-6927-44a7-8e65-b7a5b087d59f",
+        "port": "permit"
+      },
+      "target": {
+        "node": "187e5ec8-25cb-48e6-866f-98669eec1809",
+        "port": "permit"
+      }
+    },
+    {
+      "id": "bf9fc084-eb27-4164-8c29-9858b5323f45",
+      "source": {
+        "node": "bbb8486b-8203-4bb2-a8bc-263860634472",
+        "port": "condition"
+      },
+      "target": {
+        "node": "5a24746d-212b-40db-8e7b-cf9226ff4b48",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "c110b8b0-0fa4-48b8-9422-fdc2ec4db0be",
+      "source": {
+        "node": "fec6df9a-065b-427b-9c9b-c0a44d3e29e1",
+        "port": "value"
+      },
+      "target": {
+        "node": "a3c6eabe-b353-4fe7-911b-fdce1fdd2d5e",
+        "port": "duration"
+      }
+    },
+    {
+      "id": "c5e30e59-48d4-4630-ba21-fb5f0eaf6120",
+      "source": {
+        "node": "eaacf9c8-91b8-4a57-a8af-d8c4fc1800c3",
+        "port": "requirement"
+      },
+      "target": {
+        "node": "265541f5-6927-44a7-8e65-b7a5b087d59f",
+        "port": "requirement"
+      }
+    },
+    {
+      "id": "c8926a73-d184-483a-b854-60f28a34e537",
+      "source": {
+        "node": "80026097-a9a4-42bd-9ccd-d241f18e2ca7",
+        "port": "condition"
+      },
+      "target": {
+        "node": "5a217836-a652-420d-9348-7dbde0ef56ca",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "cb5cb509-bb26-4dec-ac61-6589e6ca2c84",
+      "source": {
+        "node": "a3c6eabe-b353-4fe7-911b-fdce1fdd2d5e",
+        "port": "mark"
+      },
+      "target": {
+        "node": "015f1f09-c667-4503-8950-87a63f2bc99b",
+        "port": "mark"
+      }
+    },
+    {
+      "id": "cb7c6ae3-514a-4fb7-aeca-0d42ed67bfd4",
+      "source": {
+        "node": "9349cb30-2bc7-4e16-ae85-d375776aa891",
+        "port": "condition"
+      },
+      "target": {
+        "node": "53edc9f9-08b8-4331-b678-d37413ee9a2a",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "cc0163d8-0709-4fc7-82aa-38f5cf598f6b",
+      "source": {
+        "node": "7e3bec7b-a4b0-46ae-8a66-a5882db2ca2d",
+        "port": "request"
+      },
+      "target": {
+        "node": "e7c58593-8f1e-4ac3-882b-882e51cf1674",
+        "port": "request"
+      }
+    },
+    {
+      "id": "d0fdb3d2-ca0a-48f9-aa56-c028b3fbff6a",
+      "source": {
+        "node": "7e3bec7b-a4b0-46ae-8a66-a5882db2ca2d",
+        "port": "request"
+      },
+      "target": {
+        "node": "265541f5-6927-44a7-8e65-b7a5b087d59f",
+        "port": "request"
+      }
+    },
+    {
+      "id": "d19523f1-a071-4688-9195-a3933b102e40",
+      "source": {
+        "node": "2270e229-2013-45ca-9a76-6ad9a52bb97f",
+        "port": "range"
+      },
+      "target": {
+        "node": "e9bd13bc-16b1-4c8b-999f-6168057d319b",
+        "port": "range"
+      }
+    },
+    {
+      "id": "d3a36f6b-1aaa-45d8-b648-3cd1fafe196b",
+      "source": {
+        "node": "6fcdba2d-8201-4735-901f-83ec7e231cba",
+        "port": "bank"
+      },
+      "target": {
+        "node": "ff55db2e-1ebb-4d9b-bc42-0106f2c4273e",
+        "port": "bank"
+      }
+    },
+    {
+      "id": "dee804b3-0ef7-4055-b412-7448c427fd3b",
+      "source": {
+        "node": "ff55db2e-1ebb-4d9b-bc42-0106f2c4273e",
+        "port": "program"
+      },
+      "target": {
+        "node": "47933596-3ccb-40d3-a7a5-e8696b637297",
+        "port": "program"
+      }
+    },
+    {
+      "id": "dffe210f-896d-49aa-b12b-786a15bb7922",
+      "source": {
+        "node": "4903f897-d07e-4bd1-ad04-4d5ec435ba57",
+        "port": "selection"
+      },
+      "target": {
+        "node": "7e3bec7b-a4b0-46ae-8a66-a5882db2ca2d",
+        "port": "selection"
+      }
+    },
+    {
+      "id": "e0327dc0-7731-43b3-b9e0-03ca2f81f000",
+      "source": {
+        "node": "6fcdba2d-8201-4735-901f-83ec7e231cba",
+        "port": "bank"
+      },
+      "target": {
+        "node": "015f1f09-c667-4503-8950-87a63f2bc99b",
+        "port": "bank"
+      }
+    },
+    {
+      "id": "e1444f55-8af0-49fb-a69a-46903ebe1ea9",
+      "source": {
+        "node": "d6e4fffd-73b3-4872-b93f-acd527979d31",
+        "port": "profile"
+      },
+      "target": {
+        "node": "1c1ccda7-e45c-4233-b3ab-fc7303775776",
+        "port": "profile"
+      }
+    },
+    {
+      "id": "e16dcbfb-8daf-4ca7-83ea-a4c8fe34ae44",
+      "source": {
+        "node": "12f29cb7-2531-4012-a262-233745544892",
+        "port": "value"
+      },
+      "target": {
+        "node": "4b382af0-4ce3-4aac-b227-41807ed7644a",
+        "port": "hold"
+      }
+    },
+    {
+      "id": "e27c4cb1-a35f-41f9-ac23-1cc378fdb8fb",
+      "source": {
+        "node": "e0c52346-e4f6-4292-abe7-814f8d96f5be",
+        "port": "value"
+      },
+      "target": {
+        "node": "d6e4fffd-73b3-4872-b93f-acd527979d31",
+        "port": "lifetime"
+      }
+    },
+    {
+      "id": "e3e6f028-209e-4e08-a628-c613f6b8b1e5",
+      "source": {
+        "node": "015f1f09-c667-4503-8950-87a63f2bc99b",
+        "port": "grant"
+      },
+      "target": {
+        "node": "53edc9f9-08b8-4331-b678-d37413ee9a2a",
+        "port": "target"
+      }
+    },
+    {
+      "id": "e9e512d4-791d-4452-8f51-3636ea961cc9",
+      "source": {
+        "node": "44fbe5fa-b516-4b61-9c98-fe25250b20a8",
+        "port": "volley"
+      },
+      "target": {
+        "node": "1c1ccda7-e45c-4233-b3ab-fc7303775776",
+        "port": "volley"
+      }
+    },
+    {
+      "id": "eb8cb5b6-19c8-4106-a3e2-8626f1345189",
+      "source": {
+        "node": "351b6e06-49db-47d0-97c2-36eba7adf6d5",
+        "port": "status"
+      },
+      "target": {
+        "node": "fc289506-7189-4208-b3ef-308ea51b9844",
+        "port": "status"
+      }
+    },
+    {
+      "id": "f8128132-a750-45d7-b7da-54778dff2ae2",
+      "source": {
+        "node": "3b981cb0-a1b0-4f8c-b238-6e86ad3e0558",
+        "port": "value"
+      },
+      "target": {
+        "node": "4b382af0-4ce3-4aac-b227-41807ed7644a",
+        "port": "first"
+      }
+    },
+    {
+      "id": "f975e68e-d9bb-49ff-91b7-a22282daa0e3",
+      "source": {
+        "node": "e9bd13bc-16b1-4c8b-999f-6168057d319b",
+        "port": "selector"
+      },
+      "target": {
+        "node": "1c1ccda7-e45c-4233-b3ab-fc7303775776",
+        "port": "selector"
+      }
+    },
+    {
+      "id": "fe68de76-a512-43ed-9745-b4a4b7aa97ee",
+      "source": {
+        "node": "86714015-0588-465b-9c6f-d1eb1f4872ba",
+        "port": "power"
+      },
+      "target": {
+        "node": "d6e4fffd-73b3-4872-b93f-acd527979d31",
+        "port": "power"
+      }
+    }
+  ],
+  "frames": [
+    {
+      "id": "0f7cda47-c11c-433b-9b79-1c13ad49b5b7",
+      "title": "재입력 · 남은 발수 고정 · 착탄 완료 후 다음 선택"
+    },
+    {
+      "id": "2e36026f-bf87-436a-9556-cfeaa039f97d",
+      "title": "파편 사본 원장 · 전투 지급·대여·다음 전투 정산"
+    },
+    {
+      "id": "4eb5c6d7-6d9b-4e49-b189-13c2c0771e1d",
+      "title": "후반 가속 전개 · 한 번의 상한·기한·오래된 포탈 붕괴"
+    },
+    {
+      "id": "61bb6817-5d52-4e77-8ae3-058d26d8315b",
+      "title": "장착 유물 → 회수와 사출의 명시된 지점만 변경"
+    }
+  ]
+}

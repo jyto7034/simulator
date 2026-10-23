@@ -1,0 +1,12 @@
+{
+  "command": [
+    ".cache/d07-static-explain-product-target/debug/deps/game_core-705cc9514d94a1fe",
+    "game::data::content_pack::packaging::tests::official_packaging_preserves_external_catalog_and_existing_custom_bytes",
+    "--exact",
+    "--nocapture"
+  ],
+  "exit_code": 0,
+  "seconds": 12.04426474700449,
+  "stdout": "test008.stdout.log",
+  "stderr": "test008.stderr.log"
+}

@@ -1,0 +1,841 @@
+{
+  "passed": true,
+  "limits_changed": false,
+  "decision": "Maintain existing runtime safety/normal host limits. All finite executions complete, actual allocator recovery exact, normal calibrated work/heap/time well below existing limits. Paired added schema/lifecycle bytes are measured; no arbitrary percent allowance or optimization claim.",
+  "current_and_paid": {
+    "current": {
+      "empty": {
+        "samples": 3,
+        "max_stage_seconds": 0.004357155,
+        "max_stage_requested_heap_above_baseline": 241386
+      },
+      "expanded": {
+        "samples": 3,
+        "max_stage_seconds": 0.005701071,
+        "max_stage_requested_heap_above_baseline": 1220208
+      },
+      "normal": {
+        "samples": 3,
+        "max_stage_seconds": 0.004337217,
+        "max_stage_requested_heap_above_baseline": 245873
+      }
+    },
+    "paid": {
+      "expanded": {
+        "samples": 3,
+        "max_stage_seconds": 0.007655878,
+        "max_stage_requested_heap_above_baseline": 2586673
+      },
+      "normal": {
+        "samples": 3,
+        "max_stage_seconds": 0.004093953,
+        "max_stage_requested_heap_above_baseline": 252746
+      }
+    }
+  },
+  "paired_changes": {
+    "empty": {
+      "active_checkpoint_export": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 0,
+          "before_median": 0,
+          "delta": 0
+        },
+        "wall_seconds": {
+          "after_median": 6.01e-07,
+          "before_median": 5.21e-07,
+          "delta": 8.000000000000008e-08
+        }
+      },
+      "command_commit": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 0,
+          "before_median": 0,
+          "delta": 0
+        },
+        "wall_seconds": {
+          "after_median": 3.7151e-05,
+          "before_median": 3.2983e-05,
+          "delta": 4.167999999999998e-06
+        }
+      },
+      "command_discard": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 0,
+          "before_median": 0,
+          "delta": 0
+        },
+        "wall_seconds": {
+          "after_median": 3.817e-06,
+          "before_median": 3.938e-06,
+          "delta": -1.210000000000002e-07
+        }
+      },
+      "command_prepare": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 11866,
+          "before_median": 11410,
+          "delta": 456
+        },
+        "wall_seconds": {
+          "after_median": 0.000140758,
+          "before_median": 0.000140647,
+          "delta": 1.1099999999998589e-07
+        }
+      },
+      "command_prepare_for_commit": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 11866,
+          "before_median": 11410,
+          "delta": 456
+        },
+        "wall_seconds": {
+          "after_median": 0.000199569,
+          "before_median": 0.000116191,
+          "delta": 8.3378e-05
+        }
+      },
+      "continue_import": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 240583,
+          "before_median": 233484,
+          "delta": 7099
+        },
+        "wall_seconds": {
+          "after_median": 0.004564238,
+          "before_median": 0.004216728,
+          "delta": 0.00034750999999999966
+        }
+      },
+      "final_owner_drop": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 0,
+          "before_median": 0,
+          "delta": 0
+        },
+        "wall_seconds": {
+          "after_median": 0.000124397,
+          "before_median": 7.7508e-05,
+          "delta": 4.688899999999999e-05
+        }
+      },
+      "player_profile_json_projection": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 3167,
+          "before_median": 3142,
+          "delta": 25
+        },
+        "wall_seconds": {
+          "after_median": 1.4387e-05,
+          "before_median": 1.2694e-05,
+          "delta": 1.6929999999999989e-06
+        }
+      },
+      "profile_install_commit": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 0,
+          "before_median": 0,
+          "delta": 0
+        },
+        "wall_seconds": {
+          "after_median": 7.213e-06,
+          "before_median": 6.893e-06,
+          "delta": 3.200000000000003e-07
+        }
+      },
+      "profile_install_discard": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 0,
+          "before_median": 0,
+          "delta": 0
+        },
+        "wall_seconds": {
+          "after_median": 7.635e-06,
+          "before_median": 7.925e-06,
+          "delta": -2.899999999999989e-07
+        }
+      },
+      "profile_install_prepare": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 216,
+          "before_median": 216,
+          "delta": 0
+        },
+        "wall_seconds": {
+          "after_median": 0.000103637,
+          "before_median": 0.000115139,
+          "delta": -1.1502e-05
+        }
+      },
+      "profile_install_prepare_for_commit": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 216,
+          "before_median": 216,
+          "delta": 0
+        },
+        "wall_seconds": {
+          "after_median": 5.5946e-05,
+          "before_median": 5.6828e-05,
+          "delta": -8.81999999999996e-07
+        }
+      }
+    },
+    "expanded": {
+      "active_checkpoint_export": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 0,
+          "before_median": 0,
+          "delta": 0
+        },
+        "wall_seconds": {
+          "after_median": 1.483e-06,
+          "before_median": 1.492e-06,
+          "delta": -9.000000000000041e-09
+        }
+      },
+      "command_commit": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 0,
+          "before_median": 0,
+          "delta": 0
+        },
+        "wall_seconds": {
+          "after_median": 0.000309488,
+          "before_median": 0.000303517,
+          "delta": 5.9710000000000145e-06
+        }
+      },
+      "command_discard": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 0,
+          "before_median": 0,
+          "delta": 0
+        },
+        "wall_seconds": {
+          "after_median": 0.000264944,
+          "before_median": 0.000254825,
+          "delta": 1.0119000000000003e-05
+        }
+      },
+      "command_prepare": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 327192,
+          "before_median": 310296,
+          "delta": 16896
+        },
+        "wall_seconds": {
+          "after_median": 0.001906325,
+          "before_median": 0.002033566,
+          "delta": -0.00012724100000000016
+        }
+      },
+      "command_prepare_for_commit": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 327192,
+          "before_median": 310296,
+          "delta": 16896
+        },
+        "wall_seconds": {
+          "after_median": 0.002036362,
+          "before_median": 0.002124259,
+          "delta": -8.789699999999998e-05
+        }
+      },
+      "continue_import": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 400135,
+          "before_median": 384588,
+          "delta": 15547
+        },
+        "wall_seconds": {
+          "after_median": 0.005009575,
+          "before_median": 0.005169089,
+          "delta": -0.00015951400000000036
+        }
+      },
+      "final_owner_drop": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 0,
+          "before_median": 0,
+          "delta": 0
+        },
+        "wall_seconds": {
+          "after_median": 0.001639788,
+          "before_median": 0.001483832,
+          "delta": 0.00015595600000000006
+        }
+      },
+      "player_profile_json_projection": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 806047,
+          "before_median": 672582,
+          "delta": 133465
+        },
+        "wall_seconds": {
+          "after_median": 0.001443926,
+          "before_median": 0.001385714,
+          "delta": 5.8212000000000194e-05
+        }
+      },
+      "profile_install_commit": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 0,
+          "before_median": 0,
+          "delta": 0
+        },
+        "wall_seconds": {
+          "after_median": 0.000133885,
+          "before_median": 0.000132923,
+          "delta": 9.620000000000223e-07
+        }
+      },
+      "profile_install_discard": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 0,
+          "before_median": 0,
+          "delta": 0
+        },
+        "wall_seconds": {
+          "after_median": 0.00027352,
+          "before_median": 0.000270064,
+          "delta": 3.456000000000043e-06
+        }
+      },
+      "profile_install_prepare": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 216,
+          "before_median": 216,
+          "delta": 0
+        },
+        "wall_seconds": {
+          "after_median": 0.002531143,
+          "before_median": 0.002384614,
+          "delta": 0.00014652899999999984
+        }
+      },
+      "profile_install_prepare_for_commit": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 216,
+          "before_median": 216,
+          "delta": 0
+        },
+        "wall_seconds": {
+          "after_median": 0.002453786,
+          "before_median": 0.002331242,
+          "delta": 0.00012254400000000004
+        }
+      }
+    },
+    "normal": {
+      "active_checkpoint_export": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 0,
+          "before_median": 0,
+          "delta": 0
+        },
+        "wall_seconds": {
+          "after_median": 5.41e-07,
+          "before_median": 6.11e-07,
+          "delta": -6.999999999999997e-08
+        }
+      },
+      "command_commit": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 0,
+          "before_median": 0,
+          "delta": 0
+        },
+        "wall_seconds": {
+          "after_median": 3.9495e-05,
+          "before_median": 4.0447e-05,
+          "delta": -9.520000000000004e-07
+        }
+      },
+      "command_discard": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 0,
+          "before_median": 0,
+          "delta": 0
+        },
+        "wall_seconds": {
+          "after_median": 8.977e-06,
+          "before_median": 8.526e-06,
+          "delta": 4.5100000000000127e-07
+        }
+      },
+      "command_prepare": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 15530,
+          "before_median": 14810,
+          "delta": 720
+        },
+        "wall_seconds": {
+          "after_median": 0.000162178,
+          "before_median": 0.000148022,
+          "delta": 1.4156000000000005e-05
+        }
+      },
+      "command_prepare_for_commit": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 15530,
+          "before_median": 14810,
+          "delta": 720
+        },
+        "wall_seconds": {
+          "after_median": 0.000169092,
+          "before_median": 0.000160315,
+          "delta": 8.776999999999987e-06
+        }
+      },
+      "continue_import": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 243767,
+          "before_median": 236404,
+          "delta": 7363
+        },
+        "wall_seconds": {
+          "after_median": 0.004244491,
+          "before_median": 0.004091109,
+          "delta": 0.00015338200000000052
+        }
+      },
+      "final_owner_drop": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 0,
+          "before_median": 0,
+          "delta": 0
+        },
+        "wall_seconds": {
+          "after_median": 0.000140547,
+          "before_median": 9.0331e-05,
+          "delta": 5.021600000000001e-05
+        }
+      },
+      "player_profile_json_projection": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 16698,
+          "before_median": 14456,
+          "delta": 2242
+        },
+        "wall_seconds": {
+          "after_median": 3.7591e-05,
+          "before_median": 3.7632e-05,
+          "delta": -4.100000000000181e-08
+        }
+      },
+      "profile_install_commit": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 0,
+          "before_median": 0,
+          "delta": 0
+        },
+        "wall_seconds": {
+          "after_median": 1.0319e-05,
+          "before_median": 9.298e-06,
+          "delta": 1.021000000000001e-06
+        }
+      },
+      "profile_install_discard": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 0,
+          "before_median": 0,
+          "delta": 0
+        },
+        "wall_seconds": {
+          "after_median": 1.3526e-05,
+          "before_median": 1.1311e-05,
+          "delta": 2.215e-06
+        }
+      },
+      "profile_install_prepare": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 216,
+          "before_median": 216,
+          "delta": 0
+        },
+        "wall_seconds": {
+          "after_median": 0.000155456,
+          "before_median": 0.00013151,
+          "delta": 2.3946000000000004e-05
+        }
+      },
+      "profile_install_prepare_for_commit": {
+        "native_clone_slots": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "native_work": {
+          "after_median": null,
+          "before_median": null,
+          "delta": null
+        },
+        "peak_above_baseline_bytes": {
+          "after_median": 216,
+          "before_median": 216,
+          "delta": 0
+        },
+        "wall_seconds": {
+          "after_median": 9.6594e-05,
+          "before_median": 9.2957e-05,
+          "delta": 3.637000000000006e-06
+        }
+      }
+    }
+  },
+  "native_scope": "G11 native4 tests verify budget failure, cancel/discard/restore; instrumented normal calibration measured native work. Cost operation stages without a native observation scope stay null.",
+  "normal_limit_review": "NORMAL_LIMIT_REVIEW_003.json",
+  "scope": "33 fresh cost processes:9 current,18 paired,6 paid;12 operation stages each. Paired0/6+3/384+192 same assets and Tutorial operations, same dev profile; valid catalogs differ because U15 purpose/schema changed. Current0/6+6/384+384, paid12+12 and768+768 including1/64 invested fragment ledgers.",
+  "rss": "Raw RSS is auxiliary resident memory, not allocator live bytes or retained/native work accounting.",
+  "final_release_slo_claimed": false
+}

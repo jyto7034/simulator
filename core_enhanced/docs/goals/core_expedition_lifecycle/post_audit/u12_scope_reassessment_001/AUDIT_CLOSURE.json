@@ -1,0 +1,80 @@
+{
+  "schema": "u12.current-scope-reassessment-closure/v1",
+  "finished_at_utc": "2026-10-13T13:49:15.464391+00:00",
+  "goal_set": "GS-CEXL-001",
+  "goal": "GOAL-CEXL-01",
+  "verdict": "Complete",
+  "confidence": "High",
+  "open_findings": 0,
+  "activity": "Current-scope reclassification plus completion of outstanding independent review; not a full historical audit replay",
+  "target": {
+    "path": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/target/u12_current_002/MANIFEST.json",
+    "bytes": 2599320,
+    "sha256": "3eda79477ee69d83442721e6c5f591240eee51e6677f9ebea9080cacd8351ecd"
+  },
+  "prior_audit_closure": {
+    "path": "core_enhanced/docs/goals/core_expedition_lifecycle/post_audit/u12_current_002_pass001/AUDIT_CLOSURE.json",
+    "bytes": 20556,
+    "sha256": "1b15e091d75d5f1462fa9b5663088d3254ab82d274b280c18f4a97b2558e89ff"
+  },
+  "target_currentness": "current / unchanged product; current user scope overlay bound in ENTRY",
+  "currentness_evidence": "ENTRY targeted currentness and prior INTEGRITY_EXIT reuse; auditor has made no target edits and observed no external writer/change signal since entry. No repeated full hash/archive run claimed.",
+  "new_gameplay_runs": 0,
+  "new_product_or_test_changes": 0,
+  "prior_finding": "F-U12-001 out of scope, not product-fixed",
+  "counts": {
+    "acceptance": 38,
+    "integration_seams": 19,
+    "dimensions": 10,
+    "nodes": 3
+  },
+  "artifacts": [
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/post_audit/u12_scope_reassessment_001/COMPLETION_AUDIT.md",
+      "bytes": 8932,
+      "sha256": "77417bb42e1f1ba9a87d537a216c85d87b33ec64cdad2f2a72456243d77edfb3"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/post_audit/u12_scope_reassessment_001/CONDITION_REVIEW.json",
+      "bytes": 137266,
+      "sha256": "884e20ab8f272c08d02a30f74ac55586d86d95029bf3b882efa362314d8be789"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/post_audit/u12_scope_reassessment_001/ENTRY.json",
+      "bytes": 2683,
+      "sha256": "f7814098ab2c0cdd6c732c6deabca9212c004f5df6cf0db4ffa1a53cb0b5b7f4"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/post_audit/u12_scope_reassessment_001/EVIDENCE_INDEX.json",
+      "bytes": 189772,
+      "sha256": "ca6f2ad0e03cafd4fd53fba748dd31fbcd5e4182d7e7232bccd2534c1a556417"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/post_audit/u12_scope_reassessment_001/FINDING_RECLASSIFICATION.json",
+      "bytes": 1327,
+      "sha256": "ecabb70f63a210c686050bcda0ca49e21d90babbc7d231e9309522392f487d10"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/post_audit/u12_scope_reassessment_001/RAW_REVIEW.json",
+      "bytes": 76294,
+      "sha256": "73d544ba6fd81239747958a49526c7bff263008bc326e301873d233c8844cbc8"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/post_audit/u12_scope_reassessment_001/SOURCE_PREDECESSOR_REVIEW.json",
+      "bytes": 3219,
+      "sha256": "1201fc87f0f215ea92f3095c38d6882750781d37617954ac4c51a837326972d0"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/post_audit/u12_scope_reassessment_001/SUPPLEMENTAL_REVIEW.json",
+      "bytes": 4153,
+      "sha256": "b63a0d7e56549f5153bd578afc65e41b619d20490965b98aa8a004bb2a714a6e"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/post_audit/u12_scope_reassessment_001/review_remaining.py",
+      "bytes": 8972,
+      "sha256": "9cb651198901fb2fb1ac9b92aa0f191bb85adec72139002e887e75c698ef08ab"
+    }
+  ],
+  "remaining_mandatory": [],
+  "stop": "U12 complete; U13 not started"
+}

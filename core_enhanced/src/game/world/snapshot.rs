@@ -5,17 +5,15 @@ use super::GameCore;
 use crate::game::behavior::{
     ActiveConsumableModifierSnapshotDto, CombatRecoveryRestrictionSnapshotDto,
     DisplayConsumableItemSnapshotDto, DisplayEquipmentItemSnapshotDto, DisplayItemSnapshotDto,
-    DisplayMonolithItemSnapshotDto, EmployeeCombatProfileSnapshotDto, EmployeeConditionSnapshotDto,
+    EmployeeCombatProfileSnapshotDto, EmployeeConditionSnapshotDto,
     EmployeeEligibilitySnapshotDto, EmployeeEquippedItemSnapshotDto,
-    EmployeePsychologyMemorySnapshotDto, EmployeePsychologyRecentEventSnapshotDto,
-    EmployeePsychologySnapshotDto, EmployeeRosterSnapshotDto,
+    EmployeeRosterSnapshotDto,
     EmployeeSkillFragmentBriefSnapshotDto, EmployeeSkillFragmentCompatibilitySnapshotDto,
     EmployeeSkillFragmentsSnapshotDto, EmployeeSnapshotDto,
     EncounterCompendiumAbnormalitySnapshotDto, EncounterCompendiumCorrosionSnapshotDto,
     EncounterCompendiumSnapshotDto, GameError, GameStateContextDto,
     InventoryEquipmentMaterialSnapshotDto, InventoryEquipmentSnapshotDto,
     InventorySkillFragmentSnapshotDto, InventorySnapshotDto, MapNavigationSnapshotDto,
-    MonolithProgressSnapshotDto, MonolithResidualSnapshotDto, MonolithRunSnapshotDto,
     PlayerProfileSnapshotDto, RewardOptionSnapshotDto, RunProgressionSnapshotDto,
     RunResourcesSnapshotDto, RunSnapshotDto, SelectedEventSnapshotDto, SkillCatalogCastTargetDto,
     SkillCatalogDeliveryKind, SkillCatalogDto, SkillCatalogSkillDto, SkillCatalogStepDto,
@@ -202,6 +200,9 @@ fn wire_equipment_material_type_label(
     material_type: crate::game::data::equipment_data::EquipmentMaterialType,
 ) -> &'static str {
     match material_type {
+        crate::game::data::equipment_data::EquipmentMaterialType::EquipmentDust => "EquipmentDust",
+        crate::game::data::equipment_data::EquipmentMaterialType::AbnormalityPart => "AbnormalityPart",
+        crate::game::data::equipment_data::EquipmentMaterialType::RevivalCatalyst => "RevivalCatalyst",
         crate::game::data::equipment_data::EquipmentMaterialType::Fragment => "Fragment",
         crate::game::data::equipment_data::EquipmentMaterialType::Core => "Core",
         crate::game::data::equipment_data::EquipmentMaterialType::Blueprint => "Blueprint",
@@ -218,22 +219,6 @@ fn wire_tier_label(tier: crate::game::enums::Tier) -> &'static str {
     }
 }
 
-fn wire_trust_band_label(band: crate::game::employee_psychology::TrustBand) -> &'static str {
-    match band {
-        crate::game::employee_psychology::TrustBand::Distrust => "Distrust",
-        crate::game::employee_psychology::TrustBand::Uneasy => "Uneasy",
-        crate::game::employee_psychology::TrustBand::Neutral => "Neutral",
-        crate::game::employee_psychology::TrustBand::Trusting => "Trusting",
-        crate::game::employee_psychology::TrustBand::Devoted => "Devoted",
-    }
-}
-
-fn wire_psychology_event_kind_label(
-    kind: crate::game::employee_psychology::PsychologyEventKind,
-) -> &'static str {
-    match kind {}
-}
-
 impl GameCore {
     pub fn get_run_snapshot_dto(&self) -> Result<RunSnapshotDto, GameError> {
         let map = self.current_map_view().ok();
@@ -241,6 +226,10 @@ impl GameCore {
             let run = &state.run_progression;
             RunProgressionSnapshotDto {
                 run_seed: run.run_seed,
+                instance_namespace: run.instance_namespace,
+                expedition_instance: run.expedition_instance,
+                deterrence: run.deterrence,
+                pending_continuation: run.pending_continuation,
                 game_mode: run.game_mode,
                 floor_index: run.floor_index(),
                 max_floors: run.max_floors(),
@@ -256,74 +245,11 @@ impl GameCore {
                     selectable_node_ids: self.selectable_map_node_ids(),
                 })
         });
-        let monolith = self.state.run.as_ref().map(|run| {
-            let mut entries = run
-                .monolith
-                .progress_by_abnormality
-                .iter()
-                .filter_map(|(abnormality_id, progress)| {
-                    let metadata = self.game_data.abnormality_data.get_by_id(abnormality_id)?;
-                    Some(MonolithProgressSnapshotDto {
-                        abnormality_id: abnormality_id.clone(),
-                        display_name: metadata.name.clone(),
-                        risk_level: metadata.risk_level,
-                        natural_outcome: match progress.natural_outcome {
-                            crate::game::monolith::NaturalEliteOutcome::Unresolved => "unresolved",
-                            crate::game::monolith::NaturalEliteOutcome::Victory => "victory",
-                        }
-                        .to_string(),
-                        victories: progress.victories,
-                        purchased: progress.purchased,
-                        uses_remaining: progress.uses_remaining,
-                        active_node_id: progress.active_node_id,
-                        remanifestation_failed: progress.remanifestation_failed,
-                        residual_created: progress.residual_created,
-                    })
-                })
-                .collect::<Vec<_>>();
-            entries.sort_by(|left, right| left.abnormality_id.cmp(&right.abnormality_id));
-            let mut residuals = run
-                .monolith
-                .residuals
-                .iter()
-                .map(|residual| MonolithResidualSnapshotDto {
-                    sequence: residual.sequence,
-                    source_abnormality_id: residual.source_abnormality_id.clone(),
-                })
-                .collect::<Vec<_>>();
-            residuals.sort_by_key(|residual| residual.sequence);
-            let natural_ids = self
-                .game_data
-                .pve_data
-                .encounters
-                .iter()
-                .filter(|encounter| {
-                    encounter.encounter_class
-                        == crate::game::data::pve_data::PveEncounterClass::Elite
-                })
-                .filter_map(|encounter| encounter.primary_abnormality_id())
-                .collect::<std::collections::HashSet<_>>();
-            let elite_pool_exhausted = !natural_ids.is_empty()
-                && natural_ids.iter().all(|abnormality_id| {
-                    run.monolith
-                        .progress(abnormality_id)
-                        .is_some_and(|progress| progress.is_naturally_excluded())
-                });
-            MonolithRunSnapshotDto {
-                entries,
-                residuals,
-                residual_exchange_threshold: self.run_policy().monolith.residual_exchange_threshold,
-                exchange_state: format!("{:?}", run.monolith.exchange_state).to_ascii_lowercase(),
-                exchange_shop_guarantee_issued: run.monolith.exchange_shop_guarantee_issued,
-                next_floor_shop_guarantee_pending: run.monolith.next_floor_shop_guarantee_pending,
-                corrupted_monolith_acquired: run.monolith.corrupted_monolith_acquired,
-                elite_pool_exhausted,
-            }
-        });
+        let monolith = None;
         let enkephalin = self.state.enkephalin.amount;
         let encounter_compendium = self.get_encounter_compendium_snapshot_dto()?;
         let player_profile = PlayerProfileSnapshotDto {
-            standard_tutorial_completed: self.state.player_profile.standard_tutorial_completed,
+            lifecycle: crate::authoring::clone_shape::controlled_clone(&self.state.player_profile.lifecycle)?,
             highest_floor_reached: self.state.player_profile.highest_floor_reached,
             longest_deathless_floor_streak: self
                 .state
@@ -344,7 +270,7 @@ impl GameCore {
         });
         Ok(RunSnapshotDto {
             game_state: self.game_state_name().to_string(),
-            game_state_context: self.game_state_context_dto(),
+            game_state_context: self.game_state_context_dto(self.stress_combat_view()?),
             action_capabilities: self.get_action_capabilities(),
             run_checkpoint: self
                 .state
@@ -353,11 +279,15 @@ impl GameCore {
             combat_recovery_restriction,
             run_progression,
             monolith,
+            revival: self.revival_snapshot(),
             player_profile,
             encounter_compendium,
             map_navigation,
             map,
-            current_node_session: self.state.node_session.clone(),
+            facility: self.facility_view()?,
+            current_node_session: self.state.node_session.clone().map(|s| {
+                if matches!(self.state.lifecycle.phase(), GameState::NodeConfirm { .. }) { self.facility_session_view(s) } else { s }
+            }),
             visual_novel: self.visual_novel_snapshot_dto()?,
             selected_event: self.get_selected_event_snapshot_dto()?,
             skill_catalog: self.get_skill_catalog_snapshot_dto(),
@@ -475,7 +405,7 @@ impl GameCore {
         }))
     }
 
-    fn game_state_context_dto(&self) -> GameStateContextDto {
+    fn game_state_context_dto(&self, stress_combat: Option<crate::game::stress_combat::StressCombatView>) -> GameStateContextDto {
         match self.get_state() {
             GameState::NotStarted => GameStateContextDto::NotStarted,
             GameState::PreRunBriefing { game_mode } => {
@@ -494,7 +424,8 @@ impl GameCore {
                 category,
             } => {
                 let run = self.state.run.as_ref();
-                let combat_preview = run.and_then(|run| run.combat_previews.get(&node_id).cloned());
+                let combat_preview = run.filter(|_| !self.current_facility_encounter_hidden(node_id))
+                    .and_then(|run| run.combat_previews.get(&node_id).cloned());
                 let abnormality_attempt = run
                     .filter(|_| {
                         matches!(
@@ -509,10 +440,10 @@ impl GameCore {
                     kind_id,
                     category,
                     combat_preview,
-                    trauma_recovery_preview: self
+                    trauma_recovery_preview: if category == crate::game::map::MapNodeCategory::Gate && self.facility_layout().is_some() { None } else { self
                         .trauma_recovery_preview_for_category(category)
                         .ok()
-                        .flatten(),
+                        .flatten() },
                     abnormality_attempt,
                     omen: run.and_then(|run| run.boss_omen.node_confirm_omen(node_id)),
                     monolith_conversion: self.monolith_conversion_snapshot(),
@@ -550,6 +481,7 @@ impl GameCore {
                     .state
                     .run
                     .as_ref()
+                    .filter(|_| active.stress_combat.is_none())
                     .map(|run| run.abnormality_attempt_dto(active.node_id));
                 let can_retreat = self.active_battle_retreat_available();
                 GameStateContextDto::InBattle {
@@ -564,6 +496,7 @@ impl GameCore {
                     playback: Some(active.playback_state()),
                     abnormality_attempt,
                     can_retreat,
+                    stress_combat,
                 }
             }
             GameState::AwaitingRunFailureDecision {
@@ -732,6 +665,7 @@ impl GameCore {
         let mut equipment_materials = inventory
             .equipment_materials
             .iter()
+            .filter(|(id, _)| id.as_str() != "equipment_dust")
             .map(|(material_id, amount)| {
                 let metadata = self
                     .game_data
@@ -750,6 +684,15 @@ impl GameCore {
                 }
             })
             .collect::<Vec<_>>();
+        if self.state.crafting_resources.equipment_dust > 0 {
+            let metadata = self.game_data.equipment_data.get_material_by_id("equipment_dust");
+            equipment_materials.push(InventoryEquipmentMaterialSnapshotDto {
+                material_id: "equipment_dust".into(), amount: self.state.crafting_resources.equipment_dust,
+                name: metadata.map(|m| m.name.clone()), description: metadata.map(|m| m.description.clone()),
+                material_type: metadata.map(|m| wire_equipment_material_type_label(m.material_type).into()),
+                rarity: metadata.map(|m| m.rarity), equipment_type: metadata.and_then(|m| m.equipment_type),
+            });
+        }
         equipment_materials.sort_by(|left, right| left.material_id.cmp(&right.material_id));
 
         Ok(InventorySnapshotDto {
@@ -817,6 +760,7 @@ impl GameCore {
                         })
                         .collect::<Vec<_>>();
                 Ok(EmployeeSnapshotDto {
+                    role: employee.role,
                     uuid: employee.uuid,
                     employee_definition_id: employee.employee_definition_id.clone(),
                     name: employee.name.clone(),
@@ -824,7 +768,7 @@ impl GameCore {
                     level: employee.level,
                     experience: employee.experience,
                     condition: EmployeeConditionSnapshotDto {
-                        breakdown_remaining_nodes: employee.breakdown.remaining_nodes(),
+                        breakdown_remaining_cost: employee.breakdown.remaining_cost(),
                         physical_damage: employee.condition.physical_damage,
                         physical_state: employee.condition.physical_state(),
                         trauma: employee.condition.trauma,
@@ -845,34 +789,6 @@ impl GameCore {
                         ),
                         trauma_recovery: employee
                             .eligibility(crate::game::employee::EmployeeActivity::TraumaRecovery),
-                    },
-                    psychology: EmployeePsychologySnapshotDto {
-                        trust_score: employee.psychology.trust_score,
-                        trust_band: wire_trust_band_label(employee.psychology.trust_band()).into(),
-                        memories: employee
-                            .psychology
-                            .memories
-                            .iter()
-                            .map(|memory| EmployeePsychologyMemorySnapshotDto {
-                                kind: wire_psychology_event_kind_label(memory.kind).into(),
-                                subject: memory.subject,
-                                occurrence_count: memory.occurrence_count,
-                                intensity: memory.intensity,
-                                first_source: memory.first_source,
-                                last_source: memory.last_source,
-                                remaining_nodes: memory.remaining_nodes,
-                            })
-                            .collect::<Vec<_>>(),
-                        recent_events: employee
-                            .psychology
-                            .recent_events
-                            .iter()
-                            .map(|event| EmployeePsychologyRecentEventSnapshotDto {
-                                event: wire_psychology_event_kind_label(event.kind).into(),
-                                source: event.source,
-                                trust_delta: event.trust_delta,
-                            })
-                            .collect::<Vec<_>>(),
                     },
                     combat_profile: EmployeeCombatProfileSnapshotDto {
                         battle_tier: wire_tier_label(
@@ -942,6 +858,7 @@ impl GameCore {
                         .map(|equipped| {
                             let equipment = inventory.equipments.get_item(&equipped.instance_uuid);
                             EmployeeEquippedItemSnapshotDto {
+                                weapon_stage: equipment.map(|item| item.weapon_stage).unwrap_or_default(),
                                 instance_uuid: equipped.instance_uuid,
                                 base_uuid: equipped.base_uuid,
                                 equipment_type: equipped.equipment_type,
@@ -1029,40 +946,33 @@ impl GameCore {
         &self,
         offer: &crate::game::resources::ShopOfferState,
     ) -> Result<DisplayItemSnapshotDto, GameError> {
-        let crate::game::data::shop_data::ShopMerchandise::Monolith { abnormality_id } =
-            &offer.merchandise
-        else {
-            return self.display_item_snapshot_dto(offer.item_uuid);
-        };
-        let metadata = self
-            .game_data
-            .abnormality_data
-            .get_by_id(abnormality_id)
-            .ok_or_else(|| {
-                GameError::InvalidStaticData(format!(
-                    "Shop offer references missing monolith abnormality '{abnormality_id}'"
-                ))
-            })?;
-        let progress = self
-            .state
-            .run
-            .as_ref()
-            .and_then(|run| run.monolith.progress(abnormality_id))
-            .ok_or(GameError::InvalidAction)?;
-        Ok(DisplayItemSnapshotDto::Monolith(
-            DisplayMonolithItemSnapshotDto {
-                uuid: metadata.uuid,
-                abnormality_id: abnormality_id.clone(),
-                name: format!("{}의 모노리스", metadata.name),
-                risk_level: metadata.risk_level,
-                victories: progress.victories,
-                next_stage: progress.victories.saturating_add(1),
-                uses_granted: self.run_policy().monolith.initial_uses,
-                kind: "monolith".to_string(),
-                id: format!("monolith:{abnormality_id}"),
-                item_type: "monolith".to_string(),
-            },
-        ))
+        use crate::game::data::shop_data::ShopMerchandise;
+        use crate::game::behavior::{DisplayRelicItemSnapshotDto, DisplayCatalystItemSnapshotDto, ShopCatalystPurpose};
+        match &offer.merchandise {
+            ShopMerchandise::Relic { relic_id } => {
+                let definition = self.game_data.relic_data.get_by_id(relic_id).ok_or(GameError::InvalidAction)?;
+                return Ok(DisplayItemSnapshotDto::Relic(DisplayRelicItemSnapshotDto {
+                    uuid: definition.uuid, kind: "relic".into(), id: relic_id.clone(), definition_id: relic_id.clone(),
+                    relic: definition.clone(), variant: crate::game::relic::RelicVariant::Normal,
+                }));
+            }
+            ShopMerchandise::RevivalCatalyst { material_id } => {
+                let definition = self.game_data.equipment_data.get_material_by_id(material_id).ok_or(GameError::InvalidAction)?;
+                return Ok(DisplayItemSnapshotDto::Catalyst(DisplayCatalystItemSnapshotDto {
+                    uuid: definition.uuid, kind: "catalyst".into(), id: material_id.clone(), definition_id: material_id.clone(),
+                    name: definition.name.clone(), description: definition.description.clone(), purpose: ShopCatalystPurpose::Revival,
+                }));
+            }
+            ShopMerchandise::RelicCorruptionCatalyst => return Ok(DisplayItemSnapshotDto::Catalyst(DisplayCatalystItemSnapshotDto {
+                uuid: offer.item_uuid, kind: "catalyst".into(), id: "relic_corruption_catalyst".into(), definition_id: "relic_corruption_catalyst".into(),
+                name: "침식 촉매제".into(), description: "보유 유물 하나를 침식합니다. 환상체 부활에는 사용할 수 없습니다.".into(), purpose: ShopCatalystPurpose::RelicCorruption,
+            })),
+            _ => {}
+        }
+        if matches!(offer.merchandise, ShopMerchandise::Monolith { .. }) {
+            return Err(Self::retired_encounter_action(crate::game::behavior::ActionKind::PurchaseItem));
+        }
+        self.display_item_snapshot_dto(offer.item_uuid)
     }
 
     pub fn get_selected_event_snapshot_dto(
@@ -1140,6 +1050,8 @@ impl GameCore {
                     .collect::<Vec<_>>(),
                 selected_reward_uuid: reward.selected_reward_uuid,
                 can_skip: reward.can_skip,
+                relic_activity: self.relic_reward_view(reward)?,
+                dealer: self.dealer_view(reward)?,
             },
             ActiveNodeContent::Event(event) => SelectedEventSnapshotDto::Event {
                 node_id: event.node_id,
@@ -1162,6 +1074,7 @@ impl GameCore {
                     node_id: headquarters.node_id,
                     options: headquarters.options.clone(),
                     recruitment_candidates: self.active_recruitment_candidates()?,
+                    recruitment_terms: self.headquarters_recruitment_terms()?,
                     shop_pool_id: headquarters.shop_pool_id.clone(),
                 }
             }
@@ -1510,10 +1423,6 @@ mod tests {
             "Fragment"
         );
         assert_eq!(wire_tier_label(crate::game::enums::Tier::III), "III");
-        assert_eq!(
-            wire_trust_band_label(crate::game::employee_psychology::TrustBand::Devoted),
-            "Devoted"
-        );
     }
 }
 

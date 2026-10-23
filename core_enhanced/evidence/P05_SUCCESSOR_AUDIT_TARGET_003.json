@@ -1,0 +1,29 @@
+{
+  "record_ref": "ATR-CRAR-C2-P05-GEX20-003",
+  "goal_id": "GOAL-CRAR-C2-P05-BOUNDED-HISTORY-RESULT",
+  "successor_goal_id": "GOAL-CRAR-C2-P07-CORE-PUBLIC-PROJECTION",
+  "captured_date": "2026-08-23",
+  "verdict": "Complete / High",
+  "currentness": "current / expected P07 result and reconnect projection cutover",
+  "completion_target_ref": "ATR-CRAR-C2-P05-GEX10-001",
+  "frozen_members": 32,
+  "unchanged_members": 24,
+  "expected_changed_members": [
+    {"path":"src/game/behavior.rs","current_sha256":"3ced4b4a6c8e718c04809edc3ef0be6d65b5569d3ea08880e37a4f5bb9de0ca2","disposition":"49-result application mapper and private legacy projection oracle; bounded history algorithms unchanged"},
+    {"path":"src/game/world.rs","current_sha256":"761a068cc1a2126159c60c8221671bb4e06b3e41496dec8efc2cc5b92d948605","disposition":"raw root and result helpers become private/test-only; bounded producer retained"},
+    {"path":"src/game/world/state.rs","current_sha256":"708f01f3d42a82143124d5aa13959c28ea27c4b87ab13608bf232a701ece3299","disposition":"test-only visibility adjustment; history aggregate and result authority unchanged"},
+    {"path":"src/game/world/combat.rs","current_sha256":"13813d8b3c8eaaf79d4c22c8c266ffb1de13bd9bd3679539366864bd71f966e8","disposition":"legacy public wrappers close; reconnect/cursor producer semantics retained"},
+    {"path":"docs/core_runtime_contract.md","current_sha256":"c01cf2d0e99a94c2320187858ca4634f4bc8577eb9f4a992a13f50c2ab066f0f","disposition":"P07 public read-model contract added; P05 caps/cursor/result rules retained"},
+    {"path":"tools/history_result_api_audit/valid/Cargo.toml","current_sha256":"93262e38807d9ae8faaa141d3c178e63b7b9bf1d84c7625bd35993bfdb9319d2","disposition":"serde_json added for application caller"},
+    {"path":"tools/history_result_api_audit/valid/Cargo.lock","current_sha256":"72d97606da0058390d1e41eeb83fee003485f9a45f7d1a71f67c20fdc9567338","disposition":"mechanical valid-probe dependency resolution"},
+    {"path":"tools/battle_kernel_api_audit/valid/src/main.rs","current_sha256":"45b3563658dc8d99bcc3607b82e268d58b0d29704d4a97880400d065440837f6","disposition":"actual bounded reconnect consumer now proves read-only retry equality through application port"}
+  ],
+  "validation": [
+    "release check exit 0 warnings 0",
+    "current Core 1157 passed, 0 failed, 0 ignored",
+    "exact count/byte/time caps and cursor tests remain green",
+    "application reconnect retry exact with no cursor or revision mutation",
+    "P05 valid release probe exit 0 and invalid diagnostic attachment probe expected exit 101"
+  ],
+  "external_scope": "game_server, Unity, sibling resources and external consumers uninspected and unclaimed"
+}

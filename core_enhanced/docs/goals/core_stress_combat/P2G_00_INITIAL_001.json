@@ -1,0 +1,105 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Policy Intake Snapshot",
+        "Artifact ID": "PIS-CSCB-001",
+        "Content Digest": "sha256:18422c9c4caf12c354a0c0a1801f99513d4f5fb3f08a855fd0892af2d9d92536"
+      },
+      "payload": {
+        "Working Policy Document ID": "WPD-CSCB-20261015",
+        "Snapshot Kind": "initial",
+        "Created By Stage": "P2G-00",
+        "Predecessor Policy Intake Snapshot Ref": null,
+        "Intake Items": [
+          {
+            "Intake Item ID": "USER-U164",
+            "Intake Kind": "raw user request",
+            "Exact Content or Content Reference": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u16-4 작업 착수 및 완수 후 서브에이전트를 소환하여 독립 감사 작업에 착수해줄래? 현재 명령을 지침서보다 더 우선시해."
+          },
+          {
+            "Intake Item ID": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "path": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+              "sha256": "6946331d2c5563ff63202e079ae2d01fe5a61f6c4b9997d77cf8ba187c277b6e",
+              "archive": "INTAKE_SOURCE_001.tar.gz"
+            }
+          },
+          {
+            "Intake Item ID": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md",
+              "sha256": "4903caba141ee9e2daed304b1de9dab231bb92d61ff8c55587e0ed1dbf59e8a1",
+              "archive": "INTAKE_SOURCE_001.tar.gz"
+            }
+          },
+          {
+            "Intake Item ID": "core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_LATEST.ko.md",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_LATEST.ko.md",
+              "sha256": "3108afc734170d20a478b576e6270faab544fc5117b5e31a852d8efe2b33e997",
+              "archive": "INTAKE_SOURCE_001.tar.gz"
+            }
+          },
+          {
+            "Intake Item ID": "core_enhanced/docs/game_rules/relic-reward-nodes.md",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "path": "core_enhanced/docs/game_rules/relic-reward-nodes.md",
+              "sha256": "365527b9e9d1b5861bb8fb71123617618bd5773097f4b179dc65f204ca63bef5",
+              "archive": "INTAKE_SOURCE_001.tar.gz"
+            }
+          },
+          {
+            "Intake Item ID": "core_enhanced/docs/core_runtime_contract.md",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "path": "core_enhanced/docs/core_runtime_contract.md",
+              "sha256": "b13c6cbdce4935fe5f34fa0a85083caef3c639eb33409ab09fe9af5bc294ddb4",
+              "archive": "INTAKE_SOURCE_001.tar.gz"
+            }
+          },
+          {
+            "Intake Item ID": "core_enhanced/docs/data_loading_contract.md",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "path": "core_enhanced/docs/data_loading_contract.md",
+              "sha256": "c391e71798092dd1bf3c016ddde781d4e5619737bcf834556d22c88c19536cc6",
+              "archive": "INTAKE_SOURCE_001.tar.gz"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CSCB-001",
+        "Content Digest": "sha256:a09895853ef997d09fd627ebe333a5f7dd679e9552901037cf67cfb6951915ee"
+      },
+      "payload": {
+        "Approved metadata and scope": {
+          "Working Policy Document ID": "WPD-CSCB-20261015",
+          "Policy Topic": "U16-4 스트레스 연속 방어전",
+          "Target Documentation Root": "core_enhanced/docs",
+          "Policy Directory Name": "core_stress_combat",
+          "Requested Result": "U16-4 구현/검증/고정 뒤 비참여 서브에이전트 독립감사",
+          "User-Approved Scope": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u16-4 작업 착수 및 완수 후 서브에이전트를 소환하여 독립 감사 작업에 착수해줄래? 현재 명령을 지침서보다 더 우선시해.",
+          "Excluded": "U17/U21/Unity/개별최종보스/외부임의변조; 전체U16 완료 아님"
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CSCB-001",
+          "Content Digest": "sha256:18422c9c4caf12c354a0c0a1801f99513d4f5fb3f08a855fd0892af2d9d92536"
+        },
+        "Current Policy Element Revision Map": {},
+        "Decision Revision Ref Set": [],
+        "Open Policy Question Ref Set": [],
+        "Predecessor Working Revision Ref": null
+      }
+    }
+  ]
+}

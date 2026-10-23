@@ -105,5 +105,27 @@ VisualNovelDatabase(
                 ),
             ],
         ),
+        VisualNovelDefinition(
+            id: "dealer_first_offer", entry_scene_id: "start", default_presentation_mode: Cinematic,
+            scenes: [VisualNovelSceneDefinition(
+                id: "start", text_kind: Dialogue, background: CurrentScreenDimmed,
+                script_id: "dealer_first_offer", speakers: [(speaker_id:"dealer",portrait_id:None,position:Center,active:true)], next: Choices(choices: [(id:"accept", label_id:"dealer_first_offer_accept", next: End),(id:"decline", label_id:"dealer_first_offer_decline", next: End)]),
+            )],
+        ),
+        VisualNovelDefinition(
+            id: "dealer_repeat_offer", entry_scene_id: "start", default_presentation_mode: Cinematic,
+            scenes: [VisualNovelSceneDefinition(
+                id: "start", text_kind: Dialogue, background: CurrentScreenDimmed,
+                script_id: "dealer_repeat_offer", speakers: [(speaker_id:"dealer",portrait_id:None,position:Center,active:true)], next: Choices(choices: [(id:"accept", label_id:"dealer_repeat_offer_accept", next: End),(id:"decline", label_id:"dealer_repeat_offer_decline", next: End)]),
+            )],
+        ),
+        VisualNovelDefinition(
+            id: "dealer_gambit", entry_scene_id: "start", default_presentation_mode: Cinematic,
+            scenes: [VisualNovelSceneDefinition(
+                id: "start", text_kind: Dialogue, background: CurrentScreenDimmed,
+                script_id: "dealer_gambit", speakers: [(speaker_id:"dealer",portrait_id:None,position:Center,active:true)], next: Choices(choices: [(id:"yes", label_id:"dealer_gambit_yes", next: End),(id:"no", label_id:"dealer_gambit_no", next: End)]),
+            )],
+        ),
+
     ],
 )

@@ -1,0 +1,14 @@
+{
+  "command": [
+    "core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/artifacts/normal_host003/u14_deterrence_host",
+    "--cmva-adopt-calibration",
+    "core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/test_parts/sealed_inputs002/admission.json",
+    "/tmp/u14-sealed-private-853r9yhl/adoption002",
+    "u14-sealed-actual-victory-v2",
+    "core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/test_parts/sealed_inputs002/reviewed_limits.json"
+  ],
+  "exit_code": 0,
+  "seconds": 10.090533470000082,
+  "stdout": "sealed_adoption002.stdout.log",
+  "stderr": "sealed_adoption002.stderr.log"
+}

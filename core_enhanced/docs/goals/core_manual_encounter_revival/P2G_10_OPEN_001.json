@@ -1,0 +1,482 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMER-G27-OPEN-001",
+        "Content Digest": "sha256:456e76d7782a9cd91ec01546e35f1917884297c4c23992cd72aa369f0e2bce89"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CMER-G27",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "원정별 종류별 최초 보상은 보유량과 독립이다. 엘리트는 첫 승리 파편+장비, 이후 작성된 반복 보상만 지급하고 매번 수동 전투한다. 일반 보스와 최종보스의 기존 예외 및 도감·영구 기록을 보존한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CPED-CMER-G27-001",
+        "Content Digest": "sha256:faffb690112463213977e408b56b20aaaa2cd3e4883bfa8975e5f5fe51931636"
+      },
+      "payload": {
+        "Candidate ID": "CAND-CMER-G27",
+        "Evaluated Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CMER-001",
+          "Content Digest": "sha256:5731cbfd003d73a593e1babc44fcaa55e5130a0500a8bad697a653a14a69f0a2"
+        },
+        "Approved Target Scope/Change Request Ref": {
+          "ref": "USER-20261015-U17-START",
+          "exact_text": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u17 작업에 착수해줄래?",
+          "date": "2026-10-15",
+          "interpretation": "U17 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+        },
+        "Evaluated Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CMER-001",
+          "Content Digest": "sha256:30bc59413be78e3899f717f1f26f53b8c6c365f648e4c19b386bf14d21dac4ac"
+        },
+        "Exact intake/source reference": {
+          "snapshot": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CMER-001",
+            "Content Digest": "sha256:30bc59413be78e3899f717f1f26f53b8c6c365f648e4c19b386bf14d21dac4ac"
+          },
+          "source_span": "ROADMAP U17/G27; growth-and-rewards 파편 획득과 반복 전투/숙달 소탕"
+        },
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": {
+          "ref": "USER-20261015-U17-START",
+          "exact_text": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u17 작업에 착수해줄래?",
+          "date": "2026-10-15",
+          "interpretation": "U17 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+        },
+        "Promoted Element ID/initial revision": {
+          "id": "PE-CMER-G27",
+          "ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMER-G27-OPEN-001",
+            "Content Digest": "sha256:456e76d7782a9cd91ec01546e35f1917884297c4c23992cd72aa369f0e2bce89"
+          }
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMER-G28-OPEN-001",
+        "Content Digest": "sha256:cef9898590c805c379865676a93ee4fd07a07b96278ac90f42e6cb84639894e0"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CMER-G28",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "부화 확정은 알·명시 소지/창고 촉매 소비·순수 미해결 일반전 노드 전환을 하나로 적용하며 전투를 시작하지 않는다. 부활 단계와 무억제 배율은 곱한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CPED-CMER-G28-001",
+        "Content Digest": "sha256:a9261d4644593b3c0b01276e455826de34ebb4e045547249448ac8be1bac7611"
+      },
+      "payload": {
+        "Candidate ID": "CAND-CMER-G28",
+        "Evaluated Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CMER-001",
+          "Content Digest": "sha256:5731cbfd003d73a593e1babc44fcaa55e5130a0500a8bad697a653a14a69f0a2"
+        },
+        "Approved Target Scope/Change Request Ref": {
+          "ref": "USER-20261015-U17-START",
+          "exact_text": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u17 작업에 착수해줄래?",
+          "date": "2026-10-15",
+          "interpretation": "U17 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+        },
+        "Evaluated Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CMER-001",
+          "Content Digest": "sha256:30bc59413be78e3899f717f1f26f53b8c6c365f648e4c19b386bf14d21dac4ac"
+        },
+        "Exact intake/source reference": {
+          "snapshot": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CMER-001",
+            "Content Digest": "sha256:30bc59413be78e3899f717f1f26f53b8c6c365f648e4c19b386bf14d21dac4ac"
+          },
+          "source_span": "ROADMAP U17/G28; growth-and-rewards 알과 촉매제/부화 확정과 제압·도망; equipment-and-fragments 재료 공용 창고"
+        },
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": {
+          "ref": "USER-20261015-U17-START",
+          "exact_text": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u17 작업에 착수해줄래?",
+          "date": "2026-10-15",
+          "interpretation": "U17 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+        },
+        "Promoted Element ID/initial revision": {
+          "id": "PE-CMER-G28",
+          "ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMER-G28-OPEN-001",
+            "Content Digest": "sha256:cef9898590c805c379865676a93ee4fd07a07b96278ac90f42e6cb84639894e0"
+          }
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMER-G29-OPEN-001",
+        "Content Digest": "sha256:b47b6a87eca34f623123d56b03fb57ec0a7c6edd6f485394fce9a1a899b43ed4"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CMER-G29",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "두 번째 승리는 전용 장비 선택·파츠·다음 알, 세 번째는 파츠·장비 선택만 지급한다. 승리 즉시 보상/격파/노드 소비/선택 권리를 고정하고 실제 선택을 나중에 처리한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CPED-CMER-G29-001",
+        "Content Digest": "sha256:bb45ca53bcf43e5275ebf89b571471d5433931f2ae54f1613dc67c17f0556b17"
+      },
+      "payload": {
+        "Candidate ID": "CAND-CMER-G29",
+        "Evaluated Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CMER-001",
+          "Content Digest": "sha256:5731cbfd003d73a593e1babc44fcaa55e5130a0500a8bad697a653a14a69f0a2"
+        },
+        "Approved Target Scope/Change Request Ref": {
+          "ref": "USER-20261015-U17-START",
+          "exact_text": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u17 작업에 착수해줄래?",
+          "date": "2026-10-15",
+          "interpretation": "U17 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+        },
+        "Evaluated Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CMER-001",
+          "Content Digest": "sha256:30bc59413be78e3899f717f1f26f53b8c6c365f648e4c19b386bf14d21dac4ac"
+        },
+        "Exact intake/source reference": {
+          "snapshot": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CMER-001",
+            "Content Digest": "sha256:30bc59413be78e3899f717f1f26f53b8c6c365f648e4c19b386bf14d21dac4ac"
+          },
+          "source_span": "ROADMAP U17/G29; growth-and-rewards 파편 획득과 반복 전투; results-and-save 결과 확정과 노드 소비"
+        },
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": {
+          "ref": "USER-20261015-U17-START",
+          "exact_text": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u17 작업에 착수해줄래?",
+          "date": "2026-10-15",
+          "interpretation": "U17 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+        },
+        "Promoted Element ID/initial revision": {
+          "id": "PE-CMER-G29",
+          "ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMER-G29-OPEN-001",
+            "Content Digest": "sha256:b47b6a87eca34f623123d56b03fb57ec0a7c6edd6f485394fce9a1a899b43ed4"
+          }
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMER-RESTORE-OPEN-001",
+        "Content Digest": "sha256:88157adf34e13eb38802ace37d7cba58e005461cec67c6a395bf0d791586077d"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CMER-RESTORE",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "수동 후퇴는 부화 후 전투 진입 상태로 복원하며 부화비와 최초 입장비를 유지한다. 미확정 노드 Continue와 SavePoint는 해당 경계의 조우/알/소지/창고를 같이 복원한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CPED-CMER-RESTORE-001",
+        "Content Digest": "sha256:5bc2812a7253c0bb1652d17a4b4470ec083f24f79d65deb98472d22952bcbbd3"
+      },
+      "payload": {
+        "Candidate ID": "CAND-CMER-RESTORE",
+        "Evaluated Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CMER-001",
+          "Content Digest": "sha256:5731cbfd003d73a593e1babc44fcaa55e5130a0500a8bad697a653a14a69f0a2"
+        },
+        "Approved Target Scope/Change Request Ref": {
+          "ref": "USER-20261015-U17-START",
+          "exact_text": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u17 작업에 착수해줄래?",
+          "date": "2026-10-15",
+          "interpretation": "U17 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+        },
+        "Evaluated Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CMER-001",
+          "Content Digest": "sha256:30bc59413be78e3899f717f1f26f53b8c6c365f648e4c19b386bf14d21dac4ac"
+        },
+        "Exact intake/source reference": {
+          "snapshot": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CMER-001",
+            "Content Digest": "sha256:30bc59413be78e3899f717f1f26f53b8c6c365f648e4c19b386bf14d21dac4ac"
+          },
+          "source_span": "ROADMAP U17/U04/U12/U13; growth-and-rewards 부화 확정과 제압·도망; results-and-save 저장과 복구"
+        },
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": {
+          "ref": "USER-20261015-U17-START",
+          "exact_text": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u17 작업에 착수해줄래?",
+          "date": "2026-10-15",
+          "interpretation": "U17 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+        },
+        "Promoted Element ID/initial revision": {
+          "id": "PE-CMER-RESTORE",
+          "ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMER-RESTORE-OPEN-001",
+            "Content Digest": "sha256:88157adf34e13eb38802ace37d7cba58e005461cec67c6a395bf0d791586077d"
+          }
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMER-LEGACY-OPEN-001",
+        "Content Digest": "sha256:ab31d71eb4646459cb8d17f631e116ce59d0646006369d22d058c7926cb70095"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CMER-LEGACY",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "구 숙달·소탕·모노리스 소비를 공개 활성 경로에서 제거한다. 기존 개발 저장은 원본을 보존하고 미지원 형식으로 명시 거절한다. 조용한 재해석/자동변환을 하지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CPED-CMER-LEGACY-001",
+        "Content Digest": "sha256:51c5dcc8b2c1b090503a37314d42b49fdb241da6daabe3ea2a91192837a31599"
+      },
+      "payload": {
+        "Candidate ID": "CAND-CMER-LEGACY",
+        "Evaluated Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CMER-001",
+          "Content Digest": "sha256:5731cbfd003d73a593e1babc44fcaa55e5130a0500a8bad697a653a14a69f0a2"
+        },
+        "Approved Target Scope/Change Request Ref": {
+          "ref": "USER-20261015-U17-START",
+          "exact_text": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u17 작업에 착수해줄래?",
+          "date": "2026-10-15",
+          "interpretation": "U17 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+        },
+        "Evaluated Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CMER-001",
+          "Content Digest": "sha256:30bc59413be78e3899f717f1f26f53b8c6c365f648e4c19b386bf14d21dac4ac"
+        },
+        "Exact intake/source reference": {
+          "snapshot": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CMER-001",
+            "Content Digest": "sha256:30bc59413be78e3899f717f1f26f53b8c6c365f648e4c19b386bf14d21dac4ac"
+          },
+          "source_span": "ROADMAP U17/D01/USER11; growth-and-rewards 모노리스/숙달 비교 기준"
+        },
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": {
+          "ref": "USER-20261015-U17-START",
+          "exact_text": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u17 작업에 착수해줄래?",
+          "date": "2026-10-15",
+          "interpretation": "U17 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+        },
+        "Promoted Element ID/initial revision": {
+          "id": "PE-CMER-LEGACY",
+          "ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMER-LEGACY-OPEN-001",
+            "Content Digest": "sha256:ab31d71eb4646459cb8d17f631e116ce59d0646006369d22d058c7926cb70095"
+          }
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CMER-AUTHOR-OPEN-001",
+        "Content Digest": "sha256:b5e603056c8928b1c0cf041a5dbb0fdcc067d6140060164329603eb2868447bf"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CMER-AUTHOR",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "등록한 최초/반복/부화 보상·촉매 recipe·단계 강화는 실제 loader/검증/공개 명령/query/저장 소비자로 이어져야 한다. 대표 정상 원정과 확장 workload의 비용을 측정한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CPED-CMER-AUTHOR-001",
+        "Content Digest": "sha256:af2a0690614358063513b984e2b1015c8ea1b5273beafa290583e5edf23178c6"
+      },
+      "payload": {
+        "Candidate ID": "CAND-CMER-AUTHOR",
+        "Evaluated Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CMER-001",
+          "Content Digest": "sha256:5731cbfd003d73a593e1babc44fcaa55e5130a0500a8bad697a653a14a69f0a2"
+        },
+        "Approved Target Scope/Change Request Ref": {
+          "ref": "USER-20261015-U17-START",
+          "exact_text": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u17 작업에 착수해줄래?",
+          "date": "2026-10-15",
+          "interpretation": "U17 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+        },
+        "Evaluated Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CMER-001",
+          "Content Digest": "sha256:30bc59413be78e3899f717f1f26f53b8c6c365f648e4c19b386bf14d21dac4ac"
+        },
+        "Exact intake/source reference": {
+          "snapshot": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CMER-001",
+            "Content Digest": "sha256:30bc59413be78e3899f717f1f26f53b8c6c365f648e4c19b386bf14d21dac4ac"
+          },
+          "source_span": "ROADMAP U17 노드 RON/§1.9/§8.4; 실행지침 §4/§6"
+        },
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": {
+          "ref": "USER-20261015-U17-START",
+          "exact_text": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u17 작업에 착수해줄래?",
+          "date": "2026-10-15",
+          "interpretation": "U17 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+        },
+        "Promoted Element ID/initial revision": {
+          "id": "PE-CMER-AUTHOR",
+          "ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMER-AUTHOR-OPEN-001",
+            "Content Digest": "sha256:b5e603056c8928b1c0cf041a5dbb0fdcc067d6140060164329603eb2868447bf"
+          }
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CMER-002",
+        "Content Digest": "sha256:e5d7d35ef2a3a1cb377a3c8b1e4ab65bd004fde0a8f83f113cd02154ed7ca602"
+      },
+      "payload": {
+        "Predecessor Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CMER-001",
+          "Content Digest": "sha256:5731cbfd003d73a593e1babc44fcaa55e5130a0500a8bad697a653a14a69f0a2"
+        },
+        "Predecessor Final Policy Freeze Ref": null,
+        "Approved metadata and scope": {
+          "Working Policy Document ID": "WPD-CMER-20261015",
+          "Policy Topic": "U17 수동 조우·최초 보상·알 부화·반복 이행",
+          "Requested Result": "U17 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음.",
+          "Target Project/Repository": "/mnt/f/work/simulator",
+          "Target Documentation Root": "core_enhanced/docs",
+          "Policy Directory Name": "core_manual_encounter_revival",
+          "User-Approved Scope": [
+            {
+              "id": "IN-U17",
+              "disposition": "in",
+              "meaning": "U17 G27/G28/G29: 종류별 원정별 최초 보상·엘리트 자연 반복·일반 보스 알 부화·선택 보상·소지/창고 촉매·진입/후퇴/결과/복원·구명령/저장 명시 거절·query와 consumer 검증",
+              "approval": {
+                "ref": "USER-20261015-U17-START",
+                "exact_text": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u17 작업에 착수해줄래?",
+                "date": "2026-10-15",
+                "interpretation": "U17 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+              }
+            },
+            {
+              "id": "OUT-U17",
+              "disposition": "out",
+              "meaning": "U17 명시 제외: 엘리트 알·격파횟수 자동강화·파편 상실 후 최초권리 재개방·부화 자동전투·후퇴 추가부화비·마탄 무보상 예외 제거·구저장 임의삭제. U18 이후 카드·Unity·개별최종보스·자동 감사 제외",
+              "approval": {
+                "ref": "USER-20261015-U17-START",
+                "exact_text": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u17 작업에 착수해줄래?",
+                "date": "2026-10-15",
+                "interpretation": "U17 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+              }
+            }
+          ]
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CMER-001",
+          "Content Digest": "sha256:30bc59413be78e3899f717f1f26f53b8c6c365f648e4c19b386bf14d21dac4ac"
+        },
+        "Current Policy Element Revision Map": {
+          "PE-CMER-G27": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMER-G27-OPEN-001",
+            "Content Digest": "sha256:456e76d7782a9cd91ec01546e35f1917884297c4c23992cd72aa369f0e2bce89"
+          },
+          "PE-CMER-G28": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMER-G28-OPEN-001",
+            "Content Digest": "sha256:cef9898590c805c379865676a93ee4fd07a07b96278ac90f42e6cb84639894e0"
+          },
+          "PE-CMER-G29": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMER-G29-OPEN-001",
+            "Content Digest": "sha256:b47b6a87eca34f623123d56b03fb57ec0a7c6edd6f485394fce9a1a899b43ed4"
+          },
+          "PE-CMER-RESTORE": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMER-RESTORE-OPEN-001",
+            "Content Digest": "sha256:88157adf34e13eb38802ace37d7cba58e005461cec67c6a395bf0d791586077d"
+          },
+          "PE-CMER-LEGACY": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMER-LEGACY-OPEN-001",
+            "Content Digest": "sha256:ab31d71eb4646459cb8d17f631e116ce59d0646006369d22d058c7926cb70095"
+          },
+          "PE-CMER-AUTHOR": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMER-AUTHOR-OPEN-001",
+            "Content Digest": "sha256:b5e603056c8928b1c0cf041a5dbb0fdcc067d6140060164329603eb2868447bf"
+          }
+        },
+        "Decision Revision Ref Set": [],
+        "Open Policy Question Ref Set": [],
+        "Post-Freeze Change/Closure basis": null
+      }
+    }
+  ],
+  "limits": "candidate promotion only; open elements are not current P2G20 prerequisites"
+}

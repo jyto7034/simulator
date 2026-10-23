@@ -1,0 +1,21 @@
+{
+  "stage": "P2G-00",
+  "status": "complete",
+  "working_revision_ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CMER-001",
+    "Content Digest": "sha256:5731cbfd003d73a593e1babc44fcaa55e5130a0500a8bad697a653a14a69f0a2"
+  },
+  "intake_snapshot_ref": {
+    "Artifact Type": "Policy Intake Snapshot",
+    "Artifact ID": "PIS-CMER-001",
+    "Content Digest": "sha256:30bc59413be78e3899f717f1f26f53b8c6c365f648e4c19b386bf14d21dac4ac"
+  },
+  "checks": {
+    "new_unique_path": true,
+    "empty_initial_policy_map": true,
+    "raw_capture_members_verified": 9,
+    "scope_authorized_by_user_U17_request": true
+  },
+  "next": "P2G-10 policy closure; not product implementation"
+}

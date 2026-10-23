@@ -1,0 +1,35 @@
+{
+  "runs": [
+    {
+      "command": [
+        "node",
+        "core_enhanced/docs/tools/validate_p2g40_receipt.mjs",
+        "--write-receipt",
+        "--plan",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_copy_growth_material_vault/P2G_40_PHASE_PLAN_002.json",
+        "--freeze",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_copy_growth_material_vault/P2G_30_FREEZE_001.json",
+        "--receipt",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_copy_growth_material_vault/P2G_40_VALIDATION_RECEIPT_002.json"
+      ],
+      "exit_code": 0,
+      "stdout": "P2G_40_generate_002.stdout.log",
+      "stderr": "P2G_40_generate_002.stderr.log"
+    },
+    {
+      "command": [
+        "node",
+        "core_enhanced/docs/tools/validate_p2g40_receipt.mjs",
+        "--plan",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_copy_growth_material_vault/P2G_40_PHASE_PLAN_002.json",
+        "--freeze",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_copy_growth_material_vault/P2G_30_FREEZE_001.json",
+        "--receipt",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_copy_growth_material_vault/P2G_40_VALIDATION_RECEIPT_002.json"
+      ],
+      "exit_code": 0,
+      "stdout": "P2G_40_validate_002.stdout.log",
+      "stderr": "P2G_40_validate_002.stderr.log"
+    }
+  ]
+}

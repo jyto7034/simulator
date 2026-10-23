@@ -326,7 +326,7 @@ async fn u04_protected_profile_exposes_retry_and_refuses_forced_reset_without_wr
             command!(ResetPlayerProfile),
             command!(RetryPlayerProfile),
             command!(StartNewGame {
-                game_mode: GameMode::Standard,
+                game_mode: GameMode::Expedition,
                 replace_active_run: true
             }),
         ] {
@@ -347,12 +347,9 @@ async fn u04_protected_profile_exposes_retry_and_refuses_forced_reset_without_wr
 }
 
 #[actix_web::test]
-async fn u04_two_restored_actors_cannot_publish_a_stale_terminal_disposition() {
+async fn u04_newer_profile_blocks_stale_restored_actor_terminal_disposition() {
     let root = tempfile::tempdir().unwrap();
     let active = Arc::new(Mutex::new(ActiveRunStore::open(root.path()).unwrap()));
-    let profile = Arc::new(Mutex::new(PlayerProfilePersistence::bootstrap(
-        PlayerProfileStore::open(root.path()).unwrap(),
-    )));
     let player = Uuid::new_v4();
     let initial = game_core_waiting_on_live_defense_node(player);
     active
@@ -362,6 +359,7 @@ async fn u04_two_restored_actors_cannot_publish_a_stale_terminal_disposition() {
             &initial.export_active_run_checkpoint().unwrap().unwrap(),
         ))
         .unwrap();
+    let profile = persisted_profile_fixture(root.path(), &initial);
     let balance = LoadBalanceActor::new().start();
     let make_actor = || {
         PlayerGameActor::new(
@@ -402,7 +400,11 @@ async fn u04_two_restored_actors_cannot_publish_a_stale_terminal_disposition() {
         .await
         .unwrap()
         .unwrap_err();
-    assert_eq!(error.code, "active_run_revision_conflict");
+    // Abandon clears the authoritative expedition identity. The stale actor
+    // must reject that profile before preparing another terminal publication.
+    // Store-level revision conflicts are covered by the conditional-intent test.
+    assert!(profile.lock().unwrap().profile().unwrap().lifecycle.active_expedition.is_none());
+    assert_eq!(error.code, "invalid_action");
     assert_eq!(
         std::fs::read(root.path().join("active_run.json")).unwrap(),
         confirmed
@@ -419,9 +421,6 @@ async fn u04_real_terminal_host_tick_preintent_failure_does_not_publish_end_then
 ) {
     let root = tempfile::tempdir().unwrap();
     let active = Arc::new(Mutex::new(ActiveRunStore::open(root.path()).unwrap()));
-    let profile = Arc::new(Mutex::new(PlayerProfilePersistence::bootstrap(
-        PlayerProfileStore::open(root.path()).unwrap(),
-    )));
     let player = Uuid::new_v4();
     let core = game_core_waiting_on_live_defense_node_with_data(
         player,
@@ -434,6 +433,7 @@ async fn u04_real_terminal_host_tick_preintent_failure_does_not_publish_end_then
             &core.export_active_run_checkpoint().unwrap().unwrap(),
         ))
         .unwrap();
+    let profile = persisted_profile_fixture(root.path(), &core);
     let actor = PlayerGameActor::new(player, core, LoadBalanceActor::new().start())
         .with_active_run_store(active.clone())
         .with_player_profile_persistence(profile.clone())
@@ -499,6 +499,9 @@ async fn u04_real_terminal_host_tick_preintent_failure_does_not_publish_end_then
         .checkpoint
         .unwrap();
     let mut restarted = CoreApplication::new(defense_game_data_with_survive_timer(Some(10)), 0);
+    restarted.install_authoritative_player_profile(
+        serde_json::to_value(profile.lock().unwrap().profile().unwrap()).unwrap().into()
+    ).unwrap();
     restarted
         .continue_from_active_run_checkpoint(player, &checkpoint.to_application())
         .unwrap();
@@ -600,9 +603,7 @@ async fn u04_admin_prepared_drop_and_io_failures_share_application_acceptance() 
         .unwrap()
         .publish(&StoredCheckpoint::from(&checkpoint))
         .unwrap();
-    let profile = Arc::new(Mutex::new(PlayerProfilePersistence::bootstrap(
-        PlayerProfileStore::open(root.path()).unwrap(),
-    )));
+    let profile = persisted_profile_fixture(root.path(), &core);
     let actor = PlayerGameActor::new(player, core, LoadBalanceActor::new().start())
         .with_active_run_store(active.clone())
         .with_player_profile_persistence(profile.clone())
@@ -650,6 +651,9 @@ async fn u04_admin_prepared_drop_and_io_failures_share_application_acceptance() 
         .checkpoint
         .unwrap();
     let mut restored = CoreApplication::new(defense_game_data(), 0);
+    restored.install_authoritative_player_profile(
+        serde_json::to_value(profile.lock().unwrap().profile().unwrap()).unwrap().into()
+    ).unwrap();
     restored
         .continue_from_active_run_checkpoint(player, &saved.to_application())
         .unwrap();

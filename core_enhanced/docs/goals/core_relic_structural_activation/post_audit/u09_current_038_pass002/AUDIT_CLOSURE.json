@@ -1,0 +1,164 @@
+{
+  "schema": "U09_INDEPENDENT_AUDIT_CLOSURE_V2",
+  "recorded_at_utc": "2026-10-09T06:54:25.255470+00:00",
+  "goal": "GOAL-CRSA-01",
+  "goal_set": "GS-CRSA-003",
+  "target": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/target/u09_current_038",
+    "manifest": {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/target/u09_current_038/MANIFEST.json",
+      "bytes": 195403,
+      "sha256": "b37c0b39bd3b03cf393b7fed80ae72d16552f4459f929a7ea5dde65fae468d18"
+    }
+  },
+  "product_source_sha256": "2fdaa433e7ba457531508fd2ab05547cd05373c77cfb2f6820108ccf651754f6",
+  "product_source_files": 492,
+  "restoration_source_files": 495,
+  "before_files": 441,
+  "verdict": "Complete",
+  "confidence": "High",
+  "open_findings_count": 0,
+  "open_findings": [],
+  "complete_high_open0": true,
+  "review_work_complete": true,
+  "scope": "Whole U09 / GS-CRSA-003 / GOAL-CRSA-01 frozen at038. Explicit prior independent whole-Goal nonimpact reuse plus full successor correction/source/oracle/raw/currentness review; not limited to last diff or F01.",
+  "scope_counts": {
+    "policy_sentences": 34,
+    "integration_seams": 17,
+    "required_dimensions": 10,
+    "execution_nodes": 3,
+    "predecessor_inherited_and_u08": 223,
+    "separate_r06": 31,
+    "predecessor_total": 254,
+    "evidence_groups": 48,
+    "prior_evidence_groups_binding_unchanged": 43
+  },
+  "independence": {
+    "auditor": "/root/u09_independent_audit029",
+    "model": "gpt-6-astra",
+    "reasoning_effort": "high",
+    "actual_model_basis": "Previous actual session metadata confirmation reused as instructed; no redundant model confirmation requested.",
+    "participated_in_plan_design_product_or_test_authoring": false,
+    "participated_in_correction_or_oracle_authoring": false,
+    "prior_audit_only": true,
+    "subagents_spawned": 0
+  },
+  "prior_audit": {
+    "closure": {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_029_pass001/AUDIT_CLOSURE.json",
+      "bytes": 6498,
+      "sha256": "1a31fd030bf14a2d5664572cb32acb920701b5840d350154b723dcb83cd21bab"
+    },
+    "verdict_preserved": "Not Complete",
+    "confidence_preserved": "High",
+    "open_findings_count_preserved": 1,
+    "scope": "Historical target029; its artifacts and target are unchanged."
+  },
+  "closed_findings": [
+    "F01"
+  ],
+  "additional_corrected_defects_reviewed": [
+    "RUNTIME034: canonical-Self cancellation of accepted effective PlayerUnit continuation"
+  ],
+  "entry": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_038_pass002/ENTRY_CURRENTNESS.json",
+    "bytes": 698,
+    "sha256": "dc74b1673d85226e9787cfbc7e32ea299d323e29656b2dbe5ddc53e3c4bdace9"
+  },
+  "exit": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_038_pass002/EXIT_CURRENTNESS.json",
+    "bytes": 578,
+    "sha256": "84db98b78509c2207d9d9b4484cee87af8c435c996e39a6b5657f6ae65872fff"
+  },
+  "currentness": {
+    "entry_checked_refs": 2735,
+    "exit_checked_refs": 2735,
+    "entry_mismatches": 0,
+    "exit_mismatches": 0,
+    "state": "current / unchanged"
+  },
+  "restoration": {
+    "record": {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/target/u09_current_038/RESTORE_VERIFICATION.json",
+      "bytes": 2562,
+      "sha256": "eb3d675840d5ce3ab18ee388c4b7a77bc58b09bbb29a7d9a742723e349677e62"
+    },
+    "actual_runner_receipt": {
+      "path": ".cache/u09_freeze038.execution.json",
+      "bytes": 5790,
+      "sha256": "05a532bb53b6b203565de65d9776cb245d90ec02a7574533b780dd276186f204"
+    },
+    "actual_raw": {
+      "path": ".cache/u09_freeze038.log",
+      "bytes": 269,
+      "sha256": "17e65647e452a2108d72882fdf29e49bba21249db60c052c871bbe78dac4a6d8"
+    },
+    "actual_exit_code": 0,
+    "reaped": true,
+    "forward_membership_and_bytes_match": true,
+    "reverse_membership_and_bytes_match": true,
+    "isolated_only": true,
+    "workspace_reverse_patch_applied": false,
+    "auditor_reexecuted": false,
+    "historical_archive_limit": "029 old tar files are byte-bound with original historical restore; no new whole-member verification claimed. Selected old source members were read for independent delta review."
+  },
+  "condition_review": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_038_pass002/CONDITION_REVIEW.json",
+    "bytes": 88325,
+    "sha256": "a6e32e8ceae4b67c3c3fb183ab52f746412edfaa54db8dd7e9c390dce3868a24"
+  },
+  "predecessor_review": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_038_pass002/PREDECESSOR_REVIEW.json",
+    "bytes": 1233540,
+    "sha256": "1d2a99f3315087f2fb2dbcadd235437cbe11671aebb81205a93926c63effe8ec"
+  },
+  "evidence_review": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_038_pass002/EVIDENCE_REVIEW.json",
+    "bytes": 347280,
+    "sha256": "856e1e4d3a754a996f6a39ac6cd696c616a3cdf4951d4814160d2313b9019b70"
+  },
+  "findings": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_038_pass002/FINDINGS.json",
+    "bytes": 5892,
+    "sha256": "0336ff8b68693aacbff1b2ab0f448e5d4581e751e50ce8e01f7f0552ae9df1e4"
+  },
+  "report": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_038_pass002/COMPLETION_AUDIT.md",
+    "bytes": 16573,
+    "sha256": "1792f5991d22f7634f904744888d5e3cc8439c0cbbee133583bbda1508a6fb9e"
+  },
+  "functional_evidence_scope": {
+    "033": "Only7 namedPASS rows reused; original whole7PASS2FAIL/exit101 stays failed. Matrix60/preoverlay60/typed40/equal20 and6 original controls.",
+    "036": "Actual8PASS0FAIL0ignored: World2 including3 variants and staged4, plus6 lifecycle/ownership/native controls.",
+    "counting": "165 historical named selections, not165 fresh/unique tests. Added disjoint15 records=0337+0362+0366; composites9 and8 overlap byWorld2.",
+    "prior_failures": "0306PASS3FAIL,0316PASS3FAIL,0337PASS2FAIL,0340PASS2FAIL preserved unchanged."
+  },
+  "retained_warnings": [
+    "R05 original raw101 remains concurrent peak-only warning:9709348 versus9030188,excess679160. Summary0020 is classification only.",
+    "Concurrent p9510014462ns observed10mscap=false; original latency_gate_applicable=false and reported statistical_regression=false.",
+    "Event +12 allocation ops/+256 retained/+512peak causal attribution remains unproved beyond documented source candidates."
+  ],
+  "measurement_limits": [
+    "PC001/R05002 were not rerun on2fdaa; independently read fixed TestFixture/Abnormality factories cannot reach changed Player/Employee resonance-use branch.",
+    "Original strict immediateU07M PC non-time delta0 and17 negative controls remain; olderU06+200 supplemental only.",
+    "General Employee step debit can increase for live effective steps or decrease for unavailable terminal source. Current whole tick326255/one-short326254; old326456 stays historical and−201 has no per-site attribution.",
+    "No global cost parity, measured zero CPU cost or deployment latency guarantee. Native admitted extent, allocator retention and RSS remain distinct."
+  ],
+  "supplemental_limits": [
+    "No fresh exhaustive suite claim; authorized impact-based scope fulfilled.",
+    "Formal gameplay balance is not decided by fixtures200/450/825 or penalties.",
+    "Explicit offline DEV preset/native/default ceilings unchanged.",
+    "Unity, individual final bosses and new Guest type remain out of scope."
+  ],
+  "verification": {
+    "auditor_test_build_restore_collector_runs": 0,
+    "read_only_source_and_hash_comparisons": true,
+    "source_delta_files": 6,
+    "production_delta_files": 2,
+    "test_delta_files": 4,
+    "manual_audit_artifact_json_and_cardinality_check": "34/17/10/3;254 unique original IDs/refs;48 evidence groups;open0 confirmed.",
+    "no_source_or_target_writes": true
+  },
+  "audit_artifacts_not_part_of_frozen_target": true,
+  "downstream": "Complete/High/open0 independent gate supplied for target038 only. Root owns authorized canonical closure/roadmap handoff, preserving029 NotComplete audit, failed original runs, scoped performance reuse and all limits."
+}

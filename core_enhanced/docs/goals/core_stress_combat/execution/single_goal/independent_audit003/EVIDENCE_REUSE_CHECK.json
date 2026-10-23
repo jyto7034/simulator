@@ -1,0 +1,118 @@
+{
+  "correction_current_and_before": [
+    {
+      "path": "core_enhanced/src/game/employee.rs",
+      "current_matches": true,
+      "before_matches": true
+    },
+    {
+      "path": "core_enhanced/docs/core_runtime_contract.md",
+      "current_matches": true,
+      "before_matches": true
+    }
+  ],
+  "correction_logs": [
+    {
+      "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/correction002/red001.log",
+      "sha256": "f21fd21cbf6dcaa8245517eae026d0a52db677d2d56cc051d8e1f24279261b70",
+      "matches": true,
+      "passed_unique": 1,
+      "summaries": [
+        "test result: FAILED. 1 passed; 2 failed; 0 ignored; 0 measured; 2165 filtered out; finished in 0.05s"
+      ],
+      "recorded_exit_code": 101
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/correction002/green001.log",
+      "sha256": "d3ab5b80004f46c00b3ee32698438ebc00eba207bc57a5dd6866166c407656ee",
+      "matches": true,
+      "passed_unique": 49,
+      "summaries": [
+        "test result: ok. 49 passed; 0 failed; 0 ignored; 0 measured; 2119 filtered out; finished in 19.33s"
+      ],
+      "recorded_exit_code": 0
+    }
+  ],
+  "archive_hash_matches": true,
+  "archive_members": [
+    {
+      "path": "core_enhanced/src/game/employee.rs",
+      "current_matches": true
+    },
+    {
+      "path": "core_enhanced/docs/core_runtime_contract.md",
+      "current_matches": true
+    }
+  ],
+  "previous_raw_evidence": [
+    {
+      "path": "core_enhanced/src/game/stress_combat.rs",
+      "matches": true
+    },
+    {
+      "path": "core_enhanced/src/game/world/tests/u164_stress.rs",
+      "matches": true
+    },
+    {
+      "path": "core_enhanced/docs/data_loading_contract.md",
+      "matches": true
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/correction001/red001.log",
+      "matches": true
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/correction001/green001.log",
+      "matches": true
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/correction001/loading001.log",
+      "matches": true
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/correction001/package-reject001.log",
+      "matches": true
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/correction001/package-boundary001.log",
+      "matches": true
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/runs/review-focused001.log",
+      "matches": true
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/runs/review-focused002.log",
+      "matches": true
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/runs/review-focused003.log",
+      "matches": true
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/runs/review-core001.log",
+      "matches": true
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/runs/review-regression-fixes001.log",
+      "matches": true
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/runs/review-socket001.log",
+      "matches": true
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/runs/review-integration001.log",
+      "matches": true
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/runs/review-integration002.log",
+      "matches": true
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/runs/review-server001.log",
+      "matches": true
+    }
+  ],
+  "scope": "Original failure and correction impact verified; prior broad results are historical, not current full acceptance."
+}

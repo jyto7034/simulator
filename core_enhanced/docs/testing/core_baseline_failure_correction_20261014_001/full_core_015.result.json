@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/home/blast/.cargo/bin/cargo",
+    "test",
+    "-p",
+    "game_core",
+    "--all-targets",
+    "--offline",
+    "--locked",
+    "--target-dir",
+    "/mnt/f/work/simulator/.cache/u12-vault-cost-target",
+    "--",
+    "--skip",
+    "game::data::content_pack::snapshot::tests::unix::socket_inputs_return_errors"
+  ],
+  "exit_code": 101,
+  "seconds": 111.3136905279971,
+  "stdout": "full_core_015.stdout.log",
+  "stderr": "full_core_015.stderr.log"
+}

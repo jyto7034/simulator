@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>방 크기별 활동 배정 기준 검토안</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f6fa;color:#26364c;font:16px/1.65 'Malgun Gothic',sans-serif}main{max-width:1450px;margin:auto;padding:30px}h1{margin:0;font-size:30px}h2{font-size:22px;margin:30px 0 12px}p{max-width:1150px}a{color:#356492}nav{display:flex;flex-wrap:wrap;gap:20px}.notice{padding:15px 20px;border-left:4px solid #bd9138;background:#fff6e2}.controls{display:flex;flex-wrap:wrap;gap:25px;padding:18px;background:#e7eef7;border-radius:12px}label{display:flex;align-items:center;gap:10px}select{font:inherit;padding:7px;border:1px solid #b8c6d8;border-radius:6px;background:white;color:#26364c}.scroll{overflow:auto;border:1px solid #d6e0eb;border-radius:10px;background:white}table{width:100%;border-collapse:collapse;min-width:850px}th,td{padding:12px 14px;border-bottom:1px solid #e1e7ef;text-align:right;white-space:nowrap}th{background:#eaf0f8}th:first-child,td:first-child{text-align:left}tr[data-new="true"]{background:#f0f7f2}small,.muted{color:#61738a}.tag{display:inline-block;background:#dcefe2;border-radius:5px;padding:0 6px;font-size:12px}.notes{background:white;padding:15px 20px;border-radius:10px}.notes p{margin:6px 0}footer{margin-top:30px;color:#61738a}@media(max-width:700px){main{padding:16px}h1{font-size:25px}.controls{gap:14px}}
+</style>
+<main>
+<h1>방 크기별 활동 배정 기준 검토안</h1>
+<p>6·9·12개 방의 기존 초안을 유지하면서 15·18개 방의 이벤트와 추가 보상 기회를 늘리는 안입니다. 초록색 행은 새 크기에 대한 제안입니다.</p>
+<nav><a href="../../md/facility-room-activity-allocation-v1.ko.md">기준과 설명</a><a href="facility-room-route-variations-v5.html">방 동선 15종</a><a href="../data/facility-room-activity-allocation-v1.csv" download>조건별 CSV</a><a href="../data/facility-room-activity-allocation-v1.json" download>가중치와 개수 분포 JSON</a></nav>
+<p class="notice">검토안이며 실제 시설 방에 적용한 결과가 아닙니다. 활동 수는 시작·Gate를 제외하며, 고정 조우·정비·저장·초반 보상은 포함합니다. 최종보스 방은 별도 구성입니다.</p>
+<h2>이벤트와 추가 보상 개수 가중치</h2>
+<p>각 칸은 <b>0개 / 1개 / 2개 / 3개</b>의 상대 가중치입니다. 자리 제약을 적용하면 실제 출현률은 아래 표처럼 달라질 수 있습니다. 지원 합계는 0~2개, 엘리트는 0~1개로 제한합니다.</p>
+<div class="scroll"><table><thead><tr><th>방 활동 수</th><th>이벤트 개수 가중치</th><th>추가 보상 개수 가중치</th><th>상태</th></tr></thead><tbody id="weights"></tbody></table></div>
+<h2>층과 예약 조건을 적용한 배정량</h2>
+<div class="controls"><label>층 <select id="floor"><option value="1">1층</option><option value="2">2층</option><option value="3">3층</option><option value="4" selected>4층</option><option value="5">5층</option><option value="6">6층</option><option value="7">7층</option></select></label><label>예약 조건 <select id="profile"></select></label></div>
+<p id="context" aria-live="polite"></p>
+<div class="scroll"><table><thead><tr><th>활동 수</th><th>이벤트 평균</th><th>추가 보상 평균</th><th>예약 포함 보상 평균</th><th>엘리트 평균</th><th>지원 평균</th><th>일반전 범위<br>전조 전</th><th>일반전 평균<br>전조 전</th><th>일반전 평균<br>실제 전조 배정 후</th></tr></thead><tbody id="means"></tbody></table></div>
+<p><small>한 방 전체에 배정되는 평균이며, 실제 방문 횟수나 전투 횟수가 아닙니다. 전조 후 수치는 그 방이 실제 전조 대상일 때만 적용합니다. 고정 조우와 이벤트·보상 내부 전투는 일반전 수에서 제외합니다.</small></p>
+<h2>같은 조건의 실제 출현률</h2>
+<div class="scroll"><table><thead><tr><th>활동 수</th><th>엘리트 원가중치<br>0개 / 1개</th><th>일반 이벤트 1개 이상</th><th>추가 보상 1개 이상</th><th>엘리트 1개</th><th>지원 개수 확률<br>0개 / 1개 / 2개</th></tr></thead><tbody id="presence"></tbody></table></div>
+<p><small>지원 개수 분포는 예약 조건으로 먼저 정하고 유지합니다. 이벤트·추가 보상·엘리트 개수 조합은 남은 용량과 최소 일반전 수를 만족하는 후보 안에서 추첨합니다.</small></p>
+<div class="notes"><p><b>작은 방:</b> 3~7층의 6개 방에 저장 1개와 지원 총수 2개가 들어가면 나머지 3개는 전부 일반전입니다. 다른 활동도 담을 거점이라면 9개 이상을 검토합니다.</p><p><b>큰 방:</b> 지원을 구역마다 하나씩 보장하지 않습니다. 이벤트·보상 기회를 여러 구역에 나누되, 실제 위치는 방별 템플릿을 배정한 뒤 정합니다.</p><p><b>보상:</b> 노드 수가 무료 유물 수를 뜻하지 않습니다. 보상 다섯 유형의 비중과 재화 공급은 후속 조정 대상입니다.</p></div>
+<footer id="validation"></footer>
+</main>
+<script>
+const DATA=__DATA__;
+const $=id=>document.getElementById(id),number=v=>v.toFixed(2),percent=v=>(v*100).toFixed(1)+'%';
+function cell(row,value){const el=document.createElement('td');el.textContent=value;row.append(el);}
+function row(host,size,values){const tr=document.createElement('tr');tr.dataset.new=String(size>=15);for(const v of values)cell(tr,v);host.append(tr);}
+for(const p of DATA.profiles){const option=document.createElement('option');option.value=p.id;option.textContent=p.label;$('profile').append(option);}
+for(const size of DATA.sizes){const format=p=>[0,1,2,3].map(n=>p[n]||0).join(' / ');row($('weights'),size,[size+'개',format(DATA.parameters.event[size]),format(DATA.parameters.reward_extra[size]),size>=15?'새 제안':'기존 초안']);}
+function render(){
+ const depth=Number($('floor').value),profile=$('profile').value,selected=DATA.profiles.find(p=>p.id===profile);
+ const rows=DATA.scenarios.filter(r=>r.depth===depth&&r.profile===profile);
+ $('means').replaceChildren();$('presence').replaceChildren();
+ for(const r of rows){const e=r.expected,p=r.presence,elite=DATA.parameters.elite_one[depth][r.size];
+  row($('means'),r.size,[r.size+'개',number(e.event),number(e.reward_extra),number(r.reward_total_mean),number(e.elite),number(e.support),r.normal_range.join('~'),number(e.normal),r.normal_mean_if_omen===null?'—':number(r.normal_mean_if_omen)]);
+  row($('presence'),r.size,[r.size+'개',(100-elite)+' / '+elite,percent(p.event),percent(p.reward_extra),percent(p.elite),[0,1,2].map(n=>percent(r.count_probabilities.support[n]||0)).join(' / ')]);
+ }
+ $('context').textContent=depth+'층 · '+selected.label+' · '+(depth>=3?'전조 전 일반전 최소 3개, 실제 치환 후 최소 2개':'일반전 최소 2개')+' · 모든 크기 비교';
+}
+$('floor').addEventListener('change',render);$('profile').addEventListener('change',render);render();
+$('validation').textContent=DATA.validation.scenarios+'개 조건의 확률 합·활동 수·예약·지원 분포 검증 완료. 기존 '+DATA.validation.existing_exploration_rooms_matched+'개 탐사 방의 배정 결과와 일치. 동선 배치와 플레이 밸런스는 별도 검증 대상입니다.';
+</script>
+</html>

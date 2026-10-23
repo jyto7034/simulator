@@ -460,6 +460,9 @@ fn r11_equipped_effect_core(authored: &str, configure: impl FnOnce(&mut BattleSc
     r12_fragment_equipped_effect_core(authored, configure, configure_weapon, None)
 }
 fn r12_fragment_equipped_effect_core(authored: &str, configure: impl FnOnce(&mut BattleScenario), configure_weapon: impl FnOnce(&mut crate::game::data::equipment_data::EquipmentMetadata), fragments: Option<crate::game::data::skill_fragment_data::SkillFragmentDatabase>) -> (BattleCore, super::super::sim::BattleExecutionState, UnitInstanceId, UnitInstanceId) {
+    r12_fragment_equipped_effect_core_with_data(authored, configure, configure_weapon, fragments, |builder| builder)
+}
+fn r12_fragment_equipped_effect_core_with_data(authored: &str, configure: impl FnOnce(&mut BattleScenario), configure_weapon: impl FnOnce(&mut crate::game::data::equipment_data::EquipmentMetadata), fragments: Option<crate::game::data::skill_fragment_data::SkillFragmentDatabase>, configure_data: impl FnOnce(GameDataBuilder) -> GameDataBuilder) -> (BattleCore, super::super::sim::BattleExecutionState, UnitInstanceId, UnitInstanceId) {
     let skills = SkillDatabase::from_ron("r11/effect.ron", authored).unwrap();
     let buffs: crate::game::battle::buffs::BuffDatabase = ron::de::from_str(r#"(buffs: [
         (name: "r11_silence", kind: Silence, tick_interval_ms: 0, max_stacks: 1, reapply_policy: RefreshDuration),
@@ -467,6 +470,7 @@ fn r12_fragment_equipped_effect_core(authored: &str, configure: impl FnOnce(&mut
     ])"#).unwrap();
     let weapon_id = Uuid::from_u128(0x1101);
     let mut weapon = crate::game::data::equipment_data::EquipmentMetadata {
+        content_family: None,
         id: "r11_weapon".into(), uuid: weapon_id, name: "R11 weapon".into(),
         equipment_type: crate::game::data::equipment_data::EquipmentType::Weapon,
         rarity: crate::game::enums::RiskLevel::ZAYIN, price: 0, allow_duplicate_equip: true,
@@ -485,13 +489,14 @@ fn r12_fragment_equipped_effect_core(authored: &str, configure: impl FnOnce(&mut
         profile.skill_activation_mode = SkillActivationMode::Manual;
         profile.stats.attack = 100;
         spawn.draft.source = BattleUnitSource::Employee(profile);
-        spawn.draft.equipped_items = vec![crate::game::battle::types::BattleEquipmentBinding { base_uuid: weapon_id, persistent_copy_uuid: None, slot: None }];
+        spawn.draft.equipped_items = vec![crate::game::battle::types::BattleEquipmentBinding {
+            weapon_stage: Default::default(), base_uuid: weapon_id, persistent_copy_uuid: None, slot: None }];
         spawn.draft.employee_start_condition = Some(crate::game::battle::types::EmployeeBattleStartCondition { trauma: 0, battle_hp_bonus_percent: 0 });
     }
     configure(&mut scenario);
     let builder = GameDataBuilder::empty().with_skills(skills).with_equipment(vec![weapon]).with_buffs(buffs);
     let builder = if let Some(fragments) = fragments { builder.with_skill_fragments(fragments) } else { builder };
-    let mut core = BattleCore::new_from_scenario(scenario, builder.build_arc(), 17);
+    let mut core = BattleCore::new_from_scenario(scenario, configure_data(builder).build_arc(), 17);
     let mut execution = core.start_battle_execution().unwrap();
     core.step_battle_execution_until(&mut execution, 0).unwrap();
     let mut players: Vec<_> = core.units.values().filter(|u| u.owner == Side::Player).map(|u| u.instance_id).collect(); players.sort();
@@ -1784,7 +1789,7 @@ fn r12_parry_basic_on_hit_commands_are_suppressed_before_dispatch() {
 }
 
 #[test]
-fn r12_corrosion_bypasses_enemy_shield_floor_parry_with_live_boss_flow_and_channel() {
+fn r12_corrosion_respects_boss_shield_and_keeps_live_flow_and_channel() {
     use super::super::sim::BattleLiveCommand;
     let (mut core, mut execution, a, enemy) = r12_guard_core_custom(30, 100, false, |s| {
         let s = s.replacen("steps: [SkillStepDef(id: \"shield\"", "flow: Some(Action(id: \"guard_flow\", step_id: \"shield\", wait: EffectsSettled)), steps: [SkillStepDef(id: \"shield\"", 1);
@@ -1808,19 +1813,19 @@ fn r12_corrosion_bypasses_enemy_shield_floor_parry_with_live_boss_flow_and_chann
     core.apply_live_command(BattleLiveCommand::ActivateSkill { unit_id: b, skill_id: "r11_aura".into(), target: None, time_ms: 1 }).unwrap();
     core.step_battle_execution_until(&mut execution, 2).unwrap();
     let facts = core.runtime_fact_summary();
-    assert_eq!(facts.latest_death.as_ref().unwrap().cause, crate::game::battle::runtime_facts::DeathCause::Corrosion);
-    assert!(facts.latest_death.as_ref().unwrap().lethal_damage.is_none());
+    assert!(facts.latest_death.is_none());
     assert_eq!(facts.damage_hp_lost, 0);
-    assert!(core.units.get(&enemy).is_none_or(|u| !u.is_active()));
+    assert!(core.units[&enemy].is_active());
     assert!(core.units[&b].corroded);
     assert_eq!(core.units[&b].employee_trauma, Some(100));
     assert_eq!(core.forced_pause_remaining_ms(), Some(1000));
-    assert!(core.sustained_effect_snapshot().unwrap().active.iter().all(|v| v.caster != enemy));
+    let after = core.sustained_effect_snapshot().unwrap();
+    let shield = after.active.iter().find(|v| v.caster == enemy && v.shield.is_some()).unwrap().shield.as_ref().unwrap();
+    assert_eq!(shield.remaining, 10000 - core.units[&enemy].stats.max_health.div_ceil(4));
+    assert!(core.channel_active(a));
     core.advance_forced_pause_host_elapsed(1000).unwrap();
     let outcome = core.step_battle_execution_until(&mut execution, 100).unwrap();
-    assert!(matches!(outcome, super::super::sim::BattleStepOutcome::Finished(_)));
-    core.finalize_battle_execution(&mut execution).unwrap();
-    assert!(core.sustained_effect_snapshot().unwrap().active.is_empty());
+    assert!(matches!(outcome, super::super::sim::BattleStepOutcome::Running));
 }
 
 #[test]
@@ -2032,3 +2037,19 @@ fn native_u07_reinput_wrapper_late_fault_restores_consumed_activation_cast_queue
     assert_eq!(core.runtime_fact_summary().damage_hp_lost, 150);
     assert!(core.sustained_effect_snapshot().unwrap().active.is_empty());
 }
+
+include!("compiled_parry_tests.rs");
+include!("compiled_support_tests.rs");
+
+include!("compiled_action_fixture.rs");
+include!("compiled_strike_tests.rs");
+
+include!("approach_taunt_tests.rs");
+
+include!("weapon_growth_tests.rs");
+
+include!("compiled_taunt_tests.rs");
+
+include!("compiled_channel_tests.rs");
+
+include!("compiled_overlay_tests.rs");

@@ -4,18 +4,13 @@ use actix_web_actors::ws;
 use game_server::{
     env::Settings,
     game::{load_balance_actor::LoadBalanceActor, player_game_actor::session::PlayerGameSession},
-    init_retry_config,
-    persistence::{
-        active_run_store::ActiveRunStore,
-        player_profile_store::{PlayerProfilePersistence, PlayerProfileStore},
-    },
-    AppState, LoggerManager,
+    init_retry_config, AppState, LoggerManager,
 };
 use std::{sync::Arc, time::Duration};
 use tracing::{error, info};
 use uuid::Uuid;
 
-#[cfg(feature = "runtime-measurement")]
+#[cfg(any(feature = "runtime-measurement", feature = "cmva-lab-measurement"))]
 #[global_allocator]
 static ALLOCATOR: game_server::runtime_measurement::CountingAllocator<'static, std::alloc::System> =
     game_server::runtime_measurement::process_allocator();
@@ -37,6 +32,18 @@ async fn player_game_ws_route(
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    let args = std::env::args().skip(1).collect::<Vec<_>>();
+    if game_server::mod_admission::worker::entry(&args)
+        .map_err(|e| std::io::Error::other(e.to_string()))?
+    {
+        return Ok(());
+    }
+    if let Some(value) =
+        game_server::mod_admission::administration(&args).map_err(std::io::Error::other)?
+    {
+        println!("{value}");
+        return Ok(());
+    }
     #[cfg(feature = "runtime-measurement")]
     let measurement_window = game_server::runtime_measurement::begin_process_window().ok();
     // 1. 환경변수 로드
@@ -53,14 +60,8 @@ async fn main() -> std::io::Result<()> {
     init_retry_config(&settings.retry).await;
     info!("Retry config initialized");
 
-    let game_data = game_server::bootstrap::load_game_data(&settings)?;
-    info!(
-        runtime_safety_sha256 = game_data.runtime_safety().effective_sha256(),
-        "Runtime safety profile selected"
-    );
-    info!("Game data loaded for meta-game sessions");
-
-    // 10. LoadBalanceActor 시작
+    let admission = game_server::bootstrap::load_approved_host(&settings)?;
+    let approved_host = admission.host;
     let active_run_directory = settings
         .persistence
         .active_run_directory()
@@ -69,15 +70,16 @@ async fn main() -> std::io::Result<()> {
         .persistence
         .player_profile_directory()
         .map_err(std::io::Error::other)?;
-    let active_run_store = ActiveRunStore::open(&active_run_directory)
-        .map_err(|error| std::io::Error::other(error.to_string()))?;
-    let player_profile_store = PlayerProfileStore::open(&player_profile_directory)
-        .map_err(|error| std::io::Error::other(error.to_string()))?;
-    let player_profile_persistence = PlayerProfilePersistence::bootstrap(player_profile_store);
+    let persistence = game_server::mod_admission::ApprovedPersistence::open_roots(
+        active_run_directory,
+        player_profile_directory,
+        Arc::clone(&approved_host),
+    )
+    .map_err(std::io::Error::other)?;
     #[cfg(feature = "runtime-observation")]
     let observation = game_server::observability::from_environment();
     let load_balance =
-        LoadBalanceActor::with_persistence(active_run_store, player_profile_persistence);
+        LoadBalanceActor::with_approved_persistence(Arc::clone(&approved_host), persistence);
     #[cfg(feature = "runtime-observation")]
     let load_balance =
         load_balance.with_observation(observation.as_ref().map(|(handle, _guard)| handle.clone()));
@@ -92,7 +94,7 @@ async fn main() -> std::io::Result<()> {
         load_balance_addr,
         logger_manager,
         current_run_id,
-        game_data,
+        approved_host,
     };
 
     // 16. HTTP 서버 시작

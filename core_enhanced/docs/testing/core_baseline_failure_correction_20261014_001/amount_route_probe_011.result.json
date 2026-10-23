@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/home/blast/.cargo/bin/cargo",
+    "test",
+    "-p",
+    "game_core",
+    "--lib",
+    "--offline",
+    "--locked",
+    "--target-dir",
+    "/mnt/f/work/simulator/.cache/u12-vault-cost-target",
+    "--",
+    "--exact",
+    "authoring::trial::tests::d07_b15_public_trial_amount_preview_explain_and_exact_use_actual_legacy_execution"
+  ],
+  "exit_code": 0,
+  "seconds": 43.47882906200539,
+  "stdout": "amount_route_probe_011.stdout.log",
+  "stderr": "amount_route_probe_011.stderr.log"
+}

@@ -1,0 +1,15 @@
+{
+  "stage": "P2G-00",
+  "status": "complete",
+  "scope": {
+    "Working Policy Document ID": "WPD-CSCB-20261015",
+    "Policy Topic": "U16-4 스트레스 연속 방어전",
+    "Target Documentation Root": "core_enhanced/docs",
+    "Policy Directory Name": "core_stress_combat",
+    "Requested Result": "U16-4 구현/검증/고정 뒤 비참여 서브에이전트 독립감사",
+    "User-Approved Scope": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u16-4 작업 착수 및 완수 후 서브에이전트를 소환하여 독립 감사 작업에 착수해줄래? 현재 명령을 지침서보다 더 우선시해.",
+    "Excluded": "U17/U21/Unity/개별최종보스/외부임의변조; 전체U16 완료 아님"
+  },
+  "path_preexisting_state": "execution directories created for this request; no prior document identity/artifact occupied",
+  "runtime_tests": 0
+}

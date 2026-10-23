@@ -1,0 +1,20 @@
+{
+  "record_ref": "ATR-CRAR-C2-P01-GEX20-008",
+  "goal_id": "GOAL-CRAR-C2-P01-PRESERVATION-OBSERVABILITY",
+  "successor_goal_id": "GOAL-CRAR-C2-P08-PERFORMANCE-FINAL-INTEGRATION",
+  "captured_date": "2026-08-23",
+  "verdict": "Complete / High",
+  "currentness": "current / expected P08 final comparison and manifest reconciliation",
+  "previous_currentness_ref": "ATR-CRAR-C2-P01-GEX20-007",
+  "performance_receipt_sha256": "86ccd5c78b0dcdfab502b1c5842a48c8a9df8963557e36cbf49b3ea5ec2b5848",
+  "observer_source_sha256": "64debfd6546afb617636caf520fcb9e8ee49acc1ee2377306cf8a19afbd8c631",
+  "manifest_sha256": "ed3c4fb81de3fdae080b8f834a8d67edfcb649f1a8f8cf8b17f140a78acf3779",
+  "current_locator_content_count": 44,
+  "current_locator_composite_sha256": "5ff7356cb08fb42758257570988ee39e426cbb4ba4f06ed5d3c0346821c8d620",
+  "final_exact_outputs": {
+    "event_heavy": "186 events / 65720 bytes / 2ada19d4b983fb50216dc7f0b5b8f930590b00c6557800659b14cfb56f24333a",
+    "concurrent": "11840 events / 3881088 bytes / 68da2cf9def391c02d3bed3e6c460dc89778caba747e16e17157775fa2863ca9"
+  },
+  "current_core_tests": {"library":1108,"integrations":51,"total":1159,"failed":0,"ignored":0},
+  "external_scope": "game_server, Unity, sibling resources and external consumers uninspected and unclaimed"
+}

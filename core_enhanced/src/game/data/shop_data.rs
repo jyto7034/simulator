@@ -11,6 +11,8 @@ use crate::game::data::{
     build_string_index, build_uuid_index, once_lock_with, DataValidationError,
 };
 
+pub const RELIC_CORRUPTION_CATALYST_UUID: Uuid = Uuid::from_u128(0xe1000000000000000000000000000003);
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum ShopContext {
@@ -24,6 +26,9 @@ pub enum ShopMerchandise {
     Equipment { equipment_id: String },
     Consumable { consumable_id: String },
     Monolith { abnormality_id: String },
+    Relic { relic_id: String },
+    RevivalCatalyst { material_id: String },
+    RelicCorruptionCatalyst,
 }
 
 impl ShopMerchandise {
@@ -32,6 +37,9 @@ impl ShopMerchandise {
             Self::Equipment { equipment_id } => equipment_id,
             Self::Consumable { consumable_id } => consumable_id,
             Self::Monolith { abnormality_id } => abnormality_id,
+            Self::Relic { relic_id } => relic_id,
+            Self::RevivalCatalyst { material_id } => material_id,
+            Self::RelicCorruptionCatalyst => "relic_corruption_catalyst",
         }
     }
 
@@ -40,6 +48,9 @@ impl ShopMerchandise {
             Self::Equipment { equipment_id } => format!("equipment:{equipment_id}"),
             Self::Consumable { consumable_id } => format!("consumable:{consumable_id}"),
             Self::Monolith { abnormality_id } => format!("monolith:{abnormality_id}"),
+            Self::Relic { relic_id } => format!("relic:{relic_id}"),
+            Self::RevivalCatalyst { material_id } => format!("revival_catalyst:{material_id}"),
+            Self::RelicCorruptionCatalyst => "relic_corruption_catalyst".to_string(),
         }
     }
 
@@ -53,6 +64,12 @@ impl ShopMerchandise {
 pub struct ShopMerchandiseEntry {
     pub merchandise: ShopMerchandise,
     pub quantity: u32,
+    /// Only goods without an item-catalog price use this authored base price.
+    #[serde(default)]
+    pub base_price: Option<u32>,
+    /// Always included before weighted slots, while this entry remains eligible.
+    #[serde(default)]
+    pub guaranteed: bool,
     pub weight: u32,
     #[serde(default)]
     pub repeatable: bool,
@@ -319,6 +336,10 @@ impl ShopDatabase {
             let flattened = self.flattened_entries(shop).map_err(|cause| {
                 DataValidationError::at(&shop.id, format!("shops[{shop_index}]"), cause)
             })?;
+            if flattened.iter().filter(|entry| entry.guaranteed).count() > shop.offer_count {
+                return Err(DataValidationError::at(&shop.id, "offer_count",
+                    "guaranteed merchandise exceeds the page size"));
+            }
             if flattened.len() < shop.offer_count {
                 return Err(DataValidationError::at(
                     &shop.id,
@@ -414,11 +435,21 @@ fn validate_entries(
                 "Shop merchandise quantity, weight, and optional buy_percent must be positive",
             ));
         }
-        if entry.merchandise.is_equipment() && entry.quantity != 1 {
+        let priced_here = matches!(entry.merchandise, ShopMerchandise::Relic { .. }
+            | ShopMerchandise::RevivalCatalyst { .. } | ShopMerchandise::RelicCorruptionCatalyst);
+        if priced_here != entry.base_price.is_some() || entry.base_price == Some(0) {
+            return Err(DataValidationError::at(owner_id, format!("{field}[{index}].base_price"),
+                "relic and catalyst goods require a positive base_price; item-catalog goods must use their catalog price"));
+        }
+        if matches!(entry.merchandise, ShopMerchandise::Monolith { .. }) {
+            return Err(DataValidationError::at(owner_id, format!("{field}[{index}].merchandise"),
+                "monolith offers are generated from expedition progress, not authored as merchandise"));
+        }
+        if matches!(entry.merchandise, ShopMerchandise::Equipment { .. } | ShopMerchandise::Relic { .. }) && entry.quantity != 1 {
             return Err(DataValidationError::at(
                 owner_id,
                 format!("{field}[{index}].quantity"),
-                "Equipment Shop merchandise quantity must be one",
+                "Equipment and relic Shop merchandise quantity must be one",
             ));
         }
         if !identities.insert(identity.clone()) {
@@ -457,6 +488,8 @@ mod tests {
                 consumable_id: id.to_string(),
             },
             quantity: 1,
+            base_price: None,
+            guaranteed: false,
             weight: 2,
             repeatable: false,
             buy_percent: None,

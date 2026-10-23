@@ -1,0 +1,888 @@
+--- baseline/core_enhanced/docs/core_runtime_contract.md
++++ current/core_enhanced/docs/core_runtime_contract.md
+@@ -2318,7 +2318,7 @@
+ 
+ 활동 조회는 `reward_activity`, `condition`, `support`, `first_entry_cost`, `exhausts_deterrence`,
+ `deterrence_already_exhausted`를 제공한다. 미지원 고유 조우/최종방과 U16의 미구현 보상 유형은 실행 전에
+-거절하며 보상·클리어·자동귀환을 합성하지 않는다. U16-2의 SimpleChoice·ResourceInvestment·RelicGacha와, dealer policy가 작성된 U16-3 Gambling을 지원한다. StressCombat은 후속 U16에서 구현한다. 공식 유물 공급이 비어 있으면 SimpleChoice는 빈 후보와 사유를 표시하고 미이용 종료할 수 있다. 일반 보상 풀로 대체하지 않는다. 대표 유물 효과를 작성한 지원 pack으로 실제 지급·비용·저장을 검증한다. 정적 전조 호환 자리의 일반전을 U20 전조로 자동 치환하지
++거절하며 보상·클리어·자동귀환을 합성하지 않는다. U16-2의 SimpleChoice·ResourceInvestment·RelicGacha와, dealer policy가 작성된 U16-3 Gambling, stress_combat policy가 작성된 U16-4 StressCombat을 지원한다. 공식 유물 공급이 비어 있으면 SimpleChoice는 빈 후보와 사유를 표시하고 미이용 종료할 수 있다. 일반 보상 풀로 대체하지 않는다. 대표 유물 효과를 작성한 지원 pack으로 실제 지급·비용·저장을 검증한다. 정적 전조 호환 자리의 일반전을 U20 전조로 자동 치환하지
+ 않는다. 기존 실제 전장 브리핑과 전투 입장 검증을 재사용한다.
+ 
+ Continue V14와 SavePoint는 모든 방문방의 배정/유형/해결/입장 기록을 포함한다. 원래 generation과 일치하는
+@@ -2398,3 +2398,13 @@
+ 미장착사본은loan확정에서session escrow로이동하여다른사용에서제외한다. 회수는원래UUID/variant를그대로반환하고포기는그사본만제거한다. 정산→담보회수/포기→상점→나가기순서를고정한다. purchase는현잔액/재고/공통grant를동일transaction에서반영한다. 잔액0/음수여도상점을보고나갈수있으며leave/제안거절에서만조우완료와노드소비를확정한다. 기존ClaimReward/ExitReward/CompleteNode로정산을우회하지않는다.
+ 
+ 같은process 조회는현재게임/담보/구매를유지한다. 미완료 fresh Continue는게임난수·설명이력·포인트·담보·중간구매를함께입장전으로복원한다. 완료Continue는원금회수/포기/구매/노드소비를보존하고SavePoint는당시전체상태로복원한다. paired publish 실패는메모리와active/profile 원본을보존한다. 현재 공식 유물공급 공백은빈상품목록이며대표외부pack의효과/상품검증과공식콘텐츠채택을구분한다.
++
++## U16-4 스트레스 연속 방어전
++
++시설의 `stress_combat` 정책이 있는 StressCombat은 Reward 배정에서 기존 live Defense 전투로 진입한다. 전용 PVE class `StressCombat`은 일반 지도 조우 추첨에서 제외된다. `entry_preview.stress_combat`은5라운드·첫 보상·실제 수량 배율을 입장 전에 공개하고 combat_deterrence는 전 라운드에 고정할 적 강화 자격을 제공한다.
++
++`game_state_context.stress_combat`은 battle_uuid/current_round/completed_rounds/awaiting_choice/quantity_multiplier/pending_rewards/next_rewards를 제공한다. 배율은 안내에 반영된 값이며 서버가 안내값을 다시 곱해 정산하지 않는다. `stress_combat_act` 명령은 `{battle_uuid, completed_rounds, extract}`와 공통 battle authority를 요구한다. 선택 구간에서 extract=false는 같은 BattleCore로 다음 라운드, true는 누적분을 받고 성공 종료한다. 오래된 UUID/라운드·선택 밖 호출은 거절한다. 선택 구간은 조회·재접속과 이 선택만 허용하며 전투 시간과 주기 자원/쿨다운이 진행하지 않는다.
++
++개별 라운드에는 노드 소비·실제 보상·기본 XP를 처리하지 않는다. 성공 철수 또는5라운드 완료는 고정 누적분을 ClaimAll과 기존 grant로 정산한다. 패배는 미수령 전부 상실하며 직원 손실과 기본 생존 XP는 공통 결과에서 전체1회 적용한다. 성공 무억제는 해당 수량/기본 XP2배·유물 수량 유지, 패배 기본 XP는 기존량이다.
++
++전투중 RetreatBattle은 기존 snapshot으로 전투 변화/소비를 복원한 뒤 노드를 소비한다. 최초 비용/입장 receipt 유지·XP 미지급·재도전 불가이며 일반 후퇴2회 안내를 이 활동에 적용하지 않는다. 미완료 fresh Continue는 입장전으로, 완료된 성공/패배/후퇴는 결과와 노드 소비를 함께 복원한다. 같은 프로세스 재접속은 현재 라운드 선택을 유지한다. SavePoint와 paired publication은 기존 owner를 사용한다.
+--- baseline/core_enhanced/docs/data_loading_contract.md
++++ current/core_enhanced/docs/data_loading_contract.md
+@@ -1011,3 +1011,9 @@
+ FacilityLayout의 optional `dealer: Some((...))`가 Gambling의 실행/조건/VN/상품 정책을 소유한다. 생략한 기존layout은 딜러미지원이며 silent default policy로바꾸지않는다. None은직렬화에서생략하여기존pack의정규화의미를보존한다. 공식layout은초기기본30·갬빗비중1:1·최소판돈1·Flip손실10/1위보너스20·원금10/30/60·기타rarity default_pledge_value10·빈상품과제안/VN참조를작성한다. 지원외부pack은실제유물정의/효과를상품에작성한다.
+ 
+ 기본포인트/최소판돈/Flip손실/등급별원금/default_pledge_value는양수이고갬빗2/3비중의u32합계는양수/overflow없음이어야한다. 상품은고유비어있지않은id,하나이상유효유물id,양수가격/재고를갖는다. 묶음은여러정의(동일종류여러사본포함)를허용한다. first_vn/repeat_vn은terminal accept/decline 두선택, gambit_vn은terminal yes/no 두선택을갖는유효VN entry를참조한다. 숫자·참조·선택계약오류는publication에서거절한다. 카드/주사위/정산규칙은고정Core규칙이고pack이새게임코드·RNG배열·임의포인트상태를주입하지않는다.
++
++### U16-4 스트레스 전투 작성
++
++FacilityLayout의 optional `stress_combat: Some((encounter_id:..., rounds:[(wave_ids:[...],rewards:[...]), ...]))`가 활동 전용 연속 방어전을 정한다.5개의 비어 있지 않은 라운드가 조우의 모든 required 웨이브를 중복 없이 분할해야 한다. 조우 class는 StressCombat, mission_variant는Defense이며 ProtectUnit 목표와 같은 보호 대상의 UnitDefeated 패배 조건을 작성한다. 승리는 AllRequiredEnemyGroupsDefeated이고 별도 시간 승리/bonus_objectives는 사용하지 않는다. GroupCleared와 actor trigger 바인딩 모두 뒤 라운드의 wave를 참조하여 앞 라운드를 잠그는 입력은 거절한다.
++
++라운드 rewards는 고정 엔케팔린/장비 가루/재료/XP/유물의 공통 RewardEffect이며 참조와 XP 대상 계약을 로더가 검증한다. 선택 직원을 추가로 요구하는 SelectedEmployee XP와 고정 무억제2배 수량을 표현할 수 없는 보상은 거절한다. explicit supported StressCombat 활동에 policy가 없으면 로더가 거절하며, 기존 optional policy 없는 layout은 이 활동을 미지원으로 안내한다. 공식 대표 조우는1/1/2/2/3명의I/II/II/III/III 적, 라운드당 엔케팔린10/20/30/40/50이다. 이 수치와 지원 외부 pack의 유물·재료·XP 표는 U21 최종 콘텐츠/밸런스 확정을 뜻하지 않는다.
+--- baseline/core_enhanced/src/application.rs
++++ current/core_enhanced/src/application.rs
+@@ -151,6 +151,7 @@
+     SelectRelicFusionInputs,
+     ConfirmRelicFusion,
+     DealerAct,
++    StressCombatAct,
+     PurchaseItem,
+     SellItem,
+     RefreshShop,
+@@ -1851,8 +1852,8 @@
+ 
+     #[test]
+     fn command_kind_is_exactly_bijective_with_all_domain_actions() {
+-        assert_eq!(ApplicationCommandKind::ALL.len(), 85);
+-        assert_eq!(ActionKind::ALL.len(), 85);
++        assert_eq!(ApplicationCommandKind::ALL.len(), 86);
++        assert_eq!(ActionKind::ALL.len(), 86);
+         for domain in ActionKind::ALL {
+             let application = ApplicationCommandKind::from_domain(*domain);
+             assert_eq!(application.into_domain(), *domain);
+--- baseline/core_enhanced/src/game/battle/core/basic_heal.rs
++++ current/core_enhanced/src/game/battle/core/basic_heal.rs
+@@ -44,6 +44,7 @@
+                     && effective_basic_heal_amount(source).is_some()
+                     && target.is_active()
+                     && target.role != crate::game::battle::types::BattleUnitRole::IndependentWall
++                    && !self.stress_protected_target(target.instance_id)
+                     && source.owner == target.owner
+                     && target.stats.current_health < target.stats.max_health
+                     && self.is_basic_attack_target_in_range(actor, target.instance_id)
+--- baseline/core_enhanced/src/game/battle/core/commands.rs
++++ current/core_enhanced/src/game/battle/core/commands.rs
+@@ -238,7 +238,7 @@
+             TriggerEffectTarget::AllAllies => self
+                 .units
+                 .values()
+-                .filter(|unit| unit.owner == owner && unit.is_active())
++                .filter(|unit| unit.owner == owner && unit.is_active() && !self.stress_protected_target(unit.instance_id))
+                 .map(|unit| unit.instance_id)
+                 .collect(),
+             TriggerEffectTarget::AllEnemies => self
+@@ -275,7 +275,7 @@
+         }
+ 
+         match hit_targets {
+-            SkillHitTargetFilter::Allies => target.owner == caster_owner,
++            SkillHitTargetFilter::Allies => target.owner == caster_owner && !self.stress_protected_target(target_id),
+             SkillHitTargetFilter::Enemies => target.owner != caster_owner,
+             SkillHitTargetFilter::Any => true,
+         }
+@@ -978,6 +978,7 @@
+                     target_id,
+                     modifier,
+                 } => {
++                    if !self.stress_allied_effect_allowed(modifier_source_instance_id, target_id) { continue; }
+                     let Some(target) = self.units.get(&target_id) else {
+                         continue;
+                     };
+@@ -1130,6 +1131,7 @@
+                     percent,
+                     source_id,
+                 } => {
++                    if self.stress_protected_target(target_id) { continue; }
+                     let max_health = match self.units.get(&target_id) {
+                         Some(unit) if unit.is_active() => unit.stats.max_health.max(1),
+                         _ => continue,
+@@ -1245,6 +1247,7 @@
+                     buff_id,
+                     duration_ms,
+                 } => {
++                    if !self.stress_allied_effect_allowed(Some(caster_id), target_id) { continue; }
+                     let source = if self.authoring_observation.is_some() {
+                         if control::charge(1, "authoring_buff_source").is_err() {
+                             break;
+--- baseline/core_enhanced/src/game/battle/core/field_work.rs
++++ current/core_enhanced/src/game/battle/core/field_work.rs
+@@ -855,6 +855,48 @@
+     }
+ 
+     #[test]
++    fn u164_stress_blocks_generic_ally_heal_and_protection_but_allows_authored_repair() {
++        use crate::game::battle::damage::BattleCommand;
++        let (mut core, mut execution) = field_work_core(vec![FieldWorkCellDef {
++            id: FieldWorkCellId::new("repair_cell"), position: Position::new(1, 1), tile_kind: TacticalTileKind::Ground,
++        }], 1000);
++        core.configure_stress_rounds(vec![vec!["never_clear".into()]; 5]);
++        let target = core.protected_unit_id().unwrap();
++        core.apply_hp_delta_and_record(None, target, -100, 0, HpChangeReason::Command);
++        let worker = deploy_worker(&mut core, 0x16401, 1, Position::new(1, 1), 0);
++        assert!(!core.is_alive_ally(target, Side::Player));
++        assert!(!core.stress_allied_effect_allowed(Some(worker), target));
++        assert!(!core.stress_protected_target(worker));
++        core.process_commands(vec![BattleCommand::ApplyHeal { target_id: target, flat: 100, percent: 0, source_id: Some(worker) }], 0);
++        assert_eq!(core.units[&target].stats.current_health, 100, "generic employee healing cannot repair objective");
++        core.step_battle_execution_by(&mut execution, 1000).unwrap();
++        assert_eq!(core.units[&target].stats.current_health, 200, "explicit RepairProtectedUnit remains effective");
++    }
++
++    #[test]
++    fn u164_stress_generic_sustained_protection_cannot_reach_objective() {
++        use crate::game::ability::{SkillHitTargetFilter, sustained::SustainedEffectDef};
++        use crate::game::battle::damage::BattleCommand;
++        for stress in [false, true] {
++            let (mut core, _) = field_work_core(vec![FieldWorkCellDef {
++                id: FieldWorkCellId::new("repair_cell"), position: Position::new(1, 1), tile_kind: TacticalTileKind::Ground,
++            }], 1000);
++            if stress { core.configure_stress_rounds(vec![vec!["never_clear".into()]; 5]); }
++            let target = core.protected_unit_id().unwrap();
++            let worker = deploy_worker(&mut core, 0x16402, 1, Position::new(1, 1), 0);
++            // Authored TileArea/Any delivery can include an objective even when
++            // the single-ally selector excludes it. The effect owner must gate it.
++            assert!(core.skill_delivery_accepts_unit(Side::Player, worker, target, SkillHitTargetFilter::Any, false));
++            core.process_commands(vec![BattleCommand::BeginSustained {
++                caster_id: worker, target_id: target,
++                definition: SustainedEffectDef::Shield { duration_ms: 1000, amount: 100, priority: 0, shared_radius_units: None },
++            }], 0);
++            let receipt = core.absorb_sustained_shields(target, 50, 0).unwrap();
++            assert_eq!(receipt.absorbed, if stress { 0 } else { 50 });
++        }
++    }
++
++    #[test]
+     fn field_work_preserves_progress_suspends_for_hard_cc_and_completes_once() {
+         let (mut core, mut execution) = field_work_core(
+             vec![FieldWorkCellDef {
+--- baseline/core_enhanced/src/game/battle/core/sim.rs
++++ current/core_enhanced/src/game/battle/core/sim.rs
+@@ -1937,6 +1937,15 @@
+                     .then_with(|| left.id.cmp(&right.id))
+             })
+             .cloned()
++    }
++
++    pub(crate) fn finish_stress_extraction(&mut self, state: &mut BattleExecutionState) -> Result<BattleResult, GameError> {
++        if !self.stress_round_status().is_some_and(|(_, _, waiting)| waiting) || state.is_finished() {
++            return Err(GameError::InvalidAction);
++        }
++        let outcome = self.scenario.terminal_outcomes.iter().find(|o| o.verdict == BattleVerdict::Victory).cloned().ok_or(GameError::InvalidAction)?;
++        Self::finish_signal(state, state.last_event_time_ms, outcome);
++        self.finalize_battle_execution_in_candidate(state)
+     }
+ 
+     fn all_required_enemy_groups_defeated(&self) -> bool {
+@@ -2676,6 +2685,7 @@
+     {
+         self.ensure_not_forced_paused()?;
+         control::charge(1, "battle_bucket_entry")?;
++        if self.stress_round_status().is_some_and(|(_, _, waiting)| waiting) { return Ok(BattleStepOutcome::Running); }
+         if state.is_finished() {
+             return Err(GameError::InvalidAction);
+         }
+@@ -2783,6 +2793,7 @@
+             }
+         }
+ 
++        self.settle_stress_round();
+         self.runtime_facts.release_empty_action_storage();
+         control::poll("battle_bucket_complete")?;
+         if let Some(outcome) = self.compute_terminal_outcome(current_time_ms) {
+@@ -2871,7 +2882,7 @@
+             && !crate::authoring::control::is_active();
+         let mut timestamp_units = None;
+         loop {
+-            if self.corrosion_freeze.is_some() {
++            if self.corrosion_freeze.is_some() || self.stress_round_status().is_some_and(|(_, _, waiting)| waiting) {
+                 return Ok(BattleStepOutcome::Running);
+             }
+             control::charge(1, "battle_clock_iteration")?;
+--- baseline/core_enhanced/src/game/battle/core/skill_runtime/cast.rs
++++ current/core_enhanced/src/game/battle/core/skill_runtime/cast.rs
+@@ -446,7 +446,7 @@
+     ) -> bool {
+         self.units
+             .get(&id)
+-            .is_some_and(|unit| unit.owner == owner && unit.is_active())
++            .is_some_and(|unit| unit.owner == owner && unit.is_active() && !self.stress_protected_target(id))
+     }
+ 
+     pub(in crate::game::battle::core) fn choose_ally_skill_target(
+--- baseline/core_enhanced/src/game/battle/core/sustained.rs
++++ current/core_enhanced/src/game/battle/core/sustained.rs
+@@ -308,6 +308,7 @@
+             .map_err(GameError::InvalidStaticData)?;
+         if !self.units.get(&caster).is_some_and(|u| u.is_active())
+             || !self.units.get(&target).is_some_and(|u| u.is_active())
++            || !self.stress_allied_effect_allowed(Some(caster), target)
+         {
+             return Ok(());
+         }
+--- baseline/core_enhanced/src/game/battle/core/wave_runtime.rs
++++ current/core_enhanced/src/game/battle/core/wave_runtime.rs
+@@ -51,13 +51,24 @@
+     triggers: BTreeMap<String, WaveTriggerRecord>,
+     death_epochs: BTreeMap<UnitInstanceId, u64>,
+     next_death_epoch: u64,
++    stress: Option<StressRounds>,
+ }
++
++#[derive(Debug, Clone)]
++struct StressRounds {
++    rounds: Vec<Vec<String>>,
++    current: usize,
++    completed: usize,
++    waiting: bool,
++}
++crate::authoring::clone_shape::struct_shape!(StressRounds { rounds, current, completed, waiting });
+ 
+ crate::authoring::clone_shape::copy_shape!(BoundActor, WaveActivationCause);
+ crate::authoring::clone_shape::struct_shape!(WaveRuntimeState {
+     triggers,
+     death_epochs,
+-    next_death_epoch
++    next_death_epoch,
++    stress
+ });
+ crate::authoring::clone_shape::struct_shape!(WaveTriggerRecord {
+     group_id,
+@@ -79,6 +90,35 @@
+ }
+ 
+ impl BattleCore {
++    pub(super) fn stress_protected_target(&self, id: UnitInstanceId) -> bool {
++        self.scenario_runtime.wave_runtime.stress.is_some()
++            && self.units.get(&id).is_some_and(|u| u.role == crate::game::battle::types::BattleUnitRole::DefenseObject)
++    }
++    pub(super) fn stress_allied_effect_allowed(&self, source: Option<UnitInstanceId>, target: UnitInstanceId) -> bool {
++        !self.stress_protected_target(target) || source.and_then(|id| self.units.get(&id))
++            .zip(self.units.get(&target)).is_some_and(|(a,b)| a.owner != b.owner)
++    }
++    pub(crate) fn configure_stress_rounds(&mut self, rounds: Vec<Vec<String>>) {
++        self.scenario_runtime.wave_runtime.stress = Some(StressRounds { rounds, current: 0, completed: 0, waiting: false });
++    }
++    pub(crate) fn stress_round_status(&self) -> Option<(usize, usize, bool)> {
++        self.scenario_runtime.wave_runtime.stress.as_ref().map(|s| (s.current, s.completed, s.waiting))
++    }
++    pub(crate) fn continue_stress_round(&mut self) -> Result<(), GameError> {
++        let s = self.scenario_runtime.wave_runtime.stress.as_mut().ok_or(GameError::InvalidAction)?;
++        if !s.waiting || s.completed >= s.rounds.len() { return Err(GameError::InvalidAction); }
++        s.current += 1;
++        s.waiting = false;
++        Ok(())
++    }
++    pub(super) fn settle_stress_round(&mut self) {
++        let Some(s) = self.scenario_runtime.wave_runtime.stress.as_ref() else { return; };
++        if !s.waiting && s.rounds[s.current].iter().all(|id| self.scenario_group_is_clear(&ScenarioGroupId::new(id))) {
++            let s = self.scenario_runtime.wave_runtime.stress.as_mut().unwrap();
++            s.completed = s.current + 1;
++            s.waiting = s.completed < s.rounds.len();
++        }
++    }
+     pub(in crate::game::battle::core) fn register_wave_trigger(
+         &mut self,
+         group_id: ScenarioGroupId,
+@@ -268,6 +308,10 @@
+         record: &WaveTriggerRecord,
+         now_ms: u64,
+     ) -> Option<WaveActivationCause> {
++        if self.scenario_runtime.wave_runtime.stress.as_ref().is_some_and(|s|
++            !s.rounds[..=s.current].iter().any(|r| r.contains(&record.group_id.0))) {
++            return None;
++        }
+         if self.wave_primary_is_true(record, now_ms) {
+             return Some(WaveActivationCause::Primary);
+         }
+--- baseline/core_enhanced/src/game/behavior.rs
++++ current/core_enhanced/src/game/behavior.rs
+@@ -323,6 +323,7 @@
+     SelectRelicFusionInputs,
+     ConfirmRelicFusion,
+     DealerAct,
++    StressCombatAct,
+     PurchaseItem,
+     SellItem,
+     RefreshShop,
+@@ -482,6 +483,7 @@
+             | Self::BeginSkillTargeting
+             | Self::CancelSkillTargeting
+             | Self::ActivateSkill
++            | Self::StressCombatAct
+             | Self::RetreatBattle
+             | Self::PauseBattle
+             | Self::ResumeBattle
+@@ -1540,6 +1542,8 @@
+         playback: Option<BattlePlaybackState>,
+         abnormality_attempt: Option<AbnormalityAttemptDto>,
+         can_retreat: bool,
++        #[serde(default, skip_serializing_if = "Option::is_none")]
++        stress_combat: Option<crate::game::stress_combat::StressCombatView>,
+     },
+     GameOver,
+     RunComplete,
+@@ -1813,6 +1817,7 @@
+     /// Consume the selected inputs and complete the relic node atomically.
+     ConfirmRelicFusion,
+     DealerAct { revision: u64, action: crate::game::dealer::DealerAction },
++    StressCombatAct { battle_uuid: Uuid, completed_rounds: u8, extract: bool },
+     // ============================================================
+     // 상점 관련 행동
+     // ============================================================
+@@ -2026,6 +2031,7 @@
+             PlayerBehavior::SelectRelicFusionInputs { .. } => ActionKind::SelectRelicFusionInputs,
+             PlayerBehavior::ConfirmRelicFusion => ActionKind::ConfirmRelicFusion,
+             PlayerBehavior::DealerAct { .. } => ActionKind::DealerAct,
++            PlayerBehavior::StressCombatAct { .. } => ActionKind::StressCombatAct,
+             PlayerBehavior::PurchaseItem { .. } => ActionKind::PurchaseItem,
+             PlayerBehavior::SellItem { .. } => ActionKind::SellItem,
+             PlayerBehavior::RefreshShop => ActionKind::RefreshShop,
+@@ -5939,6 +5945,7 @@
+             (PreviewTacticalCommand, CoreBattle, Query, false),
+             (ActivateSkill, CoreBattle, Gameplay, true),
+             (RetreatBattle, CoreBattle, Gameplay, true),
++            (StressCombatAct, CoreBattle, Gameplay, true),
+             (PauseBattle, CoreBattle, Gameplay, true),
+             (ResumeBattle, CoreBattle, Gameplay, true),
+             (SetBattleSpeed, CoreBattle, Gameplay, true),
+@@ -5946,7 +5953,7 @@
+ 
+         assert_eq!(
+             cases.len(),
+-            85,
++            86,
+             "the current command vocabulary is exhaustive"
+         );
+         let characterized_actions = cases
+--- baseline/core_enhanced/src/game/data/live_ron.rs
++++ current/core_enhanced/src/game/data/live_ron.rs
+@@ -1152,6 +1152,17 @@
+                 return Err(error("unknown layout difficulty profile".into()));
+             }
+             layout.relic_rewards.validate(&self.relics).map_err(&error)?;
++            if let Some(stress) = &layout.stress_combat {
++                stress.validate(&self.pve_encounters).map_err(&error)?;
++                for (ri, round) in stress.rounds.iter().enumerate() {
++                    for (ei, effect) in round.rewards.iter().enumerate() {
++                        self.validate_reward_effect_at(effect, "data/maps/facility_layouts.ron", "facility_layouts", &layout.id, format!("stress_combat.rounds[{ri}].rewards[{ei}]"))?;
++                    }
++                }
++            }
++            if layout.activities.iter().any(|a| a.support.is_supported() && a.reward_activity == Some(crate::game::map::RewardActivityKind::StressCombat)) && layout.stress_combat.is_none() {
++                return Err(error("supported StressCombat requires stress_combat policy".into()));
++            }
+             if let Some(dealer) = &layout.dealer { dealer.validate(&self.relics, &self.visual_novels).map_err(&error)?; }
+             for activity in &layout.activities {
+                 let node = self.map_catalogs.map_node_definitions.nodes.iter().find(|n| n.kind_id == activity.kind_id).ok_or_else(|| error(format!("activity '{}' has unknown node kind",activity.id)))?;
+@@ -2789,6 +2800,7 @@
+                         "ReferenceFinalBoss"
+                     }
+                     crate::game::data::pve_data::PveEncounterClass::Normal => "Normal",
++                    crate::game::data::pve_data::PveEncounterClass::StressCombat => "StressCombat",
+                 };
+                 let dust = match source.repeat_reward {
+                     crate::game::reward::RewardEffect::GrantFragmentDust { amount } => amount,
+--- baseline/core_enhanced/src/game/data/pve_data.rs
++++ current/core_enhanced/src/game/data/pve_data.rs
+@@ -34,6 +34,8 @@
+ #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+ pub enum PveEncounterClass {
+     Normal,
++    /// Activity-only continuous defense; excluded from ordinary map selectors.
++    StressCombat,
+     Elite,
+     NormalBoss,
+     FinalBoss,
+@@ -726,7 +728,7 @@
+                         "reference-only encounters cannot author abnormality reward sources",
+                     ));
+                 }
+-                PveEncounterClass::Normal => {
++                PveEncounterClass::Normal | PveEncounterClass::StressCombat => {
+                     return Err(crate::game::data::DataValidationError::at(
+                         &source.reward_source_id,
+                         format!("{source_path}.encounter_id"),
+@@ -964,7 +966,7 @@
+     }
+ 
+     match encounter.encounter_class {
+-        PveEncounterClass::Normal => {
++        PveEncounterClass::Normal | PveEncounterClass::StressCombat => {
+             if encounter.primary_abnormality_id.is_some() {
+                 return Err(pve_error(
+                     encounter,
+--- baseline/core_enhanced/src/game/data/validation.rs
++++ current/core_enhanced/src/game/data/validation.rs
+@@ -962,7 +962,7 @@
+             crate::game::data::DataValidationError::at(&encounter.id, path, cause)
+         };
+         match encounter.encounter_class {
+-            PveEncounterClass::Normal => {
++            PveEncounterClass::Normal | PveEncounterClass::StressCombat => {
+                 if encounter.primary_abnormality_id().is_some() {
+                     return Err(error(
+                         format!("{encounter_path}.primary_abnormality_id"),
+@@ -1013,7 +1013,7 @@
+                             format!("primary abnormality '{primary_abnormality_id}' must be Boss"),
+                         ));
+                     }
+-                    PveEncounterClass::Normal => unreachable!(),
++                    PveEncounterClass::Normal | PveEncounterClass::StressCombat => unreachable!(),
+                     _ => {}
+                 }
+             }
+--- baseline/core_enhanced/src/game/map/facility_layout.rs
++++ current/core_enhanced/src/game/map/facility_layout.rs
+@@ -25,6 +25,8 @@
+     pub relic_rewards: crate::game::relic_reward::BasicRelicRewardPolicy,
+     #[serde(default, skip_serializing_if = "Option::is_none")]
+     pub dealer: Option<crate::game::dealer::DealerPolicy>,
++    #[serde(default, skip_serializing_if = "Option::is_none")]
++    pub stress_combat: Option<crate::game::stress_combat::StressCombatPolicy>,
+ }
+ 
+ #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+--- baseline/core_enhanced/src/game/map/types.rs
++++ current/core_enhanced/src/game/map/types.rs
+@@ -604,6 +604,8 @@
+ 
+ #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+ pub struct NodeEntryPreviewDto {
++    #[serde(default, skip_serializing_if = "Option::is_none")]
++    pub stress_combat: Option<crate::game::stress_combat::StressCombatEntryView>,
+     pub combat_deterrence: Option<crate::game::combat_preview::BattleDeterrenceSnapshot>,
+     pub sealed_golden_bough: bool,
+     pub regulated_cost: u32,
+--- baseline/core_enhanced/src/game/mod.rs
++++ current/core_enhanced/src/game/mod.rs
+@@ -23,6 +23,7 @@
+ pub mod relic;
+ pub mod relic_reward;
+ pub mod dealer;
++pub mod stress_combat;
+ pub mod dealer_games;
+ pub mod resource;
+ pub mod resources;
+--- baseline/core_enhanced/src/game/world/action_capability.rs
++++ current/core_enhanced/src/game/world/action_capability.rs
+@@ -392,6 +392,7 @@
+                     CommonActionEvaluation::Irrelevant
+                 }
+             }
++            ActionKind::StressCombatAct => CommonActionEvaluation::Irrelevant,
+             ActionKind::CompleteNode => self.evaluate_complete_node(),
+             ActionKind::RecruitEmployee
+             | ActionKind::RequestEmergencySupplies
+--- baseline/core_enhanced/src/game/world/active_run/continuation.rs
++++ current/core_enhanced/src/game/world/active_run/continuation.rs
+@@ -679,7 +679,11 @@
+             self.state.continue_state = Default::default();
+             return Ok(());
+         }
+-        if matches!(route, ApplicationRoute::Behavior(ActionKind::RetreatBattle)) {
++        // Ordinary retreat returns to confirmation and preserves its pre-entry
++        // Continue root. Stress retreat consumes the node and must publish the
++        // resulting stable state below, including its retained entry cost.
++        if matches!(route, ApplicationRoute::Behavior(ActionKind::RetreatBattle))
++            && matches!(phase, GameState::NodeConfirm { .. }) {
+             let node_id = self
+                 .state
+                 .continue_state
+--- baseline/core_enhanced/src/game/world/application.rs
++++ current/core_enhanced/src/game/world/application.rs
+@@ -140,6 +140,7 @@
+         | ActionKind::PreviewSkillTarget
+         | ActionKind::PreviewTacticalCommand
+         | ActionKind::ActivateSkill
++        | ActionKind::StressCombatAct
+         | ActionKind::RetreatBattle
+         | ActionKind::PauseBattle
+         | ActionKind::ResumeBattle
+@@ -552,7 +553,7 @@
+ 
+     #[test]
+     fn every_behavior_kind_has_exactly_one_application_owner() {
+-        assert_eq!(ActionKind::ALL.len(), 85);
++        assert_eq!(ActionKind::ALL.len(), 86);
+         for action in ActionKind::ALL {
+             let route = ApplicationRoute::Behavior(*action);
+             assert_eq!(route.owner(), behavior_owner(*action));
+--- baseline/core_enhanced/src/game/world/battle_capability.rs
++++ current/core_enhanced/src/game/world/battle_capability.rs
+@@ -28,13 +28,14 @@
+             .as_ref()
+             .ok_or(GameError::InvalidAction)?;
+         let finished = active.execution.is_finished();
++        let stress_choice = active.battle.stress_round_status().is_some_and(|(_,_,w)| w);
+         let blocking_visual_novel = visual_novel.is_some_and(|session| session.blocking);
+         let deployment = (!finished && !blocking_visual_novel)
+             .then(|| active.live_deployment_dto(active.employee_roster()))
+             .flatten();
+ 
+         let ordinary = |evaluation| {
+-            if finished || blocking_visual_novel {
++            if finished || blocking_visual_novel || stress_choice {
+                 BattleActionEvaluation::Irrelevant(ActionDisabledReasonCode::ContextIrrelevant)
+             } else {
+                 evaluation
+@@ -177,6 +178,7 @@
+         };
+ 
+         let mut evaluations = vec![
++            (ActionKind::StressCombatAct, if stress_choice && !blocking_visual_novel { BattleActionEvaluation::Enabled } else { BattleActionEvaluation::Irrelevant(ActionDisabledReasonCode::ContextIrrelevant) }),
+             (
+                 ActionKind::RequestBattleState,
+                 if finished {
+--- baseline/core_enhanced/src/game/world/combat.rs
++++ current/core_enhanced/src/game/world/combat.rs
+@@ -532,6 +532,13 @@
+                     self.game_data.identity_arc(),
+                 )?,
+             )?;
++            let stress_combat = if self.basic_relic_activity(node_id) == Some(crate::game::map::RewardActivityKind::StressCombat) {
++                let policy = self.facility_layout().and_then(|l| l.stress_combat.as_ref()).ok_or(GameError::InvalidAction)?;
++                crate::game::relic::allocation::admit_owned_projection(policy, "stress_battle_policy")?;
++                let policy = crate::authoring::clone_shape::controlled_clone(policy)?;
++                battle.configure_stress_rounds(policy.battle_round_groups()?);
++                Some(policy)
++            } else { None };
+             battle.configure_performance_bonus(primary_abnormality_id.as_deref());
+             battle.set_effective_owner(self.capture_structural_battle_owner()?)?;
+             if let Some(plan)=self.authoring_observation.as_ref().and_then(|o|o.coverage_plan.as_ref()) {battle.set_lab_coverage(plan)?;}
+@@ -546,6 +553,7 @@
+                 node_type,
+                 mission_variant,
+                 outcome_policies,
++                stress_combat,
+                 combat_preview: combat_preview.clone(),
+                 battle,
+                 execution,
+@@ -1350,10 +1358,15 @@
+             #[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
+             event_log: active.battle.event_log.clone(),
+             result_stats,
+-            reward_mode: outcome_policy.reward_mode,
+-            rewards: outcome_policy.rewards.clone(),
+-            grant_node_bonus: outcome_policy.grant_node_bonus,
+-            advance_encounter_progression: outcome_policy.advance_encounter_progression,
++            reward_mode: if active.stress_combat.is_some() { crate::game::enums::RewardMode::ClaimAll } else { outcome_policy.reward_mode },
++            rewards: if let Some(policy) = &active.stress_combat {
++                let completed = active.battle.stress_round_status().ok_or(GameError::InvalidAction)?.1;
++                if verdict == crate::game::battle::types::BattleVerdict::Victory {
++                    vec![crate::game::reward::RewardOption { id: "stress_accumulated".into(), uuid: active.node_id.0, name: "Stress combat rewards".into(), description: String::new(), icon: String::new(), effects: policy.rewards_through(completed, 1)? }]
++                } else { vec![] }
++            } else { outcome_policy.rewards.clone() },
++            grant_node_bonus: active.stress_combat.is_none() && outcome_policy.grant_node_bonus,
++            advance_encounter_progression: active.stress_combat.is_none() && outcome_policy.advance_encounter_progression,
+             participant_results,
+             employee_conditions: active.employee_attempt.roster.clone(),
+             compendium_candidates: active.battle.compendium_candidates(),
+@@ -2922,6 +2935,7 @@
+             .as_ref()
+             .ok_or(GameError::InvalidAction)?;
+         let node_id = active.node_id;
++        let stress = active.stress_combat.is_some();
+         let snapshot = crate::authoring::clone_shape::controlled_clone(
+             active
+                 .entry_snapshot
+@@ -2936,6 +2950,7 @@
+         // Keep the active battle intact until the fallible shared copy succeeds.
+         // The outer application draft remains authoritative for later failures.
+         BattleEntrySnapshot::restore_shared(snapshot, &mut self.state)?;
++        if stress { return self.handle_complete_node(); }
+         self.run_state_mut()?.abnormality_attempts.insert(
+             node_id,
+             super::state::AbnormalityAttemptState {
+@@ -2981,11 +2996,12 @@
+     pub(super) fn active_battle_retreat_available(&self) -> bool {
+         self.state.active_battle.as_ref().is_some_and(|active| {
+             !active.execution.is_finished()
+-                && self
++                && !active.battle.stress_round_status().is_some_and(|(_,_,w)| w)
++                && (active.stress_combat.is_some() || self
+                     .state
+                     .run
+                     .as_ref()
+-                    .is_some_and(|run| run.abnormality_attempt_state(active.node_id).can_retreat())
++                    .is_some_and(|run| run.abnormality_attempt_state(active.node_id).can_retreat()))
+         })
+     }
+ 
+@@ -3301,7 +3317,7 @@
+                     reward_effects,
+                 })
+             }
+-            crate::game::data::pve_data::PveEncounterClass::Normal => {
++            crate::game::data::pve_data::PveEncounterClass::Normal | crate::game::data::pve_data::PveEncounterClass::StressCombat => {
+                 Ok(EncounterVictoryPlan::default())
+             }
+             crate::game::data::pve_data::PveEncounterClass::ReferenceFinalBoss => {
+@@ -3507,3 +3523,37 @@
+         }
+     }
+ }
++
++impl GameCore {
++    pub(super) fn start_stress_combat(&mut self, node_id: MapNodeId) -> Result<BehaviorResult, GameError> {
++        let id = self.facility_layout().and_then(|l| l.stress_combat.as_ref()).ok_or(GameError::InvalidAction)?.encounter_id.clone();
++        let snapshot = BattleEntrySnapshot::capture(&self.state)?;
++        self.handle_explicit_combat_node(node_id, MapNodeCategory::Combat, None, id, Some(snapshot))
++    }
++
++    pub(super) fn stress_combat_view(&self) -> Result<Option<crate::game::stress_combat::StressCombatView>, GameError> {
++        let Some(active) = &self.state.active_battle else { return Ok(None); };
++        let Some(policy) = &active.stress_combat else { return Ok(None); };
++        let (current, completed, waiting) = active.battle.stress_round_status().ok_or(GameError::InvalidAction)?;
++        let multiplier = active.combat_preview.deterrence.victory_quantity_multiplier;
++        let pending_rewards = policy.rewards_through(completed, multiplier)?;
++        let next_index = if waiting { completed } else { current };
++        let next_rewards = policy.rewards_for_round(next_index, multiplier)?;
++        Ok(Some(crate::game::stress_combat::StressCombatView { battle_uuid: active.battle_uuid, current_round: (current+1) as u8, completed_rounds: completed as u8, awaiting_choice: waiting, quantity_multiplier: multiplier, pending_rewards, next_rewards }))
++    }
++
++    pub(super) fn handle_stress_combat_action(&mut self, battle_uuid: Uuid, completed_rounds: u8, extract: bool) -> Result<BehaviorResult, GameError> {
++        let active = self.state.active_battle.as_mut().ok_or(GameError::InvalidAction)?;
++        let (_, completed, waiting) = active.battle.stress_round_status().ok_or(GameError::InvalidAction)?;
++        if active.battle_uuid != battle_uuid || completed != usize::from(completed_rounds) || !waiting { return Err(GameError::InvalidAction); }
++        if extract {
++            let result = active.battle.finish_stress_extraction(&mut active.execution)?;
++            let battle = Self::combat_battle_state_from_live_result(active, result.outcome_id, result.verdict, result.result_stats, result.participant_results)?;
++            self.transition_finished_live_battle_to_result(battle_uuid, battle)?;
++            self.state.confirmed_combat_result.as_ref().map(|r| r.acknowledgement.as_ref().clone()).ok_or(GameError::InvalidAction)
++        } else {
++            active.battle.continue_stress_round()?;
++            self.advance_active_battle_by_internal(0, false, 0)
++        }
++    }
++}
+--- baseline/core_enhanced/src/game/world/expedition_lifecycle.rs
++++ current/core_enhanced/src/game/world/expedition_lifecycle.rs
+@@ -231,13 +231,22 @@
+                 }
+             }).collect();
+         breakdown.sort_by_key(|entry| entry.employee_uuid);
+-        let combat_deterrence = match &node.payload {
++        let stress_policy = (self.basic_relic_activity(node.id) == Some(crate::game::map::RewardActivityKind::StressCombat))
++            .then(|| self.facility_layout().and_then(|l| l.stress_combat.as_ref())).flatten();
++        let mut combat_deterrence = match &node.payload {
+             crate::game::map::MapNodePayload::Encounter { encounter_id: Some(id) } => self.game_data.pve_data.get_by_id(id)
+                 .map(|encounter| crate::game::combat_preview::BattleDeterrenceSnapshot::for_entry(
+                     encounter.deterrence_tuning, expedition && deterrence_after == 0, sealed)),
+             _ => None,
+         };
++        let stress_combat = stress_policy.map(|policy| {
++            let encounter = self.game_data.pve_data.get_by_id(&policy.encounter_id).ok_or(GameError::InvalidAction)?;
++            let snapshot = crate::game::combat_preview::BattleDeterrenceSnapshot::for_entry(encounter.deterrence_tuning, expedition && deterrence_after == 0, false);
++            combat_deterrence = Some(snapshot);
++            Ok::<_, GameError>(crate::game::stress_combat::StressCombatEntryView { total_rounds: 5, quantity_multiplier: snapshot.victory_quantity_multiplier, first_rewards: policy.rewards_through(1, snapshot.victory_quantity_multiplier)? })
++        }).transpose()?;
+         Ok(crate::game::map::NodeEntryPreviewDto {
++            stress_combat,
+             combat_deterrence,
+             sealed_golden_bough: sealed,
+             regulated_cost, charged_cost, deterrence_after,
+--- baseline/core_enhanced/src/game/world/facility_rooms.rs
++++ current/core_enhanced/src/game/world/facility_rooms.rs
+@@ -89,7 +89,9 @@
+         if activity.condition.is_some() {
+             return Some(FacilityContentSupport::Unsupported { reason:"조우 조건 생산자 미지원".into() });
+         }
+-        if metadata.reward_activity.is_some_and(|kind| !Self::basic_relic_activity_supported(kind) && !(kind == crate::game::map::RewardActivityKind::Gambling && self.facility_layout().is_some_and(|l| l.dealer.is_some()))) {
++        if metadata.reward_activity.is_some_and(|kind| !Self::basic_relic_activity_supported(kind)
++            && !(kind == crate::game::map::RewardActivityKind::Gambling && layout.dealer.is_some())
++            && !(kind == crate::game::map::RewardActivityKind::StressCombat && layout.stress_combat.is_some())) {
+             return Some(FacilityContentSupport::Unsupported {reason:"이 유물 활동은 후속 U16 묶음에서 지원합니다".into()});
+         }
+         Some(FacilityContentSupport::Supported)
+--- baseline/core_enhanced/src/game/world/map_content.rs
++++ current/core_enhanced/src/game/world/map_content.rs
+@@ -286,6 +286,9 @@
+                 Ok(Some(BehaviorResult::ShopState { shop: shop_result }))
+             }
+             MapNodeCategory::Reward => {
++                if self.basic_relic_activity(node_id) == Some(crate::game::map::RewardActivityKind::StressCombat) {
++                    return self.start_stress_combat(node_id).map(Some);
++                }
+                 let Some(reward) = self.resolve_map_reward(node_id, payload)? else {
+                     return Ok(None);
+                 };
+--- baseline/core_enhanced/src/game/world/snapshot.rs
++++ current/core_enhanced/src/game/world/snapshot.rs
+@@ -334,7 +334,7 @@
+         });
+         Ok(RunSnapshotDto {
+             game_state: self.game_state_name().to_string(),
+-            game_state_context: self.game_state_context_dto(),
++            game_state_context: self.game_state_context_dto(self.stress_combat_view()?),
+             action_capabilities: self.get_action_capabilities(),
+             run_checkpoint: self
+                 .state
+@@ -468,7 +468,7 @@
+         }))
+     }
+ 
+-    fn game_state_context_dto(&self) -> GameStateContextDto {
++    fn game_state_context_dto(&self, stress_combat: Option<crate::game::stress_combat::StressCombatView>) -> GameStateContextDto {
+         match self.get_state() {
+             GameState::NotStarted => GameStateContextDto::NotStarted,
+             GameState::PreRunBriefing { game_mode } => {
+@@ -544,6 +544,7 @@
+                     .state
+                     .run
+                     .as_ref()
++                    .filter(|_| active.stress_combat.is_none())
+                     .map(|run| run.abnormality_attempt_dto(active.node_id));
+                 let can_retreat = self.active_battle_retreat_available();
+                 GameStateContextDto::InBattle {
+@@ -558,6 +559,7 @@
+                     playback: Some(active.playback_state()),
+                     abnormality_attempt,
+                     can_retreat,
++                    stress_combat,
+                 }
+             }
+             GameState::AwaitingRunFailureDecision {
+--- baseline/core_enhanced/src/game/world/state.rs
++++ current/core_enhanced/src/game/world/state.rs
+@@ -718,6 +718,7 @@
+     pub node_type: CombatNodeType,
+     pub mission_variant: CombatMissionVariant,
+     pub outcome_policies: Vec<ResolvedCombatOutcomePolicy>,
++    pub stress_combat: Option<crate::game::stress_combat::StressCombatPolicy>,
+     pub combat_preview: CombatPreview,
+     pub battle: BattleCore,
+     pub execution: BattleExecutionState,
+@@ -2294,6 +2295,7 @@
+     node_type,
+     mission_variant,
+     outcome_policies,
++    stress_combat,
+     combat_preview,
+     battle,
+     execution,
+--- baseline/core_enhanced/src/game/world/tests/mod.rs
++++ current/core_enhanced/src/game/world/tests/mod.rs
+@@ -1835,3 +1835,4 @@
+ mod u162_relic_rewards;
+ 
+ mod u163_dealer;
++mod u164_stress;
+--- baseline/core_enhanced/src/game/world.rs
++++ current/core_enhanced/src/game/world.rs
+@@ -872,6 +872,7 @@
+                 battle_event_after_seq,
+             ),
+             PlayerBehavior::RetreatBattle => self.handle_retreat_battle(),
++            PlayerBehavior::StressCombatAct { battle_uuid, completed_rounds, extract } => self.handle_stress_combat_action(battle_uuid, completed_rounds, extract),
+             PlayerBehavior::PauseBattle => self.handle_pause_battle(battle_event_after_seq),
+             PlayerBehavior::ResumeBattle => self.handle_resume_battle(battle_event_after_seq),
+             PlayerBehavior::SetBattleSpeed { speed } => {
+--- baseline/core_enhanced/tests/ron_loading.rs
++++ current/core_enhanced/tests/ron_loading.rs
+@@ -1045,6 +1045,28 @@
+             RewardMode::ClaimAll,
+             "live combat rewards must be automatically granted"
+         );
++        if encounter.encounter_class == PveEncounterClass::StressCombat {
++            assert!(victory_policy(encounter).reward_uuids.is_empty(),
++                "stress rewards belong to the round policy, without a second encounter grant");
++            let policies: Vec<_> = game_data.facility_templates().layouts.iter()
++                .filter_map(|layout| layout.stress_combat.as_ref())
++                .filter(|policy| policy.encounter_id == encounter.id)
++                .collect();
++            assert!(!policies.is_empty(), "live stress encounter requires an authored round reward owner");
++            for policy in policies {
++                assert_eq!(policy.rounds.len(), 5);
++                for round in &policy.rounds {
++                    assert!(!round.rewards.is_empty(), "live stress round must author fixed rewards");
++                    for effect in &round.rewards {
++                        match effect {
++                            RewardEffect::GrantEnkephalin { amount } if *amount > 0 => { observed_effects.insert("enkephalin"); }
++                            other => panic!("unexpected official stress round reward: {other:?}"),
++                        }
++                    }
++                }
++            }
++            continue;
++        }
+         assert!(
+             !victory_policy(encounter).reward_uuids.is_empty(),
+             "live encounter '{}' must author fixed rewards",
+@@ -1267,7 +1289,8 @@
+             node_type
+         );
+         match encounter.encounter_class {
+-            game_core::game::data::pve_data::PveEncounterClass::Normal => {
++            game_core::game::data::pve_data::PveEncounterClass::Normal
++            | game_core::game::data::pve_data::PveEncounterClass::StressCombat => {
+                 assert!(
+                     encounter.primary_abnormality_id.is_none(),
+                     "normal pve encounter `{}` must not define primary_abnormality_id",
+--- baseline/game_resources/data/map/facility_templates.ron
++++ current/game_resources/data/map/facility_templates.ron
+@@ -1998,7 +1998,7 @@
+         (id: "boss_omen_capstone", template_ids: ["boss_omen_capstone"]),
+     ],
+     layouts: [
+-(id: "official_facility_v1", dealer: Some((basic_points:30,gambit_weights:(1,1),minimum_wager:1,flip_loss:10,flip_first_bonus:20,pledge_values:(10,30,60),offers:[],first_vn:"dealer_first_offer",repeat_vn:"dealer_repeat_offer",gambit_vn:"dealer_gambit")), golden_bough_plans: [(id: "cross_wing_early", weight: 50, deterrence_refill: 8, locations: [(room_id: "A5-02", slot_id: "9"), (room_id: "B4-02", slot_id: "2"), (room_id: "C4-02", slot_id: "10")]), (id: "cross_wing_deep", weight: 50, deterrence_refill: 8, locations: [(room_id: "A5-02", slot_id: "9"), (room_id: "B7-02", slot_id: "9"), (room_id: "C4-02", slot_id: "10")])], expedition_default: true, entrance_room_id: "ENTRY", initial_room_id: "B1-01", difficulty_profile_id: "facility_rooms_v1", rooms: [(id: "ENTRY", depth: 0, wing: None, name: "시설 입구", concept: "시설 입구", display: (x: 1400, y: 215, asset_id: "facility/room/ENTRY"), template_id: None, final_room: false, support: Supported, access_condition: None, reservations: [], omen_slot: None, elite_slots: [], safe_access_slots: [], slot_display: {}),
++(id: "official_facility_v1", stress_combat: Some((encounter_id:"stress_defense_v1",rounds:[(wave_ids:["stress_wave_1"],rewards:[GrantEnkephalin(amount:10)]),(wave_ids:["stress_wave_2"],rewards:[GrantEnkephalin(amount:20)]),(wave_ids:["stress_wave_3"],rewards:[GrantEnkephalin(amount:30)]),(wave_ids:["stress_wave_4"],rewards:[GrantEnkephalin(amount:40)]),(wave_ids:["stress_wave_5"],rewards:[GrantEnkephalin(amount:50)])])), dealer: Some((basic_points:30,gambit_weights:(1,1),minimum_wager:1,flip_loss:10,flip_first_bonus:20,pledge_values:(10,30,60),offers:[],first_vn:"dealer_first_offer",repeat_vn:"dealer_repeat_offer",gambit_vn:"dealer_gambit")), golden_bough_plans: [(id: "cross_wing_early", weight: 50, deterrence_refill: 8, locations: [(room_id: "A5-02", slot_id: "9"), (room_id: "B4-02", slot_id: "2"), (room_id: "C4-02", slot_id: "10")]), (id: "cross_wing_deep", weight: 50, deterrence_refill: 8, locations: [(room_id: "A5-02", slot_id: "9"), (room_id: "B7-02", slot_id: "9"), (room_id: "C4-02", slot_id: "10")])], expedition_default: true, entrance_room_id: "ENTRY", initial_room_id: "B1-01", difficulty_profile_id: "facility_rooms_v1", rooms: [(id: "ENTRY", depth: 0, wing: None, name: "시설 입구", concept: "시설 입구", display: (x: 1400, y: 215, asset_id: "facility/room/ENTRY"), template_id: None, final_room: false, support: Supported, access_condition: None, reservations: [], omen_slot: None, elite_slots: [], safe_access_slots: [], slot_display: {}),
+ (id: "A1-01", depth: 1, wing: Some("A"), name: "접수분소", concept: "접수분소 탐사 구역", display: (x: 205, y: 450, asset_id: "facility/room/A1-01"), template_id: Some("facility_6A"), final_room: false, support: Supported, access_condition: None, reservations: [], omen_slot: None, elite_slots: [], safe_access_slots: ["1",
+ "2",
+ "3"], slot_display: {"S": (x: 900, y: 235, asset_id: "facility/slot/6A/S"), "G": (x: 900, y: 1190, asset_id: "facility/slot/6A/G"), "1": (x: 550, y: 445, asset_id: "facility/slot/6A/1"), "2": (x: 550, y: 715, asset_id: "facility/slot/6A/2"), "3": (x: 550, y: 985, asset_id: "facility/slot/6A/3"), "4": (x: 1250, y: 445, asset_id: "facility/slot/6A/4"), "5": (x: 1250, y: 715, asset_id: "facility/slot/6A/5"), "6": (x: 1250, y: 985, asset_id: "facility/slot/6A/6")}),
+--- baseline/game_resources/data/pve/encounters.ron
++++ current/game_resources/data/pve/encounters.ron
+@@ -2881,6 +2881,27 @@
+                 ),
+             ],
+         ),
++
++        // U16-4 representative five-round defense; U21 owns later balance/content.
++        PveEncounter(
++            id: "stress_defense_v1", encounter_class: StressCombat, risk_level: ZAYIN,
++            node_type: Some(Defense), mission_variant: Some(Defense),
++            terminal_outcomes: [
++                PveTerminalOutcomeData(id:"victory",verdict:victory,condition:AllRequiredEnemyGroupsDefeated,priority:0),
++                PveTerminalOutcomeData(id:"defeat_protected_destroyed",verdict:defeat,condition:UnitDefeated(unit_ref:"black_box_device"),priority:0),
++            ],
++            outcome_policies: [
++                PveOutcomePolicyData(outcome_id:"victory",reward_mode:ClaimAll,reward_uuids:[],grant_node_bonus:false,advance_encounter_progression:false),
++                PveOutcomePolicyData(outcome_id:"defeat_protected_destroyed",reward_mode:ClaimAll,reward_uuids:[],grant_node_bonus:false,advance_encounter_progression:false),
++            ],
++            battlefield: Some((archetype:Some(OpenHall),size_class:Some(Small))),
++            tactical_plan: Some((points:[],objective:Some(ProtectUnit(unit_ref:"black_box_device")))),
++            waves: [PveWaveData(id:"stress_wave_1",activation:(trigger_id:"stress_wave_1",priority:0,primary:AtTimeMs(time_ms: 1000)),route_id:Some("defense_main"),required_for_victory:true,source:Manual([CorrodedEmployee(profile_id:"corroded_guard",tier:I,count:1)])),
++PveWaveData(id:"stress_wave_2",activation:(trigger_id:"stress_wave_2",priority:0,primary:GroupCleared(wave_id: "stress_wave_1")),route_id:Some("defense_main"),required_for_victory:true,source:Manual([CorrodedEmployee(profile_id:"corroded_guard",tier:II,count:1)])),
++PveWaveData(id:"stress_wave_3",activation:(trigger_id:"stress_wave_3",priority:0,primary:GroupCleared(wave_id: "stress_wave_2")),route_id:Some("defense_main"),required_for_victory:true,source:Manual([CorrodedEmployee(profile_id:"corroded_guard",tier:II,count:2)])),
++PveWaveData(id:"stress_wave_4",activation:(trigger_id:"stress_wave_4",priority:0,primary:GroupCleared(wave_id: "stress_wave_3")),route_id:Some("defense_main"),required_for_victory:true,source:Manual([CorrodedEmployee(profile_id:"corroded_guard",tier:III,count:2)])),
++PveWaveData(id:"stress_wave_5",activation:(trigger_id:"stress_wave_5",priority:0,primary:GroupCleared(wave_id: "stress_wave_4")),route_id:Some("defense_main"),required_for_victory:true,source:Manual([CorrodedEmployee(profile_id:"corroded_guard",tier:III,count:3)])),], static_obstacles: [],
++        ),
+     ],
+     reward_sources: [
+         PveEncounterRewardSource(
+--- baseline/game_server/src/game/player_game_actor/messages.rs
++++ current/game_server/src/game/player_game_actor/messages.rs
+@@ -793,6 +793,7 @@
+                 K::RetreatBattle,
+                 serde_json::json!({"type":"retreat_battle"}),
+             ),
++            (K::StressCombatAct, serde_json::json!({"type":"stress_combat_act","battle_uuid":employee,"completed_rounds":1,"extract":false})),
+             (K::PauseBattle, serde_json::json!({"type":"pause_battle"})),
+             (K::ResumeBattle, serde_json::json!({"type":"resume_battle"})),
+             (
+--- baseline/tools/cmva_build.py
++++ current/tools/cmva_build.py
+@@ -56,7 +56,7 @@
+         help='Build only mod_launcher while retaining the supported package/feature graph')
+     parser.add_argument('--with-worker', action='store_true',
+         help='Build mod_launcher with selected plain probes in the same prepared invocation')
+-    parser.add_argument('--probe-bin', choices=['native_fault_gap','worker_boundaries','approved_lifecycle','public_lifecycle','normal_host_lifecycle','u14_deterrence_host','u15_economy_host'], action='append',
++    parser.add_argument('--probe-bin', choices=['native_fault_gap','worker_boundaries','approved_lifecycle','public_lifecycle','normal_host_lifecycle','u14_deterrence_host','u15_economy_host','u164_stress_host'], action='append',
+         help='Build only the required independent diagnostic probe with the supported plain graph')
+     parser.add_argument('--package-official', action='store_true',
+         help='Build package_official_content alone or with selected probes using the supported plain graph')

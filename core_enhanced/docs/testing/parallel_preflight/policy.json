@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "status": "static_classification_only",
+  "automatic_execution_enabled": false,
+  "lane_priority": {"parallel_candidate": 0, "resource_serial": 1, "isolated_process": 2, "quiet_host": 3},
+  "defaults": {
+    "new_or_changed_source": "review_before_execution",
+    "parallel_candidate": "No known cross-test mutable resource in the reviewed source boundary; validate against a serial baseline before enabling.",
+    "resource_serial": "Serialize members sharing each resource key across the applicable scope; unrelated candidates can run concurrently.",
+    "isolated_process": "Exactly one selected test in a fresh test process; also obey all checkout resource keys.",
+    "quiet_host": "Initial timing-sensitive validation without concurrent test/build load; still obey checkout resource keys. Conservative, not proven inherently serial."
+  },
+  "shared_conditions": [
+    "Do not start any build or test while the currently owned test run is active.",
+    "Hold source, game_resources, build configuration and environment stable during comparisons.",
+    "Clear export and child-dispatch environment variables in future CHILD launch environments, never mutate the coordinator's environment concurrently.",
+    "File resources under CARGO_MANIFEST_DIR/target remain shared even with distinct CARGO_TARGET_DIR values.",
+    "Source declarations are not runtime test selectors. Reconcile each configuration with its test harness list before running.",
+    "Do not treat passing functional playback assertions as evidence of uncontaminated process heap/RSS/timing measurements."
+  ],
+  "clean_child_environment": [
+    "R06_PUBLIC_CLI_EXPORT", "R07_PUBLIC_CLI_EXPORT", "R10_PUBLIC_CLI_EXPORT", "R12_PUBLIC_CLI_EXPORT",
+    "U07_TRIAL_EXPORT", "U08_PUBLIC_CLI_EXPORT", "R07_PUBLIC_RESTORE_CHILD", "U08_PUBLIC_RESTORE_CHILD",
+    "R06_NONZERO_CHECKPOINT_CHILD", "R09_COUNTER_CHECKPOINT_CHILD", "U04_INTENT_CHILD_ROOT", "U04_DURABLE_CRASH_AT"
+  ],
+  "non_harness_jobs": [
+    {
+      "source": "game_server/src/bin/measure_runtime.rs", "lane": "quiet_host",
+      "resources": ["process:allocator-ledger", "checkout:core-debug-artifacts"],
+      "reason": "Performance measurement requires a fresh process, stable inputs and no simultaneous build/test load; not included in declaration counts."
+    },
+    {
+      "source": "game_server/examples/observe_runtime.rs", "lane": "quiet_host",
+      "resources": ["checkout:core-debug-artifacts"],
+      "reason": "Observation scenario measures elapsed wall time and sleeps; reserve an independent performance/observation validation interval."
+    },
+    {
+      "source": "game_server/examples/fault_runtime.rs", "lane": "quiet_host",
+      "resources": ["checkout:core-debug-artifacts"],
+      "reason": "Fault scenario depends on scheduler progress and real sleeps; preserve its existing execution conditions."
+    }
+  ],
+  "resources": {
+    "checkout:core-debug-artifacts": {
+      "scope": "all test processes and feature configurations using the same checkout",
+      "reason": "World result transitions export deterministic run_seed/battle_uuid paths; diagnostic helpers also truncate fixed filenames.",
+      "evidence": ["core_enhanced/src/game/world/combat.rs:1415", "core_enhanced/src/game/world/combat_trace.rs:41", "core_enhanced/src/game/managers/uuid_manager.rs:39", "core_enhanced/tests/skill_test/common/run.rs:214"]
+    },
+    "process:crossbeam-default-collector": {
+      "scope": "one test process",
+      "reason": "Local recorders still use the default crossbeam epoch collector; a pinned guard can postpone another test's reclamation gate.",
+      "evidence": ["game_server/src/observability/mod.rs:443", "game_server/src/observability/tests.rs:131"]
+    },
+    "process:allocator-ledger": {
+      "scope": "all allocations in one test process",
+      "reason": "LIVE_BYTES/PROCESS_LEDGER and playback process windows observe unrelated allocations too.",
+      "evidence": ["game_server/src/observability/tests.rs:244", "game_server/src/runtime_measurement/allocator.rs:371", "game_server/src/runtime_measurement/playback.rs:742"]
+    },
+    "host:timer-validation": {
+      "scope": "host CPU and IO load during initial comparison",
+      "reason": "Actor tests use real 2-120ms sleeps and scheduler progress; keep their initial validation separate from throughput tests.",
+      "evidence": ["game_server/src/game/player_game_actor/handlers.rs:2901", "game_server/src/game/player_game_actor/handlers/tests/fault.rs:237", "game_server/src/game/player_game_actor/handlers/tests/durable.rs:460"]
+    }
+  },
+  "rules": [
+    {
+      "id": "S_WORLD_BOUNDARY", "paths": ["core_enhanced/src/game/world/*", "core_enhanced/src/application*", "core_enhanced/src/authoring/trial*", "core_enhanced/src/authoring/tests.rs", "core_enhanced/tests/u08_relic_public/*"],
+      "lane": "resource_serial", "resources": ["checkout:core-debug-artifacts"], "tags": ["conservative_module_scope"],
+      "reason": "World/application/trial helpers can finish deterministic battles and export to shared checkout paths. Broad scope avoids guessing helper call reachability."
+    },
+    {
+      "id": "S_INDIRECT_WORLD", "paths": ["core_enhanced/src/*", "core_enhanced/tests/*", "game_server/src/*"],
+      "contains": "\\b(GameCore|CoreApplication|TrialSession)\\b",
+      "lane": "resource_serial", "resources": ["checkout:core-debug-artifacts"], "tags": ["conservative_file_scope"],
+      "reason": "Files using application/world/trial objects inherit the potential shared combat trace resource. This does not assert every test writes a trace."
+    },
+    {
+      "id": "S_HOST_WORLD_HELPERS", "paths": ["game_server/src/game/*", "game_server/src/persistence/*", "game_server/src/bootstrap.rs"],
+      "lane": "resource_serial", "resources": ["checkout:core-debug-artifacts"], "tags": ["conservative_module_scope"],
+      "reason": "Host fixture/actor/persistence helpers can invoke Core applications. Retain the checkout lock pending narrower reachability review."
+    },
+    {
+      "id": "S_FIXED_SKILL_EXPORT", "paths": ["core_enhanced/tests/skill_test/*", "core_enhanced/tests/battle_showcase.rs"],
+      "lane": "resource_serial", "resources": ["checkout:core-debug-artifacts"],
+      "reason": "run_abnormality_scenario writes a fixed stem derived from the abnormality; battle_showcase and nothing_there share that stem."
+    },
+    {
+      "id": "S_COMMAND_EXPORT", "paths": ["core_enhanced/src/game/battle/core/commands.rs"], "test": "advance_basic_attack_projectile_is_idempotent_for_same_projectile_id",
+      "lane": "resource_serial", "resources": ["checkout:core-debug-artifacts"],
+      "reason": "Explicit fixed debug-event-log writer; another execution of this test shares the same path."
+    },
+    {
+      "id": "S_EPOCH", "paths": ["game_server/src/observability/*", "game_server/src/runtime_measurement/playback.rs"],
+      "lane": "resource_serial", "resources": ["process:crossbeam-default-collector"], "tags": ["conservative_module_scope"],
+      "reason": "Collector pins and delayed callbacks can affect other recorders despite per-test recorder construction."
+    },
+    {
+      "id": "I_HEAP", "paths": ["game_server/src/observability/tests.rs"], "test": "exporter_heap_is_bounded_without_scrapes_and_retires_on_idle",
+      "lane": "isolated_process", "resources": ["process:allocator-ledger"], "tags": ["ignored", "exact_single_test"],
+      "reason": "Exact process live-byte equality; source explicitly requires --ignored --test-threads=1. Use a fresh process containing this test only."
+    },
+    {
+      "id": "I_PLAYBACK_NORMAL", "paths": ["game_server/src/runtime_measurement/playback.rs"], "test": "cmrp_playback_normal_external_combat_modes_keep_typed_results_and_gameplay",
+      "lane": "isolated_process", "resources": ["process:allocator-ledger", "checkout:core-debug-artifacts"],
+      "reason": "execute opens the single process measurement window; preserve the semantics of exported samples even when assertions only compare gameplay."
+    },
+    {
+      "id": "I_PLAYBACK_QUEUE", "paths": ["game_server/src/runtime_measurement/playback.rs"], "test": "cmrp_playback_actual_queue_full_and_absent_modes_preserve_final_state",
+      "lane": "isolated_process", "resources": ["process:allocator-ledger", "checkout:core-debug-artifacts"],
+      "reason": "Calls execute and records process-wide memory samples; isolate the test process."
+    },
+    {
+      "id": "I_PLAYBACK_MAX", "paths": ["game_server/src/runtime_measurement/playback.rs"], "test": "cmrp_playback_maximum_sessions_repeats_keep_footer_and_exact_truncation",
+      "lane": "isolated_process", "resources": ["process:allocator-ledger", "checkout:core-debug-artifacts"],
+      "reason": "Calls execute and records process-wide memory samples; isolate the test process."
+    },
+    {
+      "id": "Q_ACTOR_TIMERS", "paths": ["game_server/src/game/player_game_actor/handlers.rs", "game_server/src/game/player_game_actor/handlers/tests/fault.rs", "game_server/src/game/player_game_actor/handlers/tests/durable.rs"],
+      "lane": "quiet_host", "resources": ["host:timer-validation"], "tags": ["conservative_file_scope"],
+      "reason": "Keep the small actor suite with real sleeps out of the initial parallel throughput trial. Can narrow later using actual timing evidence."
+    },
+    {
+      "id": "P_TEMP_FIXTURE", "paths": ["core_enhanced/src/*", "core_enhanced/tests/*", "game_server/src/*"],
+      "contains": "tempfile|ExternalFixture|SourceFixture|temp_dir",
+      "lane": "parallel_candidate", "tags": ["reviewed_temporary_io_pattern"],
+      "reason": "Reviewed fixture helpers use TempDir or UUID roots. env.rs only resolves its fixed example path. Stronger resource rules still apply."
+    },
+    {
+      "id": "P_LOCAL_ALLOCATOR", "paths": ["game_server/src/runtime_measurement/allocator.rs", "game_server/src/runtime_measurement/rss.rs"],
+      "lane": "parallel_candidate", "tags": ["local_ledger_or_parser"],
+      "reason": "Allocator tests construct local ledgers. RSS test checks parsing/status variants, not a numerical live-RSS bound."
+    },
+    {
+      "id": "P_CHILD_PROCESS", "paths": ["core_enhanced/tests/author_content_cli_arguments.rs", "core_enhanced/src/authoring/trial/tests/r07_copies.rs", "core_enhanced/src/authoring/trial/tests/u08_relics.rs", "core_enhanced/src/game/world/tests/checkpoint_validation.rs", "game_server/src/persistence/player_profile_store/application_intent.rs"],
+      "lane": "parallel_candidate", "tags": ["spawns_child_process", "clean_child_environment"],
+      "reason": "Child-only Command.env settings; fixtures use unique temporary roots or per-test prefix+PID. Keep exact child dispatch and crash tests intact; stronger checkout locks still apply."
+    }
+  ]
+}

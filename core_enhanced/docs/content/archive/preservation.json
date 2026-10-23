@@ -1,0 +1,383 @@
+{
+  "date": "2026-10-20",
+  "entries": [
+    {
+      "current": "relics/close-fangs.md",
+      "archive": "archive/2026-10-20/relics/close-fangs.md",
+      "original": "archive/2026-10-20/relics/close-fangs.source.txt",
+      "sha256": "74a762d2f026bd21ed11e0e382bfb32fcdde20bf8bbc347f5698e5bda0437390"
+    },
+    {
+      "current": "relics/distant-lens.md",
+      "archive": "archive/2026-10-20/relics/distant-lens.md",
+      "original": "archive/2026-10-20/relics/distant-lens.source.txt",
+      "sha256": "4866b3665d85784917ea4e908ac25e27f2fd4b29bad232bb4d3dcf53fbfc6106"
+    },
+    {
+      "current": "relics/borrowed-life.md",
+      "archive": "archive/2026-10-20/relics/borrowed-life.md",
+      "original": "archive/2026-10-20/relics/borrowed-life.source.txt",
+      "sha256": "f279ccac404b3914c168beb179c1e99807db487a3be2885ea81fa3efbce92704"
+    },
+    {
+      "current": "relics/broken-balance.md",
+      "archive": "archive/2026-10-20/relics/broken-balance.md",
+      "original": "archive/2026-10-20/relics/broken-balance.source.txt",
+      "sha256": "15bf6fecf4a80a999f340b3f3b84ff2a9c7b8e2e0429edafb50116ce83fffc92"
+    },
+    {
+      "current": "relics/next.md",
+      "archive": "archive/2026-10-20/relics/next.md",
+      "original": "archive/2026-10-20/relics/next.source.txt",
+      "sha256": "5eab5eaa3fb664dd58cb78d9d8817df3103da80333ef728de5eb9cd3fec835b6"
+    },
+    {
+      "current": "relics/missing-hp-attack.md",
+      "archive": "archive/2026-10-20/relics/missing-hp-attack.md",
+      "original": "archive/2026-10-20/relics/missing-hp-attack.source.txt",
+      "sha256": "8743239ea7b26609175056471561719e5a7617c77a55254fde617a25f43964e9"
+    },
+    {
+      "current": "relics/long-breath.md",
+      "archive": "archive/2026-10-20/relics/long-breath.md",
+      "original": "archive/2026-10-20/relics/long-breath.source.txt",
+      "sha256": "e44ffbd619dc9c7cb3b1676c249de9a986d7a5fde5ccfed594e42cf981348dfd"
+    },
+    {
+      "current": "relics/resonator.md",
+      "archive": "archive/2026-10-20/relics/resonator.md",
+      "original": "archive/2026-10-20/relics/resonator.source.txt",
+      "sha256": "82a8edeb6ff848f2773372a844e824bef2c9501b949dfe978347680cfc44d347"
+    },
+    {
+      "current": "abnormalities/knight-of-despair/fragment.md",
+      "archive": "archive/2026-10-20/abnormalities/knight-of-despair/fragment.md",
+      "original": "archive/2026-10-20/abnormalities/knight-of-despair/fragment.source.txt",
+      "sha256": "d21efc22f3bba49e128451a4352718cfc6b35aecdde48331977b4b0c4d535800"
+    },
+    {
+      "current": "abnormalities/laetitia/fragment.md",
+      "archive": "archive/2026-10-20/abnormalities/laetitia/fragment.md",
+      "original": "archive/2026-10-20/abnormalities/laetitia/fragment.source.txt",
+      "sha256": "bc71de231d4f10e29a1af2703979dd659dbc27b3fdec704795712455e5d05ba5"
+    },
+    {
+      "current": "abnormalities/laetitia/synergies.md",
+      "archive": "archive/2026-10-20/abnormalities/laetitia/synergies.md",
+      "original": "archive/2026-10-20/abnormalities/laetitia/synergies.source.txt",
+      "sha256": "2a0c4515951acf3ab005924ff4e8e47a682e4c9af03476fcccbd781e700d81b2"
+    },
+    {
+      "current": "abnormalities/queen-of-hatred/fragment.md",
+      "archive": "archive/2026-10-20/abnormalities/queen-of-hatred/fragment.md",
+      "original": "archive/2026-10-20/abnormalities/queen-of-hatred/fragment.source.txt",
+      "sha256": "e773b2dae7d496cd569af9404b391f8847c5e1b4206144d69618cde2724d3d4c"
+    },
+    {
+      "current": "abnormalities/schadenfreude/equipment.md",
+      "archive": "archive/2026-10-20/abnormalities/schadenfreude/equipment.md",
+      "original": "archive/2026-10-20/abnormalities/schadenfreude/equipment.source.txt",
+      "sha256": "8bad574b87c183c7eddc68c6b2ba0ecba317f715643db49d737d440fe8167876"
+    },
+    {
+      "current": "abnormalities/scarecrow-searching-for-wisdom/fragment.md",
+      "archive": "archive/2026-10-20/abnormalities/scarecrow-searching-for-wisdom/fragment.md",
+      "original": "archive/2026-10-20/abnormalities/scarecrow-searching-for-wisdom/fragment.source.txt",
+      "sha256": "c2e4466c8480a811264d0c93fba6ff8de8e7596889e5b699e5d3df04159205c9"
+    },
+    {
+      "current": "abnormalities/queen-bee/fragment.md",
+      "archive": "archive/2026-10-20/abnormalities/queen-bee/fragment.md",
+      "original": "archive/2026-10-20/abnormalities/queen-bee/fragment.source.txt",
+      "sha256": "1c3a5465144bddc349d14b02145353c476426a67ebdb156fc1a30954ec511111"
+    },
+    {
+      "current": "builds/low-hp.md",
+      "archive": "archive/2026-10-20/builds/low-hp.md",
+      "original": "archive/2026-10-20/builds/low-hp.source.txt",
+      "sha256": "a44d77542291578330bf5ede1e8fc68e9bfe9ffcda41419944ea3a662cad490d"
+    },
+    {
+      "current": "relics/little-red-puncture-wound.md",
+      "archive": "archive/2026-10-20/relics/little-red-puncture-wound.md",
+      "original": "archive/2026-10-20/relics/little-red-puncture-wound.source.txt",
+      "sha256": "49cbcea87a922b3bfac4e2fbea2a4d56de36cf9d67561b07ad24c3a7b50c656c"
+    },
+    {
+      "current": "relics/little-red-incendiary-round.md",
+      "archive": "archive/2026-10-20/relics/little-red-incendiary-round.md",
+      "original": "archive/2026-10-20/relics/little-red-incendiary-round.source.txt",
+      "sha256": "44e22c307177b8448e975f788b2f9212affa582386c5058b99bdb8d410e3d710"
+    },
+    {
+      "current": "relics/little-red-slug-round.md",
+      "archive": "archive/2026-10-20/relics/little-red-slug-round.md",
+      "original": "archive/2026-10-20/relics/little-red-slug-round.source.txt",
+      "sha256": "c07143ea30f0adc41b7be927682df7c73e639231b9c5db915af02f383a38e0f6"
+    },
+    {
+      "current": "relics/single-target-conversion.md",
+      "archive": "archive/2026-10-20/relics/single-target-conversion.md",
+      "original": "archive/2026-10-20/relics/single-target-conversion.source.txt",
+      "sha256": "2293981b4a1d4cfe82e4afa4c805ce3363b795111139f2afaf047a8adb9f8236"
+    },
+    {
+      "current": "abnormalities/burrowing-heaven/synergies.md",
+      "archive": "archive/2026-10-20/abnormalities/burrowing-heaven/synergies.md",
+      "original": "archive/2026-10-20/abnormalities/burrowing-heaven/synergies.source.txt",
+      "sha256": "8ba95ef9c41992832fe00e9737094379a0ada890334f62afdd4eb0552aea6030"
+    },
+    {
+      "current": "relics/README.md",
+      "archive": "archive/2026-10-20/relics/README.md",
+      "original": "archive/2026-10-20/relics/README.source.txt",
+      "sha256": "d99482231736ba444437ffb2fa4f568fcf01dbb29d6f6df5192dc019ee6b50fe"
+    },
+    {
+      "current": "abnormalities/yin-yang/fragment.md",
+      "archive": "archive/2026-10-20/abnormalities/yin-yang/fragment.md",
+      "original": "archive/2026-10-20/abnormalities/yin-yang/fragment.source.txt",
+      "sha256": "41082fb46b1d945129dd47db6b6737b739df6651c4a13194757df1201f59c6eb"
+    },
+    {
+      "current": "abnormalities/yin-yang/equipment.md",
+      "archive": "archive/2026-10-20/abnormalities/yin-yang/equipment.md",
+      "original": "archive/2026-10-20/abnormalities/yin-yang/equipment.source.txt",
+      "sha256": "1f7d28896ce96cd0afd2699b84f7bb7a001c17440090c0303953784fbcba5d65"
+    },
+    {
+      "current": "abnormalities/yin-yang/synergies.md",
+      "archive": "archive/2026-10-20/abnormalities/yin-yang/synergies.md",
+      "original": "archive/2026-10-20/abnormalities/yin-yang/synergies.source.txt",
+      "sha256": "ee2d49ccf7e6cc0a082a33cc4c7cc0f9dc60611c65123bcff4c6691bfeeacad8"
+    },
+    {
+      "current": "abnormalities/queen-of-hatred/synergies.md",
+      "archive": "archive/2026-10-20/abnormalities/queen-of-hatred/synergies.md",
+      "original": "archive/2026-10-20/abnormalities/queen-of-hatred/synergies.source.txt",
+      "sha256": "92eb3b4a7a18128a897db6a57141f3e26653579d857689a43dd7a9dee15f7356"
+    },
+    {
+      "current": "abnormalities/clouded-monk/fragment.md",
+      "archive": "archive/2026-10-20/abnormalities/clouded-monk/fragment.md",
+      "original": "archive/2026-10-20/abnormalities/clouded-monk/fragment.source.txt",
+      "sha256": "7dfe5698204eef1931aceafb5be9e75345c61cded25807abf13ad8dfeba1e823"
+    },
+    {
+      "current": "abnormalities/rudolta/fragment.md",
+      "archive": "archive/2026-10-20/abnormalities/rudolta/fragment.md",
+      "original": "archive/2026-10-20/abnormalities/rudolta/fragment.source.txt",
+      "sha256": "1bef06ef37e2e4c3ba5abe558076278167c86f9fd607552702f5f74a000cf480"
+    },
+    {
+      "current": "abnormalities/rudolta/equipment.md",
+      "archive": "archive/2026-10-20/abnormalities/rudolta/equipment.md",
+      "original": "archive/2026-10-20/abnormalities/rudolta/equipment.source.txt",
+      "sha256": "0d3f264dbcbc529028ad632950e38418059e014a62572468f701e59b5750d0da"
+    },
+    {
+      "current": "abnormalities/scarecrow-searching-for-wisdom/equipment.md",
+      "archive": "archive/2026-10-20/abnormalities/scarecrow-searching-for-wisdom/equipment.md",
+      "original": "archive/2026-10-20/abnormalities/scarecrow-searching-for-wisdom/equipment.source.txt",
+      "sha256": "6bd8e8f83abacaa2e6570d64cbae5acb8275675a1bd6db8dfbfc5e568ddcccf4"
+    },
+    {
+      "current": "abnormalities/melting-love/equipment.md",
+      "archive": "archive/2026-10-20/abnormalities/melting-love/equipment.md",
+      "original": "archive/2026-10-20/abnormalities/melting-love/equipment.source.txt",
+      "sha256": "78c588da13224498285e87de27387b8f01e8d3ac8798f0c83976e3d26d44febc"
+    },
+    {
+      "current": "abnormalities/mountain-of-smiling-bodies/equipment.md",
+      "archive": "archive/2026-10-20/abnormalities/mountain-of-smiling-bodies/equipment.md",
+      "original": "archive/2026-10-20/abnormalities/mountain-of-smiling-bodies/equipment.source.txt",
+      "sha256": "484df9443496d976fc9f69f0cce09c81c376cbb7a804eb6a1e2b597d495fb7a2"
+    },
+    {
+      "current": "abnormalities/schadenfreude/fragment.md",
+      "archive": "archive/2026-10-20/abnormalities/schadenfreude/fragment.md",
+      "original": "archive/2026-10-20/abnormalities/schadenfreude/fragment.source.txt",
+      "sha256": "035df9b0eeec454432f145b0ddf5a51f7e958d18f5ea37c6709d52cd5d189657"
+    },
+    {
+      "current": "abnormalities/nameless-fetus/synergies.md",
+      "archive": "archive/2026-10-20/abnormalities/nameless-fetus/synergies.md",
+      "original": "archive/2026-10-20/abnormalities/nameless-fetus/synergies.source.txt",
+      "sha256": "d68b7c1737fe4f8ce7a74177b4f0a4ffa5ba4c23a04267fac20a95a586b43414"
+    },
+    {
+      "current": "principles/relics.md",
+      "archive": "archive/2026-10-20/principles/relics.md",
+      "original": "archive/2026-10-20/principles/relics.source.txt",
+      "sha256": "18b91295bfadc20ce13f9bde1fc0c65fdb1a85ee0f4639225abe877d517bfd73"
+    },
+    {
+      "current": "abnormalities/scarecrow-searching-for-wisdom/encounter.md",
+      "archive": "archive/2026-10-20/abnormalities/scarecrow-searching-for-wisdom/encounter.md",
+      "original": "archive/2026-10-20/abnormalities/scarecrow-searching-for-wisdom/encounter.source.txt",
+      "sha256": "b229e4a38f972a58c5bc521e91a91c574f5db0eb2d71ce2c0da0af91914b1d44"
+    },
+    {
+      "current": "abnormalities/scarecrow-searching-for-wisdom/README.md",
+      "archive": "archive/2026-10-20/abnormalities/scarecrow-searching-for-wisdom/README.md",
+      "original": "archive/2026-10-20/abnormalities/scarecrow-searching-for-wisdom/README.source.txt",
+      "sha256": "97fc69f3f7f7f3d85a914da771012b8177394d83de4f073fd8ed37ded2b52d97"
+    },
+    {
+      "current": "abnormalities/laetitia/equipment.md",
+      "archive": "archive/2026-10-20/abnormalities/laetitia/equipment.md",
+      "original": "archive/2026-10-20/abnormalities/laetitia/equipment.source.txt",
+      "sha256": "57f38b231af6efdadc0188179e5020ba43d3ac77df229ddc753f2bbc09a8650a"
+    },
+    {
+      "current": "abnormalities/laetitia/encounter.md",
+      "archive": "archive/2026-10-20/abnormalities/laetitia/encounter.md",
+      "original": "archive/2026-10-20/abnormalities/laetitia/encounter.source.txt",
+      "sha256": "60915dcc9a2440e5aae59bdaf85253febf6301241eb59a027493cbbe5597d506"
+    },
+    {
+      "current": "abnormalities/nameless-fetus/fragment.md",
+      "archive": "archive/2026-10-20/abnormalities/nameless-fetus/fragment.md",
+      "original": "archive/2026-10-20/abnormalities/nameless-fetus/fragment.source.txt",
+      "sha256": "c4e967f3d9a4d0a913ea399708159f7e758f8a7c33fe09f6d33d7382bb237d70"
+    },
+    {
+      "current": "abnormalities/white-night/fragment.md",
+      "archive": "archive/2026-10-20/abnormalities/white-night/fragment.md",
+      "original": "archive/2026-10-20/abnormalities/white-night/fragment.source.txt",
+      "sha256": "bea89d1a85b98627b0b041c358511e7b0fe4dcc9a94657190b480a22b47a7e00"
+    },
+    {
+      "current": "abnormalities/little-red/synergies.md",
+      "archive": "archive/2026-10-20/abnormalities/little-red/synergies.md",
+      "original": "archive/2026-10-20/abnormalities/little-red/synergies.source.txt",
+      "sha256": "1c0244b1ae8940166ec49ec605c77379a6ff76e5f3affcf4533f8b4221f14f28"
+    },
+    {
+      "current": "abnormalities/little-red/README.md",
+      "archive": "archive/2026-10-20/abnormalities/little-red/README.md",
+      "original": "archive/2026-10-20/abnormalities/little-red/README.source.txt",
+      "sha256": "3187ae82ab2305555463956997ecf9ad36a8aa4f2ce34b686f66c048bb6abc7a"
+    },
+    {
+      "current": "abnormalities/little-red/fragment.md",
+      "archive": "archive/2026-10-20/abnormalities/little-red/fragment.md",
+      "original": "archive/2026-10-20/abnormalities/little-red/fragment.source.txt",
+      "sha256": "2e90cda2e01942d6060715413842fc753cef8987690977844a03b052dbd75867"
+    },
+    {
+      "current": "relics/yin-yang-dragon.md",
+      "archive": "archive/2026-10-20/relics/yin-yang-dragon.md",
+      "original": "archive/2026-10-20/relics/yin-yang-dragon.source.txt",
+      "sha256": "0957c619662e3647049b3471d4cc4f0c088e37b7512e8ac36c885a8f1e89315f"
+    },
+    {
+      "current": "abnormalities/funeral-of-dying-butterflies/equipment.md",
+      "archive": "archive/2026-10-20/abnormalities/funeral-of-dying-butterflies/equipment.md",
+      "original": "archive/2026-10-20/abnormalities/funeral-of-dying-butterflies/equipment.source.txt",
+      "sha256": "eb2d79d3980eaac57e8589c68ac804cd4a7a28fdd0d57a87ac8a33f1d930b52c"
+    },
+    {
+      "current": "abnormalities/king-of-greed/equipment.md",
+      "archive": "archive/2026-10-20/abnormalities/king-of-greed/equipment.md",
+      "original": "archive/2026-10-20/abnormalities/king-of-greed/equipment.source.txt",
+      "sha256": "047a07856ec71c100e47474583be60f7faa4c8a09e73d89ce34b585a880914eb"
+    },
+    {
+      "current": "abnormalities/burrowing-heaven/fragment.md",
+      "archive": "archive/2026-10-20/abnormalities/burrowing-heaven/fragment.md",
+      "original": "archive/2026-10-20/abnormalities/burrowing-heaven/fragment.source.txt",
+      "sha256": "2ba15621194edce9ac9b080dc3a500241da443c7c630e41f54bf3c2c5f685b0c"
+    },
+    {
+      "current": "abnormalities/queen-of-hatred/encounter.md",
+      "archive": "archive/2026-10-20/abnormalities/queen-of-hatred/encounter.md",
+      "original": "archive/2026-10-20/abnormalities/queen-of-hatred/encounter.source.txt",
+      "sha256": "dbf7e826db129daa89f9aba6039ca79161f9ed4e20a1a40e90ea914fa45ebc85"
+    },
+    {
+      "current": "abnormalities/yin-yang/encounter.md",
+      "archive": "archive/2026-10-20/abnormalities/yin-yang/encounter.md",
+      "original": "archive/2026-10-20/abnormalities/yin-yang/encounter.source.txt",
+      "sha256": "51b53194783b87f9ca8fa8b58bc3e6f0ae574d2598ad201c52f7875689794fa3"
+    },
+    {
+      "current": "abnormalities/rudolta/encounter.md",
+      "archive": "archive/2026-10-20/abnormalities/rudolta/encounter.md",
+      "original": "archive/2026-10-20/abnormalities/rudolta/encounter.source.txt",
+      "sha256": "58b6206e8e648c3cb257d6abc330d36519b8aed181d65963ad92104e4ab5bfef"
+    },
+    {
+      "current": "abnormalities/dream-of-black-swan/fragment.md",
+      "archive": "archive/2026-10-20/abnormalities/dream-of-black-swan/fragment.md",
+      "original": "archive/2026-10-20/abnormalities/dream-of-black-swan/fragment.source.txt",
+      "sha256": "eae83092a113436b6cb1f33d1850f397fa3bf978871c3fd5f3650d17d86197b2"
+    },
+    {
+      "current": "abnormalities/nothing-there/fragment.md",
+      "archive": "archive/2026-10-20/abnormalities/nothing-there/fragment.md",
+      "original": "archive/2026-10-20/abnormalities/nothing-there/fragment.source.txt",
+      "sha256": "8ea1ba7369088220c4dfb36dccfaf9586b4d43225d2652940b97d550309fd8b6"
+    },
+    {
+      "current": "abnormalities/snow-queen/README.md",
+      "archive": "archive/2026-10-20/snow-queen-rework/abnormalities/snow-queen/README.md",
+      "original": "archive/2026-10-20/snow-queen-rework/abnormalities/snow-queen/README.source.txt",
+      "sha256": "27af6b0fb06b55f7719d7c4159036b35d2690474822e7763808b1a4fb9a89201"
+    },
+    {
+      "current": "abnormalities/snow-queen/fragment.md",
+      "archive": "archive/2026-10-20/snow-queen-rework/abnormalities/snow-queen/fragment.md",
+      "original": "archive/2026-10-20/snow-queen-rework/abnormalities/snow-queen/fragment.source.txt",
+      "sha256": "84aacdf97cb61f2934677cea76833e15313ecda389c14a07c965da235fce79c9"
+    },
+    {
+      "current": "abnormalities/snow-queen/equipment.md",
+      "archive": "archive/2026-10-20/snow-queen-rework/abnormalities/snow-queen/equipment.md",
+      "original": "archive/2026-10-20/snow-queen-rework/abnormalities/snow-queen/equipment.source.txt",
+      "sha256": "43011590406e98eeb60da67fd832be46fff77afe27c775a2c6a71f5c2a848692"
+    },
+    {
+      "current": "relics/snow-queen-remnant.md",
+      "archive": "archive/2026-10-20/snow-queen-rework/relics/snow-queen-remnant.md",
+      "original": "archive/2026-10-20/snow-queen-rework/relics/snow-queen-remnant.source.txt",
+      "sha256": "f144306db5a82c4f71f7c9e1feb35b04762e0862ad826b3599e0d76be63a0e47"
+    },
+    {
+      "current": "relics/README.md",
+      "archive": "archive/2026-10-20/snow-queen-rework/relics/README.md",
+      "original": "archive/2026-10-20/snow-queen-rework/relics/README.source.txt",
+      "sha256": "240f4447ac62a3c2e8755590a9e623d6ff545f87ce3241eb5b309f496e934018"
+    },
+    {
+      "current": "principles/relics.md",
+      "archive": "archive/2026-10-20/snow-queen-rework/principles/relics.md",
+      "original": "archive/2026-10-20/snow-queen-rework/principles/relics.source.txt",
+      "sha256": "757c4082c06a3fa0249f538797bd08b1358d55b77049575cfd4c598ab26ae8db"
+    },
+    {
+      "current": "abnormalities/white-night/fragment.md",
+      "archive": "archive/2026-10-20/white-night-rework/abnormalities/white-night/fragment.md",
+      "original": "archive/2026-10-20/white-night-rework/abnormalities/white-night/fragment.source.txt",
+      "sha256": "eaabee0f5a5dc7c09f65d2a4c57f689ce934ffdc25539dc31e3c12eded327f0a"
+    },
+    {
+      "current": "abnormalities/white-night/equipment.md",
+      "archive": "archive/2026-10-20/white-night-rework/abnormalities/white-night/equipment.md",
+      "original": "archive/2026-10-20/white-night-rework/abnormalities/white-night/equipment.source.txt",
+      "sha256": "e0c8a1d21bb90a98a0682a0dd610b02ce8e431d8b884ca26604f19e00ac19559"
+    },
+    {
+      "current": "abnormalities/white-night/README.md",
+      "archive": "archive/2026-10-20/white-night-rework/abnormalities/white-night/README.md",
+      "original": "archive/2026-10-20/white-night-rework/abnormalities/white-night/README.source.txt",
+      "sha256": "f8433c1d7ad5b2e3bab997f49f2f200fe266f3ccfd2fee5073cf0714518f83e0"
+    },
+    {
+      "current": "principles/relics.md",
+      "archive": "archive/2026-10-20/white-night-rework/principles/relics.md",
+      "original": "archive/2026-10-20/white-night-rework/principles/relics.source.txt",
+      "sha256": "9ec21933c8f3e15694693b1439b78b36a54b4a95eeaa1274c8457f40c353ca6f"
+    }
+  ]
+}

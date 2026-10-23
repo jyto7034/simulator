@@ -32,6 +32,7 @@ pub(super) enum ApplicationRoute {
     ActiveRunContinue,
     MergeEncounterCompendiumProfile,
     MergePlayerProfile,
+    InstallPlayerProfile,
     ResetPlayerProfile,
     #[cfg(test)]
     SetEnkephalinFixture,
@@ -48,7 +49,7 @@ impl ApplicationRoute {
             Self::AdminCommand => ApplicationOwner::Admin,
             Self::ActiveRunRollbackRestore => ApplicationOwner::ActiveRunRecovery,
             Self::ActiveRunContinue => ApplicationOwner::ActiveRunRecovery,
-            Self::MergeEncounterCompendiumProfile | Self::MergePlayerProfile => {
+            Self::MergeEncounterCompendiumProfile | Self::MergePlayerProfile | Self::InstallPlayerProfile => {
                 ApplicationOwner::PlayerProfile
             }
             Self::ResetPlayerProfile => ApplicationOwner::PlayerProfile,
@@ -61,14 +62,19 @@ impl ApplicationRoute {
 pub(super) const fn behavior_owner(action: ActionKind) -> ApplicationOwner {
     match action {
         ActionKind::StartNewGame
+        | ActionKind::SkipTutorial
+        | ActionKind::AcknowledgeFirstReturnStory
+        | ActionKind::ChooseExpeditionContinuation
         | ActionKind::ContinueRun
         | ActionKind::ResetActiveRun
         | ActionKind::RetryPlayerProfile
         | ActionKind::ResetPlayerProfile
         | ActionKind::SelectStarterEmployees
+        | ActionKind::MoveToFacilityRoom
         | ActionKind::RequestMapData
         | ActionKind::SelectMapNode
         | ActionKind::ConvertMapNodeWithMonolith
+        | ActionKind::HatchEncounter
         | ActionKind::ConfirmEnterNode
         | ActionKind::CancelSelectedNode
         | ActionKind::SweepMasteredElite
@@ -99,12 +105,14 @@ pub(super) const fn behavior_owner(action: ActionKind) -> ApplicationOwner {
         | ActionKind::PreviewRelicCorruption
         | ActionKind::CorruptRelic
         | ActionKind::PreviewRelicDismantle
+        | ActionKind::PreviewSkillFragmentBloom
         | ActionKind::DismantleRelic => ApplicationOwner::Maintenance,
         ActionKind::PurchaseItem
         | ActionKind::SellItem
         | ActionKind::RefreshShop
         | ActionKind::ExitShop => ApplicationOwner::Shop,
-        ActionKind::SelectReward | ActionKind::ClaimReward | ActionKind::ExitReward => {
+        ActionKind::SelectReward | ActionKind::ClaimReward | ActionKind::ExitReward
+        | ActionKind::InvestRelicReward | ActionKind::SelectRelicFusionInputs | ActionKind::ConfirmRelicFusion | ActionKind::DealerAct => {
             ApplicationOwner::Reward
         }
         ActionKind::AdvanceEventScene
@@ -133,6 +141,7 @@ pub(super) const fn behavior_owner(action: ActionKind) -> ApplicationOwner {
         | ActionKind::PreviewSkillTarget
         | ActionKind::PreviewTacticalCommand
         | ActionKind::ActivateSkill
+        | ActionKind::StressCombatAct
         | ActionKind::RetreatBattle
         | ActionKind::PauseBattle
         | ActionKind::ResumeBattle
@@ -184,10 +193,10 @@ impl<T> PreparedApplicationCommit<T> {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum PublicationDisposition {
     Accepted,
-    // Reserved by the P03 outcome contract for a delivery/diagnostic fault
-    // observed after the infallible authority commit. Current Core prepares all
-    // player-facing projection before commit, so production does not construct
-    // this disposition yet.
+    // Reserved for a delivery/diagnostic fault at this private GameCore publish
+    // boundary; production currently returns the already prepared output.
+    // This is distinct from ApplicationResultDisposition: direct public adapters
+    // project after this commit, while PreparedApplication projects before it.
     #[allow(dead_code)]
     AcceptedRecoveryPending,
 }
@@ -198,9 +207,9 @@ struct CommittedApplication<T> {
 }
 
 impl<T> CommittedApplication<T> {
-    /// Publishing an already committed result is deliberately infallible. A
-    /// diagnostic/projection delivery problem can only change the accepted
-    /// disposition; it can never turn the authoritative commit into `Err`.
+    /// Returning this already prepared output is infallible. Public
+    /// application adapters and their execution-control checks are outside this
+    /// private publish step; this does not make those later projections infallible.
     fn publish(self) -> T {
         match self.disposition {
             PublicationDisposition::Accepted | PublicationDisposition::AcceptedRecoveryPending => {
@@ -368,6 +377,7 @@ impl GameCore {
                 | ApplicationRoute::ActiveRunContinue
                 | ApplicationRoute::MergeEncounterCompendiumProfile
                 | ApplicationRoute::MergePlayerProfile
+                | ApplicationRoute::InstallPlayerProfile
                 | ApplicationRoute::ResetPlayerProfile
                 | ApplicationRoute::ActiveRunRollbackRestore => false,
                 #[cfg(test)]
@@ -379,7 +389,7 @@ impl GameCore {
                         ApplicationRoute::Behavior(action) => action,
                         _ => ActionKind::ActivateSkill,
                     },
-                    reason: crate::game::behavior::ActionDisabledReasonCode::CorrosionForcedPause,
+                    reason: self.state.active_battle.as_ref().unwrap().battle.forced_pause_reason(),
                 });
             }
         }
@@ -423,7 +433,7 @@ impl GameCore {
         } else if let Some(extent) = self.pending_resource_extent()? {
             crate::game::battle::runtime_control::seed_retained_extent(extent)?;
         }
-        self.state.preflight_resource_clone(true)?;
+        self.state.preflight_resource_clone()?;
         let mut draft = crate::authoring::clone_shape::controlled_clone(self)?;
         if let Some(active) = draft.state.active_battle.as_mut() {
             active.battle.event_log.prepare_authoring_write()?;
@@ -464,6 +474,7 @@ impl GameCore {
             draft.validate_structural_loadouts()?;
         }
         draft.reconcile_run_resources()?;
+        draft.validate_profile_active_ownership()?;
         draft.reconcile_authoring_lifecycle()?;
         draft.refresh_continue_after_operation(route)?;
         #[cfg(feature = "runtime-observation")]
@@ -543,7 +554,7 @@ mod tests {
 
     #[test]
     fn every_behavior_kind_has_exactly_one_application_owner() {
-        assert_eq!(ActionKind::ALL.len(), 75);
+        assert_eq!(ActionKind::ALL.len(), 87);
         for action in ActionKind::ALL {
             let route = ApplicationRoute::Behavior(*action);
             assert_eq!(route.owner(), behavior_owner(*action));
@@ -567,7 +578,7 @@ mod tests {
     #[test]
     fn incoherent_parallel_context_is_rejected_before_application_staging() {
         let mut core = GameCore::new(GameDataBuilder::empty().build_arc(), 0xCA03_0002);
-        core.state.pending_game_mode = Some(GameMode::Standard);
+        core.state.pending_game_mode = Some(GameMode::Expedition);
         let before_phase = core.state.lifecycle.snapshot();
         let before_pending = core.state.pending_game_mode;
 
@@ -575,7 +586,7 @@ mod tests {
             .execute(
                 Uuid::from_u128(1),
                 PlayerBehavior::StartNewGame {
-                    game_mode: GameMode::Standard,
+                    game_mode: GameMode::Expedition,
                     replace_active_run: false,
                 },
             )

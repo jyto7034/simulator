@@ -1,0 +1,9 @@
+--- core_enhanced/docs/roadmaps/core_first/execution/u08_public_20261006_032/docs_before/3_ROADMAP.ko.md
++++ core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md
+@@ -1,4 +1,6 @@
+ # Core 우선 게임 로직·공개 콘텐츠 제작·모드 지원 통합 개발 로드맵
++
++**2026-10-06 환경 복구 인수032:** U08 환경 복구·잔여 실행 인수032: 통합007의17성공은보존한다. public_guards007은별도Cargo프로젝트의offline의존캐시부족으로검사시작전실패했고실패원본/닫힌interval을보존했다. lockedfetch2회로workspace+8nested의411의존캐시를보충했으며source438/4c7bbd31·원1322·manifest/lock은불변이다. guard2역할만008,나머지미시작은007,추가ResourceSum probe002/receipt008로재개한다. selected58=기능50+성능8이며전체기능뒤PC/R05각각50quiescence를유지한다. 전체완료·독립감사·U09는아직아니다. [재개 기록](execution/u08_public_20261006_032/RECORD.ko.md)
+ 
+ **2026-10-06 추가 관측 인수031:** U08 통합007 진행·추가관측031: Core 기본/fixture 각각1967, observation1986 PASS의 원raw를 확인했다. 원57필수역할에 Resource A/B 공개 Sum4사례를 한 optional execution으로 추가한다. 기존49기능 종료 후fresh007 binary로 실행하며 선택58=기능50+성능8, PC/R05 각각50기능 quiescence를 요구한다. source438/4c7bbd31·기존1322입력·030/007 BEFORE는 보존하고 새115입력은별도결속한다. 전체U08·독립감사·U09는미완료이며 연속실행을계속한다. [인수 기록](execution/u08_public_20261006_031/RECORD.ko.md)
+ 

@@ -1,0 +1,28 @@
+{
+  "target": "u164_current_001",
+  "stage": "GEX-20",
+  "authority": "2026-10-15 user independent audit request",
+  "independence": "separate executor; no implementation or correction participation; no delegation",
+  "source": {
+    "count": 920,
+    "mismatches": []
+  },
+  "evidence": {
+    "count": 550,
+    "mismatches": []
+  },
+  "bindings": {
+    "SOURCE.tar.gz": true,
+    "BEFORE.tar.gz": true,
+    "SOURCE_MANIFEST.json": true,
+    "EVIDENCE_MANIFEST.json": true,
+    "RESTORE.json": true,
+    "SCOPED.diff": true,
+    "DELTA.json": true
+  },
+  "archive": {
+    "members": 920,
+    "mismatches": []
+  },
+  "passed": true
+}

@@ -71,6 +71,14 @@ pub fn load_game_data(settings: &Settings) -> io::Result<ValidatedGameData> {
     .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e.to_string()))
 }
 
+/// Normal server admission; the static loader above remains an embedding and
+/// diagnostic API. A missing approval configuration cannot silently bypass Lab.
+pub fn load_approved_host(settings: &Settings) -> io::Result<crate::mod_admission::AdmissionSession> {
+    let path = settings.mod_admission_path.as_deref().ok_or_else(|| io::Error::other("mod_admission_path is required for normal server startup"))?;
+    let config = crate::mod_admission::AdmissionConfig::read(path).map_err(io::Error::other)?;
+    crate::mod_admission::AdmissionSession::open(&config).map_err(io::Error::other)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

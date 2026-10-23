@@ -1,0 +1,412 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CSNA-G23-OPEN-001",
+        "Content Digest": "sha256:2b7b0d461fc8cfa9a68fb7b199b9f61ad4fd39b90bc772ea4495858d20e35e3b"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CSNA-G23",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "기존 엔케팔린 거래와 유료 HQ 채용을 재사용한다. 유물 구매와 서로 구분되는 부활/침식 촉매제 구매를 같은 공통 지급에 연결하고 일반 유물 매각 및 가루/파츠 거래는 허용하지 않는다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CPED-CSNA-G23-001",
+        "Content Digest": "sha256:855f284363278aba823980016ec735ef3dd2b8db50c697ef8400e63289b2f0b1"
+      },
+      "payload": {
+        "Candidate ID": "CAND-CSNA-G23",
+        "Evaluated Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSNA-001",
+          "Content Digest": "sha256:313dfb94a5dd62f6e842e080a93179938e6b797e1410a607c9c105000ee2c900"
+        },
+        "Approved Target Scope/Change Request Ref": {
+          "ref": "USER-20261015-U16-1-START",
+          "exact_text": "응, 그러면 CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u16 작업에 착수해줄래?",
+          "date": "2026-10-15",
+          "interpretation": "U16-1 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+        },
+        "Evaluated Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CSNA-001",
+          "Content Digest": "sha256:42cf92da5c2fd1141c065fce2743f4a19a1a20dad4b68981edc88336ca5e59fa"
+        },
+        "Exact intake/source reference": {
+          "snapshot": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CSNA-001",
+            "Content Digest": "sha256:42cf92da5c2fd1141c065fce2743f4a19a1a20dad4b68981edc88336ca5e59fa"
+          },
+          "source_span": "ROADMAP U16-1/G23; run-and-map.md 직원 선발과 채용/상점; growth-and-rewards.md 재료와 엔케팔린"
+        },
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": {
+          "ref": "USER-20261015-U16-1-START",
+          "exact_text": "응, 그러면 CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u16 작업에 착수해줄래?",
+          "date": "2026-10-15",
+          "interpretation": "U16-1 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+        },
+        "Promoted Element ID/initial revision": {
+          "id": "PE-CSNA-G23",
+          "ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSNA-G23-OPEN-001",
+            "Content Digest": "sha256:2b7b0d461fc8cfa9a68fb7b199b9f61ad4fd39b90bc772ea4495858d20e35e3b"
+          }
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CSNA-G24-OPEN-001",
+        "Content Digest": "sha256:edf92767a0fc99464606f0b182adaff8b9e30d9d4e0242b5efea66d7a11500cb"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CSNA-G24",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "Event는 노드별 고정 d20과 확정 선택 receipt를 사용한다. 실패도 정상 분기로 진행하며 무료 침식과 전투 분기를 기존 노드 완료/복원에 연결한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CPED-CSNA-G24-001",
+        "Content Digest": "sha256:72fc79762c96da288c7823ea7645c6d900f65405b9ac716622738a4385127169"
+      },
+      "payload": {
+        "Candidate ID": "CAND-CSNA-G24",
+        "Evaluated Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSNA-001",
+          "Content Digest": "sha256:313dfb94a5dd62f6e842e080a93179938e6b797e1410a607c9c105000ee2c900"
+        },
+        "Approved Target Scope/Change Request Ref": {
+          "ref": "USER-20261015-U16-1-START",
+          "exact_text": "응, 그러면 CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u16 작업에 착수해줄래?",
+          "date": "2026-10-15",
+          "interpretation": "U16-1 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+        },
+        "Evaluated Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CSNA-001",
+          "Content Digest": "sha256:42cf92da5c2fd1141c065fce2743f4a19a1a20dad4b68981edc88336ca5e59fa"
+        },
+        "Exact intake/source reference": {
+          "snapshot": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CSNA-001",
+            "Content Digest": "sha256:42cf92da5c2fd1141c065fce2743f4a19a1a20dad4b68981edc88336ca5e59fa"
+          },
+          "source_span": "ROADMAP U16-1/G24; run-and-map.md Event; relics.md 침식된 유물"
+        },
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": {
+          "ref": "USER-20261015-U16-1-START",
+          "exact_text": "응, 그러면 CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u16 작업에 착수해줄래?",
+          "date": "2026-10-15",
+          "interpretation": "U16-1 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+        },
+        "Promoted Element ID/initial revision": {
+          "id": "PE-CSNA-G24",
+          "ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSNA-G24-OPEN-001",
+            "Content Digest": "sha256:edf92767a0fc99464606f0b182adaff8b9e30d9d4e0242b5efea66d7a11500cb"
+          }
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CSNA-G25-OPEN-001",
+        "Content Digest": "sha256:757476d7878533a9805f6186fb13cab13b69e71efd5a94b8d2d98e50189eaa90"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CSNA-G25",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "일반 소비품은 허용된 전투 전 화면에서 직원에게 하나 소비하며 활성 효과를 교체한다. UI 표시 슬롯 수는 Core 획득 상한이 아니다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CPED-CSNA-G25-001",
+        "Content Digest": "sha256:3000108baf08eea02df916f48e3d97d25e6881d189fc59970c5a2e5208f51406"
+      },
+      "payload": {
+        "Candidate ID": "CAND-CSNA-G25",
+        "Evaluated Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSNA-001",
+          "Content Digest": "sha256:313dfb94a5dd62f6e842e080a93179938e6b797e1410a607c9c105000ee2c900"
+        },
+        "Approved Target Scope/Change Request Ref": {
+          "ref": "USER-20261015-U16-1-START",
+          "exact_text": "응, 그러면 CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u16 작업에 착수해줄래?",
+          "date": "2026-10-15",
+          "interpretation": "U16-1 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+        },
+        "Evaluated Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CSNA-001",
+          "Content Digest": "sha256:42cf92da5c2fd1141c065fce2743f4a19a1a20dad4b68981edc88336ca5e59fa"
+        },
+        "Exact intake/source reference": {
+          "snapshot": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CSNA-001",
+            "Content Digest": "sha256:42cf92da5c2fd1141c065fce2743f4a19a1a20dad4b68981edc88336ca5e59fa"
+          },
+          "source_span": "ROADMAP U16-1/G25; run-and-map.md 물품과 소비 아이템; results-and-save.md"
+        },
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": {
+          "ref": "USER-20261015-U16-1-START",
+          "exact_text": "응, 그러면 CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u16 작업에 착수해줄래?",
+          "date": "2026-10-15",
+          "interpretation": "U16-1 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+        },
+        "Promoted Element ID/initial revision": {
+          "id": "PE-CSNA-G25",
+          "ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSNA-G25-OPEN-001",
+            "Content Digest": "sha256:757476d7878533a9805f6186fb13cab13b69e71efd5a94b8d2d98e50189eaa90"
+          }
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CSNA-STORE-OPEN-001",
+        "Content Digest": "sha256:fa57b53d3495ce2b322da29b733f572a64a16d409378dd3d7ed9075127131f96"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CSNA-STORE",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "상점/HQ/Event/소비품의 비용·사본·결과·queue·효과·노드 상태를 하나의 저장 경계에서 보존한다. 미완료 노드 새프로세스 이어하기는 입장 전이고 완료 노드는 결과를 유지한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CPED-CSNA-STORE-001",
+        "Content Digest": "sha256:5fc93ad6bf70a60a757b57585803b001049571cfe2a9aa4401a74cef598b154a"
+      },
+      "payload": {
+        "Candidate ID": "CAND-CSNA-STORE",
+        "Evaluated Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSNA-001",
+          "Content Digest": "sha256:313dfb94a5dd62f6e842e080a93179938e6b797e1410a607c9c105000ee2c900"
+        },
+        "Approved Target Scope/Change Request Ref": {
+          "ref": "USER-20261015-U16-1-START",
+          "exact_text": "응, 그러면 CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u16 작업에 착수해줄래?",
+          "date": "2026-10-15",
+          "interpretation": "U16-1 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+        },
+        "Evaluated Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CSNA-001",
+          "Content Digest": "sha256:42cf92da5c2fd1141c065fce2743f4a19a1a20dad4b68981edc88336ca5e59fa"
+        },
+        "Exact intake/source reference": {
+          "snapshot": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CSNA-001",
+            "Content Digest": "sha256:42cf92da5c2fd1141c065fce2743f4a19a1a20dad4b68981edc88336ca5e59fa"
+          },
+          "source_span": "ROADMAP U16-1; results-and-save.md 저장과 복구; U04/U12/U15 completed contracts"
+        },
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": {
+          "ref": "USER-20261015-U16-1-START",
+          "exact_text": "응, 그러면 CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u16 작업에 착수해줄래?",
+          "date": "2026-10-15",
+          "interpretation": "U16-1 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+        },
+        "Promoted Element ID/initial revision": {
+          "id": "PE-CSNA-STORE",
+          "ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSNA-STORE-OPEN-001",
+            "Content Digest": "sha256:fa57b53d3495ce2b322da29b733f572a64a16d409378dd3d7ed9075127131f96"
+          }
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CSNA-AUTHOR-OPEN-001",
+        "Content Digest": "sha256:9f16a041af9d95b92217e7d474ec9223c66388d89c694d9683c28e8d06ae7441"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CSNA-AUTHOR",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "상품/후보/비용·활동 조건은 정상 작성 입력과 공개 application/host로 소비한다. 대표 콘텐츠와 지원 경로 오류 검증 및 필요한 비용 측정을 같은 묶음에서 수행한다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CPED-CSNA-AUTHOR-001",
+        "Content Digest": "sha256:d29ef53e7bfd8b61b0cf9ec23a8a44815c5653c4cf4e24666bf58cf8de950bc2"
+      },
+      "payload": {
+        "Candidate ID": "CAND-CSNA-AUTHOR",
+        "Evaluated Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSNA-001",
+          "Content Digest": "sha256:313dfb94a5dd62f6e842e080a93179938e6b797e1410a607c9c105000ee2c900"
+        },
+        "Approved Target Scope/Change Request Ref": {
+          "ref": "USER-20261015-U16-1-START",
+          "exact_text": "응, 그러면 CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u16 작업에 착수해줄래?",
+          "date": "2026-10-15",
+          "interpretation": "U16-1 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+        },
+        "Evaluated Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CSNA-001",
+          "Content Digest": "sha256:42cf92da5c2fd1141c065fce2743f4a19a1a20dad4b68981edc88336ca5e59fa"
+        },
+        "Exact intake/source reference": {
+          "snapshot": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CSNA-001",
+            "Content Digest": "sha256:42cf92da5c2fd1141c065fce2743f4a19a1a20dad4b68981edc88336ca5e59fa"
+          },
+          "source_span": "ROADMAP U16-1 and §1.9/8.4; continuous instructions §4–7; CF-D06"
+        },
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": {
+          "ref": "USER-20261015-U16-1-START",
+          "exact_text": "응, 그러면 CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u16 작업에 착수해줄래?",
+          "date": "2026-10-15",
+          "interpretation": "U16-1 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+        },
+        "Promoted Element ID/initial revision": {
+          "id": "PE-CSNA-AUTHOR",
+          "ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSNA-AUTHOR-OPEN-001",
+            "Content Digest": "sha256:9f16a041af9d95b92217e7d474ec9223c66388d89c694d9683c28e8d06ae7441"
+          }
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CSNA-002",
+        "Content Digest": "sha256:fbda171c146a6a602a282f3e0df01e06f36a31ecab6cd3b32950b8949e1bf1ad"
+      },
+      "payload": {
+        "Predecessor Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSNA-001",
+          "Content Digest": "sha256:313dfb94a5dd62f6e842e080a93179938e6b797e1410a607c9c105000ee2c900"
+        },
+        "Predecessor Final Policy Freeze Ref": null,
+        "Approved metadata and scope": {
+          "Working Policy Document ID": "WPD-CSNA-20261015",
+          "Policy Topic": "U16-1 기존 지원 활동: 상점·유료 HQ 채용·Event·소비품",
+          "Requested Result": "U16-1 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음.",
+          "Target Project/Repository": "/mnt/f/work/simulator",
+          "Target Documentation Root": "core_enhanced/docs",
+          "Policy Directory Name": "core_support_node_activities",
+          "User-Approved Scope": [
+            {
+              "id": "IN-U16-1",
+              "disposition": "in",
+              "meaning": "U16 착수의 첫 분리 인수 묶음 U16-1/G23–G25: 상점·유료 HQ 채용·Event·소비품 정상 입력/거래/사본/자격/query/저장/복원/공개 consumer 검증. U16-2/3/4는 로드맵에 따라 후속 인수 대상으로 유지하며 전체 U16 완료로 주장하지 않음",
+              "approval": {
+                "ref": "USER-20261015-U16-1-START",
+                "exact_text": "응, 그러면 CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u16 작업에 착수해줄래?",
+                "date": "2026-10-15",
+                "interpretation": "U16-1 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+              }
+            },
+            {
+              "id": "OUT-U16-1",
+              "disposition": "out",
+              "meaning": "U16 명시 제외: 별도 자산 엔진·일반 상점 유물 매각·가루/파츠 구매판매·부활촉매 희귀상품화·인벤토리 보유상한. U16-2/3/4는 후속 묶음; U17/U21 고유 범위와 Unity/최종보스 및 자동 감사 제외",
+              "approval": {
+                "ref": "USER-20261015-U16-1-START",
+                "exact_text": "응, 그러면 CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u16 작업에 착수해줄래?",
+                "date": "2026-10-15",
+                "interpretation": "U16-1 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+              }
+            }
+          ]
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CSNA-001",
+          "Content Digest": "sha256:42cf92da5c2fd1141c065fce2743f4a19a1a20dad4b68981edc88336ca5e59fa"
+        },
+        "Current Policy Element Revision Map": {
+          "PE-CSNA-G23": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSNA-G23-OPEN-001",
+            "Content Digest": "sha256:2b7b0d461fc8cfa9a68fb7b199b9f61ad4fd39b90bc772ea4495858d20e35e3b"
+          },
+          "PE-CSNA-G24": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSNA-G24-OPEN-001",
+            "Content Digest": "sha256:edf92767a0fc99464606f0b182adaff8b9e30d9d4e0242b5efea66d7a11500cb"
+          },
+          "PE-CSNA-G25": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSNA-G25-OPEN-001",
+            "Content Digest": "sha256:757476d7878533a9805f6186fb13cab13b69e71efd5a94b8d2d98e50189eaa90"
+          },
+          "PE-CSNA-STORE": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSNA-STORE-OPEN-001",
+            "Content Digest": "sha256:fa57b53d3495ce2b322da29b733f572a64a16d409378dd3d7ed9075127131f96"
+          },
+          "PE-CSNA-AUTHOR": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSNA-AUTHOR-OPEN-001",
+            "Content Digest": "sha256:9f16a041af9d95b92217e7d474ec9223c66388d89c694d9683c28e8d06ae7441"
+          }
+        },
+        "Decision Revision Ref Set": [],
+        "Open Policy Question Ref Set": [],
+        "Post-Freeze Change/Closure basis": null
+      }
+    }
+  ],
+  "limits": "candidate promotion only; open elements are not current P2G20 prerequisites"
+}

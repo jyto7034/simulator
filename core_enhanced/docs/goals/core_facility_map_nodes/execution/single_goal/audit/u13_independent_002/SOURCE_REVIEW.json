@@ -1,0 +1,20 @@
+{
+  "changed_production_paths": {
+    "live_ron.rs:validate_facility_layout_authoring": "Roles validated after activity/reference validation; normal/elite match actual category, payload, existing kind interpretation and concrete PVE class. Wrong support/reward metadata cannot masquerade as ordinary battle. Valid activity IDs are not hardcoded; no allocator weights or source normalization introduced.",
+    "facility_rooms.rs:facility_encounter_hidden": "Single predicate uses authored reservation and permanent completed-room set, not transient visitation/query. Both current map and visited-room projection consume it. Pure read; hidden authoritative encounter remains available for execution.",
+    "node_flow.rs:handle_select_map_node": "Stores original enter_result.session in state before redacting response copy. Cancel clears transient session; selected snapshot uses same predicate. Complete response invokes common concealment after node transition.",
+    "combat.rs:combat_preview_for_node / explicit_combat_preview_for_node": "Presentation is concealed before cache access, including retry response. BattleStart resolves explicit actual encounter separately; no hidden None is fed into actual battle selection.",
+    "snapshot.rs:NodeConfirm": "Masks session and cached preview only at pre-entry confirmation, while actual entered battle context stays authoritative. Top-level map is current_map_view; nested room map uses room-aware predicate."
+  },
+  "unchanged_contracts_checked": {
+    "allocation": "Support total sampled first including fixed support; feasible event/reward/elite combinations and min-normal arithmetic; candidate shuffle and independent five-way reward choice; official graph cross-checked to adopted JSON.",
+    "room_ownership": "Current RunState.map is single owner; visited rooms preserve map/progression and shared metadata/receipts. Reentry restores original UUID and reroll/debit is absent.",
+    "gate_completion": "Actual completed reachable Gate plus authored edge. Transaction prepares clone/recovery before permanent completion; Return cause Gate distinct from exhaustion. Descent-only ceil recovery remains covered by current selected tests.",
+    "profile_continue": "Permanent room/compendium knowledge unions monotonically and is outside checkpoint rewind. Current room and prior visited maps survive V14; genuine V12/profileV4, V5 current publication and actual temporary IO failure remain unaffected by correction.",
+    "normal_authority": "17 named baseline references verified; corrected files do not change paired CAS, journal, worker, issuer or profile/store codecs. Existing 30 approved-host steps establish unchanged publication mechanism, not a new approval for this source.",
+    "quality": "No fixture-specific product branch, silent missing-reference normalization, new fallback executor, ownership duplication or policy change identified in reviewed delta. Explicit Unsupported remains separate from valid references; fixed graph returns before legacy auto boss/omen generator.",
+    "durable_docs": "U13 sections of core_runtime_contract, data_loading_contract and run-and-map reflect typed layout, support, ownership and persistence. Existing universal secrecy/valid role contracts are restored rather than redefined."
+  },
+  "independence": "Current conversation reviewer performed no U13 implementation, design choice or repair; only read-only probes and audit records. No subagents. No assertion about unverified runtime model identity.",
+  "scope": "GEX-20 stage-run for GS-CFMN-001/GOAL-CFMN-01/PHASE-CFMN-01; ROADMAP1.9 supported routes only. No product edits, U14, new Normal approval or whole-repository-pass claim."
+}

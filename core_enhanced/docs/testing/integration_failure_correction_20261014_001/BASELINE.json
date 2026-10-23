@@ -1,0 +1,30 @@
+[
+  {
+    "path": "core_enhanced/tests/ron_loading.rs",
+    "sha256": "d8e4c1f018391dbd3107e8934293f0db9b11a68f6caad266ccb21503bf251bb9"
+  },
+  {
+    "path": "core_enhanced/tests/u08_relic_public/support.rs",
+    "sha256": "270a655a6ffb68cc2840823a16ac25cfa996262824b6fbf4e88adb156a62f5fb"
+  },
+  {
+    "path": "core_enhanced/tests/u08_relic_public/prospective.rs",
+    "sha256": "438e605104d40040344c3fcd68e58c2f861a67a29cb8eba98d30abef2571f958"
+  },
+  {
+    "path": "core_enhanced/tests/u08_relic_public/lifecycle.rs",
+    "sha256": "5139fd4905127f8a9ca94eb7414a376afdac9a68eeda4cb259e3751f5b073f28"
+  },
+  {
+    "path": "core_enhanced/tests/fixtures/u08/lifecycle001/facility_templates.ron",
+    "sha256": "97265ce51950369364ab454b96dc091f11fa52c29af8a4755c3d72324029fd99"
+  },
+  {
+    "path": "core_enhanced/tests/fixtures/u08/lifecycle001/node_assignment_profiles.ron",
+    "sha256": "21a973d031dd3e277561adaf0f918080cf9d81c5fae617ba2ded119fc46b1bc7"
+  },
+  {
+    "path": "core_enhanced/docs/game_rules/equipment-and-fragments.md",
+    "sha256": "a2ca6d1abf5eceec1f38cad84016549d15927893c9cc91891642786cc67d9241"
+  }
+]

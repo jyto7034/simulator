@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/artifacts/normal002/normal_host_lifecycle",
+    "--cmva-adopt-calibration",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/test_parts/normal_inputs002/admission.json",
+    "/tmp/u13-normal-v2-private-nrtv_2me/adoption",
+    "u13-supported-facility-criterion-v1",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/test_parts/normal_inputs002/reviewed_limits.json"
+  ],
+  "exit_code": 1,
+  "seconds": 2.423368625997682,
+  "stdout": "normal_adoption001.stdout.log",
+  "stderr": "normal_adoption001.stderr.log"
+}

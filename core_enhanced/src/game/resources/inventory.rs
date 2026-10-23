@@ -29,6 +29,8 @@ use crate::game::{
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EquipmentItemDto {
+    pub weapon_stage: crate::game::ability::weapon_marks::WeaponStage,
+    pub investment: crate::game::material_economy::MaterialInvestment,
     pub uuid: Uuid,
     pub definition_id: String,
     pub name: String,
@@ -48,11 +50,10 @@ impl EquipmentItemDto {
     }
 
     pub fn from_owned_equipment(owned: &OwnedEquipment) -> Self {
-        Self::from_owned_with_level(
-            owned.instance_uuid,
-            owned.meta.as_ref(),
-            owned.enhancement_level,
-        )
+        let mut dto = Self::from_owned_with_level(owned.instance_uuid, owned.meta.as_ref(), owned.enhancement_level);
+        dto.investment = owned.investment.clone();
+        dto.weapon_stage = owned.weapon_stage;
+        dto
     }
 
     pub fn from_owned_with_level(
@@ -61,6 +62,8 @@ impl EquipmentItemDto {
         enhancement_level: u8,
     ) -> Self {
         Self {
+            investment: Default::default(),
+            weapon_stage: Default::default(),
             uuid: instance_uuid,
             definition_id: meta.id.clone(),
             name: meta.name.clone(),
@@ -235,6 +238,8 @@ crate::authoring::clone_shape::struct_shape!(EquipmentInventory { items });
 crate::authoring::clone_shape::struct_shape!(EquipmentMaterialInventory { stacks });
 crate::authoring::clone_shape::struct_shape!(ConsumableInventory { items });
 crate::authoring::clone_shape::struct_shape!(OwnedEquipment {
+    weapon_stage,
+    investment,
     instance_uuid,
     meta,
     equipped_to,
@@ -580,6 +585,9 @@ impl EquipmentInventory {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OwnedEquipment {
+    #[serde(default)]
+    pub weapon_stage: crate::game::ability::weapon_marks::WeaponStage,
+    pub investment: crate::game::material_economy::MaterialInvestment,
     pub instance_uuid: Uuid,
     pub meta: Arc<EquipmentItem>,
     pub equipped_to: Option<Uuid>,
@@ -593,6 +601,8 @@ impl OwnedEquipment {
             meta,
             equipped_to: None,
             enhancement_level: 0,
+            investment: Default::default(),
+            weapon_stage: Default::default(),
         }
     }
 }
@@ -740,6 +750,7 @@ mod tests {
 
     fn equipment_meta(uuid: u128, equipment_type: EquipmentType) -> Arc<EquipmentMetadata> {
         Arc::new(EquipmentMetadata {
+            content_family: None,
             id: format!("equip_{uuid}"),
             uuid: Uuid::from_u128(uuid),
             name: "Equip".to_string(),

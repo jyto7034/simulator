@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#16140f" />
+  <script>
+    (() => {
+      let preference;
+      try { preference = localStorage.getItem('ark-wiki-theme'); } catch {}
+      document.documentElement.dataset.theme = preference === 'dark' || (preference !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    })();
+  </script>
+  <title>ARK 게임 위키</title>
+  <!--seo-->
+</head>
+<body>
+  <div id="root"><!--app--></div>
+  <!--page-data-->
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+</html>

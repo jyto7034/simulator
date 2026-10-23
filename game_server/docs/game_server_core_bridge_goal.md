@@ -4,7 +4,7 @@
 
 Update `game_server` so it successfully bridges the Unity client to the latest `core_enhanced` single-player game system.
 
-The server must not own game rules. It should translate WebSocket JSON requests into `game_core::game::behavior::PlayerBehavior`, execute them through `GameCore`, and return `BehaviorResult` plus the latest core snapshot in a stable Unity-facing protocol.
+The server must not own game rules. It parses WebSocket command documents through `ApplicationCommand::from_document`, executes or prepares them through `CoreApplication` with `ApplicationExecutionContext`, and publishes Core's typed `ApplicationResult` meaning and payload. Changes published through paired active-run/profile persistence pass through the host's accepted application intent before Core commit. State reads use `CoreApplication::snapshot(ApplicationSnapshotKind::Run)` in the stable Unity-facing protocol.
 
 ## Current Policy Decisions
 
@@ -15,12 +15,21 @@ The server must not own game rules. It should translate WebSocket JSON requests 
 - Long-term response shape: keep a stable command-result plus state-snapshot flow for Unity, but let payload content follow the current `core_enhanced` contracts.
 - Do not reintroduce phase-era or suppression-era core concepts as compatibility wrappers.
 
+## Tutorial and Expedition consumer
+
+The bridge accepts Core's Tutorial/Expedition modes, required loan_copy_ids, three distinct employees from six candidates (two per role),
+paid HQ candidates, saved Gate/exhaustion continuation choices and first-return acknowledgement. Fresh Expedition
+does not depend on a tutorial completion flag. The profile stores exact expedition sequence/binding/vault/story
+beside monotonic knowledge. Paired publication uses profile4/active7/journal3; profile-only lifecycle mutations reject
+before Core commit. Removed psychology fields and old modes/versions are rejected with original bytes protected.
+This describes the current implementation contract; U12 execution and independent review remain in the Goal records.
+
 ## Success Criteria
 
 ### Current Relic boundary
 
 Relic support follows Core's published RON catalog and generic application command/result boundary.
-`CatalogKind::Relics` is one of the 26 catalogs under schema5; its strict definitions provide Normal effects
+`CatalogKind::Relics` is one of the 26 catalogs under schema6; its strict definitions provide Normal effects
 and optional replacement Corrupt effects/penalties. The official catalog currently contains no balance
 definitions. Host/Unity code does not invent a second catalog, capability, ownership table or modifier
 registry. See [data loading](../../core_enhanced/docs/data_loading_contract.md#relics-catalog-and-immutable-variants).
@@ -35,8 +44,8 @@ snapshot fields. The [Unity protocol](unity_bridge_protocol.md#relic-commands-an
 the actual wire command fields and response boundaries.
 
 Durable publication preserves the current and independent SavePoint Relic graphs, including copy
-variant/placement, materials, UUID stream and Event history. ActiveRun envelope V5, outer continuation
-V11 and standalone Core checkpoint payload V12 are distinct formats. Content generation and original
+variant/placement, materials, UUID stream and Event history. ActiveRun envelope V7, outer continuation
+V12 and standalone Core checkpoint payload V13 are distinct formats. Content generation and original
 damage-source bindings remain Core-owned; reconnect/Continue cannot manufacture them from a UI numeric
 plan. Existing basic aura precedes one Relic composition. Strong retained owners and test-only Weak
 lifetime checks do not establish host RSS or deployment capacity. No new live battle disk codec is
@@ -44,9 +53,9 @@ introduced by this boundary.
 
 The goal is complete only when all required checks below pass.
 
-- `cargo check -p game_server` passes.
-- `cargo test -p game_server` passes, or any failures are unrelated and documented.
-- `cargo test -p game_core` is run after server compilation succeeds, or a clear blocker is documented.
+- The server build and selected Core/server checks cover the changed command, query, paired storage and recovery paths.
+- Relevant failures, selected/executed counts, skips and raw evidence are recorded; unrelated full suites are not automatic requirements.
+- Preparation/build-only and prior target evidence do not establish current Tutorial/Expedition behavior.
 - The active `/game` WebSocket path supports the latest `core_enhanced` single-player flow:
   - `StartNewGame`
   - `SelectStarterEmployees`
@@ -60,19 +69,22 @@ The goal is complete only when all required checks below pass.
   - reward selection
   - skill fragment equip, unequip, upgrade, awaken, dismantle
   - equipment restore, dismantle, enhance
-  - combat replay finish
-- The active state snapshot is based on `GameCore::get_run_snapshot_json()`.
-- The local active-run store uses strict envelope version 5 around external Core continuation document version 11.
-  The standalone Core checkpoint payload encoder uses version 12; its document is not a normal Continue input.
+  - live battle commands and `CompleteCombatResult` acknowledgement
+- The active state snapshot comes from `CoreApplication::snapshot(ApplicationSnapshotKind::Run)`.
+  The server serializes the typed `RunSnapshotDto` and adds only its host persistence/recovery overlay.
+- The local active-run store uses strict envelope version 7 around external Core continuation document version 12.
+  The standalone Core checkpoint payload encoder uses version 13; its document is not a normal Continue input.
   The opaque Core graph owns its power-model/Floor-anchor generation; the server envelope preserves monotonic load
   count and run peak. Completed publication writes current and backup for the same latest confirmed generation.
   Backup recovery and explicit SavePoint rewind do not decrease those high-water values.
 - The server snapshot wrapper preserves Core's typed `encounter_compendium` root field without a
   second field list or metadata mapper. A local-install singleton persistence runtime restores and publishes
   the monotonic discovered/defeated sets independently of transport player UUID and active-run/checkpoint
-  state, and projects recovery/dirty/fatal status to Unity. `AttachSession` merges every readable shared profile
-  into Core before building the reconnect snapshot; a fatal profile instead keeps the title Retry/Reset recovery
-  snapshot available and does not substitute an empty durable profile.
+  state, and projects recovery/dirty/fatal status to Unity. Before building the reconnect snapshot,
+  `AttachSession` installs a readable authoritative profile through `CoreApplication::install_authoritative_player_profile`:
+  the installed profile carries its exact lifecycle sequence/binding/vault/story and published monotonic knowledge.
+  Recovery-pending, protected and fatal profiles are not installed as empty durable authority; their explicit
+  recovery status remains available in the snapshot.
 - The server no longer calls removed core APIs such as:
   - `get_progression`
   - `get_current_phase_events`
@@ -125,7 +137,8 @@ The goal is complete only when all required checks below pass.
 
 ### Phase 2: Update Client Request Mapping
 
-Update `PlayerGameClientMessage` and `PlayerBehaviorRequest` so the request adapter covers current `PlayerBehavior`.
+Keep `PlayerGameClientMessage::Command` parsing the behavior document into the current public
+`ApplicationCommand`; the server does not translate it into a domain `PlayerBehavior` enum.
 
 Add or update request variants for:
 
@@ -150,7 +163,7 @@ Add or update request variants for:
 - `DismantleEquipment { item_uuid }`
 - `EnhanceEquipment { item_uuid }`
 - existing inventory, field, bench, shop, reward, and equipment equip actions
-- `FinishCombatReplay`
+- `CompleteCombatResult`
 
 Remove active mappings for deleted phase/suppression actions.
 
@@ -162,7 +175,8 @@ Preferred protocol direction:
 
 ### Phase 3: Update Result Mapping
 
-Update `behavior_result_to_command_result` to cover every current `BehaviorResult`.
+Keep `behavior_result_to_command_result` consuming `ApplicationResult` and preserving its
+public meaning, payload and disposition. Core owns domain `BehaviorResult` conversion.
 
 Required result coverage:
 
@@ -194,7 +208,6 @@ Required result coverage:
 - `PurchaseItem`
 - `RewardGranted`
 - `CombatRewardsGranted`
-- `CombatResolved`
 - `RewardState`
 - `Ok`
 
@@ -206,31 +219,23 @@ Rules:
   `CombatRewardsGranted`, `EmployeeRecruited`, and `EmergencySuppliesGranted`.
 - Send the successful command result before the trailing root snapshot so Unity can present the
   exact one-shot delivery fact without inferring it from inventory differences.
-- Compress timelines for WebSocket payloads when returning `CombatResolved`.
+- Preserve live battle setup/update/resync side messages. Production terminal results have no event-log
+  attachment; `compressed_event_log` is omitted. Diagnostic timelines remain outside this boundary.
+- `complete_combat_result` acknowledges Core's stored compact receipt and advances to the next phase;
+  it does not repeat the settlement or its unconditional grants.
 - Preserve recursive completion payload for `CombatRewardsGranted`.
 - Prefer serializing complete DTOs from core rather than rebuilding them manually in the server.
 
 ### Phase 4: Replace Server-Built Snapshots
 
-Replace custom phase-era snapshot assembly with `GameCore::get_run_snapshot_json()`.
+Read the typed `RunSnapshotDto` through `CoreApplication::snapshot(ApplicationSnapshotKind::Run)`
+and serialize it as a whole, preserving Core's published roots and action capabilities without a second
+server-owned field list. Add only the host persistence/recovery overlay. Read-only projections and live
+battle side-message results do not request a trailing full state snapshot.
 
-The snapshot returned after auth and after each command should come from core and include:
-
-- `game_state`
-- `game_state_context`
-- typed `action_capabilities`
-- `run_progression`
-- `map_progression`
-- `map`
-- `current_node_session`
-- `selected_event`
-- `roster`
-- `field`
-- `bench`
-- `inventory`
-- `resources`
-
-If an active combat replay exists, use the current core method `get_active_combat_replay()` only as a supplemental compressed timeline field. Do not use suppression-era naming.
+An active battle uses Core's setup/update/resync projections. A finished host tick publishes the final
+battle update before the `combat_result` snapshot; the client then acknowledges the stored receipt
+with `complete_combat_result`. Neither the root snapshot nor terminal result attaches a replay log.
 
 ### Phase 5: Update Game Data Loading
 
@@ -284,14 +289,14 @@ Run checks in this order:
 
 If server tests are sparse, add focused adapter tests for:
 
-- request JSON deserialization into current `PlayerBehaviorRequest`
-- conversion from `PlayerBehaviorRequest` to `PlayerBehavior`
+- request JSON deserialization into current `ApplicationCommand`
+- parsing command documents through `ApplicationCommand::from_document`
 - result mapping for at least:
   - `RunStartFlowStarted`
   - `NodePreview`
   - `NodeEntered`
   - `SupportState`
-  - `CombatResolved`
+  - live battle setup/update/resync projections
   - `CombatRewardsGranted`
 - auth attach returns a core run snapshot without phase-era fields
 
@@ -305,10 +310,10 @@ Fast loop preference:
 - [x] Active Unity route `/game` is identified as the single-player bridge.
 - [x] Deprecated multiplayer routes are labeled but retained.
 - [x] Removed phase/suppression request variants are no longer active in the bridge.
-- [x] Current `PlayerBehavior` variants are available through WebSocket request mapping.
-- [x] Current `BehaviorResult` variants are serialized by `behavior_result_to_command_result`.
-- [x] Core snapshot uses `GameCore::get_run_snapshot_json()`.
-- [x] Combat replay uses current combat naming and compression.
+- [x] Current public `ApplicationCommand` documents are available through WebSocket request parsing.
+- [x] `behavior_result_to_command_result` preserves typed `ApplicationResult` meaning, payload and disposition.
+- [x] Core snapshot uses `CoreApplication::snapshot(ApplicationSnapshotKind::Run)` and typed `RunSnapshotDto`.
+- [x] Live battle setup/update/resync and compact-receipt acknowledgement follow the current Core boundary.
 - [x] Server RON loader builds current `GameDataBase`.
 - [x] `cargo check -p game_server` passes.
 - [x] `cargo test -p game_server` passes or unrelated failures are documented.

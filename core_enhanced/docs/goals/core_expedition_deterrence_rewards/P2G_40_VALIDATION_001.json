@@ -1,0 +1,35 @@
+{
+  "runs": [
+    {
+      "command": [
+        "node",
+        "core_enhanced/docs/tools/validate_p2g40_receipt.mjs",
+        "--write-receipt",
+        "--plan",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_expedition_deterrence_rewards/P2G_40_PHASE_PLAN_001.json",
+        "--freeze",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_expedition_deterrence_rewards/P2G_30_FREEZE_001.json",
+        "--receipt",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_expedition_deterrence_rewards/P2G_40_VALIDATION_RECEIPT_001.json"
+      ],
+      "exit_code": 0,
+      "stdout": "P2G_40_generate_001.stdout.log",
+      "stderr": "P2G_40_generate_001.stderr.log"
+    },
+    {
+      "command": [
+        "node",
+        "core_enhanced/docs/tools/validate_p2g40_receipt.mjs",
+        "--plan",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_expedition_deterrence_rewards/P2G_40_PHASE_PLAN_001.json",
+        "--freeze",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_expedition_deterrence_rewards/P2G_30_FREEZE_001.json",
+        "--receipt",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_expedition_deterrence_rewards/P2G_40_VALIDATION_RECEIPT_001.json"
+      ],
+      "exit_code": 0,
+      "stdout": "P2G_40_validate_001.stdout.log",
+      "stderr": "P2G_40_validate_001.stderr.log"
+    }
+  ]
+}

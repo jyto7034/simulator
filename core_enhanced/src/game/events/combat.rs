@@ -681,6 +681,8 @@ mod tests {
         let game_data = game_data_with_abnormalities_and_pve(
             vec![enemy],
             vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
                 id: "boss_contract".to_string(),
                 encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
                 primary_abnormality_id: Some("enemy".to_string()),
@@ -736,6 +738,8 @@ mod tests {
         let game_data = game_data_with_abnormalities_and_pve(
             vec![enemy],
             vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
                 id: "preview_encounter".to_string(),
                 encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
                 primary_abnormality_id: Some("enemy".to_string()),
@@ -811,6 +815,8 @@ mod tests {
         let game_data = game_data_with_abnormalities_and_pve(
             vec![enemy],
             vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
                 id: "strict_preview_encounter".to_string(),
                 encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
                 primary_abnormality_id: Some("enemy".to_string()),
@@ -887,6 +893,8 @@ mod tests {
         let enemy_a = abnormality("enemy_a", Uuid::from_u128(0x225), 1);
         let enemy_b = abnormality("enemy_b", Uuid::from_u128(0x226), 1);
         let encounter_a = PveEncounter {
+            deterrence_tuning: Default::default(),
+            bonus_objectives: Vec::new(),
             id: "encounter_a".to_string(),
             encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
             primary_abnormality_id: Some("enemy_a".to_string()),
@@ -971,6 +979,8 @@ mod tests {
         let game_data = game_data_with_abnormalities_and_pve(
             vec![enemy],
             vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
                 id: "defense_encounter".to_string(),
                 encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
                 primary_abnormality_id: Some("enemy".to_string()),
@@ -1050,6 +1060,8 @@ mod tests {
         let game_data = game_data_with_abnormalities_and_pve(
             vec![enemy],
             vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
                 id: "wave_encounter".to_string(),
                 encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
                 primary_abnormality_id: Some("enemy".to_string()),
@@ -1103,6 +1115,7 @@ mod tests {
             })
             .collect::<Vec<_>>();
         let preview = CombatPreview {
+            deterrence: Default::default(),
             node_id,
             encounter_id: Some("wave_encounter".to_string()),
             battlefield_template_id: "test_wave_field".to_string(),
@@ -1235,6 +1248,8 @@ mod tests {
         let game_data = game_data_with_abnormalities_and_pve(
             vec![player, enemy],
             vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
                 id: "tactical_encounter".to_string(),
                 encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
                 primary_abnormality_id: Some("enemy".to_string()),
@@ -1348,6 +1363,8 @@ mod tests {
         let game_data = game_data_with_abnormalities_and_pve(
             vec![player, enemy],
             vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
                 id: "default_defense_encounter".to_string(),
                 encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
                 primary_abnormality_id: Some("enemy".to_string()),
@@ -1480,6 +1497,8 @@ mod tests {
         let game_data = game_data_with_abnormalities_and_pve(
             vec![player, enemy],
             vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
                 id: "generated_route_encounter".to_string(),
                 encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
                 primary_abnormality_id: Some("route_enemy".to_string()),
@@ -1603,6 +1622,8 @@ mod tests {
         let game_data = game_data_with_abnormalities_and_pve(
             vec![player, enemy],
             vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
                 id: "survival_timer_encounter".to_string(),
                 encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
                 primary_abnormality_id: Some("enemy".to_string()),
@@ -1697,6 +1718,8 @@ mod tests {
         let game_data = game_data_with_abnormalities_and_pve(
             vec![enemy],
             vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
                 id: "surrounded_default_defense".to_string(),
                 encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
                 primary_abnormality_id: Some("enemy".to_string()),
@@ -1806,6 +1829,8 @@ mod tests {
         let game_data = game_data_with_abnormalities_and_pve(
             vec![player, enemy],
             vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
                 id: "fixture_encounter".to_string(),
                 encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
                 primary_abnormality_id: Some("enemy".to_string()),
@@ -1894,6 +1919,8 @@ mod tests {
         let game_data = game_data_with_abnormalities_and_pve(
             vec![boss_fixture],
             vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
                 id: "boss_without_binding".to_string(),
                 encounter_class: crate::game::data::pve_data::PveEncounterClass::NormalBoss,
                 primary_abnormality_id: Some("boss_fixture".to_string()),
@@ -2016,6 +2043,8 @@ mod tests {
             .compile()
             .expect("Boss fixture catalog should compile");
         let encounter = PveEncounter {
+            deterrence_tuning: Default::default(),
+            bonus_objectives: Vec::new(),
             id: "bound_tracking_encounter".to_string(),
             encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
             primary_abnormality_id: Some("tracking_fixture".to_string()),

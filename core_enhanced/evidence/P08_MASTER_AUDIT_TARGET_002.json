@@ -1,0 +1,268 @@
+{
+  "record_ref": "ATR-CRAR-C2-MASTER-GEX30-002",
+  "captured_at_utc": "2026-08-22T22:01:55Z",
+  "handoff_ref": "HA-CRAR-P2G60-002",
+  "goal_set_ref": "GS-CRAR-P2G50-002",
+  "goal_id": "GOAL-CRAR-C2-MASTER",
+  "execution_pass": "GEX-30",
+  "repository": {
+    "workspace_locator": "/mnt/f/work/simulator/core_enhanced",
+    "revision": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+    "branch": "cleanup/simulator-dirty-worktree-20260803",
+    "workspace_manifest": {
+      "path": "Cargo.toml",
+      "sha256": "0d118334417380f47461c89b50c550bd3af758f705e1ce2ebf6252ae9ecd368b"
+    },
+    "dependency_lock": {
+      "path": "../Cargo.lock",
+      "sha256": "2e5f218d4147b915e4af8362835f9b17bd7de3f21b98c89a290abda20921e969"
+    }
+  },
+  "final_implementation_submanifest": {
+    "record_ref": "ATR-CRAR-C2-P08-GEX10-001",
+    "path": "evidence/P08_AUDIT_TARGET.json",
+    "sha256": "a3486eca50fc9f0f9685ece4e31609fa904eb972afb81bbe5610dfa6d43bed9e",
+    "content_members": 95,
+    "composition": "all 95 original path/kind/sha256 members are included by exact immutable submanifest reference"
+  },
+  "current_correction_submanifest": {
+    "record_ref": "ATR-CRAR-C2-P08-GEX20-001",
+    "path": "evidence/P08_AUDIT_TARGET_002.json",
+    "sha256": "1a0b7c628b581ed5c476b3e6aa26399394575013d5aa30140c6984d9b4d42101",
+    "current_delta_members": 16,
+    "composition": "P07 correction plus all affected predecessor currentness and current authoring inputs are included by exact submanifest reference"
+  },
+  "master_content_members": [
+    {
+      "path": "docs/goal_execution_pipeline.md",
+      "kind": "execution_contract",
+      "sha256": "5c19b62ae16943ef58ea2d02446f2fa188fa7bf8c18ad42d8ee79d0b18676c72"
+    },
+    {
+      "path": "docs/goals/current_runtime_architecture_remediation/P2G_30_CORE_ONLY_FREEZE_002.ko.md",
+      "kind": "current_final_freeze",
+      "sha256": "c55dbe40a2e5ec40fb3a62ff6d02dbff6d359395a048cb08e795f22e5d25452a"
+    },
+    {
+      "path": "docs/goals/current_runtime_architecture_remediation/P2G_40_CORE_ONLY_PHASE_PLAN_002.ko.md",
+      "kind": "current_phase_plan",
+      "sha256": "6d2ffd859e833df39b74de4ac93df5d32e01425b3172ebee499fc1b54e83e25b"
+    },
+    {
+      "path": "docs/goals/current_runtime_architecture_remediation/P2G_40_CORE_ONLY_PHASE_PLAN_VALIDATION_RECEIPT_002.json",
+      "kind": "current_phase_plan_receipt",
+      "sha256": "d5d467b8314a5d0e078d29180292985ab92756f931aba100789abdce1557e9fb"
+    },
+    {
+      "path": "docs/goals/current_runtime_architecture_remediation/P2G_50_CORE_ONLY_GOAL_SET_002.ko.md",
+      "kind": "current_goal_set",
+      "sha256": "2fc3730dc9e0024e3ead2a1ae37851799411dc63d5f63614430e37d26b3af08a"
+    },
+    {
+      "path": "docs/goals/current_runtime_architecture_remediation/P2G_60_CORE_ONLY_HANDOFF_002.ko.md",
+      "kind": "current_handoff",
+      "sha256": "40ec840f91be7b600d3edab509715f78d35887b7e4ddb5a3e642cd04abd8e4ff"
+    },
+    {
+      "path": "docs/architecture/runtime_feature_manifest.v1.json",
+      "kind": "current_feature_manifest",
+      "sha256": "ed3c4fb81de3fdae080b8f834a8d67edfcb649f1a8f8cf8b17f140a78acf3779"
+    },
+    {
+      "path": "Cargo.toml",
+      "kind": "core_build_input",
+      "sha256": "0d118334417380f47461c89b50c550bd3af758f705e1ce2ebf6252ae9ecd368b"
+    },
+    {
+      "path": "../Cargo.lock",
+      "kind": "core_dependency_lock",
+      "sha256": "2e5f218d4147b915e4af8362835f9b17bd7de3f21b98c89a290abda20921e969"
+    },
+    {
+      "path": "docs/goals/current_runtime_architecture_remediation/execution/p01_preservation_observability/COMPLETION_AUDIT.md",
+      "kind": "phase_completion_audit",
+      "sha256": "4b02feed4abb1dd3c85af7fd072740fad49b5431b95932964c2711c65dcdcda6"
+    },
+    {
+      "path": "docs/goals/current_runtime_architecture_remediation/execution/p02_validated_data/COMPLETION_AUDIT.md",
+      "kind": "phase_completion_audit",
+      "sha256": "7e52ff1bfeab768362a7bdab80802253376721b7a452f20a52f72b8ce7650ce3"
+    },
+    {
+      "path": "docs/goals/current_runtime_architecture_remediation/execution/p03_application_authority/COMPLETION_AUDIT.md",
+      "kind": "phase_completion_audit",
+      "sha256": "5ad8314fe3d0ff50fd845ebbe4ece22356b37ce8a34ca9fce7cf2ffc333b3c57"
+    },
+    {
+      "path": "docs/goals/current_runtime_architecture_remediation/execution/p04_battle_kernel/COMPLETION_AUDIT.md",
+      "kind": "phase_completion_audit",
+      "sha256": "ede79ef4c5d95ac5014bb3f41f03c223a8b1568b789527f7ca56175e98749da7"
+    },
+    {
+      "path": "docs/goals/current_runtime_architecture_remediation/execution/p05_bounded_history_result/COMPLETION_AUDIT.md",
+      "kind": "phase_completion_audit",
+      "sha256": "65b60f99096a6a74f74905105dcbee646bddd5aff128db6f0d03f03e71f190f2"
+    },
+    {
+      "path": "docs/goals/current_runtime_architecture_remediation/execution/p06_checkpoint_migration/COMPLETION_AUDIT.md",
+      "kind": "phase_completion_audit",
+      "sha256": "7370e3f539b16a10453d4b58f652ad20306c4bc03035f8e55e885380a16081db"
+    },
+    {
+      "path": "docs/goals/current_runtime_architecture_remediation/execution/p07_core_public_projection/COMPLETION_AUDIT.md",
+      "kind": "phase_completion_audit",
+      "sha256": "5aa0d9f7deb68fa15fdc03ae87b56967675cb11dac2f931040801450821ec610"
+    },
+    {
+      "path": "docs/goals/current_runtime_architecture_remediation/execution/p08_performance_final_integration/COMPLETION_AUDIT.md",
+      "kind": "phase_completion_audit",
+      "sha256": "127e1cd52e771f79159fe415f62431fde480d38237343caa14cbbe244a96ca9c"
+    },
+    {
+      "path": "evidence/P01_SUCCESSOR_AUDIT_TARGET_009.json",
+      "kind": "phase_currentness",
+      "sha256": "83b75421a54063b8ee67b38bf61527c6078b97685bfb25fbb238889c79701994"
+    },
+    {
+      "path": "evidence/P02_SUCCESSOR_AUDIT_TARGET_007.json",
+      "kind": "phase_currentness",
+      "sha256": "ae12124d9708dfa576a1fd3924e642a6bfbbd30a1be3ffbbf15c4fd52fc84a25"
+    },
+    {
+      "path": "evidence/P03_SUCCESSOR_AUDIT_TARGET_007.json",
+      "kind": "phase_currentness",
+      "sha256": "c8e54d394ec23cb270e636ab79741e0fa9319fadb6062120566cfd3503d24340"
+    },
+    {
+      "path": "evidence/P04_SUCCESSOR_AUDIT_TARGET_005.json",
+      "kind": "phase_currentness",
+      "sha256": "ac2c7d1ade176e9db247c4244c06fc575431f9aa55525e522b936e0bfda7df84"
+    },
+    {
+      "path": "evidence/P05_SUCCESSOR_AUDIT_TARGET_005.json",
+      "kind": "phase_currentness",
+      "sha256": "3c8d88e51bab0200997eb59ba3220b5cff161b5e3db618a1b3e9bc268a6b70ae"
+    },
+    {
+      "path": "evidence/P06_SUCCESSOR_AUDIT_TARGET_003.json",
+      "kind": "phase_currentness",
+      "sha256": "33a6c6a77c169346bc1f73541d3d9bbc13521d3d6a1160bc1e1e05bfb61927c5"
+    },
+    {
+      "path": "evidence/P07_SUCCESSOR_AUDIT_TARGET_002.json",
+      "kind": "phase_currentness",
+      "sha256": "43b98a7a029423e69f965a982de8ee74c7673b83d047a4844a822c7785da7aab"
+    },
+    {
+      "path": "evidence/P08_SUCCESSOR_AUDIT_TARGET_001.json",
+      "kind": "phase_currentness",
+      "sha256": "86c72a8bf31e2ec16caa4d6ca2a44bd79b44257f6341b50fd32db028b94046f9"
+    },
+    {
+      "path": "evidence/P07_AUDIT_TARGET_002.json",
+      "kind": "p07_correction_target",
+      "sha256": "9fc894b57107eaf043e5601e6ff1155f9a73cdf24f8968586e539150d7ae2755"
+    },
+    {
+      "path": "evidence/P08_AUDIT_TARGET_002.json",
+      "kind": "p08_correction_integration_target",
+      "sha256": "1a0b7c628b581ed5c476b3e6aa26399394575013d5aa30140c6984d9b4d42101"
+    },
+    {
+      "path": "evidence/P07_CORE_PUBLIC_PROJECTION_RECEIPT_002.json",
+      "kind": "p07_correction_receipt",
+      "sha256": "a169a85657829dddcfe7406aa03af4aec0095ff162ba6c28149cc62a72632d9d"
+    },
+    {
+      "path": "docs/goals/current_runtime_architecture_remediation/execution/p07_core_public_projection/SUCCESSOR_CURRENTNESS_AUDIT_002.md",
+      "kind": "p07_currentness_document",
+      "sha256": "2d83082558dc5c40148cc024192766e6a008ea265d93658a98f39dedeb12bcb1"
+    },
+    {
+      "path": "docs/goals/current_runtime_architecture_remediation/execution/p08_performance_final_integration/SUCCESSOR_CURRENTNESS_AUDIT_001.md",
+      "kind": "p08_currentness_document",
+      "sha256": "5a23e2c211c1f5cba7aa6857d4918584386e064847eeb1be8a31beed20182713"
+    },
+    {
+      "path": "docs/goals/current_runtime_architecture_remediation/execution/p08_performance_final_integration/FINAL_EVIDENCE_INDEX.md",
+      "kind": "final_policy_and_dimension_evidence_index",
+      "sha256": "d8abbe689696e2ea6494d550090647372fccebb092a2353025c50adad2568919"
+    },
+    {
+      "path": "docs/goals/current_runtime_architecture_remediation/execution/p08_performance_final_integration/STRUCTURAL_AUDIT.md",
+      "kind": "final_structural_evidence",
+      "sha256": "0c39777d6dae5219ce6de034f0615cc71c7bfe19b796484db55967cf4ad3b9cb"
+    }
+  ],
+  "master_content_member_count": 32,
+  "phase_currentness": [
+    {
+      "goal_id": "GOAL-CRAR-C2-P01-PRESERVATION-OBSERVABILITY",
+      "record_ref": "ATR-CRAR-C2-P01-GEX20-009",
+      "verdict": "Complete / High"
+    },
+    {
+      "goal_id": "GOAL-CRAR-C2-P02-VALIDATED-DATA",
+      "record_ref": "ATR-CRAR-C2-P02-GEX20-007",
+      "verdict": "Complete / High"
+    },
+    {
+      "goal_id": "GOAL-CRAR-C2-P03-APPLICATION-AUTHORITY",
+      "record_ref": "ATR-CRAR-C2-P03-GEX20-007",
+      "verdict": "Complete / High"
+    },
+    {
+      "goal_id": "GOAL-CRAR-C2-P04-BATTLE-KERNEL",
+      "record_ref": "ATR-CRAR-C2-P04-GEX20-005",
+      "verdict": "Complete / High"
+    },
+    {
+      "goal_id": "GOAL-CRAR-C2-P05-BOUNDED-HISTORY-RESULT",
+      "record_ref": "ATR-CRAR-C2-P05-GEX20-005",
+      "verdict": "Complete / High"
+    },
+    {
+      "goal_id": "GOAL-CRAR-C2-P06-CHECKPOINT-MIGRATION",
+      "record_ref": "ATR-CRAR-C2-P06-GEX20-003",
+      "verdict": "Complete / High"
+    },
+    {
+      "goal_id": "GOAL-CRAR-C2-P07-CORE-PUBLIC-PROJECTION",
+      "record_ref": "ATR-CRAR-C2-P07-GEX20-002",
+      "verdict": "Complete / High"
+    },
+    {
+      "goal_id": "GOAL-CRAR-C2-P08-PERFORMANCE-FINAL-INTEGRATION",
+      "record_ref": "ATR-CRAR-C2-P08-GEX20-001",
+      "verdict": "Complete / High"
+    }
+  ],
+  "unrelated_core_dirty_baseline": {
+    "scope": "core_enhanced paths only; game_server, Unity, sibling resources and external consumers excluded without inspection",
+    "exclusions": "cumulative P01-P08 target/execution/evidence/tool outputs plus Master audit-local execution/evidence artifacts and generated target directories",
+    "modified": 92,
+    "deleted": 23,
+    "untracked": 675,
+    "other": 0,
+    "total": 790,
+    "porcelain_sha256": "d9e815c705367387b6a610aa699e2eaa0968172c4c287cb567b822d6be7fd622"
+  },
+  "validation_identity": {
+    "fresh_p08_gex20": "five performance/public tools, release check/rustdoc, manifest verifier, 11 expected API probes, full Core 1159/1159",
+    "manifest": "57 features / 10 dimensions / 44 locator contents / errors 0 / locator composite 07f3b56b4e16fa39fa4f6547a9f881469c5c6aee7326c86947d44e01326fb8a7",
+    "api_probes": "five valid exit 0 / five established invalid expected exit 101 / default fixture invalid expected exit 101",
+    "full_core": "1159 passed / 0 failed / 0 ignored",
+    "structural": "single application writer 1 / runtime test-benchmark switches 0 / unresolved 0"
+  },
+  "known_mutability": "no applicable external actual; local audit-local generated build output may change and is excluded",
+  "explicit_exclusions": [
+    "docs/goals/current_runtime_architecture_remediation/execution/master_goal_set audit documents",
+    "evidence/P08_MASTER_AUDIT_TARGET.json, evidence/P08_MASTER_AUDIT_TARGET_002.json and Master GEX-30 receipts",
+    "generated target directories and audit-local temporary output",
+    "game_server, Unity, sibling resources, external consumers, deployment, release rollout and product SLA"
+  ],
+  "known_limitations": [
+    "system perf sampling unavailable; retained exact-output source-instrumented A/B evidence plus standard and allocator measurements remain the applicable direct evidence",
+    "whole-library Clippy has a previously recorded unrelated denied never_loop; required release check and rustdoc are warning-free"
+  ]
+}

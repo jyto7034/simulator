@@ -25,7 +25,13 @@ fn cmrp_external_world_active_terminal_and_pending_keep_effective_owner_limits()
     let fixture = external_resource_fixture_options(ResourceLifetime::Run, false, true, true);
     for cap in [16 * 1024 * 1024, 32 * 1024 * 1024] {
         let mut raw =
-            String::from_utf8(crate::runtime_safety::EMBEDDED_RUNTIME_SAFETY_RON.to_vec()).unwrap();
+            String::from_utf8(crate::runtime_safety::EMBEDDED_RUNTIME_SAFETY_RON.to_vec())
+                .unwrap()
+                .replacen(
+                    "max_retained_bytes: 16777216",
+                    "max_retained_bytes: 8388608",
+                    1,
+                );
         let end = raw.rfind(')').unwrap();
         raw.insert_str(
             end,
@@ -168,26 +174,11 @@ fn external_resource_fixture_options(
     timed_result: bool,
 ) -> ExternalFixture {
     let fixture = ExternalFixture::official();
-    // Preserve this resource/cost oracle's pre-U06 equipment and passive input.
-    // The normal six active starter sets have separate live grant/use coverage.
     let mut employees: crate::game::data::employee_data::EmployeeDefinitionDatabase =
         ron::de::from_str(&fixture.read("official/data/employees/definitions.ron")).unwrap();
     for employee in &mut employees.definitions {
-        employee.initial_loadout.active_skill_fragment_id = None;
-        if employee.starter_eligible {
-            employee.initial_loadout.equipment_ids =
-                vec!["standard_training_sword".into(), "standard_armor".into()];
-            if employee.employee_definition_id == "maintenance_tech" {
-                employee
-                    .initial_loadout
-                    .equipment_ids
-                    .push("archive_scanner".into());
-            }
-            employee.initial_loadout.baseline_skill_fragment_ids =
-                vec!["starter_basic_attack_enhancement".into()];
-        } else {
-            employee.initial_loadout.equipment_ids.clear();
-            employee.initial_loadout.baseline_skill_fragment_ids.clear();
+        if employee.employee_definition_id == "records_clerk" {
+            employee.initial_loadout.baseline_skill_fragment_ids = vec!["starter_basic_attack_enhancement".into()];
         }
     }
     fixture.write(
@@ -210,12 +201,9 @@ fn external_resource_fixture_options(
         "(include_anchor_tile: false, rows: [\"XXXXXXX\", \"XXXXXXX\", \"XXXXXXX\", \"XXX@XXX\", \"XXXXXXX\", \"XXXXXXX\", \"XXXXXXX\"])").unwrap();
     if timed_result {
         sword.price = 100; // synthetic sale quote; official training sword remains unpriced
-        let mut dismantle = equipment.dismantle_recipes[0].clone();
-        dismantle.equipment_id = "standard_training_sword".into();
-        equipment.dismantle_recipes.push(dismantle);
-        let mut enhance = equipment.enhancement_recipes[0].clone();
-        enhance.equipment_id = "standard_training_sword".into();
-        equipment.enhancement_recipes.push(enhance);
+        // Current official training weapons already own valid growth/dismantle recipes.
+        assert!(equipment.dismantle_recipes.iter().any(|r|r.equipment_id=="standard_training_sword"));
+        assert!(equipment.enhancement_recipes.iter().any(|r|r.equipment_id=="standard_training_sword"));
     }
     fixture.write(
         "official/data/equipments/base.ron",
@@ -290,7 +278,9 @@ fn start_resource_battle(data: Arc<GameDataBase>) -> (GameCore, Uuid, Uuid, Posi
 }
 
 fn enter_resource_battle(core: &mut GameCore, player: Uuid) -> (Uuid, Position) {
-    let employee = core.roster().unwrap().combat_eligible_employee_ids()[0];
+    let employee = core.roster().unwrap().iter()
+        .find(|employee| employee.employee_definition_id == "records_clerk")
+        .expect("resource probe is carried by the authored sword dealer").uuid;
     let node = force_map_combat_node(
         core,
         MapNodeCategory::Combat,
@@ -720,19 +710,18 @@ fn actual_run_result_failure_retry_and_fresh_public_checkpoint_preserve_nonempty
     let source = crate::application::CoreApplication::from_core(core);
     let checkpoint = source.export_active_run_checkpoint().unwrap().unwrap();
     let document: Value = serde_json::from_slice(checkpoint.core_payload_json()).unwrap();
-    assert_eq!(document["version"], 11);
+    assert_eq!(document["version"], 18);
     assert_eq!(
         document["continuation"]["current"]["typed_resources"],
         serde_json::to_value(&committed).unwrap()
     );
-    let profile = crate::game::encounter_compendium::PlayerProfileState {
-        standard_tutorial_completed: true,
-        highest_floor_reached: 99,
-        longest_deathless_floor_streak: 17,
-        ..Default::default()
-    };
+    let mut profile: crate::game::encounter_compendium::PlayerProfileState = serde_json::from_value(
+        source.snapshot(crate::application::ApplicationSnapshotKind::PlayerProfile).unwrap().read_model().as_value().clone()
+    ).unwrap();
+    profile.highest_floor_reached = 99;
+    profile.longest_deathless_floor_streak = 17;
     let seed_profile = |app: &mut crate::application::CoreApplication| {
-        app.merge_player_profile(crate::application::ApplicationDocument::new(
+        app.install_authoritative_player_profile(crate::application::ApplicationDocument::new(
             serde_json::to_value(&profile).unwrap(),
         ))
         .unwrap();
@@ -769,7 +758,7 @@ fn actual_run_result_failure_retry_and_fresh_public_checkpoint_preserve_nonempty
                 entries[0]["owner"] = json!({"EquipmentCopy": Uuid::from_u128(0xBAD)})
             }
             "unknown_resource" => entries[0]["resource"] = json!("missing_resource"),
-            "cap" => entries[0]["balance"] = json!(16),
+            "cap" => entries[0]["balance"] = json!(17),
             "duplicate" => {
                 let entry = entries[0].clone();
                 entries.as_array_mut().unwrap().insert(0, entry);
@@ -955,6 +944,8 @@ fn actual_same_copy_transfer_enhance_sale_and_dismantle_preserve_or_discard_only
         .find(|other| other.uuid != employee)
         .unwrap()
         .uuid;
+    let active_copy = base.state.roster.iter().find(|e|e.uuid == other).unwrap().skill_fragments.active_copy_uuid().unwrap();
+    base.execute(player,PlayerBehavior::UnequipSkillFragment {employee_uuid:other,copy_uuid:active_copy}).unwrap();
     base.execute(
         player,
         PlayerBehavior::UnEquipItem {
@@ -1091,7 +1082,7 @@ fn actual_same_copy_transfer_enhance_sale_and_dismantle_preserve_or_discard_only
     assert_eq!(armors.len(), 2);
     for item_uuid in armors {
         maintenance
-            .execute(player, PlayerBehavior::DismantleEquipment { item_uuid })
+            .execute(player, PlayerBehavior::DismantleEquipmentConfirmed { confirmed: true, item_uuid })
             .unwrap();
         assert_eq!(maintenance.run_resources(), Some(&original));
     }
@@ -1127,23 +1118,13 @@ fn actual_same_copy_transfer_enhance_sale_and_dismantle_preserve_or_discard_only
         .clone();
     assert!(!yields.is_empty());
     let mut rejected_dismantle = maintenance.clone();
-    let material = &yields[0];
-    let current = rejected_dismantle
-        .state
-        .inventory
-        .equipment_materials
-        .amount(&material.material_id);
-    rejected_dismantle
-        .state
-        .inventory
-        .equipment_materials
-        .add(&material.material_id, u32::MAX - current)
-        .unwrap();
+    let current = rejected_dismantle.state.crafting_resources.equipment_dust;
+    rejected_dismantle.state.crafting_resources.grant_equipment_dust(u32::MAX - current).unwrap();
     let rejected_before = serialized_grant_roots(&rejected_dismantle);
     assert!(rejected_dismantle
         .execute(
             player,
-            PlayerBehavior::DismantleEquipment { item_uuid: copy }
+            PlayerBehavior::DismantleEquipmentConfirmed { confirmed: true, item_uuid: copy }
         )
         .is_err());
     assert_eq!(serialized_grant_roots(&rejected_dismantle), rejected_before);
@@ -1153,24 +1134,20 @@ fn actual_same_copy_transfer_enhance_sale_and_dismantle_preserve_or_discard_only
         .map(|material| {
             (
                 material.material_id.clone(),
-                maintenance
-                    .state
-                    .inventory
-                    .equipment_materials
-                    .amount(&material.material_id)
-                    + material.amount,
+                maintenance.state.crafting_resources.equipment_dust
+                    + material.amount + 1, // One dust refunded from the authored two-dust enhancement.
             )
         })
         .collect();
     maintenance
         .execute(
             player,
-            PlayerBehavior::DismantleEquipment { item_uuid: copy },
+            PlayerBehavior::DismantleEquipmentConfirmed { confirmed: true, item_uuid: copy },
         )
         .unwrap();
     for (id, expected) in expected_yields {
         assert_eq!(
-            maintenance.state.inventory.equipment_materials.amount(&id),
+            crate::game::material_economy::carried_amount(&maintenance.state.inventory, &maintenance.state.crafting_resources, &id),
             expected
         );
     }
@@ -1235,16 +1212,18 @@ fn two_real_same_definition_copies_and_target_employee_selector_do_not_alias() {
         "official/data/skills/base.ron",
         skills.replace("owner:SourceEmployee", "owner:TargetEmployee"),
     );
-    let (mut core, player, first, first_position) =
-        start_resource_battle(fixture.load().into_fixture_database_arc());
-    advance_to_resource_cost(&mut core, 2);
-    let second = core
-        .state
-        .roster
-        .iter()
-        .find(|employee| employee.uuid != first)
-        .unwrap()
-        .uuid;
+    let mut core = GameCore::new(fixture.load().into_fixture_database_arc(),0xCA05_101);
+    let player = Uuid::from_u128(1);
+    start_new_game_with_default_starters(&mut core,player);
+    let second = core.state.roster.iter().find(|e|e.employee_definition_id == "breach_guard").unwrap().uuid;
+    let active_copy = core.state.roster.iter().find(|e|e.uuid == second).unwrap().skill_fragments.active_copy_uuid().unwrap();
+    core.execute(player,PlayerBehavior::UnequipSkillFragment {employee_uuid:second,copy_uuid:active_copy}).unwrap();
+    let granted = core.execute_admin_command(crate::game::world::AdminCommand::AdminGrantEquipment {
+        definition_id:"standard_training_sword".into(),count:1}).unwrap();
+    let copy = serde_json::from_value(granted.payload["item_uuids"][0].clone()).unwrap();
+    core.execute(player,PlayerBehavior::EquipItem {item_uuid:copy,target_unit:second}).unwrap();
+    let (first,first_position) = enter_resource_battle(&mut core,player);
+    advance_to_resource_cost(&mut core,2);
     let active = core.state.active_battle.as_ref().unwrap();
     let position = active
         .combat_preview
@@ -1825,11 +1804,13 @@ fn nonempty_run_survives_repeat_retreat_second_result_floor_and_ends_at_new_run(
     );
     core.execute(player, PlayerBehavior::SelectMapNode { node_id: gate })
         .unwrap();
-    assert!(matches!(
-        core.execute(player, PlayerBehavior::ConfirmEnterNode)
-            .unwrap(),
-        BehaviorResult::FloorAdvanced { .. }
-    ));
+    core.execute(player, PlayerBehavior::ConfirmEnterNode).unwrap();
+    if core.state.run.as_ref().unwrap().run_progression.pending_continuation.is_some() {
+        core.execute(player,PlayerBehavior::ChooseExpeditionContinuation {choice:crate::game::expedition_lifecycle::ExpeditionContinuationChoice::Continue}).unwrap();
+    }
+    assert!(core.facility_gate_reached());
+    core.execute(player,PlayerBehavior::MoveToFacilityRoom {room_id:"B2-01".into()}).unwrap();
+    assert_eq!(core.state.run.as_ref().unwrap().run_progression.floor_index(),1);
     assert_eq!(core.run_resources(), Some(&second));
     core.execute(player, PlayerBehavior::AbandonRun).unwrap();
     if let Some(closed) = core.run_resources() {
@@ -2054,6 +2035,11 @@ fn actual_admin_acquisition_recruitment_and_employee_status_preserve_owner_ident
     };
     assert_ne!(recruit, employee);
     assert_eq!(core.run_resources(), Some(&original));
+    core.execute(player,PlayerBehavior::RequestEmergencySupplies).unwrap();
+    let recruit_active = core.state.roster.iter().find(|e|e.uuid == recruit).unwrap().skill_fragments.active_copy_uuid();
+    if let Some(active_copy) = recruit_active {
+        core.execute(player,PlayerBehavior::UnequipSkillFragment {employee_uuid:recruit,copy_uuid:active_copy}).unwrap();
+    }
     core.execute(
         player,
         PlayerBehavior::EquipItem {
@@ -2117,6 +2103,8 @@ fn actual_shop_and_reward_acquisitions_create_distinct_spendable_copy_owners() {
             equipment_id: "standard_training_sword".into(),
         },
         quantity: 1,
+            base_price: None,
+            guaranteed: false,
         weight: 1,
         repeatable: false,
         buy_percent: None,
@@ -2128,7 +2116,10 @@ fn actual_shop_and_reward_acquisitions_create_distinct_spendable_copy_owners() {
         .unwrap()
         .replace("type:\"equipment\"", "type:equipment")
         .replace("type:\"consumable\"", "type:consumable")
-        .replace("type:\"monolith\"", "type:monolith");
+        .replace("type:\"monolith\"", "type:monolith")
+        .replace("type:\"relic\"", "type:relic")
+        .replace("type:\"revival_catalyst\"", "type:revival_catalyst")
+        .replace("type:\"relic_corruption_catalyst\"", "type:relic_corruption_catalyst");
     fixture.write("official/data/events/shops/base.ron", shop_ron);
     let mut rewards: crate::game::data::reward_data::RewardDatabase =
         ron::de::from_str(&fixture.read("official/data/events/rewards/base.ron")).unwrap();
@@ -2195,6 +2186,10 @@ fn actual_shop_and_reward_acquisitions_create_distinct_spendable_copy_owners() {
                 },
             )
         };
+        // This fixture exercises the legacy authored reward pool, not a facility relic activity.
+        if let Some(rooms) = core.state.run.as_mut().unwrap().facility_run_state.rooms.as_mut() {
+            if let Some(metadata) = rooms.activity_metadata.get_mut(&node) { metadata.reward_activity = None; }
+        }
         core.execute(player, PlayerBehavior::SelectMapNode { node_id: node })
             .unwrap();
         let entered = core
@@ -2461,7 +2456,7 @@ fn runtime_safety_checkpoint_restore_uses_current_host_profile_and_preserves_ori
     let original = checkpoint.core_payload_json().to_vec();
     let raw = std::str::from_utf8(crate::runtime_safety::EMBEDDED_RUNTIME_SAFETY_RON)
         .unwrap()
-        .replace("max_retained_bytes: 8388608", "max_retained_bytes: 262144");
+        .replace("max_retained_bytes: 16777216", "max_retained_bytes: 262144");
     let profile = Arc::new(RuntimeSafetySettings::from_ron("small-host", raw.as_bytes()).unwrap());
     let selected = content_pack::load_with_runtime_safety(
         fixture.root(),
@@ -2472,6 +2467,7 @@ fn runtime_safety_checkpoint_restore_uses_current_host_profile_and_preserves_ori
     .unwrap();
     assert_eq!(generation.identity(), selected.identity());
     let mut rejected = CoreApplication::new(selected, 555);
+    install_application_profile_for_continue(&mut rejected, &source);
     let before = rejected.snapshot(ApplicationSnapshotKind::Run).unwrap();
     let fault = rejected
         .continue_from_active_run_checkpoint(player, &checkpoint)
@@ -2492,6 +2488,7 @@ fn runtime_safety_checkpoint_restore_uses_current_host_profile_and_preserves_ori
         original
     );
     let mut accepted = CoreApplication::new(generation, 555);
+    install_application_profile_for_continue(&mut accepted, &source);
     accepted
         .continue_from_active_run_checkpoint(player, &checkpoint)
         .unwrap();

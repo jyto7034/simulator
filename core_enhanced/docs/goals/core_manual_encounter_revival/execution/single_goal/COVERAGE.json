@@ -1,0 +1,459 @@
+{
+  "goal_set": "GS-CMER-001",
+  "goal": "GOAL-CMER-01",
+  "phase": "PHASE-CMER-01",
+  "implementation_self_validation": "complete",
+  "audit_performed": false,
+  "goal_complete": false,
+  "acceptance": [
+    {
+      "id": "A01",
+      "disposition": "satisfied",
+      "selectors": [
+        "u17_first_kind_ledger_is_independent_of_holdings_and_new_expedition_resets_it",
+        "u17_public_normal_elite_dismantle_repeat_and_new_expedition_reset"
+      ],
+      "evidence": [
+        "runs/raw_logs/u17-native002.log",
+        "runs/current001/normal/ASSERTIONS.json"
+      ]
+    },
+    {
+      "id": "A02",
+      "disposition": "satisfied",
+      "selectors": [
+        "u17_natural_elite_slots_ignore_completion_and_preserve_assignments"
+      ],
+      "evidence": [
+        "runs/raw_logs/u17-native002.log",
+        "runs/current001/normal/ASSERTIONS.json"
+      ]
+    },
+    {
+      "id": "A03",
+      "disposition": "satisfied",
+      "selectors": [
+        "u17_public_boss_hatch_two_and_three_reward_choices_without_debug_grants",
+        "u17_elites_cannot_leave_eggs_and_rewardless_story_cannot_gain_ordinary_rewards"
+      ],
+      "evidence": [
+        "runs/raw_logs/u17-native002.log",
+        "runs/raw_logs/u17-ron-regression002.log"
+      ]
+    },
+    {
+      "id": "A04",
+      "disposition": "satisfied",
+      "selectors": [
+        "u17_hatch_payment_is_explicit_atomic_and_does_not_enter_combat"
+      ],
+      "evidence": [
+        "runs/raw_logs/u17-native002.log",
+        "runs/current001/normal/ASSERTIONS.json",
+        "runs/current001/io_replay/ASSERTIONS.json"
+      ]
+    },
+    {
+      "id": "A05",
+      "disposition": "satisfied",
+      "selectors": [
+        "u17_public_reserved_normal_rejects_hatch_and_same_floor_revisit_keeps_it",
+        "u17_public_hatch_on_only_route_to_gate_preserves_graph_and_requires_manual_entry"
+      ],
+      "evidence": [
+        "runs/raw_logs/u17-native002.log"
+      ]
+    },
+    {
+      "id": "A06",
+      "disposition": "satisfied",
+      "selectors": [
+        "u17_hatch_payment_is_explicit_atomic_and_does_not_enter_combat"
+      ],
+      "evidence": [
+        "runs/raw_logs/u17-native002.log",
+        "runs/current001/normal/ASSERTIONS.json",
+        "runs/current001/io_replay/ASSERTIONS.json"
+      ]
+    },
+    {
+      "id": "A07",
+      "disposition": "satisfied",
+      "selectors": [
+        "u17_public_unrestrained_zero_choice_stages_keep_fixed_parts_and_no_fallback",
+        "u17_each_authored_stage_round_trips_with_its_node_identity"
+      ],
+      "evidence": [
+        "runs/raw_logs/u17-native002.log",
+        "runs/current001/normal/ASSERTIONS.json"
+      ]
+    },
+    {
+      "id": "A08",
+      "disposition": "satisfied",
+      "selectors": [
+        "u17_eggs_follow_one_two_three_sequence_and_failure_leaves_none",
+        "u17_actual_defeat_consumes_hatched_node_without_success_or_refund"
+      ],
+      "evidence": [
+        "runs/raw_logs/u17-native002.log",
+        "runs/current001/normal/ASSERTIONS.json"
+      ]
+    },
+    {
+      "id": "A09",
+      "disposition": "satisfied",
+      "selectors": [
+        "u17_public_single_choice_alternate_encounter_keeps_stage_owner",
+        "u17_public_unrestrained_zero_choice_stages_keep_fixed_parts_and_no_fallback"
+      ],
+      "evidence": [
+        "runs/raw_logs/u17-native002.log",
+        "runs/current001/fresh_readers/ASSERTIONS.json",
+        "runs/current001/expanded/ASSERTIONS.json"
+      ]
+    },
+    {
+      "id": "A10",
+      "disposition": "satisfied",
+      "selectors": [
+        "u17_public_boss_hatch_two_and_three_reward_choices_without_debug_grants"
+      ],
+      "evidence": [
+        "runs/raw_logs/u17-native002.log",
+        "runs/current001/fresh_readers/ASSERTIONS.json",
+        "runs/current001/io_replay/ASSERTIONS.json"
+      ]
+    },
+    {
+      "id": "A11",
+      "disposition": "satisfied",
+      "selectors": [
+        "u17_public_boss_hatch_two_and_three_reward_choices_without_debug_grants"
+      ],
+      "evidence": [
+        "runs/raw_logs/u17-native002.log",
+        "runs/current001/normal/ASSERTIONS.json"
+      ]
+    },
+    {
+      "id": "A12",
+      "disposition": "satisfied",
+      "selectors": [
+        "u17_manual_retreat_keeps_hatch_and_two_retreats_leave_final_attempt",
+        "u17_actual_defeat_consumes_hatched_node_without_success_or_refund"
+      ],
+      "evidence": [
+        "runs/raw_logs/u17-native002.log",
+        "runs/current001/normal/ASSERTIONS.json",
+        "runs/current001/fresh_readers/ASSERTIONS.json"
+      ]
+    },
+    {
+      "id": "A13",
+      "disposition": "satisfied",
+      "selectors": [
+        "u17_hatch_before_entry_survives_continue_and_cancel",
+        "u17_unfinished_normal_entry_then_hatch_rolls_back_all_sources_on_continue"
+      ],
+      "evidence": [
+        "runs/raw_logs/u17-native002.log",
+        "runs/current001/fresh_readers/ASSERTIONS.json"
+      ]
+    },
+    {
+      "id": "A14",
+      "disposition": "satisfied",
+      "selectors": [
+        "u17_savepoint_before_and_after_hatch_restores_egg_node_and_source_payments"
+      ],
+      "evidence": [
+        "runs/raw_logs/u17-native002.log",
+        "runs/current001/fresh_readers/ASSERTIONS.json"
+      ]
+    },
+    {
+      "id": "A15",
+      "disposition": "satisfied",
+      "selectors": [
+        "u17_public_reserved_normal_rejects_hatch_and_same_floor_revisit_keeps_it",
+        "u17_manual_retreat_keeps_hatch_and_two_retreats_leave_final_attempt"
+      ],
+      "evidence": [
+        "runs/raw_logs/u17-native002.log",
+        "runs/current001/fresh_readers/ASSERTIONS.json"
+      ]
+    },
+    {
+      "id": "A16",
+      "disposition": "satisfied",
+      "selectors": [],
+      "evidence": [
+        "runs/current001/io_replay/ASSERTIONS.json",
+        "runs/current001/fresh_readers/ASSERTIONS.json"
+      ]
+    },
+    {
+      "id": "A17",
+      "disposition": "satisfied",
+      "selectors": [
+        "u17_retired_commands_reject_without_mutating_state_or_appearing_in_queries"
+      ],
+      "evidence": [
+        "runs/raw_logs/u17-native002.log",
+        "runs/current001/normal/ASSERTIONS.json"
+      ]
+    },
+    {
+      "id": "A18",
+      "disposition": "satisfied",
+      "selectors": [
+        "u17_real_v16_host_save_is_rejected_before_decode_and_preserved"
+      ],
+      "evidence": [
+        "runs/raw_logs/u17-native002.log",
+        "runs/current001/fresh_readers/ASSERTIONS.json",
+        "BASELINE_REUSE.json"
+      ]
+    },
+    {
+      "id": "A19",
+      "disposition": "satisfied",
+      "selectors": [],
+      "evidence": [
+        "BASELINE_REUSE.json",
+        "runs/raw_logs/u17-preview-retirement001.log"
+      ]
+    },
+    {
+      "id": "A20",
+      "disposition": "satisfied",
+      "selectors": [
+        "u17_authored_revival_rejects_invalid_recipe_stage_and_reward_contracts"
+      ],
+      "evidence": [
+        "runs/raw_logs/u17-native002.log",
+        "runs/current001/normal/ASSERTIONS.json",
+        "runs/current001/expanded/ASSERTIONS.json"
+      ]
+    },
+    {
+      "id": "A21",
+      "disposition": "satisfied",
+      "selectors": [
+        "u17_completed_preview_owners_retire_before_savepoint_and_public_continue"
+      ],
+      "evidence": [
+        "runs/raw_logs/u17-native002.log",
+        "runs/current001/normal/ASSERTIONS.json",
+        "runs/current001/fresh_readers/ASSERTIONS.json",
+        "runs/current001/io_replay/ASSERTIONS.json"
+      ]
+    },
+    {
+      "id": "A22",
+      "disposition": "satisfied",
+      "selectors": [
+        "u17_hatch_native_exact_limits_and_short_retry_preserve_all_roots"
+      ],
+      "evidence": [
+        "runs/raw_logs/u17-native002.log",
+        "COST_REVIEW.json",
+        "runs/current001/cost/ASSERTIONS.json",
+        "NORMAL_LIMIT_REVIEW_002.json",
+        "EXPANDED_LIMIT_REVIEW_002.json"
+      ]
+    }
+  ],
+  "dimensions": [
+    {
+      "id": "success",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A01",
+        "A03",
+        "A08",
+        "A10"
+      ]
+    },
+    {
+      "id": "invalid_input",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A04",
+        "A05",
+        "A17",
+        "A20"
+      ]
+    },
+    {
+      "id": "failure_rollback",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A04",
+        "A16",
+        "A22"
+      ]
+    },
+    {
+      "id": "retry_idempotency",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A10",
+        "A16"
+      ]
+    },
+    {
+      "id": "ordering_concurrency",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A04",
+        "A09",
+        "A16"
+      ]
+    },
+    {
+      "id": "boundary_empty_max",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A07",
+        "A08",
+        "A09",
+        "A12"
+      ]
+    },
+    {
+      "id": "disconnect_restart_persistence",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A13",
+        "A14",
+        "A18",
+        "A21"
+      ]
+    },
+    {
+      "id": "live_data",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A20",
+        "A22"
+      ]
+    },
+    {
+      "id": "producer_consumer",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A06",
+        "A20",
+        "A21"
+      ]
+    },
+    {
+      "id": "legacy_fallback_absence",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A01",
+        "A17",
+        "A18"
+      ]
+    }
+  ],
+  "integration_acceptance": [
+    {
+      "id": "IVA-CMER-G27",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A01",
+        "A02"
+      ]
+    },
+    {
+      "id": "IVA-CMER-G28",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A03",
+        "A04",
+        "A05",
+        "A06",
+        "A07",
+        "A08",
+        "A11"
+      ]
+    },
+    {
+      "id": "IVA-CMER-G29",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A09",
+        "A10",
+        "A12",
+        "A15"
+      ]
+    },
+    {
+      "id": "IVA-CMER-RESTORE",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A13",
+        "A14",
+        "A16",
+        "A21"
+      ]
+    },
+    {
+      "id": "IVA-CMER-LEGACY",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A17",
+        "A18",
+        "A19"
+      ]
+    },
+    {
+      "id": "IVA-CMER-AUTHOR",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A20",
+        "A22"
+      ]
+    }
+  ],
+  "execution_nodes": [
+    {
+      "id": "AG-CMER-RUN",
+      "disposition": "satisfied",
+      "evidence": [
+        "IMPLEMENTATION_REVIEW.ko.md",
+        "runs/raw_logs/u17-native002.log",
+        "runs/current001/normal/ASSERTIONS.json"
+      ]
+    },
+    {
+      "id": "WP-CMER-PUBLIC",
+      "disposition": "satisfied",
+      "evidence": [
+        "runs/current001/normal/ASSERTIONS.json",
+        "runs/current001/fresh_readers/ASSERTIONS.json",
+        "runs/current001/io_replay/ASSERTIONS.json"
+      ]
+    },
+    {
+      "id": "WP-CMER-VERIFY",
+      "disposition": "satisfied",
+      "evidence": [
+        "BASELINE_REUSE.json",
+        "COST_REVIEW.json",
+        "TEST_RESULTS_INDEX.json"
+      ]
+    }
+  ],
+  "known_limits": [
+    "GEX-20 audit not performed; Goal Complete not declared.",
+    "Representative supported RON includes explicit fixture tuning; official gameplay balance is not certified.",
+    "Legacy development saves are preserved and rejected; automatic migration not provided.",
+    "Inherited six Core and 22 server ignored tests are not claimed as passes.",
+    "Extreme XP optimization remains the previously accepted U16 nonblocking follow-up; no U17 scope expansion.",
+    "Cost measurement is finite dev-profile diagnostic; loader residual and RSS retention disclosed in COST_REVIEW."
+  ]
+}

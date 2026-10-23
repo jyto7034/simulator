@@ -1,0 +1,45 @@
+{
+  "schema": "u12.scope-reassessment-entry/v1",
+  "started_at_utc": "2026-10-13T13:33:44.891149+00:00",
+  "authorization": "User: 응 재판단해줄래?",
+  "goal": "GOAL-CEXL-01",
+  "activity": "Current scope reclassification plus completion of the previously unfinished independent review; not a replay of the whole historical audit.",
+  "reviewer": "Same planning/product/test nonparticipant as original pass001; no delegation and no product repair. No independently verified model identity claimed.",
+  "basis": [
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+      "bytes": 380578,
+      "sha256": "13ec3130a11468f910aad3b0996b68d201b6268a785769fe807c7ac70f41be31"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md",
+      "bytes": 25265,
+      "sha256": "2f3242652e7492b00e5fcb8b6fe8898b8322a3b97dcef065f08ea88474be681c"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/post_audit/u12_current_002_pass001/AUDIT_CLOSURE.json",
+      "bytes": 20556,
+      "sha256": "1b15e091d75d5f1462fa9b5663088d3254ab82d274b280c18f4a97b2558e89ff"
+    }
+  ],
+  "currentness_reuse": {
+    "prior_exit": "u12_current_002_pass001/INTEGRITY_EXIT.json",
+    "prior_exit_time": "2026-10-13T13:08:24.764697+00:00",
+    "source_manifest_members_checked_for_newer_mtime": 4728,
+    "newer_source_paths": [],
+    "missing_source_paths": [],
+    "target_reference_hash_comparisons": 39,
+    "reference_mismatches": [],
+    "reason": "No source edits by auditor, no later source timestamp/missing evidence from targeted handoff check, no independent active writer evidence. Reuse prior complete hashes/archive checks; policy changes are outside target source and explicitly bound above.",
+    "limitation": "File timestamps are change indicators, not new full byte verification. No new full hash/archive/restore execution is claimed."
+  },
+  "F-U12-001": {
+    "current_disposition": "범위 밖 — 외부 임의 변조",
+    "policy": "USER-20261013-VALIDATION-SCOPE; ROADMAP §1.9 explicit U12 example",
+    "occurrence_evidence": "Original audit probe manually adds standard_tutorial_completed to a current V4 typed profile and recomputes checksum. Current PlayerProfileState and writer cannot emit that field; historical writer version is a distinct supported legacy case.",
+    "product_correction_required": false,
+    "completion_blocker": false,
+    "historical_verdict_preserved": true
+  },
+  "remaining": "Review unresolved current evidence and source/oracle details from original CONDITION_REVIEW; do not grant Complete merely by excluding this finding."
+}

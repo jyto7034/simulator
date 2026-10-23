@@ -1043,6 +1043,8 @@ impl BattleEventLogEntry {
 pub enum SkillCastTarget {
     Unit { unit_instance_id: UnitInstanceId },
     Tile { position: Position },
+    TilePair { first: Position, second: Position },
+    Direction { facing: crate::game::battle::tile_range::FacingDirection },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -1403,6 +1405,7 @@ pub enum SkillCastCancelReason {
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub enum HpChangeReason {
+    Corrosion,
     HealthCost,
     BasicAttack,
     Command,

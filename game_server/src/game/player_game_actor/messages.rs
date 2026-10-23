@@ -291,6 +291,16 @@ mod tests {
                 }],
             },
             checkpoint: LiveBattleStateCheckpointDto {
+                presence_marks: Default::default(),
+                weapon_marks: Default::default(),
+                tile_bursts: Default::default(),
+                counter_channels: Default::default(),
+                relation_actions: Default::default(),
+                input_plans: Default::default(),
+                prepared_volleys: Default::default(),
+                mobile_effects: Default::default(),
+                paired_areas: Default::default(),
+
                 sustained_effects: Default::default(),
                 independent_objects: Default::default(),
                 at_seq: 128,
@@ -510,6 +520,16 @@ mod tests {
                 events: Vec::new(),
             },
             checkpoint: LiveBattleStateCheckpointDto {
+                presence_marks: Default::default(),
+                weapon_marks: Default::default(),
+                tile_bursts: Default::default(),
+                counter_channels: Default::default(),
+                relation_actions: Default::default(),
+                input_plans: Default::default(),
+                prepared_volleys: Default::default(),
+                mobile_effects: Default::default(),
+                paired_areas: Default::default(),
+
                 sustained_effects: Default::default(),
                 independent_objects: Default::default(),
                 at_seq: 150,
@@ -592,7 +612,11 @@ mod tests {
         for (kind, input) in [
             (
                 K::SelectStarterEmployees,
-                serde_json::json!({"type":"select_starter_employees","employee_definition_ids":["a","b","c"]}),
+                serde_json::json!({"type":"select_starter_employees","employee_definition_ids":["a","b","c"],"loan_copy_ids":[]}),
+            ),
+            (
+                K::SelectStarterEmployees,
+                serde_json::json!({"type":"select_starter_employees","employee_definition_ids":["a","b","c"],"loan_copy_ids":[copy,Uuid::from_u128(0xF002)]}),
             ),
             (
                 K::ConvertMapNodeWithMonolith,
@@ -643,6 +667,7 @@ mod tests {
             assert_command(input, kind);
         }
         for input in [
+            serde_json::json!({"type":"select_starter_employees","employee_definition_ids":["a","b","c"]}),
             serde_json::json!({"type":"choose_support","support_type":"Rest"}),
             serde_json::json!({"type":"upgrade_skill_fragment","target_fragment_id":"fragment_a"}),
             serde_json::json!({"type":"awaken_skill_fragment","target_fragment_id":"fragment_a"}),
@@ -793,6 +818,7 @@ mod tests {
                 K::RetreatBattle,
                 serde_json::json!({"type":"retreat_battle"}),
             ),
+            (K::StressCombatAct, serde_json::json!({"type":"stress_combat_act","battle_uuid":employee,"completed_rounds":1,"extract":false})),
             (K::PauseBattle, serde_json::json!({"type":"pause_battle"})),
             (K::ResumeBattle, serde_json::json!({"type":"resume_battle"})),
             (

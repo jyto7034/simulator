@@ -1,0 +1,1360 @@
+{
+  "goal": "GOAL-CSNA-01",
+  "implementation_self_validation": "complete",
+  "audit_performed": false,
+  "goal_complete": false,
+  "acceptance": [
+    {
+      "id": "A01",
+      "requirement": "A01: 고정 상품의 사본/종류·수량·총가격·재고를 조회하며 구매는 비용/공통 grant/상품 소진을 한번 확정한다. 실패·부족·중복은 사본/UUID/재화/재고를 바꾸지 않고 빈자리를 자동 보충하지 않는다.",
+      "disposition": "satisfied",
+      "evidence": [
+        {
+          "path": "runs/final-focused001.log",
+          "test_selectors": [
+            "u16_new_goods_query",
+            "u16_shortage_overflow"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/shop_unfinished004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/shop_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        }
+      ]
+    },
+    {
+      "id": "A02",
+      "requirement": "A02: 갱신은 작성 비용/횟수로 페이지 전체를 교체하고 반복 불가 구매품을 제외한다. 후보 부족·통화 부족·실패 시 비용/횟수/페이지/상품이 유지된다. 매입 올림·매각 내림 및 차익 방지 계약을 유지한다.",
+      "disposition": "satisfied",
+      "evidence": [
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "quote_rounding_is_checked",
+            "refresh_is_full_sized",
+            "exhausted_refresh_rejects"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/shop_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        }
+      ]
+    },
+    {
+      "id": "A03",
+      "requirement": "A03: 일반 유물 구매는 정상 상태의 개별 사본을 공통 grant로 지급하며 해당 종류의 기존 중복 자격을 따른다. 일반 상점 유물 매각, 장착/귀속 장비 판매, 가루/파츠 직접 구매판매, 0원 거래를 거절한다.",
+      "disposition": "satisfied",
+      "evidence": [
+        {
+          "path": "runs/final-focused001.log",
+          "test_selectors": [
+            "u16_shortage_overflow"
+          ]
+        },
+        {
+          "path": "runs/final-public001.log",
+          "test_selectors": [
+            "u08_public_shop_rejects_all_relic"
+          ]
+        },
+        {
+          "path": "runs/public_edges001/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/authoring003/RESULT.json",
+          "test_selectors": []
+        }
+      ]
+    },
+    {
+      "id": "A04",
+      "requirement": "A04: 부활 촉매제는 일반 상인의 기본 상품으로 제공하고 희귀 추첨으로 숨기지 않는다. 침식 촉매제는 별도 구매/보유 자원이다. 부활용은 비싸고 침식용은 과도한 비용을 피하는 초기 작성값을 두며 실제 부화는 U17이다.",
+      "disposition": "satisfied",
+      "evidence": [
+        {
+          "path": "runs/final-focused001.log",
+          "test_selectors": [
+            "u16_basic_revival_offer"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/shop_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/authoring002/RESULT.json",
+          "test_selectors": []
+        }
+      ]
+    },
+    {
+      "id": "A05",
+      "requirement": "A05: 유료 채용은 가격에 기본 무기/파편 세트를 포함하고 기존 대여와 중복 지급하지 않는다. 1~4층·세션 최대2명·보유10명·부족/이미채용/비적격 거절과 후보 queue 순서를 유지한다. 자격 조회와 명령 결과가 일치한다.",
+      "disposition": "satisfied",
+      "evidence": [
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "u12_lifecycle_paid_recruitment",
+            "u12_lifecycle_insufficient_money",
+            "u12_lifecycle_depth_five",
+            "u06_starter_public_recruitment_stops_at_ten"
+          ]
+        },
+        {
+          "path": "runs/final-focused001.log",
+          "test_selectors": [
+            "u16_hq_terms"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/hq_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        }
+      ]
+    },
+    {
+      "id": "A06",
+      "requirement": "A06: 선택/직원 변경이나 조회/재접속/복원으로 d20이 달라지지 않는다. raw1 치명실패/raw20 치명성공이며 2~19는 합계>=DC, 허용 DC8/12/16/20과 적성+3을 적용한다.",
+      "disposition": "satisfied",
+      "evidence": [
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "event_check_outcomes_pin",
+            "outcome_matrix_exhausts",
+            "precheck_checkpoint_reuses_raw_roll"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/EVENT_RESULT.json",
+          "test_selectors": []
+        }
+      ]
+    },
+    {
+      "id": "A07",
+      "requirement": "A07: 선택 직원의 장착/소유 장비 최고+1/+2 하나만 적용하고 동률은 사본ID 오름차순이다. 공용 장비 제외·열쇠는 비소비/무추가보정·잘못된 선택/직원/조건 거절 무변경을 증명한다.",
+      "disposition": "satisfied",
+      "evidence": [
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "evaluator_uses_stored_aptitude_highest_only",
+            "condition_reason_precedes",
+            "event_resolve_revalidates_equipped_key",
+            "event_check_rejects_stale"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A08",
+      "requirement": "A08: 확정한 선택/직원/장비증거/결과를 반복해 재지급하지 않는다. 성공/실패의 다음 장면과 전투 분기의 승패/노드 소비는 한번 처리하며 후퇴는 기존 진입 전 복원이다.",
+      "disposition": "satisfied",
+      "evidence": [
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "event_check_persists_one_result",
+            "event_check_failure_is_persisted",
+            "event_started_combat_victory",
+            "event_started_combat_defeat",
+            "event_success_action_starts_combat_and_retreat"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/EVENT_RESULT.json",
+          "test_selectors": []
+        }
+      ]
+    },
+    {
+      "id": "A09",
+      "requirement": "A09: 침식 Event는 대상 효과/패널티와 자격을 공개하고 촉매/통화/재료 없이 선택 사본만 변환한다. 거절·무효 대상·반복 요청 및 재시작에서 비용/사본 결과를 보존한다.",
+      "disposition": "satisfied",
+      "evidence": [
+        {
+          "path": "runs/final-public001.log",
+          "test_selectors": [
+            "event_normal_reward_grants_feed_multiple_free",
+            "event_rejects_wrong_authority",
+            "unfinished_event_continue_rewinds"
+          ]
+        },
+        {
+          "path": "runs/restore-regression001.log",
+          "test_selectors": [
+            "u08_external_ron_normal_grants_savepoint_event_replay_and_fresh_process"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A10",
+      "requirement": "A10: 지도/전투 진입 전 사용만 허용하고 직원당 활성 효과 하나를 새 효과로 즉시 교체한다. 성공 시 수량1 차감·환불 없음, 잘못된 대상/상태/재고 부족은 무변경이다. 즉시 치료도 기존 일반 활성 효과를 유지시키는 별도 예외를 추가하지 않는다.",
+      "disposition": "satisfied",
+      "evidence": [
+        {
+          "path": "runs/final-focused001.log",
+          "test_selectors": [
+            "u16_immediate_treatment"
+          ]
+        },
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "use_consumable_item_rejects_dead",
+            "use_consumable_item_replaces_existing"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/hq_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        }
+      ]
+    },
+    {
+      "id": "A11",
+      "requirement": "A11: 전투 결과 확정에 남은 기간을 한번 차감하고 결과 확인/중복명령에는 추가 차감하지 않는다. 비전투 완료/후퇴에는 차감하지 않으며 후퇴는 이미 사용한 전투 진입 전 효과/잔량을 복원한다.",
+      "disposition": "satisfied",
+      "evidence": [
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "consumable_modifier_survives_abandonment",
+            "sweep_stages_stable_battle_independent_result"
+          ]
+        },
+        {
+          "path": "runs/consumable007/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/hq_completed_continue004/RESULT.json",
+          "test_selectors": []
+        }
+      ]
+    },
+    {
+      "id": "A12",
+      "requirement": "A12: 장비/소비품 보유가 50/60 표시 기준을 넘어도 정상 구매·보상 획득을 거절하지 않는다. 50부터10단위 표시 확장과 실제 화면은 U26-B이며 새로운 Core 보유 한도를 만들지 않는다.",
+      "disposition": "satisfied",
+      "evidence": [
+        {
+          "path": "runs/final-focused001.log",
+          "test_selectors": [
+            "u16_inventory_display_size",
+            "u16_expanded_carried"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/expanded_purchase004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/expanded_completed_continue004/RESULT.json",
+          "test_selectors": []
+        }
+      ]
+    },
+    {
+      "id": "A13",
+      "requirement": "A13: 같은프로세스 재접속은 진행 중 offer/roll/선택/효과를 유지한다. 새프로세스 Continue는 미완료 노드 입장 전 거래·지불·채용·사본/원장을 함께 복원하며 노드 배정은 재추첨하지 않는다.",
+      "disposition": "satisfied",
+      "evidence": [
+        {
+          "path": "runs/final-focused001.log",
+          "test_selectors": [
+            "u16_completed_shop_continue"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/shop_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/hq_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/event_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "precheck_checkpoint_reuses_raw_roll"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A14",
+      "requirement": "A14: 완료한 상점/HQ/Event의 결과·소비를 새프로세스에서 유지하고 중복 완료/구매/채용/판정은 추가 지급하지 않는다. SavePoint는 당시 비용/결과를 함께 복원하되 무관한 영구기록/창고는 보존한다.",
+      "disposition": "satisfied",
+      "evidence": [
+        {
+          "path": "runs/normal_host003/shop_completed_continue004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/hq_completed_continue004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/event_completed_continue004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/shop_savepoint004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "u15_restore_keeps_precheckpoint_warehouse_spend"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A15",
+      "requirement": "A15: 실제 정상 host의 저장 IO실패는 메모리/active/profile의 부분 거래를 남기지 않고 재시도로 한 번만 반영한다. 지원 새 형식의 loader/writer·세대 입력·실제 소비자를 함께 검증하고 구개발 저장을 바꾸어 성공시키지 않는다.",
+      "disposition": "satisfied",
+      "evidence": [
+        {
+          "path": "runs/normal_host003/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/EVENT_RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/server001.log",
+          "test_selectors": []
+        }
+      ]
+    },
+    {
+      "id": "A16",
+      "requirement": "A16: 유물/촉매제 상품 및 기존 장비/소비품은 실제 RON/pack loader를 통과하여 공개 query/command에 나타난다. 누락 참조·가루/파츠 상품·0가격/0수량·overflow·불법 작성 조합을 로더에서 거절한다.",
+      "disposition": "satisfied",
+      "evidence": [
+        {
+          "path": "runs/authoring002/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/authoring003/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_pilot002/RESULT.json",
+          "test_selectors": []
+        }
+      ]
+    },
+    {
+      "id": "A17",
+      "requirement": "A17: U13 실제 노드 배정·예약과 U14 최초 입장 비용·완료 의미를 유지한 대표 원정에서 상점/HQ/Event/소비품을 실행한다. 내부 helper fixture와 공개 host/fresh-process 검증을 구분하고 전체 U16 완료로 확대하지 않는다.",
+      "disposition": "satisfied",
+      "evidence": [
+        {
+          "path": "runs/normal_host003/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/EVENT_RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "NORMAL_LIMIT_REVIEW_003.json",
+          "test_selectors": []
+        }
+      ]
+    },
+    {
+      "id": "A18",
+      "requirement": "A18: 정상/확장 상품·사본 workload의 시간/실제 메모리 peak/회수를 관측하고 기존 제한 조정 필요를 근거로 판단한다. 외부 임의 파일/메모리 변조 전용 시험은 제외하며 실제 IO장애와 지원 입력 오류는 검증한다.",
+      "disposition": "satisfied",
+      "evidence": [
+        {
+          "path": "runs/cost003/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/restore_cost001/value_bound.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/restore_cost001/continue.0.json",
+          "test_selectors": []
+        },
+        {
+          "path": "NORMAL_LIMIT_REVIEW_003.json",
+          "test_selectors": []
+        },
+        {
+          "path": "EXPANDED_LIMIT_REVIEW_003.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/restore-regression001.log",
+          "test_selectors": [
+            "u08_continue_stages_are_cumulative"
+          ]
+        }
+      ]
+    }
+  ],
+  "dimensions": [
+    {
+      "id": "success",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A01",
+        "A05",
+        "A09",
+        "A10"
+      ],
+      "evidence": [
+        {
+          "path": "runs/final-focused001.log",
+          "test_selectors": [
+            "u16_new_goods_query",
+            "u16_shortage_overflow"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/shop_unfinished004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/shop_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "u12_lifecycle_paid_recruitment",
+            "u12_lifecycle_insufficient_money",
+            "u12_lifecycle_depth_five",
+            "u06_starter_public_recruitment_stops_at_ten"
+          ]
+        },
+        {
+          "path": "runs/final-focused001.log",
+          "test_selectors": [
+            "u16_hq_terms"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/hq_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/final-public001.log",
+          "test_selectors": [
+            "event_normal_reward_grants_feed_multiple_free",
+            "event_rejects_wrong_authority",
+            "unfinished_event_continue_rewinds"
+          ]
+        },
+        {
+          "path": "runs/restore-regression001.log",
+          "test_selectors": [
+            "u08_external_ron_normal_grants_savepoint_event_replay_and_fresh_process"
+          ]
+        },
+        {
+          "path": "runs/final-focused001.log",
+          "test_selectors": [
+            "u16_immediate_treatment"
+          ]
+        },
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "use_consumable_item_rejects_dead",
+            "use_consumable_item_replaces_existing"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/hq_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        }
+      ]
+    },
+    {
+      "id": "invalid_input",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A03",
+        "A07",
+        "A16"
+      ],
+      "evidence": [
+        {
+          "path": "runs/final-focused001.log",
+          "test_selectors": [
+            "u16_shortage_overflow"
+          ]
+        },
+        {
+          "path": "runs/final-public001.log",
+          "test_selectors": [
+            "u08_public_shop_rejects_all_relic"
+          ]
+        },
+        {
+          "path": "runs/public_edges001/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/authoring003/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "evaluator_uses_stored_aptitude_highest_only",
+            "condition_reason_precedes",
+            "event_resolve_revalidates_equipped_key",
+            "event_check_rejects_stale"
+          ]
+        },
+        {
+          "path": "runs/authoring002/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/authoring003/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_pilot002/RESULT.json",
+          "test_selectors": []
+        }
+      ]
+    },
+    {
+      "id": "failure_rollback",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A01",
+        "A02",
+        "A15"
+      ],
+      "evidence": [
+        {
+          "path": "runs/final-focused001.log",
+          "test_selectors": [
+            "u16_new_goods_query",
+            "u16_shortage_overflow"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/shop_unfinished004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/shop_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "quote_rounding_is_checked",
+            "refresh_is_full_sized",
+            "exhausted_refresh_rejects"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/shop_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/EVENT_RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/server001.log",
+          "test_selectors": []
+        }
+      ]
+    },
+    {
+      "id": "retry_idempotency",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A08",
+        "A11",
+        "A14"
+      ],
+      "evidence": [
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "event_check_persists_one_result",
+            "event_check_failure_is_persisted",
+            "event_started_combat_victory",
+            "event_started_combat_defeat",
+            "event_success_action_starts_combat_and_retreat"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/EVENT_RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "consumable_modifier_survives_abandonment",
+            "sweep_stages_stable_battle_independent_result"
+          ]
+        },
+        {
+          "path": "runs/consumable007/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/hq_completed_continue004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/shop_completed_continue004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/hq_completed_continue004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/event_completed_continue004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/shop_savepoint004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "u15_restore_keeps_precheckpoint_warehouse_spend"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ordering_concurrency",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A01",
+        "A06",
+        "A15"
+      ],
+      "evidence": [
+        {
+          "path": "runs/final-focused001.log",
+          "test_selectors": [
+            "u16_new_goods_query",
+            "u16_shortage_overflow"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/shop_unfinished004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/shop_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "event_check_outcomes_pin",
+            "outcome_matrix_exhausts",
+            "precheck_checkpoint_reuses_raw_roll"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/EVENT_RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/EVENT_RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/server001.log",
+          "test_selectors": []
+        }
+      ]
+    },
+    {
+      "id": "boundary_empty_max",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A03",
+        "A05",
+        "A12"
+      ],
+      "evidence": [
+        {
+          "path": "runs/final-focused001.log",
+          "test_selectors": [
+            "u16_shortage_overflow"
+          ]
+        },
+        {
+          "path": "runs/final-public001.log",
+          "test_selectors": [
+            "u08_public_shop_rejects_all_relic"
+          ]
+        },
+        {
+          "path": "runs/public_edges001/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/authoring003/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "u12_lifecycle_paid_recruitment",
+            "u12_lifecycle_insufficient_money",
+            "u12_lifecycle_depth_five",
+            "u06_starter_public_recruitment_stops_at_ten"
+          ]
+        },
+        {
+          "path": "runs/final-focused001.log",
+          "test_selectors": [
+            "u16_hq_terms"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/hq_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/final-focused001.log",
+          "test_selectors": [
+            "u16_inventory_display_size",
+            "u16_expanded_carried"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/expanded_purchase004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/expanded_completed_continue004/RESULT.json",
+          "test_selectors": []
+        }
+      ]
+    },
+    {
+      "id": "disconnect_restart_persistence",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A13",
+        "A14",
+        "A15"
+      ],
+      "evidence": [
+        {
+          "path": "runs/final-focused001.log",
+          "test_selectors": [
+            "u16_completed_shop_continue"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/shop_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/hq_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/event_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "precheck_checkpoint_reuses_raw_roll"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/shop_completed_continue004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/hq_completed_continue004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/event_completed_continue004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/shop_savepoint004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "u15_restore_keeps_precheckpoint_warehouse_spend"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/EVENT_RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/server001.log",
+          "test_selectors": []
+        }
+      ]
+    },
+    {
+      "id": "live_data",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A04",
+        "A16",
+        "A17"
+      ],
+      "evidence": [
+        {
+          "path": "runs/final-focused001.log",
+          "test_selectors": [
+            "u16_basic_revival_offer"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/shop_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/authoring002/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/authoring002/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/authoring003/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_pilot002/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/EVENT_RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "NORMAL_LIMIT_REVIEW_003.json",
+          "test_selectors": []
+        }
+      ]
+    },
+    {
+      "id": "producer_consumer",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A01",
+        "A15",
+        "A16"
+      ],
+      "evidence": [
+        {
+          "path": "runs/final-focused001.log",
+          "test_selectors": [
+            "u16_new_goods_query",
+            "u16_shortage_overflow"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/shop_unfinished004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/shop_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/EVENT_RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/server001.log",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/authoring002/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/authoring003/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_pilot002/RESULT.json",
+          "test_selectors": []
+        }
+      ]
+    },
+    {
+      "id": "legacy_fallback_absence",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A03",
+        "A04",
+        "A05"
+      ],
+      "evidence": [
+        {
+          "path": "runs/final-focused001.log",
+          "test_selectors": [
+            "u16_shortage_overflow"
+          ]
+        },
+        {
+          "path": "runs/final-public001.log",
+          "test_selectors": [
+            "u08_public_shop_rejects_all_relic"
+          ]
+        },
+        {
+          "path": "runs/public_edges001/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/authoring003/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/final-focused001.log",
+          "test_selectors": [
+            "u16_basic_revival_offer"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/shop_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/authoring002/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "u12_lifecycle_paid_recruitment",
+            "u12_lifecycle_insufficient_money",
+            "u12_lifecycle_depth_five",
+            "u06_starter_public_recruitment_stops_at_ten"
+          ]
+        },
+        {
+          "path": "runs/final-focused001.log",
+          "test_selectors": [
+            "u16_hq_terms"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/hq_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        }
+      ]
+    }
+  ],
+  "integration_acceptance": [
+    {
+      "id": "IVA-CSNA-G23",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A01",
+        "A02",
+        "A03",
+        "A04",
+        "A05"
+      ],
+      "evidence": [
+        {
+          "path": "runs/final-focused001.log",
+          "test_selectors": [
+            "u16_new_goods_query",
+            "u16_shortage_overflow"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/shop_unfinished004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/shop_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "quote_rounding_is_checked",
+            "refresh_is_full_sized",
+            "exhausted_refresh_rejects"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/shop_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/final-focused001.log",
+          "test_selectors": [
+            "u16_shortage_overflow"
+          ]
+        },
+        {
+          "path": "runs/final-public001.log",
+          "test_selectors": [
+            "u08_public_shop_rejects_all_relic"
+          ]
+        },
+        {
+          "path": "runs/public_edges001/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/authoring003/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/final-focused001.log",
+          "test_selectors": [
+            "u16_basic_revival_offer"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/shop_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/authoring002/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "u12_lifecycle_paid_recruitment",
+            "u12_lifecycle_insufficient_money",
+            "u12_lifecycle_depth_five",
+            "u06_starter_public_recruitment_stops_at_ten"
+          ]
+        },
+        {
+          "path": "runs/final-focused001.log",
+          "test_selectors": [
+            "u16_hq_terms"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/hq_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        }
+      ]
+    },
+    {
+      "id": "IVA-CSNA-G24",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A06",
+        "A07",
+        "A08",
+        "A09"
+      ],
+      "evidence": [
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "event_check_outcomes_pin",
+            "outcome_matrix_exhausts",
+            "precheck_checkpoint_reuses_raw_roll"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/EVENT_RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "evaluator_uses_stored_aptitude_highest_only",
+            "condition_reason_precedes",
+            "event_resolve_revalidates_equipped_key",
+            "event_check_rejects_stale"
+          ]
+        },
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "event_check_persists_one_result",
+            "event_check_failure_is_persisted",
+            "event_started_combat_victory",
+            "event_started_combat_defeat",
+            "event_success_action_starts_combat_and_retreat"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/EVENT_RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/final-public001.log",
+          "test_selectors": [
+            "event_normal_reward_grants_feed_multiple_free",
+            "event_rejects_wrong_authority",
+            "unfinished_event_continue_rewinds"
+          ]
+        },
+        {
+          "path": "runs/restore-regression001.log",
+          "test_selectors": [
+            "u08_external_ron_normal_grants_savepoint_event_replay_and_fresh_process"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IVA-CSNA-G25",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A10",
+        "A11",
+        "A12"
+      ],
+      "evidence": [
+        {
+          "path": "runs/final-focused001.log",
+          "test_selectors": [
+            "u16_immediate_treatment"
+          ]
+        },
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "use_consumable_item_rejects_dead",
+            "use_consumable_item_replaces_existing"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/hq_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "consumable_modifier_survives_abandonment",
+            "sweep_stages_stable_battle_independent_result"
+          ]
+        },
+        {
+          "path": "runs/consumable007/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/hq_completed_continue004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/final-focused001.log",
+          "test_selectors": [
+            "u16_inventory_display_size",
+            "u16_expanded_carried"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/expanded_purchase004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/expanded_completed_continue004/RESULT.json",
+          "test_selectors": []
+        }
+      ]
+    },
+    {
+      "id": "IVA-CSNA-STORE",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A13",
+        "A14",
+        "A15"
+      ],
+      "evidence": [
+        {
+          "path": "runs/final-focused001.log",
+          "test_selectors": [
+            "u16_completed_shop_continue"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/shop_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/hq_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/event_rewind_complete004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "precheck_checkpoint_reuses_raw_roll"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/shop_completed_continue004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/hq_completed_continue004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/event_completed_continue004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/shop_savepoint004/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/core001.log",
+          "test_selectors": [
+            "u15_restore_keeps_precheckpoint_warehouse_spend"
+          ]
+        },
+        {
+          "path": "runs/normal_host003/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/EVENT_RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/server001.log",
+          "test_selectors": []
+        }
+      ]
+    },
+    {
+      "id": "IVA-CSNA-AUTHOR",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A16",
+        "A17",
+        "A18"
+      ],
+      "evidence": [
+        {
+          "path": "runs/authoring002/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/authoring003/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_pilot002/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/normal_host003/EVENT_RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "NORMAL_LIMIT_REVIEW_003.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/cost003/RESULT.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/restore_cost001/value_bound.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/restore_cost001/continue.0.json",
+          "test_selectors": []
+        },
+        {
+          "path": "NORMAL_LIMIT_REVIEW_003.json",
+          "test_selectors": []
+        },
+        {
+          "path": "EXPANDED_LIMIT_REVIEW_003.json",
+          "test_selectors": []
+        },
+        {
+          "path": "runs/restore-regression001.log",
+          "test_selectors": [
+            "u08_continue_stages_are_cumulative"
+          ]
+        }
+      ]
+    }
+  ],
+  "known_limits": [
+    "U16-1 implementation/self-validation only; GEX20 audit not performed and Goal not Complete. U16-2/3/4 remain later bundles.",
+    "Current official relic catalog is empty; normal supported external authored fixture supplies the representative relic; no official relic effects invented.",
+    "Initial authored prices 60/150/30 use recorded scoped delegation, not a completed balance study. U17 incubation and Unity inventory display remain outside this Goal.",
+    "Finite diagnostic workloads and dev opt0/debug0 cost samples are not deployment/device SLOs. Native retained/work, allocator requested bytes and RSS are distinct. Six inherited ignored Core tests remain ignored; no single full-green all-target invocation is claimed.",
+    "Root/node occupancy bound depends on current Rust BTreeMap and default serde_json backend; revalidate with toolchain/backend changes. Typed decode and cumulative default16MiB guard remain.",
+    "External arbitrary save/checksum/memory mutation cases are not new required protection work; inherited tests that happen to execute them do not expand acceptance."
+  ]
+}

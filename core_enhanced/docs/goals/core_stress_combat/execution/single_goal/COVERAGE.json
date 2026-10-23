@@ -1,0 +1,282 @@
+{
+  "goal_set": "GS-CSCB-001",
+  "goal": "GOAL-CSCB-01",
+  "implementation_self_validation": "complete",
+  "independent_completion_audit": "not performed",
+  "goal_complete": false,
+  "acceptance": [
+    {
+      "id": "A01",
+      "requirement": "정상 RON의 StressCombat 배정에서 보호 대상 방어 연속 전투를 시작하고 첫 라운드 보상을 공개한다.",
+      "disposition": "satisfied",
+      "assessment": "정상 RON package/calibration/adoption 후 공개 host 입장과 첫 미수령 보상 조회.",
+      "evidence": [
+        "completion001/FULL002.json",
+        "runs/completion_host001/prepare001/trace.jsonl",
+        "runs/completion_host001/full002/trace.jsonl"
+      ]
+    },
+    {
+      "id": "A02",
+      "requirement": "선택 구간은 계속 방어와 보상 받고 철수만 허용하며 누적/다음 보상에 적용 배율을 공개한다.",
+      "disposition": "satisfied",
+      "assessment": "모든 선택구간 clock/checkpoint 불변, pause/retreat 거절 및 continue/extract 정상. 기타 전투명령 공통 waiting gate와 기존 부정 명령 회귀를 함께 검토.",
+      "evidence": [
+        "completion001/FULL002.json",
+        "completion001/UNRESTRAINED002.json",
+        "independent_audit003/RESULT.json"
+      ]
+    },
+    {
+      "id": "A03",
+      "requirement": "최대5라운드의 작성된 웨이브를 모두 처치해야 각 라운드를 완료한다. 뒤 라운드는 콘텐츠로 강화한다.",
+      "disposition": "satisfied",
+      "assessment": "정상9명/확장27명 작성5round 완료. 감사003의 delayed multiwave 양성 대조 재사용.",
+      "evidence": [
+        "completion001/FULL002.json",
+        "completion001/EXPANDED006.json",
+        "independent_audit003/RESULT.json"
+      ]
+    },
+    {
+      "id": "A04",
+      "requirement": "HP/배치/자원/쿨다운/전투당 기록/보호 대상을 같은 전투에서 유지하며 라운드 사이 시간은 정지한다.",
+      "disposition": "satisfied",
+      "assessment": "4회 Continue 전후 시간/HP/UUID/배치/자원/효과 동일. 실제 미만료 태세/내부 cooldown와 max1 proc, 같은 시각 패배 우선 probe.",
+      "evidence": [
+        "completion001/RESULT.json",
+        "runs/completion-probes005.log",
+        "test_parts/COMPLETION_PROBES.rs"
+      ]
+    },
+    {
+      "id": "A05",
+      "requirement": "개별 라운드에는 실제 보상/XP/노드 소비를 하지 않고 성공 철수 또는5라운드 완료에서 누적분을 한번 지급한다.",
+      "disposition": "satisfied",
+      "assessment": "정상150통화/15가루/15파츠/25XP각생존출전자/유물1; 1round철수10/1/1/11XP. 중간 미지급·최종 중복 거절·IO 재시도.",
+      "evidence": [
+        "completion001/FULL002.json",
+        "completion001/EXTRACT001.json",
+        "independent_audit003/RESULT.json"
+      ]
+    },
+    {
+      "id": "A06",
+      "requirement": "보호 대상 파괴 등의 패배는 미수령 보상을 전부 상실하고 공통 직원 손실/생존 XP는 전투 전체1회 적용한다.",
+      "disposition": "satisfied",
+      "assessment": "보호목표 실제 파괴로 누적 전량 상실/기본XP10. 실제 무력화 injury1/trauma26/소비품차감 및 지원작성 probe의 무력화→다음입장비용 사망→유물회수. 사망은 전투중 즉사가 아닌 실제 breakdown cost 경로.",
+      "evidence": [
+        "completion001/DEFEAT001.json",
+        "completion001/RESULT.json",
+        "runs/completion-probes005.log"
+      ]
+    },
+    {
+      "id": "A07",
+      "requirement": "전투 중 수동 후퇴는 직원/소비/장비/유물을 진입 전 복원하고 노드 소비/보상 상실/재도전 불가를 유지한다. 최초 입장 비용은 유지하며 XP는 지급하지 않는다.",
+      "disposition": "satisfied",
+      "assessment": "pending 후 Continue하고 수동후퇴: 모든 진입자산/소비품기간 복원, 입장비용/노드소비 유지, XP0; fresh복원.",
+      "evidence": [
+        "completion001/RETREAT001.json",
+        "completion001/retreat001_fresh.json",
+        "independent_audit003/RESULT.json"
+      ]
+    },
+    {
+      "id": "A08",
+      "requirement": "무억제 진입의 적 HP/공격력 강화를 전 라운드 유지하고 성공 XP/재료/엔케팔린 총량2배, 유물 수량 불변, 패배 기본 XP 기존량을 검증한다.",
+      "disposition": "satisfied",
+      "assessment": "공개 정상비용 소진과 Continue 선택. 전5wave9명 HP90→135/attack10→15. 성공300/30/30/50XP와 유물1; 패배기본XP10.",
+      "evidence": [
+        "completion001/UNRESTRAINED002.json",
+        "completion001/DEFEAT001.json",
+        "completion001/RESULT.json"
+      ]
+    },
+    {
+      "id": "A09",
+      "requirement": "같은 프로세스 재접속은 선택/미수령 상태를 유지하고 fresh Continue 미완료는 입장전, 완료는 결과/소비를 함께 보존한다. SavePoint와 실제 IO 실패/동일명령 재시도를 검증한다.",
+      "disposition": "satisfied",
+      "assessment": "같은 프로세스 reconnect, fresh미완료 입장전 rollback, 완료확인후복원과 확인전 CombatResult복원. 선행SavePoint 실제IO/fresh. 성공finaltick/extract/retreat/SavePoint 4경로 paired journal IO 실패 원자성 및 동일요청재시도.",
+      "evidence": [
+        "completion001/RESULT.json",
+        "completion001/EXPANDED_FRESH006.json",
+        "completion001/SAVEPOINT003.json"
+      ]
+    },
+    {
+      "id": "A10",
+      "requirement": "정상/오류 작성과 공개 application/host/query/consumer 및 기존 영향 회귀를 검증하고 정상/확장 비용과 실제 메모리 회수를 측정한다. 외부 임의 변조 방어는 제외한다.",
+      "disposition": "satisfied",
+      "assessment": "지원 정상/오류 작성, CoreApplication/approvedhost/query/consumer, 영향 회귀재사용+새최종통합. 동일binary 정상/확장3회씩 시간/native/heap/RSS/drop 회수. 한도불변.",
+      "evidence": [
+        "BASELINE_REUSE.json",
+        "TEST_RESULTS_INDEX.json",
+        "completion001/cost001/RESULT.json",
+        "COST_REVIEW.json"
+      ]
+    }
+  ],
+  "dimensions": [
+    {
+      "id": "success",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A01",
+        "A03",
+        "A05"
+      ]
+    },
+    {
+      "id": "invalid_input",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A02",
+        "A10"
+      ]
+    },
+    {
+      "id": "failure_rollback",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A06",
+        "A07",
+        "A09"
+      ]
+    },
+    {
+      "id": "retry_idempotency",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A02",
+        "A05",
+        "A09"
+      ]
+    },
+    {
+      "id": "ordering_concurrency",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A04",
+        "A09"
+      ]
+    },
+    {
+      "id": "boundary_empty_max",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A03",
+        "A05",
+        "A10"
+      ]
+    },
+    {
+      "id": "disconnect_restart_persistence",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A09"
+      ]
+    },
+    {
+      "id": "live_data",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A01",
+        "A03",
+        "A10"
+      ]
+    },
+    {
+      "id": "producer_consumer",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A01",
+        "A09",
+        "A10"
+      ]
+    },
+    {
+      "id": "legacy_fallback_absence",
+      "disposition": "satisfied",
+      "acceptance": [
+        "A04",
+        "A05",
+        "A07",
+        "A10"
+      ]
+    }
+  ],
+  "integration_acceptance": [
+    {
+      "id": "IVA-CSCB-FLOW",
+      "disposition": "satisfied",
+      "owner": "WP-CSCB-VERIFY",
+      "acceptance": [
+        "A01",
+        "A02"
+      ]
+    },
+    {
+      "id": "IVA-CSCB-GAME",
+      "disposition": "satisfied",
+      "owner": "WP-CSCB-VERIFY",
+      "acceptance": [
+        "A03",
+        "A04"
+      ]
+    },
+    {
+      "id": "IVA-CSCB-LOAN",
+      "disposition": "satisfied",
+      "owner": "WP-CSCB-VERIFY",
+      "acceptance": [
+        "A05",
+        "A06"
+      ]
+    },
+    {
+      "id": "IVA-CSCB-SHOP",
+      "disposition": "satisfied",
+      "owner": "WP-CSCB-VERIFY",
+      "acceptance": [
+        "A07",
+        "A08"
+      ]
+    },
+    {
+      "id": "IVA-CSCB-STORE",
+      "disposition": "satisfied",
+      "owner": "WP-CSCB-VERIFY",
+      "acceptance": [
+        "A09",
+        "A10"
+      ]
+    }
+  ],
+  "execution_nodes": [
+    {
+      "id": "AG-CSCB-RUN",
+      "disposition": "satisfied",
+      "evidence": [
+        "COMPLETION_REVIEW.ko.md",
+        "TEST_RESULTS_INDEX.json"
+      ]
+    },
+    {
+      "id": "WP-CSCB-VERIFY",
+      "disposition": "satisfied",
+      "evidence": [
+        "COMPLETION_REVIEW.ko.md",
+        "TEST_RESULTS_INDEX.json"
+      ]
+    }
+  ],
+  "scope_rule": "정상플레이/지원작성/실제IO만; 외부 save/checksum/메모리 임의변조 제외",
+  "known_limits": [
+    "필수 비참여 최종 완료감사 미인수: 자체검증 완료와 Goal Complete를 구분한다.",
+    "기존 서버 SelectStarterEmployees fixture의 loan_copy_ids 누락1건은 착수전부터 존재하며 U16-4 비영향으로 보존. 서버전체 green이 아니다.",
+    "Core 고유2222/ignore6는 과거 broad 실행과 교정 재실행의 합산 재사용이다. 현재 전체일괄 재실행으로 표기하지 않는다.",
+    "대표 작성콘텐츠의 기능/비용 검증이다. 공식 기본편대5round 밸런스, U21 최종SLO, Unity/U17/개별최종보스는 범위 밖.",
+    "시간은 공개 Core 연산창으로 disk publication/trace직렬화 제외. RSS 회수는 주장하지 않으며 실제 요청heap만 정확 회수."
+  ]
+}

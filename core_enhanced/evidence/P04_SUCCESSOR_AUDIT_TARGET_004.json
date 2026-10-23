@@ -1,0 +1,25 @@
+{
+  "record_ref": "ATR-CRAR-C2-P04-GEX20-004",
+  "goal_id": "GOAL-CRAR-C2-P04-BATTLE-KERNEL",
+  "successor_goal_id": "GOAL-CRAR-C2-P07-CORE-PUBLIC-PROJECTION",
+  "captured_date": "2026-08-23",
+  "verdict": "Complete / High",
+  "currentness": "current / expected P07 application battle caller cutover",
+  "completion_target_ref": "ATR-CRAR-C2-P04-GEX10-001",
+  "frozen_members": 31,
+  "unchanged_members": 27,
+  "expected_changed_members": [
+    {"path":"docs/core_runtime_contract.md","current_sha256":"c01cf2d0e99a94c2320187858ca4634f4bc8577eb9f4a992a13f50c2ab066f0f","disposition":"P07 application contract added; private finite kernel rules retained"},
+    {"path":"tools/battle_kernel_api_audit/valid/Cargo.toml","current_sha256":"d9452149bd18582b32af196f837fd994b752959df0cad8eb5a608b4cee82eab2","disposition":"serde_json added for application command documents"},
+    {"path":"tools/battle_kernel_api_audit/valid/Cargo.lock","current_sha256":"affe0884d729bc38b0d099b886846d2c1c220a5082dd2f13dd916d70e55734eb","disposition":"mechanical valid-probe dependency resolution"},
+    {"path":"tools/battle_kernel_api_audit/valid/src/main.rs","current_sha256":"45b3563658dc8d99bcc3607b82e268d58b0d29704d4a97880400d065440837f6","disposition":"live caller reaches private kernel and read-only reconnect solely through CoreApplication"}
+  ],
+  "validation": [
+    "release check exit 0 warnings 0",
+    "current Core 1157 passed, 0 failed, 0 ignored",
+    "live application battle/reconnect release probe exit 0",
+    "reconnect retry exact and ReadOnly while preserving BattleAdvanced payload identity",
+    "invalid raw kernel probe expected exit 101 E0603"
+  ],
+  "external_scope": "game_server, Unity, sibling resources and external consumers uninspected and unclaimed"
+}

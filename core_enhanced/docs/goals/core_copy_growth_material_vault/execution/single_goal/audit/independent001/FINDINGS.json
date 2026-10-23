@@ -1,0 +1,21 @@
+{
+  "findings": [
+    {
+      "id": "E-U15-001",
+      "category": "validation_evidence",
+      "severity": "medium",
+      "scope_classification": "범위 안 — 지원 귀환 명령/실제 저장 IO 장애",
+      "status": "closed_by_independent_audit_verification",
+      "requirement": "A17/A20; failure_rollback/retry_idempotency/disconnect_restart_persistence; IVA-CGMV-STORE",
+      "evidence": "test_parts/host_replays001/phase4.json fail_index29 equals reject_indices[0]; command29 requests3parts; raw IO_FAILURE reports InvalidAction rather than filesystem error.",
+      "impact": "Frozen original has2 real IO failure/retry cases, not3. Return IO coverage cannot be inferred from that record.",
+      "closure": "audit/independent001/return_io001 valid command30 (2parts+1catalyst) reaches OS21, memory and disk unchanged, retry accepted run_complete. New process phase5 reloan/reset/refund once passed.",
+      "source_changes": 0,
+      "frozen_fixture_changes": 0,
+      "owner_if_product_correction_needed": "GOAL-CGMV-01 / GEX-10 (not required by observed result)"
+    }
+  ],
+  "open_completion_blockers": 0,
+  "product_defects_confirmed": 0,
+  "external_arbitrary_tamper_findings": 0
+}

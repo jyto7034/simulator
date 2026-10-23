@@ -35,7 +35,7 @@ pub(super) fn insert_breakdown_counters(
         }
         let counter = if trauma == 100 && physical < 6 {
             BreakdownCounter::Active {
-                remaining_nodes: limit,
+                remaining_cost: limit,
                 entered_node: None,
             }
         } else {
@@ -55,47 +55,7 @@ impl GameCore {
         input: &[u8],
         expected: &ContentIdentity,
     ) -> Result<Vec<u8>, GameError> {
-        let bad = |message: &str| active_run_checkpoint_codec_error("V8 conversion", message);
-        if input.len() > 32 * 1024 * 1024 {
-            return Err(bad("payload exceeds 32 MiB"));
-        }
-        let v7::UniqueJson(mut raw) =
-            serde_json::from_slice(input).map_err(|e| bad(&e.to_string()))?;
-        if raw.as_object().is_none_or(|o| o.len() != 3) || raw["version"] != 8 {
-            return Err(bad("expected exact V8 envelope"));
-        }
-        let checkpoint = raw
-            .get("checkpoint")
-            .ok_or_else(|| bad("missing checkpoint"))?;
-        let mut bytes = Vec::new();
-        write_canonical_json(checkpoint, &mut bytes).map_err(|e| bad(&e.to_string()))?;
-        let digest = format!("{:x}", Sha256::digest(bytes));
-        if raw["checkpoint_sha256"].as_str() != Some(&digest) {
-            return Err(bad("original checksum mismatch"));
-        }
-        let identity: ContentIdentity =
-            serde_json::from_value(checkpoint["content_identity"].clone())
-                .map_err(|e| bad(&e.to_string()))?;
-        if &identity != expected {
-            return Err(bad("original content identity mismatch"));
-        }
-        let checkpoint = raw
-            .get_mut("checkpoint")
-            .and_then(Value::as_object_mut)
-            .ok_or_else(|| bad("invalid checkpoint"))?;
-        insert_breakdown_counters(
-            checkpoint,
-            self.run_policy().corrosion.breakdown_collapse_node_limit,
-        )?;
-        checkpoint.insert(
-            "content_identity".into(),
-            serde_json::to_value(self.game_data.identity()).map_err(|e| bad(&e.to_string()))?,
-        );
-        super::convert_legacy_employee_resonance(checkpoint)?;
-        let candidate: RunCheckpointPayload =
-            serde_json::from_value(Value::Object(checkpoint.clone()))
-                .map_err(|e| bad(&e.to_string()))?;
-        self.validate_run_checkpoint_payload_for_continue(&candidate)?;
-        encode_active_run_checkpoint(&candidate)
+        let _ = (input, expected);
+        Err(active_run_checkpoint_codec_error("V8 conversion", "legacy lifecycle has no exact ownership/instance mapping; original preserved"))
     }
 }

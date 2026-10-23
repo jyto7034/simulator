@@ -1,0 +1,8 @@
+{
+  "checked_utc": "2026-10-15T09:16:06.664538+00:00",
+  "files": 753,
+  "current_mismatches": [],
+  "archive_mismatches": [],
+  "archive_sha256": "c9e72535f9ebe663d945c7174071e6215fe8040e96c67ed3f6e22e0029d2688f",
+  "timing": "After replay and source review, before separate handoff-only updates"
+}

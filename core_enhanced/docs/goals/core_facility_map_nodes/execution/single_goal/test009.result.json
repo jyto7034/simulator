@@ -1,0 +1,12 @@
+{
+  "command": [
+    ".cache/d07-static-explain-product-target/debug/deps/game_core-705cc9514d94a1fe",
+    "u13_",
+    "u04_prepared_host_tick_fault",
+    "--test-threads=4"
+  ],
+  "exit_code": 0,
+  "seconds": 9.889570523999282,
+  "stdout": "test009.stdout.log",
+  "stderr": "test009.stderr.log"
+}

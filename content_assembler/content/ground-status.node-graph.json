@@ -1,0 +1,819 @@
+{
+  "format": "node-graph",
+  "version": 1,
+  "id": "02d50497-a583-4335-a4ac-2a3761dde594",
+  "name": "장판 구성 · 진입·체류 상태",
+  "nodes": [
+    {
+      "id": "01defc74-af40-46ae-94d8-e377383db2fd",
+      "kind": "skill-resonance-admit",
+      "title": "접수와 첫 지불",
+      "position": {
+        "x": 2240,
+        "y": 2605.3
+      },
+      "values": {},
+      "note": "",
+      "frame": "f575ff73-af82-461d-929f-6b23d54b8a9c"
+    },
+    {
+      "id": "026180cc-65ea-4d15-8446-65e38806d247",
+      "kind": "skill-seconds",
+      "title": "장판 유지 시간",
+      "position": {
+        "x": 480,
+        "y": 302
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "50f283fc-b76c-401d-9033-82eed5e34c2a"
+    },
+    {
+      "id": "1579b7bd-f2a6-48a0-bf7f-d2337e74f25d",
+      "kind": "skill-ground-enter",
+      "title": "장판 진입",
+      "position": {
+        "x": 1280,
+        "y": 2130
+      },
+      "values": {},
+      "note": "",
+      "frame": "75bd631b-51e8-46df-8f47-5bcd6d58301c"
+    },
+    {
+      "id": "298702ac-ee7d-47df-a8b7-fe42f4aecb59",
+      "kind": "skill-cue",
+      "title": "장판 종료 표시",
+      "position": {
+        "x": 480,
+        "y": 955
+      },
+      "values": {
+        "description": "이 장판의 관계·주기·상태 기여분 정리 뒤 장판 외형을 제거합니다."
+      },
+      "note": "",
+      "frame": "75bd631b-51e8-46df-8f47-5bcd6d58301c"
+    },
+    {
+      "id": "373e2add-2f31-4ead-b6e6-54baf3cecc6b",
+      "kind": "skill-resonance-qualify",
+      "title": "사용 자격 검사",
+      "position": {
+        "x": 1800,
+        "y": 2688.8
+      },
+      "values": {},
+      "note": "",
+      "frame": "f575ff73-af82-461d-929f-6b23d54b8a9c"
+    },
+    {
+      "id": "39fe6814-bd1e-4194-80b3-c7066ab4c6e6",
+      "kind": "skill-target-selection",
+      "title": "입력의 대상 선택",
+      "position": {
+        "x": 480,
+        "y": 98
+      },
+      "values": {
+        "mode": "player-tile"
+      },
+      "note": "",
+      "frame": "50f283fc-b76c-401d-9033-82eed5e34c2a"
+    },
+    {
+      "id": "4f3e8dcd-2e05-480f-b1a8-f998b4f75cec",
+      "kind": "skill-ground-status",
+      "title": "진입 둔화 정의",
+      "position": {
+        "x": 1280,
+        "y": 1800
+      },
+      "values": {
+        "effect": "slow",
+        "lifetime": "unresolved",
+        "overlap": "unresolved",
+        "percent": ""
+      },
+      "note": "",
+      "frame": "75bd631b-51e8-46df-8f47-5bcd6d58301c"
+    },
+    {
+      "id": "50ccbf52-4d84-458e-bb5b-a8d9d8b39287",
+      "kind": "skill-seconds",
+      "title": "필요 체류 시간",
+      "position": {
+        "x": 840,
+        "y": 1223.5
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "75bd631b-51e8-46df-8f47-5bcd6d58301c"
+    },
+    {
+      "id": "55117331-e837-41b4-82ee-679f44ce5765",
+      "kind": "skill-ground-area",
+      "title": "지정 타일 장판 생성",
+      "position": {
+        "x": 920,
+        "y": 332.6
+      },
+      "values": {},
+      "note": "장판 사건·효과·수명 연결 예제입니다. 실제 스킬의 수치와 미정 정책을 대신 확정하지 않습니다.",
+      "frame": "50f283fc-b76c-401d-9033-82eed5e34c2a"
+    },
+    {
+      "id": "5613f90f-b99d-4301-a716-35633a5afc82",
+      "kind": "skill-resonance-requirement",
+      "title": "사용 공명 조건",
+      "position": {
+        "x": 1360,
+        "y": 3022
+      },
+      "values": {
+        "mode": "full"
+      },
+      "note": "",
+      "frame": "f575ff73-af82-461d-929f-6b23d54b8a9c"
+    },
+    {
+      "id": "595a3b2b-69a8-4090-8c2e-d058ea0e9316",
+      "kind": "skill-range",
+      "title": "대상 선택 범위",
+      "position": {
+        "x": 40,
+        "y": 80
+      },
+      "values": {
+        "includeAnchor": false,
+        "pattern": ""
+      },
+      "note": "",
+      "frame": "50f283fc-b76c-401d-9033-82eed5e34c2a"
+    },
+    {
+      "id": "63e2ac9d-eaf5-4619-8ada-efc701c72cb6",
+      "kind": "skill-resonance-cost",
+      "title": "첫 지불 비용",
+      "position": {
+        "x": 1360,
+        "y": 2508
+      },
+      "values": {
+        "minimumCost": "",
+        "mode": "all",
+        "percent": ""
+      },
+      "note": "",
+      "frame": "f575ff73-af82-461d-929f-6b23d54b8a9c"
+    },
+    {
+      "id": "64b00c5d-dec1-4dba-8275-68afc93d6ced",
+      "kind": "skill-range-placement",
+      "title": "효과 범위 배치",
+      "position": {
+        "x": 480,
+        "y": 524
+      },
+      "values": {
+        "facingTime": "unresolved",
+        "origin": "selected-tile",
+        "positionTime": "unresolved"
+      },
+      "note": "",
+      "frame": "50f283fc-b76c-401d-9033-82eed5e34c2a"
+    },
+    {
+      "id": "6fd7f935-3132-4359-a402-32b9297142dc",
+      "kind": "skill-ground-ended",
+      "title": "이 장판 종료",
+      "position": {
+        "x": 40,
+        "y": 922
+      },
+      "values": {},
+      "note": "",
+      "frame": "75bd631b-51e8-46df-8f47-5bcd6d58301c"
+    },
+    {
+      "id": "7405e9d7-b5db-4ba9-9f33-1a2399461752",
+      "kind": "skill-ground-apply-status",
+      "title": "진입 대상 둔화",
+      "position": {
+        "x": 1720,
+        "y": 2021
+      },
+      "values": {},
+      "note": "",
+      "frame": "75bd631b-51e8-46df-8f47-5bcd6d58301c"
+    },
+    {
+      "id": "79c3e4bd-0a83-49c2-8e83-ed472341409c",
+      "kind": "skill-cue",
+      "title": "장판 이탈 표시",
+      "position": {
+        "x": 1720,
+        "y": 1606.5
+      },
+      "values": {
+        "description": "이탈한 대상의 표시를 정리합니다. 상태 해제 여부는 각 상태 정의의 수명을 따릅니다."
+      },
+      "note": "",
+      "frame": "75bd631b-51e8-46df-8f47-5bcd6d58301c"
+    },
+    {
+      "id": "7dc0d721-0c6a-4337-8102-8a1d5bb27cfe",
+      "kind": "skill-range",
+      "title": "스킬 효과 범위",
+      "position": {
+        "x": 40,
+        "y": 542
+      },
+      "values": {
+        "includeAnchor": false,
+        "pattern": ""
+      },
+      "note": "",
+      "frame": "50f283fc-b76c-401d-9033-82eed5e34c2a"
+    },
+    {
+      "id": "9ca5789a-c95a-4363-931f-29d7b6818d9c",
+      "kind": "skill-resonance-result",
+      "title": "첫 지불 결과",
+      "position": {
+        "x": 2680,
+        "y": 2510.9666666666667
+      },
+      "values": {},
+      "note": "",
+      "frame": "f575ff73-af82-461d-929f-6b23d54b8a9c"
+    },
+    {
+      "id": "a4933173-14af-4e79-96eb-de2f38414ff4",
+      "kind": "skill-resonance-settings",
+      "title": "공명 저장 설정",
+      "position": {
+        "x": 480,
+        "y": 2853.7380952380954
+      },
+      "values": {},
+      "note": "",
+      "frame": "f575ff73-af82-461d-929f-6b23d54b8a9c"
+    },
+    {
+      "id": "ab862b5f-f5e5-4dfd-a8a3-423eb184cd2e",
+      "kind": "skill-ground-filter",
+      "title": "장판 대상 조건",
+      "position": {
+        "x": 840,
+        "y": 1497.6666666666665
+      },
+      "values": {
+        "caster": "exclude",
+        "side": "enemies"
+      },
+      "note": "",
+      "frame": "75bd631b-51e8-46df-8f47-5bcd6d58301c"
+    },
+    {
+      "id": "b3704880-760d-4c69-b3b8-5d7c9843ce95",
+      "kind": "skill-resonance-read",
+      "title": "요청의 공명 조회",
+      "position": {
+        "x": 920,
+        "y": 2846.0714285714284
+      },
+      "values": {},
+      "note": "",
+      "frame": "f575ff73-af82-461d-929f-6b23d54b8a9c"
+    },
+    {
+      "id": "baf15c30-6983-437e-97d0-727baab7f8bb",
+      "kind": "skill-request",
+      "title": "검증 사용 요청",
+      "position": {
+        "x": 480,
+        "y": 3093
+      },
+      "values": {},
+      "note": "",
+      "frame": "f575ff73-af82-461d-929f-6b23d54b8a9c"
+    },
+    {
+      "id": "bc05ae3a-5c55-4357-8b9a-a36123f41da3",
+      "kind": "skill-ground-apply-status",
+      "title": "체류 대상 기절",
+      "position": {
+        "x": 1720,
+        "y": 1143
+      },
+      "values": {},
+      "note": "",
+      "frame": "75bd631b-51e8-46df-8f47-5bcd6d58301c"
+    },
+    {
+      "id": "c540b15e-aa08-482c-9641-bcdda252a203",
+      "kind": "skill-resonance-end",
+      "title": "사용 완료",
+      "position": {
+        "x": 2680,
+        "y": 2784.9666666666667
+      },
+      "values": {},
+      "note": "",
+      "frame": "f575ff73-af82-461d-929f-6b23d54b8a9c"
+    },
+    {
+      "id": "ccca05c7-02a0-4247-9c74-fdeb14dece81",
+      "kind": "skill-ground-status",
+      "title": "체류 기절 정의",
+      "position": {
+        "x": 1280,
+        "y": 922
+      },
+      "values": {
+        "effect": "stun",
+        "lifetime": "unresolved",
+        "overlap": "unresolved",
+        "percent": ""
+      },
+      "note": "",
+      "frame": "75bd631b-51e8-46df-8f47-5bcd6d58301c"
+    },
+    {
+      "id": "cd82cdea-b607-4767-937b-4f77d5a060cf",
+      "kind": "skill-ground-exit",
+      "title": "장판 이탈",
+      "position": {
+        "x": 1280,
+        "y": 1526
+      },
+      "values": {},
+      "note": "",
+      "frame": "75bd631b-51e8-46df-8f47-5bcd6d58301c"
+    },
+    {
+      "id": "d9ec59be-3345-468e-bd4e-09c6628ed923",
+      "kind": "skill-resonance-amount",
+      "title": "검증 저장 상한",
+      "position": {
+        "x": 40,
+        "y": 2835.7380952380954
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "f575ff73-af82-461d-929f-6b23d54b8a9c"
+    },
+    {
+      "id": "db1b7217-544c-400b-aa83-e2eeb2290dbf",
+      "kind": "skill-ground-dwell",
+      "title": "체류 조건 도달",
+      "position": {
+        "x": 1280,
+        "y": 1252
+      },
+      "values": {},
+      "note": "",
+      "frame": "75bd631b-51e8-46df-8f47-5bcd6d58301c"
+    }
+  ],
+  "edges": [
+    {
+      "id": "00263a43-124e-47d9-ad0e-2569b955216b",
+      "source": {
+        "node": "595a3b2b-69a8-4090-8c2e-d058ea0e9316",
+        "port": "range"
+      },
+      "target": {
+        "node": "39fe6814-bd1e-4194-80b3-c7066ab4c6e6",
+        "port": "range"
+      }
+    },
+    {
+      "id": "1e9b3712-5a82-4323-bb33-724953a04f4c",
+      "source": {
+        "node": "7dc0d721-0c6a-4337-8102-8a1d5bb27cfe",
+        "port": "range"
+      },
+      "target": {
+        "node": "64b00c5d-dec1-4dba-8275-68afc93d6ced",
+        "port": "range"
+      }
+    },
+    {
+      "id": "2e093780-2f6a-4fac-9a50-88b7ee382ce1",
+      "source": {
+        "node": "ab862b5f-f5e5-4dfd-a8a3-423eb184cd2e",
+        "port": "filter"
+      },
+      "target": {
+        "node": "cd82cdea-b607-4767-937b-4f77d5a060cf",
+        "port": "filter"
+      }
+    },
+    {
+      "id": "3250afff-8399-48a1-9ede-b906a160b203",
+      "source": {
+        "node": "b3704880-760d-4c69-b3b8-5d7c9843ce95",
+        "port": "snapshot"
+      },
+      "target": {
+        "node": "63e2ac9d-eaf5-4619-8ada-efc701c72cb6",
+        "port": "snapshot"
+      }
+    },
+    {
+      "id": "352bb4cd-5e05-417e-99b6-95fc56e91597",
+      "source": {
+        "node": "50ccbf52-4d84-458e-bb5b-a8d9d8b39287",
+        "port": "value"
+      },
+      "target": {
+        "node": "db1b7217-544c-400b-aa83-e2eeb2290dbf",
+        "port": "duration"
+      }
+    },
+    {
+      "id": "3af83819-61dc-42ba-8251-9cdb41b71d81",
+      "source": {
+        "node": "4f3e8dcd-2e05-480f-b1a8-f998b4f75cec",
+        "port": "status"
+      },
+      "target": {
+        "node": "7405e9d7-b5db-4ba9-9f33-1a2399461752",
+        "port": "status"
+      }
+    },
+    {
+      "id": "3b81a38e-acce-42ae-a34b-970a937d9157",
+      "source": {
+        "node": "39fe6814-bd1e-4194-80b3-c7066ab4c6e6",
+        "port": "selection"
+      },
+      "target": {
+        "node": "baf15c30-6983-437e-97d0-727baab7f8bb",
+        "port": "selection"
+      }
+    },
+    {
+      "id": "4377ab3c-7f1a-4ff9-a037-358cceffe29c",
+      "source": {
+        "node": "d9ec59be-3345-468e-bd4e-09c6628ed923",
+        "port": "value"
+      },
+      "target": {
+        "node": "a4933173-14af-4e79-96eb-de2f38414ff4",
+        "port": "capacity"
+      }
+    },
+    {
+      "id": "43d3ef09-d23a-4919-a557-80c1e1840685",
+      "source": {
+        "node": "baf15c30-6983-437e-97d0-727baab7f8bb",
+        "port": "out"
+      },
+      "target": {
+        "node": "373e2add-2f31-4ead-b6e6-54baf3cecc6b",
+        "port": "in"
+      }
+    },
+    {
+      "id": "47959995-77b9-49d4-993b-84d635763c1d",
+      "source": {
+        "node": "55117331-e837-41b4-82ee-679f44ce5765",
+        "port": "area"
+      },
+      "target": {
+        "node": "db1b7217-544c-400b-aa83-e2eeb2290dbf",
+        "port": "area"
+      }
+    },
+    {
+      "id": "524c1fa2-b32c-4d4b-ad5a-1b431c185a92",
+      "source": {
+        "node": "baf15c30-6983-437e-97d0-727baab7f8bb",
+        "port": "request"
+      },
+      "target": {
+        "node": "373e2add-2f31-4ead-b6e6-54baf3cecc6b",
+        "port": "request"
+      }
+    },
+    {
+      "id": "543bed5c-a39c-4e30-93ec-659cd2978e68",
+      "source": {
+        "node": "b3704880-760d-4c69-b3b8-5d7c9843ce95",
+        "port": "snapshot"
+      },
+      "target": {
+        "node": "373e2add-2f31-4ead-b6e6-54baf3cecc6b",
+        "port": "snapshot"
+      }
+    },
+    {
+      "id": "5b264dc3-1995-4b08-b18d-a4524a36e2aa",
+      "source": {
+        "node": "baf15c30-6983-437e-97d0-727baab7f8bb",
+        "port": "request"
+      },
+      "target": {
+        "node": "b3704880-760d-4c69-b3b8-5d7c9843ce95",
+        "port": "request"
+      }
+    },
+    {
+      "id": "5e6d84e8-7cd6-4491-9e9a-400d20185846",
+      "source": {
+        "node": "01defc74-af40-46ae-94d8-e377383db2fd",
+        "port": "out"
+      },
+      "target": {
+        "node": "9ca5789a-c95a-4363-931f-29d7b6818d9c",
+        "port": "in"
+      }
+    },
+    {
+      "id": "67b597ee-fa31-42f3-a5a0-822a221e2d97",
+      "source": {
+        "node": "6fd7f935-3132-4359-a402-32b9297142dc",
+        "port": "cue"
+      },
+      "target": {
+        "node": "298702ac-ee7d-47df-a8b7-fe42f4aecb59",
+        "port": "event"
+      }
+    },
+    {
+      "id": "6eda7285-b019-48eb-a66d-611b90e13b9e",
+      "source": {
+        "node": "373e2add-2f31-4ead-b6e6-54baf3cecc6b",
+        "port": "out"
+      },
+      "target": {
+        "node": "01defc74-af40-46ae-94d8-e377383db2fd",
+        "port": "in"
+      }
+    },
+    {
+      "id": "71a58928-7a05-435f-a5fd-36d96c0e0978",
+      "source": {
+        "node": "55117331-e837-41b4-82ee-679f44ce5765",
+        "port": "area"
+      },
+      "target": {
+        "node": "1579b7bd-f2a6-48a0-bf7f-d2337e74f25d",
+        "port": "area"
+      }
+    },
+    {
+      "id": "733c1b28-0542-4362-8e38-1101b08d6003",
+      "source": {
+        "node": "ab862b5f-f5e5-4dfd-a8a3-423eb184cd2e",
+        "port": "filter"
+      },
+      "target": {
+        "node": "1579b7bd-f2a6-48a0-bf7f-d2337e74f25d",
+        "port": "filter"
+      }
+    },
+    {
+      "id": "781c5c2a-0984-449c-a7f3-b07c5d8473b0",
+      "source": {
+        "node": "55117331-e837-41b4-82ee-679f44ce5765",
+        "port": "area"
+      },
+      "target": {
+        "node": "cd82cdea-b607-4767-937b-4f77d5a060cf",
+        "port": "area"
+      }
+    },
+    {
+      "id": "7926d92e-2e61-41d8-8c39-aad4fea23d51",
+      "source": {
+        "node": "5613f90f-b99d-4301-a716-35633a5afc82",
+        "port": "requirement"
+      },
+      "target": {
+        "node": "373e2add-2f31-4ead-b6e6-54baf3cecc6b",
+        "port": "requirement"
+      }
+    },
+    {
+      "id": "7b27e9b4-dd40-4d4f-8380-9b9a983c7718",
+      "source": {
+        "node": "026180cc-65ea-4d15-8446-65e38806d247",
+        "port": "value"
+      },
+      "target": {
+        "node": "55117331-e837-41b4-82ee-679f44ce5765",
+        "port": "duration"
+      }
+    },
+    {
+      "id": "89a7091d-3ac3-46e4-b822-a6a9ca1208b6",
+      "source": {
+        "node": "1579b7bd-f2a6-48a0-bf7f-d2337e74f25d",
+        "port": "member"
+      },
+      "target": {
+        "node": "7405e9d7-b5db-4ba9-9f33-1a2399461752",
+        "port": "member"
+      }
+    },
+    {
+      "id": "8be63ecc-fc1e-4721-b352-c0b164063649",
+      "source": {
+        "node": "01defc74-af40-46ae-94d8-e377383db2fd",
+        "port": "receipt"
+      },
+      "target": {
+        "node": "9ca5789a-c95a-4363-931f-29d7b6818d9c",
+        "port": "receipt"
+      }
+    },
+    {
+      "id": "93680333-fded-435c-a9d0-b77b49145677",
+      "source": {
+        "node": "63e2ac9d-eaf5-4619-8ada-efc701c72cb6",
+        "port": "cost"
+      },
+      "target": {
+        "node": "373e2add-2f31-4ead-b6e6-54baf3cecc6b",
+        "port": "cost"
+      }
+    },
+    {
+      "id": "a1a9163a-2e46-4e6f-8974-98776a037c97",
+      "source": {
+        "node": "a4933173-14af-4e79-96eb-de2f38414ff4",
+        "port": "settings"
+      },
+      "target": {
+        "node": "b3704880-760d-4c69-b3b8-5d7c9843ce95",
+        "port": "settings"
+      }
+    },
+    {
+      "id": "ac825c75-2d45-4ec6-8ed4-ad4f3a994e4a",
+      "source": {
+        "node": "ccca05c7-02a0-4247-9c74-fdeb14dece81",
+        "port": "status"
+      },
+      "target": {
+        "node": "bc05ae3a-5c55-4357-8b9a-a36123f41da3",
+        "port": "status"
+      }
+    },
+    {
+      "id": "b203c794-afc5-47e8-ba21-85056dce8fb4",
+      "source": {
+        "node": "373e2add-2f31-4ead-b6e6-54baf3cecc6b",
+        "port": "permit"
+      },
+      "target": {
+        "node": "01defc74-af40-46ae-94d8-e377383db2fd",
+        "port": "permit"
+      }
+    },
+    {
+      "id": "b4435e41-7fce-4a0a-9b89-04470d216c7c",
+      "source": {
+        "node": "1579b7bd-f2a6-48a0-bf7f-d2337e74f25d",
+        "port": "out"
+      },
+      "target": {
+        "node": "7405e9d7-b5db-4ba9-9f33-1a2399461752",
+        "port": "in"
+      }
+    },
+    {
+      "id": "b947bb39-a802-4a21-8388-642d3988f66c",
+      "source": {
+        "node": "cd82cdea-b607-4767-937b-4f77d5a060cf",
+        "port": "cue"
+      },
+      "target": {
+        "node": "79c3e4bd-0a83-49c2-8e83-ed472341409c",
+        "port": "event"
+      }
+    },
+    {
+      "id": "bc5513a7-a8c3-4039-ae3e-ffb28726e8f7",
+      "source": {
+        "node": "01defc74-af40-46ae-94d8-e377383db2fd",
+        "port": "use"
+      },
+      "target": {
+        "node": "55117331-e837-41b4-82ee-679f44ce5765",
+        "port": "use"
+      }
+    },
+    {
+      "id": "c85bee39-47ab-47fc-9d68-8bc3c81e56b0",
+      "source": {
+        "node": "64b00c5d-dec1-4dba-8275-68afc93d6ced",
+        "port": "area"
+      },
+      "target": {
+        "node": "55117331-e837-41b4-82ee-679f44ce5765",
+        "port": "area"
+      }
+    },
+    {
+      "id": "c923d4bc-6ef1-41c9-a65b-6f24e7564552",
+      "source": {
+        "node": "55117331-e837-41b4-82ee-679f44ce5765",
+        "port": "out"
+      },
+      "target": {
+        "node": "c540b15e-aa08-482c-9641-bcdda252a203",
+        "port": "in"
+      }
+    },
+    {
+      "id": "d5f2f6d0-dfa2-4487-8b2e-e31d840dad1c",
+      "source": {
+        "node": "ab862b5f-f5e5-4dfd-a8a3-423eb184cd2e",
+        "port": "filter"
+      },
+      "target": {
+        "node": "db1b7217-544c-400b-aa83-e2eeb2290dbf",
+        "port": "filter"
+      }
+    },
+    {
+      "id": "da87c36e-6474-4c0c-a7e9-01ca2332a5c6",
+      "source": {
+        "node": "55117331-e837-41b4-82ee-679f44ce5765",
+        "port": "area"
+      },
+      "target": {
+        "node": "6fd7f935-3132-4359-a402-32b9297142dc",
+        "port": "area"
+      }
+    },
+    {
+      "id": "e60c036d-94e7-4a34-8b49-f062c7827436",
+      "source": {
+        "node": "01defc74-af40-46ae-94d8-e377383db2fd",
+        "port": "use"
+      },
+      "target": {
+        "node": "c540b15e-aa08-482c-9641-bcdda252a203",
+        "port": "use"
+      }
+    },
+    {
+      "id": "f2099543-1b67-4046-be53-2ba4932e37c3",
+      "source": {
+        "node": "db1b7217-544c-400b-aa83-e2eeb2290dbf",
+        "port": "out"
+      },
+      "target": {
+        "node": "bc05ae3a-5c55-4357-8b9a-a36123f41da3",
+        "port": "in"
+      }
+    },
+    {
+      "id": "f7449b37-4a3b-4eb0-b154-29aa853efcee",
+      "source": {
+        "node": "9ca5789a-c95a-4363-931f-29d7b6818d9c",
+        "port": "out"
+      },
+      "target": {
+        "node": "55117331-e837-41b4-82ee-679f44ce5765",
+        "port": "in"
+      }
+    },
+    {
+      "id": "fc1dda69-d1d6-4610-ac13-83f7bf19d24b",
+      "source": {
+        "node": "db1b7217-544c-400b-aa83-e2eeb2290dbf",
+        "port": "member"
+      },
+      "target": {
+        "node": "bc05ae3a-5c55-4357-8b9a-a36123f41da3",
+        "port": "member"
+      }
+    }
+  ],
+  "frames": [
+    {
+      "id": "50f283fc-b76c-401d-9033-82eed5e34c2a",
+      "title": "범위 구성 · 타일 배치와 수치는 미정"
+    },
+    {
+      "id": "75bd631b-51e8-46df-8f47-5bcd6d58301c",
+      "title": "장판 사건과 효과 · 수치와 미정 정책은 직접 지정"
+    },
+    {
+      "id": "f575ff73-af82-461d-929f-6b23d54b8a9c",
+      "title": "검증 전용 수치 · 게임 콘텐츠에 적용하지 않음"
+    }
+  ]
+}

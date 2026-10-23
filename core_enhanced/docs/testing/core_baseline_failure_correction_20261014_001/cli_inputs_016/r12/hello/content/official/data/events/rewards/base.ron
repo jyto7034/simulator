@@ -1,0 +1,122 @@
+// 보상 이벤트 메타데이터
+// id: 보상 식별자
+// uuid: 클라이언트가 이미지/설명을 조회하기 위한 고유 식별자
+// name: 보상 이름
+// description: 보상 설명
+// icon: 아이콘 경로
+// effects: 실제 지급 효과 목록
+RewardDatabase(
+    rewards: [
+        RewardMetadata(
+            id: "enkephalin_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440101",
+            name: "엔케팔린 보상",
+            description: "엔케팔린을 획득합니다. 이를 사용하여 상점에서 아이템을 구매할 수 있습니다.",
+            icon: "icons/enkephalin.png",
+            effects: [
+                GrantEnkephalin(amount: 100),
+                GrantSkillFragment(fragment_id: "authoring_preview_fragment"),
+            ],
+        ),
+        RewardMetadata(
+            id: "experience_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440102",
+            name: "작업 경험",
+            description: "직원의 경험치를 획득합니다. 명시된 경험치는 각 대상 직원에게 전액 지급되며, 누적 기준에 따라 레벨과 전투 등급이 오릅니다.",
+            icon: "icons/experience.png",
+            effects: [
+                GrantExperience(amount: 200, target: AliveRoster),
+            ],
+        ),
+        RewardMetadata(
+            id: "ego_gift_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440103",
+            name: "E.G.O 선물",
+            description: "무작위 E.G.O 선물을 획득합니다. 직원에게 장착하여 능력치를 강화할 수 있습니다.",
+            icon: "icons/ego_gift.png",
+            effects: [
+                GrantEquipmentFromPool(pool_id: "ego_gift_reward_pool"),
+            ],
+        ),
+        RewardMetadata(
+            id: "large_enkephalin_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440105",
+            name: "고농도 엔케팔린",
+            description: "대량의 엔케팔린을 획득합니다. 후반 상점 운영에 유리합니다.",
+            icon: "icons/enkephalin_large.png",
+            effects: [
+                GrantEnkephalin(amount: 180),
+            ],
+        ),
+        RewardMetadata(
+            id: "double_ego_gift_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440106",
+            name: "E.G.O 보급 상자",
+            description: "무작위 E.G.O 선물을 획득합니다. 장비 선택지를 넓힐 수 있습니다.",
+            icon: "icons/ego_cache.png",
+            effects: [
+                GrantEquipmentFromPool(pool_id: "ego_gift_reward_pool"),
+            ],
+        ),
+        RewardMetadata(
+            id: "training_budget_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440108",
+            name: "교육 예산",
+            description: "교육과 재배치를 위한 추가 엔케팔린을 획득합니다.",
+            icon: "icons/training_budget.png",
+            effects: [
+                GrantEnkephalin(amount: 140),
+            ],
+        ),
+                RewardMetadata(
+            id: "equipment_dust_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440114",
+            name: "장비 가루",
+            description: "침식된 직원의 장비에서 회수한 공통 장비 강화 재료입니다.",
+            icon: "icons/equipment_fragment_weapon.png",
+            effects: [
+                GrantEquipmentMaterial(material_id: "equipment_dust", amount: 3),
+            ],
+        ),
+        RewardMetadata(
+            id: "field_equipment_salvage_reward",
+            uuid: "650e8400-e29b-41d4-a716-446655440116",
+            name: "현장 장비 잔해",
+            description: "침식된 직원 웨이브에서 회수한 장비 잔해입니다. 분쇄 가능한 장비 가루를 획득합니다.",
+            icon: "icons/equipment_salvage.png",
+            effects: [
+                GrantEquipmentMaterial(material_id: "equipment_dust", amount: 4),
+            ],
+        ),
+    ],
+    equipment_pools: [
+        (
+            id: "ego_gift_reward_pool",
+            filter: (
+                rarity_min: Some(TETH),
+                rarity_max: Some(ALEPH),
+                equipment_type_in: [Weapon, Armor, Accessory],
+                exclude_bound: true,
+                exclude_equipment_ids: ["standard_training_sword", "standard_training_gun", "standard_training_shield", "standard_training_greatsword", "standard_training_healing_staff", "standard_training_area_healing_staff"],
+            ),
+            entries: [],
+        ),
+    ],
+    pools: [
+        (
+            id: "default_treasures",
+            reward_ids: [
+                "enkephalin_reward",
+                "ego_gift_reward",
+                "large_enkephalin_reward",
+                "double_ego_gift_reward",
+                "training_budget_reward",
+                "equipment_dust_reward",
+                "field_equipment_salvage_reward",
+            ],
+        ),
+        (id: "tutorial_f1_training_budget", reward_ids: ["training_budget_reward"]),
+        (id: "tutorial_f3_salvage", reward_ids: ["field_equipment_salvage_reward"]),
+        (id: "tutorial_f3_budget", reward_ids: ["large_enkephalin_reward"]),
+    ],
+)

@@ -43,7 +43,7 @@ fn u07_public_external_ron_trial_creates_actor_traps_walls_and_detaches_pool() {
             battle_uuid: serde_json::from_value(update["battle_uuid"].clone()).unwrap(), battle_state_revision: update["battle_state_revision"].as_u64().unwrap(),
         }), ..Default::default() };
         let employee = serde_json::from_value(discovery.step(9).unwrap().public_result().unwrap()["payload"]["employee_uuid"].clone()).unwrap();
-        let mut positions: Vec<Position> = serde_json::from_value(discovery.step(19).unwrap().public_result().unwrap()["payload"]["combat_preview"]["valid_tiles"].clone()).unwrap();
+        let mut positions: Vec<Position> = serde_json::from_value(discovery.step(20).unwrap().public_result().unwrap()["payload"]["battle_setup_snapshot"]["battlefield"]["valid_tiles"].clone()).unwrap();
         let enemies: Vec<Position> = update["checkpoint"]["units"].as_array().unwrap().iter().filter(|u| u["owner"] == "Opponent").map(|u| serde_json::from_value(u["position"].clone()).unwrap()).collect();
         positions.sort_by_key(|p| std::cmp::Reverse(enemies.iter().map(|enemy| (p.x-enemy.x).abs().max((p.y-enemy.y).abs())).min().unwrap_or(0)));
         let target = positions.into_iter().find(|position| {

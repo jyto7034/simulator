@@ -1,0 +1,440 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CEXL-001",
+        "Content Digest": "sha256:4a31856008428324110bf614154f44982e2758c32b3a7cff8fe08c13bbddb705"
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEXL-008",
+          "Content Digest": "sha256:2acd788219ab11f4dcbb9f268c51d68dcaa627c23a9ee06e0e01f77f4094ceaa"
+        },
+        "Review Batch Ref": {
+          "Artifact Type": "Review Batch",
+          "Artifact ID": "RB-CEXL-002",
+          "Content Digest": "sha256:21319ad3b3015be0547cece04c97fceaedd5a86073bc68f7762b90b5c8871766"
+        },
+        "Predecessor Freeze": null,
+        "Ordered code_reviewed Policy Element Revision Ref Set": [
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEXL-PS01-REVIEWED-001",
+            "Content Digest": "sha256:d9b14e22b1333ce692651d9f8c9c576707951a81de5399c4aa11473c2133b553"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEXL-PS02-REVIEWED-001",
+            "Content Digest": "sha256:7d0c16dd74dbce756a9d4a214361aebe855d4523bdb363e3728be84857242fde"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEXL-01-REVIEWED-001",
+            "Content Digest": "sha256:b3be22e4b8799bdb1fe47a18a81cb7a7e147ab85e8814950207ee8a8c3474bf8"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEXL-02-REVIEWED-001",
+            "Content Digest": "sha256:80caf41f123b6add55e6add3c673b674eb6c787a831564919b704ccc2e8fb867"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEXL-03-REVIEWED-001",
+            "Content Digest": "sha256:b223164e9ff024c33aca6a99850dee0ddfef43b37617a0f30c96f8ba36c2abc4"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEXL-04-REVIEWED-001",
+            "Content Digest": "sha256:8427aedd1b13e96e336ee101a88c012ec14b04d90cb7cd3025280404277251cf"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEXL-05-REVIEWED-001",
+            "Content Digest": "sha256:3dc37a9b2077ebda1aa5f4c3fe4f350179a25c68b966fbee9b0c6ccbef513f2e"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEXL-06-REVIEWED-001",
+            "Content Digest": "sha256:546829f762a09ab73a9a30c139fdea72a0391df1e68cb8610b12bca531c71d4b"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEXL-07-REVIEWED-001",
+            "Content Digest": "sha256:bf439a4c7f485c716036d8d7c634f2a9ef6220584554bfa2ecd9daffb32fe200"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEXL-08-REVIEWED-001",
+            "Content Digest": "sha256:1c575c850d830ff641ff817318ffc02a7ef3527d8dfd98188d9712d9150fea01"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEXL-09-REVIEWED-001",
+            "Content Digest": "sha256:3e5ba597377e855047efbf806a82d1e1584d2cec8081aaaf44d76c4a48d55a79"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEXL-10-REVIEWED-001",
+            "Content Digest": "sha256:6e785275faecf64969da937641705e7f2c4945e09ecda3522b4ce56ee828e6f9"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEXL-11-REVIEWED-001",
+            "Content Digest": "sha256:a99079390cfe1c87d6ccc8ef61e6422cd25b3ffdb0b6cba78f504c713a11ca56"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEXL-12-REVIEWED-001",
+            "Content Digest": "sha256:971f19e37d605446417e41c88753fc36591ca91237ddc923e9813ec8554d5dc7"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEXL-13-REVIEWED-001",
+            "Content Digest": "sha256:6a240b567fa290c97d3cbc784f79e09f9c204271b23ab2e537a3d81dd2451c12"
+          }
+        ],
+        "Decision Revision Ref Set": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEXL-001",
+            "Content Digest": "sha256:f06a3df5b4372fd6dcc4c9a14acd22cbd4de3b804e601a7a0c1521d2bd88cc07"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEXL-01-001",
+            "Content Digest": "sha256:d457a3cf4a5a706b5193972145002f8e16e70e46e09e74a0a065cf227121f1de"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEXL-02-001",
+            "Content Digest": "sha256:e7bb32a47e1b974ae60e4e1308039f549d8be7af709dad7f4a765aedb82b7215"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEXL-03-001",
+            "Content Digest": "sha256:11df1fb6c7d38ebfa7242682362805b780be47c6124bece702e651cc3f101670"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEXL-04-001",
+            "Content Digest": "sha256:5531465d6e691a6971d40c41f456005d0040a457b01db926f4cf7d3cf368aba8"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEXL-05-001",
+            "Content Digest": "sha256:a3eb48d465b2853c23457b55afd7420ebf6bbd0a0b17eab109162ed8c8ed7986"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEXL-06-001",
+            "Content Digest": "sha256:69a8141f7375fcbea280807a6ce304cbc27d132068e766cc66709a359053d3d0"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEXL-07-002",
+            "Content Digest": "sha256:83a1dbdbab890ede77e8d966da3fd79d10e8d525c9abb94066ac8d0bcc896cc5"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEXL-08-001",
+            "Content Digest": "sha256:0501abffa8ca7825e2cc2afbe37dd99f0e5eedc3b5eb3abbd0fea2d795791287"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEXL-09-001",
+            "Content Digest": "sha256:e41d738f60318dbfcf9afc549c4b0683a085bd0cb255edd6c72980abf88deadf"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEXL-10-001",
+            "Content Digest": "sha256:c905fe8c24332b7dfa3bb59adb3a6b0d914cc3d3e267986e5d14002d3510c8cd"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEXL-11-001",
+            "Content Digest": "sha256:07f12d37116a65f072b69455d58b3b4bf25c43734c7d8291b4c4c91d3534dde6"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEXL-12-001",
+            "Content Digest": "sha256:b3bfc700a9dfcdacf3b0dd94ee8d51c1bb883db72b991c6001eb63c3ad4603b1"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CEXL-13-001",
+            "Content Digest": "sha256:1c445c525a9f695e9d3037d3e86f95f055cb827bb4fa01c0b3f32d3b3af472e0"
+          }
+        ],
+        "Observable Policy Acceptance Set": [
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CEXL-PS01-REVIEWED-001",
+              "Content Digest": "sha256:d9b14e22b1333ce692651d9f8c9c576707951a81de5399c4aa11473c2133b553"
+            },
+            "Observable Policy Acceptance": [
+              "활성 직원 모델·정상 신규 저장·query/DTO·작성/public capability에 기억 및 해당 최근 반응/사건 필드/기능이 없다.",
+              "기억 합침·기간·노드 경과·최근8 생산을 새로 구현하거나 잔존 동작으로 유지하지 않는다. 후퇴/checkpoint/Continue·사망·새 원정에서도 제거 시스템을 재생성하지 않는다.",
+              "고정 성격 위험/사회 두 축과 condition/사망·영구 도감/탐사/귀환/획득 기록을 삭제하거나 기억 시스템으로 재해석하지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CEXL-PS02-REVIEWED-001",
+              "Content Digest": "sha256:7d0c16dd74dbce756a9d4a214361aebe855d4523bdb363e3728be84857242fde"
+            },
+            "Observable Policy Acceptance": [
+              "활성 모델·기본 초기화·신규 저장·query/DTO에서 신뢰 점수/band와 전용 입력/public capability가 없다. 신뢰 gameplay를 향후 필수 또는 미정 기능으로 남기지 않는다.",
+              "미지원 구형 개발/테스트 저장이나 제거 시스템 전용 입력을 정상 지원 데이터처럼 조용히 수용하지 않는다. 명시 거절 후 원본 파일 및 거절 전 활성 상태를 보호한다.",
+              "새 지원 저장·후퇴/checkpoint/Continue·원정 시작/귀환/실패/다음 직원 초기화가 두 시스템을 재생성하지 않으며 다른 승인 상태의 정상 저장·복원이 유지된다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CEXL-01-REVIEWED-001",
+              "Content Digest": "sha256:b3be22e4b8799bdb1fe47a18a81cb7a7e147ab85e8814950207ee8a8c3474bf8"
+            },
+            "Observable Policy Acceptance": [
+              "새 profile에서 튜토리얼 완료 없이 정상 명령으로 원정을 시작한다. 옛 Standard 완료→Endless 해금 gate를 사용하지 않는다.",
+              "튜토리얼 시작·보상·완료·실패·skip·반복·종료/Continue·checkpoint 복원 전후의 원정 vault/진행 기록/첫 귀환 이력이 동일하다. 튜토리얼 내부 진행 저장은 정상 동작한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CEXL-02-REVIEWED-001",
+              "Content Digest": "sha256:80caf41f123b6add55e6add3c673b674eb6c787a831564919b704ccc2e8fb867"
+            },
+            "Observable Policy Acceptance": [
+              "기존 ST1-NT60 고정 슬롯/활동을 현재 로더·정상 명령으로 진행해 3층 마지막 일반 보스 승리까지 도달하며 가짜 terminal/빈 executor로 대체하지 않는다. 실패 후 새 반복과 같은 패배 노드 재도전을 구별한다.",
+              "사전 설정 장비/파편은 사용할 수 있지만 별도 파편 학습 grant/시퀀스는 없다. 전투력/원정 peak가 적의 작성된 고정 값을 바꾸지 않는다. 기존 수치는 검증할 초기값이며 보스 actor 감쇠를 다른 출현/적/보상에 전파하지 않는다.",
+              "튜토리얼에 기존 Event·보급·정비·상점·본사 연락·SavePoint가 연결되고 현재 노드/결과 원자 확정과 중단 복원을 따른다. 직원 처분 설정과 첫귀환 VN은 미리 소비/설명하지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CEXL-03-REVIEWED-001",
+              "Content Digest": "sha256:b223164e9ff024c33aca6a99850dee0ddfef43b37617a0f30c96f8ba36c2abc4"
+            },
+            "Observable Policy Acceptance": [
+              "역할별2/총6 중 서로 다른3개 정의를 선택한다. 잘못된 개수·중복·없는 후보는 상태/예산/장비를 부분 생성하지 않고 거절한다. 정상 선발 직원마다 기본 세트가 정확히 한 번 지급된다.",
+              "추가 훈련용 파편 선택/무상 대여 대체는 없다. 10명 보유/8명 배치 경계와 철수 후 다른 인원 배치, condition·무기·비용·재배치 대기를 유지한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CEXL-04-REVIEWED-001",
+              "Content Digest": "sha256:8427aedd1b13e96e336ee101a88c012ec14b04d90cb7cd3025280404277251cf"
+            },
+            "Observable Policy Acceptance": [
+              "같은 seed와 확정 선택에서 offer 순서가 재진입·저장/Continue·checkpoint로 임의 재추첨되지 않는다. 채용하지 않은 후보는 제시 순서대로 뒤로 이동하며 비채용 HQ 선택은 제안 전원을 같은 순서로 돌린다.",
+              "고정 초반 기회에서 최대2명 유료 채용이 가능하고 작성된 비용·보유 한도·실제 후보/기본 장비 유효성을 함께 적용한다. 부족 비용/10명 초과/없는 후보 거절은 queue/offer/roster·지갑·장비를 부분 변경하지 않는다.",
+              "깊이5 이상 일반 채용은 제공되지 않으며 0층 시작 선발은 별도다. 본사 다른 서비스까지 제거하지 않는다. 정확한 방 배치·가격은 승인된 플레이 조절값이며 U13 전체 배치 완료를 주장하지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CEXL-05-REVIEWED-001",
+              "Content Digest": "sha256:3dc37a9b2077ebda1aa5f4c3fe4f350179a25c68b966fbee9b0c6ccbef513f2e"
+            },
+            "Observable Policy Acceptance": [
+              "정의의 두 성격 축은 UUID·신뢰·기억에서 생성하지 않고 정상 조회/새 저장/복원에서 유지한다. 표시 적성을 무기 제한·보너스·불일치 페널티로 사용하지 않는다.",
+              "채용과 새 원정은 새 개인 identity를 만들되 Continue/checkpoint/후퇴는 해당 시점의 같은 개인을 복원한다. 이전 개인의 성장/부상/트라우마/사망 상태를 다음 개인에게 넘기지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CEXL-06-REVIEWED-001",
+              "Content Digest": "sha256:546829f762a09ab73a9a30c139fdea72a0391df1e68cb8610b12bca531c71d4b"
+            },
+            "Observable Policy Acceptance": [
+              "새 원정 시작 확정 시에만 예산을 한 번 받고 중복 입력·브리핑 재진입·Continue·checkpoint·후퇴로 추가 지급되지 않는다.",
+              "성공 귀환과 실패 모두 잔액을 차기 원정/창고에 더하지 않는다. 기본 세트·대여·예산은 별도이며 초기 액수는 초반 유료 채용/상점 가격과 함께 조절 가능한 작성값으로 유지한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CEXL-07-REVIEWED-001",
+              "Content Digest": "sha256:bf439a4c7f485c716036d8d7c634f2a9ef6220584554bfa2ecd9daffb32fe200"
+            },
+            "Observable Policy Acceptance": [
+              "0/1/2사본은 허용하고 총3개·동일사본중복·없는사본·이미반입중인사본은 거절한다. 장비2/파편2/혼합을 같은 총한도로 판정한다.",
+              "선발/대여 확정·저장/Continue·checkpoint·재시작/중복 입력으로 같은 사본이 vault와 현재 원정에 이중 존재하거나 기본 세트로 복제되지 않는다. 미반입 vault 사본은 이번 원정 실패로 소실되지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CEXL-08-REVIEWED-001",
+              "Content Digest": "sha256:1c575c850d830ff641ff817318ffc02a7ef3527d8dfd98188d9712d9150fea01"
+            },
+            "Observable Policy Acceptance": [
+              "현재 깊이2는 목적지가3이어도 귀환을 거절하고 현재깊이3의 실제 선택 가능한 Gate는 귀환/진행을 허용한다. 방문 수/횡단 수로 깊이 조건을 대신하거나 가상 미래 Gate를 현재 자격으로 세지 않는다.",
+              "소진 입장 처리 뒤 활동 시작 전 현재깊이에 맞는 선택을 제공한다. 깊이1–2는 계속/포기, 깊이3 이상은 귀환/계속. 계속 후 잔량0 유지나 깊이3 진입만으로 소진 선택을 반복 열지 않는다.",
+              "실제 귀환을 선택하기 전에는 보상 수령/일반 보스 승리만으로 반출·원정 종료가 일어나지 않는다. 개별 최종보스 구현/E2E는 제외하되 원문 계속탐사 정책을 일반 자동귀환으로 바꾸지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CEXL-09-REVIEWED-001",
+              "Content Digest": "sha256:3e5ba597377e855047efbf806a82d1e1584d2cec8081aaaf44d76c4a48d55a79"
+            },
+            "Observable Policy Acceptance": [
+              "승리 보상·결과 ack·전투 후퇴·Continue가 반납 원인이 되지 않고 실제 귀환 한 번에만 현재 보유 사본을 이동한다. 이미 소비/분쇄/상실한 사본을 history로 재발급하지 않는다.",
+              "귀환 무기 일반 강화는 초기화하고 파편의 실제 보유 개화 상태는 유지한다. 아직 도입되지 않은 U15 투자/재료 창고 필드는 선추가하지 않으며 도입 시 그 owner가 같은 사본 수명에 연결한다.",
+              "확정 실패/포기는 반입 및 획득 소지품에 손실을 적용하되 미반입 vault·이미 확정한 도감/탐사 등 별도 영구 기록을 보호한다. rollback 가능한 실패 후보를 최종 실패 정산으로 오인하지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CEXL-10-REVIEWED-001",
+              "Content Digest": "sha256:6e785275faecf64969da937641705e7f2c4945e09ecda3522b4ce56ee828e6f9"
+            },
+            "Observable Policy Acceptance": [
+              "카테고리 존재·가상 미래 치료·빈 offer·돈 없는 채용·무기 없는 직원·깊이2 귀환을 회복 가능으로 세지 않는다. 실제 허용 행동으로 결과를 확인하며 행동 뒤 조건을 재평가한다.",
+              "복구 제한은 실제 회복 행동과 checkpoint 불러오기만 허용하고 선택 가능한 경로/사유를 노출한다. Gate 하강 회복과 성공귀환 깊이를 구별한다.",
+              "생존자 없음/실제 복구 불가의 실패 후보에서 유효 checkpoint와 남은 횟수를 확인한다. 복구 포기·없는 checkpoint의 확정 실패/자발포기·정상 원정 완료는 Continue를 무효화하고 정산을 한 번만 수행한다. U04의 checkpoint 사용횟수 비되돌림과 장애 원자성을 유지한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CEXL-11-REVIEWED-001",
+              "Content Digest": "sha256:a99079390cfe1c87d6ccc8ef61e6422cd25b3ffdb0b6cba78f504c713a11ca56"
+            },
+            "Observable Policy Acceptance": [
+              "성공 자산 정산과 종료 직원 처리가 한 확정 경계로 저장되고 처분이 추가 실패 손실을 만들지 않는다. 시작/채용 직원 모두 동일하게 적용한다.",
+              "중단/Continue/checkpoint/전투 후퇴는 원정 종료로 세지 않고 개인을 처분/교체하지 않는다. 실제 종료 뒤 다음 원정에 이전 직원 identity/개인 상태가 계승되지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CEXL-12-REVIEWED-001",
+              "Content Digest": "sha256:971f19e37d605446417e41c88753fc36591ca91237ddc923e9813ec8554d5dc7"
+            },
+            "Observable Policy Acceptance": [
+              "첫 성공 귀환 전/실패/튜토리얼에서 pending이나 소비 이력을 만들지 않는다. 정산 뒤 종료/재시작해도 pending이 남고 재생/skip ack로 한 번만 소비된다.",
+              "중복 ack·재접속·다음 성공 귀환은 첫 이야기 재생 권리를 재생성하거나 정산/처분을 중복하지 않는다. query는 현재 pending/소비 여부를 Core 권위 상태로 제공한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CEXL-13-REVIEWED-001",
+              "Content Digest": "sha256:6a240b567fa290c97d3cbc784f79e09f9c204271b23ab2e537a3d81dd2451c12"
+            },
+            "Observable Policy Acceptance": [
+              "정상 공개 entry에서 시작→실제 조우→귀환/실패→다음 원정과 튜토리얼3층을 실행할 수 있고 내부 상태 직접 주입만으로 공개 경로 완료를 대체하지 않는다. UI 최초 구현은 요구하지 않는다.",
+              "새 저장/반영 실패에서 profile와 active run·vault·roster·budget·story가 부분 확정되거나 자산이 복제/소실되지 않는다. 이전 정상 저장/다른 session과 미지원 원본을 보호하고 실제 재시작으로 같은 확정 상태를 소비한다.",
+              "U12 새 capability/콘텐츠 identity 변경은 정상 검증/승인/cache/Apply/required-mod-save 경계를 함께 소비한다. 부적합·누락·stale 승인/전용 구입력은 구체적으로 거절하고 fixture/문서를 같은 새 공개 계약에 연결한다."
+            ]
+          }
+        ],
+        "Current Code Review Binding Ref Set": [
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEXL-PS01-002",
+            "Content Digest": "sha256:cf66feddb2cfd367bda3b1e378e545ffff57a4072da4aa60d3ce14cd77f96272"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEXL-PS02-002",
+            "Content Digest": "sha256:05d1505ccac5574e8d0a4ebc1fedac97f727b3d650ab2d81b74a2f9af02c0a86"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEXL-01-002",
+            "Content Digest": "sha256:4c13aab6cd94eee326909b91bdb41133c1391e4037be6d027d6d652d925241c2"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEXL-02-002",
+            "Content Digest": "sha256:3819072f941da25f4f752ea6cdd23ff7a9eb57370467a1f2c36e651069ddb342"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEXL-03-002",
+            "Content Digest": "sha256:9f716b538c38a40efd5737f507bbae8f0fff2756d4b6b52f154fa6c8a1125470"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEXL-04-002",
+            "Content Digest": "sha256:361cdcd5a4f8494d90c0459b8116a03d702097b9778b49c39e0f8d28be28cb29"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEXL-05-002",
+            "Content Digest": "sha256:b44061300afb3906ae938dc5cf49ef6a148753c20dd56a19c6f89da308add211"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEXL-06-002",
+            "Content Digest": "sha256:3bdf28442a6b91c03e8ed3f0b753a98d9a739a9efd5cde1a32f6c1d028181453"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEXL-07-002",
+            "Content Digest": "sha256:d59bdf1a8705dee644a5d844d815ec6392f5434cd085172ec2602dad456c637e"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEXL-08-002",
+            "Content Digest": "sha256:a088729ec136991b148ee53a9003e1f0edf7e4475500ce5f8ca25fc02bc45445"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEXL-09-002",
+            "Content Digest": "sha256:9fad461c4391f19e1c24af898024739d9fc0ded2a220c68fb78437f408568458"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEXL-10-002",
+            "Content Digest": "sha256:fcbf1795e92c84341f9fd051b9ebae8235d505f8f4d3a33bfc20297c935c55a8"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEXL-11-002",
+            "Content Digest": "sha256:83f625b4187a0f91702b080774aa703a634a565b1b7210496a7ddb79647b21ed"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEXL-12-002",
+            "Content Digest": "sha256:e09b6995406bdc08e7bea7c5ee11aace1d62f7034df9b3296f484b02d314fe68"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CEXL-13-002",
+            "Content Digest": "sha256:d71e55f2040dad5b06ee86bec3fea8a3be448f0e2575e41ef9a605014f6319ce"
+          }
+        ],
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CEXL-002",
+          "Content Digest": "sha256:dfd134406574c1eb7b7985bb1fa225262adef83758db2abdb12ceb2b9f025a27"
+        },
+        "Binding Completeness Evidence": {
+          "Artifact Type": "Review Batch",
+          "Artifact ID": "RB-CEXL-002",
+          "Content Digest": "sha256:21319ad3b3015be0547cece04c97fceaedd5a86073bc68f7762b90b5c8871766"
+        },
+        "Applicable Change/Obligation Basis": [],
+        "Resolved Prerequisite Evidence": [],
+        "Known Unknowns": "No open policy/current-source gap. Concrete API/version/tuning and new runtime verification remain mandatory GEX per CODE_REVIEW T01–T07.",
+        "Compatibility/Migration Disposition": "New supported Tutorial/Expedition and strict new current/Continue/SavePoint/profile format; old modes and removed nested psychology explicitly unsupported, originals protected. Preserve personality/condition/progress, U03 draft semantics, U04 accepted intent/recovery_pending and U11 normal approval. Released/deployed/Unity/unique final bosses not claimed.",
+        "Lifecycle Disposition": "current"
+      }
+    }
+  ]
+}

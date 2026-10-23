@@ -1,0 +1,187 @@
+{
+  "rust": [
+    {
+      "raw": "runs/core002.log",
+      "sha256": "a8424b380d950ff27cada6e3a5b7d08df953f4ba5da6eeacf25153cbcff80491",
+      "summaries": [
+        {
+          "outcome": "FAILED",
+          "passed": 2097,
+          "failed": 6,
+          "ignored": 6,
+          "measured": 0,
+          "filtered": 5
+        },
+        {
+          "outcome": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "outcome": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "outcome": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "outcome": "ok",
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "outcome": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "outcome": "ok",
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "outcome": "ok",
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "outcome": "ok",
+          "passed": 25,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "outcome": "ok",
+          "passed": 15,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "outcome": "ok",
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "outcome": "ok",
+          "passed": 15,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        }
+      ],
+      "zero_test_targets_not_counted": true
+    },
+    {
+      "raw": "runs/focused005.log",
+      "sha256": "a87f8b8c574c39da030d9c9c3c2e1a28a00888bec673e369fcc45c40f9c8797f",
+      "summaries": [
+        {
+          "outcome": "ok",
+          "passed": 37,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2077
+        }
+      ],
+      "zero_test_targets_not_counted": true
+    },
+    {
+      "raw": "runs/server001.log",
+      "sha256": "7b5569d5ff6de461388bb862670f0659734b33aca2a9536715412770a4ccbbee",
+      "summaries": [
+        {
+          "outcome": "ok",
+          "passed": 29,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 91
+        }
+      ],
+      "zero_test_targets_not_counted": true
+    },
+    {
+      "raw": "runs/g11-native001.log",
+      "sha256": "222de36ab075641f47ce4680d4ebadc7331c1b138cf7a685609ddef8a428f96f",
+      "summaries": [
+        {
+          "outcome": "ok",
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2129
+        }
+      ],
+      "zero_test_targets_not_counted": true
+    },
+    {
+      "raw": "runs/socket002.log",
+      "sha256": "461fce151d0fcda5a86628346208ec26d733c26e00b4134c71246de42750b7be",
+      "summaries": [
+        {
+          "outcome": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2113
+        }
+      ],
+      "zero_test_targets_not_counted": true
+    }
+  ],
+  "public_processes": [
+    "runs/public_phase1_002/RESULT.json",
+    "runs/public_phase2_002/RESULT.json",
+    "runs/public_phase3_002/RESULT.json",
+    "runs/public_phase4_002/RESULT.json",
+    "runs/public_phase5_003/RESULT.json",
+    "runs/public_phase6_003/RESULT.json"
+  ],
+  "normal_host": "runs/normal_host001/RESULT.json",
+  "normal_calibration": "NORMAL_LIMIT_REVIEW_003.json",
+  "normal_adoption": "runs/normal_adoption003.stdout.log",
+  "authoring": "runs/authoring001/RESULT.json",
+  "legacy": "runs/old_save_reject002/RESULT.json",
+  "cost": [
+    "runs/current_cost001/summary.json",
+    "runs/paired_cost001/RESULT.json",
+    "runs/paid_cost001/RESULT.json"
+  ],
+  "failed_originals": "runs/ retains compilation, preparation, assertions, sandbox and disk failures; EXPERIMENTS identifies corrections. Failed and zero-test runs are not current PASS.",
+  "reproduction": "test_parts/consumer001, u15_host.rs, run_normal_host.py, cost001 collectors and paid_cost001/collect_paid.py; use fresh output/private paths for exclusive creation, offline locked build receipts under artifacts/."
+}

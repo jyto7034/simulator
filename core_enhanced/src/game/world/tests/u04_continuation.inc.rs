@@ -1,6 +1,6 @@
 fn u04_continue(core: &GameCore, player: Uuid) -> GameCore {
     let export = core.export_active_run_checkpoint().unwrap().expect("confirmed continuation");
-    let mut restarted = GameCore::new(core.game_data.clone(), 0xDEAD);
+    let mut restarted = core_with_profile_for_continue(&core, 0xDEAD);
     restarted.continue_from_active_run_checkpoint(
         player, &export.core_payload_json, export.loads_used, export.run_peak_certified_power,
     ).unwrap();
@@ -9,9 +9,9 @@ fn u04_continue(core: &GameCore, player: Uuid) -> GameCore {
 
 #[test]
 fn u04_continue_before_first_savepoint_restores_current_roster_and_map() {
-    let mut core = GameCore::new(legacy_sword_live_game_data_from_ron(), 0xC004_0001);
+    let mut core = GameCore::new(live_game_data_from_ron(), 0xC004_0001);
     let player = Uuid::from_u128(1);
-    start_new_game_with_default_starters(&mut core, player);
+    start_new_game_with_legacy_sword_fixture(&mut core, player);
     assert!(core.state.run_checkpoint.payload.is_none());
     let restored = u04_continue(&core, player);
     assert_eq!(restored.get_state(), GameState::ViewingMap);
@@ -23,9 +23,9 @@ fn u04_continue_before_first_savepoint_restores_current_roster_and_map() {
 
 #[test]
 fn u04_continue_unfinished_battle_preserves_two_retreats_and_third_entry_without_quit_charge() {
-    let mut core = GameCore::new(legacy_sword_live_game_data_from_ron(), 0xC004_0002);
+    let mut core = GameCore::new(legacy_pool_game_data_from_ron(), 0xC004_0002);
     let player = Uuid::from_u128(1);
-    start_new_game_with_default_starters(&mut core, player);
+    start_new_game_with_legacy_sword_fixture(&mut core, player);
     let node = force_map_combat_node(&mut core, MapNodeCategory::Combat, "combat_monster", "suppress_burrowing_heaven");
     core.execute(player, PlayerBehavior::SelectMapNode { node_id: node }).unwrap();
     core.execute(player, PlayerBehavior::ConfirmEnterNode).unwrap();
@@ -59,7 +59,7 @@ fn u04_continue_unfinished_battle_preserves_two_retreats_and_third_entry_without
 
 #[test]
 fn u04_live_terminal_commits_before_ack_and_continue_cannot_repeat_grants() {
-    let mut data = legacy_sword_live_game_data_from_ron();
+    let mut data = live_game_data_from_ron();
     let database = Arc::get_mut(&mut data).unwrap();
     let pve = Arc::get_mut(&mut database.pve_data).unwrap();
     let encounter_id = "suppress_burrowing_heaven";
@@ -70,7 +70,7 @@ fn u04_live_terminal_commits_before_ack_and_continue_cannot_repeat_grants() {
     encounter.terminal_outcomes[0].condition = crate::game::data::pve_data::PveTerminalConditionData::TimeReached { time_ms: 10 };
     let mut core = GameCore::new(data, 0xC004_0003);
     let player = Uuid::from_u128(1);
-    start_new_game_with_default_starters(&mut core, player);
+    start_new_game_with_legacy_sword_fixture(&mut core, player);
     let node = force_map_combat_node(&mut core, MapNodeCategory::Combat, "combat_monster", "suppress_burrowing_heaven");
     core.execute(player, PlayerBehavior::SelectMapNode { node_id: node }).unwrap();
     core.execute(player, PlayerBehavior::ConfirmEnterNode).unwrap();
@@ -101,8 +101,26 @@ fn u04_choose_one_fixture(count: usize) -> (GameCore, Uuid, Uuid, Vec<Uuid>) {
     u04_choose_one_fixture_with_terminal(count, false)
 }
 
+fn u04_terminal_profile_fixture() -> crate::game::encounter_compendium::PlayerProfileState {
+    use crate::game::expedition_lifecycle::{FirstReturnStory, VaultEquipment};
+    let mut profile = crate::game::encounter_compendium::PlayerProfileState::default();
+    profile.highest_floor_reached = 7;
+    profile.encounter_compendium.registered_ids.insert("u04_prior_terminal_knowledge".into());
+    profile.lifecycle.expedition_sequence = 1;
+    profile.lifecycle.first_return_story = FirstReturnStory::Consumed;
+    let copy_uuid = Uuid::from_u128(0xC004_F001);
+    profile.lifecycle.vault.equipment.insert(copy_uuid, VaultEquipment {
+            weapon_stage: Default::default(),
+        copy_uuid, definition_id: "u04_dormant_returned_weapon".into(),
+        equipment_type: EquipmentType::Weapon, enhancement_level: 0,
+    });
+    profile.validate_persisted().expect("valid dormant assets and prior permanent knowledge");
+    assert!(profile.lifecycle.active_expedition.is_none());
+    profile
+}
+
 fn u04_choose_one_fixture_with_terminal(count: usize, terminal: bool) -> (GameCore, Uuid, Uuid, Vec<Uuid>) {
-    let mut data = legacy_sword_live_game_data_from_ron();
+    let mut data = live_game_data_from_ron();
     let database = Arc::get_mut(&mut data).unwrap();
     let reward_ids = (0..count).map(|index| Uuid::from_u128(0xC004_1000 + index as u128)).collect::<Vec<_>>();
     let mut rewards = (*database.reward_data).clone();
@@ -142,7 +160,17 @@ fn u04_choose_one_fixture_with_terminal(count: usize, terminal: bool) -> (GameCo
     encounter.outcome_policies[0].grant_node_bonus = false;
     let mut core = GameCore::new(data, 0xC004_0004);
     let player = Uuid::from_u128(1);
-    start_new_game_with_default_starters(&mut core, player);
+    if terminal {
+        // I is installed before the public Tutorial start. It is a valid
+        // existing profile, with no fabricated active expedition or loan.
+        core.state.player_profile = u04_terminal_profile_fixture();
+        // I targets the Tutorial terminal owner. Start that mode normally so
+        // mode, instance and deterrence agree before moving to its final floor.
+        start_new_game_with_mode_and_default_starters(&mut core, player, GameMode::Tutorial);
+        apply_legacy_sword_numerical_fixture(&mut core, player);
+    } else {
+        start_new_game_with_legacy_sword_fixture(&mut core, player);
+    }
     let node = if terminal {
         force_map_combat_node(&mut core, MapNodeCategory::Boss, "boss_abnormality", encounter_id)
     } else {
@@ -150,7 +178,7 @@ fn u04_choose_one_fixture_with_terminal(count: usize, terminal: bool) -> (GameCo
     };
     if terminal {
         let run = core.state.run.as_mut().unwrap();
-        run.run_progression.mode_state = crate::game::map::RunProgressionModeState::Standard {
+        run.run_progression.mode_state = crate::game::map::RunProgressionModeState::Tutorial {
             floor_index: run_policy().setup.standard_floor_count - 1,
             max_floors: run_policy().setup.standard_floor_count,
         };
@@ -224,7 +252,7 @@ fn u04_pending_continue_rejects_tampered_entitlement_and_missing_option_fields_a
         let mut bad = document.clone();
         bad["continuation"].as_object_mut().unwrap().remove(field);
         refresh_active_run_checksum(&mut bad);
-        let mut restarted = GameCore::new(core.game_data.clone(), 1);
+        let mut restarted = core_with_profile_for_continue(&core, 1);
         assert!(restarted.continue_from_active_run_checkpoint(player, &serde_json::to_vec(&bad).unwrap(), 0, 0).is_err(), "missing {field}");
         assert!(restarted.state.run.is_none());
     }
@@ -239,7 +267,7 @@ fn u04_pending_continue_rejects_tampered_entitlement_and_missing_option_fields_a
             _ => continuation["reward_continuation"]["battle_uuid"] = serde_json::json!(Uuid::nil()),
         }
         refresh_active_run_checksum(&mut bad);
-        let mut restarted = GameCore::new(core.game_data.clone(), 1);
+        let mut restarted = core_with_profile_for_continue(&core, 1);
         for _ in 0..2 {
             let error = restarted.continue_from_active_run_checkpoint(player, &serde_json::to_vec(&bad).unwrap(), 0, 0).unwrap_err();
             assert!(matches!(error, GameError::InvalidStaticData(_)), "case {case}: {error:?}");
@@ -277,7 +305,8 @@ fn u04_each_unfinished_interactive_node_restores_its_preentry_roots() {
             assert!(core.state.enkephalin.amount > expected.state.enkephalin.amount);
         }
         let restored = u04_continue(&core, player);
-        assert_eq!(restored.get_run_snapshot_json().unwrap(), expected.get_run_snapshot_json().unwrap(), "{category:?}");
+        let expected_snapshot=expected.get_run_snapshot_json().unwrap();
+        assert_eq!(restored.get_run_snapshot_json().unwrap(), expected_snapshot, "{category:?}: unfinished activity restores effects and its pre-entry cost");
         assert_eq!(json!(restored.state.inventory), json!(expected.state.inventory), "{category:?}");
         assert_eq!(json!(restored.state.uuid_manager), json!(expected.state.uuid_manager), "{category:?}");
         assert!(restored.state.run_checkpoint.payload.is_none(), "entering SavePoint alone cannot create one");
@@ -300,7 +329,8 @@ fn u04_unfinished_event_combat_restores_before_event_instead_of_after_choice() {
     enter_event_combat_choice(&mut core, player, node, "event_started_victory", "fight");
     assert!(core.state.active_battle.is_some());
     let restored = u04_continue(&core, player);
-    assert_eq!(restored.get_run_snapshot_json().unwrap(), expected.get_run_snapshot_json().unwrap());
+    let expected_snapshot=expected.get_run_snapshot_json().unwrap();
+    assert_eq!(restored.get_run_snapshot_json().unwrap(), expected_snapshot);
     assert_eq!(json!(restored.state.uuid_manager), json!(expected.state.uuid_manager));
     assert!(restored.run_state().unwrap().event_sessions.is_empty());
 }
@@ -333,19 +363,115 @@ fn u04_continue_retains_active_visual_novel_and_queue_at_a_stable_boundary() {
 fn u04_terminal_choice_survives_ack_and_claim_restart_then_exit_invalidates_continue() {
     let (mut core, player, _, candidates) = u04_choose_one_fixture_with_terminal(2, true);
     assert_eq!(core.state.confirmed_combat_result.as_ref().unwrap().continuation_phase, GameState::RunComplete);
-    assert!(core.state.player_profile.standard_tutorial_completed);
+    let profile = u04_terminal_profile_fixture();
+    assert_eq!(core.state.player_profile, profile);
+    let ownership = u04_terminal_active_ownership(&core);
     let amount = core.state.enkephalin.amount;
     core = u04_continue(&core, player);
+    assert_eq!(u04_terminal_active_ownership(&core), ownership);
+    assert_eq!(core.state.player_profile, profile);
     core.execute(player, PlayerBehavior::CompleteCombatResult).unwrap();
+    assert!(matches!(core.get_state(), GameState::InReward { .. }));
+    assert_eq!(u04_terminal_active_ownership(&core), ownership, "ACK preserves actors while a reward is pending");
     core = u04_continue(&core, player);
+    assert_eq!(u04_terminal_active_ownership(&core), ownership);
+    assert_eq!(core.state.player_profile, profile);
     core.execute(player, PlayerBehavior::SelectReward { reward_id: candidates[1] }).unwrap();
     core.execute(player, PlayerBehavior::ClaimReward).unwrap();
+    assert!(matches!(core.get_state(), GameState::InRewardClaimed { .. }));
+    assert_eq!(u04_terminal_active_ownership(&core), ownership, "Claim keeps employee and copy ownership until Exit");
+    assert_eq!(core.state.player_profile, profile);
     core = u04_continue(&core, player);
+    assert_eq!(u04_terminal_active_ownership(&core), ownership);
+    assert_eq!(core.state.player_profile, profile);
     assert_eq!(core.state.enkephalin.amount, amount + 18);
+    let before_retry = u04_terminal_roots(&core);
     assert!(core.execute(player, PlayerBehavior::ClaimReward).is_err());
+    assert_eq!(u04_terminal_roots(&core), before_retry);
     core.execute(player, PlayerBehavior::ExitReward).unwrap();
+    u04_assert_terminal_assets_cleared(&core, &profile);
+    let terminal = u04_terminal_roots(&core);
+    for behavior in [PlayerBehavior::ExitReward, PlayerBehavior::CompleteCombatResult,
+        PlayerBehavior::ClaimReward] {
+        assert!(core.execute(player, behavior).is_err());
+        assert_eq!(u04_terminal_roots(&core), terminal, "terminal retries cannot re-grant or re-settle");
+    }
+}
+
+fn u04_terminal_active_ownership(core: &GameCore) -> Value {
+    assert_eq!(core.state.roster.len(), 3, "terminal battle actors remain owned until final acknowledgement");
+    let run = core.state.run.as_ref().unwrap();
+    run.recruitment.validate_exact_ownership(&core.game_data.employee_definition_data.definitions,
+        &core.state.roster).expect("pending reward cannot sever recruitment/roster ownership");
+    let employees = core.state.roster.iter().map(|employee| employee.uuid)
+        .collect::<std::collections::BTreeSet<_>>();
+    assert!(core.state.inventory.equipments.iter().next().is_some());
+    for copy in core.state.inventory.equipments.iter() {
+        if let Some(owner) = copy.equipped_to { assert!(employees.contains(&owner)); }
+    }
+    json!({"employees": employees, "inventory": core.state.inventory,
+        "fragments": core.state.skill_fragments, "recruitment": run.recruitment})
+}
+
+fn u04_terminal_roots(core: &GameCore) -> Value {
+    json!({"runtime": non_battle_state_without_profile_fingerprint(core),
+        "profile": core.state.player_profile,
+        "continue": core.export_active_run_checkpoint().unwrap().map(|checkpoint| checkpoint.core_payload_json)})
+}
+
+fn u04_assert_terminal_assets_cleared(
+    core: &GameCore,
+    profile: &crate::game::encounter_compendium::PlayerProfileState,
+) {
     assert_eq!(core.get_state(), GameState::RunComplete);
+    assert_eq!(&core.state.player_profile, profile, "Tutorial termination preserves the exact permanent profile");
+    assert_eq!(core.state.roster.len(), 0);
+    assert_eq!(serde_json::to_value(&core.state.inventory).unwrap(),
+        serde_json::to_value(crate::game::resources::inventory::Inventory::default()).unwrap());
+    assert!(core.state.skill_fragments.copies().next().is_none());
+    assert!(core.state.relics.is_empty());
+    assert_eq!(core.state.crafting_resources, Default::default());
+    assert!(core.state.run_checkpoint.payload.is_none());
+    assert_eq!(core.state.run_checkpoint.loads_used, 0);
+    assert!(core.state.confirmed_combat_result.is_none());
+    assert!(core.state.combat_reward_continuation.is_none());
+    assert!(core.state.active_battle.is_none());
+    assert!(core.state.active_node_content.is_none());
+    assert!(core.state.node_session.is_none());
     assert!(core.export_active_run_checkpoint().unwrap().is_none());
+}
+
+#[test]
+fn u04_terminal_zero_candidates_keeps_actors_until_ack_then_clears_without_repeat() {
+    let (mut core, player, _, candidates) = u04_choose_one_fixture_with_terminal(0, true);
+    assert!(candidates.is_empty());
+    let profile = u04_terminal_profile_fixture();
+    assert_eq!(core.state.player_profile, profile);
+    assert_eq!(core.state.confirmed_combat_result.as_ref().unwrap().continuation_phase, GameState::RunComplete);
+    assert!(core.state.combat_reward_continuation.is_none());
+    let summary = core.get_selected_event_snapshot_json().unwrap().unwrap();
+    assert_eq!(summary["no_reward_candidates"], true);
+    assert_eq!(summary["rewards"], json!([]));
+    let ownership = u04_terminal_active_ownership(&core);
+    // Terminal results without a pending reward are already non-resumable;
+    // runtime actors remain owned until the result is acknowledged.
+    assert!(core.export_active_run_checkpoint().unwrap().is_none());
+    let before_claim = u04_terminal_roots(&core);
+    assert!(core.execute(player, PlayerBehavior::ClaimReward).is_err());
+    assert_eq!(u04_terminal_roots(&core), before_claim);
+    assert_eq!(u04_terminal_active_ownership(&core), ownership);
+    let acknowledgement = core.execute(player, PlayerBehavior::CompleteCombatResult).unwrap();
+    let BehaviorResult::CombatRewardsGranted { completion, .. } = acknowledgement else {
+        panic!("terminal victory acknowledges its combat rewards");
+    };
+    assert!(matches!(*completion, BehaviorResult::RunComplete { .. }));
+    u04_assert_terminal_assets_cleared(&core, &profile);
+    let terminal = u04_terminal_roots(&core);
+    for behavior in [PlayerBehavior::CompleteCombatResult, PlayerBehavior::ClaimReward,
+        PlayerBehavior::ExitReward] {
+        assert!(core.execute(player, behavior).is_err());
+        assert_eq!(u04_terminal_roots(&core), terminal);
+    }
 }
 
 #[test]
@@ -366,7 +492,7 @@ fn u04_confirmed_receipt_rejects_phase_outcome_ack_and_entitlement_inconsistency
             _ => { payload["result"]["continuation_phase"] = json!(GameState::RunComplete); payload["reward_continuation"]["return_phase"] = json!(GameState::RunComplete); },
         }
         refresh_active_run_checksum(&mut bad);
-        let mut restarted = GameCore::new(core.game_data.clone(), 1);
+        let mut restarted = core_with_profile_for_continue(&core, 1);
         assert!(restarted.continue_from_active_run_checkpoint(player, &serde_json::to_vec(&bad).unwrap(), 0, 0).is_err(), "case {case}");
         assert!(restarted.state.run.is_none(), "case {case}");
     }
@@ -374,9 +500,9 @@ fn u04_confirmed_receipt_rejects_phase_outcome_ack_and_entitlement_inconsistency
 
 #[test]
 fn u04_savepoint_load_rewinds_retreats_while_continue_preserves_load_budget_and_profile() {
-    let mut core = GameCore::new(legacy_sword_live_game_data_from_ron(), 0xC004_0400);
+    let mut core = GameCore::new(live_game_data_from_ron(), 0xC004_0400);
     let player = Uuid::from_u128(1);
-    start_new_game_with_default_starters(&mut core, player);
+    start_new_game_with_legacy_sword_fixture(&mut core, player);
     let node = force_map_combat_node(&mut core, MapNodeCategory::Combat, "combat_monster", "suppress_burrowing_heaven");
     core.execute(player, PlayerBehavior::SelectMapNode { node_id: node }).unwrap();
     core.save_run_checkpoint_for_test().unwrap();
@@ -413,8 +539,8 @@ fn u04_savepoint_load_rewinds_retreats_while_continue_preserves_load_budget_and_
 #[test]
 fn u04_shared_savepoint_encoding_restores_independent_rewind_and_rejects_bad_references() {
     let player = Uuid::from_u128(1);
-    let mut core = GameCore::new(legacy_sword_live_game_data_from_ron(), 0xC004_0500);
-    start_new_game_with_default_starters(&mut core, player);
+    let mut core = GameCore::new(live_game_data_from_ron(), 0xC004_0500);
+    start_new_game_with_legacy_sword_fixture(&mut core, player);
     core.save_run_checkpoint_for_test().unwrap();
     let export = core.export_active_run_checkpoint().unwrap().unwrap();
     let document: Value = serde_json::from_slice(&export.core_payload_json).unwrap();

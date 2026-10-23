@@ -155,6 +155,7 @@ fn writable_actor_summaries(
 #[derive(Debug, Clone)]
 pub(crate) struct RuntimeFactState {
     pub(super) resources: Option<Box<crate::game::resource::runtime::RuntimeResources>>,
+    pub(super) causal: Option<Box<super::relic_causal::CausalRuntime>>,
     attempt: Arc<AttemptToken>,
     next_action: u64,
     next_strike: u64,
@@ -171,6 +172,7 @@ pub(crate) struct RuntimeFactState {
 }
 crate::authoring::clone_shape::struct_shape!(RuntimeFactState {
     resources,
+    causal,
     attempt,
     next_action,
     next_strike,
@@ -280,6 +282,7 @@ impl RuntimeFactState {
     pub(super) fn new(limits: RuntimeFactLimits) -> Self {
         Self {
             resources: None,
+            causal: None,
             attempt: Arc::new(AttemptToken),
             next_action: 0,
             next_strike: 0,
@@ -359,11 +362,28 @@ impl RuntimeFactState {
         &mut self,
         actor: UnitInstanceId,
         skill_id: Option<&SkillId>,
-        source: RuntimeFactSource,
+        mut source: RuntimeFactSource,
         time_ms: u64,
         public_reserved: bool,
     ) -> Result<ActionHandle, GameError> {
         crate::authoring::control::charge(1, "action_accept")?;
+        if source.causal().and_then(|c| c.context.as_ref()).is_none() {
+            if let Some(causal) = self.causal.as_deref_mut() {
+                let context = causal.new_root(false)?;
+                control::admit_retained_growth(
+                    0,
+                    Some(std::mem::size_of::<super::relic_causal::CausalSourceData>() + 64),
+                    "causal_action_source",
+                )?;
+                source =
+                    source.with_causal(Some(Arc::new(super::relic_causal::CausalSourceData {
+                        context: Some(context),
+                        program: source.causal().and_then(|c| c.program.clone()),
+                        amount: None,
+                        cause: source.causal().and_then(|c| c.cause.clone()),
+                    })))?;
+            }
+        }
         control::limit(
             Code::ActiveActionLimit,
             "action_accept",
@@ -811,6 +831,13 @@ impl RuntimeFactState {
             return Ok(());
         }
         if self.active[&handle.ordinal()].snapshot.terminal.is_none() {
+            if !matches!(&kind, ActionTerminalKind::Finished) {
+                if let Some(causal) = self.causal.as_deref_mut() {
+                    causal.cancel_participants(
+                        self.active[&handle.ordinal()].snapshot.source.as_ref(),
+                    )?;
+                }
+            }
             if let Some(resources) = self.resources.as_mut() {
                 resources.terminal(handle)?;
             }
@@ -1021,12 +1048,23 @@ impl RuntimeFactState {
         )?))
     }
 
+    pub(super) fn live_sources(&self) -> impl Iterator<Item = &RuntimeFactSource> {
+        self.active.values().map(|a| a.snapshot.source.as_ref())
+    }
     pub(super) fn accepted_source(
         &self,
         handle: &ActionHandle,
     ) -> Result<&RuntimeFactSource, ActionQueryError> {
         self.validate_live_action(handle)?;
         Ok(self.active[&handle.ordinal()].snapshot.source.as_ref())
+    }
+    pub(super) fn actor_has_unsettled_action(&self,actor:UnitInstanceId)->Result<bool,GameError>{
+        crate::authoring::control::charge(self.active.len()as u64,"relation_action_boundary")?;
+        Ok(self.active.values().any(|a|a.snapshot.source.actor==Some(actor) && (a.snapshot.released_at_ms.is_none() && a.snapshot.terminal.is_none() || a.snapshot.outstanding_deliveries>0)))
+    }
+    pub(super) fn action_lifetime(&self, handle: &ActionHandle) -> Option<(bool, bool, usize)> {
+        self.active.get(&handle.ordinal()).filter(|a| a.handle == *handle)
+            .map(|a| (a.snapshot.released_at_ms.is_some(), a.snapshot.terminal.is_some(), a.snapshot.outstanding_deliveries))
     }
     pub(super) fn query(&self, handle: &ActionHandle) -> Result<ActionSnapshot, ActionQueryError> {
         if !Arc::ptr_eq(&self.attempt, &handle.validity.attempt) {
@@ -1135,6 +1173,9 @@ pub(super) struct AdmittedStrike {
 }
 
 impl AdmittedStrike {
+    pub(super) fn ordinal(&self) -> StrikeOrdinal {
+        self.progress.ordinal
+    }
     pub(super) fn first_positive_roll_key(&self) -> Option<u64> {
         (!self.progress.positive && !self.progress.deflected).then_some(self.progress.ordinal.0)
     }
@@ -1758,6 +1799,9 @@ impl BattleCore {
         if let Some(owner) = &self.effective_owner {
             add(Some(owner.retained_extent()))?;
         }
+        if let Some(causal) = &self.runtime_facts.causal {
+            add(causal.retained_extent())?;
+        }
         add(self.sustained.retained_extent())?;
         crate::authoring::control::charge(
             self.independent_objects.entity_count() as u64,
@@ -1878,6 +1922,8 @@ impl BattleCore {
         }
         for area in self.active_areas.values() {
             add(area.effective_history_extent())?;
+            add(area.emission_extent())?;
+            add(area.ground_status.as_ref().map_or(Some(0), |g| g.retained_extent()))?;
         }
         for cast in self.active_skill_casts.values() {
             if let Some(flow) = &cast.flow {
@@ -2170,6 +2216,7 @@ impl BattleCore {
             .on_attack_modifier_sources
             .len()
             .checked_add(support_count)
+            .and_then(|count| count.checked_add(usize::from(snapshot.prepared_basic.is_some())))
             .and_then(|count| {
                 count.checked_add(
                     on_hit
@@ -2213,6 +2260,9 @@ impl BattleCore {
                         .and_then(|n| bytes.checked_add(n))
                 });
             }
+        }
+        if let Some(prepared) = &snapshot.prepared_basic {
+            extent = extent.and_then(|n| prepared.source.retained_extent().and_then(|s| n.checked_add(s)));
         }
         extent = extent.and_then(|n| protection.retained_extent().and_then(|p| n.checked_add(p)));
         let extent = self.runtime_facts.reserve_fact_storage(extent)?;
@@ -2259,6 +2309,7 @@ impl BattleCore {
                 modifier_sources.push(contributor.source.clone());
             }
         }
+        if let Some(prepared) = &snapshot.prepared_basic { modifier_sources.push(prepared.source.clone()); }
         let ordinal = self.runtime_facts.fact_ordinal()?;
         Ok((
             Arc::new(DamageFact {
@@ -2314,6 +2365,7 @@ impl BattleCore {
         });
         self.runtime_facts
             .record_fact(FactUpdate::Heal(value.clone()))?;
+        self.record_lab_source(&value.source,if hp_after!=hp_before{crate::mod_validation::CoverageStage::ConsumedOrEffect}else{crate::mod_validation::CoverageStage::LegalNoop})?;
         self.observe_effect_heal_result(&value.source, i64::from(hp_after) - i64::from(hp_before));
         self.runtime_facts.release_fact_storage(extent);
         Ok(())
@@ -2725,16 +2777,24 @@ impl BattleCore {
 mod tests {
     use super::*;
 
-    fn cmrp_core() -> (
+    fn cmrp_core(
+        emergency: usize,
+    ) -> (
         BattleCore,
         Arc<crate::runtime_safety::RuntimeSafetySettings>,
     ) {
         let mut source =
-            String::from_utf8(crate::runtime_safety::EMBEDDED_RUNTIME_SAFETY_RON.to_vec()).unwrap();
+            String::from_utf8(crate::runtime_safety::EMBEDDED_RUNTIME_SAFETY_RON.to_vec())
+                .unwrap()
+                .replacen(
+                    "max_retained_bytes: 16777216",
+                    "max_retained_bytes: 8388608",
+                    1,
+                );
         let end = source.rfind(')').unwrap();
         source.insert_str(
             end,
-            "development_measurement: Some((revision: 1, emergency_retained_bytes: 16777216)),\n",
+            &format!("development_measurement: Some((revision: 1, emergency_retained_bytes: {emergency})),\n"),
         );
         let settings = Arc::new(
             crate::runtime_safety::RuntimeSafetySettings::from_ron(
@@ -2802,16 +2862,16 @@ mod tests {
                 .retained
                 .unwrap()
                 .profile_warning_bytes,
-            Some(8 * 1024 * 1024)
+            Some(16 * 1024 * 1024)
         );
     }
 
     #[test]
     fn cmrp_public_override_keeps_small_cap_and_rejects_raw_development_cap() {
-        let (core, settings) = cmrp_core();
+        let (core, settings) = cmrp_core(32 * 1024 * 1024);
         assert_eq!(
             core.runtime_fact_limits().max_retained_bytes,
-            16 * 1024 * 1024
+            32 * 1024 * 1024
         );
         assert!(matches!(
             core.clone()
@@ -2819,8 +2879,8 @@ mod tests {
             Err(GameError::BattleRuntimeFault(BattleRuntimeFault {
                 code: Code::InvalidLimits,
                 site: "max_retained_bytes",
-                limit: Some(8388608),
-                requested: Some(16777216)
+                limit: Some(16777216),
+                requested: Some(33554432)
             }))
         ));
         let small = core
@@ -2847,10 +2907,10 @@ mod tests {
 
     #[test]
     fn cmrp_actual_snapshot_uses_trusted_owner_outside_and_cumulative_budget_inside() {
-        let (mut core, settings) = cmrp_core();
+        let (mut core, settings) = cmrp_core(32 * 1024 * 1024);
         // Representation boundary fixture, not an authored-content sample: the
-        // admitted owner retains a large identifier to exercise a >8MiB view.
-        let skill = SkillId::new("x".repeat(9 * 1024 * 1024));
+        // admitted owner retains a large identifier to exercise a >16MiB view.
+        let skill = SkillId::new("x".repeat(17 * 1024 * 1024));
         control::run_with_profile(core.runtime_fact_limits(), &settings, || {
             core.runtime_facts.accept(
                 actor(),
@@ -2864,8 +2924,8 @@ mod tests {
         .unwrap();
         assert!(!control::is_active());
         let snapshot = core.runtime_fact_snapshot().unwrap();
-        assert!(snapshot.retained_extent > 8 * 1024 * 1024);
-        assert!(snapshot.retained_extent < 16 * 1024 * 1024);
+        assert!(snapshot.retained_extent > 16 * 1024 * 1024);
+        assert!(snapshot.retained_extent < 32 * 1024 * 1024);
         assert_eq!(snapshot.active_actions.len(), 1);
         assert_eq!(
             snapshot.active_actions[0]
@@ -2874,7 +2934,7 @@ mod tests {
                 .unwrap()
                 .as_str()
                 .len(),
-            9 * 1024 * 1024
+            17 * 1024 * 1024
         );
         let error = control::run(
             RuntimeFactLimits {

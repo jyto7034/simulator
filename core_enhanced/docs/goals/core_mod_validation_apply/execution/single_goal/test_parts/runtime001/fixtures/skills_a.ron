@@ -1,0 +1,19 @@
+SkillDatabase(
+    skills: [
+        SkillDef(
+            id: "u11_damage_a",
+            name: "U11 independent thirteen",
+            kind: Targeted,
+            focus_time_ms: 0,
+            use_lifetime: Action,
+            cast_targeting: Explicit(selection: automatic_unit, target: EnemySingle(rule: Nearest), reach: global, air_capable: false),
+            steps: [(
+                id: "u11_a_strike",
+                delay_ms: 0,
+                target: EnemySingle(rule: Nearest),
+                delivery: Instant,
+                effects: [(id: "u11_a_damage", op: Damage(amount: 13, damage_type: Magic))],
+            )],
+        ),
+    ],
+)

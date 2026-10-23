@@ -1,0 +1,89 @@
+{
+  "record_ref": "ATR-CRAR-C2-P06-GEX10-001",
+  "captured_at_utc": "2026-08-22T17:56:11Z",
+  "handoff_ref": "HA-CRAR-P2G60-002",
+  "goal_set_ref": "GS-CRAR-P2G50-002",
+  "goal_id": "GOAL-CRAR-C2-P06-CHECKPOINT-MIGRATION",
+  "phase_id": "PHASE-CRAR-C2-06-CHECKPOINT-MIGRATION",
+  "execution_node": "WP-CRAR-C2-07",
+  "policy_ref": "PER-CRAR-010-R3-CODE-REVIEWED",
+  "decision_ref": "DR-CRAR-009-R1",
+  "realization_decision_ref": "TD-CRAR-020",
+  "invariant_ref": "IVA-C2-07",
+  "repository": {
+    "workspace_locator": "/mnt/f/work/simulator/core_enhanced",
+    "revision": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+    "branch": "cleanup/simulator-dirty-worktree-20260803"
+  },
+  "predecessor_currentness": [
+    {"record_ref":"ATR-CRAR-C2-P01-GEX20-006","verdict":"Complete / High","currentness":"current / expected P06 checkpoint locator delta","evidence_path":"evidence/P01_SUCCESSOR_AUDIT_TARGET_006.json"},
+    {"record_ref":"ATR-CRAR-C2-P02-GEX20-005","verdict":"Complete / High","currentness":"current / expected P06 codec dependency delta","evidence_path":"evidence/P02_SUCCESSOR_AUDIT_TARGET_005.json"},
+    {"record_ref":"ATR-CRAR-C2-P03-GEX20-004","verdict":"Complete / High","currentness":"current / expected P05 plus P06 subordinate deltas","evidence_path":"evidence/P03_SUCCESSOR_AUDIT_TARGET_004.json"},
+    {"record_ref":"ATR-CRAR-C2-P04-GEX20-003","verdict":"Complete / High","currentness":"current / P06 checkpoint-only non-impacting delta","evidence_path":"evidence/P04_SUCCESSOR_AUDIT_TARGET_003.json"},
+    {"record_ref":"ATR-CRAR-C2-P05-GEX20-002","verdict":"Complete / High","currentness":"current / expected P06 checkpoint and dependency deltas","evidence_path":"evidence/P05_SUCCESSOR_AUDIT_TARGET_002.json"}
+  ],
+  "content_members": [
+    {"path":"Cargo.toml","kind":"tracked_dirty_mixed_attribution_p06_direct_checksum_dependency","sha256":"0d118334417380f47461c89b50c550bd3af758f705e1ce2ebf6252ae9ecd368b"},
+    {"path":"../Cargo.lock","kind":"tracked_workspace_lock_p06_dependency_resolution","sha256":"2e5f218d4147b915e4af8362835f9b17bd7de3f21b98c89a290abda20921e969"},
+    {"path":"src/game/map/facility_generator.rs","kind":"tracked_dirty_mixed_attribution_p06_version_neutral_comment","sha256":"65045baf30051e3a2bca8861b50907db959192864d973c660f4e3820219db5a4"},
+    {"path":"src/game/world/active_run.rs","kind":"tracked_dirty_mixed_attribution_p06_codec","sha256":"0bba5a9a9284302fd0b60049589be23bcbdff9a7bcba1b37dc72655b90e91a56"},
+    {"path":"src/game/world/tests/mod.rs","kind":"tracked_dirty_mixed_attribution_p06_test_support","sha256":"7b49a1e16fc81226a9be6bf756d64a0eb2d0f1769d0b37b85de92db791c757a8"},
+    {"path":"src/game/world/tests/checkpoint_validation.rs","kind":"untracked_preexisting_mixed_p06_checkpoint_oracle","sha256":"59128e2d112d8095f699cd9a0aab618b57fb3cb7363e5895c6d6f8b33ce7658b"},
+    {"path":"src/game/world/tests/facility.rs","kind":"tracked_dirty_mixed_attribution_p06_actual_caller","sha256":"b84804bfcd9a3a5a2ae9ae7812f6b27d52c5e7ca3105d1dd25cdad571748cbe0"},
+    {"path":"src/game/world/tests/node_sessions.rs","kind":"tracked_dirty_mixed_attribution_p06_actual_caller","sha256":"8fdbc74dcef09155b7f79617d04006174b0395e3270d0e65b53c9f5b3dc026d5"},
+    {"path":"src/game/world/tests/combat.rs","kind":"tracked_dirty_mixed_attribution_p06_actual_caller","sha256":"653edd119f13a5c1c8b03f60b98366d1873e8ca9a3aeec76db1b41792c49aafd"},
+    {"path":"docs/core_runtime_contract.md","kind":"tracked_dirty_mixed_attribution_p06_canonical_contract","sha256":"56060826753d66af3cd10c725b351cb74a41d219b67cbf4033b1cf9192098a4e"},
+    {"path":"docs/goals/current_runtime_architecture_remediation/execution/p06_checkpoint_migration/PLAN.md","kind":"untracked_p06_execution_evidence","sha256":"d4d7329c9ee0847de895a0c8edd0c8bc2a319ecfa2a0176b72b5e2c9501ff0e8"},
+    {"path":"docs/goals/current_runtime_architecture_remediation/execution/p06_checkpoint_migration/EXPERIMENTS.md","kind":"untracked_p06_execution_evidence","sha256":"606b6fac986a922b0ef4850de66ecd321c812b31451c8180ac5cd3120ac3e0df"},
+    {"path":"docs/goals/current_runtime_architecture_remediation/execution/p06_checkpoint_migration/EXPERIMENT_NOTES.md","kind":"untracked_p06_execution_evidence","sha256":"7e61ba986ff7bccdb9783975235c699622784717f513a6e2a58a06c1f1f67a6b"},
+    {"path":"evidence/P06_CHECKPOINT_MIGRATION_RECEIPT.json","kind":"untracked_p06_validation_evidence","sha256":"cc911998a95c7abf585b9f3d903f2644585dde6c844701b93857fb096cb2aa2d"},
+    {"path":"tools/validated_data_api_audit/valid/Cargo.lock","kind":"untracked_p06_predecessor_probe_dependency","sha256":"cd1d9e35da0894487e4a54538ed8c9aba99169a7e42aeb7a2485ee0df00c5308"},
+    {"path":"tools/validated_data_api_audit/invalid/Cargo.lock","kind":"untracked_p06_predecessor_probe_dependency","sha256":"6af2f6b0443e342bf4a77ba7200d6e07fb06aa661e1460348ff2202284e5189c"},
+    {"path":"tools/application_authority_api_audit/valid/Cargo.lock","kind":"untracked_p06_predecessor_probe_dependency","sha256":"fddf9fdd014a35e70bef91842045ad328333b5d4aebe4b32d525b48c78bbf062"},
+    {"path":"tools/application_authority_api_audit/invalid/Cargo.lock","kind":"untracked_p06_predecessor_probe_dependency","sha256":"cfbb5c5c47057406e95f866fbd4336fe527abf17d1806f774b6e61bd772df8bd"},
+    {"path":"tools/battle_kernel_api_audit/valid/Cargo.lock","kind":"untracked_p06_predecessor_probe_dependency","sha256":"b36706b52b45434ea110d233125b268cd832225b7b73ed5be6501642405a003b"},
+    {"path":"tools/battle_kernel_api_audit/invalid/Cargo.lock","kind":"untracked_p06_predecessor_probe_dependency","sha256":"22e0c646026f401491ece6739bafe46f295afb9870e032987e8f5ed4a871e0bf"},
+    {"path":"tools/history_result_api_audit/valid/Cargo.lock","kind":"untracked_p06_predecessor_probe_dependency","sha256":"045046728f0ca6912666ca02f4f228eb32cb7f5dec1ca138a76eaf76fea25635"},
+    {"path":"tools/history_result_api_audit/invalid/Cargo.lock","kind":"untracked_p06_predecessor_probe_dependency","sha256":"ad4ddb91b2515c60cbf5dceb0209bd0150d2332e34cfb23849580e738d050399"},
+    {"path":"evidence/P01_SUCCESSOR_AUDIT_TARGET_006.json","kind":"untracked_predecessor_currentness_evidence","sha256":"c4ed6a7979537b7b3316d16d4db7ac842c7155bc55af0df302c4104722ee27a0"},
+    {"path":"docs/goals/current_runtime_architecture_remediation/execution/p01_preservation_observability/SUCCESSOR_CURRENTNESS_AUDIT_006.md","kind":"untracked_predecessor_currentness_evidence","sha256":"3111a35d5f0d1417eff5bfedf8dd30d056fe3fb2c7d052daa2d7ca4257e01135"},
+    {"path":"evidence/P02_SUCCESSOR_AUDIT_TARGET_005.json","kind":"untracked_predecessor_currentness_evidence","sha256":"2709cb9765e3f7ef5d2f8fa9f27ec49b18d4dff01671e7c331e1a87b9d8335e4"},
+    {"path":"docs/goals/current_runtime_architecture_remediation/execution/p02_validated_data/SUCCESSOR_CURRENTNESS_AUDIT_005.md","kind":"untracked_predecessor_currentness_evidence","sha256":"bd880cc8f5349cc492fca8d3afef5b193fd66ffb6dbb3ec10853ea591091e1e2"},
+    {"path":"evidence/P03_SUCCESSOR_AUDIT_TARGET_004.json","kind":"untracked_predecessor_currentness_evidence","sha256":"02a22256d292a6bd839eb8f8d7d8f6cc843638ff42bcec2bd2963673e835229e"},
+    {"path":"docs/goals/current_runtime_architecture_remediation/execution/p03_application_authority/SUCCESSOR_CURRENTNESS_AUDIT_004.md","kind":"untracked_predecessor_currentness_evidence","sha256":"b8cc57a7c567347fe459e7f9f768e2eee495ef91d45879481a6ee174d1e298f1"},
+    {"path":"evidence/P04_SUCCESSOR_AUDIT_TARGET_003.json","kind":"untracked_predecessor_currentness_evidence","sha256":"eb9e04508d9043bbed5508e16e33be89148e79a9935d28d565cafbdc6cc6c587"},
+    {"path":"docs/goals/current_runtime_architecture_remediation/execution/p04_battle_kernel/SUCCESSOR_CURRENTNESS_AUDIT_003.md","kind":"untracked_predecessor_currentness_evidence","sha256":"c58bd41317c7b1f280a1e89625fcba3dfc676c70c82a22c952d28751d062890a"},
+    {"path":"evidence/P05_SUCCESSOR_AUDIT_TARGET_002.json","kind":"untracked_predecessor_currentness_evidence","sha256":"25477c2294c5a8361dc6b58f4899fb6eb14b5d4cbd80bf73d5e0f0b1bcba71ce"},
+    {"path":"docs/goals/current_runtime_architecture_remediation/execution/p05_bounded_history_result/SUCCESSOR_CURRENTNESS_AUDIT_002.md","kind":"untracked_predecessor_currentness_evidence","sha256":"43812c2dc7684528277941c38a7fda43756540d0fc646878a429e7b3e214a089"}
+  ],
+  "content_member_count": 32,
+  "validation": [
+    {"command":"cargo fmt --all -- --check","result":"exit 0"},
+    {"command":"target-scoped git diff --check","result":"exit 0"},
+    {"command":"cargo check -p game_core --release --lib","result":"exit 0; warnings 0"},
+    {"command":"focused checkpoint/corpus/corruption/rollback/boundary matrix","result":"15 passed; 0 failed; 0 ignored"},
+    {"command":"cargo test -p game_core","result":"1150 passed; 0 failed; 0 ignored"},
+    {"command":"P01 manifest verifier","result":"exit 0; 57 features; 42 contents; composite 3ec400cf300247eaab0555e842663ebc5c7908a7edbe8f189df007560c1690d0; errors 0"},
+    {"command":"P02-P05 valid/invalid release probes","result":"all valid exit 0; all invalid expected exit 101 with frozen error families"}
+  ],
+  "unrelated_core_dirty_baseline": {
+    "scope":"core_enhanced paths only; game_server, Unity, sibling resources and external consumers excluded without inspection",
+    "exclusions":"cumulative P01-P06 exact target members, execution/evidence artifacts, audit probe trees and all generated target directories",
+    "modified":83,
+    "deleted":23,
+    "untracked":675,
+    "total":781,
+    "porcelain_sha256":"ba914e98866360b052ee1f668930cd614d61992e7cc73b182fc6b78a159cdc46"
+  },
+  "known_limitations": [
+    "released/deployed save population and external store envelope remain evidence-backed N/A",
+    "P07 owns transport-neutral public projection architecture",
+    "P08 owns checkpoint timing/allocation/memory, optimization and performance PASS",
+    "whole-library Clippy retains a pre-existing denied never_loop outside P06"
+  ],
+  "explicit_exclusions": [
+    "COMPLETION_AUDIT.md",
+    "generated target directories",
+    "game_server, Unity, sibling resources and external consumers"
+  ]
+}

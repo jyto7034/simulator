@@ -76,7 +76,7 @@ fn discarded_preparation_detaches_tls_and_cannot_advance_commit_gauges() {
     let mut other = empty();
     let (other_receiver, other_reader) = observe(&mut other, 2);
     let command = || {
-        ApplicationCommand::from_document(json!({"type":"start_new_game","game_mode":crate::game::map::GameMode::Standard,"replace_active_run":false}).into()).unwrap()
+        ApplicationCommand::from_document(json!({"type":"start_new_game","game_mode":crate::game::map::GameMode::Expedition,"replace_active_run":false}).into()).unwrap()
     };
     let before = app.snapshot(ApplicationSnapshotKind::Run).unwrap();
     let prepared = app
@@ -219,8 +219,13 @@ fn finite_labels_have_unique_names_and_dense_operation_indices() {
 }
 
 fn cmrp_settings(cap: usize) -> crate::runtime_safety::RuntimeSafetySettings {
-    let mut source =
-        String::from_utf8(crate::runtime_safety::EMBEDDED_RUNTIME_SAFETY_RON.to_vec()).unwrap();
+    let mut source = String::from_utf8(crate::runtime_safety::EMBEDDED_RUNTIME_SAFETY_RON.to_vec())
+        .unwrap()
+        .replacen(
+            "max_retained_bytes: 16777216",
+            "max_retained_bytes: 8388608",
+            1,
+        );
     let end = source.rfind(')').unwrap();
     source.insert_str(
         end,
@@ -454,7 +459,7 @@ fn cmrp_identity_generation_discard_commit_private_fork_and_persistence_rollback
         "non-battle capture remains outside native scope"
     );
     let command = || {
-        ApplicationCommand::from_document(json!({"type":"start_new_game","game_mode":crate::game::map::GameMode::Standard,"replace_active_run":false}).into()).unwrap()
+        ApplicationCommand::from_document(json!({"type":"start_new_game","game_mode":crate::game::map::GameMode::Expedition,"replace_active_run":false}).into()).unwrap()
     };
     let prepared = app
         .prepare_command_with_generation(

@@ -35,6 +35,7 @@ fn u07_block_spawn(
     spawn.draft.owned_uuid = Uuid::from_u128(10_000 + u128::from(salt));
     spawn.draft.equipped_items = if employee {
         vec![crate::game::battle::types::BattleEquipmentBinding {
+            weapon_stage: Default::default(),
             base_uuid: Uuid::from_u128(300), persistent_copy_uuid: None, slot: None,
         }]
     } else { vec![] };

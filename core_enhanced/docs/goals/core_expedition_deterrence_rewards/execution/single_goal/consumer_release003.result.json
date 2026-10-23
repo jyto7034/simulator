@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/home/blast/.cargo/bin/cargo",
+    "build",
+    "--release",
+    "--offline",
+    "--locked",
+    "--target",
+    "x86_64-unknown-linux-gnu",
+    "--target-dir",
+    ".cache/u11-mod-validation-target",
+    "--manifest-path",
+    "core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/test_parts/consumer004/Cargo.toml"
+  ],
+  "exit_code": 0,
+  "seconds": 81.77201815200533,
+  "stdout": "consumer_release003.stdout.log",
+  "stderr": "consumer_release003.stderr.log"
+}

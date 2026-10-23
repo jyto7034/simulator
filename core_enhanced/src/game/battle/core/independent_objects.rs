@@ -415,6 +415,7 @@ impl super::BattleCore {
             "independent_object_owner",
         )?;
         let key = crate::authoring::clone_shape::controlled_clone(&object.family)?;
+        self.record_lab_object(&object.definition.0,false)?;
         self.independent_objects.counters.insert(key, new);
         self.independent_objects.objects.insert(object.id, object);
         Ok(())
@@ -461,6 +462,7 @@ impl super::BattleCore {
         let creator = object.family.creator;
         let definition = crate::authoring::clone_shape::controlled_clone(&object.definition)?;
         let family = crate::authoring::clone_shape::controlled_clone(&object.family)?;
+        self.record_lab_object(&definition.0,true)?;
         self.independent_objects.objects.remove(&id);
         self.independent_objects
             .counters

@@ -9,7 +9,7 @@ fn material() -> EquipmentMaterialMetadata {
         uuid: Uuid::from_u128(0x608),
         name: "Dust".into(),
         description: String::new(),
-        material_type: EquipmentMaterialType::Generic,
+        material_type: EquipmentMaterialType::EquipmentDust,
         rarity: RiskLevel::ZAYIN,
         equipment_type: None,
     }
@@ -58,6 +58,7 @@ fn numeric_fixture(weapon_attack: u32, growth: i32) -> (GameDataBase, BattleUnit
         growth_stacks: stacks,
         equipment_layout: None,
         equipped_items: vec![BattleEquipmentBinding {
+            weapon_stage: Default::default(),
             base_uuid: uuid,
             persistent_copy_uuid: Some(copy),
             slot: None,
@@ -195,6 +196,7 @@ fn r06_same_definition_copy_levels_are_isolated_and_mismatches_rejected() {
     draft.equipped_item_enhancements.clear();
     for (copy, level) in [(0x605, 1), (0x606, 2)] {
         draft.equipped_items.push(BattleEquipmentBinding {
+            weapon_stage: Default::default(),
             base_uuid: item.uuid,
             persistent_copy_uuid: Some(Uuid::from_u128(copy)),
             slot: None,

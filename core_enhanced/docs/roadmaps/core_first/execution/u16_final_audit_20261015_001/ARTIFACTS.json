@@ -1,0 +1,1105 @@
+{
+  "files": [
+    {
+      "path": "ARCHIVE_CHECK.json",
+      "bytes": 137,
+      "sha256": "a2ff4a5a3d32f98295149622b058c6e3dbdde6f540b89383503f19db62396aa9"
+    },
+    {
+      "path": "AUDIT_TARGET_RECORD.json",
+      "bytes": 1040,
+      "sha256": "19b9b3e7f44491c64838203ff3f35ff255062213221bf4d9953e988fce267ac2"
+    },
+    {
+      "path": "COMPLETION_AUDIT.md",
+      "bytes": 15713,
+      "sha256": "3455d54411646717eeedfb5e32d4698d366bf81410b76eeb436e201d1a39c020"
+    },
+    {
+      "path": "CONDITION_REVIEW.json",
+      "bytes": 94069,
+      "sha256": "fcc1765d749c862e7dffe26ea4acd237897a7eb49a432959d065c1741a4da9b8"
+    },
+    {
+      "path": "CURRENT_SOURCE.tar.gz",
+      "bytes": 4902257,
+      "sha256": "fb8f1e56deb4a2f3bf12a4191b478393118d3aa1281bb61f3c5db486e8687411"
+    },
+    {
+      "path": "DIRTY_BEFORE.txt",
+      "bytes": 240123,
+      "sha256": "60719d729604eb9946419b058b7508ad6c6973e28801ce4268a7b70a09f096d7"
+    },
+    {
+      "path": "ENTRY.json",
+      "bytes": 918021,
+      "sha256": "d5c9b9bab7f7671e48ebdfa81e3a781936425ec1038b4505e59e9c916ff04d40"
+    },
+    {
+      "path": "EXIT.json",
+      "bytes": 79,
+      "sha256": "e1273a1e749cba6d520df3af43ce7f75bddc0122df8fcd0c8319c5f1edf5ea6b"
+    },
+    {
+      "path": "FINDINGS.json",
+      "bytes": 760,
+      "sha256": "3ad3de63df0ce02401dcec3a7e030f8a8a2e56c8ead792e6a450bf70e14ea9fe"
+    },
+    {
+      "path": "HISTORY_RECHECK.json",
+      "bytes": 1493,
+      "sha256": "4da645595d67a8e078a2602e21f615dc1325d3fc42d4318f5df7d0e78157b87b"
+    },
+    {
+      "path": "PLAN.ko.md",
+      "bytes": 2567,
+      "sha256": "506c13ac6d7eba83e7e93863482d030cd407ed7f14e64040475a54439d0f0c63"
+    },
+    {
+      "path": "POST_U164.patch",
+      "bytes": 45569,
+      "sha256": "0a538f3970b856ec7ef79db9efb6b4b69f678ff654b0018e8ee7f50d16acbcda"
+    },
+    {
+      "path": "PREDECESSOR_DIFF.json",
+      "bytes": 41157,
+      "sha256": "12012ce61d5cd8074e799a8ff2c75043efa00de283637e4418482caa2c3d3f9e"
+    },
+    {
+      "path": "RESULT.json",
+      "bytes": 1406,
+      "sha256": "ce8651d568c232015788c78feb4b4e1b6a38553dbbf84eed9a96a31fb12c5452"
+    },
+    {
+      "path": "VERIFIED_RESULTS.json",
+      "bytes": 7412,
+      "sha256": "a4e9f773dae6d01634a214f4e6037dddd13d31488304a292b954ed8e2f0cec1d"
+    },
+    {
+      "path": "XP_PACKAGE.json",
+      "bytes": 1002,
+      "sha256": "bb92c8032f8b2f450f57ce2b2cbb914b338e23b02cfa5adff502d469a4177999"
+    },
+    {
+      "path": "XP_PROBE_PLAN.json",
+      "bytes": 814,
+      "sha256": "5d4917588819aeb4c293a7ff1d8f69adecd082edb4e2f69cad54073898d2e13f"
+    },
+    {
+      "path": "XP_RUNS.json",
+      "bytes": 587,
+      "sha256": "5cf7f86e6dbd388ca2cd75dd7e0d7f7adffdc4a6fd0bf2241e723244c4ed3c6c"
+    },
+    {
+      "path": "XP_RUNS002.json",
+      "bytes": 795,
+      "sha256": "ccb2193ac10e4bcc8b9a9e3945d2dc5e92ba49f54f75541ba2d41fa3e3f5d471"
+    },
+    {
+      "path": "XP_RUNS003.json",
+      "bytes": 1317,
+      "sha256": "7bcb08a08cd6a4de7b103a942507433498d5d1684bc905548f179a5f1f4316df"
+    },
+    {
+      "path": "XP_RUNS004.json",
+      "bytes": 1183,
+      "sha256": "71cca10351a9eed7f10ab24810c9f8ecac63440253b6917801c59ce9cc983ec9"
+    },
+    {
+      "path": "focused.log",
+      "bytes": 14791,
+      "sha256": "6a1ca30b88a66a574000d457e6912bb8a67142236ba48b46a7de3d8ccc58db19"
+    },
+    {
+      "path": "focused.time",
+      "bytes": 34,
+      "sha256": "df9152872cafc7675bed84d936731fd656b7fff3c9f82edd9dfb2b5b4930340c"
+    },
+    {
+      "path": "recheck_history.py",
+      "bytes": 2278,
+      "sha256": "cdb1953a5477946675c6c017382ee77d43ceb5b0f1dcefadbd8d3d6d4b6c25dd"
+    },
+    {
+      "path": "snapshot.py",
+      "bytes": 4025,
+      "sha256": "1348ea9f4b6ec0aa113fe3a9c18168b013117f0b1f937ee98029d36d9e138258"
+    },
+    {
+      "path": "u161_RECHECK.json",
+      "bytes": 43001,
+      "sha256": "2fb5d4fd75b09803042482b43c3c6a5c129e55f85a7db2efbfeafb10c6889bf4"
+    },
+    {
+      "path": "u161_recheck.log",
+      "bytes": 2963,
+      "sha256": "0d6a50c8aaa86a5d717dee62217e2792ca1acad76b080761a5f18430064e5aa2"
+    },
+    {
+      "path": "u162_RECHECK.json",
+      "bytes": 16468,
+      "sha256": "717fd9409e77735f055ba5ba2768745e055543e25205298f73425225c1d2836a"
+    },
+    {
+      "path": "u162_recheck.log",
+      "bytes": 3859,
+      "sha256": "b35cb5a09c7a4d507ef300caca9f47f37bc79731f4c0673295efb2db9830d580"
+    },
+    {
+      "path": "u163_RECHECK.json",
+      "bytes": 2683,
+      "sha256": "fbe4a7bbb2bbca5b16f3bf37df0048601bc85e2f70f0c452614eab8fa05b81f3"
+    },
+    {
+      "path": "u163_recheck.log",
+      "bytes": 2683,
+      "sha256": "fbe4a7bbb2bbca5b16f3bf37df0048601bc85e2f70f0c452614eab8fa05b81f3"
+    },
+    {
+      "path": "u164_RECHECK.json",
+      "bytes": 1848,
+      "sha256": "1f4ebb4c75cd86646de21ae3bacd8daac73bad047871a26c1b53650aaa48dba8"
+    },
+    {
+      "path": "u164_recheck.log",
+      "bytes": 31,
+      "sha256": "c0541f5ccce8b219fdd1650ff4a95d52fade7946f3cb5f43a078f5e3f624197c"
+    },
+    {
+      "path": "verify_results.py",
+      "bytes": 3650,
+      "sha256": "d0f7be5b0ec84c4ac93eb61275d1d4c9ab4952516b002076cad00132c1608e9d"
+    },
+    {
+      "path": "xp_build.log",
+      "bytes": 12609,
+      "sha256": "3692bd7316c50c4ac026d6f3192d14955c88983364966ee1663727ff73e00370"
+    },
+    {
+      "path": "xp_large/RESULT003.json",
+      "bytes": 332805,
+      "sha256": "19db9e04e2aff3c97f56d460e71773d8247070659730bd285a23d6b5fdb124d8"
+    },
+    {
+      "path": "xp_large/RESULT003.json.trace.jsonl",
+      "bytes": 5423874,
+      "sha256": "a2075606c484f12dce0841383dc1315caf7ccfb78c26ce7622abc3e8e9272252"
+    },
+    {
+      "path": "xp_large/config.json",
+      "bytes": 1308,
+      "sha256": "6a34e099ae55dc1a174b137398cd2874a99d5040f4f3e98112a4b0e5f49a72e3"
+    },
+    {
+      "path": "xp_large/config002.json",
+      "bytes": 1313,
+      "sha256": "fe77eb5f9019488f7a9888dd3fc1281b967ee2fe655df4e05a4caa214a205365"
+    },
+    {
+      "path": "xp_large/content_root/official/data/abnormalities/base.ron",
+      "bytes": 33133,
+      "sha256": "b1c2edb2af416e754bd445d581278555f6196936832a155bed31fb4bd048c474"
+    },
+    {
+      "path": "xp_large/content_root/official/data/boss_omen/chains.ron",
+      "bytes": 799,
+      "sha256": "8ababe6019c5a4f371b728ec321c7bb72e213131bc93870fed482b4838bdd8b0"
+    },
+    {
+      "path": "xp_large/content_root/official/data/boss_runtime/base.ron",
+      "bytes": 15863,
+      "sha256": "58805dbc82ee3d4513c571acf8c034646b1389e070fcaebacd08f84ba4966d04"
+    },
+    {
+      "path": "xp_large/content_root/official/data/buffs/base.ron",
+      "bytes": 917,
+      "sha256": "e7cc335f4243b4fc0ac907a72356ba44a1eae2669aa340147a0fbbc14f9c448b"
+    },
+    {
+      "path": "xp_large/content_root/official/data/consumables/base.ron",
+      "bytes": 4154,
+      "sha256": "bdaa2b1f4667ebd20234d0541dd50dd5241f3828b2a417b44980d7390cccdd0a"
+    },
+    {
+      "path": "xp_large/content_root/official/data/employees/definitions.ron",
+      "bytes": 9974,
+      "sha256": "d56593946a7c615e05628c96819bbf247a3989e9760f6043d5cc614b4dea0baa"
+    },
+    {
+      "path": "xp_large/content_root/official/data/enemies/corroded_employees.ron",
+      "bytes": 6332,
+      "sha256": "f4bf8aea315da15da172cb584bec6c73f93f1e40ffb46226f2e3adbcdc294154"
+    },
+    {
+      "path": "xp_large/content_root/official/data/enemies/corroded_wave_presets.ron",
+      "bytes": 3346,
+      "sha256": "c638648cdc9999b07fd8dcd8e1f6e699c9f5c6650d41959d7b1f0bca6764b751"
+    },
+    {
+      "path": "xp_large/content_root/official/data/equipments/base.ron",
+      "bytes": 59282,
+      "sha256": "aa71cfc244d0da0ec88495dfcc11566d51dae0323605692216cdf03a64d9e4f9"
+    },
+    {
+      "path": "xp_large/content_root/official/data/events/rewards/base.ron",
+      "bytes": 5148,
+      "sha256": "8f02b9119f31a244934324e263791902b4fc6ad582d351abd99bd951c447829a"
+    },
+    {
+      "path": "xp_large/content_root/official/data/events/shops/base.ron",
+      "bytes": 7724,
+      "sha256": "430ea8bf71fe593a43e7e2802f558232dea56c175a4a436368dd6268fd176f06"
+    },
+    {
+      "path": "xp_large/content_root/official/data/events/story/base.ron",
+      "bytes": 1976,
+      "sha256": "304260223d4f6ee7d22fa340493561f5014f862f07988128983fbe2e4e81b966"
+    },
+    {
+      "path": "xp_large/content_root/official/data/map/battlefield_archetypes.ron",
+      "bytes": 1823,
+      "sha256": "c8251aab51532ee5f045fe182999e0f627e89c7e8ca936f2714bf165fc043dd9"
+    },
+    {
+      "path": "xp_large/content_root/official/data/map/battlefield_templates.ron",
+      "bytes": 12299,
+      "sha256": "1f51d0e4cc1a784c684e60cf4bef9ee4b4e943aa776cd7db781ad7078144223f"
+    },
+    {
+      "path": "xp_large/content_root/official/data/map/facility_templates.ron",
+      "bytes": 77129,
+      "sha256": "c3f8c9990cd3814af9a229002be6cb30e9a3cd702b24124fff11e7e269eec698"
+    },
+    {
+      "path": "xp_large/content_root/official/data/map/node_assignment_profiles.ron",
+      "bytes": 10591,
+      "sha256": "d27bb55245dcff74bc4bf801f32168104926698162589009470641d6d69c10a3"
+    },
+    {
+      "path": "xp_large/content_root/official/data/map/node_definitions.ron",
+      "bytes": 2419,
+      "sha256": "482d876e7a0baf406118b62afccb2e88ec4d2372b39e48be8cd872c3dd25491b"
+    },
+    {
+      "path": "xp_large/content_root/official/data/pve/encounters.ron",
+      "bytes": 122639,
+      "sha256": "d7d950626ef0477b15499d1e05ab3637fdf62a8d07d4fc31512fb1e506df3461"
+    },
+    {
+      "path": "xp_large/content_root/official/data/relics/base.ron",
+      "bytes": 5926,
+      "sha256": "81f5b36ddc96e6a739117a03a76ba0061628e0aecac86e13cc6e4e53a65353bb"
+    },
+    {
+      "path": "xp_large/content_root/official/data/resources/base.ron",
+      "bytes": 91,
+      "sha256": "2bba22ea16ddc7967d507ca9fcd8278931f1581da3f55a79aee895862a642449"
+    },
+    {
+      "path": "xp_large/content_root/official/data/run/policy.ron",
+      "bytes": 17547,
+      "sha256": "e8e961e161f14311fb09f551c4d76546eedf9ffa159de1ec56561d6fde8ec025"
+    },
+    {
+      "path": "xp_large/content_root/official/data/skill_fragments/base.ron",
+      "bytes": 33069,
+      "sha256": "0e3a405e83420052544b655085795c386c6730e6cba284f33507460823109c4c"
+    },
+    {
+      "path": "xp_large/content_root/official/data/skills/base.ron",
+      "bytes": 54198,
+      "sha256": "a2281f712acf0b75955f91c75e4aedc9707be028b68b1a219e0dd599bc3c7912"
+    },
+    {
+      "path": "xp_large/content_root/official/data/summoned_units/base.ron",
+      "bytes": 2918,
+      "sha256": "341047f471a809ceed21edb14270eb76779cd90e09f4080d67d42c3fc2182966"
+    },
+    {
+      "path": "xp_large/content_root/official/data/visual_novel_triggers/base.ron",
+      "bytes": 725,
+      "sha256": "63b11363113f621f782d34aa0e6b5883fa87e4b4486f2e71afec5d833c25b1af"
+    },
+    {
+      "path": "xp_large/content_root/official/data/visual_novels/base.ron",
+      "bytes": 6051,
+      "sha256": "c76d2d1fb76dcdafb58b42dac195bb1a9605999efcf925a873386951595433e3"
+    },
+    {
+      "path": "xp_large/content_root/official/pack.ron",
+      "bytes": 1877,
+      "sha256": "c90e64ad0de2458bec340c46f25516a743e99e5a319a5160725d7cf268a1c2cf"
+    },
+    {
+      "path": "xp_large/package.log",
+      "bytes": 11960,
+      "sha256": "f44769d2f551c482ca8d61b250847dd612262d94ea75d07170ac5d1327f0df52"
+    },
+    {
+      "path": "xp_large/run003.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "xp_large/source/data/abnormalities/base.ron",
+      "bytes": 33133,
+      "sha256": "b1c2edb2af416e754bd445d581278555f6196936832a155bed31fb4bd048c474"
+    },
+    {
+      "path": "xp_large/source/data/boss_omen/chains.ron",
+      "bytes": 799,
+      "sha256": "8ababe6019c5a4f371b728ec321c7bb72e213131bc93870fed482b4838bdd8b0"
+    },
+    {
+      "path": "xp_large/source/data/boss_runtime/base.ron",
+      "bytes": 15863,
+      "sha256": "58805dbc82ee3d4513c571acf8c034646b1389e070fcaebacd08f84ba4966d04"
+    },
+    {
+      "path": "xp_large/source/data/buffs/base.ron",
+      "bytes": 917,
+      "sha256": "e7cc335f4243b4fc0ac907a72356ba44a1eae2669aa340147a0fbbc14f9c448b"
+    },
+    {
+      "path": "xp_large/source/data/bundle.ron",
+      "bytes": 27,
+      "sha256": "f75b0805480c82e5607dd931f9b0dbb1e1244947e9b3a288945444687b0d771e"
+    },
+    {
+      "path": "xp_large/source/data/consumables/base.ron",
+      "bytes": 4154,
+      "sha256": "bdaa2b1f4667ebd20234d0541dd50dd5241f3828b2a417b44980d7390cccdd0a"
+    },
+    {
+      "path": "xp_large/source/data/employees/definitions.ron",
+      "bytes": 9974,
+      "sha256": "d56593946a7c615e05628c96819bbf247a3989e9760f6043d5cc614b4dea0baa"
+    },
+    {
+      "path": "xp_large/source/data/enemies/corroded_employees.ron",
+      "bytes": 6332,
+      "sha256": "f4bf8aea315da15da172cb584bec6c73f93f1e40ffb46226f2e3adbcdc294154"
+    },
+    {
+      "path": "xp_large/source/data/enemies/corroded_wave_presets.ron",
+      "bytes": 3346,
+      "sha256": "c638648cdc9999b07fd8dcd8e1f6e699c9f5c6650d41959d7b1f0bca6764b751"
+    },
+    {
+      "path": "xp_large/source/data/equipments/base.ron",
+      "bytes": 59282,
+      "sha256": "aa71cfc244d0da0ec88495dfcc11566d51dae0323605692216cdf03a64d9e4f9"
+    },
+    {
+      "path": "xp_large/source/data/events/rewards/base.ron",
+      "bytes": 5148,
+      "sha256": "8f02b9119f31a244934324e263791902b4fc6ad582d351abd99bd951c447829a"
+    },
+    {
+      "path": "xp_large/source/data/events/shops/base.ron",
+      "bytes": 7724,
+      "sha256": "430ea8bf71fe593a43e7e2802f558232dea56c175a4a436368dd6268fd176f06"
+    },
+    {
+      "path": "xp_large/source/data/events/story/base.ron",
+      "bytes": 1976,
+      "sha256": "304260223d4f6ee7d22fa340493561f5014f862f07988128983fbe2e4e81b966"
+    },
+    {
+      "path": "xp_large/source/data/map/battlefield_archetypes.ron",
+      "bytes": 1823,
+      "sha256": "c8251aab51532ee5f045fe182999e0f627e89c7e8ca936f2714bf165fc043dd9"
+    },
+    {
+      "path": "xp_large/source/data/map/battlefield_templates.ron",
+      "bytes": 12299,
+      "sha256": "1f51d0e4cc1a784c684e60cf4bef9ee4b4e943aa776cd7db781ad7078144223f"
+    },
+    {
+      "path": "xp_large/source/data/map/facility_templates.ron",
+      "bytes": 77129,
+      "sha256": "c3f8c9990cd3814af9a229002be6cb30e9a3cd702b24124fff11e7e269eec698"
+    },
+    {
+      "path": "xp_large/source/data/map/node_assignment_profiles.ron",
+      "bytes": 10591,
+      "sha256": "d27bb55245dcff74bc4bf801f32168104926698162589009470641d6d69c10a3"
+    },
+    {
+      "path": "xp_large/source/data/map/node_definitions.ron",
+      "bytes": 2419,
+      "sha256": "482d876e7a0baf406118b62afccb2e88ec4d2372b39e48be8cd872c3dd25491b"
+    },
+    {
+      "path": "xp_large/source/data/pve/encounters.ron",
+      "bytes": 122639,
+      "sha256": "d7d950626ef0477b15499d1e05ab3637fdf62a8d07d4fc31512fb1e506df3461"
+    },
+    {
+      "path": "xp_large/source/data/relics/base.ron",
+      "bytes": 5926,
+      "sha256": "81f5b36ddc96e6a739117a03a76ba0061628e0aecac86e13cc6e4e53a65353bb"
+    },
+    {
+      "path": "xp_large/source/data/resources/base.ron",
+      "bytes": 91,
+      "sha256": "2bba22ea16ddc7967d507ca9fcd8278931f1581da3f55a79aee895862a642449"
+    },
+    {
+      "path": "xp_large/source/data/run/policy.ron",
+      "bytes": 17547,
+      "sha256": "e8e961e161f14311fb09f551c4d76546eedf9ffa159de1ec56561d6fde8ec025"
+    },
+    {
+      "path": "xp_large/source/data/skill_fragments/base.ron",
+      "bytes": 33069,
+      "sha256": "0e3a405e83420052544b655085795c386c6730e6cba284f33507460823109c4c"
+    },
+    {
+      "path": "xp_large/source/data/skills/base.ron",
+      "bytes": 54198,
+      "sha256": "a2281f712acf0b75955f91c75e4aedc9707be028b68b1a219e0dd599bc3c7912"
+    },
+    {
+      "path": "xp_large/source/data/summoned_units/base.ron",
+      "bytes": 2918,
+      "sha256": "341047f471a809ceed21edb14270eb76779cd90e09f4080d67d42c3fc2182966"
+    },
+    {
+      "path": "xp_large/source/data/visual_novel_triggers/base.ron",
+      "bytes": 725,
+      "sha256": "63b11363113f621f782d34aa0e6b5883fa87e4b4486f2e71afec5d833c25b1af"
+    },
+    {
+      "path": "xp_large/source/data/visual_novels/base.ron",
+      "bytes": 6051,
+      "sha256": "c76d2d1fb76dcdafb58b42dac195bb1a9605999efcf925a873386951595433e3"
+    },
+    {
+      "path": "xp_larger/RESULT.json",
+      "bytes": 332866,
+      "sha256": "52fabb07dad8b8e6ca569d8f677c5035a1f9d35430308c91c64ac7689edfb7e3"
+    },
+    {
+      "path": "xp_larger/RESULT.json.trace.jsonl",
+      "bytes": 5424516,
+      "sha256": "919fec52861a0436efa9b628190b17b794ec36dfec25ea3be0b6317b9bf50dac"
+    },
+    {
+      "path": "xp_larger/config.json",
+      "bytes": 1314,
+      "sha256": "bcd353e5e6a0966014b7b8ea569ef1dd42bacf8678abdf4da6f4b16f6cbfaa42"
+    },
+    {
+      "path": "xp_larger/content_root/official/data/abnormalities/base.ron",
+      "bytes": 33133,
+      "sha256": "b1c2edb2af416e754bd445d581278555f6196936832a155bed31fb4bd048c474"
+    },
+    {
+      "path": "xp_larger/content_root/official/data/boss_omen/chains.ron",
+      "bytes": 799,
+      "sha256": "8ababe6019c5a4f371b728ec321c7bb72e213131bc93870fed482b4838bdd8b0"
+    },
+    {
+      "path": "xp_larger/content_root/official/data/boss_runtime/base.ron",
+      "bytes": 15863,
+      "sha256": "58805dbc82ee3d4513c571acf8c034646b1389e070fcaebacd08f84ba4966d04"
+    },
+    {
+      "path": "xp_larger/content_root/official/data/buffs/base.ron",
+      "bytes": 917,
+      "sha256": "e7cc335f4243b4fc0ac907a72356ba44a1eae2669aa340147a0fbbc14f9c448b"
+    },
+    {
+      "path": "xp_larger/content_root/official/data/consumables/base.ron",
+      "bytes": 4154,
+      "sha256": "bdaa2b1f4667ebd20234d0541dd50dd5241f3828b2a417b44980d7390cccdd0a"
+    },
+    {
+      "path": "xp_larger/content_root/official/data/employees/definitions.ron",
+      "bytes": 9974,
+      "sha256": "d56593946a7c615e05628c96819bbf247a3989e9760f6043d5cc614b4dea0baa"
+    },
+    {
+      "path": "xp_larger/content_root/official/data/enemies/corroded_employees.ron",
+      "bytes": 6332,
+      "sha256": "f4bf8aea315da15da172cb584bec6c73f93f1e40ffb46226f2e3adbcdc294154"
+    },
+    {
+      "path": "xp_larger/content_root/official/data/enemies/corroded_wave_presets.ron",
+      "bytes": 3346,
+      "sha256": "c638648cdc9999b07fd8dcd8e1f6e699c9f5c6650d41959d7b1f0bca6764b751"
+    },
+    {
+      "path": "xp_larger/content_root/official/data/equipments/base.ron",
+      "bytes": 59282,
+      "sha256": "aa71cfc244d0da0ec88495dfcc11566d51dae0323605692216cdf03a64d9e4f9"
+    },
+    {
+      "path": "xp_larger/content_root/official/data/events/rewards/base.ron",
+      "bytes": 5148,
+      "sha256": "8f02b9119f31a244934324e263791902b4fc6ad582d351abd99bd951c447829a"
+    },
+    {
+      "path": "xp_larger/content_root/official/data/events/shops/base.ron",
+      "bytes": 7724,
+      "sha256": "430ea8bf71fe593a43e7e2802f558232dea56c175a4a436368dd6268fd176f06"
+    },
+    {
+      "path": "xp_larger/content_root/official/data/events/story/base.ron",
+      "bytes": 1976,
+      "sha256": "304260223d4f6ee7d22fa340493561f5014f862f07988128983fbe2e4e81b966"
+    },
+    {
+      "path": "xp_larger/content_root/official/data/map/battlefield_archetypes.ron",
+      "bytes": 1823,
+      "sha256": "c8251aab51532ee5f045fe182999e0f627e89c7e8ca936f2714bf165fc043dd9"
+    },
+    {
+      "path": "xp_larger/content_root/official/data/map/battlefield_templates.ron",
+      "bytes": 12299,
+      "sha256": "1f51d0e4cc1a784c684e60cf4bef9ee4b4e943aa776cd7db781ad7078144223f"
+    },
+    {
+      "path": "xp_larger/content_root/official/data/map/facility_templates.ron",
+      "bytes": 77130,
+      "sha256": "33f1d88fe42e4eb28be15835efb69689664c5c428edd45c4e40e749b80a838b9"
+    },
+    {
+      "path": "xp_larger/content_root/official/data/map/node_assignment_profiles.ron",
+      "bytes": 10591,
+      "sha256": "d27bb55245dcff74bc4bf801f32168104926698162589009470641d6d69c10a3"
+    },
+    {
+      "path": "xp_larger/content_root/official/data/map/node_definitions.ron",
+      "bytes": 2419,
+      "sha256": "482d876e7a0baf406118b62afccb2e88ec4d2372b39e48be8cd872c3dd25491b"
+    },
+    {
+      "path": "xp_larger/content_root/official/data/pve/encounters.ron",
+      "bytes": 122639,
+      "sha256": "d7d950626ef0477b15499d1e05ab3637fdf62a8d07d4fc31512fb1e506df3461"
+    },
+    {
+      "path": "xp_larger/content_root/official/data/relics/base.ron",
+      "bytes": 5926,
+      "sha256": "81f5b36ddc96e6a739117a03a76ba0061628e0aecac86e13cc6e4e53a65353bb"
+    },
+    {
+      "path": "xp_larger/content_root/official/data/resources/base.ron",
+      "bytes": 91,
+      "sha256": "2bba22ea16ddc7967d507ca9fcd8278931f1581da3f55a79aee895862a642449"
+    },
+    {
+      "path": "xp_larger/content_root/official/data/run/policy.ron",
+      "bytes": 17547,
+      "sha256": "e8e961e161f14311fb09f551c4d76546eedf9ffa159de1ec56561d6fde8ec025"
+    },
+    {
+      "path": "xp_larger/content_root/official/data/skill_fragments/base.ron",
+      "bytes": 33069,
+      "sha256": "0e3a405e83420052544b655085795c386c6730e6cba284f33507460823109c4c"
+    },
+    {
+      "path": "xp_larger/content_root/official/data/skills/base.ron",
+      "bytes": 54198,
+      "sha256": "a2281f712acf0b75955f91c75e4aedc9707be028b68b1a219e0dd599bc3c7912"
+    },
+    {
+      "path": "xp_larger/content_root/official/data/summoned_units/base.ron",
+      "bytes": 2918,
+      "sha256": "341047f471a809ceed21edb14270eb76779cd90e09f4080d67d42c3fc2182966"
+    },
+    {
+      "path": "xp_larger/content_root/official/data/visual_novel_triggers/base.ron",
+      "bytes": 725,
+      "sha256": "63b11363113f621f782d34aa0e6b5883fa87e4b4486f2e71afec5d833c25b1af"
+    },
+    {
+      "path": "xp_larger/content_root/official/data/visual_novels/base.ron",
+      "bytes": 6051,
+      "sha256": "c76d2d1fb76dcdafb58b42dac195bb1a9605999efcf925a873386951595433e3"
+    },
+    {
+      "path": "xp_larger/content_root/official/pack.ron",
+      "bytes": 1877,
+      "sha256": "c90e64ad0de2458bec340c46f25516a743e99e5a319a5160725d7cf268a1c2cf"
+    },
+    {
+      "path": "xp_larger/package.log",
+      "bytes": 12002,
+      "sha256": "8e9e74bbe583b0a7913117a63942c7edb8297d7e4094a9a2aa872852a9a4b222"
+    },
+    {
+      "path": "xp_larger/run.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "xp_larger/source/data/abnormalities/base.ron",
+      "bytes": 33133,
+      "sha256": "b1c2edb2af416e754bd445d581278555f6196936832a155bed31fb4bd048c474"
+    },
+    {
+      "path": "xp_larger/source/data/boss_omen/chains.ron",
+      "bytes": 799,
+      "sha256": "8ababe6019c5a4f371b728ec321c7bb72e213131bc93870fed482b4838bdd8b0"
+    },
+    {
+      "path": "xp_larger/source/data/boss_runtime/base.ron",
+      "bytes": 15863,
+      "sha256": "58805dbc82ee3d4513c571acf8c034646b1389e070fcaebacd08f84ba4966d04"
+    },
+    {
+      "path": "xp_larger/source/data/buffs/base.ron",
+      "bytes": 917,
+      "sha256": "e7cc335f4243b4fc0ac907a72356ba44a1eae2669aa340147a0fbbc14f9c448b"
+    },
+    {
+      "path": "xp_larger/source/data/bundle.ron",
+      "bytes": 27,
+      "sha256": "f75b0805480c82e5607dd931f9b0dbb1e1244947e9b3a288945444687b0d771e"
+    },
+    {
+      "path": "xp_larger/source/data/consumables/base.ron",
+      "bytes": 4154,
+      "sha256": "bdaa2b1f4667ebd20234d0541dd50dd5241f3828b2a417b44980d7390cccdd0a"
+    },
+    {
+      "path": "xp_larger/source/data/employees/definitions.ron",
+      "bytes": 9974,
+      "sha256": "d56593946a7c615e05628c96819bbf247a3989e9760f6043d5cc614b4dea0baa"
+    },
+    {
+      "path": "xp_larger/source/data/enemies/corroded_employees.ron",
+      "bytes": 6332,
+      "sha256": "f4bf8aea315da15da172cb584bec6c73f93f1e40ffb46226f2e3adbcdc294154"
+    },
+    {
+      "path": "xp_larger/source/data/enemies/corroded_wave_presets.ron",
+      "bytes": 3346,
+      "sha256": "c638648cdc9999b07fd8dcd8e1f6e699c9f5c6650d41959d7b1f0bca6764b751"
+    },
+    {
+      "path": "xp_larger/source/data/equipments/base.ron",
+      "bytes": 59282,
+      "sha256": "aa71cfc244d0da0ec88495dfcc11566d51dae0323605692216cdf03a64d9e4f9"
+    },
+    {
+      "path": "xp_larger/source/data/events/rewards/base.ron",
+      "bytes": 5148,
+      "sha256": "8f02b9119f31a244934324e263791902b4fc6ad582d351abd99bd951c447829a"
+    },
+    {
+      "path": "xp_larger/source/data/events/shops/base.ron",
+      "bytes": 7724,
+      "sha256": "430ea8bf71fe593a43e7e2802f558232dea56c175a4a436368dd6268fd176f06"
+    },
+    {
+      "path": "xp_larger/source/data/events/story/base.ron",
+      "bytes": 1976,
+      "sha256": "304260223d4f6ee7d22fa340493561f5014f862f07988128983fbe2e4e81b966"
+    },
+    {
+      "path": "xp_larger/source/data/map/battlefield_archetypes.ron",
+      "bytes": 1823,
+      "sha256": "c8251aab51532ee5f045fe182999e0f627e89c7e8ca936f2714bf165fc043dd9"
+    },
+    {
+      "path": "xp_larger/source/data/map/battlefield_templates.ron",
+      "bytes": 12299,
+      "sha256": "1f51d0e4cc1a784c684e60cf4bef9ee4b4e943aa776cd7db781ad7078144223f"
+    },
+    {
+      "path": "xp_larger/source/data/map/facility_templates.ron",
+      "bytes": 77130,
+      "sha256": "33f1d88fe42e4eb28be15835efb69689664c5c428edd45c4e40e749b80a838b9"
+    },
+    {
+      "path": "xp_larger/source/data/map/node_assignment_profiles.ron",
+      "bytes": 10591,
+      "sha256": "d27bb55245dcff74bc4bf801f32168104926698162589009470641d6d69c10a3"
+    },
+    {
+      "path": "xp_larger/source/data/map/node_definitions.ron",
+      "bytes": 2419,
+      "sha256": "482d876e7a0baf406118b62afccb2e88ec4d2372b39e48be8cd872c3dd25491b"
+    },
+    {
+      "path": "xp_larger/source/data/pve/encounters.ron",
+      "bytes": 122639,
+      "sha256": "d7d950626ef0477b15499d1e05ab3637fdf62a8d07d4fc31512fb1e506df3461"
+    },
+    {
+      "path": "xp_larger/source/data/relics/base.ron",
+      "bytes": 5926,
+      "sha256": "81f5b36ddc96e6a739117a03a76ba0061628e0aecac86e13cc6e4e53a65353bb"
+    },
+    {
+      "path": "xp_larger/source/data/resources/base.ron",
+      "bytes": 91,
+      "sha256": "2bba22ea16ddc7967d507ca9fcd8278931f1581da3f55a79aee895862a642449"
+    },
+    {
+      "path": "xp_larger/source/data/run/policy.ron",
+      "bytes": 17547,
+      "sha256": "e8e961e161f14311fb09f551c4d76546eedf9ffa159de1ec56561d6fde8ec025"
+    },
+    {
+      "path": "xp_larger/source/data/skill_fragments/base.ron",
+      "bytes": 33069,
+      "sha256": "0e3a405e83420052544b655085795c386c6730e6cba284f33507460823109c4c"
+    },
+    {
+      "path": "xp_larger/source/data/skills/base.ron",
+      "bytes": 54198,
+      "sha256": "a2281f712acf0b75955f91c75e4aedc9707be028b68b1a219e0dd599bc3c7912"
+    },
+    {
+      "path": "xp_larger/source/data/summoned_units/base.ron",
+      "bytes": 2918,
+      "sha256": "341047f471a809ceed21edb14270eb76779cd90e09f4080d67d42c3fc2182966"
+    },
+    {
+      "path": "xp_larger/source/data/visual_novel_triggers/base.ron",
+      "bytes": 725,
+      "sha256": "63b11363113f621f782d34aa0e6b5883fa87e4b4486f2e71afec5d833c25b1af"
+    },
+    {
+      "path": "xp_larger/source/data/visual_novels/base.ron",
+      "bytes": 6051,
+      "sha256": "c76d2d1fb76dcdafb58b42dac195bb1a9605999efcf925a873386951595433e3"
+    },
+    {
+      "path": "xp_probe/Cargo.lock",
+      "bytes": 73642,
+      "sha256": "9585adc54624240c9471f55482e20e170fc4cc2cd8ee696dc99a60152571e596"
+    },
+    {
+      "path": "xp_probe/Cargo.toml",
+      "bytes": 427,
+      "sha256": "362fb368e10adfbcc2af90507c837980759ba027932ba9c161b5478f1bf5b506"
+    },
+    {
+      "path": "xp_probe/src/main.rs",
+      "bytes": 7077,
+      "sha256": "4c38f6ce381941dc6d26f44770ed8627f2919535e1526d9ceff52e7b617b9f73"
+    },
+    {
+      "path": "xp_small/RESULT002.json.trace.jsonl",
+      "bytes": 747518,
+      "sha256": "e63f8f71311597dc193a2cb9a2774020ce51338ea93b858348d10844e75616f6"
+    },
+    {
+      "path": "xp_small/RESULT003.json",
+      "bytes": 332896,
+      "sha256": "7ef095460e1d52576ca8744496a88983f9e77ef8ee8f73de437b61be4778d04a"
+    },
+    {
+      "path": "xp_small/RESULT003.json.trace.jsonl",
+      "bytes": 5421306,
+      "sha256": "fc23593f6555740f78e720eafb2c7ff29628a4c90a95825d696a1699fd8fa3c5"
+    },
+    {
+      "path": "xp_small/config.json",
+      "bytes": 1308,
+      "sha256": "01ee2b8f3f58fb48137a285615c9dbf334b23ba49a319d0ecd7a3e7e0d703ffe"
+    },
+    {
+      "path": "xp_small/config002.json",
+      "bytes": 1313,
+      "sha256": "34400994fe944b5dc7fcfbbbbe305cb6dd5e4d870cb07d571c606bfa746ba7ac"
+    },
+    {
+      "path": "xp_small/content_root/official/data/abnormalities/base.ron",
+      "bytes": 33133,
+      "sha256": "b1c2edb2af416e754bd445d581278555f6196936832a155bed31fb4bd048c474"
+    },
+    {
+      "path": "xp_small/content_root/official/data/boss_omen/chains.ron",
+      "bytes": 799,
+      "sha256": "8ababe6019c5a4f371b728ec321c7bb72e213131bc93870fed482b4838bdd8b0"
+    },
+    {
+      "path": "xp_small/content_root/official/data/boss_runtime/base.ron",
+      "bytes": 15863,
+      "sha256": "58805dbc82ee3d4513c571acf8c034646b1389e070fcaebacd08f84ba4966d04"
+    },
+    {
+      "path": "xp_small/content_root/official/data/buffs/base.ron",
+      "bytes": 917,
+      "sha256": "e7cc335f4243b4fc0ac907a72356ba44a1eae2669aa340147a0fbbc14f9c448b"
+    },
+    {
+      "path": "xp_small/content_root/official/data/consumables/base.ron",
+      "bytes": 4154,
+      "sha256": "bdaa2b1f4667ebd20234d0541dd50dd5241f3828b2a417b44980d7390cccdd0a"
+    },
+    {
+      "path": "xp_small/content_root/official/data/employees/definitions.ron",
+      "bytes": 9974,
+      "sha256": "d56593946a7c615e05628c96819bbf247a3989e9760f6043d5cc614b4dea0baa"
+    },
+    {
+      "path": "xp_small/content_root/official/data/enemies/corroded_employees.ron",
+      "bytes": 6332,
+      "sha256": "f4bf8aea315da15da172cb584bec6c73f93f1e40ffb46226f2e3adbcdc294154"
+    },
+    {
+      "path": "xp_small/content_root/official/data/enemies/corroded_wave_presets.ron",
+      "bytes": 3346,
+      "sha256": "c638648cdc9999b07fd8dcd8e1f6e699c9f5c6650d41959d7b1f0bca6764b751"
+    },
+    {
+      "path": "xp_small/content_root/official/data/equipments/base.ron",
+      "bytes": 59282,
+      "sha256": "aa71cfc244d0da0ec88495dfcc11566d51dae0323605692216cdf03a64d9e4f9"
+    },
+    {
+      "path": "xp_small/content_root/official/data/events/rewards/base.ron",
+      "bytes": 5148,
+      "sha256": "8f02b9119f31a244934324e263791902b4fc6ad582d351abd99bd951c447829a"
+    },
+    {
+      "path": "xp_small/content_root/official/data/events/shops/base.ron",
+      "bytes": 7724,
+      "sha256": "430ea8bf71fe593a43e7e2802f558232dea56c175a4a436368dd6268fd176f06"
+    },
+    {
+      "path": "xp_small/content_root/official/data/events/story/base.ron",
+      "bytes": 1976,
+      "sha256": "304260223d4f6ee7d22fa340493561f5014f862f07988128983fbe2e4e81b966"
+    },
+    {
+      "path": "xp_small/content_root/official/data/map/battlefield_archetypes.ron",
+      "bytes": 1823,
+      "sha256": "c8251aab51532ee5f045fe182999e0f627e89c7e8ca936f2714bf165fc043dd9"
+    },
+    {
+      "path": "xp_small/content_root/official/data/map/battlefield_templates.ron",
+      "bytes": 12299,
+      "sha256": "1f51d0e4cc1a784c684e60cf4bef9ee4b4e943aa776cd7db781ad7078144223f"
+    },
+    {
+      "path": "xp_small/content_root/official/data/map/facility_templates.ron",
+      "bytes": 77125,
+      "sha256": "c1449275c5eda394c8427ada2cd6575b8cc48ba0ac2d4d5b1e5844da52c13fbf"
+    },
+    {
+      "path": "xp_small/content_root/official/data/map/node_assignment_profiles.ron",
+      "bytes": 10591,
+      "sha256": "d27bb55245dcff74bc4bf801f32168104926698162589009470641d6d69c10a3"
+    },
+    {
+      "path": "xp_small/content_root/official/data/map/node_definitions.ron",
+      "bytes": 2419,
+      "sha256": "482d876e7a0baf406118b62afccb2e88ec4d2372b39e48be8cd872c3dd25491b"
+    },
+    {
+      "path": "xp_small/content_root/official/data/pve/encounters.ron",
+      "bytes": 122639,
+      "sha256": "d7d950626ef0477b15499d1e05ab3637fdf62a8d07d4fc31512fb1e506df3461"
+    },
+    {
+      "path": "xp_small/content_root/official/data/relics/base.ron",
+      "bytes": 5926,
+      "sha256": "81f5b36ddc96e6a739117a03a76ba0061628e0aecac86e13cc6e4e53a65353bb"
+    },
+    {
+      "path": "xp_small/content_root/official/data/resources/base.ron",
+      "bytes": 91,
+      "sha256": "2bba22ea16ddc7967d507ca9fcd8278931f1581da3f55a79aee895862a642449"
+    },
+    {
+      "path": "xp_small/content_root/official/data/run/policy.ron",
+      "bytes": 17547,
+      "sha256": "e8e961e161f14311fb09f551c4d76546eedf9ffa159de1ec56561d6fde8ec025"
+    },
+    {
+      "path": "xp_small/content_root/official/data/skill_fragments/base.ron",
+      "bytes": 33069,
+      "sha256": "0e3a405e83420052544b655085795c386c6730e6cba284f33507460823109c4c"
+    },
+    {
+      "path": "xp_small/content_root/official/data/skills/base.ron",
+      "bytes": 54198,
+      "sha256": "a2281f712acf0b75955f91c75e4aedc9707be028b68b1a219e0dd599bc3c7912"
+    },
+    {
+      "path": "xp_small/content_root/official/data/summoned_units/base.ron",
+      "bytes": 2918,
+      "sha256": "341047f471a809ceed21edb14270eb76779cd90e09f4080d67d42c3fc2182966"
+    },
+    {
+      "path": "xp_small/content_root/official/data/visual_novel_triggers/base.ron",
+      "bytes": 725,
+      "sha256": "63b11363113f621f782d34aa0e6b5883fa87e4b4486f2e71afec5d833c25b1af"
+    },
+    {
+      "path": "xp_small/content_root/official/data/visual_novels/base.ron",
+      "bytes": 6051,
+      "sha256": "c76d2d1fb76dcdafb58b42dac195bb1a9605999efcf925a873386951595433e3"
+    },
+    {
+      "path": "xp_small/content_root/official/pack.ron",
+      "bytes": 1877,
+      "sha256": "c90e64ad0de2458bec340c46f25516a743e99e5a319a5160725d7cf268a1c2cf"
+    },
+    {
+      "path": "xp_small/package.log",
+      "bytes": 11960,
+      "sha256": "dd1a242245df6c8c1b932625d4100453254b187caf4786f3ea536118c52eca16"
+    },
+    {
+      "path": "xp_small/run.log",
+      "bytes": 426,
+      "sha256": "b2f9f82d682744ae4b990fb3ccfdd5700adcbd5a6261cea7551ccf2b8fb94eb2"
+    },
+    {
+      "path": "xp_small/run002.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "xp_small/run003.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "xp_small/source/data/abnormalities/base.ron",
+      "bytes": 33133,
+      "sha256": "b1c2edb2af416e754bd445d581278555f6196936832a155bed31fb4bd048c474"
+    },
+    {
+      "path": "xp_small/source/data/boss_omen/chains.ron",
+      "bytes": 799,
+      "sha256": "8ababe6019c5a4f371b728ec321c7bb72e213131bc93870fed482b4838bdd8b0"
+    },
+    {
+      "path": "xp_small/source/data/boss_runtime/base.ron",
+      "bytes": 15863,
+      "sha256": "58805dbc82ee3d4513c571acf8c034646b1389e070fcaebacd08f84ba4966d04"
+    },
+    {
+      "path": "xp_small/source/data/buffs/base.ron",
+      "bytes": 917,
+      "sha256": "e7cc335f4243b4fc0ac907a72356ba44a1eae2669aa340147a0fbbc14f9c448b"
+    },
+    {
+      "path": "xp_small/source/data/bundle.ron",
+      "bytes": 27,
+      "sha256": "f75b0805480c82e5607dd931f9b0dbb1e1244947e9b3a288945444687b0d771e"
+    },
+    {
+      "path": "xp_small/source/data/consumables/base.ron",
+      "bytes": 4154,
+      "sha256": "bdaa2b1f4667ebd20234d0541dd50dd5241f3828b2a417b44980d7390cccdd0a"
+    },
+    {
+      "path": "xp_small/source/data/employees/definitions.ron",
+      "bytes": 9974,
+      "sha256": "d56593946a7c615e05628c96819bbf247a3989e9760f6043d5cc614b4dea0baa"
+    },
+    {
+      "path": "xp_small/source/data/enemies/corroded_employees.ron",
+      "bytes": 6332,
+      "sha256": "f4bf8aea315da15da172cb584bec6c73f93f1e40ffb46226f2e3adbcdc294154"
+    },
+    {
+      "path": "xp_small/source/data/enemies/corroded_wave_presets.ron",
+      "bytes": 3346,
+      "sha256": "c638648cdc9999b07fd8dcd8e1f6e699c9f5c6650d41959d7b1f0bca6764b751"
+    },
+    {
+      "path": "xp_small/source/data/equipments/base.ron",
+      "bytes": 59282,
+      "sha256": "aa71cfc244d0da0ec88495dfcc11566d51dae0323605692216cdf03a64d9e4f9"
+    },
+    {
+      "path": "xp_small/source/data/events/rewards/base.ron",
+      "bytes": 5148,
+      "sha256": "8f02b9119f31a244934324e263791902b4fc6ad582d351abd99bd951c447829a"
+    },
+    {
+      "path": "xp_small/source/data/events/shops/base.ron",
+      "bytes": 7724,
+      "sha256": "430ea8bf71fe593a43e7e2802f558232dea56c175a4a436368dd6268fd176f06"
+    },
+    {
+      "path": "xp_small/source/data/events/story/base.ron",
+      "bytes": 1976,
+      "sha256": "304260223d4f6ee7d22fa340493561f5014f862f07988128983fbe2e4e81b966"
+    },
+    {
+      "path": "xp_small/source/data/map/battlefield_archetypes.ron",
+      "bytes": 1823,
+      "sha256": "c8251aab51532ee5f045fe182999e0f627e89c7e8ca936f2714bf165fc043dd9"
+    },
+    {
+      "path": "xp_small/source/data/map/battlefield_templates.ron",
+      "bytes": 12299,
+      "sha256": "1f51d0e4cc1a784c684e60cf4bef9ee4b4e943aa776cd7db781ad7078144223f"
+    },
+    {
+      "path": "xp_small/source/data/map/facility_templates.ron",
+      "bytes": 77125,
+      "sha256": "c1449275c5eda394c8427ada2cd6575b8cc48ba0ac2d4d5b1e5844da52c13fbf"
+    },
+    {
+      "path": "xp_small/source/data/map/node_assignment_profiles.ron",
+      "bytes": 10591,
+      "sha256": "d27bb55245dcff74bc4bf801f32168104926698162589009470641d6d69c10a3"
+    },
+    {
+      "path": "xp_small/source/data/map/node_definitions.ron",
+      "bytes": 2419,
+      "sha256": "482d876e7a0baf406118b62afccb2e88ec4d2372b39e48be8cd872c3dd25491b"
+    },
+    {
+      "path": "xp_small/source/data/pve/encounters.ron",
+      "bytes": 122639,
+      "sha256": "d7d950626ef0477b15499d1e05ab3637fdf62a8d07d4fc31512fb1e506df3461"
+    },
+    {
+      "path": "xp_small/source/data/relics/base.ron",
+      "bytes": 5926,
+      "sha256": "81f5b36ddc96e6a739117a03a76ba0061628e0aecac86e13cc6e4e53a65353bb"
+    },
+    {
+      "path": "xp_small/source/data/resources/base.ron",
+      "bytes": 91,
+      "sha256": "2bba22ea16ddc7967d507ca9fcd8278931f1581da3f55a79aee895862a642449"
+    },
+    {
+      "path": "xp_small/source/data/run/policy.ron",
+      "bytes": 17547,
+      "sha256": "e8e961e161f14311fb09f551c4d76546eedf9ffa159de1ec56561d6fde8ec025"
+    },
+    {
+      "path": "xp_small/source/data/skill_fragments/base.ron",
+      "bytes": 33069,
+      "sha256": "0e3a405e83420052544b655085795c386c6730e6cba284f33507460823109c4c"
+    },
+    {
+      "path": "xp_small/source/data/skills/base.ron",
+      "bytes": 54198,
+      "sha256": "a2281f712acf0b75955f91c75e4aedc9707be028b68b1a219e0dd599bc3c7912"
+    },
+    {
+      "path": "xp_small/source/data/summoned_units/base.ron",
+      "bytes": 2918,
+      "sha256": "341047f471a809ceed21edb14270eb76779cd90e09f4080d67d42c3fc2182966"
+    },
+    {
+      "path": "xp_small/source/data/visual_novel_triggers/base.ron",
+      "bytes": 725,
+      "sha256": "63b11363113f621f782d34aa0e6b5883fa87e4b4486f2e71afec5d833c25b1af"
+    },
+    {
+      "path": "xp_small/source/data/visual_novels/base.ron",
+      "bytes": 6051,
+      "sha256": "c76d2d1fb76dcdafb58b42dac195bb1a9605999efcf925a873386951595433e3"
+    }
+  ],
+  "note": "Audit output manifest; historical inputs stay bound by ENTRY/EXIT. Truncated timeout trace intentionally preserved."
+}

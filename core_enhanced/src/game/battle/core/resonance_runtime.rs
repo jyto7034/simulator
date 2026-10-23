@@ -90,10 +90,26 @@ impl BattleCore {
             )
     }
 
+    pub(super) fn resonance_admission_payment(
+        &self, actor: UnitInstanceId, skill: &crate::game::ability::SkillDef,
+    ) -> Option<u32> {
+        let unit = self.units.get(&actor)?;
+        if let Some(policy) = skill.resonance_admission {
+            // This backend profile currently exposes player-requested employee admission.
+            if !Self::is_employee_resonance_unit(unit)
+                || unit.skill_activation_mode != crate::game::ability::SkillActivationMode::Manual {
+                return None;
+            }
+            policy.payment(unit.resonance_current, unit.resonance_max)
+        } else {
+            (unit.resonance_current >= unit.resonance_max.max(1)).then_some(unit.resonance_current)
+        }
+    }
+
     pub(super) fn admit_employee_resonance_use(
         &mut self,
         actor: UnitInstanceId,
-        skill: &crate::game::ability::SkillId,
+        skill: &crate::game::ability::SkillDef,
         action: &crate::game::battle::runtime_facts::ActionHandle,
         now: u64,
     ) -> Result<bool, crate::game::behavior::GameError> {
@@ -107,12 +123,14 @@ impl BattleCore {
         if !Self::is_employee_resonance_unit(unit) {
             return Ok(false);
         }
-        if unit.resonance_current < unit.resonance_max.max(1)
-            || self.resonance_use_has_obligations(actor)
-        {
+        if self.resonance_use_has_obligations(actor) {
             return Err(crate::game::behavior::GameError::InvalidAction);
         }
-        let spent = unit.resonance_current;
+        let before = unit.resonance_current;
+        let spent = self.resonance_admission_payment(actor, skill)
+            .ok_or(crate::game::behavior::GameError::InvalidAction)?;
+        let remaining = before - spent;
+        let full_payment = before >= unit.resonance_max.max(1) && spent == before;
         let maximum = unit.resonance_max;
         let source = RuntimeFactSource {
             actor: Some(actor),
@@ -120,23 +138,26 @@ impl BattleCore {
             fragment: unit.fragment_source.clone(),
             ..Default::default()
         };
-        let reason = if self.corrosion_ready(actor, skill, now) {
+        let reason = if full_payment && self.corrosion_ready(actor, &skill.id, now) {
             CostReason::Corrosion
+        } else if skill.resonance_admission.is_some() {
+            CostReason::AuthoredResource
         } else {
             CostReason::CastReset
         };
         crate::game::battle::runtime_control::admit_retained_growth(
             0,
             std::mem::size_of::<super::types::ResonanceUse>()
-                .checked_add(skill.as_str().len())
+                .checked_add(skill.id.as_str().len())
                 .and_then(|n| n.checked_add(64)),
             "resonance_use_admission",
         )?;
         let unit = self.units.get_mut(&actor).unwrap();
-        unit.resonance_current = 0;
+        unit.resonance_current = remaining;
         unit.resonance_use = Some(super::types::ResonanceUse {
             action: action.clone(),
-            skill_id: skill.clone(),
+            skill_id: skill.id.clone(),
+            full_payment,
             consumed: spent,
             unreleased_attacks: 0,
             control_cancelled: false,
@@ -147,16 +168,16 @@ impl BattleCore {
             Some(reason),
             source,
             -i64::from(spent),
-            spent,
-            0,
+            before,
+            remaining,
             now,
         )?;
         self.record_event_log(
             now,
             crate::game::battle::event_log::BattleLogEvent::ResonanceChanged {
                 unit_instance_id: actor,
-                before: spent,
-                after: 0,
+                before,
+                after: remaining,
                 max: maximum,
             },
         );
@@ -174,7 +195,6 @@ impl BattleCore {
                 &use_state.action == action
                     && &use_state.skill_id == skill
                     && !use_state.control_cancelled
-                    && use_state.consumed >= unit.resonance_max.max(1)
             })
         })
     }
@@ -225,6 +245,14 @@ impl BattleCore {
         self.schedule_resonance_pulse(actor, now);
     }
 
+    fn accepted_resonance_use_skill<'a>(
+        &'a self,
+        use_state: &super::types::ResonanceUse,
+    ) -> Option<&'a crate::game::ability::SkillDef> {
+        let source = self.runtime_facts.accepted_source(&use_state.action).ok()?;
+        self.skill_for_source(&use_state.skill_id, source)
+    }
+
     pub(super) fn cancel_uses_with_unavailable_targets(
         &mut self,
         now: u64,
@@ -238,11 +266,7 @@ impl BattleCore {
                 self.units
                     .values()
                     .filter_map(|unit| unit.resonance_use.as_ref())
-                    .filter_map(|use_state| {
-                        self.game_data
-                            .skill_data
-                            .get_by_id(use_state.skill_id.as_str())
-                    })
+                    .filter_map(|use_state| self.accepted_resonance_use_skill(use_state))
                     .map(|skill| skill.steps.len())
                     .sum::<usize>(),
             );
@@ -264,10 +288,6 @@ impl BattleCore {
                     if self.runtime_fact_source.action.as_ref() == Some(&use_state.action) {
                         return None;
                     }
-                    let skill = self
-                        .game_data
-                        .skill_data
-                        .get_by_id(use_state.skill_id.as_str())?;
                     let pending_target = unit
                         .pending_skill_cast
                         .as_ref()
@@ -283,12 +303,14 @@ impl BattleCore {
                             })
                             .flatten()
                     });
-                    pending_target
-                        .or(cast_target)
-                        .filter(|target| {
-                            !self.admitted_skill_target_is_valid(*actor, skill, *target)
+                    let target = pending_target.or(cast_target)?;
+                    // A pending continuation must retain its accepted source;
+                    // a missing binding cannot authorize it from current gear.
+                    self.accepted_resonance_use_skill(use_state)
+                        .is_none_or(|skill| {
+                            !self.admitted_skill_target_is_valid(*actor, skill, target)
                         })
-                        .map(|_| *actor)
+                        .then_some(*actor)
                 })
                 .min();
             let Some(actor) = actor else {
@@ -563,7 +585,7 @@ impl BattleCore {
         };
         // An independent area owns every attack it creates, including its first
         // tick. A retained action attribution must not reopen the creator's use.
-        if matches!(&step.delivery, crate::game::ability::DeliveryDef::TileArea { area, .. } if area.duration_ms > 0)
+        if matches!(&step.delivery, crate::game::ability::DeliveryDef::TileArea { area, .. } if area.is_independent())
         {
             return Ok(false);
         }

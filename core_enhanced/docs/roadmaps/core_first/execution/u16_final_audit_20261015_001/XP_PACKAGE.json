@@ -1,0 +1,22 @@
+[
+  {
+    "variant": "small",
+    "argv": [
+      "/mnt/f/work/simulator/core_enhanced/docs/goals/core_stress_combat/execution/single_goal/artifacts/normal002/package_official_content",
+      "/mnt/f/work/simulator/core_enhanced/docs/roadmaps/core_first/execution/u16_final_audit_20261015_001/xp_small/source",
+      "/mnt/f/work/simulator/core_enhanced/docs/roadmaps/core_first/execution/u16_final_audit_20261015_001/xp_small/content"
+    ],
+    "exit_code": 0,
+    "seconds": 1.2156135340046603
+  },
+  {
+    "variant": "large",
+    "argv": [
+      "/mnt/f/work/simulator/core_enhanced/docs/goals/core_stress_combat/execution/single_goal/artifacts/normal002/package_official_content",
+      "/mnt/f/work/simulator/core_enhanced/docs/roadmaps/core_first/execution/u16_final_audit_20261015_001/xp_large/source",
+      "/mnt/f/work/simulator/core_enhanced/docs/roadmaps/core_first/execution/u16_final_audit_20261015_001/xp_large/content"
+    ],
+    "exit_code": 0,
+    "seconds": 1.157394399982877
+  }
+]

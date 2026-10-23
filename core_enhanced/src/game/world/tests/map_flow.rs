@@ -571,11 +571,11 @@ fn confirmed_gate_transition_advances_floor_and_recovers_living_trauma_without_c
         MapNodePayload::None,
     );
 
-    let psychology_before = core
+    let profile_before = core
         .roster()
         .unwrap()
         .iter()
-        .map(|employee| (employee.uuid, employee.psychology.clone()))
+        .map(|employee| (employee.uuid, employee.profile.clone()))
         .collect::<std::collections::HashMap<_, _>>();
     let preview = core
         .execute(
@@ -610,7 +610,7 @@ fn confirmed_gate_transition_advances_floor_and_recovers_living_trauma_without_c
     else {
         panic!("expected gate to advance floor");
     };
-    assert_eq!(game_mode, GameMode::Standard);
+    assert_eq!(game_mode, GameMode::Expedition);
     assert_eq!(floor_index, 1);
     assert!(matches!(core.get_state(), GameState::ViewingMap));
     let roster = core.roster().unwrap();
@@ -627,15 +627,15 @@ fn confirmed_gate_transition_advances_floor_and_recovers_living_trauma_without_c
     assert_eq!(roster.get(&employee_ids[2]).unwrap().condition.trauma, 50);
     for employee in roster.iter() {
         assert_eq!(
-            &employee.psychology,
-            psychology_before.get(&employee.uuid).unwrap(),
-            "Gate recovery must not produce Psychology state"
+            &employee.profile,
+            profile_before.get(&employee.uuid).unwrap(),
+            "Gate recovery must preserve authored personality and aptitude"
         );
     }
     assert!(!core.state.run_checkpoint.can_load());
     assert_eq!(
         core.state.run.as_ref().unwrap().run_progression.game_mode,
-        GameMode::Standard
+        GameMode::Expedition
     );
 
     let trauma_after_transition = core
@@ -659,13 +659,13 @@ fn confirmed_gate_transition_advances_floor_and_recovers_living_trauma_without_c
 fn endless_gate_transition_advances_floor_without_max_cap_or_run_completion() {
     let mut core = GameCore::new(empty_game_data(), 123);
     let player_id = Uuid::from_u128(1);
-    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Endless);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
 
     let initial_snapshot = core.get_run_snapshot_json().unwrap();
     let initial_progression = initial_snapshot["run_progression"]
         .as_object()
         .expect("run progression object");
-    assert_eq!(initial_progression["game_mode"], "Endless");
+    assert_eq!(initial_progression["game_mode"], "Expedition");
     assert_eq!(initial_progression["floor_index"], 0);
     assert!(
         !initial_progression.contains_key("max_floors"),
@@ -702,13 +702,13 @@ fn endless_gate_transition_advances_floor_without_max_cap_or_run_completion() {
     else {
         panic!("Endless Gate should advance to the next floor instead of completing the run");
     };
-    assert_eq!(game_mode, GameMode::Endless);
+    assert_eq!(game_mode, GameMode::Expedition);
     assert_eq!(floor_index, 1);
     assert!(!map.nodes.is_empty());
     assert!(matches!(core.get_state(), GameState::ViewingMap));
 
     let run = core.state.run.as_ref().expect("run should continue");
-    assert_eq!(run.run_progression.game_mode, GameMode::Endless);
+    assert_eq!(run.run_progression.game_mode, GameMode::Expedition);
     assert_eq!(run.run_progression.floor_index(), 1);
     assert_eq!(run.run_progression.max_floors(), None);
     assert_eq!(core.state.player_profile.highest_floor_reached, 2);
@@ -725,7 +725,7 @@ fn endless_gate_transition_advances_floor_without_max_cap_or_run_completion() {
     let advanced_progression = advanced_snapshot["run_progression"]
         .as_object()
         .expect("run progression object");
-    assert_eq!(advanced_progression["game_mode"], "Endless");
+    assert_eq!(advanced_progression["game_mode"], "Expedition");
     assert_eq!(advanced_progression["floor_index"], 1);
     assert!(
         !advanced_progression.contains_key("max_floors"),
@@ -816,6 +816,10 @@ fn combat_node_confirm_starts_live_battle() {
             ),
             crate::game::behavior::ActionCapabilityDto::enabled(
                 ActionKind::RequestRelicNumericPlan,
+                crate::game::behavior::ActionScope::Query
+            ),
+            crate::game::behavior::ActionCapabilityDto::enabled(
+                ActionKind::RequestRelicEffectivePlan,
                 crate::game::behavior::ActionScope::Query
             ),
         ]
@@ -923,7 +927,7 @@ fn map_progression_selects_completes_and_unlocks_next_nodes() {
 fn generated_standard_maps_use_fixed_gate_and_nothing_there_normal_boss_terminal() {
     let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
     let player_id = Uuid::from_u128(1);
-    start_new_game_with_default_starters(&mut core, player_id);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Tutorial);
 
     let map = match core
         .execute(player_id, PlayerBehavior::RequestMapData)
@@ -988,7 +992,7 @@ fn generated_standard_maps_use_fixed_gate_and_nothing_there_normal_boss_terminal
     }));
 
     let mut final_floor_progression = run.run_progression.clone();
-    final_floor_progression.mode_state = crate::game::map::RunProgressionModeState::Standard {
+    final_floor_progression.mode_state = crate::game::map::RunProgressionModeState::Tutorial {
         floor_index: run_policy().setup.standard_floor_count - 1,
         max_floors: run_policy().setup.standard_floor_count,
     };
@@ -1079,7 +1083,7 @@ fn map_encounter_assignment_respects_node_kind_and_boss_purpose() {
             resolution: FacilityTerminalResolution::RunFinalBoss,
         }],
     };
-    let run_progression = RunProgression::new(123, GameMode::Standard, 3);
+    let run_progression = RunProgression::new(123, GameMode::Expedition, 3);
     let mut encounter_progression =
         crate::game::encounter_progression::EncounterProgressionState::default();
 
@@ -1165,7 +1169,7 @@ fn completed_boss_omen_chain_forces_single_boss_node_ahead_of_current_room() {
                     class: crate::game::map::MapNodeCombatDifficultyClass::Ordinary(
                         crate::game::data::run_policy_data::OrdinaryCombatDifficultyBand::Standard,
                     ),
-                    monolith_stage: None,
+                    revival: None,
                     floor_power_anchor: 175,
                     target_power: 175,
                 }),
@@ -1179,9 +1183,9 @@ fn completed_boss_omen_chain_forces_single_boss_node_ahead_of_current_room() {
         available_node_ids: vec![side_node_id],
         completed_node_ids: vec![current_node_id],
     };
-    let mut run_progression = RunProgression::new(123, GameMode::Endless, 3);
+    let mut run_progression = RunProgression::new(123, GameMode::Expedition, 3);
     run_progression.mode_state =
-        crate::game::map::RunProgressionModeState::Endless { floor_index: 3 };
+        crate::game::map::RunProgressionModeState::Expedition { floor_index: 3 };
     let mut boss_omen = crate::game::boss_omen::BossOmenRunState {
         active: Some(crate::game::boss_omen::ActiveBossOmenState {
             chain_id: crate::game::data::boss_omen_data::BossOmenChainId::new("white_night"),
@@ -1264,9 +1268,9 @@ fn active_boss_omen_chain_overlays_matching_event_node() {
         start_node_ids: vec![event_node_id],
         terminals: vec![],
     };
-    let mut run_progression = RunProgression::new(123, GameMode::Endless, 3);
+    let mut run_progression = RunProgression::new(123, GameMode::Expedition, 3);
     run_progression.mode_state =
-        crate::game::map::RunProgressionModeState::Endless { floor_index: 3 };
+        crate::game::map::RunProgressionModeState::Expedition { floor_index: 3 };
     let mut boss_omen = crate::game::boss_omen::BossOmenRunState {
         active: Some(crate::game::boss_omen::ActiveBossOmenState {
             chain_id: crate::game::data::boss_omen_data::BossOmenChainId::new("white_night"),
@@ -1330,9 +1334,9 @@ fn active_boss_omen_chain_defers_when_required_source_node_is_missing() {
         start_node_ids: vec![combat_node_id],
         terminals: vec![],
     };
-    let mut run_progression = RunProgression::new(123, GameMode::Endless, 3);
+    let mut run_progression = RunProgression::new(123, GameMode::Expedition, 3);
     run_progression.mode_state =
-        crate::game::map::RunProgressionModeState::Endless { floor_index: 3 };
+        crate::game::map::RunProgressionModeState::Expedition { floor_index: 3 };
     let active = crate::game::boss_omen::ActiveBossOmenState {
         chain_id: crate::game::data::boss_omen_data::BossOmenChainId::new("white_night"),
         boss_abnormality_id: "o-01-45_white_night".to_string(),
@@ -1459,7 +1463,7 @@ fn start_live_run_with_archive_starters(core: &mut GameCore, player_id: Uuid) {
         .execute(
             player_id,
             PlayerBehavior::StartNewGame {
-                game_mode: GameMode::Standard,
+                game_mode: GameMode::Expedition,
                 replace_active_run: false,
             },
         )
@@ -1489,6 +1493,7 @@ fn start_live_run_with_archive_starters(core: &mut GameCore, player_id: Uuid) {
                 "records_clerk".to_string(),
                 "field_medic".to_string(),
             ],
+            loan_copy_ids: vec![],
         },
     )
     .expect("approved live archive starter set should start the run");
@@ -1604,7 +1609,7 @@ fn event_command_result_and_root_snapshot_share_one_inner_event_dto() {
     );
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
-    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Standard);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
     let event_node_id = force_single_event_node_run(&mut core, event_id);
 
     core.execute(
@@ -1639,7 +1644,7 @@ fn event_snapshot_serializes_typed_panels_choices_candidates_and_capability() {
     );
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
-    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Standard);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
     let event_node_id = force_single_event_node_run(&mut core, event_id);
 
     core.execute(
@@ -1734,7 +1739,7 @@ fn event_check_persists_one_result_and_commits_success_grant_at_most_once() {
     );
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
-    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Standard);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
     core.set_enkephalin(5);
     let event_node_id = force_single_event_node_run(&mut core, "event_grant_once");
     let event_id = enter_single_scene_event(&mut core, player_id, event_node_id);
@@ -1920,7 +1925,7 @@ fn event_grant_late_failure_preserves_all_five_roots_and_both_session_copies() {
     let game_data = game_data_with_event_definitions(game_data_with_pve_encounters(), vec![event]);
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
-    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Standard);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
     let event_node_id = force_single_event_node_run(&mut core, "event_grant_late_failure");
     let event_id = enter_single_scene_event(&mut core, player_id, event_node_id);
     let employee_uuid = first_living_employee_uuid(&core);
@@ -1981,7 +1986,7 @@ fn event_check_failure_is_persisted_gameplay_state_and_final_advance_completes()
     for seed in 1..=100 {
         let mut core = GameCore::new(game_data.clone(), seed);
         let player_id = Uuid::from_u128(1);
-        start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Standard);
+        start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
         let event_node_id = force_single_event_node_run(&mut core, "failure_event");
         let event_id = enter_single_scene_event(&mut core, player_id, event_node_id);
         let employee_uuid = first_living_employee_uuid(&core);
@@ -2060,9 +2065,9 @@ fn live_white_night_bootstrap_requires_no_global_awakened_fragment() {
         start_node_ids: vec![event_node_id],
         terminals: vec![],
     };
-    let mut run_progression = RunProgression::new(123, GameMode::Endless, 3);
+    let mut run_progression = RunProgression::new(123, GameMode::Expedition, 3);
     run_progression.mode_state =
-        crate::game::map::RunProgressionModeState::Endless { floor_index: 3 };
+        crate::game::map::RunProgressionModeState::Expedition { floor_index: 3 };
     let mut boss_omen = crate::game::boss_omen::BossOmenRunState::default();
 
     crate::game::boss_omen::apply_boss_omen_to_map(
@@ -2088,7 +2093,7 @@ fn event_check_rejects_stale_scene_choice_and_employee_identities_without_mutati
     let game_data = game_data_with_event_definitions(game_data_with_pve_encounters(), vec![event]);
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
-    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Standard);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
     let event_node_id = force_single_event_node_run(&mut core, "identity_event");
     let event_id = enter_single_scene_event(&mut core, player_id, event_node_id);
     let employee_uuid = first_living_employee_uuid(&core);
@@ -2165,7 +2170,7 @@ fn event_resolve_revalidates_equipped_key_and_commits_shared_evaluator_provenanc
     );
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
-    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Standard);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
     let event_node_id = force_single_event_node_run(&mut core, "keyed_event");
     let event_id = enter_single_scene_event(&mut core, player_id, event_node_id);
     let employee_uuid = first_living_employee_uuid(&core);
@@ -2341,7 +2346,7 @@ fn precheck_checkpoint_reuses_raw_roll_for_different_valid_choice_and_employee()
     let game_data = game_data_with_event_definitions(game_data_with_pve_encounters(), vec![event]);
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
-    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Standard);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
     let employee_ids = core.roster().unwrap().combat_eligible_employee_ids();
     let maintenance_employee = employee_ids[0];
     let analysis_employee = employee_ids[1];
@@ -2452,7 +2457,7 @@ fn event_check_candidates_use_living_state_only_and_disable_when_none_are_living
     let game_data = game_data_with_event_definitions(game_data_with_pve_encounters(), vec![event]);
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
-    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Standard);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
     let event_node_id = force_single_event_node_run(&mut core, "eligibility_event");
     enter_single_scene_event(&mut core, player_id, event_node_id);
     for employee in core.state.roster.iter_mut() {
@@ -2506,7 +2511,7 @@ fn event_success_action_starts_combat_and_retreat_preserves_committed_check() {
     let game_data = game_data_with_event_definitions(game_data_with_pve_encounters(), vec![event]);
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
-    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Standard);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
     let event_node_id = force_single_event_node_run(&mut core, "combat_choice_event");
     let event_id = enter_single_scene_event(&mut core, player_id, event_node_id);
     let employee_uuid = first_living_employee_uuid(&core);
@@ -2930,7 +2935,7 @@ fn live_sealed_archive_duplicate_and_precheck_checkpoint_reuse_one_raw_roll() {
 fn live_event_panels_advance_through_typed_route_and_complete_node() {
     let mut core = GameCore::new(live_game_data_from_ron(), 123);
     let player_id = Uuid::from_u128(1);
-    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Standard);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
     let event_node_id = force_single_event_node_run(&mut core, "white_night_confession_01");
 
     core.execute(
@@ -3016,12 +3021,12 @@ fn live_event_panels_advance_through_typed_route_and_complete_node() {
 fn boss_omen_event_step_consumption_forces_authored_capstone() {
     let mut core = GameCore::new(live_game_data_from_ron(), 123);
     let player_id = Uuid::from_u128(1);
-    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Endless);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
     let event_node_id = force_single_event_node_run(&mut core, "white_night_confession_01");
     {
         let run = core.state.run.as_mut().expect("run");
         run.run_progression.mode_state =
-            crate::game::map::RunProgressionModeState::Endless { floor_index: 3 };
+            crate::game::map::RunProgressionModeState::Expedition { floor_index: 3 };
         run.boss_omen.placed_source = Some(crate::game::boss_omen::PlacedBossOmenSourceState {
             node_id: event_node_id,
             chain_id: crate::game::data::boss_omen_data::BossOmenChainId::new("white_night"),
@@ -3130,8 +3135,8 @@ fn generic_standard_boss_assignment_never_selects_final_boss_encounter() {
             resolution: FacilityTerminalResolution::RunFinalBoss,
         }],
     };
-    let mut run_progression = RunProgression::new(123, GameMode::Standard, 3);
-    run_progression.mode_state = crate::game::map::RunProgressionModeState::Standard {
+    let mut run_progression = RunProgression::new(123, GameMode::Tutorial, 3);
+    run_progression.mode_state = crate::game::map::RunProgressionModeState::Tutorial {
         floor_index: 2,
         max_floors: 3,
     };
@@ -3159,10 +3164,11 @@ fn generic_standard_boss_assignment_never_selects_final_boss_encounter() {
 }
 
 #[test]
-fn boss_completion_advances_standard_floors_until_run_complete() {
+fn tutorial_completion_advances_finite_floors_without_permanent_profile_changes() {
     let mut core = GameCore::new(empty_game_data(), 123);
     let player_id = Uuid::from_u128(1);
-    start_new_game_with_default_starters(&mut core, player_id);
+    let profile_before = core.state.player_profile.clone();
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Tutorial);
 
     let mut floor_advanced_count = 0_u32;
     loop {
@@ -3204,11 +3210,11 @@ fn boss_completion_advances_standard_floors_until_run_complete() {
                 ..
             } => {
                 floor_advanced_count = floor_advanced_count.saturating_add(1);
-                assert_eq!(game_mode, GameMode::Standard);
+                assert_eq!(game_mode, GameMode::Tutorial);
                 assert_eq!(floor_index, floor_advanced_count);
                 assert!(!map.nodes.is_empty());
                 assert!(matches!(core.get_state(), GameState::ViewingMap));
-                assert!(!core.state.player_profile.standard_tutorial_completed);
+                assert_eq!(core.state.player_profile, profile_before);
             }
             BehaviorResult::RunComplete { map } => {
                 assert_eq!(
@@ -3217,7 +3223,7 @@ fn boss_completion_advances_standard_floors_until_run_complete() {
                 );
                 assert!(!map.nodes.is_empty());
                 assert!(matches!(core.get_state(), GameState::RunComplete));
-                assert!(core.state.player_profile.standard_tutorial_completed);
+                assert_eq!(core.state.player_profile, profile_before);
                 assert_eq!(core.state.player_profile.highest_floor_reached, 0);
                 assert_eq!(core.state.player_profile.longest_deathless_floor_streak, 0);
                 break;

@@ -1,0 +1,1948 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "REV-CSNA-SHOP-001",
+        "Content Digest": "sha256:f6c125362ae51b187b93397d3dfaa06ebe11778cc54c4c1e3e06dc43d8fcbd25"
+      },
+      "payload": {
+        "Repository/environment identity": {
+          "repository": "/mnt/f/work/simulator",
+          "HEAD": "2f725172edbffd27c5078d29000a1a2ba6ddc4d9",
+          "dirty": "prior dirty preserved"
+        },
+        "Source Set": [
+          {
+            "path": "core_enhanced/src/game/data/shop_data.rs",
+            "bytes": 20073,
+            "sha256": "3e98296ffe9b05f00c19a521cec0dbd22efca20e1203dc1c9e394378cb389001"
+          },
+          {
+            "path": "core_enhanced/src/game/data/validation.rs",
+            "bytes": 83399,
+            "sha256": "ce6bafb9e21f7cc3a27d840b47a7a5ad756b8226ec63ad9c813f5171aae229c1"
+          },
+          {
+            "path": "core_enhanced/src/game/data/mod.rs",
+            "bytes": 64104,
+            "sha256": "49c682e83080783a9eb7f8d7d4fab22b6e7101bf804e102cb1a8f640a3b3d70b"
+          },
+          {
+            "path": "core_enhanced/src/game/world/shop.rs",
+            "bytes": 43659,
+            "sha256": "b42e371104e62c9e4db910611103dca71009a2e1c1de4084ff72e239b41b802c"
+          },
+          {
+            "path": "game_resources/data/events/shops/base.ron",
+            "bytes": 5446,
+            "sha256": "a2d16a0c8e5a5a309cc5f89e068c6642383179e14901eeead2a63d325b769297"
+          }
+        ],
+        "Exact Source Archive": "P2G_20_SOURCE_001.tar.gz",
+        "Observation command/method": "rg/sed targeted read and CODE_REVIEW.ko.md boundary table",
+        "Observed result": "typed shop lacks relic/catalyst; fixed offers and atomic purchase/refresh exist; extend same owner",
+        "Observation timestamp": "2026-10-14T15:23:44.474435+00:00",
+        "Supported claim": "current owner/delta/validation seam, not runtime completion",
+        "Limitations": "runtime tests0; reading scope is named symbols/boundaries, not exhaustive file audit",
+        "Runtime tests executed": 0
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CSNA-SHOP-001",
+        "Content Digest": "sha256:763fe9a0510d09b4ff5f203f259c5ce97f5c540b644f2040d7ac099ae403a11a"
+      },
+      "payload": {
+        "Evaluated Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSNA-003",
+          "Content Digest": "sha256:288d0861f1393c39b3120f551074bace26e4a2ab7e5660c612e98209de811a7e"
+        },
+        "Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CSNA-001",
+          "Content Digest": "sha256:b5339a72b2b16b8459dbee13e12984040cf85e70ca1816f41964a0526e0bc355"
+        },
+        "Requirement ID": "SHOP",
+        "Observed source identity/location/version": [
+          {
+            "path": "core_enhanced/src/game/data/shop_data.rs",
+            "bytes": 20073,
+            "sha256": "3e98296ffe9b05f00c19a521cec0dbd22efca20e1203dc1c9e394378cb389001"
+          },
+          {
+            "path": "core_enhanced/src/game/data/validation.rs",
+            "bytes": 83399,
+            "sha256": "ce6bafb9e21f7cc3a27d840b47a7a5ad756b8226ec63ad9c813f5171aae229c1"
+          },
+          {
+            "path": "core_enhanced/src/game/data/mod.rs",
+            "bytes": 64104,
+            "sha256": "49c682e83080783a9eb7f8d7d4fab22b6e7101bf804e102cb1a8f640a3b3d70b"
+          },
+          {
+            "path": "core_enhanced/src/game/world/shop.rs",
+            "bytes": 43659,
+            "sha256": "b42e371104e62c9e4db910611103dca71009a2e1c1de4084ff72e239b41b802c"
+          },
+          {
+            "path": "game_resources/data/events/shops/base.ron",
+            "bytes": 5446,
+            "sha256": "a2d16a0c8e5a5a309cc5f89e068c6642383179e14901eeead2a63d325b769297"
+          }
+        ],
+        "Disposition": "confirmed",
+        "Observation Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-SHOP-001",
+            "Content Digest": "sha256:f6c125362ae51b187b93397d3dfaa06ebe11778cc54c4c1e3e06dc43d8fcbd25"
+          }
+        ],
+        "Limitation or N/A reason": "static owner/delta confirmed; implementation verification remains",
+        "Observation timestamp": "2026-10-14T15:23:44.474435+00:00"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "REV-CSNA-GRANT-001",
+        "Content Digest": "sha256:da7c5bc9e2bba42dc4ae2272fb5a80be16f4f64b20f3a26c738b2c4d29b62d00"
+      },
+      "payload": {
+        "Repository/environment identity": {
+          "repository": "/mnt/f/work/simulator",
+          "HEAD": "2f725172edbffd27c5078d29000a1a2ba6ddc4d9",
+          "dirty": "prior dirty preserved"
+        },
+        "Source Set": [
+          {
+            "path": "core_enhanced/src/game/reward.rs",
+            "bytes": 25059,
+            "sha256": "19561a4d7d5fe96de82c926e863f159485846a9952f593cdc2d32c6b405e56d3"
+          },
+          {
+            "path": "core_enhanced/src/game/world/grant_state.rs",
+            "bytes": 3746,
+            "sha256": "05e283078e23587251b8c64252393518eacee8ae7b9a601e9c6ea39b2fceb4cf"
+          },
+          {
+            "path": "core_enhanced/src/game/data/relic_data.rs",
+            "bytes": 13972,
+            "sha256": "140f36341923b7fed9611031a68233ac534d680ef392584dc9db6820f93e5c68"
+          },
+          {
+            "path": "core_enhanced/src/game/resources/selection.rs",
+            "bytes": 17207,
+            "sha256": "a69d031f5090e097a3f9a65b08d043e259f1c79383f90168d03be1094744d189"
+          },
+          {
+            "path": "game_resources/data/equipments/base.ron",
+            "bytes": 78310,
+            "sha256": "4daafc407bd5b78a4984bd3c2336dc95a5b3c030ffd8698e02e5b6a92b6da0fc"
+          }
+        ],
+        "Exact Source Archive": "P2G_20_SOURCE_001.tar.gz",
+        "Observation command/method": "rg/sed targeted read and CODE_REVIEW.ko.md boundary table",
+        "Observed result": "normal relic/material/catalyst grants and seven-root candidate exist; session/query must expose new goods",
+        "Observation timestamp": "2026-10-14T15:23:44.474435+00:00",
+        "Supported claim": "current owner/delta/validation seam, not runtime completion",
+        "Limitations": "runtime tests0; reading scope is named symbols/boundaries, not exhaustive file audit",
+        "Runtime tests executed": 0
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CSNA-GRANT-001",
+        "Content Digest": "sha256:0fc3d9c91e2b10139f0438d6997c1f11dd148eb4af2944f322775fadcffaa722"
+      },
+      "payload": {
+        "Evaluated Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSNA-003",
+          "Content Digest": "sha256:288d0861f1393c39b3120f551074bace26e4a2ab7e5660c612e98209de811a7e"
+        },
+        "Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CSNA-001",
+          "Content Digest": "sha256:b5339a72b2b16b8459dbee13e12984040cf85e70ca1816f41964a0526e0bc355"
+        },
+        "Requirement ID": "GRANT",
+        "Observed source identity/location/version": [
+          {
+            "path": "core_enhanced/src/game/reward.rs",
+            "bytes": 25059,
+            "sha256": "19561a4d7d5fe96de82c926e863f159485846a9952f593cdc2d32c6b405e56d3"
+          },
+          {
+            "path": "core_enhanced/src/game/world/grant_state.rs",
+            "bytes": 3746,
+            "sha256": "05e283078e23587251b8c64252393518eacee8ae7b9a601e9c6ea39b2fceb4cf"
+          },
+          {
+            "path": "core_enhanced/src/game/data/relic_data.rs",
+            "bytes": 13972,
+            "sha256": "140f36341923b7fed9611031a68233ac534d680ef392584dc9db6820f93e5c68"
+          },
+          {
+            "path": "core_enhanced/src/game/resources/selection.rs",
+            "bytes": 17207,
+            "sha256": "a69d031f5090e097a3f9a65b08d043e259f1c79383f90168d03be1094744d189"
+          },
+          {
+            "path": "game_resources/data/equipments/base.ron",
+            "bytes": 78310,
+            "sha256": "4daafc407bd5b78a4984bd3c2336dc95a5b3c030ffd8698e02e5b6a92b6da0fc"
+          }
+        ],
+        "Disposition": "confirmed",
+        "Observation Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-GRANT-001",
+            "Content Digest": "sha256:da7c5bc9e2bba42dc4ae2272fb5a80be16f4f64b20f3a26c738b2c4d29b62d00"
+          }
+        ],
+        "Limitation or N/A reason": "static owner/delta confirmed; implementation verification remains",
+        "Observation timestamp": "2026-10-14T15:23:44.474435+00:00"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "REV-CSNA-HQ-001",
+        "Content Digest": "sha256:46eff673354b84c513fdc6075087b2cbfcc60d402057241943b78a93d82d34ba"
+      },
+      "payload": {
+        "Repository/environment identity": {
+          "repository": "/mnt/f/work/simulator",
+          "HEAD": "2f725172edbffd27c5078d29000a1a2ba6ddc4d9",
+          "dirty": "prior dirty preserved"
+        },
+        "Source Set": [
+          {
+            "path": "core_enhanced/src/game/world/headquarters.rs",
+            "bytes": 7713,
+            "sha256": "bb170bb816db4d7a0c5ebbdc45d7d54509503e9a34697871530b984fd63d4a36"
+          },
+          {
+            "path": "core_enhanced/src/game/world/map_content.rs",
+            "bytes": 14445,
+            "sha256": "13f901e9bdb3c27e7b416d549155f54fe67d4ac85a5237d0cc874127500356b8"
+          },
+          {
+            "path": "core_enhanced/src/game/world/tests/u12_lifecycle/recruitment.rs",
+            "bytes": 17271,
+            "sha256": "1b4ae5b30282077a413c3cf30398f2b65525d3e69cc21f002271194da1aadb11"
+          },
+          {
+            "path": "game_resources/data/run/policy.ron",
+            "bytes": 17549,
+            "sha256": "eaccc2d80bccc8ab39641568d5899fdfcfbf5289dce9eeefea3f49f4c680fea4"
+          }
+        ],
+        "Exact Source Archive": "P2G_20_SOURCE_001.tar.gz",
+        "Observation command/method": "rg/sed targeted read and CODE_REVIEW.ko.md boundary table",
+        "Observed result": "paid100/max2 with default loadout/queue exists; add visible terms and actual consumer verification",
+        "Observation timestamp": "2026-10-14T15:23:44.474435+00:00",
+        "Supported claim": "current owner/delta/validation seam, not runtime completion",
+        "Limitations": "runtime tests0; reading scope is named symbols/boundaries, not exhaustive file audit",
+        "Runtime tests executed": 0
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CSNA-HQ-001",
+        "Content Digest": "sha256:9476f87f218fb8cffddffaf295361c1d9f2553081e2f78a18dcf424f57e69cc9"
+      },
+      "payload": {
+        "Evaluated Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSNA-003",
+          "Content Digest": "sha256:288d0861f1393c39b3120f551074bace26e4a2ab7e5660c612e98209de811a7e"
+        },
+        "Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CSNA-001",
+          "Content Digest": "sha256:b5339a72b2b16b8459dbee13e12984040cf85e70ca1816f41964a0526e0bc355"
+        },
+        "Requirement ID": "HQ",
+        "Observed source identity/location/version": [
+          {
+            "path": "core_enhanced/src/game/world/headquarters.rs",
+            "bytes": 7713,
+            "sha256": "bb170bb816db4d7a0c5ebbdc45d7d54509503e9a34697871530b984fd63d4a36"
+          },
+          {
+            "path": "core_enhanced/src/game/world/map_content.rs",
+            "bytes": 14445,
+            "sha256": "13f901e9bdb3c27e7b416d549155f54fe67d4ac85a5237d0cc874127500356b8"
+          },
+          {
+            "path": "core_enhanced/src/game/world/tests/u12_lifecycle/recruitment.rs",
+            "bytes": 17271,
+            "sha256": "1b4ae5b30282077a413c3cf30398f2b65525d3e69cc21f002271194da1aadb11"
+          },
+          {
+            "path": "game_resources/data/run/policy.ron",
+            "bytes": 17549,
+            "sha256": "eaccc2d80bccc8ab39641568d5899fdfcfbf5289dce9eeefea3f49f4c680fea4"
+          }
+        ],
+        "Disposition": "confirmed",
+        "Observation Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-HQ-001",
+            "Content Digest": "sha256:46eff673354b84c513fdc6075087b2cbfcc60d402057241943b78a93d82d34ba"
+          }
+        ],
+        "Limitation or N/A reason": "static owner/delta confirmed; implementation verification remains",
+        "Observation timestamp": "2026-10-14T15:23:44.474435+00:00"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "REV-CSNA-EVENT-001",
+        "Content Digest": "sha256:5ce316350baefb28014704289f5a4f2ec4df3028529b4896d9e32162711e69f3"
+      },
+      "payload": {
+        "Repository/environment identity": {
+          "repository": "/mnt/f/work/simulator",
+          "HEAD": "2f725172edbffd27c5078d29000a1a2ba6ddc4d9",
+          "dirty": "prior dirty preserved"
+        },
+        "Source Set": [
+          {
+            "path": "core_enhanced/src/game/world/event_node.rs",
+            "bytes": 53785,
+            "sha256": "438a71d8d9b548aba9b47ad1d16d80be1924512007047becd77595ecdaae116c"
+          },
+          {
+            "path": "core_enhanced/src/game/data/event_data.rs",
+            "bytes": 23500,
+            "sha256": "455a9dab09322da8e81933c88451a9dae3f684f0fcdf3f4b3af02d6ab8443f07"
+          },
+          {
+            "path": "core_enhanced/src/game/world/tests/u08_event_owner.rs",
+            "bytes": 22171,
+            "sha256": "1eea3407757522e8a6b866f26d0c35b3bc67075e8d57b070a59f054a67f1ab20"
+          }
+        ],
+        "Exact Source Archive": "P2G_20_SOURCE_001.tar.gz",
+        "Observation command/method": "rg/sed targeted read and CODE_REVIEW.ko.md boundary table",
+        "Observed result": "seeded d20, committed check and free corruption owner exist; verify actual branches and restart",
+        "Observation timestamp": "2026-10-14T15:23:44.474435+00:00",
+        "Supported claim": "current owner/delta/validation seam, not runtime completion",
+        "Limitations": "runtime tests0; reading scope is named symbols/boundaries, not exhaustive file audit",
+        "Runtime tests executed": 0
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CSNA-EVENT-001",
+        "Content Digest": "sha256:1b8e9a8afedc567a9a85bde664ca7f6f459b397f3ae6b27dee852c7d57fb9a41"
+      },
+      "payload": {
+        "Evaluated Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSNA-003",
+          "Content Digest": "sha256:288d0861f1393c39b3120f551074bace26e4a2ab7e5660c612e98209de811a7e"
+        },
+        "Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CSNA-001",
+          "Content Digest": "sha256:b5339a72b2b16b8459dbee13e12984040cf85e70ca1816f41964a0526e0bc355"
+        },
+        "Requirement ID": "EVENT",
+        "Observed source identity/location/version": [
+          {
+            "path": "core_enhanced/src/game/world/event_node.rs",
+            "bytes": 53785,
+            "sha256": "438a71d8d9b548aba9b47ad1d16d80be1924512007047becd77595ecdaae116c"
+          },
+          {
+            "path": "core_enhanced/src/game/data/event_data.rs",
+            "bytes": 23500,
+            "sha256": "455a9dab09322da8e81933c88451a9dae3f684f0fcdf3f4b3af02d6ab8443f07"
+          },
+          {
+            "path": "core_enhanced/src/game/world/tests/u08_event_owner.rs",
+            "bytes": 22171,
+            "sha256": "1eea3407757522e8a6b866f26d0c35b3bc67075e8d57b070a59f054a67f1ab20"
+          }
+        ],
+        "Disposition": "confirmed",
+        "Observation Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-EVENT-001",
+            "Content Digest": "sha256:5ce316350baefb28014704289f5a4f2ec4df3028529b4896d9e32162711e69f3"
+          }
+        ],
+        "Limitation or N/A reason": "static owner/delta confirmed; implementation verification remains",
+        "Observation timestamp": "2026-10-14T15:23:44.474435+00:00"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "REV-CSNA-CONSUMABLE-001",
+        "Content Digest": "sha256:71c0346b7bfa97221888238a5f8999939d044c273f7e7fd6d1bfdc2b5162a4a6"
+      },
+      "payload": {
+        "Repository/environment identity": {
+          "repository": "/mnt/f/work/simulator",
+          "HEAD": "2f725172edbffd27c5078d29000a1a2ba6ddc4d9",
+          "dirty": "prior dirty preserved"
+        },
+        "Source Set": [
+          {
+            "path": "core_enhanced/src/game/world/maintenance.rs",
+            "bytes": 25861,
+            "sha256": "9b06411e568fda10b09661eadf054ec5cc8e48ca91a6d45427573f1f7cc8e394"
+          },
+          {
+            "path": "core_enhanced/src/game/employee.rs",
+            "bytes": 44026,
+            "sha256": "d565c8aef36daad3a8a203e908709ac7ebb0a06e71b8944b8612b8abccae6ff1"
+          },
+          {
+            "path": "core_enhanced/src/game/world/combat.rs",
+            "bytes": 140912,
+            "sha256": "70d8c4f793a9b4228a6afe110a8d59dc5dc4fa6a45d7b26b7420f3c65754594d"
+          },
+          {
+            "path": "core_enhanced/src/game/world/tests/equipment.rs",
+            "bytes": 79970,
+            "sha256": "ee3b7db50ac9c11b202d45e70cf94a427e99330d81d911c84509443125d880c3"
+          },
+          {
+            "path": "core_enhanced/src/game/data/consumable_data.rs",
+            "bytes": 13860,
+            "sha256": "9211a070c85911c1650b999b0e5970aaed4aee6792cc3f4e2552e00017155114"
+          }
+        ],
+        "Exact Source Archive": "P2G_20_SOURCE_001.tar.gz",
+        "Observation command/method": "rg/sed targeted read and CODE_REVIEW.ko.md boundary table",
+        "Observed result": "immediate injury healing currently retains old modifier; explicit replace rule requires correction; final combat decrement exists",
+        "Observation timestamp": "2026-10-14T15:23:44.474435+00:00",
+        "Supported claim": "current owner/delta/validation seam, not runtime completion",
+        "Limitations": "runtime tests0; reading scope is named symbols/boundaries, not exhaustive file audit",
+        "Runtime tests executed": 0
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CSNA-CONSUMABLE-001",
+        "Content Digest": "sha256:52a87dfe61388a442783780149e8cac8621d51189d954912a16faf28f7f091d0"
+      },
+      "payload": {
+        "Evaluated Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSNA-003",
+          "Content Digest": "sha256:288d0861f1393c39b3120f551074bace26e4a2ab7e5660c612e98209de811a7e"
+        },
+        "Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CSNA-001",
+          "Content Digest": "sha256:b5339a72b2b16b8459dbee13e12984040cf85e70ca1816f41964a0526e0bc355"
+        },
+        "Requirement ID": "CONSUMABLE",
+        "Observed source identity/location/version": [
+          {
+            "path": "core_enhanced/src/game/world/maintenance.rs",
+            "bytes": 25861,
+            "sha256": "9b06411e568fda10b09661eadf054ec5cc8e48ca91a6d45427573f1f7cc8e394"
+          },
+          {
+            "path": "core_enhanced/src/game/employee.rs",
+            "bytes": 44026,
+            "sha256": "d565c8aef36daad3a8a203e908709ac7ebb0a06e71b8944b8612b8abccae6ff1"
+          },
+          {
+            "path": "core_enhanced/src/game/world/combat.rs",
+            "bytes": 140912,
+            "sha256": "70d8c4f793a9b4228a6afe110a8d59dc5dc4fa6a45d7b26b7420f3c65754594d"
+          },
+          {
+            "path": "core_enhanced/src/game/world/tests/equipment.rs",
+            "bytes": 79970,
+            "sha256": "ee3b7db50ac9c11b202d45e70cf94a427e99330d81d911c84509443125d880c3"
+          },
+          {
+            "path": "core_enhanced/src/game/data/consumable_data.rs",
+            "bytes": 13860,
+            "sha256": "9211a070c85911c1650b999b0e5970aaed4aee6792cc3f4e2552e00017155114"
+          }
+        ],
+        "Disposition": "confirmed",
+        "Observation Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-CONSUMABLE-001",
+            "Content Digest": "sha256:71c0346b7bfa97221888238a5f8999939d044c273f7e7fd6d1bfdc2b5162a4a6"
+          }
+        ],
+        "Limitation or N/A reason": "static owner/delta confirmed; implementation verification remains",
+        "Observation timestamp": "2026-10-14T15:23:44.474435+00:00"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "REV-CSNA-STORE-001",
+        "Content Digest": "sha256:2f20615bcdab67dfca3d4fdf95cee3eb5adc10bafd797f0186e54600a25f29da"
+      },
+      "payload": {
+        "Repository/environment identity": {
+          "repository": "/mnt/f/work/simulator",
+          "HEAD": "2f725172edbffd27c5078d29000a1a2ba6ddc4d9",
+          "dirty": "prior dirty preserved"
+        },
+        "Source Set": [
+          {
+            "path": "core_enhanced/src/game/world/state.rs",
+            "bytes": 93271,
+            "sha256": "37940116bc752c2cb8b32659dfa3f4e762a15ae1cf46a6b0505474a8a94ad748"
+          },
+          {
+            "path": "core_enhanced/src/game/world/node_flow.rs",
+            "bytes": 75343,
+            "sha256": "56655426cf1ad7bc82d79cac31baa9004d12f1720e5e80f7f695379d68a0ae37"
+          },
+          {
+            "path": "core_enhanced/src/game/world/active_run.rs",
+            "bytes": 10401,
+            "sha256": "dda2d80d3b76250387f91ae3933c318abc761f1a32fb0b981c4a5a1f8e8ceac1"
+          },
+          {
+            "path": "core_enhanced/src/game/world/active_run/continuation.rs",
+            "bytes": 52523,
+            "sha256": "9c386a4b32e1a99e8c29b163374b57e3f555edbb6f7ee09d8b32c533b83d691b"
+          },
+          {
+            "path": "core_enhanced/src/application.rs",
+            "bytes": 92919,
+            "sha256": "ac43f4082c0bf0b63e59c22fdd845cbe5dde11b43ca89721fd9f0342192f65e5"
+          },
+          {
+            "path": "game_server/src/persistence/player_profile_store/application_intent.rs",
+            "bytes": 34890,
+            "sha256": "ed842c717a9774bef9e227c4cb53a0832752197f0cb520cb5da6fa3bffb8dac6"
+          }
+        ],
+        "Exact Source Archive": "P2G_20_SOURCE_001.tar.gz",
+        "Observation command/method": "rg/sed targeted read and CODE_REVIEW.ko.md boundary table",
+        "Observed result": "checkpoint and unfinished-node Continue/paired publish owners exist; new product variants need exact read/write verification",
+        "Observation timestamp": "2026-10-14T15:23:44.474435+00:00",
+        "Supported claim": "current owner/delta/validation seam, not runtime completion",
+        "Limitations": "runtime tests0; reading scope is named symbols/boundaries, not exhaustive file audit",
+        "Runtime tests executed": 0
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CSNA-STORE-001",
+        "Content Digest": "sha256:670fd88d0c73850bac2f16e439de1fed1266c96360304520d713e0a98f3a277b"
+      },
+      "payload": {
+        "Evaluated Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSNA-003",
+          "Content Digest": "sha256:288d0861f1393c39b3120f551074bace26e4a2ab7e5660c612e98209de811a7e"
+        },
+        "Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CSNA-001",
+          "Content Digest": "sha256:b5339a72b2b16b8459dbee13e12984040cf85e70ca1816f41964a0526e0bc355"
+        },
+        "Requirement ID": "STORE",
+        "Observed source identity/location/version": [
+          {
+            "path": "core_enhanced/src/game/world/state.rs",
+            "bytes": 93271,
+            "sha256": "37940116bc752c2cb8b32659dfa3f4e762a15ae1cf46a6b0505474a8a94ad748"
+          },
+          {
+            "path": "core_enhanced/src/game/world/node_flow.rs",
+            "bytes": 75343,
+            "sha256": "56655426cf1ad7bc82d79cac31baa9004d12f1720e5e80f7f695379d68a0ae37"
+          },
+          {
+            "path": "core_enhanced/src/game/world/active_run.rs",
+            "bytes": 10401,
+            "sha256": "dda2d80d3b76250387f91ae3933c318abc761f1a32fb0b981c4a5a1f8e8ceac1"
+          },
+          {
+            "path": "core_enhanced/src/game/world/active_run/continuation.rs",
+            "bytes": 52523,
+            "sha256": "9c386a4b32e1a99e8c29b163374b57e3f555edbb6f7ee09d8b32c533b83d691b"
+          },
+          {
+            "path": "core_enhanced/src/application.rs",
+            "bytes": 92919,
+            "sha256": "ac43f4082c0bf0b63e59c22fdd845cbe5dde11b43ca89721fd9f0342192f65e5"
+          },
+          {
+            "path": "game_server/src/persistence/player_profile_store/application_intent.rs",
+            "bytes": 34890,
+            "sha256": "ed842c717a9774bef9e227c4cb53a0832752197f0cb520cb5da6fa3bffb8dac6"
+          }
+        ],
+        "Disposition": "confirmed",
+        "Observation Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-STORE-001",
+            "Content Digest": "sha256:2f20615bcdab67dfca3d4fdf95cee3eb5adc10bafd797f0186e54600a25f29da"
+          }
+        ],
+        "Limitation or N/A reason": "static owner/delta confirmed; implementation verification remains",
+        "Observation timestamp": "2026-10-14T15:23:44.474435+00:00"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "REV-CSNA-PUBLIC-001",
+        "Content Digest": "sha256:1b819552ee15b34ffb8a56966a6f8cab49731225f99f557566fade97cc031930"
+      },
+      "payload": {
+        "Repository/environment identity": {
+          "repository": "/mnt/f/work/simulator",
+          "HEAD": "2f725172edbffd27c5078d29000a1a2ba6ddc4d9",
+          "dirty": "prior dirty preserved"
+        },
+        "Source Set": [
+          {
+            "path": "core_enhanced/src/game/behavior.rs",
+            "bytes": 260329,
+            "sha256": "694a1052c11ac5d1ffa42cdfa74909f48aff44c487929572890a52834c6a2720"
+          },
+          {
+            "path": "core_enhanced/src/game/world/snapshot.rs",
+            "bytes": 68439,
+            "sha256": "af9f8691124253d93399474d8f6463cbd34a89d3eb0208aa6622c3ca1748fc0f"
+          },
+          {
+            "path": "core_enhanced/src/game/world/application.rs",
+            "bytes": 23526,
+            "sha256": "e824c63053f95c40a2f4eee1b5e46bf2e6cecc5d3d49758a92cf20fd3cc3cff2"
+          },
+          {
+            "path": "core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/test_parts/run_normal_host.py",
+            "bytes": 4435,
+            "sha256": "eb70a1748d6adda3c28ccb838e386b912c2ef53ad745ceec8ed0b7251f0ef460"
+          }
+        ],
+        "Exact Source Archive": "P2G_20_SOURCE_001.tar.gz",
+        "Observation command/method": "rg/sed targeted read and CODE_REVIEW.ko.md boundary table",
+        "Observed result": "normal command/query/host exist; item display/grant diff and HQ terms require extension; reuse runner not old approval",
+        "Observation timestamp": "2026-10-14T15:23:44.474435+00:00",
+        "Supported claim": "current owner/delta/validation seam, not runtime completion",
+        "Limitations": "runtime tests0; reading scope is named symbols/boundaries, not exhaustive file audit",
+        "Runtime tests executed": 0
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Source Observation",
+        "Artifact ID": "SO-CSNA-PUBLIC-001",
+        "Content Digest": "sha256:91ef9a03e30e0a5b7bf785c057f7e43b67d3ccc5a037eab2d23016dd4aab8124"
+      },
+      "payload": {
+        "Evaluated Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSNA-003",
+          "Content Digest": "sha256:288d0861f1393c39b3120f551074bace26e4a2ab7e5660c612e98209de811a7e"
+        },
+        "Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CSNA-001",
+          "Content Digest": "sha256:b5339a72b2b16b8459dbee13e12984040cf85e70ca1816f41964a0526e0bc355"
+        },
+        "Requirement ID": "PUBLIC",
+        "Observed source identity/location/version": [
+          {
+            "path": "core_enhanced/src/game/behavior.rs",
+            "bytes": 260329,
+            "sha256": "694a1052c11ac5d1ffa42cdfa74909f48aff44c487929572890a52834c6a2720"
+          },
+          {
+            "path": "core_enhanced/src/game/world/snapshot.rs",
+            "bytes": 68439,
+            "sha256": "af9f8691124253d93399474d8f6463cbd34a89d3eb0208aa6622c3ca1748fc0f"
+          },
+          {
+            "path": "core_enhanced/src/game/world/application.rs",
+            "bytes": 23526,
+            "sha256": "e824c63053f95c40a2f4eee1b5e46bf2e6cecc5d3d49758a92cf20fd3cc3cff2"
+          },
+          {
+            "path": "core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/test_parts/run_normal_host.py",
+            "bytes": 4435,
+            "sha256": "eb70a1748d6adda3c28ccb838e386b912c2ef53ad745ceec8ed0b7251f0ef460"
+          }
+        ],
+        "Disposition": "confirmed",
+        "Observation Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-PUBLIC-001",
+            "Content Digest": "sha256:1b819552ee15b34ffb8a56966a6f8cab49731225f99f557566fade97cc031930"
+          }
+        ],
+        "Limitation or N/A reason": "static owner/delta confirmed; implementation verification remains",
+        "Observation timestamp": "2026-10-14T15:23:44.474435+00:00"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Reviewed Source Basis",
+        "Artifact ID": "RSB-CSNA-001",
+        "Content Digest": "sha256:1056b8dc47ed8d45ab715f568f9449ea0cd4b38549d3d64f1fd3adfb2bec7957"
+      },
+      "payload": {
+        "Selected Source Set": [
+          {
+            "Source ID": "SHOP",
+            "Source Observation Ref": {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CSNA-SHOP-001",
+              "Content Digest": "sha256:763fe9a0510d09b4ff5f203f259c5ce97f5c540b644f2040d7ac099ae403a11a"
+            },
+            "Review Evidence Ref": {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "REV-CSNA-SHOP-001",
+              "Content Digest": "sha256:f6c125362ae51b187b93397d3dfaa06ebe11778cc54c4c1e3e06dc43d8fcbd25"
+            },
+            "Supported claim": "typed shop lacks relic/catalyst; fixed offers and atomic purchase/refresh exist; extend same owner",
+            "Disposition": "confirmed"
+          },
+          {
+            "Source ID": "GRANT",
+            "Source Observation Ref": {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CSNA-GRANT-001",
+              "Content Digest": "sha256:0fc3d9c91e2b10139f0438d6997c1f11dd148eb4af2944f322775fadcffaa722"
+            },
+            "Review Evidence Ref": {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "REV-CSNA-GRANT-001",
+              "Content Digest": "sha256:da7c5bc9e2bba42dc4ae2272fb5a80be16f4f64b20f3a26c738b2c4d29b62d00"
+            },
+            "Supported claim": "normal relic/material/catalyst grants and seven-root candidate exist; session/query must expose new goods",
+            "Disposition": "confirmed"
+          },
+          {
+            "Source ID": "HQ",
+            "Source Observation Ref": {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CSNA-HQ-001",
+              "Content Digest": "sha256:9476f87f218fb8cffddffaf295361c1d9f2553081e2f78a18dcf424f57e69cc9"
+            },
+            "Review Evidence Ref": {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "REV-CSNA-HQ-001",
+              "Content Digest": "sha256:46eff673354b84c513fdc6075087b2cbfcc60d402057241943b78a93d82d34ba"
+            },
+            "Supported claim": "paid100/max2 with default loadout/queue exists; add visible terms and actual consumer verification",
+            "Disposition": "confirmed"
+          },
+          {
+            "Source ID": "EVENT",
+            "Source Observation Ref": {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CSNA-EVENT-001",
+              "Content Digest": "sha256:1b8e9a8afedc567a9a85bde664ca7f6f459b397f3ae6b27dee852c7d57fb9a41"
+            },
+            "Review Evidence Ref": {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "REV-CSNA-EVENT-001",
+              "Content Digest": "sha256:5ce316350baefb28014704289f5a4f2ec4df3028529b4896d9e32162711e69f3"
+            },
+            "Supported claim": "seeded d20, committed check and free corruption owner exist; verify actual branches and restart",
+            "Disposition": "confirmed"
+          },
+          {
+            "Source ID": "CONSUMABLE",
+            "Source Observation Ref": {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CSNA-CONSUMABLE-001",
+              "Content Digest": "sha256:52a87dfe61388a442783780149e8cac8621d51189d954912a16faf28f7f091d0"
+            },
+            "Review Evidence Ref": {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "REV-CSNA-CONSUMABLE-001",
+              "Content Digest": "sha256:71c0346b7bfa97221888238a5f8999939d044c273f7e7fd6d1bfdc2b5162a4a6"
+            },
+            "Supported claim": "immediate injury healing currently retains old modifier; explicit replace rule requires correction; final combat decrement exists",
+            "Disposition": "confirmed"
+          },
+          {
+            "Source ID": "STORE",
+            "Source Observation Ref": {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CSNA-STORE-001",
+              "Content Digest": "sha256:670fd88d0c73850bac2f16e439de1fed1266c96360304520d713e0a98f3a277b"
+            },
+            "Review Evidence Ref": {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "REV-CSNA-STORE-001",
+              "Content Digest": "sha256:2f20615bcdab67dfca3d4fdf95cee3eb5adc10bafd797f0186e54600a25f29da"
+            },
+            "Supported claim": "checkpoint and unfinished-node Continue/paired publish owners exist; new product variants need exact read/write verification",
+            "Disposition": "confirmed"
+          },
+          {
+            "Source ID": "PUBLIC",
+            "Source Observation Ref": {
+              "Artifact Type": "Source Observation",
+              "Artifact ID": "SO-CSNA-PUBLIC-001",
+              "Content Digest": "sha256:91ef9a03e30e0a5b7bf785c057f7e43b67d3ccc5a037eab2d23016dd4aab8124"
+            },
+            "Review Evidence Ref": {
+              "Artifact Type": "Review Evidence",
+              "Artifact ID": "REV-CSNA-PUBLIC-001",
+              "Content Digest": "sha256:1b819552ee15b34ffb8a56966a6f8cab49731225f99f557566fade97cc031930"
+            },
+            "Supported claim": "normal command/query/host exist; item display/grant diff and HQ terms require extension; reuse runner not old approval",
+            "Disposition": "confirmed"
+          }
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Artifact",
+        "Artifact ID": "CRA-CSNA-001",
+        "Content Digest": "sha256:b86bdf92b50e7bcfa4ba18d1cfc6708a3875f8a0e7e4ec92f2bdaf1087772923"
+      },
+      "payload": {
+        "Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSNA-003",
+          "Content Digest": "sha256:288d0861f1393c39b3120f551074bace26e4a2ab7e5660c612e98209de811a7e"
+        },
+        "Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CSNA-001",
+          "Content Digest": "sha256:b5339a72b2b16b8459dbee13e12984040cf85e70ca1816f41964a0526e0bc355"
+        },
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CSNA-001",
+          "Content Digest": "sha256:1056b8dc47ed8d45ab715f568f9449ea0cd4b38549d3d64f1fd3adfb2bec7957"
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-SHOP-001",
+            "Content Digest": "sha256:f6c125362ae51b187b93397d3dfaa06ebe11778cc54c4c1e3e06dc43d8fcbd25"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-GRANT-001",
+            "Content Digest": "sha256:da7c5bc9e2bba42dc4ae2272fb5a80be16f4f64b20f3a26c738b2c4d29b62d00"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-HQ-001",
+            "Content Digest": "sha256:46eff673354b84c513fdc6075087b2cbfcc60d402057241943b78a93d82d34ba"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-EVENT-001",
+            "Content Digest": "sha256:5ce316350baefb28014704289f5a4f2ec4df3028529b4896d9e32162711e69f3"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-CONSUMABLE-001",
+            "Content Digest": "sha256:71c0346b7bfa97221888238a5f8999939d044c273f7e7fd6d1bfdc2b5162a4a6"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-STORE-001",
+            "Content Digest": "sha256:2f20615bcdab67dfca3d4fdf95cee3eb5adc10bafd797f0186e54600a25f29da"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-PUBLIC-001",
+            "Content Digest": "sha256:1b819552ee15b34ffb8a56966a6f8cab49731225f99f557566fade97cc031930"
+          }
+        ],
+        "Review body": {
+          "path": "core_enhanced/docs/goals/core_support_node_activities/CODE_REVIEW.ko.md",
+          "bytes": 6930,
+          "sha256": "d994b65747c4eb64138ada325d9f945fdaaf3530bf0c275172e3bd26e1db8ab3"
+        },
+        "Element review": [
+          {
+            "element": "PE-CSNA-G23",
+            "required_boundaries": [
+              "SHOP",
+              "GRANT",
+              "HQ",
+              "STORE",
+              "PUBLIC"
+            ],
+            "implementation_delta": "CODE_REVIEW.ko.md current/delta row; preserve exact acceptance",
+            "status": "implementable with in-scope atomic cutover"
+          },
+          {
+            "element": "PE-CSNA-G24",
+            "required_boundaries": [
+              "EVENT",
+              "STORE",
+              "PUBLIC"
+            ],
+            "implementation_delta": "CODE_REVIEW.ko.md current/delta row; preserve exact acceptance",
+            "status": "implementable with in-scope atomic cutover"
+          },
+          {
+            "element": "PE-CSNA-G25",
+            "required_boundaries": [
+              "CONSUMABLE",
+              "STORE",
+              "PUBLIC"
+            ],
+            "implementation_delta": "CODE_REVIEW.ko.md current/delta row; preserve exact acceptance",
+            "status": "implementable with in-scope atomic cutover"
+          },
+          {
+            "element": "PE-CSNA-STORE",
+            "required_boundaries": [
+              "GRANT",
+              "HQ",
+              "EVENT",
+              "CONSUMABLE",
+              "STORE",
+              "PUBLIC"
+            ],
+            "implementation_delta": "CODE_REVIEW.ko.md current/delta row; preserve exact acceptance",
+            "status": "implementable with in-scope atomic cutover"
+          },
+          {
+            "element": "PE-CSNA-AUTHOR",
+            "required_boundaries": [
+              "SHOP",
+              "GRANT",
+              "EVENT",
+              "STORE",
+              "PUBLIC"
+            ],
+            "implementation_delta": "CODE_REVIEW.ko.md current/delta row; preserve exact acceptance",
+            "status": "implementable with in-scope atomic cutover"
+          }
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CSNA-G23-001",
+        "Content Digest": "sha256:fa20ad03ef3d2125e13391da7be7b207c0ca935fcf561eb748ad46745fc79fb5"
+      },
+      "payload": {
+        "Review Path": "policy_revision_review",
+        "Input Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CSNA-G23-DECIDED-001",
+          "Content Digest": "sha256:00d611eef740a698301ceb212709d43ddc4ea7b4a48e7b2dcbbc4e8ebef5c439"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CSNA-001",
+          "Content Digest": "sha256:b86bdf92b50e7bcfa4ba18d1cfc6708a3875f8a0e7e4ec92f2bdaf1087772923"
+        },
+        "Proposed Policy Element Payload": {
+          "Stable Element ID": "PE-CSNA-G23",
+          "Predecessor Policy Element Revision Ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSNA-G23-DECIDED-001",
+            "Content Digest": "sha256:00d611eef740a698301ceb212709d43ddc4ea7b4a48e7b2dcbbc4e8ebef5c439"
+          },
+          "Policy statement": "기존 엔케팔린 거래와 유료 HQ 채용을 재사용한다. 유물 구매와 서로 구분되는 부활/침식 촉매제 구매를 같은 공통 지급에 연결하고 일반 유물 매각 및 가루/파츠 거래는 허용하지 않는다.",
+          "Decision Revision Ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CSNA-G23-001",
+            "Content Digest": "sha256:d8b7674aa818968937bb9cd372d502448a25faf2ee45fca96b90afeafb67b9c7"
+          },
+          "Observable Policy Acceptance": [
+            "A01: 고정 상품의 사본/종류·수량·총가격·재고를 조회하며 구매는 비용/공통 grant/상품 소진을 한번 확정한다. 실패·부족·중복은 사본/UUID/재화/재고를 바꾸지 않고 빈자리를 자동 보충하지 않는다.",
+            "A02: 갱신은 작성 비용/횟수로 페이지 전체를 교체하고 반복 불가 구매품을 제외한다. 후보 부족·통화 부족·실패 시 비용/횟수/페이지/상품이 유지된다. 매입 올림·매각 내림 및 차익 방지 계약을 유지한다.",
+            "A03: 일반 유물 구매는 정상 상태의 개별 사본을 공통 grant로 지급하며 해당 종류의 기존 중복 자격을 따른다. 일반 상점 유물 매각, 장착/귀속 장비 판매, 가루/파츠 직접 구매판매, 0원 거래를 거절한다.",
+            "A04: 부활 촉매제는 일반 상인의 기본 상품으로 제공하고 희귀 추첨으로 숨기지 않는다. 침식 촉매제는 별도 구매/보유 자원이다. 부활용은 비싸고 침식용은 과도한 비용을 피하는 초기 작성값을 두며 실제 부화는 U17이다.",
+            "A05: 유료 채용은 가격에 기본 무기/파편 세트를 포함하고 기존 대여와 중복 지급하지 않는다. 1~4층·세션 최대2명·보유10명·부족/이미채용/비적격 거절과 후보 queue 순서를 유지한다. 자격 조회와 명령 결과가 일치한다."
+          ],
+          "Intrinsic status": "code_reviewed"
+        },
+        "Finding disposition": "technical design only; policy meaning unchanged"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CSNA-G23-REVIEWED-001",
+        "Content Digest": "sha256:066bc981df18cbe922513cb26ec905b0ffbbed48439f9a7bfc5718c724750c35"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CSNA-G23",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CSNA-G23-DECIDED-001",
+          "Content Digest": "sha256:00d611eef740a698301ceb212709d43ddc4ea7b4a48e7b2dcbbc4e8ebef5c439"
+        },
+        "Policy statement": "기존 엔케팔린 거래와 유료 HQ 채용을 재사용한다. 유물 구매와 서로 구분되는 부활/침식 촉매제 구매를 같은 공통 지급에 연결하고 일반 유물 매각 및 가루/파츠 거래는 허용하지 않는다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CSNA-G23-001",
+          "Content Digest": "sha256:d8b7674aa818968937bb9cd372d502448a25faf2ee45fca96b90afeafb67b9c7"
+        },
+        "Observable Policy Acceptance": [
+          "A01: 고정 상품의 사본/종류·수량·총가격·재고를 조회하며 구매는 비용/공통 grant/상품 소진을 한번 확정한다. 실패·부족·중복은 사본/UUID/재화/재고를 바꾸지 않고 빈자리를 자동 보충하지 않는다.",
+          "A02: 갱신은 작성 비용/횟수로 페이지 전체를 교체하고 반복 불가 구매품을 제외한다. 후보 부족·통화 부족·실패 시 비용/횟수/페이지/상품이 유지된다. 매입 올림·매각 내림 및 차익 방지 계약을 유지한다.",
+          "A03: 일반 유물 구매는 정상 상태의 개별 사본을 공통 grant로 지급하며 해당 종류의 기존 중복 자격을 따른다. 일반 상점 유물 매각, 장착/귀속 장비 판매, 가루/파츠 직접 구매판매, 0원 거래를 거절한다.",
+          "A04: 부활 촉매제는 일반 상인의 기본 상품으로 제공하고 희귀 추첨으로 숨기지 않는다. 침식 촉매제는 별도 구매/보유 자원이다. 부활용은 비싸고 침식용은 과도한 비용을 피하는 초기 작성값을 두며 실제 부화는 U17이다.",
+          "A05: 유료 채용은 가격에 기본 무기/파편 세트를 포함하고 기존 대여와 중복 지급하지 않는다. 1~4층·세션 최대2명·보유10명·부족/이미채용/비적격 거절과 후보 queue 순서를 유지한다. 자격 조회와 명령 결과가 일치한다."
+        ],
+        "Intrinsic status": "code_reviewed"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CSNA-G24-001",
+        "Content Digest": "sha256:e61802b461a934174b05f6314225b170e8dba6b8fe6d8e3d075b3da8f34080f4"
+      },
+      "payload": {
+        "Review Path": "policy_revision_review",
+        "Input Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CSNA-G24-DECIDED-001",
+          "Content Digest": "sha256:483ed0a0450b1d15e8f35cf3257bc2ba7fad4f622668ef1cd3097fa61425cebe"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CSNA-001",
+          "Content Digest": "sha256:b86bdf92b50e7bcfa4ba18d1cfc6708a3875f8a0e7e4ec92f2bdaf1087772923"
+        },
+        "Proposed Policy Element Payload": {
+          "Stable Element ID": "PE-CSNA-G24",
+          "Predecessor Policy Element Revision Ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSNA-G24-DECIDED-001",
+            "Content Digest": "sha256:483ed0a0450b1d15e8f35cf3257bc2ba7fad4f622668ef1cd3097fa61425cebe"
+          },
+          "Policy statement": "Event는 노드별 고정 d20과 확정 선택 receipt를 사용한다. 실패도 정상 분기로 진행하며 무료 침식과 전투 분기를 기존 노드 완료/복원에 연결한다.",
+          "Decision Revision Ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CSNA-G24-001",
+            "Content Digest": "sha256:48ddfb02d8a793c64cac59c3bdfd907891b9d842c86d3a988c2031c1faaa1f27"
+          },
+          "Observable Policy Acceptance": [
+            "A06: 선택/직원 변경이나 조회/재접속/복원으로 d20이 달라지지 않는다. raw1 치명실패/raw20 치명성공이며 2~19는 합계>=DC, 허용 DC8/12/16/20과 적성+3을 적용한다.",
+            "A07: 선택 직원의 장착/소유 장비 최고+1/+2 하나만 적용하고 동률은 사본ID 오름차순이다. 공용 장비 제외·열쇠는 비소비/무추가보정·잘못된 선택/직원/조건 거절 무변경을 증명한다.",
+            "A08: 확정한 선택/직원/장비증거/결과를 반복해 재지급하지 않는다. 성공/실패의 다음 장면과 전투 분기의 승패/노드 소비는 한번 처리하며 후퇴는 기존 진입 전 복원이다.",
+            "A09: 침식 Event는 대상 효과/패널티와 자격을 공개하고 촉매/통화/재료 없이 선택 사본만 변환한다. 거절·무효 대상·반복 요청 및 재시작에서 비용/사본 결과를 보존한다."
+          ],
+          "Intrinsic status": "code_reviewed"
+        },
+        "Finding disposition": "technical design only; policy meaning unchanged"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CSNA-G24-REVIEWED-001",
+        "Content Digest": "sha256:af1611abb44724a8d7c5818989dc96fe116ab41244ced0eb06438b62ea45f0ed"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CSNA-G24",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CSNA-G24-DECIDED-001",
+          "Content Digest": "sha256:483ed0a0450b1d15e8f35cf3257bc2ba7fad4f622668ef1cd3097fa61425cebe"
+        },
+        "Policy statement": "Event는 노드별 고정 d20과 확정 선택 receipt를 사용한다. 실패도 정상 분기로 진행하며 무료 침식과 전투 분기를 기존 노드 완료/복원에 연결한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CSNA-G24-001",
+          "Content Digest": "sha256:48ddfb02d8a793c64cac59c3bdfd907891b9d842c86d3a988c2031c1faaa1f27"
+        },
+        "Observable Policy Acceptance": [
+          "A06: 선택/직원 변경이나 조회/재접속/복원으로 d20이 달라지지 않는다. raw1 치명실패/raw20 치명성공이며 2~19는 합계>=DC, 허용 DC8/12/16/20과 적성+3을 적용한다.",
+          "A07: 선택 직원의 장착/소유 장비 최고+1/+2 하나만 적용하고 동률은 사본ID 오름차순이다. 공용 장비 제외·열쇠는 비소비/무추가보정·잘못된 선택/직원/조건 거절 무변경을 증명한다.",
+          "A08: 확정한 선택/직원/장비증거/결과를 반복해 재지급하지 않는다. 성공/실패의 다음 장면과 전투 분기의 승패/노드 소비는 한번 처리하며 후퇴는 기존 진입 전 복원이다.",
+          "A09: 침식 Event는 대상 효과/패널티와 자격을 공개하고 촉매/통화/재료 없이 선택 사본만 변환한다. 거절·무효 대상·반복 요청 및 재시작에서 비용/사본 결과를 보존한다."
+        ],
+        "Intrinsic status": "code_reviewed"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CSNA-G25-001",
+        "Content Digest": "sha256:c418f10cea623d6bc6282a9030d9507454dce826f3686102ab12132341c39019"
+      },
+      "payload": {
+        "Review Path": "policy_revision_review",
+        "Input Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CSNA-G25-DECIDED-001",
+          "Content Digest": "sha256:e532320d2391d8f49bb5a1263d765f536b6f22db93e315fcd58d082189bc4c5e"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CSNA-001",
+          "Content Digest": "sha256:b86bdf92b50e7bcfa4ba18d1cfc6708a3875f8a0e7e4ec92f2bdaf1087772923"
+        },
+        "Proposed Policy Element Payload": {
+          "Stable Element ID": "PE-CSNA-G25",
+          "Predecessor Policy Element Revision Ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSNA-G25-DECIDED-001",
+            "Content Digest": "sha256:e532320d2391d8f49bb5a1263d765f536b6f22db93e315fcd58d082189bc4c5e"
+          },
+          "Policy statement": "일반 소비품은 허용된 전투 전 화면에서 직원에게 하나 소비하며 활성 효과를 교체한다. UI 표시 슬롯 수는 Core 획득 상한이 아니다.",
+          "Decision Revision Ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CSNA-G25-001",
+            "Content Digest": "sha256:1ae46cd009a06a6724189568b86779f25389693af23886c3181f203a758300b7"
+          },
+          "Observable Policy Acceptance": [
+            "A10: 지도/전투 진입 전 사용만 허용하고 직원당 활성 효과 하나를 새 효과로 즉시 교체한다. 성공 시 수량1 차감·환불 없음, 잘못된 대상/상태/재고 부족은 무변경이다. 즉시 치료도 기존 일반 활성 효과를 유지시키는 별도 예외를 추가하지 않는다.",
+            "A11: 전투 결과 확정에 남은 기간을 한번 차감하고 결과 확인/중복명령에는 추가 차감하지 않는다. 비전투 완료/후퇴에는 차감하지 않으며 후퇴는 이미 사용한 전투 진입 전 효과/잔량을 복원한다.",
+            "A12: 장비/소비품 보유가 50/60 표시 기준을 넘어도 정상 구매·보상 획득을 거절하지 않는다. 50부터10단위 표시 확장과 실제 화면은 U26-B이며 새로운 Core 보유 한도를 만들지 않는다."
+          ],
+          "Intrinsic status": "code_reviewed"
+        },
+        "Finding disposition": "technical design only; policy meaning unchanged"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CSNA-G25-REVIEWED-001",
+        "Content Digest": "sha256:1092c84d5d0d6d4835c1d23882ce31990e697b96b7bcb091bdb242b76b137d8b"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CSNA-G25",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CSNA-G25-DECIDED-001",
+          "Content Digest": "sha256:e532320d2391d8f49bb5a1263d765f536b6f22db93e315fcd58d082189bc4c5e"
+        },
+        "Policy statement": "일반 소비품은 허용된 전투 전 화면에서 직원에게 하나 소비하며 활성 효과를 교체한다. UI 표시 슬롯 수는 Core 획득 상한이 아니다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CSNA-G25-001",
+          "Content Digest": "sha256:1ae46cd009a06a6724189568b86779f25389693af23886c3181f203a758300b7"
+        },
+        "Observable Policy Acceptance": [
+          "A10: 지도/전투 진입 전 사용만 허용하고 직원당 활성 효과 하나를 새 효과로 즉시 교체한다. 성공 시 수량1 차감·환불 없음, 잘못된 대상/상태/재고 부족은 무변경이다. 즉시 치료도 기존 일반 활성 효과를 유지시키는 별도 예외를 추가하지 않는다.",
+          "A11: 전투 결과 확정에 남은 기간을 한번 차감하고 결과 확인/중복명령에는 추가 차감하지 않는다. 비전투 완료/후퇴에는 차감하지 않으며 후퇴는 이미 사용한 전투 진입 전 효과/잔량을 복원한다.",
+          "A12: 장비/소비품 보유가 50/60 표시 기준을 넘어도 정상 구매·보상 획득을 거절하지 않는다. 50부터10단위 표시 확장과 실제 화면은 U26-B이며 새로운 Core 보유 한도를 만들지 않는다."
+        ],
+        "Intrinsic status": "code_reviewed"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CSNA-STORE-001",
+        "Content Digest": "sha256:b3ce786c4fec251d7b0c29686c5ffc5a3e0420c071a23d935d82c2d5789f06fb"
+      },
+      "payload": {
+        "Review Path": "policy_revision_review",
+        "Input Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CSNA-STORE-DECIDED-001",
+          "Content Digest": "sha256:932d2e3d86ecf39b4c19629fc567b45dbc83905e3d87bf8785428f13a42cf96e"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CSNA-001",
+          "Content Digest": "sha256:b86bdf92b50e7bcfa4ba18d1cfc6708a3875f8a0e7e4ec92f2bdaf1087772923"
+        },
+        "Proposed Policy Element Payload": {
+          "Stable Element ID": "PE-CSNA-STORE",
+          "Predecessor Policy Element Revision Ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSNA-STORE-DECIDED-001",
+            "Content Digest": "sha256:932d2e3d86ecf39b4c19629fc567b45dbc83905e3d87bf8785428f13a42cf96e"
+          },
+          "Policy statement": "상점/HQ/Event/소비품의 비용·사본·결과·queue·효과·노드 상태를 하나의 저장 경계에서 보존한다. 미완료 노드 새프로세스 이어하기는 입장 전이고 완료 노드는 결과를 유지한다.",
+          "Decision Revision Ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CSNA-STORE-001",
+            "Content Digest": "sha256:3f4465e8f923d8b722d1c453ac5e955a9682eccc76c2d5799b0aca1bd3fb0023"
+          },
+          "Observable Policy Acceptance": [
+            "A13: 같은프로세스 재접속은 진행 중 offer/roll/선택/효과를 유지한다. 새프로세스 Continue는 미완료 노드 입장 전 거래·지불·채용·사본/원장을 함께 복원하며 노드 배정은 재추첨하지 않는다.",
+            "A14: 완료한 상점/HQ/Event의 결과·소비를 새프로세스에서 유지하고 중복 완료/구매/채용/판정은 추가 지급하지 않는다. SavePoint는 당시 비용/결과를 함께 복원하되 무관한 영구기록/창고는 보존한다.",
+            "A15: 실제 정상 host의 저장 IO실패는 메모리/active/profile의 부분 거래를 남기지 않고 재시도로 한 번만 반영한다. 지원 새 형식의 loader/writer·세대 입력·실제 소비자를 함께 검증하고 구개발 저장을 바꾸어 성공시키지 않는다."
+          ],
+          "Intrinsic status": "code_reviewed"
+        },
+        "Finding disposition": "technical design only; policy meaning unchanged"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CSNA-STORE-REVIEWED-001",
+        "Content Digest": "sha256:050580994b35abb8aecccd647a41e126cd4020df7c88b8c29398a0389b44c445"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CSNA-STORE",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CSNA-STORE-DECIDED-001",
+          "Content Digest": "sha256:932d2e3d86ecf39b4c19629fc567b45dbc83905e3d87bf8785428f13a42cf96e"
+        },
+        "Policy statement": "상점/HQ/Event/소비품의 비용·사본·결과·queue·효과·노드 상태를 하나의 저장 경계에서 보존한다. 미완료 노드 새프로세스 이어하기는 입장 전이고 완료 노드는 결과를 유지한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CSNA-STORE-001",
+          "Content Digest": "sha256:3f4465e8f923d8b722d1c453ac5e955a9682eccc76c2d5799b0aca1bd3fb0023"
+        },
+        "Observable Policy Acceptance": [
+          "A13: 같은프로세스 재접속은 진행 중 offer/roll/선택/효과를 유지한다. 새프로세스 Continue는 미완료 노드 입장 전 거래·지불·채용·사본/원장을 함께 복원하며 노드 배정은 재추첨하지 않는다.",
+          "A14: 완료한 상점/HQ/Event의 결과·소비를 새프로세스에서 유지하고 중복 완료/구매/채용/판정은 추가 지급하지 않는다. SavePoint는 당시 비용/결과를 함께 복원하되 무관한 영구기록/창고는 보존한다.",
+          "A15: 실제 정상 host의 저장 IO실패는 메모리/active/profile의 부분 거래를 남기지 않고 재시도로 한 번만 반영한다. 지원 새 형식의 loader/writer·세대 입력·실제 소비자를 함께 검증하고 구개발 저장을 바꾸어 성공시키지 않는다."
+        ],
+        "Intrinsic status": "code_reviewed"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Review Envelope",
+        "Artifact ID": "CRE-CSNA-AUTHOR-001",
+        "Content Digest": "sha256:b1eb788921f2d6dfb1f6564e356ba7df37272bb81385c5c48afaa1df2ee1e528"
+      },
+      "payload": {
+        "Review Path": "policy_revision_review",
+        "Input Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CSNA-AUTHOR-DECIDED-001",
+          "Content Digest": "sha256:6e04156b3eac6befc0fbbcf0c9776fc93518cc427b6eeb9a958a22f3e8fc94e4"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CSNA-001",
+          "Content Digest": "sha256:b86bdf92b50e7bcfa4ba18d1cfc6708a3875f8a0e7e4ec92f2bdaf1087772923"
+        },
+        "Proposed Policy Element Payload": {
+          "Stable Element ID": "PE-CSNA-AUTHOR",
+          "Predecessor Policy Element Revision Ref": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSNA-AUTHOR-DECIDED-001",
+            "Content Digest": "sha256:6e04156b3eac6befc0fbbcf0c9776fc93518cc427b6eeb9a958a22f3e8fc94e4"
+          },
+          "Policy statement": "상품/후보/비용·활동 조건은 정상 작성 입력과 공개 application/host로 소비한다. 대표 콘텐츠와 지원 경로 오류 검증 및 필요한 비용 측정을 같은 묶음에서 수행한다.",
+          "Decision Revision Ref": {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CSNA-AUTHOR-001",
+            "Content Digest": "sha256:dedd96ade3dba9c2d6fed65e37e991ca4b8fa1ee3ed35e50932ec74c1a9dbbfe"
+          },
+          "Observable Policy Acceptance": [
+            "A16: 유물/촉매제 상품 및 기존 장비/소비품은 실제 RON/pack loader를 통과하여 공개 query/command에 나타난다. 누락 참조·가루/파츠 상품·0가격/0수량·overflow·불법 작성 조합을 로더에서 거절한다.",
+            "A17: U13 실제 노드 배정·예약과 U14 최초 입장 비용·완료 의미를 유지한 대표 원정에서 상점/HQ/Event/소비품을 실행한다. 내부 helper fixture와 공개 host/fresh-process 검증을 구분하고 전체 U16 완료로 확대하지 않는다.",
+            "A18: 정상/확장 상품·사본 workload의 시간/실제 메모리 peak/회수를 관측하고 기존 제한 조정 필요를 근거로 판단한다. 외부 임의 파일/메모리 변조 전용 시험은 제외하며 실제 IO장애와 지원 입력 오류는 검증한다."
+          ],
+          "Intrinsic status": "code_reviewed"
+        },
+        "Finding disposition": "technical design only; policy meaning unchanged"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CSNA-AUTHOR-REVIEWED-001",
+        "Content Digest": "sha256:e72b341fb73bdaedbc46e8b846beed653f9f933e7dd056e86e0b1033622021cd"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CSNA-AUTHOR",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CSNA-AUTHOR-DECIDED-001",
+          "Content Digest": "sha256:6e04156b3eac6befc0fbbcf0c9776fc93518cc427b6eeb9a958a22f3e8fc94e4"
+        },
+        "Policy statement": "상품/후보/비용·활동 조건은 정상 작성 입력과 공개 application/host로 소비한다. 대표 콘텐츠와 지원 경로 오류 검증 및 필요한 비용 측정을 같은 묶음에서 수행한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CSNA-AUTHOR-001",
+          "Content Digest": "sha256:dedd96ade3dba9c2d6fed65e37e991ca4b8fa1ee3ed35e50932ec74c1a9dbbfe"
+        },
+        "Observable Policy Acceptance": [
+          "A16: 유물/촉매제 상품 및 기존 장비/소비품은 실제 RON/pack loader를 통과하여 공개 query/command에 나타난다. 누락 참조·가루/파츠 상품·0가격/0수량·overflow·불법 작성 조합을 로더에서 거절한다.",
+          "A17: U13 실제 노드 배정·예약과 U14 최초 입장 비용·완료 의미를 유지한 대표 원정에서 상점/HQ/Event/소비품을 실행한다. 내부 helper fixture와 공개 host/fresh-process 검증을 구분하고 전체 U16 완료로 확대하지 않는다.",
+          "A18: 정상/확장 상품·사본 workload의 시간/실제 메모리 peak/회수를 관측하고 기존 제한 조정 필요를 근거로 판단한다. 외부 임의 파일/메모리 변조 전용 시험은 제외하며 실제 IO장애와 지원 입력 오류는 검증한다."
+        ],
+        "Intrinsic status": "code_reviewed"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CSNA-004",
+        "Content Digest": "sha256:bcdcbcdc441f8eeb7b0b59899248c7bc568fa88665c7d28210d8e30b2cdbda4b"
+      },
+      "payload": {
+        "Predecessor Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSNA-003",
+          "Content Digest": "sha256:288d0861f1393c39b3120f551074bace26e4a2ab7e5660c612e98209de811a7e"
+        },
+        "Predecessor Final Policy Freeze Ref": null,
+        "Approved metadata and scope": {
+          "Working Policy Document ID": "WPD-CSNA-20261015",
+          "Policy Topic": "U16-1 기존 지원 활동: 상점·유료 HQ 채용·Event·소비품",
+          "Requested Result": "U16-1 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음.",
+          "Target Project/Repository": "/mnt/f/work/simulator",
+          "Target Documentation Root": "core_enhanced/docs",
+          "Policy Directory Name": "core_support_node_activities",
+          "User-Approved Scope": [
+            {
+              "id": "IN-U16-1",
+              "disposition": "in",
+              "meaning": "U16 착수의 첫 분리 인수 묶음 U16-1/G23–G25: 상점·유료 HQ 채용·Event·소비품 정상 입력/거래/사본/자격/query/저장/복원/공개 consumer 검증. U16-2/3/4는 로드맵에 따라 후속 인수 대상으로 유지하며 전체 U16 완료로 주장하지 않음",
+              "approval": {
+                "ref": "USER-20261015-U16-1-START",
+                "exact_text": "응, 그러면 CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u16 작업에 착수해줄래?",
+                "date": "2026-10-15",
+                "interpretation": "U16-1 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+              }
+            },
+            {
+              "id": "OUT-U16-1",
+              "disposition": "out",
+              "meaning": "U16 명시 제외: 별도 자산 엔진·일반 상점 유물 매각·가루/파츠 구매판매·부활촉매 희귀상품화·인벤토리 보유상한. U16-2/3/4는 후속 묶음; U17/U21 고유 범위와 Unity/최종보스 및 자동 감사 제외",
+              "approval": {
+                "ref": "USER-20261015-U16-1-START",
+                "exact_text": "응, 그러면 CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u16 작업에 착수해줄래?",
+                "date": "2026-10-15",
+                "interpretation": "U16-1 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+              }
+            }
+          ]
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CSNA-001",
+          "Content Digest": "sha256:42cf92da5c2fd1141c065fce2743f4a19a1a20dad4b68981edc88336ca5e59fa"
+        },
+        "Current Policy Element Revision Map": {
+          "PE-CSNA-AUTHOR": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSNA-AUTHOR-REVIEWED-001",
+            "Content Digest": "sha256:e72b341fb73bdaedbc46e8b846beed653f9f933e7dd056e86e0b1033622021cd"
+          },
+          "PE-CSNA-G23": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSNA-G23-REVIEWED-001",
+            "Content Digest": "sha256:066bc981df18cbe922513cb26ec905b0ffbbed48439f9a7bfc5718c724750c35"
+          },
+          "PE-CSNA-G24": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSNA-G24-REVIEWED-001",
+            "Content Digest": "sha256:af1611abb44724a8d7c5818989dc96fe116ab41244ced0eb06438b62ea45f0ed"
+          },
+          "PE-CSNA-G25": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSNA-G25-REVIEWED-001",
+            "Content Digest": "sha256:1092c84d5d0d6d4835c1d23882ce31990e697b96b7bcb091bdb242b76b137d8b"
+          },
+          "PE-CSNA-STORE": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSNA-STORE-REVIEWED-001",
+            "Content Digest": "sha256:050580994b35abb8aecccd647a41e126cd4020df7c88b8c29398a0389b44c445"
+          }
+        },
+        "Decision Revision Ref Set": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CSNA-G23-001",
+            "Content Digest": "sha256:d8b7674aa818968937bb9cd372d502448a25faf2ee45fca96b90afeafb67b9c7"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CSNA-G24-001",
+            "Content Digest": "sha256:48ddfb02d8a793c64cac59c3bdfd907891b9d842c86d3a988c2031c1faaa1f27"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CSNA-G25-001",
+            "Content Digest": "sha256:1ae46cd009a06a6724189568b86779f25389693af23886c3181f203a758300b7"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CSNA-STORE-001",
+            "Content Digest": "sha256:3f4465e8f923d8b722d1c453ac5e955a9682eccc76c2d5799b0aca1bd3fb0023"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CSNA-AUTHOR-001",
+            "Content Digest": "sha256:dedd96ade3dba9c2d6fed65e37e991ca4b8fa1ee3ed35e50932ec74c1a9dbbfe"
+          }
+        ],
+        "Open Policy Question Ref Set": [],
+        "Post-Freeze Change/Closure basis": null
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CSNA-G23-001",
+        "Content Digest": "sha256:380641bd9cc5a3811cdd5ec15936dc368d2af4686a029b35fd0cee746e86a24c"
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSNA-004",
+          "Content Digest": "sha256:bcdcbcdc441f8eeb7b0b59899248c7bc568fa88665c7d28210d8e30b2cdbda4b"
+        },
+        "Bound Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSNA-004",
+          "Content Digest": "sha256:bcdcbcdc441f8eeb7b0b59899248c7bc568fa88665c7d28210d8e30b2cdbda4b"
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CSNA-G23-REVIEWED-001",
+          "Content Digest": "sha256:066bc981df18cbe922513cb26ec905b0ffbbed48439f9a7bfc5718c724750c35"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CSNA-001",
+          "Content Digest": "sha256:b86bdf92b50e7bcfa4ba18d1cfc6708a3875f8a0e7e4ec92f2bdaf1087772923"
+        },
+        "Review Path": "policy_revision_review",
+        "Predecessor Code Review Binding Ref": null,
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CSNA-001",
+          "Content Digest": "sha256:1056b8dc47ed8d45ab715f568f9449ea0cd4b38549d3d64f1fd3adfb2bec7957"
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-SHOP-001",
+            "Content Digest": "sha256:f6c125362ae51b187b93397d3dfaa06ebe11778cc54c4c1e3e06dc43d8fcbd25"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-GRANT-001",
+            "Content Digest": "sha256:da7c5bc9e2bba42dc4ae2272fb5a80be16f4f64b20f3a26c738b2c4d29b62d00"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-HQ-001",
+            "Content Digest": "sha256:46eff673354b84c513fdc6075087b2cbfcc60d402057241943b78a93d82d34ba"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-STORE-001",
+            "Content Digest": "sha256:2f20615bcdab67dfca3d4fdf95cee3eb5adc10bafd797f0186e54600a25f29da"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-PUBLIC-001",
+            "Content Digest": "sha256:1b819552ee15b34ffb8a56966a6f8cab49731225f99f557566fade97cc031930"
+          }
+        ],
+        "Covered Required Claim/Boundary Set": [
+          "SHOP",
+          "GRANT",
+          "HQ",
+          "STORE",
+          "PUBLIC"
+        ],
+        "Target Current-Element-Map Match Evidence": {
+          "element": "PE-CSNA-G23",
+          "exact_ref_equal": true
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CSNA-G24-001",
+        "Content Digest": "sha256:c8f4c0d8b72c5d8b0b4c5916581ee66d78014239cac29a25ed6a6beaa31e135d"
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSNA-004",
+          "Content Digest": "sha256:bcdcbcdc441f8eeb7b0b59899248c7bc568fa88665c7d28210d8e30b2cdbda4b"
+        },
+        "Bound Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSNA-004",
+          "Content Digest": "sha256:bcdcbcdc441f8eeb7b0b59899248c7bc568fa88665c7d28210d8e30b2cdbda4b"
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CSNA-G24-REVIEWED-001",
+          "Content Digest": "sha256:af1611abb44724a8d7c5818989dc96fe116ab41244ced0eb06438b62ea45f0ed"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CSNA-001",
+          "Content Digest": "sha256:b86bdf92b50e7bcfa4ba18d1cfc6708a3875f8a0e7e4ec92f2bdaf1087772923"
+        },
+        "Review Path": "policy_revision_review",
+        "Predecessor Code Review Binding Ref": null,
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CSNA-001",
+          "Content Digest": "sha256:1056b8dc47ed8d45ab715f568f9449ea0cd4b38549d3d64f1fd3adfb2bec7957"
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-EVENT-001",
+            "Content Digest": "sha256:5ce316350baefb28014704289f5a4f2ec4df3028529b4896d9e32162711e69f3"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-STORE-001",
+            "Content Digest": "sha256:2f20615bcdab67dfca3d4fdf95cee3eb5adc10bafd797f0186e54600a25f29da"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-PUBLIC-001",
+            "Content Digest": "sha256:1b819552ee15b34ffb8a56966a6f8cab49731225f99f557566fade97cc031930"
+          }
+        ],
+        "Covered Required Claim/Boundary Set": [
+          "EVENT",
+          "STORE",
+          "PUBLIC"
+        ],
+        "Target Current-Element-Map Match Evidence": {
+          "element": "PE-CSNA-G24",
+          "exact_ref_equal": true
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CSNA-G25-001",
+        "Content Digest": "sha256:b52d94064fc0ce4ef2111467f337e6c7ebbda2ec88e073fc7b0aa8c39a0a49bf"
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSNA-004",
+          "Content Digest": "sha256:bcdcbcdc441f8eeb7b0b59899248c7bc568fa88665c7d28210d8e30b2cdbda4b"
+        },
+        "Bound Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSNA-004",
+          "Content Digest": "sha256:bcdcbcdc441f8eeb7b0b59899248c7bc568fa88665c7d28210d8e30b2cdbda4b"
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CSNA-G25-REVIEWED-001",
+          "Content Digest": "sha256:1092c84d5d0d6d4835c1d23882ce31990e697b96b7bcb091bdb242b76b137d8b"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CSNA-001",
+          "Content Digest": "sha256:b86bdf92b50e7bcfa4ba18d1cfc6708a3875f8a0e7e4ec92f2bdaf1087772923"
+        },
+        "Review Path": "policy_revision_review",
+        "Predecessor Code Review Binding Ref": null,
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CSNA-001",
+          "Content Digest": "sha256:1056b8dc47ed8d45ab715f568f9449ea0cd4b38549d3d64f1fd3adfb2bec7957"
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-CONSUMABLE-001",
+            "Content Digest": "sha256:71c0346b7bfa97221888238a5f8999939d044c273f7e7fd6d1bfdc2b5162a4a6"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-STORE-001",
+            "Content Digest": "sha256:2f20615bcdab67dfca3d4fdf95cee3eb5adc10bafd797f0186e54600a25f29da"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-PUBLIC-001",
+            "Content Digest": "sha256:1b819552ee15b34ffb8a56966a6f8cab49731225f99f557566fade97cc031930"
+          }
+        ],
+        "Covered Required Claim/Boundary Set": [
+          "CONSUMABLE",
+          "STORE",
+          "PUBLIC"
+        ],
+        "Target Current-Element-Map Match Evidence": {
+          "element": "PE-CSNA-G25",
+          "exact_ref_equal": true
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CSNA-STORE-001",
+        "Content Digest": "sha256:1587da06d52294c8e1e64b9d6d09d8d42735551b90f0f2e7baf1f5f0718baaec"
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSNA-004",
+          "Content Digest": "sha256:bcdcbcdc441f8eeb7b0b59899248c7bc568fa88665c7d28210d8e30b2cdbda4b"
+        },
+        "Bound Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSNA-004",
+          "Content Digest": "sha256:bcdcbcdc441f8eeb7b0b59899248c7bc568fa88665c7d28210d8e30b2cdbda4b"
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CSNA-STORE-REVIEWED-001",
+          "Content Digest": "sha256:050580994b35abb8aecccd647a41e126cd4020df7c88b8c29398a0389b44c445"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CSNA-001",
+          "Content Digest": "sha256:b86bdf92b50e7bcfa4ba18d1cfc6708a3875f8a0e7e4ec92f2bdaf1087772923"
+        },
+        "Review Path": "policy_revision_review",
+        "Predecessor Code Review Binding Ref": null,
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CSNA-001",
+          "Content Digest": "sha256:1056b8dc47ed8d45ab715f568f9449ea0cd4b38549d3d64f1fd3adfb2bec7957"
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-GRANT-001",
+            "Content Digest": "sha256:da7c5bc9e2bba42dc4ae2272fb5a80be16f4f64b20f3a26c738b2c4d29b62d00"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-HQ-001",
+            "Content Digest": "sha256:46eff673354b84c513fdc6075087b2cbfcc60d402057241943b78a93d82d34ba"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-EVENT-001",
+            "Content Digest": "sha256:5ce316350baefb28014704289f5a4f2ec4df3028529b4896d9e32162711e69f3"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-CONSUMABLE-001",
+            "Content Digest": "sha256:71c0346b7bfa97221888238a5f8999939d044c273f7e7fd6d1bfdc2b5162a4a6"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-STORE-001",
+            "Content Digest": "sha256:2f20615bcdab67dfca3d4fdf95cee3eb5adc10bafd797f0186e54600a25f29da"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-PUBLIC-001",
+            "Content Digest": "sha256:1b819552ee15b34ffb8a56966a6f8cab49731225f99f557566fade97cc031930"
+          }
+        ],
+        "Covered Required Claim/Boundary Set": [
+          "GRANT",
+          "HQ",
+          "EVENT",
+          "CONSUMABLE",
+          "STORE",
+          "PUBLIC"
+        ],
+        "Target Current-Element-Map Match Evidence": {
+          "element": "PE-CSNA-STORE",
+          "exact_ref_equal": true
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CSNA-AUTHOR-001",
+        "Content Digest": "sha256:125f34f0bbbb1439a358c85d0a66b73964f7ec6856add78656c27bc0347d9284"
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSNA-004",
+          "Content Digest": "sha256:bcdcbcdc441f8eeb7b0b59899248c7bc568fa88665c7d28210d8e30b2cdbda4b"
+        },
+        "Bound Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSNA-004",
+          "Content Digest": "sha256:bcdcbcdc441f8eeb7b0b59899248c7bc568fa88665c7d28210d8e30b2cdbda4b"
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CSNA-AUTHOR-REVIEWED-001",
+          "Content Digest": "sha256:e72b341fb73bdaedbc46e8b846beed653f9f933e7dd056e86e0b1033622021cd"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CSNA-001",
+          "Content Digest": "sha256:b86bdf92b50e7bcfa4ba18d1cfc6708a3875f8a0e7e4ec92f2bdaf1087772923"
+        },
+        "Review Path": "policy_revision_review",
+        "Predecessor Code Review Binding Ref": null,
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CSNA-001",
+          "Content Digest": "sha256:1056b8dc47ed8d45ab715f568f9449ea0cd4b38549d3d64f1fd3adfb2bec7957"
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-SHOP-001",
+            "Content Digest": "sha256:f6c125362ae51b187b93397d3dfaa06ebe11778cc54c4c1e3e06dc43d8fcbd25"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-GRANT-001",
+            "Content Digest": "sha256:da7c5bc9e2bba42dc4ae2272fb5a80be16f4f64b20f3a26c738b2c4d29b62d00"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-EVENT-001",
+            "Content Digest": "sha256:5ce316350baefb28014704289f5a4f2ec4df3028529b4896d9e32162711e69f3"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-STORE-001",
+            "Content Digest": "sha256:2f20615bcdab67dfca3d4fdf95cee3eb5adc10bafd797f0186e54600a25f29da"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-PUBLIC-001",
+            "Content Digest": "sha256:1b819552ee15b34ffb8a56966a6f8cab49731225f99f557566fade97cc031930"
+          }
+        ],
+        "Covered Required Claim/Boundary Set": [
+          "SHOP",
+          "GRANT",
+          "EVENT",
+          "STORE",
+          "PUBLIC"
+        ],
+        "Target Current-Element-Map Match Evidence": {
+          "element": "PE-CSNA-AUTHOR",
+          "exact_ref_equal": true
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Review Batch",
+        "Artifact ID": "RB-CSNA-001",
+        "Content Digest": "sha256:bd3029288d00bf05aa2f453d9d1e572dea650cf35615992b32d427949e677a52"
+      },
+      "payload": {
+        "Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSNA-003",
+          "Content Digest": "sha256:288d0861f1393c39b3120f551074bace26e4a2ab7e5660c612e98209de811a7e"
+        },
+        "Result Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSNA-004",
+          "Content Digest": "sha256:bcdcbcdc441f8eeb7b0b59899248c7bc568fa88665c7d28210d8e30b2cdbda4b"
+        },
+        "Candidate Review Envelope Ref Set": [
+          {
+            "Artifact Type": "Candidate Review Envelope",
+            "Artifact ID": "CRE-CSNA-G23-001",
+            "Content Digest": "sha256:fa20ad03ef3d2125e13391da7be7b207c0ca935fcf561eb748ad46745fc79fb5"
+          },
+          {
+            "Artifact Type": "Candidate Review Envelope",
+            "Artifact ID": "CRE-CSNA-G24-001",
+            "Content Digest": "sha256:e61802b461a934174b05f6314225b170e8dba6b8fe6d8e3d075b3da8f34080f4"
+          },
+          {
+            "Artifact Type": "Candidate Review Envelope",
+            "Artifact ID": "CRE-CSNA-G25-001",
+            "Content Digest": "sha256:c418f10cea623d6bc6282a9030d9507454dce826f3686102ab12132341c39019"
+          },
+          {
+            "Artifact Type": "Candidate Review Envelope",
+            "Artifact ID": "CRE-CSNA-STORE-001",
+            "Content Digest": "sha256:b3ce786c4fec251d7b0c29686c5ffc5a3e0420c071a23d935d82c2d5789f06fb"
+          },
+          {
+            "Artifact Type": "Candidate Review Envelope",
+            "Artifact ID": "CRE-CSNA-AUTHOR-001",
+            "Content Digest": "sha256:b1eb788921f2d6dfb1f6564e356ba7df37272bb81385c5c48afaa1df2ee1e528"
+          }
+        ],
+        "Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CSNA-001",
+          "Content Digest": "sha256:b5339a72b2b16b8459dbee13e12984040cf85e70ca1816f41964a0526e0bc355"
+        },
+        "Source Observation Ref Set": [
+          {
+            "Artifact Type": "Source Observation",
+            "Artifact ID": "SO-CSNA-SHOP-001",
+            "Content Digest": "sha256:763fe9a0510d09b4ff5f203f259c5ce97f5c540b644f2040d7ac099ae403a11a"
+          },
+          {
+            "Artifact Type": "Source Observation",
+            "Artifact ID": "SO-CSNA-GRANT-001",
+            "Content Digest": "sha256:0fc3d9c91e2b10139f0438d6997c1f11dd148eb4af2944f322775fadcffaa722"
+          },
+          {
+            "Artifact Type": "Source Observation",
+            "Artifact ID": "SO-CSNA-HQ-001",
+            "Content Digest": "sha256:9476f87f218fb8cffddffaf295361c1d9f2553081e2f78a18dcf424f57e69cc9"
+          },
+          {
+            "Artifact Type": "Source Observation",
+            "Artifact ID": "SO-CSNA-EVENT-001",
+            "Content Digest": "sha256:1b8e9a8afedc567a9a85bde664ca7f6f459b397f3ae6b27dee852c7d57fb9a41"
+          },
+          {
+            "Artifact Type": "Source Observation",
+            "Artifact ID": "SO-CSNA-CONSUMABLE-001",
+            "Content Digest": "sha256:52a87dfe61388a442783780149e8cac8621d51189d954912a16faf28f7f091d0"
+          },
+          {
+            "Artifact Type": "Source Observation",
+            "Artifact ID": "SO-CSNA-STORE-001",
+            "Content Digest": "sha256:670fd88d0c73850bac2f16e439de1fed1266c96360304520d713e0a98f3a277b"
+          },
+          {
+            "Artifact Type": "Source Observation",
+            "Artifact ID": "SO-CSNA-PUBLIC-001",
+            "Content Digest": "sha256:91ef9a03e30e0a5b7bf785c057f7e43b67d3ccc5a037eab2d23016dd4aab8124"
+          }
+        ],
+        "Code Review Artifact Ref Set": [
+          {
+            "Artifact Type": "Code Review Artifact",
+            "Artifact ID": "CRA-CSNA-001",
+            "Content Digest": "sha256:b86bdf92b50e7bcfa4ba18d1cfc6708a3875f8a0e7e4ec92f2bdaf1087772923"
+          }
+        ],
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CSNA-001",
+          "Content Digest": "sha256:1056b8dc47ed8d45ab715f568f9449ea0cd4b38549d3d64f1fd3adfb2bec7957"
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-SHOP-001",
+            "Content Digest": "sha256:f6c125362ae51b187b93397d3dfaa06ebe11778cc54c4c1e3e06dc43d8fcbd25"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-GRANT-001",
+            "Content Digest": "sha256:da7c5bc9e2bba42dc4ae2272fb5a80be16f4f64b20f3a26c738b2c4d29b62d00"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-HQ-001",
+            "Content Digest": "sha256:46eff673354b84c513fdc6075087b2cbfcc60d402057241943b78a93d82d34ba"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-EVENT-001",
+            "Content Digest": "sha256:5ce316350baefb28014704289f5a4f2ec4df3028529b4896d9e32162711e69f3"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-CONSUMABLE-001",
+            "Content Digest": "sha256:71c0346b7bfa97221888238a5f8999939d044c273f7e7fd6d1bfdc2b5162a4a6"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-STORE-001",
+            "Content Digest": "sha256:2f20615bcdab67dfca3d4fdf95cee3eb5adc10bafd797f0186e54600a25f29da"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSNA-PUBLIC-001",
+            "Content Digest": "sha256:1b819552ee15b34ffb8a56966a6f8cab49731225f99f557566fade97cc031930"
+          }
+        ],
+        "Result Current code_reviewed Policy Element Revision Ref Set": [
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSNA-AUTHOR-REVIEWED-001",
+            "Content Digest": "sha256:e72b341fb73bdaedbc46e8b846beed653f9f933e7dd056e86e0b1033622021cd"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSNA-G23-REVIEWED-001",
+            "Content Digest": "sha256:066bc981df18cbe922513cb26ec905b0ffbbed48439f9a7bfc5718c724750c35"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSNA-G24-REVIEWED-001",
+            "Content Digest": "sha256:af1611abb44724a8d7c5818989dc96fe116ab41244ced0eb06438b62ea45f0ed"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSNA-G25-REVIEWED-001",
+            "Content Digest": "sha256:1092c84d5d0d6d4835c1d23882ce31990e697b96b7bcb091bdb242b76b137d8b"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSNA-STORE-REVIEWED-001",
+            "Content Digest": "sha256:050580994b35abb8aecccd647a41e126cd4020df7c88b8c29398a0389b44c445"
+          }
+        ],
+        "Result-basis Code Review Binding Ref Set": [
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CSNA-G23-001",
+            "Content Digest": "sha256:380641bd9cc5a3811cdd5ec15936dc368d2af4686a029b35fd0cee746e86a24c"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CSNA-G24-001",
+            "Content Digest": "sha256:c8f4c0d8b72c5d8b0b4c5916581ee66d78014239cac29a25ed6a6beaa31e135d"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CSNA-G25-001",
+            "Content Digest": "sha256:b52d94064fc0ce4ef2111467f337e6c7ebbda2ec88e073fc7b0aa8c39a0a49bf"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CSNA-STORE-001",
+            "Content Digest": "sha256:1587da06d52294c8e1e64b9d6d09d8d42735551b90f0f2e7baf1f5f0718baaec"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CSNA-AUTHOR-001",
+            "Content Digest": "sha256:125f34f0bbbb1439a358c85d0a66b73964f7ec6856add78656c27bc0347d9284"
+          }
+        ],
+        "Outcome": "complete; all5current elements have owner/delta/seam; no open material choice"
+      }
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "stage": "archives",
+  "started_at_utc": "2026-10-13T12:51:09.362168+00:00",
+  "target_manifest": {
+    "path": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/target/u12_current_002/MANIFEST.json",
+    "bytes": 2599320,
+    "sha256": "3eda79477ee69d83442721e6c5f591240eee51e6677f9ebea9080cacd8351ecd"
+  },
+  "checks": [
+    {
+      "archive": "SOURCE_BEFORE.tar.gz",
+      "members": 4693,
+      "mismatches": []
+    },
+    {
+      "archive": "SOURCE_AFTER.tar.gz",
+      "members": 4728,
+      "mismatches": []
+    },
+    {
+      "archive": "RECORDS.tar.gz",
+      "members": 3692,
+      "mismatches": []
+    },
+    {
+      "archive": "REFERENCES.tar.gz",
+      "members": 39,
+      "mismatches": []
+    }
+  ],
+  "finished_at_utc": "2026-10-13T12:51:11.863831+00:00",
+  "pass": true
+}

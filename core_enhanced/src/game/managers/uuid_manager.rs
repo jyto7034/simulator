@@ -10,12 +10,14 @@ use crate::game::determinism;
 /// IMPORTANT: Use separate namespaces for unrelated streams so adding a new call site
 /// doesn't shift every subsequent UUID in other systems.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct UuidManager {
     run_seed: u64,
+    instance_namespace: Uuid,
     counters: BTreeMap<u64, u64>,
 }
 
-crate::authoring::clone_shape::struct_shape!(UuidManager { run_seed, counters });
+crate::authoring::clone_shape::struct_shape!(UuidManager { run_seed, instance_namespace, counters });
 
 impl UuidManager {
     pub const NS_OWNED_EQUIPMENT: u64 = 0x4f57_4e44_4551_5549; // "OWNDEQUI"
@@ -29,8 +31,35 @@ impl UuidManager {
     pub fn new(run_seed: u64) -> Self {
         Self {
             run_seed,
+            instance_namespace: Uuid::nil(),
             counters: BTreeMap::new(),
         }
+    }
+
+    pub fn for_instance(run_seed: u64, instance_namespace: Uuid) -> Self {
+        Self { run_seed, instance_namespace, counters: BTreeMap::new() }
+    }
+
+    pub fn instance_namespace(&self) -> Uuid {
+        self.instance_namespace
+    }
+
+    fn generated_uuid(&self, namespace: u64, index: u64) -> Uuid {
+        if self.instance_namespace.is_nil() {
+            return determinism::uuid_v4_from_seed(self.run_seed, namespace, index);
+        }
+        use sha2::{Digest, Sha256};
+        let mut hash = Sha256::new();
+        hash.update(b"core.instance.uuid.v1\0");
+        hash.update(self.instance_namespace.as_bytes());
+        hash.update(self.run_seed.to_le_bytes());
+        hash.update(namespace.to_le_bytes());
+        hash.update(index.to_le_bytes());
+        let mut bytes = [0; 16];
+        bytes.copy_from_slice(&hash.finalize()[..16]);
+        bytes[6] = (bytes[6] & 0x0f) | 0x40;
+        bytes[8] = (bytes[8] & 0x3f) | 0x80;
+        Uuid::from_bytes(bytes)
     }
 
     pub(crate) fn run_seed(&self) -> u64 {
@@ -38,15 +67,15 @@ impl UuidManager {
     }
 
     pub fn next(&mut self, namespace: u64) -> Uuid {
-        let index = self.counters.entry(namespace).or_insert(0);
-        let uuid = determinism::uuid_v4_from_seed(self.run_seed, namespace, *index);
-        *index = index.wrapping_add(1);
+        let index = self.counters.get(&namespace).copied().unwrap_or(0);
+        let uuid = self.generated_uuid(namespace, index);
+        self.counters.insert(namespace, index.wrapping_add(1));
         uuid
     }
 
     pub fn peek(&self, namespace: u64) -> Uuid {
         let index = self.counters.get(&namespace).copied().unwrap_or(0);
-        determinism::uuid_v4_from_seed(self.run_seed, namespace, index)
+        self.generated_uuid(namespace, index)
     }
 
     /// Restore checkpoint-owned UUID streams while keeping explicitly global
@@ -60,6 +89,8 @@ impl UuidManager {
             self.run_seed, checkpoint.run_seed,
             "a run checkpoint must belong to the current run seed"
         );
+        debug_assert_eq!(self.instance_namespace, checkpoint.instance_namespace,
+            "a run checkpoint must belong to the same instance");
         let preserved = monotonic_namespaces
             .iter()
             .map(|namespace| {
@@ -72,8 +103,11 @@ impl UuidManager {
 
         *self = checkpoint;
         for (namespace, current_counter) in preserved {
-            let checkpoint_counter = self.counters.entry(namespace).or_insert(0);
-            *checkpoint_counter = (*checkpoint_counter).max(current_counter);
+            // A missing stream already denotes index zero. Only an actual
+            // advance may add it, preserving canonical bytes on fresh restore.
+            if current_counter > self.counters.get(&namespace).copied().unwrap_or(0) {
+                self.counters.insert(namespace, current_counter);
+            }
         }
     }
 
@@ -97,7 +131,7 @@ impl UuidManager {
         let next = index
             .checked_add(1)
             .ok_or(crate::game::behavior::GameError::InvalidAction)?;
-        let uuid = determinism::uuid_v4_from_seed(self.run_seed, Self::NS_OWNED_FRAGMENT, index);
+        let uuid = self.generated_uuid(Self::NS_OWNED_FRAGMENT, index);
         self.counters.insert(Self::NS_OWNED_FRAGMENT, next);
         Ok(uuid)
     }
@@ -172,7 +206,7 @@ impl UuidManager {
                 "relic_uuid_stream",
             )?;
         }
-        let uuid = determinism::uuid_v4_from_seed(self.run_seed, Self::NS_OWNED_RELIC, index);
+        let uuid = self.generated_uuid(Self::NS_OWNED_RELIC, index);
         self.counters.insert(Self::NS_OWNED_RELIC, next);
         Ok(uuid)
     }

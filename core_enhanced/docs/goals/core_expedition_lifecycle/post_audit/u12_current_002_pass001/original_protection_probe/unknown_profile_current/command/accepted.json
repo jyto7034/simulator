@@ -1,0 +1,11 @@
+{
+  "command": {
+    "type": "abandon_run"
+  },
+  "result": {
+    "disposition": "accepted",
+    "kind": "run_abandoned",
+    "meaning": "RunAbandoned",
+    "payload": {}
+  }
+}

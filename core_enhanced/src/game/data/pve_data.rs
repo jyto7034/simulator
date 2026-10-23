@@ -34,6 +34,8 @@ use crate::{
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum PveEncounterClass {
     Normal,
+    /// Activity-only continuous defense; excluded from ordinary map selectors.
+    StressCombat,
     Elite,
     NormalBoss,
     FinalBoss,
@@ -255,6 +257,10 @@ impl From<PvePosition> for Position {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct PveEncounter {
+    #[serde(default)]
+    pub deterrence_tuning: PveDeterrenceTuning,
+    #[serde(default)]
+    pub bonus_objectives: Vec<PveBonusObjective>,
     pub id: String,
     pub encounter_class: PveEncounterClass,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -280,6 +286,34 @@ pub struct PveEncounter {
     pub static_obstacles: Vec<PveStaticObstacleData>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PveBonusObjective {
+    pub id: String,
+    pub condition: PveBonusCondition,
+    pub effects: Vec<RewardEffect>,
+}
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub enum PveBonusCondition {
+    ClearWithin { time_ms: u64 },
+    DecisiveDamage { max_health_percent: u32 },
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+pub struct PveDeterrenceTuning {
+    pub unrestrained_health_percent: u32,
+    pub unrestrained_attack_percent: u32,
+    pub seal_health_percent: u32,
+    pub seal_attack_percent: u32,
+}
+impl Default for PveDeterrenceTuning {
+    fn default() -> Self {
+        Self { unrestrained_health_percent: 150, unrestrained_attack_percent: 150,
+            seal_health_percent: 150, seal_attack_percent: 150 }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(deny_unknown_fields)]
 pub struct PveBossRuntimeBindingData {
@@ -296,6 +330,10 @@ pub struct PveBossActorBindingData {
 }
 
 impl PveEncounter {
+    pub fn is_rewardless_story_encounter(&self) -> bool {
+        self.primary_abnormality_id() == Some("t-02-43_freischutz")
+    }
+
     #[cfg(test)]
     pub(crate) fn fixture_terminal_outcomes(
         survive_timer_ms: Option<u64>,
@@ -562,7 +600,9 @@ pub struct PveEncounterRewardSource {
     pub reward_source_id: String,
     pub encounter_id: String,
     pub fragment_id: SkillFragmentId,
-    pub repeat_reward: RewardEffect,
+    pub first_equipment_ids: Vec<String>,
+    pub repeat_rewards: Vec<RewardEffect>,
+    pub revival: Option<crate::game::revival::BossRevivalPolicy>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -683,25 +723,12 @@ impl PveEncounterDatabase {
                         format!("references missing PVE encounter '{}'", source.encounter_id),
                     )
                 })?;
-            let expected_dust = match encounter.encounter_class {
-                PveEncounterClass::Elite => 5,
-                PveEncounterClass::NormalBoss => 10,
-                PveEncounterClass::FinalBoss => 20,
-                PveEncounterClass::ReferenceFinalBoss => {
-                    return Err(crate::game::data::DataValidationError::at(
-                        &source.reward_source_id,
-                        format!("{source_path}.encounter_id"),
-                        "reference-only encounters cannot author abnormality reward sources",
-                    ));
-                }
-                PveEncounterClass::Normal => {
-                    return Err(crate::game::data::DataValidationError::at(
-                        &source.reward_source_id,
-                        format!("{source_path}.encounter_id"),
-                        "Normal encounters cannot author abnormality reward sources",
-                    ));
-                }
-            };
+            if matches!(encounter.encounter_class, PveEncounterClass::Normal | PveEncounterClass::StressCombat | PveEncounterClass::ReferenceFinalBoss) {
+                return Err(crate::game::data::DataValidationError::at(&source.reward_source_id, format!("{source_path}.encounter_id"), "ordinary/reference encounters cannot author abnormality reward sources"));
+            }
+            if encounter.encounter_class != PveEncounterClass::NormalBoss && source.revival.is_some() {
+                return Err(crate::game::data::DataValidationError::at(&source.reward_source_id, format!("{source_path}.revival"), "only normal bosses can leave revival eggs"));
+            }
             if encounter.primary_abnormality_id().is_none() {
                 return Err(crate::game::data::DataValidationError::at(
                     &source.reward_source_id,
@@ -709,19 +736,13 @@ impl PveEncounterDatabase {
                     "reward source encounter must author a primary abnormality",
                 ));
             }
-            match source.repeat_reward {
-                RewardEffect::GrantFragmentDust { amount } if amount == expected_dust => {}
-                _ => {
-                    return Err(crate::game::data::DataValidationError::at(
-                        &source.reward_source_id,
-                        format!("{source_path}.repeat_reward"),
-                        format!(
-                            "repeat reward must be explicit GrantFragmentDust({expected_dust}) for {:?}",
-                            encounter.encounter_class
-                        ),
-                    ));
-                }
+            if source.repeat_rewards.iter().any(|effect| !matches!(effect,
+                RewardEffect::GrantEnkephalin { .. } | RewardEffect::GrantEquipmentDust { .. }
+                | RewardEffect::GrantExperience { .. } | RewardEffect::GrantEquipmentMaterial { .. }
+                | RewardEffect::GrantEquipment { .. } | RewardEffect::GrantRelic { .. })) {
+                return Err(crate::game::data::DataValidationError::at(&source.reward_source_id, format!("{source_path}.repeat_rewards"), "repeat rewards cannot regrant fragments or use legacy fragment dust"));
             }
+
         }
         Ok(())
     }
@@ -885,6 +906,44 @@ fn validate_encounter_authoring_contract(
     encounter: &PveEncounter,
     encounter_path: &str,
 ) -> Result<(), crate::game::data::DataValidationError> {
+    let mut bonus_ids = HashSet::new();
+    for objective in &encounter.bonus_objectives {
+        let invalid = || pve_error(encounter, format!("{encounter_path}.bonus_objectives"),
+            "bonus requires unique identity, primary abnormality, valid threshold, and material/AliveRoster XP effects");
+        let Some(primary) = encounter.primary_abnormality_id.as_deref() else { return Err(invalid()); };
+        if objective.id.trim().is_empty() || !bonus_ids.insert(&objective.id) || objective.effects.is_empty() {
+            return Err(invalid());
+        }
+        match objective.condition {
+            PveBonusCondition::ClearWithin { time_ms } => {
+                if time_ms == 0 || !encounter.waves.iter().any(|wave| wave.authored_time_ms() == Some(0)
+                    && wave.manual_enemies().iter().any(|enemy| matches!(enemy,
+                        PveWaveEnemyData::Abnormality { abnormality_id, .. } if abnormality_id == primary))) {
+                    return Err(invalid());
+                }
+            }
+            PveBonusCondition::DecisiveDamage { max_health_percent } => {
+                if !(1..=100).contains(&max_health_percent) { return Err(invalid()); }
+            }
+        }
+        for effect in &objective.effects {
+            let amount = match effect {
+                RewardEffect::GrantEnkephalin { amount } | RewardEffect::GrantEquipmentDust { amount }
+                | RewardEffect::GrantEquipmentMaterial { amount, .. } => *amount,
+                RewardEffect::GrantExperience { amount, target: crate::game::reward::ExperienceTargetPolicy::AliveRoster } => *amount,
+                _ => return Err(invalid()),
+            };
+            if amount == 0 { return Err(invalid()); }
+        }
+    }
+    let tuning = encounter.deterrence_tuning;
+    if !(150..=200).contains(&tuning.unrestrained_health_percent)
+        || !(150..=200).contains(&tuning.unrestrained_attack_percent)
+        || tuning.seal_health_percent <= 100
+        || tuning.seal_attack_percent <= 100 {
+        return Err(pve_error(encounter, format!("{encounter_path}.deterrence_tuning"),
+            "unrestrained HP/ATK must be 150..=200%; seal HP/ATK must exceed 100%"));
+    }
     if encounter.waves.is_empty() {
         return Err(pve_error(
             encounter,
@@ -894,7 +953,7 @@ fn validate_encounter_authoring_contract(
     }
 
     match encounter.encounter_class {
-        PveEncounterClass::Normal => {
+        PveEncounterClass::Normal | PveEncounterClass::StressCombat => {
             if encounter.primary_abnormality_id.is_some() {
                 return Err(pve_error(
                     encounter,
@@ -937,6 +996,13 @@ fn validate_encounter_authoring_contract(
                 ));
             }
         }
+    }
+
+    if encounter.is_rewardless_story_encounter()
+        && (!encounter.bonus_objectives.is_empty() || encounter.outcome_policies.iter().any(|policy|
+            !policy.reward_uuids.is_empty() || policy.grant_node_bonus || policy.advance_encounter_progression)) {
+        return Err(pve_error(encounter, format!("{encounter_path}.outcome_policies"),
+            "Der Freischutz story encounters cannot grant ordinary rewards or encounter progression"));
     }
 
     let mut primary_target_count = 0_u32;
@@ -1641,6 +1707,8 @@ mod tests {
 
     fn graph_encounter(waves: Vec<PveWaveData>) -> PveEncounter {
         PveEncounter {
+            deterrence_tuning: Default::default(),
+            bonus_objectives: Vec::new(),
             id: "wave_graph".to_string(),
             encounter_class: PveEncounterClass::Normal,
             primary_abnormality_id: None,

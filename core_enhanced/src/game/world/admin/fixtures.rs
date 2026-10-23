@@ -71,7 +71,7 @@ impl GameCore {
         MapNodeId::new(self.state.uuid_manager.peek(ADMIN_NODE_NS))
     }
 
-    fn admin_prepare_fixture_node_with_id(
+    pub(super) fn admin_prepare_fixture_node_with_id(
         &mut self,
         node_id: MapNodeId,
         category: MapNodeCategory,
@@ -148,8 +148,8 @@ impl GameCore {
 
         if !current_template_supports_save_point {
             let fixture_floor_index = match game_mode {
-                GameMode::Standard => 1,
-                GameMode::Endless => 0,
+                GameMode::Tutorial => 1,
+                GameMode::Expedition => 0,
             };
             let generated = FacilityMapGenerator::generate(
                 run_seed,
@@ -173,7 +173,7 @@ impl GameCore {
             run.shop_sessions.clear();
             run.combat_previews.clear();
             run.abnormality_attempts.clear();
-            run.monolith.clear_floor_local_remanifestations();
+            run.revival.leave_floor();
             run.boss_omen = Default::default();
             run.combat_recovery_restriction = None;
         }

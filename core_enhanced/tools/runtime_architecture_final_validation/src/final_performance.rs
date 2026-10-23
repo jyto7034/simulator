@@ -40,6 +40,8 @@ use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use uuid::Uuid;
 
+mod concurrent_inspection;
+
 const WORKLOAD_VERSION: &str = "crar-final-performance/1";
 const LATENCY_SAMPLE_COUNT: usize = 21;
 const ALLOCATION_SAMPLE_COUNT: usize = 5;
@@ -845,6 +847,47 @@ fn allocation_guard<T>(
     })
 }
 
+// Diagnostic measurement is deliberately separate from the frozen P01 guard.
+// It produces current raw samples and cannot certify baseline parity or pass.
+fn measure_current(output: PathBuf) {
+    let logical_cpus = std::thread::available_parallelism().map(usize::from).unwrap_or(1);
+    assert!(logical_cpus >= 31, "same affinity workload requires 31 CPUs");
+    let (data, fixture_conversion_elapsed_ns) = preservation_data();
+    pin_current_thread(30);
+    set_allocation_tracking(false);
+    let _ = event_heavy_sample(data.clone(), 0);
+    let _ = concurrent_sample(data.clone(), 0);
+    let count = if cfg!(feature = "allocation-observer") {
+        ALLOCATION_SAMPLE_COUNT
+    } else {
+        LATENCY_SAMPLE_COUNT
+    };
+    set_allocation_tracking(cfg!(feature = "allocation-observer"));
+    let event = (1..=count).map(|i| event_heavy_sample(data.clone(), i)).collect::<Vec<_>>();
+    let concurrent = (1..=count).map(|i| concurrent_sample(data.clone(), i)).collect::<Vec<_>>();
+    set_allocation_tracking(false);
+    let event_repeatable = all_event_samples_repeat(&event);
+    let concurrent_repeatable = all_concurrent_samples_repeat(&concurrent);
+    let receipt = serde_json::json!({
+        "schema_version": 1, "mode": "current_measurement_only",
+        "workload_version": WORKLOAD_VERSION, "baseline_comparison_applicable": false,
+        "performance_pass_claimed": false,
+        "allocation_observer_enabled": cfg!(feature = "allocation-observer"),
+        "latency_measurement_applicable": !cfg!(feature = "allocation-observer"),
+        "tool_source_sha256": sha256(include_bytes!("final_performance.rs")),
+        "fixture_conversion_elapsed_ns": fixture_conversion_elapsed_ns,
+        "environment": {"profile": if cfg!(debug_assertions) {"debug"} else {"release"},
+            "os": std::env::consts::OS, "arch": std::env::consts::ARCH,
+            "logical_cpus": logical_cpus, "affinity": "coordinator=30; lanes=0,2,4,6,8,10,12,14"},
+        "event_heavy": {"duration_ms": EVENT_HEAVY_DURATION_MS, "repeatable": event_repeatable,
+            "p95_ns": nearest_rank_p95(event.iter().map(|s| s.elapsed_ns)), "raw_samples": event},
+        "concurrent_sessions": {"repeatable": concurrent_repeatable, "step_ms": SESSION_STEP_MS,
+            "p95_ns": nearest_rank_p95(concurrent.iter().map(|s| s.elapsed_ns)), "raw_samples": concurrent}
+    });
+    fs::write(output, serde_json::to_vec_pretty(&receipt).unwrap()).expect("write current measurement");
+    assert!(event_repeatable && concurrent_repeatable, "current outputs must repeat");
+}
+
 fn main() {
     let mut args = std::env::args().skip(1);
     let baseline_path = args
@@ -859,6 +902,14 @@ fn main() {
         args.next().is_none(),
         "unexpected final_performance argument"
     );
+    if baseline_path == std::path::Path::new("--measure-current") {
+        measure_current(output);
+        return;
+    }
+    if baseline_path == std::path::Path::new("--inspect-concurrent") {
+        concurrent_inspection::run(output);
+        return;
+    }
     let baseline_bytes = fs::read(&baseline_path).expect("read accepted P01 baseline receipt");
     let baseline: BaselineReceipt =
         serde_json::from_slice(&baseline_bytes).expect("decode accepted P01 baseline receipt");

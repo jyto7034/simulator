@@ -992,6 +992,8 @@ mod tests {
                 attack_percent: 200,
                 defense_percent: 125,
                 exact_override: None,
+                encounter_health_percent: 100,
+                encounter_attack_percent: 100,
             },
             summon_spawn_zones: vec![ResolvedBossSummonSpawnZone {
                 id: "fixture_zone".to_string(),
@@ -1019,6 +1021,7 @@ mod tests {
             .collect();
         let scenario = BattleScenario {
             battlefield: BattleFieldSpec {
+            walkable_paths: Vec::new(),
                 object_placement: None,
                 width: 8,
                 height: 6,

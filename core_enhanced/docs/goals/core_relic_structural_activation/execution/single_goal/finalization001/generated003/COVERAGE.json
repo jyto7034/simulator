@@ -1,0 +1,991 @@
+{
+  "recorded_at_utc": "2026-10-09T05:00:07.890675+00:00",
+  "goal": "GOAL-CRSA-01",
+  "goal_set": "GS-CRSA-003",
+  "source": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/finalization001/CURRENT_SOURCE.json",
+    "bytes": 91650,
+    "sha256": "34018590247da600cdc3b63a013ef4fbba72c511877c91659f93c7662959f0a0"
+  },
+  "source_sha256": "1ca0fbe68a2ba80603470dde38a6c50e67c9d0ca3938391dbc4b211e875c492e",
+  "collector": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/finalization001/collect_finalization.py",
+    "bytes": 19530,
+    "sha256": "fd631e339828b6fffcac61684958ca37ddc035873bfebc328d313b94268d607e"
+  },
+  "independent_completion": "pending_nonparticipant_audit_not_implied_by_collection",
+  "schema": "U09_COVERAGE_V1",
+  "status": "pending_currentness_performance_restore_and_independent_completion",
+  "frozen_policy": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/P2G_30_FREEZE_002.json",
+    "bytes": 33168,
+    "sha256": "f1322b7e21d0a74431ecacad9ea9c62da9aac2f8129fadbb0efbdf250cd4d19c"
+  },
+  "mapping_input": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/finalization001/COVERAGE_INPUT.json",
+    "bytes": 15071,
+    "sha256": "e144c2c38e6b02c215f9a40879804fccd78d223ab71bf62ecb50ba39462d6b25"
+  },
+  "acceptances": [
+    {
+      "id": "PE-CRSA-01.1",
+      "text": "태그가 서로 나뉜 두 효과는 AND를 충족하지 않지만 같은 효과의 태그·속성·정확 ID/form이 모두 맞으면 활성이다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-01-REVIEWED-001",
+        "Content Digest": "sha256:ca31d4429793a92960a3366e4f156e327d0f4704dab82ad55d306e0de39b382a"
+      },
+      "independent_oracle": "Split sibling tags fail AND; one effect with matching identity/form/property succeeds; incompatible form/weapon contexts cannot share admission success.",
+      "evidence_refs": [
+        "compiler",
+        "publication_forms"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-01.2",
+      "text": "생성 효과에도 같은 선택 규칙을 적용하고 ID/form mismatch·property 부재는 설명 가능한 휴면 또는 부적격 결과로 나타난다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-01-REVIEWED-001",
+        "Content Digest": "sha256:ca31d4429793a92960a3366e4f156e327d0f4704dab82ad55d306e0de39b382a"
+      },
+      "independent_oracle": "Generated effect has finite distinct identity and same selector rules; generated base40 effective75 explains original/grant/modifier sources; mismatches and removed property do not select another effect.",
+      "evidence_refs": [
+        "compiler",
+        "external_core",
+        "publication_variants"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-02.1",
+      "text": "무seed A/B는 둘 다 휴면, 각 실제 seed의 추가로 도달 가능한 효과만 활성이고 seed 제거 뒤 다시 휴면이다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-02-REVIEWED-001",
+        "Content Digest": "sha256:27b2394009f0e9e7646afdf32054a574fa4399937cf6ede0671188242cf70450"
+      },
+      "independent_oracle": "Unseeded A/B remains dormant; either actual seed reaches only the authored finite set; removing seed returns dormant without history bootstrap.",
+      "evidence_refs": [
+        "compiler",
+        "external_closure"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-02.2",
+      "text": "같은 사본 집합의 모든 장착 순서에서 최종 효과·값·휴면 이유가 같으며 자기 부트스트랩과 임의 반복횟수에 의한 부분 성공이 없다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-02-REVIEWED-001",
+        "Content Digest": "sha256:27b2394009f0e9e7646afdf32054a574fa4399937cf6ede0671188242cf70450"
+      },
+      "independent_oracle": "All same-copy slot permutations retain the same reachable set, values and dormant reasons; no iteration-cap partial success.",
+      "evidence_refs": [
+        "compiler",
+        "external_closure",
+        "typed_root"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-03.1",
+      "text": "새 폭발 효과를 유물 A가 부여하고 B가 그 실제 생성 효과를 선택·강화해 정상 시전 피해로 나타난다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-03-REVIEWED-001",
+        "Content Digest": "sha256:661d78eaa539e5741d525a65353443e876c57a8d8b50a91232ea2b2e70e95ac4"
+      },
+      "independent_oracle": "A grants finite named damage and B selects that generated effect; independent actual HP105 comprises original30 and generated75 through normal external commands.",
+      "evidence_refs": [
+        "external_core",
+        "external_closure"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-03.2",
+      "text": "NOT cycle·재귀 grant·입증 불가능한 구조 의존은 부분 게시 없이 거절하고, 유효한 긍정 순환은 seed 의미대로 종료한다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-03-REVIEWED-001",
+        "Content Digest": "sha256:661d78eaa539e5741d525a65353443e876c57a8d8b50a91232ea2b2e70e95ac4"
+      },
+      "independent_oracle": "Negative dependency/invalid finite grant/reference rejection is atomic; valid finite positive seed cycle remains admitted; external invalid content preserves held token and nonempty run.",
+      "evidence_refs": [
+        "compiler",
+        "publication_adversaries",
+        "external_core"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-04.1",
+      "text": "공개 descriptor·validation·explain·실제 실행이 같은 속성과 타입을 사용하며 없는/비공개/단위 불일치 property는 명시 거절된다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-04-REVIEWED-002",
+        "Content Digest": "sha256:7268e84571bc6101ed2cc19719164a2b6ed9bc0a8d3a68c75a7bcae9ebbe20d9"
+      },
+      "independent_oracle": "Public typed descriptors and query/explain agree with consumer; unknown/private/wrong-unit values fail explicitly; actual Active and Exact preview/explain base40/effective75 are read-only.",
+      "evidence_refs": [
+        "typed_root",
+        "compiler",
+        "external_core",
+        "legacy_amount"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-04.2",
+      "text": "단일 지원에서 제거된 area 속성에 반경 modifier가 적용되거나 대상 선택 사거리·별도 회복이 함께 늘어나지 않는다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-04-REVIEWED-002",
+        "Content Digest": "sha256:7268e84571bc6101ed2cc19719164a2b6ed9bc0a8d3a68c75a7bcae9ebbe20d9"
+      },
+      "independent_oracle": "Removed support area radius is absent or explicitly dormant, never retarget reach; original carrier and separate healing/sibling13 remain unchanged.",
+      "evidence_refs": [
+        "compiler",
+        "selected_support_world",
+        "flow"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-05.1",
+      "text": "고정 독립 oracle와 순서 permutation으로 Add/Scale/동일 Replace의 결과가 같고 서로 다른 Replace는 어떤 UUID/장착 순서에서도 typed 거절된다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-05-REVIEWED-001",
+        "Content Digest": "sha256:f3c4dfc859d3bdc2f8a1a137d1fe2a61ecccf241a87f98c396b6f8685537a102"
+      },
+      "independent_oracle": "Independent301+2+3 and aggregate scales10+20 produce397 with truncation once; equal Replace coalesces; differing Replace fails across order and real legal coequip witnesses.",
+      "evidence_refs": [
+        "typed_root",
+        "publication_world",
+        "publication_adversaries"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-05.2",
+      "text": "타입·단위·범위/overflow 실패에서 이전 loadout·plan·저장·자원이 보존되고 유물 없는 기존 수치 결과는 같다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-05-REVIEWED-001",
+        "Content Digest": "sha256:f3c4dfc859d3bdc2f8a1a137d1fe2a61ecccf241a87f98c396b6f8685537a102"
+      },
+      "independent_oracle": "Wrong types/ranges/overflow and admission failures preserve prior roots; legacy numeric branches and shared owner consumers retain old semantic results. Exact old nonempty owner work is not assumed unchanged.",
+      "evidence_refs": [
+        "typed_root",
+        "storage_bindings",
+        "publication_adversaries",
+        "legacy_amount",
+        "current_impact_69"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-06.1",
+      "text": "같은 SkillId를 서로 다른 유물/형태로 쓰는 직원의 실제 즉시·지연 결과와 query가 각각의 독립 oracle와 일치하고 공유 원형은 불변이다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-06-REVIEWED-001",
+        "Content Digest": "sha256:99878b0420474d8d06114b4da11a1c570586ad4feb472b85d23a7550318b3324"
+      },
+      "independent_oracle": "Two same-SkillId employees have distinct structural graphs [30,75] and [40], independently caused HP105/40, their exact copy/query identities, and unchanged shared prototype; current12 U08 carrier cases additionally preserve numeric-only binding.",
+      "evidence_refs": [
+        "same_skill_structural",
+        "external_core",
+        "selected_support_world",
+        "current_impact_69"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-06.2",
+      "text": "Pause 접수→Resume와 plan 교체·source 종료 뒤 남은 허용 payload가 선택된 소유/평가 시점을 보존하며 stale generation/provider는 거절된다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-06-REVIEWED-001",
+        "Content Digest": "sha256:99878b0420474d8d06114b4da11a1c570586ad4feb472b85d23a7550318b3324"
+      },
+      "independent_oracle": "Both distinct structural owners accepted while paused resume with their original delay0/20 plan; pending/released owner and Snapshot/Live time survive allowed replacement and source termination; stale provider/generation cannot regain authority.",
+      "evidence_refs": [
+        "post_lethal_impact",
+        "same_skill_structural",
+        "pending_owner",
+        "flow_rollback",
+        "selected_support_world",
+        "current_impact_69",
+        "literal_gap_extensions"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-07.1",
+      "text": "손상된 참조·충돌 bundle·부적격 구조는 게시와 장착/전환을 부분 적용하지 않고 거절한다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-07-REVIEWED-001",
+        "Content Digest": "sha256:9049041fa35eefef628735d8e30eee40f3849cf2383c451652091db85cf69fdf"
+      },
+      "independent_oracle": "Recipe/property/reach/conflicting replacement/invalid reference are refused before partial publication or configuration commit; only legal form/loadout contexts count.",
+      "evidence_refs": [
+        "compiler",
+        "publication_world",
+        "publication_adversaries",
+        "publication_variants",
+        "publication_forms",
+        "external_core"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-07.2",
+      "text": "피해 범위만 바꾼 합성 스킬에서 자기 회복·다른 effect·carrier·채널·HP 비용·출처는 보존되고 최종 query와 실제 실행이 일치한다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-07-REVIEWED-001",
+        "Content Digest": "sha256:9049041fa35eefef628735d8e30eee40f3849cf2383c451652091db85cf69fdf"
+      },
+      "independent_oracle": "Effect-only footprint leaves sibling13 and Self heal fixed; fixed support leaves Self channel carrier and authored HP cost; primary attacker/cost/source remain unchanged in actual consumption.",
+      "evidence_refs": [
+        "flow",
+        "selected_support_world",
+        "support_corrupt",
+        "external_monk",
+        "literal_gap_extensions"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-08.1",
+      "text": "정상 선택·무자격/거리 밖 거절, 태아 자기 제외/거리 이탈·복귀와 포큐버스 자기 허용/부여 뒤 이탈 유지·재진입 무충전을 실제 명령과 효과로 검증하며 자동 retarget이 없다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-08-REVIEWED-002",
+        "Content Digest": "sha256:66c37cc0e0ea5f4f81ea8f68c9a5fa687366efe2531797b52fe606d3a5ec903a"
+      },
+      "independent_oracle": "Qualified selection rejects enemy/object/out-of-reach; fixed support excludes self and returns same connection after range reentry; personal permits self and keeps residual balances out of range without refill or retarget.",
+      "evidence_refs": [
+        "personal",
+        "selected_support_world",
+        "external_area",
+        "external_single"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-08.2",
+      "text": "대상 철수/사망/재배치 및 source 종료에서 각 효과의 연결/방어막 수명이 맞고 새 identity나 다른 아군으로 이전하지 않는다. 한 대상 무효화가 다른 포큐버스 대상의 유효 방어막을 종료하지 않는다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-08-REVIEWED-002",
+        "Content Digest": "sha256:66c37cc0e0ea5f4f81ea8f68c9a5fa687366efe2531797b52fe606d3a5ec903a"
+      },
+      "independent_oracle": "Recipient withdrawal/death affects only its personal pool; fixed connection becomes terminal and never transfers; redeploy has new battle identity; provider death/withdrawal reclaims only its source groups.",
+      "evidence_refs": [
+        "personal",
+        "selected_support_world"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-09.1",
+      "text": "정상 공개 시전에서 대상별1회 개인 부여·독립 흡수·늦은 진입 미부여·이탈 유지·재진입/시전자 이동 무충전과 선택1명 강화 결과를 독립 숫자로 검증한다. 대상 수나 수혜자 modifier가 개인량을 증식하지 않고 source modifier는 한 번이며 기존 R12 공유 보호 동작을 보존한다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-09-REVIEWED-002",
+        "Content Digest": "sha256:8111eff65c32f6001fc74e16c0dbf87e13043080f63dde48132e95cbd2ed0ee7"
+      },
+      "independent_oracle": "Independent area450 per release recipient and selected825/1200; source expression/modifier once, Snapshot450/Live825, recipient stats700/900 ignored; no late join/refill; actual external enemy consumer and unchanged generic shared R12 regression.",
+      "evidence_refs": [
+        "personal",
+        "external_area",
+        "external_single",
+        "current_impact_69"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-09.2",
+      "text": "HP 비용 우회·방어 후 흡수/초과분·기존 보호 priority·회복/Rest 무충전·개별 소진/만료/대상종료·source 종료·release 후 CC·같은 출처 재시전 전체교체/다른 출처 독립 및 늦은 실패 원자성을 검증한다. 시험용 보호량/기간/강화량을 공식 밸런스로 채택하지 않는다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-09-REVIEWED-002",
+        "Content Digest": "sha256:8111eff65c32f6001fc74e16c0dbf87e13043080f63dde48132e95cbd2ed0ee7"
+      },
+      "independent_oracle": "HealthCost and heal do not recharge; mitigated700 consumes personal H70/E30/P450/L20 then shared100 and only30HP; source/effect groups recast atomically, others remain; actual post-release Silence/Stun, expiry/death/retreat and late fault preserve successor semantics. Fixture constants are not official balance.",
+      "evidence_refs": [
+        "personal",
+        "current_impact_69"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-10.1",
+      "text": "실제 regular basic의20/40/80과 기준속도100에서115/120/130, 비대상 active/proc 불변 및 중복 source 비중첩을 독립 oracle로 검증한다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-10-REVIEWED-001",
+        "Content Digest": "sha256:de279657b97723fede69f18ef6c14a856fa4c0aba105667b91d7afa779748491"
+      },
+      "independent_oracle": "Regular20/40/80 damages120/140/180 at115/120/130 speed; actual Corrupt command uses catalyst and130-speed next time770; triggered and ExtraAttack remain100 for structural; legacy remains120; eligibility precedes family winner and sources do not stack incorrectly.",
+      "evidence_refs": [
+        "support_corrupt",
+        "selected_support_world",
+        "external_support",
+        "current_impact_69"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-10.2",
+      "text": "집중 종료·거리 이탈·Hard CC·직접 중지·Pause와 작성된 HP 비용에서 원 소유/원자성/부족 실패가 유지된다. 침식 수치 fixture의 시험용 penalty와 공식 미정 penalty를 구분한다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-10-REVIEWED-001",
+        "Content Digest": "sha256:de279657b97723fede69f18ef6c14a856fa4c0aba105667b91d7afa779748491"
+      },
+      "independent_oracle": "Original channel ends on source/control/reinput, range return retains identity, Pause stops advancement; authored Self HealthCost10 pays once and exactHP10 refuses atomically at consumption. Corrupt fixture defense-1 is representative only.",
+      "evidence_refs": [
+        "selected_support_world",
+        "support_corrupt",
+        "literal_gap_extensions",
+        "current_impact_69"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-11.1",
+      "text": "피해 범위를 넓혀 적 여러 명을 맞혀도 회복은 시전자에게 한 번이고 다른 아군을 치유하거나 대상 수에 비례해 반복하지 않는다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-11-REVIEWED-001",
+        "Content Digest": "sha256:ffd04b5d1f8cf408b3ba6106906ba4bdeee659af072895d470063793278f0932"
+      },
+      "independent_oracle": "Two footprint recipients get20 Physical each while sibling13 only hits inherited target; only caster receives one37 heal, clamped990to1000. Normal external Monk consumes40 and heals7 once.",
+      "evidence_refs": [
+        "flow",
+        "external_monk"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-11.2",
+      "text": "빈 범위·무적·완전 흡수·부분 흡수·처치/비처치에서 settled 실제 HP-loss 기준 분기가 맞고 Physical/source/최대HP clamp를 보존한다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-11-REVIEWED-001",
+        "Content Digest": "sha256:ffd04b5d1f8cf408b3ba6106906ba4bdeee659af072895d470063793278f0932"
+      },
+      "independent_oracle": "Effect HpLost0 with sibling13 does not heal; full shield100 suppresses but partial99 yielding1HP triggers; independent occurrence0/100/0 heals0/37/0; new table supplies real empty shape, invulnerability and lethal/nonlethal damage gates with Physical/source retained.",
+      "evidence_refs": [
+        "post_lethal_impact",
+        "flow",
+        "flow_rollback",
+        "literal_gap_extensions",
+        "external_monk"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-12.1",
+      "text": "기본 효과와 생성 효과의 서로 다른 사본 기여를 실제 피해/보호/상태 결과에서 추적하고 위조·stale source/세대·권한은 거절한다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-12-REVIEWED-001",
+        "Content Digest": "sha256:5c8d112fd3572efb6cb68b45c8f0a465d238ffd76eb90f6574813b65c66b7fb2"
+      },
+      "independent_oracle": "Finite child original/grant/modifier copy provenance and distinct action/delivery resource scopes survive real execution; stale/settled source cannot execute; support contributor has no action/delivery/use authority and attacker retains credit.",
+      "evidence_refs": [
+        "post_lethal_impact",
+        "pending_owner",
+        "flow",
+        "storage_bindings",
+        "support_corrupt",
+        "external_core",
+        "current_impact_69"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-12.2",
+      "text": "유물 유무·새 구조 조합과 관계없이 에고 침식 및 기존 source/reinput/보스 진행 권한 회귀가 유지된다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-12-REVIEWED-001",
+        "Content Digest": "sha256:5c8d112fd3572efb6cb68b45c8f0a465d238ffd76eb90f6574813b65c66b7fb2"
+      },
+      "independent_oracle": "Inherited corrosion/suppression predicates and boss-specific authority retain reviewed unchanged branches; current R10/R11/R12/host source, reinput, Flow and cleanup exercise changed shared consumers. The69 selection does not claim to rerun dedicated corrosion tests. Transformed support reinput uses the same actor-owned stop boundary.",
+      "evidence_refs": [
+        "selected_support_world",
+        "literal_gap_extensions",
+        "current_impact_69",
+        "predecessor_impact"
+      ],
+      "pending_evidence": [
+        "predecessor_impact"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "PE-CRSA-13.1",
+      "text": "독립 새 ID grant→다른 유물 강화와 세 대표 구조가 정상 공개 경로에서 실제 결과를 만들고 query와 일치한다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-13-REVIEWED-001",
+        "Content Digest": "sha256:a35e05c0e46fe30c411b27b59cbc48bfc48573ae7b63a6b71fd36e61d8a2e57b"
+      },
+      "independent_oracle": "Normal external new-ID catalogs/finite grant+cross-relic selector and all representative families proceed through public commands to literal query and actual HP/shield outcomes; component preparation is not mislabeled normal acquisition.",
+      "evidence_refs": [
+        "external_core",
+        "external_closure",
+        "external_area",
+        "external_single",
+        "external_support",
+        "external_monk",
+        "cli_public",
+        "public_comparator"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-13.2",
+      "text": "unknown property/잘못된 reference/type/충돌/미지원 reactive authoring은 정확한 source 위치·사유로 거절되고 부분 catalog 게시가 없다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-13-REVIEWED-001",
+        "Content Digest": "sha256:a35e05c0e46fe30c411b27b59cbc48bfc48573ae7b63a6b71fd36e61d8a2e57b"
+      },
+      "independent_oracle": "Unknown/wrong-unit/invalid reference/reactive and incompatible bundles reject with source/site/reason without replacing published content or nonempty run.",
+      "evidence_refs": [
+        "compiler",
+        "publication_adversaries",
+        "publication_forms",
+        "publication_variants",
+        "external_core",
+        "cli_public"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-14.1",
+      "text": "동일한 사본·variant를 fresh Core/Continue/checkpoint/retreat로 복원하면 같은 활성·휴면·실제 효과가 나오며 missing/changed content와 forged graph는 원본 보존 거절이다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-14-REVIEWED-001",
+        "Content Digest": "sha256:8c7b298dccd9fdcfcf8fb512601bc7319050d7275d082496246d4e881b51151f"
+      },
+      "independent_oracle": "Fresh Core/current-generation Continue reconstructs plans from real copy/variant without persisted derived execution; missing/changed generation and forged input preserve original save/public roots; normal external child process validates restart.",
+      "evidence_refs": [
+        "selected_support_world",
+        "external_core",
+        "cli_public",
+        "current_impact_69"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-14.2",
+      "text": "반복 구성 전환·전투·release 종료 뒤 과거 owner가 불필요하게 남지 않고 seed 제거·직원 이전/사망 회수·clone은 독립된 올바른 현재 구성을 갖는다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-14-REVIEWED-001",
+        "Content Digest": "sha256:8c7b298dccd9fdcfcf8fb512601bc7319050d7275d082496246d4e881b51151f"
+      },
+      "independent_oracle": "Removing seed/config owner does not affect allowed pending owner; source end/terminal cleanup and new battle reclaim old owners; clone/resource scopes are independent and transfer uses current copies.",
+      "evidence_refs": [
+        "post_lethal_impact",
+        "personal",
+        "pending_owner",
+        "flow_rollback",
+        "selected_support_world",
+        "external_closure",
+        "current_impact_69"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-15.1",
+      "text": "one-short/exact 경계와 누적 후보·plan 교체·late fault에서 실제 requested/accepted·retained가 정확하고 상태·RNG·ID·저장에 부분 commit이 없다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-15-REVIEWED-001",
+        "Content Digest": "sha256:00b4991c11bd1059303fd7383b2212576e71489748081571e36120c592b430f3"
+      },
+      "independent_oracle": "Exact/one-short installed owner/cast/clone/native World work/retained admission and actual lethal-child consumption tick work, cumulative structural compile and late publication/cancel/recast failures preserve transaction roots, queue, RNG/IDs/save; retry equals clean success.",
+      "evidence_refs": [
+        "literal_gap_extensions",
+        "post_lethal_impact",
+        "owner_install",
+        "storage_bindings",
+        "pending_owner",
+        "publication_adversaries",
+        "personal",
+        "flow_rollback",
+        "current_impact_69"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-15.2",
+      "text": "같은 seed/구성·관측 off/on/saturated 및 다양한 장착 순서에서 권위 결과가 같고 source/lease/cache 해제 뒤 불필요한 retained 증가가 없다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-15-REVIEWED-001",
+        "Content Digest": "sha256:00b4991c11bd1059303fd7383b2212576e71489748081571e36120c592b430f3"
+      },
+      "independent_oracle": "Observation off/on/saturated yields same authoritative amounts/outcomes, slot permutations same finite plan, scoped child/personal/source lifetime ends without retained owner leak.",
+      "evidence_refs": [
+        "post_lethal_impact",
+        "compiler",
+        "personal",
+        "flow",
+        "flow_rollback",
+        "external_core",
+        "external_closure",
+        "current_impact_69"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-16.1",
+      "text": "선행223 조건과 별도31행의 affected/non-impact 근거가 현재 source 및 실제 nonzero 결과에 연결되고 영향받은 공개·fault·저장·수명 회귀를 검증한다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-16-REVIEWED-001",
+        "Content Digest": "sha256:bca89f62c1a34e1d6ef1f4f72beef8d352ea2042f46431a49d7bf8b7826c7546"
+      },
+      "independent_oracle": "Exact191 prior+32 U08 sentence IDs and separate31 R06 literal rows are mapped to changed branch/owner/consumer paths and nonzero current execution or reviewed inherited component evidence.",
+      "evidence_refs": [
+        "post_lethal_impact",
+        "predecessor_impact",
+        "current_impact_69",
+        "authoring_preset",
+        "legacy_amount"
+      ],
+      "pending_evidence": [
+        "predecessor_impact"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "PE-CRSA-16.2",
+      "text": "PC 비시간 지표와 R05 원시 전후 비용·결정론·retained/allocator 범위를 비교하며 실패 원본·peak-only 경고·환경 한계를 보존한다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-16-REVIEWED-001",
+        "Content Digest": "sha256:bca89f62c1a34e1d6ef1f4f72beef8d352ea2042f46431a49d7bf8b7826c7546"
+      },
+      "independent_oracle": "Unmodified36 PC workloads and576 non-time values compared to immediate predecessor; original R05 cost guards/samples and historical peak-only failure are preserved. No shared-host deployment timing claim or discarded raw failure.",
+      "evidence_refs": [
+        "pc_current",
+        "r05_current",
+        "publication_measurement"
+      ],
+      "pending_evidence": [],
+      "status": "evidence_available_currentness_review_required"
+    },
+    {
+      "id": "PE-CRSA-17.1",
+      "text": "구현·테스트 역할이 분리되고 모든 수용문장/필수차원/통합 경계의 실제 증거가 고정된 현재 target에 추적되며 실패·미실행을 숨기지 않는다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-17-REVIEWED-001",
+        "Content Digest": "sha256:188ed9d21dec23cb9fb6cd0560ff4e5df81530eba1e079083006ecb1d41e44cc"
+      },
+      "independent_oracle": "Authorship and sole Sol execution remain distinct; selected named raw rows and exact source/material identities cover every34 sentence/10 dimension/17 seam; partial failures and pending work remain visible.",
+      "evidence_refs": [
+        "predecessor_impact",
+        "current_impact_69",
+        "frozen_restore",
+        "independent_completion"
+      ],
+      "pending_evidence": [
+        "predecessor_impact",
+        "frozen_restore",
+        "independent_completion"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "PE-CRSA-17.2",
+      "text": "격리 정·역 복원과 비참여 Astra/High의 전체 Goal 감사가 Complete/High/open0이고 출구 currentness 및 후속 문서 delta를 인수한다.",
+      "policy_ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CRSA-17-REVIEWED-001",
+        "Content Digest": "sha256:188ed9d21dec23cb9fb6cd0560ff4e5df81530eba1e079083006ecb1d41e44cc"
+      },
+      "independent_oracle": "Isolated forward/reverse exact restoration and nonparticipant entire-goal Complete/High/open0 plus exit currentness and canonical/follow-on docs are required, never inferred from focused PASS.",
+      "evidence_refs": [
+        "frozen_restore",
+        "independent_completion"
+      ],
+      "pending_evidence": [
+        "frozen_restore",
+        "independent_completion"
+      ],
+      "status": "pending"
+    }
+  ],
+  "integration_seams": [
+    {
+      "id": "IVA-CRSA-V01",
+      "sentence_refs": [
+        "PE-CRSA-01.1",
+        "PE-CRSA-01.2"
+      ],
+      "owner": "GOAL-CRSA-01/WP-CRSA-VERIFY"
+    },
+    {
+      "id": "IVA-CRSA-V02",
+      "sentence_refs": [
+        "PE-CRSA-02.1",
+        "PE-CRSA-02.2"
+      ],
+      "owner": "GOAL-CRSA-01/WP-CRSA-VERIFY"
+    },
+    {
+      "id": "IVA-CRSA-V03",
+      "sentence_refs": [
+        "PE-CRSA-03.1",
+        "PE-CRSA-03.2"
+      ],
+      "owner": "GOAL-CRSA-01/WP-CRSA-VERIFY"
+    },
+    {
+      "id": "IVA-CRSA-V04",
+      "sentence_refs": [
+        "PE-CRSA-04.1",
+        "PE-CRSA-04.2"
+      ],
+      "owner": "GOAL-CRSA-01/WP-CRSA-VERIFY"
+    },
+    {
+      "id": "IVA-CRSA-V05",
+      "sentence_refs": [
+        "PE-CRSA-05.1",
+        "PE-CRSA-05.2"
+      ],
+      "owner": "GOAL-CRSA-01/WP-CRSA-VERIFY"
+    },
+    {
+      "id": "IVA-CRSA-V06",
+      "sentence_refs": [
+        "PE-CRSA-06.1",
+        "PE-CRSA-06.2"
+      ],
+      "owner": "GOAL-CRSA-01/WP-CRSA-VERIFY"
+    },
+    {
+      "id": "IVA-CRSA-V07",
+      "sentence_refs": [
+        "PE-CRSA-07.1",
+        "PE-CRSA-07.2"
+      ],
+      "owner": "GOAL-CRSA-01/WP-CRSA-VERIFY"
+    },
+    {
+      "id": "IVA-CRSA-V08",
+      "sentence_refs": [
+        "PE-CRSA-08.1",
+        "PE-CRSA-08.2"
+      ],
+      "owner": "GOAL-CRSA-01/WP-CRSA-VERIFY"
+    },
+    {
+      "id": "IVA-CRSA-V09",
+      "sentence_refs": [
+        "PE-CRSA-09.1",
+        "PE-CRSA-09.2"
+      ],
+      "owner": "GOAL-CRSA-01/WP-CRSA-VERIFY"
+    },
+    {
+      "id": "IVA-CRSA-V10",
+      "sentence_refs": [
+        "PE-CRSA-10.1",
+        "PE-CRSA-10.2"
+      ],
+      "owner": "GOAL-CRSA-01/WP-CRSA-VERIFY"
+    },
+    {
+      "id": "IVA-CRSA-V11",
+      "sentence_refs": [
+        "PE-CRSA-11.1",
+        "PE-CRSA-11.2"
+      ],
+      "owner": "GOAL-CRSA-01/WP-CRSA-VERIFY"
+    },
+    {
+      "id": "IVA-CRSA-V12",
+      "sentence_refs": [
+        "PE-CRSA-12.1",
+        "PE-CRSA-12.2"
+      ],
+      "owner": "GOAL-CRSA-01/WP-CRSA-VERIFY"
+    },
+    {
+      "id": "IVA-CRSA-V13",
+      "sentence_refs": [
+        "PE-CRSA-13.1",
+        "PE-CRSA-13.2"
+      ],
+      "owner": "GOAL-CRSA-01/WP-CRSA-VERIFY"
+    },
+    {
+      "id": "IVA-CRSA-V14",
+      "sentence_refs": [
+        "PE-CRSA-14.1",
+        "PE-CRSA-14.2"
+      ],
+      "owner": "GOAL-CRSA-01/WP-CRSA-VERIFY"
+    },
+    {
+      "id": "IVA-CRSA-V15",
+      "sentence_refs": [
+        "PE-CRSA-15.1",
+        "PE-CRSA-15.2"
+      ],
+      "owner": "GOAL-CRSA-01/WP-CRSA-VERIFY"
+    },
+    {
+      "id": "IVA-CRSA-V16",
+      "sentence_refs": [
+        "PE-CRSA-16.1",
+        "PE-CRSA-16.2"
+      ],
+      "owner": "GOAL-CRSA-01/WP-CRSA-VERIFY"
+    },
+    {
+      "id": "IVA-CRSA-V17",
+      "sentence_refs": [
+        "PE-CRSA-17.1",
+        "PE-CRSA-17.2"
+      ],
+      "owner": "GOAL-CRSA-01/WP-CRSA-VERIFY"
+    }
+  ],
+  "required_dimensions": [
+    {
+      "id": "success",
+      "evidence_refs": [
+        "compiler",
+        "flow",
+        "personal",
+        "support_corrupt",
+        "external_core",
+        "external_area",
+        "external_single",
+        "external_support",
+        "external_monk"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "invalid_input",
+      "evidence_refs": [
+        "typed_root",
+        "compiler",
+        "publication_adversaries",
+        "publication_variants",
+        "publication_forms",
+        "external_core"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "failure_rollback",
+      "evidence_refs": [
+        "post_lethal_impact",
+        "owner_install",
+        "pending_owner",
+        "flow_rollback",
+        "personal",
+        "publication_adversaries",
+        "selected_support_world",
+        "literal_gap_extensions"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "retry_idempotency",
+      "evidence_refs": [
+        "post_lethal_impact",
+        "compiler",
+        "personal",
+        "flow_rollback",
+        "selected_support_world",
+        "literal_gap_extensions"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "ordering_concurrency",
+      "evidence_refs": [
+        "typed_root",
+        "compiler",
+        "flow",
+        "flow_rollback",
+        "personal",
+        "selected_support_world",
+        "same_skill_structural",
+        "current_impact_69"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "boundary_empty_max",
+      "evidence_refs": [
+        "typed_root",
+        "compiler",
+        "owner_install",
+        "pending_owner",
+        "personal",
+        "publication_adversaries",
+        "literal_gap_extensions"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "disconnect_restart_persistence",
+      "evidence_refs": [
+        "external_core",
+        "selected_support_world",
+        "pending_owner",
+        "current_impact_69"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "live_data",
+      "evidence_refs": [
+        "external_core",
+        "external_closure",
+        "external_area",
+        "external_single",
+        "external_support",
+        "external_monk",
+        "cli_public",
+        "authoring_preset"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "producer_consumer",
+      "evidence_refs": [
+        "post_lethal_impact",
+        "flow",
+        "flow_rollback",
+        "personal",
+        "support_corrupt",
+        "external_core",
+        "literal_gap_extensions",
+        "same_skill_structural",
+        "current_impact_69"
+      ],
+      "pending_evidence": []
+    },
+    {
+      "id": "legacy_fallback_absence",
+      "evidence_refs": [
+        "post_lethal_impact",
+        "storage_bindings",
+        "legacy_amount",
+        "current_impact_69",
+        "predecessor_impact",
+        "pc_current",
+        "r05_current",
+        "independent_completion"
+      ],
+      "pending_evidence": [
+        "predecessor_impact",
+        "independent_completion"
+      ]
+    }
+  ],
+  "execution_nodes": {
+    "AG-CRSA-RUNTIME": {
+      "evidence": [
+        "post_lethal_impact",
+        "compiler",
+        "owner_install",
+        "pending_owner",
+        "storage_bindings",
+        "flow",
+        "flow_rollback",
+        "personal",
+        "support_corrupt",
+        "publication_adversaries",
+        "literal_gap_extensions",
+        "same_skill_structural"
+      ],
+      "meaning": "SCHEMA/PLAN/CONSUMERS/LIFECYCLE integrated source; Root reviewed A/B/C/D/E/F/G"
+    },
+    "WP-CRSA-PUBLIC": {
+      "evidence": [
+        "external_core",
+        "external_closure",
+        "external_area",
+        "external_single",
+        "external_support",
+        "external_monk",
+        "cli_public",
+        "public_comparator",
+        "authoring_preset"
+      ],
+      "meaning": "normal external content, public command/query, CLI, fresh Continue and canonical authoring docs"
+    },
+    "WP-CRSA-VERIFY": {
+      "evidence": [
+        "post_lethal_impact",
+        "current_impact_69",
+        "predecessor_impact",
+        "pc_current",
+        "r05_current",
+        "frozen_restore",
+        "independent_completion"
+      ],
+      "meaning": "independent oracles plus Sol raw execution and nonparticipant whole-goal audit"
+    }
+  },
+  "limits": [
+    "Current integration/performance/restore/audit remain pending until actual bindings and mechanical checks close.",
+    "Root reviews product-side source relationships; neither this file nor a passing collector is the independent completion verdict.",
+    "Previously failed full runs retain failure status even when their named passed rows support a narrower claim.",
+    "Legacy no-structural-rule semantics can be preserved while nonempty equipped-roster preflight adds authoring work; cost is assessed by current raw measurements, never by blanket exact-input reuse."
+  ]
+}

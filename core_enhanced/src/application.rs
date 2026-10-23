@@ -104,6 +104,9 @@ macro_rules! define_application_command_kinds {
 
 define_application_command_kinds!(
     StartNewGame,
+    SkipTutorial,
+    AcknowledgeFirstReturnStory,
+    ChooseExpeditionContinuation,
     ContinueRun,
     ResetActiveRun,
     RetryPlayerProfile,
@@ -127,11 +130,14 @@ define_application_command_kinds!(
     RequestRelicEffectivePlan,
     PreviewRelicCorruption,
     CorruptRelic,
+    PreviewSkillFragmentBloom,
     PreviewRelicDismantle,
     DismantleRelic,
     RequestMapData,
+    MoveToFacilityRoom,
     SelectMapNode,
     ConvertMapNodeWithMonolith,
+    HatchEncounter,
     ConfirmEnterNode,
     CancelSelectedNode,
     CompleteNode,
@@ -142,6 +148,11 @@ define_application_command_kinds!(
     RequestEmergencySupplies,
     OpenHeadquartersShop,
     SelectReward,
+    InvestRelicReward,
+    SelectRelicFusionInputs,
+    ConfirmRelicFusion,
+    DealerAct,
+    StressCombatAct,
     PurchaseItem,
     SellItem,
     RefreshShop,
@@ -405,6 +416,7 @@ define_application_result_kinds!(
     BattleSkillTargetingFocusChanged,
     BattleSkillActivated,
     RewardState,
+    DealerState,
     Ok,
 );
 
@@ -587,6 +599,7 @@ fn application_result_kind(result: &BehaviorResult) -> ApplicationResultKind {
         }
         BehaviorResult::BattleSkillActivated { .. } => K::BattleSkillActivated,
         BehaviorResult::RewardState { .. } => K::RewardState,
+        BehaviorResult::DealerState { .. } => K::DealerState,
         BehaviorResult::Ok => K::Ok,
     }
 }
@@ -1039,6 +1052,16 @@ impl CoreApplication {
 
     pub(crate) fn set_amount_observation_enabled(&mut self, enabled: bool) {
         self.core.set_amount_observation_enabled(enabled);
+    }
+
+    pub(crate) fn prepare_lab(&mut self,recipe:&crate::authoring::LabPreparation)->Result<crate::authoring::LabPreparationReceipt,ApplicationError>{
+        self.core.prepare_lab(recipe).map_err(ApplicationError::from_domain)
+    }
+    pub(crate) fn set_lab_coverage(&mut self,plan:Option<Arc<crate::mod_validation::CoveragePlan>>)->Result<(),ApplicationError>{
+        self.core.set_lab_coverage(plan).map_err(ApplicationError::from_domain)
+    }
+    pub(crate) fn lab_coverage(&self)->Result<Option<crate::mod_validation::CoverageReport>,ApplicationError>{
+        self.core.lab_coverage().map_err(ApplicationError::from_domain)
     }
 
     pub(crate) fn authoring_trace(
@@ -1674,7 +1697,7 @@ impl CoreApplication {
         })
     }
 
-    /// Explicit conversion returns new bytes and never overwrites or continues the input save.
+    /// Retired V7 conversion is explicitly unsupported and leaves the original untouched.
     pub fn convert_active_run_v7(
         &self,
         original: &[u8],
@@ -1686,7 +1709,7 @@ impl CoreApplication {
             .map_err(ApplicationError::from_domain)
     }
 
-    /// Explicit V8 conversion validates original bytes before creating a V12 checkpoint.
+    /// Retired V8 conversion is explicitly unsupported and leaves the original untouched.
     pub fn convert_active_run_v8(
         &self,
         original: &[u8],
@@ -1696,6 +1719,10 @@ impl CoreApplication {
         self.core
             .convert_active_run_v8(original, expected_original_identity)
             .map_err(ApplicationError::from_domain)
+    }
+
+    pub fn inspect_checkpoint_requirements(bytes: &[u8], max_bytes: usize) -> Result<crate::game::data::content_pack::ContentIdentity, ApplicationError> {
+        GameCore::inspect_checkpoint_requirements(bytes, max_bytes).map_err(ApplicationError::from_domain)
     }
 
     pub fn export_active_run_checkpoint(
@@ -1760,6 +1787,25 @@ impl CoreApplication {
         })
     }
 
+    /// Install the profile accepted by the host store, including exact vault ownership.
+    pub fn install_authoritative_player_profile(&mut self, profile: ApplicationDocument) -> Result<(), ApplicationError> {
+        self.ensure_battle_not_faulted()?;
+        self.advance_transaction_revision();
+        let profile: PlayerProfileState = serde_json::from_value(profile.0).map_err(|error| {
+            ApplicationError::invalid_input(ApplicationErrorKind::InvalidProfile, "invalid_player_profile", &error)
+        })?;
+        self.core.install_authoritative_player_profile(profile).map_err(ApplicationError::from_domain)
+    }
+
+    /// Prepare exact host profile installation before a paired administrative acceptance.
+    pub fn prepare_authoritative_profile_install(&mut self, profile: ApplicationDocument) -> Result<PreparedApplication<'_, ()>, ApplicationError> {
+        self.ensure_battle_not_faulted()?;
+        self.advance_transaction_revision();
+        let profile: PlayerProfileState = serde_json::from_value(profile.0).map_err(|error| ApplicationError::invalid_input(ApplicationErrorKind::InvalidProfile, "invalid_player_profile", &error))?;
+        let prepared = self.core.prepare_authoritative_profile_install(profile).map_err(ApplicationError::from_domain)?;
+        self.prepare_publication(prepared)
+    }
+
     pub fn merge_encounter_compendium_profile(
         &mut self,
         profile: ApplicationDocument,
@@ -1807,8 +1853,8 @@ mod tests {
 
     #[test]
     fn command_kind_is_exactly_bijective_with_all_domain_actions() {
-        assert_eq!(ApplicationCommandKind::ALL.len(), 75);
-        assert_eq!(ActionKind::ALL.len(), 75);
+        assert_eq!(ApplicationCommandKind::ALL.len(), 87);
+        assert_eq!(ActionKind::ALL.len(), 87);
         for domain in ActionKind::ALL {
             let application = ApplicationCommandKind::from_domain(*domain);
             assert_eq!(application.into_domain(), *domain);
@@ -1833,7 +1879,7 @@ mod tests {
         let valid = ApplicationCommand::try_new(
             ApplicationCommandKind::StartNewGame,
             ApplicationDocument(json!({
-                "game_mode": GameMode::Standard,
+                "game_mode": GameMode::Tutorial,
                 "replace_active_run": false,
             })),
         )
@@ -1896,7 +1942,7 @@ mod tests {
             let command = ApplicationCommand::try_new(
                 ApplicationCommandKind::StartNewGame,
                 ApplicationDocument(
-                    json!({"game_mode": GameMode::Standard, "replace_active_run": false}),
+                    json!({"game_mode": GameMode::Tutorial, "replace_active_run": false}),
                 ),
             )
             .unwrap();
@@ -1986,7 +2032,7 @@ mod tests {
         }
 
         let behavior = BehaviorResult::RunStartFlowStarted {
-            game_mode: GameMode::Standard,
+            game_mode: GameMode::Tutorial,
             visual_novel: None,
         };
         let expected = ApplicationResult::from_behavior(&behavior).unwrap();
@@ -2175,7 +2221,7 @@ mod tests {
             ),
             (
                 GameError::TutorialCompletionRequired {
-                    game_mode: GameMode::Endless,
+                    game_mode: GameMode::Expedition,
                 },
                 ApplicationErrorKind::TutorialCompletionRequired,
             ),
@@ -2418,7 +2464,6 @@ mod persistence_rollback_tests {
         let token = application.capture_persistence_rollback().unwrap().unwrap();
         let profile = PlayerProfileState {
             highest_floor_reached: 99,
-            standard_tutorial_completed: true,
             ..Default::default()
         };
         application

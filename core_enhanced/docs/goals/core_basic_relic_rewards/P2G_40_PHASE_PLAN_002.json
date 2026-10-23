@@ -1,0 +1,293 @@
+{
+  "validation_receipt_ref": {
+    "Artifact Type": "Phase Plan Validation Receipt",
+    "Artifact ID": "PVR-CBRR-002",
+    "Content Digest": null
+  },
+  "validator_method_version": "p2g40-receipt-validator/1.2.0",
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Phase Plan",
+        "Artifact ID": "PP-CBRR-002",
+        "Content Digest": "sha256:881cb24d02c4979b1080261d91dd722df5f4aa102392c560602fb6e98eebbf93"
+      },
+      "payload": {
+        "Bound Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CBRR-001",
+          "Content Digest": "sha256:08495a1c4745d09d4c6aef52125aa114eb0730b2ce795c2878fac57e615a0743"
+        },
+        "Exact Prerequisite Composite Basis": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CBRR-004",
+            "Content Digest": "sha256:710bc2b546868ef4175c934a7cfa13857af20901695814408d0984e5ae5b5da1"
+          },
+          "Final Policy Freeze Ref": {
+            "Artifact Type": "Final Policy Freeze",
+            "Artifact ID": "FPF-CBRR-001",
+            "Content Digest": "sha256:08495a1c4745d09d4c6aef52125aa114eb0730b2ce795c2878fac57e615a0743"
+          },
+          "Applicable Change/Obligation Basis": []
+        },
+        "Applicable P2G-40 Obligation Key Set": [],
+        "P2G-40 Resolution Record Ref Set": [],
+        "Applicable Obligation Supersession Record Ref Set": [],
+        "Goal Structure Fact": "single_phase",
+        "Parallelization": "none approved",
+        "work_packages": [
+          {
+            "id": "WP-CBRR-RUNTIME",
+            "selectors": {
+              "implementation": [
+                "PE-CBRR-CHOICE",
+                "PE-CBRR-DUST",
+                "PE-CBRR-FUSION"
+              ]
+            },
+            "boundary": "fixed map activity→session→choice/invest/select-confirm→common grant/node completion",
+            "expected_change": "three reward activities with distinct candidates, cost preview/prevalidation, fixed six fusion probability rows and atomic completion",
+            "prerequisite": "STORE and PUBLIC same session/command identity",
+            "validation": "normal, shortage/zero, refusal/old selection, all6 rows/input order, copy/cost/result atomicity",
+            "unknown": "private schema and exact command names chosen in GEX"
+          },
+          {
+            "id": "WP-CBRR-STORE",
+            "selectors": {
+              "implementation": [
+                "PE-CBRR-STORE"
+              ],
+              "supporting": [
+                "PE-CBRR-CHOICE",
+                "PE-CBRR-DUST",
+                "PE-CBRR-FUSION"
+              ]
+            },
+            "boundary": "reward session/assets→checkpoint/Continue→paired host publish",
+            "expected_change": "preserve same-process activity; unfinished rewind and completed preserve; all costs/results together",
+            "prerequisite": "RUNTIME authoritative state and PUBLIC serialization",
+            "validation": "fresh-process partial/completed Continue, SavePoint, actual IO failure/retry",
+            "unknown": "optional/default wire additions preferred; version change only if codec requires"
+          },
+          {
+            "id": "WP-CBRR-PUBLIC",
+            "selectors": {
+              "implementation": [
+                "PE-CBRR-AUTHOR"
+              ],
+              "supporting": [
+                "PE-CBRR-CHOICE",
+                "PE-CBRR-DUST",
+                "PE-CBRR-FUSION",
+                "PE-CBRR-STORE"
+              ]
+            },
+            "boundary": "authored pool/weights/dust→loader validation→preview/eligibility/normal commands and result",
+            "expected_change": "normal supported RON candidate policy and query/command ports; pre-entry requirements; no future candidate disclosure",
+            "prerequisite": "RUNTIME and STORE coherent protocol",
+            "validation": "supported external pack and actual host, invalid authoring, effects/cost/probabilities/eligibility",
+            "unknown": "official relic definitions remain U21"
+          },
+          {
+            "id": "WP-CBRR-VERIFY",
+            "selectors": {
+              "validation_only": [
+                "PE-CBRR-CHOICE",
+                "PE-CBRR-DUST",
+                "PE-CBRR-FUSION",
+                "PE-CBRR-STORE",
+                "PE-CBRR-AUTHOR"
+              ]
+            },
+            "boundary": "17acceptance through authoring/public/storage/host/impact and measured cost",
+            "expected_change": "durable actual-path evidence and final recoverable target",
+            "prerequisite": "all atomic implementation nodes fixed before final execution",
+            "validation": "nonzero actual selected/run/pass counts; preserved failures; exact/nonimpact reuse",
+            "unknown": "new runtime/cost evidence pending"
+          }
+        ],
+        "dependencies": [
+          {
+            "from": "WP-CBRR-RUNTIME",
+            "to": "WP-CBRR-STORE",
+            "type": "persistence_lifetime",
+            "evidence": "new activity session, cost and grant must have coherent writer/reader and consumer",
+            "broken": "partial cutover loses costs/results or hides required choices"
+          },
+          {
+            "from": "WP-CBRR-STORE",
+            "to": "WP-CBRR-RUNTIME",
+            "type": "persistence_lifetime",
+            "evidence": "new activity session, cost and grant must have coherent writer/reader and consumer",
+            "broken": "partial cutover loses costs/results or hides required choices"
+          },
+          {
+            "from": "WP-CBRR-PUBLIC",
+            "to": "WP-CBRR-STORE",
+            "type": "persistence_lifetime",
+            "evidence": "new activity session, cost and grant must have coherent writer/reader and consumer",
+            "broken": "partial cutover loses costs/results or hides required choices"
+          },
+          {
+            "from": "WP-CBRR-STORE",
+            "to": "WP-CBRR-PUBLIC",
+            "type": "persistence_lifetime",
+            "evidence": "new activity session, cost and grant must have coherent writer/reader and consumer",
+            "broken": "partial cutover loses costs/results or hides required choices"
+          },
+          {
+            "from": "WP-CBRR-RUNTIME",
+            "to": "WP-CBRR-VERIFY",
+            "type": "validation",
+            "evidence": "real paths need final producer/consumer",
+            "broken": "helper-only result replaces missing normal activity"
+          },
+          {
+            "from": "WP-CBRR-STORE",
+            "to": "WP-CBRR-VERIFY",
+            "type": "validation",
+            "evidence": "real paths need final producer/consumer",
+            "broken": "helper-only result replaces missing normal activity"
+          },
+          {
+            "from": "WP-CBRR-PUBLIC",
+            "to": "WP-CBRR-VERIFY",
+            "type": "validation",
+            "evidence": "real paths need final producer/consumer",
+            "broken": "helper-only result replaces missing normal activity"
+          }
+        ],
+        "atomic_groups": [
+          {
+            "id": "AG-CBRR-RUN",
+            "members": [
+              "WP-CBRR-RUNTIME",
+              "WP-CBRR-STORE",
+              "WP-CBRR-PUBLIC"
+            ],
+            "evidence": "Activity config/session, common grant and node completion, command/query and writer/reader transition together; partial support loses paid assets or consumer visibility."
+          }
+        ],
+        "standalone": [
+          "WP-CBRR-VERIFY"
+        ],
+        "cyclic_sccs": [
+          {
+            "members": [
+              "WP-CBRR-RUNTIME",
+              "WP-CBRR-STORE",
+              "WP-CBRR-PUBLIC"
+            ],
+            "disposition": "coimplement_atomic",
+            "atomic_group": "AG-CBRR-RUN",
+            "evidence": "Runtime↔stored authoritative state dependencies above; partial cutover invalid"
+          }
+        ],
+        "phases": [
+          {
+            "id": "PHASE-CBRR-01",
+            "primary": [
+              "PE-CBRR-CHOICE",
+              "PE-CBRR-DUST",
+              "PE-CBRR-FUSION",
+              "PE-CBRR-STORE",
+              "PE-CBRR-AUTHOR"
+            ],
+            "supporting": [],
+            "nodes": [
+              "AG-CBRR-RUN",
+              "WP-CBRR-VERIFY"
+            ],
+            "exit": "17acceptance/10dimensions/5IVA, normal loader/support activities/public/restore and cost evidence"
+          }
+        ],
+        "audits": [
+          {
+            "phase": "PHASE-CBRR-01",
+            "state": "fixed candidates, investment stage/dust, fusion selected inputs and results with coherent restore",
+            "checks": "3/2/1/0 choices, whole threshold cost, prior right preservation, six fusion rows, copy removal/normal output, actual query/restart/IO",
+            "evidence": "CODE_REVIEW and exact17acceptance; functional evidence generated during same phase",
+            "limitation": "planning review only; future content bodies and Unity excluded; no parallel agents"
+          }
+        ],
+        "integration": [
+          {
+            "id": "IVA-CBRR-CHOICE",
+            "source": "FPF-CBRR-001 PE-CBRR-CHOICE every acceptance item",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CBRR-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CBRR-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json PE-CBRR-CHOICE",
+            "evidence": "policy-derived actual normal path/raw evidence or exact unchanged-source reuse",
+            "prerequisite": "AG-CBRR-RUN and WP-CBRR-PUBLIC"
+          },
+          {
+            "id": "IVA-CBRR-DUST",
+            "source": "FPF-CBRR-001 PE-CBRR-DUST every acceptance item",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CBRR-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CBRR-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json PE-CBRR-DUST",
+            "evidence": "policy-derived actual normal path/raw evidence or exact unchanged-source reuse",
+            "prerequisite": "AG-CBRR-RUN and WP-CBRR-PUBLIC"
+          },
+          {
+            "id": "IVA-CBRR-FUSION",
+            "source": "FPF-CBRR-001 PE-CBRR-FUSION every acceptance item",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CBRR-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CBRR-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json PE-CBRR-FUSION",
+            "evidence": "policy-derived actual normal path/raw evidence or exact unchanged-source reuse",
+            "prerequisite": "AG-CBRR-RUN and WP-CBRR-PUBLIC"
+          },
+          {
+            "id": "IVA-CBRR-STORE",
+            "source": "FPF-CBRR-001 PE-CBRR-STORE every acceptance item",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CBRR-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CBRR-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json PE-CBRR-STORE",
+            "evidence": "policy-derived actual normal path/raw evidence or exact unchanged-source reuse",
+            "prerequisite": "AG-CBRR-RUN and WP-CBRR-PUBLIC"
+          },
+          {
+            "id": "IVA-CBRR-AUTHOR",
+            "source": "FPF-CBRR-001 PE-CBRR-AUTHOR every acceptance item",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CBRR-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CBRR-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json PE-CBRR-AUTHOR",
+            "evidence": "policy-derived actual normal path/raw evidence or exact unchanged-source reuse",
+            "prerequisite": "AG-CBRR-RUN and WP-CBRR-PUBLIC"
+          }
+        ],
+        "Shared Contract Handoff": "U16-3/4 common grants and activity lifecycle; U21 authored relic content; U26-B activity DTO; U28 persistence",
+        "Known Unknown/Limitations": [
+          "U16-3/4 remain later bundles. Dust3/9/18 and equal initial candidate weight1 are provisional authored balance. Official relic catalog remains empty; supported external pack supplies representative validation. Current three activities and restore semantics fixed."
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "record_ref": "PVR-CRAR-C2-P04-GEX10-001",
+  "captured_date": "2026-08-23",
+  "handoff_ref": "HA-CRAR-P2G60-002",
+  "goal_set_ref": "GS-CRAR-P2G50-002",
+  "goal_id": "GOAL-CRAR-C2-P04-BATTLE-KERNEL",
+  "phase_id": "PHASE-CRAR-C2-04-BATTLE-KERNEL",
+  "work_package": "WP-CRAR-C2-05",
+  "decision_ref": "DR-CRAR-006-R1",
+  "invariant_ref": "IVA-CRAR-C2-05",
+  "result": "GEX-10 exit criteria met",
+  "implemented_contract": {
+    "default_release_kernel_visibility": "crate-private",
+    "test_capability": "public only for test, debug_assertions, or explicit test-fixtures",
+    "production_command_producer": "GameCore application authority and its private active battle",
+    "production_public_kernel_mutation_bypasses": 0,
+    "production_public_raw_event_injection_ports": 0,
+    "finite_inputs": [
+      "WorldVec2 x and y",
+      "world radius",
+      "world speed",
+      "battle seconds"
+    ],
+    "non_finite_policy": "typed rejection before mutation; no clamp, default, normalization, or accepted total order"
+  },
+  "rejection_matrix": {
+    "position_radius_speed_cases": 12,
+    "time_cases": 3,
+    "values_per_dimension": ["NaN", "+infinity", "-infinity"],
+    "first_and_retry_error_equal": true,
+    "complete_authority_snapshot_equal": true,
+    "snapshot_includes": [
+      "transaction debug state",
+      "units and bodies",
+      "event queue and ordering",
+      "serialized event log",
+      "battlefield dimensions, positions, and obstacles",
+      "all sequence counters",
+      "seed",
+      "recording stacks"
+    ]
+  },
+  "validation": [
+    {"command": "cargo fmt --all -- --check", "result": "exit 0"},
+    {"command": "cargo check -p game_core --release", "result": "exit 0; warnings 0"},
+    {"command": "finite rejection and serialization matrix", "result": "all focused tests passed"},
+    {"command": "same-bucket heap permutation, boss priority, movement insertion order", "result": "3 focused tests passed"},
+    {"command": "cargo test -p game_core --test skill_runtime_contract", "result": "14 passed"},
+    {"command": "cargo test -p game_core --test skill_test_suite", "result": "4 passed"},
+    {"command": "valid battle-kernel default-release probe", "result": "exit 0; embedded validated data to GameCore live combat"},
+    {"command": "invalid battle-kernel default-release probe", "result": "expected exit 101; E0603 private module"},
+    {"command": "cargo test -p game_core", "result": "1138 passed; 0 failed; 0 ignored"},
+    {"command": "P01 feature manifest verifier", "result": "57 features; 42 contents; composite b6999623897695ac9d84474392df8682d1d5bb78160c21533747b2454d1f3cde; errors 0"},
+    {"command": "P02 valid/invalid release probes", "result": "valid exit 0; invalid expected exit 101 E0432/E0603/E0277/E0599"},
+    {"command": "P03 frozen-member comparison", "result": "32 unchanged; one expected P04 contract delta"}
+  ],
+  "predecessor_currentness": [
+    "ATR-CRAR-C2-P01-GEX20-004: Complete / High",
+    "ATR-CRAR-C2-P02-GEX20-004: Complete / High",
+    "ATR-CRAR-C2-P03-GEX20-002: Complete / High"
+  ],
+  "validation_dimensions": {
+    "success": "live validated publication to GameCore combat plus full Core oracle",
+    "invalid_input": "NaN and both infinities rejected for every scoped float-bearing input",
+    "failure_rollback": "complete kernel authority unchanged on every rejection",
+    "retry_idempotency": "identical typed error and state on retry",
+    "ordering_concurrency": "heap permutation and insertion-order determinism; no shared concurrent writer added",
+    "boundary_empty_max": "signed zero and ordinary finite round-trip; u64 millisecond conversion finite; empty/full existing oracles pass",
+    "disconnect_restart_persistence": "N/A: no checkpoint, reconnect, save, result-lifetime, or history-format change; owned by P05/P06",
+    "live_data": "embedded live data enters private kernel through GameCore",
+    "producer_consumer": "positive and negative standalone default-release probes",
+    "legacy_fallback_absence": "zero default-release public kernel/event bypass; no normalization or duplicate facade"
+  },
+  "known_limitations": [
+    "P05 owns battle history and result lifetime",
+    "P06 owns checkpoint version and format",
+    "P07 owns transport-neutral public projection",
+    "P08 owns measurement, optimization, retained-memory guards, and performance PASS",
+    "whole-library Clippy retains a pre-existing denied never_loop outside P04",
+    "bitwise cross-platform replay and external physics/consumer compatibility are not claimed"
+  ],
+  "external_scope": "game_server, Unity, sibling resources and external consumers uninspected and unclaimed"
+}

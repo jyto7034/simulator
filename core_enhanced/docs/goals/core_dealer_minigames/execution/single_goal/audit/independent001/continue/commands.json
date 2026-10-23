@@ -1,0 +1,60 @@
+[
+  {
+    "command": {
+      "type": "request_relic_state"
+    },
+    "index": 0,
+    "result": {
+      "disposition": "accepted",
+      "kind": "relic_state",
+      "meaning": "RelicState",
+      "payload": {
+        "copies": [
+          {
+            "copy_uuid": "0e3f0194-bedb-4442-a426-437dbc508564",
+            "definition_id": "u162_common_1",
+            "variant": "Corrupt"
+          },
+          {
+            "copy_uuid": "4a58d8ca-2a0c-4ee9-9222-007500a076f7",
+            "definition_id": "u162_special_2",
+            "variant": "Normal"
+          },
+          {
+            "copy_uuid": "522633fd-9189-4a8e-8b5e-86bbb75460ab",
+            "definition_id": "u162_common_0",
+            "variant": "Normal"
+          },
+          {
+            "copy_uuid": "9cbb6943-2007-4cde-9139-39fa5d3600c6",
+            "definition_id": "u162_common_2",
+            "variant": "Normal"
+          },
+          {
+            "copy_uuid": "b9bf9399-06f2-41e4-9c71-2be530245d5f",
+            "definition_id": "u162_common_1",
+            "variant": "Normal"
+          },
+          {
+            "copy_uuid": "c0bf26d5-30b5-407f-894f-ab85cf86ea7f",
+            "definition_id": "u162_common_0",
+            "variant": "Normal"
+          }
+        ],
+        "loadouts": [],
+        "not_sellable_copy_uuids": [
+          "0e3f0194-bedb-4442-a426-437dbc508564",
+          "4a58d8ca-2a0c-4ee9-9222-007500a076f7",
+          "522633fd-9189-4a8e-8b5e-86bbb75460ab",
+          "9cbb6943-2007-4cde-9139-39fa5d3600c6",
+          "b9bf9399-06f2-41e4-9c71-2be530245d5f",
+          "c0bf26d5-30b5-407f-894f-ab85cf86ea7f"
+        ],
+        "resources": {
+          "equipment_dust": 18,
+          "relic_corruption_catalysts": 0
+        }
+      }
+    }
+  }
+]

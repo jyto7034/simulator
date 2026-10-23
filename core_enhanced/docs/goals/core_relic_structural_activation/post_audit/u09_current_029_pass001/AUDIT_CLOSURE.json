@@ -1,0 +1,135 @@
+{
+  "schema": "U09_INDEPENDENT_AUDIT_CLOSURE_V1",
+  "recorded_at_utc": "2026-10-09T05:22:59.414802+00:00",
+  "goal": "GOAL-CRSA-01",
+  "goal_set": "GS-CRSA-003",
+  "target": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/target/u09_current_029",
+    "manifest": {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/target/u09_current_029/MANIFEST.json",
+      "bytes": 195330,
+      "sha256": "9ea2e2bc6b6687ba99649d1b9bc7d6d4f8922429ef7b0785fb2fadad0557a1f3"
+    }
+  },
+  "product_source_sha256": "1ca0fbe68a2ba80603470dde38a6c50e67c9d0ca3938391dbc4b211e875c492e",
+  "product_source_files": 492,
+  "restoration_source_files": 495,
+  "before_files": 441,
+  "verdict": "Not Complete",
+  "confidence": "High",
+  "open_findings_count": 1,
+  "open_findings": [
+    "F01"
+  ],
+  "complete_high_open0": false,
+  "review_work_complete": true,
+  "scope": "Whole frozen U09 / GS-CRSA-003 / GOAL-CRSA-01, including all policy acceptances and predecessor conditions; not limited to Product023 or F01.",
+  "scope_counts": {
+    "policy_sentences": 34,
+    "integration_seams": 17,
+    "required_dimensions": 10,
+    "execution_nodes": 3,
+    "predecessor_inherited_and_u08": 223,
+    "separate_r06": 31,
+    "predecessor_total": 254,
+    "evidence_groups": 43
+  },
+  "independence": {
+    "auditor": "/root/u09_independent_audit029",
+    "model": "gpt-6-astra",
+    "reasoning_effort": "high",
+    "actual_model_basis": "Root confirmed actual session turn_context metadata at audit entry.",
+    "planning_participant": false,
+    "design_participant": false,
+    "product_participant": false,
+    "test_authoring_participant": false,
+    "subagents_spawned": 0
+  },
+  "entry": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_029_pass001/ENTRY_CURRENTNESS.json",
+    "bytes": 745,
+    "sha256": "f532dd7b419db14417a3e77adce9bef699880abde2d2a44ae66b7f003307221b"
+  },
+  "exit": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_029_pass001/EXIT_CURRENTNESS.json",
+    "bytes": 578,
+    "sha256": "35524e4744d4adadedc09e4d1dc77dd7a5155d064a0b05a498725f669baea1cc"
+  },
+  "currentness": {
+    "entry_checked_refs": 2641,
+    "exit_checked_refs": 2641,
+    "entry_mismatches": 0,
+    "exit_mismatches": 0,
+    "state": "current / unchanged"
+  },
+  "restoration": {
+    "record": {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/target/u09_current_029/RESTORE_VERIFICATION.json",
+      "bytes": 2562,
+      "sha256": "7666df5cd5064f90ee35cf1121765de0d8b2ef1e5e675713cf0cb10cad70016f"
+    },
+    "actual_runner_receipt": {
+      "path": ".cache/u09_freeze029.execution.json",
+      "bytes": 2933,
+      "sha256": "c9b2ea5dc2f360d14058742daa1c8dc7ae4bee54176836305bbfdd73b72fbcbe"
+    },
+    "actual_raw": {
+      "path": ".cache/u09_freeze029.log",
+      "bytes": 269,
+      "sha256": "2830d362d9c493764ec0fc426eb3176d6c8df4cfa7d5115fedd9611dbba0d29f"
+    },
+    "forward_membership_and_bytes_match": true,
+    "reverse_membership_and_bytes_match": true,
+    "isolated_only": true,
+    "auditor_reexecuted": false
+  },
+  "condition_review": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_029_pass001/CONDITION_REVIEW.json",
+    "bytes": 64679,
+    "sha256": "38ca08cef068f1e50020cbfc2f721fdf83995d81c60e91d3280374b62299e117"
+  },
+  "predecessor_review": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_029_pass001/PREDECESSOR_REVIEW.json",
+    "bytes": 854921,
+    "sha256": "030b76b468e596825adfaef0992e021e67d73618abb2c8b738dd8dfa2e526d61"
+  },
+  "evidence_review": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_029_pass001/EVIDENCE_REVIEW.json",
+    "bytes": 273448,
+    "sha256": "a675c5e8acacfd98ecc2028046b769c5b9fc577b81e1f31749ba7dc737230a0f"
+  },
+  "findings": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_029_pass001/FINDINGS.json",
+    "bytes": 3565,
+    "sha256": "7feb147d6c0f8a935a47299f8d142a41bd010b600f847a3aa03cc0e93e20dce2"
+  },
+  "report": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_029_pass001/COMPLETION_AUDIT.md",
+    "bytes": 14917,
+    "sha256": "01fbd123e9f763b501feb4e5317aef4371e54a22d5f2ed93ac7badd54d70f7fe"
+  },
+  "retained_warnings": [
+    "R05 actual raw exit101 remains concurrent peak-only warning:9709348 versus9030188, excess679160. Summary002 exit0 is classification only.",
+    "Concurrent p9510014462ns absolute observedcap=false; original allocation-observer latency_gate_applicable=false; no statistical regression reported.",
+    "Event +12ops/+256retained/+512peak attribution candidates are concrete but exact causal attribution remains unproved."
+  ],
+  "measurement_limits": [
+    "PC original strict immediateU07M non-time allowed_delta0 and17 negative controls accepted; olderU06+200 only supplemental.",
+    "Shared-host/timing observations are not deployment latency guarantees. Native admitted extent, allocator retention and RSS are distinct."
+  ],
+  "supplemental_limits": [
+    "150 named entries are not a fresh whole-suite count.",
+    "Original69 impact plus022 bounded sameSkill and024 exact9 remain separate scopes.",
+    "Failed parent runs and failed commands remain failed despite bounded successful selections.",
+    "Formal gameplay balance remains undecided; test numbers do not approve balance.",
+    "Unity, individual final bosses and a new Guest type remain out of scope."
+  ],
+  "verification": {
+    "auditor_test_build_restore_collector_runs": 0,
+    "read_only_hash_comparisons": true,
+    "manual_audit_artifact_cardinality_and_json_check": "34/17/10/3,254 unique exact IDs,43 groups confirmed; no source or evidence collector run",
+    "static_finding_runtime_reproduction_claimed": false
+  },
+  "audit_artifacts_not_part_of_frozen_target": true,
+  "downstream": "Return F01 to product and independent test owners; Sol runs authorized focused verification. Preserve target029 and this failed completion audit; bind corrected source/evidence and freeze a new target before independent re-audit. Do not mark Goal/roadmap complete or propagate Complete/High/open0. Existing selected-reach contract needs implementation correction, not new policy approval."
+}

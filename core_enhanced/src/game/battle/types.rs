@@ -119,12 +119,14 @@ crate::authoring::clone_shape::struct_shape!(UnitSnapshot {
 /// Definition and, when known, the actual inventory copy entering battle.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct BattleEquipmentBinding {
+    pub weapon_stage: crate::game::ability::weapon_marks::WeaponStage,
     pub base_uuid: Uuid,
     pub persistent_copy_uuid: Option<Uuid>,
     pub slot: Option<EquipmentSlotAddress>,
 }
 
 crate::authoring::clone_shape::struct_shape!(BattleEquipmentBinding {
+    weapon_stage,
     base_uuid,
     persistent_copy_uuid,
     slot,
@@ -156,6 +158,8 @@ pub struct BattleUnitStatScale {
     pub attack_percent: u32,
     pub defense_percent: u32,
     pub exact_override: Option<BattleUnitExactStatOverride>,
+    pub encounter_health_percent: u32,
+    pub encounter_attack_percent: u32,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -173,6 +177,8 @@ impl Default for BattleUnitStatScale {
             attack_percent: 100,
             defense_percent: 100,
             exact_override: None,
+            encounter_health_percent: 100,
+            encounter_attack_percent: 100,
         }
     }
 }
@@ -393,6 +399,10 @@ pub enum MobilityKind {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum UnitTargetTrait {
     Airborne,
+    /// Explicit control immunity; size, height and boss class do not imply it.
+    TauntImmune,
+    SlowImmune,
+    StunImmune,
 }
 
 impl MobilityKind {
@@ -1017,6 +1027,7 @@ mod tests {
             }))],
         );
         let item = EquipmentMetadata {
+            content_family: None,
             id: "item".to_string(),
             uuid: item_uuid,
             name: "Item".to_string(),
@@ -1052,6 +1063,7 @@ mod tests {
             growth_stacks: growth,
             equipment_layout: None,
             equipped_items: vec![BattleEquipmentBinding {
+            weapon_stage: Default::default(),
                 base_uuid: item_uuid,
                 persistent_copy_uuid: None,
                 slot: None,
@@ -1094,6 +1106,7 @@ mod tests {
             target_traits: Vec::new(),
         };
         let item = EquipmentMetadata {
+            content_family: None,
             id: "enhanced_item".to_string(),
             uuid: item_uuid,
             name: "Enhanced Item".to_string(),
@@ -1119,7 +1132,7 @@ mod tests {
                         uuid: Uuid::from_u128(3),
                         name: "Test Material".to_string(),
                         description: String::new(),
-                        material_type: EquipmentMaterialType::Fragment,
+                        material_type: EquipmentMaterialType::EquipmentDust,
                         rarity: RiskLevel::ZAYIN,
                         equipment_type: Some(EquipmentType::Weapon),
                     }],
@@ -1152,6 +1165,7 @@ mod tests {
             growth_stacks: GrowthStack::new(),
             equipment_layout: None,
             equipped_items: vec![BattleEquipmentBinding {
+            weapon_stage: Default::default(),
                 base_uuid: item_uuid,
                 persistent_copy_uuid: Some(Uuid::from_u128(0xc001)),
                 slot: None,
@@ -1233,6 +1247,7 @@ mod tests {
             )],
         );
         let item = EquipmentMetadata {
+            content_family: None,
             id: "item".to_string(),
             uuid: item_uuid,
             name: "Item".to_string(),

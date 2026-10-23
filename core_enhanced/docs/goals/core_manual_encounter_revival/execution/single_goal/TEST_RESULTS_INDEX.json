@@ -1,0 +1,1007 @@
+{
+  "raw_runs": [
+    {
+      "log": "runs/raw_logs/u17-native001.log",
+      "suites": [
+        {
+          "status": "ok",
+          "passed": 28,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2156,
+          "seconds": 10.06
+        }
+      ]
+    },
+    {
+      "log": "runs/raw_logs/u17-native002.log",
+      "suites": [
+        {
+          "status": "ok",
+          "passed": 35,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2150,
+          "seconds": 10.21
+        }
+      ]
+    },
+    {
+      "log": "runs/raw_logs/u17-pilot001.log",
+      "suites": [
+        {
+          "status": "FAILED",
+          "passed": 6,
+          "failed": 3,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2141,
+          "seconds": 5.39
+        }
+      ]
+    },
+    {
+      "log": "runs/raw_logs/u17-pilot002.log",
+      "suites": [
+        {
+          "status": "ok",
+          "passed": 9,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2141,
+          "seconds": 5.43
+        }
+      ]
+    },
+    {
+      "log": "runs/raw_logs/u17-preview-retirement001.log",
+      "suites": [
+        {
+          "status": "ok",
+          "passed": 223,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 1942,
+          "seconds": 59.91
+        }
+      ]
+    },
+    {
+      "log": "runs/raw_logs/u17-public-export020.log",
+      "suites": [
+        {
+          "status": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2163,
+          "seconds": 9.61
+        }
+      ]
+    },
+    {
+      "log": "runs/raw_logs/u17-public-pilot002.log",
+      "suites": [
+        {
+          "status": "FAILED",
+          "passed": 12,
+          "failed": 1,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2141,
+          "seconds": 5.38
+        }
+      ]
+    },
+    {
+      "log": "runs/raw_logs/u17-public-pilot003.log",
+      "suites": [
+        {
+          "status": "FAILED",
+          "passed": 15,
+          "failed": 1,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2141,
+          "seconds": 5.44
+        }
+      ]
+    },
+    {
+      "log": "runs/raw_logs/u17-public-pilot004.log",
+      "suites": [
+        {
+          "status": "FAILED",
+          "passed": 0,
+          "failed": 1,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2156,
+          "seconds": 0.24
+        }
+      ]
+    },
+    {
+      "log": "runs/raw_logs/u17-public-pilot005.log",
+      "suites": [
+        {
+          "status": "FAILED",
+          "passed": 0,
+          "failed": 1,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2156,
+          "seconds": 4.09
+        }
+      ]
+    },
+    {
+      "log": "runs/raw_logs/u17-public-pilot006.log",
+      "suites": [
+        {
+          "status": "FAILED",
+          "passed": 0,
+          "failed": 1,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2156,
+          "seconds": 4.46
+        }
+      ]
+    },
+    {
+      "log": "runs/raw_logs/u17-public-pilot007.log",
+      "suites": [
+        {
+          "status": "FAILED",
+          "passed": 0,
+          "failed": 1,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2156,
+          "seconds": 4.44
+        }
+      ]
+    },
+    {
+      "log": "runs/raw_logs/u17-public-pilot008.log",
+      "suites": [
+        {
+          "status": "FAILED",
+          "passed": 0,
+          "failed": 1,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2156,
+          "seconds": 4.47
+        }
+      ]
+    },
+    {
+      "log": "runs/raw_logs/u17-public-pilot010.log",
+      "suites": [
+        {
+          "status": "FAILED",
+          "passed": 0,
+          "failed": 1,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2156,
+          "seconds": 4.39
+        }
+      ]
+    },
+    {
+      "log": "runs/raw_logs/u17-public-pilot011.log",
+      "suites": [
+        {
+          "status": "FAILED",
+          "passed": 0,
+          "failed": 1,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2156,
+          "seconds": 4.35
+        }
+      ]
+    },
+    {
+      "log": "runs/raw_logs/u17-public-pilot012.log",
+      "suites": [
+        {
+          "status": "FAILED",
+          "passed": 0,
+          "failed": 1,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2156,
+          "seconds": 4.45
+        }
+      ]
+    },
+    {
+      "log": "runs/raw_logs/u17-public-pilot013.log",
+      "suites": [
+        {
+          "status": "FAILED",
+          "passed": 15,
+          "failed": 4,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2141,
+          "seconds": 5.71
+        }
+      ]
+    },
+    {
+      "log": "runs/raw_logs/u17-public-pilot014.log",
+      "suites": [
+        {
+          "status": "FAILED",
+          "passed": 18,
+          "failed": 1,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2141,
+          "seconds": 5.54
+        }
+      ]
+    },
+    {
+      "log": "runs/raw_logs/u17-public-pilot017.log",
+      "suites": [
+        {
+          "status": "FAILED",
+          "passed": 19,
+          "failed": 1,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2141,
+          "seconds": 9.7
+        }
+      ]
+    },
+    {
+      "log": "runs/raw_logs/u17-public-pilot018.log",
+      "suites": [
+        {
+          "status": "FAILED",
+          "passed": 20,
+          "failed": 1,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2141,
+          "seconds": 9.76
+        }
+      ]
+    },
+    {
+      "log": "runs/raw_logs/u17-public-pilot019.log",
+      "suites": [
+        {
+          "status": "FAILED",
+          "passed": 22,
+          "failed": 1,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2141,
+          "seconds": 9.9
+        }
+      ]
+    },
+    {
+      "log": "runs/raw_logs/u17-public-restore-repro001.log",
+      "suites": [
+        {
+          "status": "FAILED",
+          "passed": 0,
+          "failed": 1,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2164,
+          "seconds": 4.95
+        }
+      ]
+    },
+    {
+      "log": "runs/raw_logs/u17-regression002.log",
+      "suites": [
+        {
+          "status": "FAILED",
+          "passed": 33,
+          "failed": 3,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2128,
+          "seconds": 23.54
+        }
+      ]
+    },
+    {
+      "log": "runs/raw_logs/u17-regression003.log",
+      "suites": [
+        {
+          "status": "ok",
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2161,
+          "seconds": 4.69
+        }
+      ]
+    },
+    {
+      "log": "runs/raw_logs/u17-related001.log",
+      "suites": [
+        {
+          "status": "FAILED",
+          "passed": 99,
+          "failed": 2,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2049,
+          "seconds": 16.61
+        }
+      ]
+    },
+    {
+      "log": "runs/raw_logs/u17-ron-regression002.log",
+      "suites": [
+        {
+          "status": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 24,
+          "seconds": 5.04
+        }
+      ]
+    },
+    {
+      "log": "runs/raw_logs/u17-socket001.log",
+      "suites": [
+        {
+          "status": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2163,
+          "seconds": 0.11
+        }
+      ]
+    },
+    {
+      "log": "runs/raw_logs/u17-workspace-tests001.log",
+      "suites": [
+        {
+          "status": "FAILED",
+          "passed": 2121,
+          "failed": 37,
+          "ignored": 6,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 198.99
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.47
+        },
+        {
+          "status": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 5.34
+        },
+        {
+          "status": "ok",
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 5.09
+        },
+        {
+          "status": "ok",
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 4.4
+        },
+        {
+          "status": "FAILED",
+          "passed": 24,
+          "failed": 1,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 7.42
+        },
+        {
+          "status": "ok",
+          "passed": 15,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 12.91
+        },
+        {
+          "status": "ok",
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 6.66
+        },
+        {
+          "status": "ok",
+          "passed": 15,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 13.29
+        },
+        {
+          "status": "ok",
+          "passed": 96,
+          "failed": 0,
+          "ignored": 22,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 20.01
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.02
+        },
+        {
+          "status": "ok",
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        },
+        {
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0,
+          "seconds": 0.0
+        }
+      ]
+    }
+  ],
+  "current_public": {
+    "normal": {
+      "original": "/tmp/u17-full-flow-ua4fo5vj",
+      "preserved": "runs/current001/normal"
+    },
+    "expanded": {
+      "original": "/tmp/u17-full-flow-qgz2_pl5",
+      "preserved": "runs/current001/expanded"
+    },
+    "fresh_readers": {
+      "original": "/tmp/u17-fresh-readers-5j70cmvq",
+      "preserved": "runs/current001/fresh_readers"
+    },
+    "io_replay": {
+      "original": "/tmp/u17-io-replay-ova6kixu",
+      "preserved": "runs/current001/io_replay"
+    },
+    "cost": {
+      "original": "/tmp/u17-cost-thzfujy9",
+      "preserved": "runs/current001/cost"
+    }
+  },
+  "historical_archives": [
+    {
+      "source": "/tmp/u17-full-flow-4wrpcp18",
+      "archive": "runs/historical/u17-full-flow-4wrpcp18.tar.gz",
+      "sha256": "c0c5c19285e8481b1d7586b5120a79f86964e6b901cc37e488c4673522f56e0c"
+    },
+    {
+      "source": "/tmp/u17-full-flow-g_g4raxj",
+      "archive": "runs/historical/u17-full-flow-g_g4raxj.tar.gz",
+      "sha256": "eb9cead8c368566aee20d3161a269407bf20d669304423baec4943d609769e2a"
+    },
+    {
+      "source": "/tmp/u17-full-flow-kg636p85",
+      "archive": "runs/historical/u17-full-flow-kg636p85.tar.gz",
+      "sha256": "8f2af45505dd722b5aaa4a8110c53b2e564220202e7f4b77a0a82f42c0606a45"
+    },
+    {
+      "source": "/tmp/u17-full-flow-x0wzsqib",
+      "archive": "runs/historical/u17-full-flow-x0wzsqib.tar.gz",
+      "sha256": "e1c66d08b2387214efcff8e3c1b4793a0674e9b9a00fa225d0d1dba70f6da23c"
+    },
+    {
+      "source": "/tmp/u17-fresh-readers-4fafujo4",
+      "archive": "runs/historical/u17-fresh-readers-4fafujo4.tar.gz",
+      "sha256": "ac90d65e56daf9660366677ddcb44608b25c6d8ab859ae3943a17a3e5458f6d7"
+    },
+    {
+      "source": "/tmp/u17-fresh-readers-iswlanne",
+      "archive": "runs/historical/u17-fresh-readers-iswlanne.tar.gz",
+      "sha256": "66838a32659c7d172c076932d7336fd9e3745184beb6dd249e8db89c1c41a58e"
+    },
+    {
+      "source": "/tmp/u17-io-replay-fbmhw4v4",
+      "archive": "runs/historical/u17-io-replay-fbmhw4v4.tar.gz",
+      "sha256": "58a91fd1636a6b91df260d72cab4e5eb9b76e9a43cab2a17797721149d26e0f8"
+    },
+    {
+      "source": "/tmp/u17-io-replay-gbv92e5o",
+      "archive": "runs/historical/u17-io-replay-gbv92e5o.tar.gz",
+      "sha256": "25643e1359812e7b08e712ee602d02a5e0d4def05183e743aa4d9c2d0b89bf6a"
+    },
+    {
+      "source": "/tmp/u17-boss-pilot-1arllv5s",
+      "archive": "runs/historical/u17-boss-pilot-1arllv5s.tar.gz",
+      "sha256": "16fa2cff6a656848b48611454dfbbe9bfb077377bea9ee1603f55c854d1ca10c"
+    },
+    {
+      "source": "/tmp/u17-boss-pilot-t26knt0c",
+      "archive": "runs/historical/u17-boss-pilot-t26knt0c.tar.gz",
+      "sha256": "23ec88f0ac22d66a338117f08a2b1587ecaa06e922a77c5f60338a10f159de19"
+    },
+    {
+      "source": "/tmp/u17-cost-sllqegec",
+      "archive": "runs/historical/u17-cost-sllqegec.tar.gz",
+      "sha256": "b982fa66fd2f548a94aaa81bbe432957b6ff34631213943b2a8c36187351916b"
+    }
+  ],
+  "interpretation": "Every original failed or partial run remains historical evidence. Current passes are identified in COVERAGE/BASELINE_REUSE; zero-test executables and build-only results do not count as functional passes."
+}

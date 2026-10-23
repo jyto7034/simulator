@@ -181,8 +181,6 @@ pub struct GameCoreState {
     pub player: Option<PlayerInfo>,
     pub lifecycle: LifecycleContext,
     pub active_node_content: Option<ActiveNodeContent>,
-    pub pending_mastered_elite_sweep:
-        Option<super::mastered_elite_sweep::MasteredEliteSweepCommitPlan>,
     pub node_session: Option<NodeSession>,
     pub run: Option<RunState>,
     pub visual_novel: VisualNovelRuntimeState,
@@ -215,10 +213,12 @@ fn preflight_resource_fields(
 ) -> Result<(), GameError> {
     use crate::game::resource::store::{preflight_resource_clone, ResourceError};
     if let Some(run) = run {
+        run.credit_ledgers.preflight()?;
         preflight_resource_clone(&run.typed_resources).map_err(ResourceError::into_game_error)?;
         crate::game::resources::selection::preflight_relic_event_histories(&run.event_sessions)?;
     }
     if let Some(checkpoint) = &checkpoint.payload {
+        checkpoint.credit_ledgers.preflight()?;
         preflight_resource_clone(&checkpoint.typed_resources)
             .map_err(ResourceError::into_game_error)?;
         checkpoint.preflight_relic_history_clone()?;
@@ -227,6 +227,9 @@ fn preflight_resource_fields(
         if session.has_relic_history() {
             session.preflight_relic_clone()?;
         }
+    }
+    if let Some(ActiveNodeContent::Reward(reward)) = content {
+        reward.preflight_relic_activity_clone()?;
     }
     if let Some(ActiveNodeContent::CombatBattle(battle)) = content {
         if let Some(result) = &battle.typed_resource_result {
@@ -301,21 +304,12 @@ impl GameCoreState {
         crate::runtime_observation::relic_extent(bytes);
         Ok(bytes)
     }
-    pub(super) fn preflight_resource_clone(&self, include_entry: bool) -> Result<(), GameError> {
+    pub(super) fn preflight_resource_clone(&self) -> Result<(), GameError> {
         preflight_resource_fields(&self.run, &self.run_checkpoint, &self.active_node_content)?;
-        if include_entry {
-            if let Some(entry) = self
-                .active_battle
-                .as_ref()
-                .and_then(|active| active.entry_snapshot.as_ref())
-            {
-                preflight_resource_fields(
-                    &entry.run,
-                    &entry.run_checkpoint,
-                    &entry.active_node_content,
-                )?;
-            }
-        }
+        crate::game::resource::store::preflight_resource_clone(&self.player_profile)
+            .map_err(crate::game::resource::store::ResourceError::into_game_error)?;
+        // The active battle's immutable entry snapshot is retained by an Arc
+        // handle. Its owned roots are admitted only when restoration copies them.
         Ok(())
     }
 
@@ -323,12 +317,11 @@ impl GameCoreState {
         if self.active_battle.is_some() {
             return Ok(None);
         }
-        self.preflight_resource_clone(false)?;
+        self.preflight_resource_clone()?;
         let candidate = crate::authoring::clone_shape::capture_shape!(Self {
             player: &self.player,
             lifecycle: &self.lifecycle,
             active_node_content: &self.active_node_content,
-            pending_mastered_elite_sweep: &self.pending_mastered_elite_sweep,
             node_session: &self.node_session,
             run: &self.run,
             visual_novel: &self.visual_novel,
@@ -349,7 +342,7 @@ impl GameCoreState {
             confirmed_combat_result: &self.confirmed_combat_result,
             combat_reward_continuation: &self.combat_reward_continuation,
         } sets {} fresh {
-            // Local profile knowledge is preserved by the rollback owner.
+            // The transaction token separately captures lifecycle assets.
             player_profile: PlayerProfileState::default(), active_battle: None
         } fresh_sets {})?;
         Ok(Some(candidate))
@@ -368,7 +361,6 @@ impl GameCoreState {
                     || self.active_node_content.is_some()
                     || self.active_battle.is_some()
                     || self.pending_game_mode.is_some()
-                    || self.pending_mastered_elite_sweep.is_some()
                 {
                     return Err(crate::game::battle::runtime_control::invariant("application_context"));
                 }
@@ -453,15 +445,8 @@ impl GameCoreState {
                     return Err(crate::game::battle::runtime_control::invariant("application_context"));
                 }
             }
-            GameState::MasteredEliteSweepResult { sweep_uuid } => {
-                if self.active_battle.is_some()
-                    || self
-                        .pending_mastered_elite_sweep
-                        .as_ref()
-                        .is_none_or(|plan| plan.result.sweep_uuid != *sweep_uuid)
-                {
-                    return Err(crate::game::battle::runtime_control::invariant("application_context"));
-                }
+            GameState::MasteredEliteSweepResult { .. } => {
+                return Err(crate::game::battle::runtime_control::invariant("retired_sweep_state"));
             }
             GameState::InShop { shop_uuid } => {
                 if self.active_battle.is_some()
@@ -526,15 +511,9 @@ impl RunPowerAuthorityState {
         &mut self,
         policy: crate::game::data::run_policy_data::ResolvedFloorPowerAnchorPolicy,
     ) -> u64 {
-        let previous_rise = self
-            .current_floor_power_anchor
-            .checked_add(policy.minimum_rise)
-            .filter(|_| self.current_floor_power_anchor > 0)
-            .unwrap_or(0);
-        self.current_floor_power_anchor = policy
-            .authored_minimum_power
-            .max(previous_rise)
-            .max(self.run_peak_certified_power);
+        // Enemy selection follows the authored floor only. Certified power and
+        // historical peaks remain available for readiness diagnostics.
+        self.current_floor_power_anchor = policy.authored_minimum_power;
         self.current_floor_power_anchor
     }
 
@@ -584,6 +563,32 @@ macro_rules! define_run_checkpoint_payload {
         } sets { visual_novel_trigger_checkpoint_consumed });
 
         impl RunCheckpointPayload {
+            /// All independent checkpoint copies use the same native-owner
+            /// admission, whether they come from SavePoint, Continue or serde.
+            pub(super) fn preflight_copy(&self) -> Result<(), GameError> {
+                self.credit_ledgers.preflight()?;
+                crate::game::resource::store::preflight_resource_clone(&self.typed_resources)
+                    .map_err(crate::game::resource::store::ResourceError::into_game_error)?;
+                self.relics.preflight_clone()?;
+                self.uuid_manager.preflight_relic_stream_clone()?;
+                self.preflight_relic_history_clone()
+            }
+
+            pub(super) fn copy_owned(&self) -> Result<Self, GameError> {
+                self.preflight_copy()?;
+                crate::authoring::clone_shape::controlled_clone(self)
+            }
+
+            /// Install an independent gameplay owner. A sole owner can move;
+            /// a SavePoint retained by the Continue cache needs a checked copy,
+            /// including when the wire uses the `current` alias.
+            pub(super) fn from_shared(snapshot: Arc<Self>) -> Result<Self, GameError> {
+                match Arc::try_unwrap(snapshot) {
+                    Ok(owned) => Ok(owned),
+                    Err(shared) => shared.copy_owned(),
+                }
+            }
+
             pub(super) fn has_relic_owner(&self) -> bool {
                 !self.relics.is_empty() || !self.crafting_resources.is_empty() || self.uuid_manager.has_relic_stream()
                     || crate::game::resources::selection::has_relic_event_histories(&self.event_sessions)
@@ -600,6 +605,7 @@ macro_rules! define_run_checkpoint_payload {
                 run: &RunState,
                 content_identity: &crate::game::data::content_pack::ContentIdentity,
             ) -> Result<Self, GameError> {
+                run.credit_ledgers.preflight()?;
                 crate::game::resource::store::preflight_resource_clone(&run.typed_resources)
                     .map_err(crate::game::resource::store::ResourceError::into_game_error)?;
                 state.relics.preflight_clone()?;
@@ -623,7 +629,13 @@ macro_rules! define_run_checkpoint_payload {
                 } fresh {} fresh_sets {})
             }
 
-            pub(super) fn restore_into_state(self, state: &mut GameCoreState) {
+            pub(super) fn restore_into_state(self, state: &mut GameCoreState) -> Result<(), GameError> {
+                if self.run_progression.game_mode == crate::game::map::GameMode::Expedition {
+                    let lifecycle = &mut state.player_profile.lifecycle;
+                    let next = crate::game::material_economy::reconcile_warehouse(&lifecycle.vault.materials, &lifecycle.warehouse_debits, &self.run_progression.warehouse_debits)?;
+                    lifecycle.vault.materials = next;
+                    lifecycle.warehouse_debits = self.run_progression.warehouse_debits.clone();
+                }
                 let Self {
                     content_identity: _,
                     power_model_version,
@@ -659,10 +671,10 @@ macro_rules! define_run_checkpoint_payload {
                     visual_novel_trigger_checkpoint_consumed;
                 state.node_session = None;
                 state.active_node_content = None;
-                state.pending_mastered_elite_sweep = None;
                 state.active_battle = None;
                 state.confirmed_combat_result = None;
                 state.combat_reward_continuation = None;
+                Ok(())
             }
         }
     };
@@ -670,6 +682,7 @@ macro_rules! define_run_checkpoint_payload {
 
 define_run_checkpoint_payload! {
     typed_resources: crate::game::resource::durable::RunResourceState,
+    credit_ledgers: crate::game::credit_ledger::CreditLedgers,
     map: RunMap,
     map_progression: MapProgression,
     run_progression: RunProgression,
@@ -723,10 +736,11 @@ pub struct ActiveBattleSession {
     pub node_type: CombatNodeType,
     pub mission_variant: CombatMissionVariant,
     pub outcome_policies: Vec<ResolvedCombatOutcomePolicy>,
+    pub stress_combat: Option<crate::game::stress_combat::StressCombatPolicy>,
     pub combat_preview: CombatPreview,
     pub battle: BattleCore,
     pub execution: BattleExecutionState,
-    pub entry_snapshot: Option<BattleEntrySnapshot>,
+    pub entry_snapshot: Option<Arc<BattleEntrySnapshot>>,
     pub employee_attempt: BattleEmployeeAttemptState,
     pub tactical_resource: TacticalResourceState,
     pub live_deployment: Option<LiveBattleDeploymentState>,
@@ -749,6 +763,7 @@ pub struct BattleInteractionState {
     pub deployment_employee_uuid: Option<Uuid>,
     pub restore_playback: Option<BattlePlaybackState>,
     pub settings_restore_playback: Option<BattlePlaybackState>,
+    pub input_plan_restore_playback: Option<BattlePlaybackState>,
 }
 
 crate::authoring::clone_shape::copy_shape!(
@@ -763,7 +778,8 @@ crate::authoring::clone_shape::struct_shape!(BattleInteractionState {
     focused_unit_instance_id,
     deployment_employee_uuid,
     restore_playback,
-    settings_restore_playback
+    settings_restore_playback,
+    input_plan_restore_playback
 });
 
 #[derive(Clone)]
@@ -784,19 +800,6 @@ pub struct BattleEntrySnapshot {
     relics: crate::game::relic::RelicInventory,
     crafting_resources: crate::game::relic::RunCraftingResources,
     run_checkpoint: RunCheckpointState,
-}
-
-impl ActiveBattleSession {
-    pub(super) fn preflight_entry_resource_clone(&self) -> Result<(), GameError> {
-        if let Some(entry) = &self.entry_snapshot {
-            preflight_resource_fields(
-                &entry.run,
-                &entry.run_checkpoint,
-                &entry.active_node_content,
-            )?;
-        }
-        Ok(())
-    }
 }
 
 impl BattleEntrySnapshot {
@@ -844,7 +847,7 @@ impl BattleEntrySnapshot {
         Ok(bytes)
     }
     pub fn capture(state: &GameCoreState) -> Result<Self, GameError> {
-        state.preflight_resource_clone(false)?;
+        state.preflight_resource_clone()?;
         state.relics.preflight_clone()?;
         state.uuid_manager.preflight_relic_stream_clone()?;
         if let Some(p) = &state.run_checkpoint.payload {
@@ -869,6 +872,47 @@ impl BattleEntrySnapshot {
             crafting_resources: &state.crafting_resources,
             run_checkpoint: &state.run_checkpoint,
         } sets {} fresh {} fresh_sets {})
+    }
+
+    /// Freeze the completed owned capture, including any event reentry edits.
+    /// Its children were already captured; only the new Arc allocation and the
+    /// fixed body move are additional work. Use the existing conservative Arc
+    /// header allowance, without claiming an allocator byte measurement.
+    pub(super) fn freeze(self) -> Result<Arc<Self>, GameError> {
+        crate::game::battle::runtime_control::admit_retained_growth(
+            0,
+            std::mem::size_of::<Self>().checked_add(64),
+            "battle_entry_snapshot_owner",
+        )?;
+        Ok(Arc::new(self))
+    }
+
+    /// Materialize shared captured roots before changing any destination field.
+    /// A sole owner can transfer them directly; a shared owner pays the same
+    /// resource/relic admission and actual owned-copy cost as a fresh capture.
+    pub(super) fn restore_shared(
+        snapshot: Arc<Self>,
+        state: &mut GameCoreState,
+    ) -> Result<(), GameError> {
+        let owned = match Arc::try_unwrap(snapshot) {
+            Ok(owned) => owned,
+            Err(shared) => {
+                preflight_resource_fields(
+                    &shared.run,
+                    &shared.run_checkpoint,
+                    &shared.active_node_content,
+                )?;
+                shared.relics.preflight_clone()?;
+                shared.uuid_manager.preflight_relic_stream_clone()?;
+                if let Some(checkpoint) = &shared.run_checkpoint.payload {
+                    checkpoint.relics.preflight_clone()?;
+                    checkpoint.uuid_manager.preflight_relic_stream_clone()?;
+                }
+                crate::authoring::clone_shape::controlled_clone(shared.as_ref())?
+            }
+        };
+        owned.restore(state);
+        Ok(())
     }
 
     pub fn restore(self, state: &mut GameCoreState) {
@@ -1126,14 +1170,14 @@ impl ActiveBattleSession {
         result.forced_pause_remaining_ms = self.battle.forced_pause_remaining_ms();
         if result.forced_pause_remaining_ms.is_some() {
             result.pause = BattlePayloadEligibilityDto::disabled(
-                ActionDisabledReasonCode::CorrosionForcedPause,
+                self.battle.forced_pause_reason(),
             );
             result.resume = BattlePayloadEligibilityDto::disabled(
-                ActionDisabledReasonCode::CorrosionForcedPause,
+                self.battle.forced_pause_reason(),
             );
             for speed in &mut result.speeds {
                 speed.eligibility = BattlePayloadEligibilityDto::disabled(
-                    ActionDisabledReasonCode::CorrosionForcedPause,
+                    self.battle.forced_pause_reason(),
                 );
             }
         }
@@ -1691,6 +1735,15 @@ impl ActiveBattleSession {
         units.sort_by(|left, right| left.unit_instance_id.cmp(&right.unit_instance_id));
 
         Ok(LiveBattleStateCheckpointDto {
+            presence_marks: self.battle.presence_marks_snapshot(battle_time_ms)?,
+            weapon_marks: self.battle.weapon_marks_snapshot()?,
+            tile_bursts: self.battle.tile_bursts_snapshot()?,
+            counter_channels: self.battle.counter_channels_snapshot()?,
+            relation_actions: self.battle.relation_actions_snapshot()?,
+            input_plans: self.battle.input_plans_snapshot()?,
+            prepared_volleys: self.battle.prepared_volleys_snapshot()?,
+            mobile_effects: self.battle.mobile_effects_snapshot()?,
+            paired_areas: self.battle.paired_areas_snapshot()?,
             sustained_effects: self.battle.sustained_effect_snapshot()?,
             independent_objects: self.battle.independent_objects_snapshot(battle_time_ms)?,
             at_seq,
@@ -1789,6 +1842,7 @@ fn live_unit_hud_dto(unit: &crate::game::battle::core::types::RuntimeUnit) -> Li
 #[derive(Clone)]
 pub struct RunState {
     pub typed_resources: crate::game::resource::durable::RunResourceState,
+    pub credit_ledgers: crate::game::credit_ledger::CreditLedgers,
     pub map: RunMap,
     pub map_progression: MapProgression,
     pub run_progression: RunProgression,
@@ -1834,6 +1888,17 @@ pub struct CombatRecoveryRestriction {
 }
 
 impl RunState {
+    /// Retire completed node setup only. Committed results and pending rewards
+    /// have separate owners; relic Event receipts remain durable for dismantle.
+    /// Unfinished nodes never cross this boundary, so their RNG/choices survive.
+    pub(super) fn retire_completed_node_setup(&mut self, node_id: MapNodeId) {
+        self.clear_abnormality_attempt(node_id);
+        self.combat_previews.remove(&node_id);
+        if !self.event_sessions.get(&node_id).is_some_and(|session| session.has_relic_history()) {
+            self.event_sessions.remove(&node_id);
+        }
+    }
+
     pub fn new(
         map: RunMap,
         map_progression: MapProgression,
@@ -1841,6 +1906,7 @@ impl RunState {
     ) -> Self {
         Self {
             typed_resources: Default::default(),
+            credit_ledgers: Default::default(),
             map,
             map_progression,
             run_progression,
@@ -1869,7 +1935,7 @@ impl RunState {
         let mut next = Self::new(map, map_progression, run_progression)
             .with_persistent_run_state_from(previous)?
             .with_encounter_progression(encounter_progression);
-        next.monolith.clear_floor_local_remanifestations();
+        next.revival.leave_floor();
         Ok(next)
     }
 
@@ -1887,6 +1953,7 @@ impl RunState {
         self.typed_resources =
             crate::game::resource::store::clone_resource_value(&previous.typed_resources)
                 .map_err(crate::game::resource::store::ResourceError::into_game_error)?;
+        self.credit_ledgers=crate::authoring::clone_shape::controlled_clone(&previous.credit_ledgers)?;
         self.facility_run_state = previous.facility_run_state.clone();
         self.encounter_progression = previous.encounter_progression.clone();
         self.recruitment = previous.recruitment.clone();
@@ -1975,6 +2042,7 @@ mod tests {
         let definitions = vec![EmployeeDefinition {
             employee_definition_id: "floor_candidate".to_string(),
             name: "Floor Candidate".to_string(),
+            role: crate::game::employee::EmployeeRole::Dealer,
             starter_eligible: false,
             initial_loadout: EmployeeInitialLoadout::default(),
             profile: EmployeeProfile::default(),
@@ -2060,7 +2128,7 @@ mod tests {
     }
 
     #[test]
-    fn run_power_anchor_uses_authored_minimum_previous_rise_and_peak_monotonically() {
+    fn u14_run_power_anchor_ignores_previous_rise_and_certified_peak() {
         use crate::game::data::run_policy_data::ResolvedFloorPowerAnchorPolicy;
 
         let mut authority = RunPowerAuthorityState::default();
@@ -2078,7 +2146,7 @@ mod tests {
                 authored_minimum_power: 110,
                 minimum_rise: 25,
             }),
-            130
+            110
         );
         authority.record_combat_entry(1, 120);
         assert_eq!(authority.run_peak_certified_power, 130);
@@ -2087,15 +2155,15 @@ mod tests {
                 authored_minimum_power: 140,
                 minimum_rise: 25,
             }),
-            155,
-            "previous anchor plus minimum rise must win when it is strongest"
+            140,
+            "only authored floor power affects enemies"
         );
     }
 
     #[test]
     fn next_floor_run_state_preserves_encounter_progression_and_resets_node_scoped_state() {
         let mut previous =
-            generated_run_state(0xA11CE, RunProgression::new(0xBEEF, GameMode::Standard, 3));
+            generated_run_state(0xA11CE, RunProgression::new(0xBEEF, GameMode::Tutorial, 3));
         previous
             .completed_reward_source_ids
             .insert("test_source".to_string());
@@ -2145,7 +2213,7 @@ mod tests {
     #[test]
     fn run_complete_state_preserves_run_scoped_encounter_progression() {
         let mut previous =
-            generated_run_state(0xC0DE, RunProgression::new(0xCAFE, GameMode::Standard, 1));
+            generated_run_state(0xC0DE, RunProgression::new(0xCAFE, GameMode::Tutorial, 1));
         previous
             .completed_reward_source_ids
             .insert("test_source".to_string());
@@ -2185,7 +2253,6 @@ impl GameCoreState {
             player: None,
             lifecycle: LifecycleContext::not_started(),
             active_node_content: None,
-            pending_mastered_elite_sweep: None,
             node_session: None,
             run: None,
             visual_novel: VisualNovelRuntimeState::default(),
@@ -2232,7 +2299,6 @@ crate::authoring::clone_shape::struct_shape!(GameCoreState {
     player,
     lifecycle,
     active_node_content,
-    pending_mastered_elite_sweep,
     node_session,
     run,
     visual_novel,
@@ -2270,6 +2336,7 @@ crate::authoring::clone_shape::struct_shape!(ActiveBattleSession {
     node_type,
     mission_variant,
     outcome_policies,
+    stress_combat,
     combat_preview,
     battle,
     execution,
@@ -2332,6 +2399,7 @@ crate::authoring::clone_shape::struct_shape!(TacticalResourceState {
 
 crate::authoring::clone_shape::struct_shape!(RunState {
     typed_resources,
+    credit_ledgers,
     map,
     map_progression,
     run_progression,

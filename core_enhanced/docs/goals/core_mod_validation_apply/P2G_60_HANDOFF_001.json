@@ -1,0 +1,59 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Handoff Artifact",
+        "Artifact ID": "HA-CMVA-001",
+        "Content Digest": "sha256:4f661439e1ed0b813a2252a9eed69ce245653489b47715c9fc4fe2b9ab4377d9"
+      },
+      "payload": {
+        "Predecessor Handoff Artifact Ref": null,
+        "Result Composite Basis": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CMVA-003",
+            "Content Digest": "sha256:b366ad2b16b9fa3dd912d69f14b5712eae056ec8b4e2cfedc4c2b93c87cfebaa"
+          },
+          "Final Policy Freeze Ref": {
+            "Artifact Type": "Final Policy Freeze",
+            "Artifact ID": "FPF-CMVA-001",
+            "Content Digest": "sha256:e4009fb88d9916523324a97434900a9efcd7e81f4ffc5378831153e9400c2aa6"
+          },
+          "Phase Plan Ref": {
+            "Artifact Type": "Phase Plan",
+            "Artifact ID": "PP-CMVA-001",
+            "Content Digest": "sha256:bb6ff74ca67c2312c583c3fefbdfeb0688a3920fa5e772a1c3b8c67ea055da45"
+          },
+          "Goal Set Ref": {
+            "Artifact Type": "Goal Set",
+            "Artifact ID": "GS-CMVA-001",
+            "Content Digest": "sha256:64dd01bc79319c7ec61472f21b2d6dd65542b0e905f29c7c77bcb066de3eb6da"
+          },
+          "Post-Freeze Change Record Ref Set": [],
+          "Authoritative Change Obligation Declaration Ref Set": []
+        },
+        "Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CMVA-001",
+          "Content Digest": "sha256:e4009fb88d9916523324a97434900a9efcd7e81f4ffc5378831153e9400c2aa6"
+        },
+        "Phase Plan Ref": {
+          "Artifact Type": "Phase Plan",
+          "Artifact ID": "PP-CMVA-001",
+          "Content Digest": "sha256:bb6ff74ca67c2312c583c3fefbdfeb0688a3920fa5e772a1c3b8c67ea055da45"
+        },
+        "Goal Set Ref": {
+          "Artifact Type": "Goal Set",
+          "Artifact ID": "GS-CMVA-001",
+          "Content Digest": "sha256:64dd01bc79319c7ec61472f21b2d6dd65542b0e905f29c7c77bcb066de3eb6da"
+        },
+        "Remaining Gap/Blocker/Limitation Summary": "No unresolved required policy/current-source gap. CODE_REVIEW T01–T07 and Goal describe mandatory unimplemented delta. Concrete API/schema/metadata version/authentication primitive/private root/build identity and preparation wiring need Sol detailed preparation with Root authority/save review. Real calibration, evidence-backed versioned numeric criteria, boundaries and normal Lab→Apply are required before completion, not deferred or already measured. GEX must capture recoverable mutation baseline. Prior U10 target002/pass001 Complete/High/open0 is prerequisite evidence only; historical PC/R05 failures/peak warning and environment limits remain.",
+        "Scope/Authorization Boundary": "P2G authoring/handoff does not activate or authorize implementation. Existing direct continuous user instruction independently authorizes selected GOAL-CMVA-01 goal-run through implementation, independent test writing, prepared impact-selected execution/corrections, nonparticipant whole-Goal audit and next approved roadmap. No checkpoint opt-in. Root Astra/high plan/source review/quality/criterion adoption; Sol6.1/xhigh product and sole runner; separate Astra/high test/fixture/oracle author; nonparticipant Astra/high final audit.",
+        "Out-of-Scope Summary": "Unity/unique final bosses/future full roster; central certification mandate, mod-provided PASS trust, file=mod assumption, 20-minute tests, arbitrary gameplay cap/low-PC exemption, hidden save migration/removal/automatic slots, unauthorized remote management, malicious in-process Rust host isolation claim and rewriting immutable past evidence.",
+        "Applicable P2G-60 Obligation Key Set": [],
+        "P2G-60 Resolution Record Ref Set": [],
+        "Lifecycle Disposition": "current"
+      }
+    }
+  ]
+}

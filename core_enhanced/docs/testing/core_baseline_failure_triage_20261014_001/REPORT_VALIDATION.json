@@ -1,0 +1,10 @@
+{
+  "matrix_exact_coverage": 138,
+  "report_rows": 138,
+  "source_match": 713,
+  "current_alternatives_pass": 12,
+  "unique_diagnostic_pass": 65,
+  "execution_records": 6,
+  "missing_source_links": 0,
+  "validation": "pass"
+}

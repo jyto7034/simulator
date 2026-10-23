@@ -1,0 +1,26 @@
+{
+  "written_utc": "2026-10-15T08:27:46.642709+00:00",
+  "purpose": "correction result and next-owner handoff; no goal completion or independent audit claim",
+  "changes": [
+    {
+      "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/PLAN.md",
+      "before_sha256": "eb252443ade43ba5d9b516abb97d9aeee2db884a640340c0a3cc5eb9714f8bec",
+      "after_sha256": "dc0c28419f68e453fcc9a196f837c49834952c5168f7a952f836caea0157b930"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/EXPERIMENTS.md",
+      "before_sha256": "7fc73be19799651b7ded26bfefd1b87f46d69bbd9724fd5f3b4fd70e3bd2dc5c",
+      "after_sha256": "bd79e1405afddfb4fed7947e3263c253221d08e7a9f884b659e347080282f5f0"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_LATEST.ko.md",
+      "before_sha256": "55d3c6839380d511354484c9fa51cb9242e40ff1fae3bc7b6e5d3f95c48667ef",
+      "after_sha256": "739327a5cafa603c9ce545190ceb43f0a918c4322b201490ca0b5fb6e2268d38"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/EXECUTION_HISTORY.ko.md",
+      "before_sha256": "2d67c5d1c60ad295cd633cc172ef9ace1f2208f9b9390b627ab5a0dd5a5b3aa4",
+      "after_sha256": "ca6ab6dabb953502bac3b9d6f08b0aacc76a48baae538053a239be86a1001d30"
+    }
+  ]
+}

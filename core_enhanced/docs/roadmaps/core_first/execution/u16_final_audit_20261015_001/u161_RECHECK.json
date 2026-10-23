@@ -1,0 +1,1225 @@
+{
+  "target": "u16_1_current_001",
+  "product_suites_rerun": false,
+  "archive": {
+    "before_members": 585,
+    "after_members": 1006,
+    "delta_members": 443,
+    "archive_manifest_equality": true,
+    "prior_guarded_restore_reused": true
+  },
+  "rust": {
+    "unique_core_passed": 2188,
+    "suites": {
+      "core001": 2108,
+      "focused004": 13,
+      "integration001": 72,
+      "restore-regression001": 44,
+      "final-focused001": 28,
+      "final-public001": 15
+    },
+    "closed_failures": [
+      "game::world::tests::combat::resource_lifetimes::actual_shop_and_reward_acquisitions_create_distinct_spendable_copy_owners",
+      "game::world::tests::equipment::dismantle_equipment_automatically_unequips_equipped_item",
+      "game::world::tests::u12_lifecycle::cost::u12_vault_entry_checkpoint_restore_preserves_profile_boundary",
+      "game::world::tests::u12_lifecycle::cost::u12_vault_prepare_import_budget_failures_preserve_roots",
+      "game::world::tests::u12_lifecycle::cost::u12_vault_prepared_discard_and_commit_keep_exact_profile",
+      "game::world::tests::u12_lifecycle::cost::u12_vault_profile_capture_charges_owned_graph"
+    ],
+    "native_passed": 4,
+    "server_passed": 31,
+    "existing_ignored": 6,
+    "single_green_invocation": false
+  },
+  "coverage_selector_checks": [
+    {
+      "condition": "A01",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_new_goods_query",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_new_goods_query_and_atomic_purchase_publish_exact_distinct_assets"
+      ]
+    },
+    {
+      "condition": "A01",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_shortage_overflow",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_shortage_overflow_and_unavailable_sale_preserve_all_roots"
+      ]
+    },
+    {
+      "condition": "A02",
+      "path": "runs/core001.log",
+      "selector": "quote_rounding_is_checked",
+      "passed_names": [
+        "game::world::shop::tests::quote_rounding_is_checked_and_directional"
+      ]
+    },
+    {
+      "condition": "A02",
+      "path": "runs/core001.log",
+      "selector": "refresh_is_full_sized",
+      "passed_names": [
+        "game::world::shop::tests::refresh_is_full_sized_charged_and_excludes_purchased_nonrepeatable_merchandise"
+      ]
+    },
+    {
+      "condition": "A02",
+      "path": "runs/core001.log",
+      "selector": "exhausted_refresh_rejects",
+      "passed_names": [
+        "game::world::shop::tests::exhausted_refresh_rejects_without_currency_use_or_page_mutation"
+      ]
+    },
+    {
+      "condition": "A03",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_shortage_overflow",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_shortage_overflow_and_unavailable_sale_preserve_all_roots"
+      ]
+    },
+    {
+      "condition": "A03",
+      "path": "runs/final-public001.log",
+      "selector": "u08_public_shop_rejects_all_relic",
+      "passed_names": [
+        "sell::u08_public_shop_rejects_all_relic_variants_and_loadouts_with_a_specific_reason"
+      ]
+    },
+    {
+      "condition": "A04",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_basic_revival_offer",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_basic_revival_offer_is_guaranteed_and_nonrepeatable_after_purchase"
+      ]
+    },
+    {
+      "condition": "A05",
+      "path": "runs/core001.log",
+      "selector": "u12_lifecycle_paid_recruitment",
+      "passed_names": [
+        "game::world::tests::u12_lifecycle::recruitment::u12_lifecycle_paid_recruitment_debits_once_grants_normal_loadout_and_caps_session_at_two"
+      ]
+    },
+    {
+      "condition": "A05",
+      "path": "runs/core001.log",
+      "selector": "u12_lifecycle_insufficient_money",
+      "passed_names": [
+        "game::world::tests::u12_lifecycle::recruitment::u12_lifecycle_insufficient_money_and_unknown_recruit_preserve_queue_and_identity_stream"
+      ]
+    },
+    {
+      "condition": "A05",
+      "path": "runs/core001.log",
+      "selector": "u12_lifecycle_depth_five",
+      "passed_names": [
+        "game::world::tests::u12_lifecycle::recruitment::u12_lifecycle_depth_five_hq_disables_recruitment_but_supplies_and_shop_still_complete"
+      ]
+    },
+    {
+      "condition": "A05",
+      "path": "runs/core001.log",
+      "selector": "u06_starter_public_recruitment_stops_at_ten",
+      "passed_names": [
+        "game::world::tests::u06_starter::u06_starter_public_recruitment_stops_at_ten_with_exact_ownership"
+      ]
+    },
+    {
+      "condition": "A05",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_hq_terms",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_hq_terms_match_price_loadout_and_remaining_hires"
+      ]
+    },
+    {
+      "condition": "A06",
+      "path": "runs/core001.log",
+      "selector": "event_check_outcomes_pin",
+      "passed_names": [
+        "game::world::event_node::tests::event_check_outcomes_pin_natural_extremes_and_modified_threshold"
+      ]
+    },
+    {
+      "condition": "A06",
+      "path": "runs/core001.log",
+      "selector": "outcome_matrix_exhausts",
+      "passed_names": [
+        "game::world::event_node::tests::outcome_matrix_exhausts_every_face_dc_and_modifier_boundary"
+      ]
+    },
+    {
+      "condition": "A06",
+      "path": "runs/core001.log",
+      "selector": "precheck_checkpoint_reuses_raw_roll",
+      "passed_names": [
+        "game::world::tests::map_flow::precheck_checkpoint_reuses_raw_roll_for_different_valid_choice_and_employee"
+      ]
+    },
+    {
+      "condition": "A07",
+      "path": "runs/core001.log",
+      "selector": "evaluator_uses_stored_aptitude_highest_only",
+      "passed_names": [
+        "game::world::event_node::tests::evaluator_uses_stored_aptitude_highest_only_uuid_ties_and_owned_equipped_key"
+      ]
+    },
+    {
+      "condition": "A07",
+      "path": "runs/core001.log",
+      "selector": "condition_reason_precedes",
+      "passed_names": [
+        "game::world::event_node::tests::condition_reason_precedes_missing_key_and_mismatch_is_zero_not_ineligible"
+      ]
+    },
+    {
+      "condition": "A07",
+      "path": "runs/core001.log",
+      "selector": "event_resolve_revalidates_equipped_key",
+      "passed_names": [
+        "game::world::tests::map_flow::event_resolve_revalidates_equipped_key_and_commits_shared_evaluator_provenance"
+      ]
+    },
+    {
+      "condition": "A07",
+      "path": "runs/core001.log",
+      "selector": "event_check_rejects_stale",
+      "passed_names": [
+        "game::world::tests::map_flow::event_check_rejects_stale_scene_choice_and_employee_identities_without_mutation"
+      ]
+    },
+    {
+      "condition": "A08",
+      "path": "runs/core001.log",
+      "selector": "event_check_persists_one_result",
+      "passed_names": [
+        "game::world::tests::map_flow::event_check_persists_one_result_and_commits_success_grant_at_most_once"
+      ]
+    },
+    {
+      "condition": "A08",
+      "path": "runs/core001.log",
+      "selector": "event_check_failure_is_persisted",
+      "passed_names": [
+        "game::world::tests::map_flow::event_check_failure_is_persisted_gameplay_state_and_final_advance_completes"
+      ]
+    },
+    {
+      "condition": "A08",
+      "path": "runs/core001.log",
+      "selector": "event_started_combat_victory",
+      "passed_names": [
+        "game::world::tests::combat::event_started_combat_victory_consumes_event_node"
+      ]
+    },
+    {
+      "condition": "A08",
+      "path": "runs/core001.log",
+      "selector": "event_started_combat_defeat",
+      "passed_names": [
+        "game::world::tests::combat::event_started_combat_defeat_consumes_node_and_clears_session",
+        "game::world::tests::combat::event_started_combat_defeat_has_no_duplicate_event_reward_policy"
+      ]
+    },
+    {
+      "condition": "A08",
+      "path": "runs/core001.log",
+      "selector": "event_success_action_starts_combat_and_retreat",
+      "passed_names": [
+        "game::world::tests::map_flow::event_success_action_starts_combat_and_retreat_preserves_committed_check"
+      ]
+    },
+    {
+      "condition": "A09",
+      "path": "runs/final-public001.log",
+      "selector": "event_normal_reward_grants_feed_multiple_free",
+      "passed_names": [
+        "event::u08_public_event_normal_reward_grants_feed_multiple_free_exact_copy_selections"
+      ]
+    },
+    {
+      "condition": "A09",
+      "path": "runs/final-public001.log",
+      "selector": "event_rejects_wrong_authority",
+      "passed_names": [
+        "event::u08_public_event_rejects_wrong_authority_and_follows_the_committed_employee_check_branch"
+      ]
+    },
+    {
+      "condition": "A09",
+      "path": "runs/final-public001.log",
+      "selector": "unfinished_event_continue_rewinds",
+      "passed_names": [
+        "lifecycle::u08_public_unfinished_event_continue_rewinds_variants_and_history_but_keeps_pre_entry_paid_cost"
+      ]
+    },
+    {
+      "condition": "A09",
+      "path": "runs/restore-regression001.log",
+      "selector": "u08_external_ron_normal_grants_savepoint_event_replay_and_fresh_process",
+      "passed_names": [
+        "authoring::trial::tests::u08_relics::u08_external_ron_normal_grants_savepoint_event_replay_and_fresh_process"
+      ]
+    },
+    {
+      "condition": "A10",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_immediate_treatment",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_immediate_treatment_replaces_modifier_and_consumes_exactly_one"
+      ]
+    },
+    {
+      "condition": "A10",
+      "path": "runs/core001.log",
+      "selector": "use_consumable_item_rejects_dead",
+      "passed_names": [
+        "game::world::tests::equipment::use_consumable_item_rejects_dead_target"
+      ]
+    },
+    {
+      "condition": "A10",
+      "path": "runs/core001.log",
+      "selector": "use_consumable_item_replaces_existing",
+      "passed_names": [
+        "game::world::tests::equipment::use_consumable_item_replaces_existing_modifier_without_refund"
+      ]
+    },
+    {
+      "condition": "A11",
+      "path": "runs/core001.log",
+      "selector": "consumable_modifier_survives_abandonment",
+      "passed_names": [
+        "game::world::tests::combat::consumable_modifier_survives_abandonment_and_expires_on_committed_result"
+      ]
+    },
+    {
+      "condition": "A11",
+      "path": "runs/core001.log",
+      "selector": "sweep_stages_stable_battle_independent_result",
+      "passed_names": [
+        "game::world::tests::mastered_elite_sweep::sweep_stages_stable_battle_independent_result_then_commits_every_effect_once"
+      ]
+    },
+    {
+      "condition": "A12",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_inventory_display_size",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_inventory_display_size_does_not_limit_relic_purchase"
+      ]
+    },
+    {
+      "condition": "A12",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_expanded_carried",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_expanded_carried_equipment_and_shop_goods_continue_with_default_budget"
+      ]
+    },
+    {
+      "condition": "A13",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_completed_shop_continue",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_completed_shop_continue_keeps_goods_unfinished_continue_rewinds_all_goods"
+      ]
+    },
+    {
+      "condition": "A13",
+      "path": "runs/core001.log",
+      "selector": "precheck_checkpoint_reuses_raw_roll",
+      "passed_names": [
+        "game::world::tests::map_flow::precheck_checkpoint_reuses_raw_roll_for_different_valid_choice_and_employee"
+      ]
+    },
+    {
+      "condition": "A14",
+      "path": "runs/core001.log",
+      "selector": "u15_restore_keeps_precheckpoint_warehouse_spend",
+      "passed_names": [
+        "game::world::tests::u15_economy::u15_restore_keeps_precheckpoint_warehouse_spend_and_first_copy_investment"
+      ]
+    },
+    {
+      "condition": "A18",
+      "path": "runs/restore-regression001.log",
+      "selector": "u08_continue_stages_are_cumulative",
+      "passed_names": [
+        "game::world::tests::u08_continue_owner::u08_continue_stages_are_cumulative_and_one_short_refusal_is_atomic"
+      ]
+    },
+    {
+      "condition": "success",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_new_goods_query",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_new_goods_query_and_atomic_purchase_publish_exact_distinct_assets"
+      ]
+    },
+    {
+      "condition": "success",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_shortage_overflow",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_shortage_overflow_and_unavailable_sale_preserve_all_roots"
+      ]
+    },
+    {
+      "condition": "success",
+      "path": "runs/core001.log",
+      "selector": "u12_lifecycle_paid_recruitment",
+      "passed_names": [
+        "game::world::tests::u12_lifecycle::recruitment::u12_lifecycle_paid_recruitment_debits_once_grants_normal_loadout_and_caps_session_at_two"
+      ]
+    },
+    {
+      "condition": "success",
+      "path": "runs/core001.log",
+      "selector": "u12_lifecycle_insufficient_money",
+      "passed_names": [
+        "game::world::tests::u12_lifecycle::recruitment::u12_lifecycle_insufficient_money_and_unknown_recruit_preserve_queue_and_identity_stream"
+      ]
+    },
+    {
+      "condition": "success",
+      "path": "runs/core001.log",
+      "selector": "u12_lifecycle_depth_five",
+      "passed_names": [
+        "game::world::tests::u12_lifecycle::recruitment::u12_lifecycle_depth_five_hq_disables_recruitment_but_supplies_and_shop_still_complete"
+      ]
+    },
+    {
+      "condition": "success",
+      "path": "runs/core001.log",
+      "selector": "u06_starter_public_recruitment_stops_at_ten",
+      "passed_names": [
+        "game::world::tests::u06_starter::u06_starter_public_recruitment_stops_at_ten_with_exact_ownership"
+      ]
+    },
+    {
+      "condition": "success",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_hq_terms",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_hq_terms_match_price_loadout_and_remaining_hires"
+      ]
+    },
+    {
+      "condition": "success",
+      "path": "runs/final-public001.log",
+      "selector": "event_normal_reward_grants_feed_multiple_free",
+      "passed_names": [
+        "event::u08_public_event_normal_reward_grants_feed_multiple_free_exact_copy_selections"
+      ]
+    },
+    {
+      "condition": "success",
+      "path": "runs/final-public001.log",
+      "selector": "event_rejects_wrong_authority",
+      "passed_names": [
+        "event::u08_public_event_rejects_wrong_authority_and_follows_the_committed_employee_check_branch"
+      ]
+    },
+    {
+      "condition": "success",
+      "path": "runs/final-public001.log",
+      "selector": "unfinished_event_continue_rewinds",
+      "passed_names": [
+        "lifecycle::u08_public_unfinished_event_continue_rewinds_variants_and_history_but_keeps_pre_entry_paid_cost"
+      ]
+    },
+    {
+      "condition": "success",
+      "path": "runs/restore-regression001.log",
+      "selector": "u08_external_ron_normal_grants_savepoint_event_replay_and_fresh_process",
+      "passed_names": [
+        "authoring::trial::tests::u08_relics::u08_external_ron_normal_grants_savepoint_event_replay_and_fresh_process"
+      ]
+    },
+    {
+      "condition": "success",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_immediate_treatment",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_immediate_treatment_replaces_modifier_and_consumes_exactly_one"
+      ]
+    },
+    {
+      "condition": "success",
+      "path": "runs/core001.log",
+      "selector": "use_consumable_item_rejects_dead",
+      "passed_names": [
+        "game::world::tests::equipment::use_consumable_item_rejects_dead_target"
+      ]
+    },
+    {
+      "condition": "success",
+      "path": "runs/core001.log",
+      "selector": "use_consumable_item_replaces_existing",
+      "passed_names": [
+        "game::world::tests::equipment::use_consumable_item_replaces_existing_modifier_without_refund"
+      ]
+    },
+    {
+      "condition": "invalid_input",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_shortage_overflow",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_shortage_overflow_and_unavailable_sale_preserve_all_roots"
+      ]
+    },
+    {
+      "condition": "invalid_input",
+      "path": "runs/final-public001.log",
+      "selector": "u08_public_shop_rejects_all_relic",
+      "passed_names": [
+        "sell::u08_public_shop_rejects_all_relic_variants_and_loadouts_with_a_specific_reason"
+      ]
+    },
+    {
+      "condition": "invalid_input",
+      "path": "runs/core001.log",
+      "selector": "evaluator_uses_stored_aptitude_highest_only",
+      "passed_names": [
+        "game::world::event_node::tests::evaluator_uses_stored_aptitude_highest_only_uuid_ties_and_owned_equipped_key"
+      ]
+    },
+    {
+      "condition": "invalid_input",
+      "path": "runs/core001.log",
+      "selector": "condition_reason_precedes",
+      "passed_names": [
+        "game::world::event_node::tests::condition_reason_precedes_missing_key_and_mismatch_is_zero_not_ineligible"
+      ]
+    },
+    {
+      "condition": "invalid_input",
+      "path": "runs/core001.log",
+      "selector": "event_resolve_revalidates_equipped_key",
+      "passed_names": [
+        "game::world::tests::map_flow::event_resolve_revalidates_equipped_key_and_commits_shared_evaluator_provenance"
+      ]
+    },
+    {
+      "condition": "invalid_input",
+      "path": "runs/core001.log",
+      "selector": "event_check_rejects_stale",
+      "passed_names": [
+        "game::world::tests::map_flow::event_check_rejects_stale_scene_choice_and_employee_identities_without_mutation"
+      ]
+    },
+    {
+      "condition": "failure_rollback",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_new_goods_query",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_new_goods_query_and_atomic_purchase_publish_exact_distinct_assets"
+      ]
+    },
+    {
+      "condition": "failure_rollback",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_shortage_overflow",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_shortage_overflow_and_unavailable_sale_preserve_all_roots"
+      ]
+    },
+    {
+      "condition": "failure_rollback",
+      "path": "runs/core001.log",
+      "selector": "quote_rounding_is_checked",
+      "passed_names": [
+        "game::world::shop::tests::quote_rounding_is_checked_and_directional"
+      ]
+    },
+    {
+      "condition": "failure_rollback",
+      "path": "runs/core001.log",
+      "selector": "refresh_is_full_sized",
+      "passed_names": [
+        "game::world::shop::tests::refresh_is_full_sized_charged_and_excludes_purchased_nonrepeatable_merchandise"
+      ]
+    },
+    {
+      "condition": "failure_rollback",
+      "path": "runs/core001.log",
+      "selector": "exhausted_refresh_rejects",
+      "passed_names": [
+        "game::world::shop::tests::exhausted_refresh_rejects_without_currency_use_or_page_mutation"
+      ]
+    },
+    {
+      "condition": "retry_idempotency",
+      "path": "runs/core001.log",
+      "selector": "event_check_persists_one_result",
+      "passed_names": [
+        "game::world::tests::map_flow::event_check_persists_one_result_and_commits_success_grant_at_most_once"
+      ]
+    },
+    {
+      "condition": "retry_idempotency",
+      "path": "runs/core001.log",
+      "selector": "event_check_failure_is_persisted",
+      "passed_names": [
+        "game::world::tests::map_flow::event_check_failure_is_persisted_gameplay_state_and_final_advance_completes"
+      ]
+    },
+    {
+      "condition": "retry_idempotency",
+      "path": "runs/core001.log",
+      "selector": "event_started_combat_victory",
+      "passed_names": [
+        "game::world::tests::combat::event_started_combat_victory_consumes_event_node"
+      ]
+    },
+    {
+      "condition": "retry_idempotency",
+      "path": "runs/core001.log",
+      "selector": "event_started_combat_defeat",
+      "passed_names": [
+        "game::world::tests::combat::event_started_combat_defeat_consumes_node_and_clears_session",
+        "game::world::tests::combat::event_started_combat_defeat_has_no_duplicate_event_reward_policy"
+      ]
+    },
+    {
+      "condition": "retry_idempotency",
+      "path": "runs/core001.log",
+      "selector": "event_success_action_starts_combat_and_retreat",
+      "passed_names": [
+        "game::world::tests::map_flow::event_success_action_starts_combat_and_retreat_preserves_committed_check"
+      ]
+    },
+    {
+      "condition": "retry_idempotency",
+      "path": "runs/core001.log",
+      "selector": "consumable_modifier_survives_abandonment",
+      "passed_names": [
+        "game::world::tests::combat::consumable_modifier_survives_abandonment_and_expires_on_committed_result"
+      ]
+    },
+    {
+      "condition": "retry_idempotency",
+      "path": "runs/core001.log",
+      "selector": "sweep_stages_stable_battle_independent_result",
+      "passed_names": [
+        "game::world::tests::mastered_elite_sweep::sweep_stages_stable_battle_independent_result_then_commits_every_effect_once"
+      ]
+    },
+    {
+      "condition": "retry_idempotency",
+      "path": "runs/core001.log",
+      "selector": "u15_restore_keeps_precheckpoint_warehouse_spend",
+      "passed_names": [
+        "game::world::tests::u15_economy::u15_restore_keeps_precheckpoint_warehouse_spend_and_first_copy_investment"
+      ]
+    },
+    {
+      "condition": "ordering_concurrency",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_new_goods_query",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_new_goods_query_and_atomic_purchase_publish_exact_distinct_assets"
+      ]
+    },
+    {
+      "condition": "ordering_concurrency",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_shortage_overflow",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_shortage_overflow_and_unavailable_sale_preserve_all_roots"
+      ]
+    },
+    {
+      "condition": "ordering_concurrency",
+      "path": "runs/core001.log",
+      "selector": "event_check_outcomes_pin",
+      "passed_names": [
+        "game::world::event_node::tests::event_check_outcomes_pin_natural_extremes_and_modified_threshold"
+      ]
+    },
+    {
+      "condition": "ordering_concurrency",
+      "path": "runs/core001.log",
+      "selector": "outcome_matrix_exhausts",
+      "passed_names": [
+        "game::world::event_node::tests::outcome_matrix_exhausts_every_face_dc_and_modifier_boundary"
+      ]
+    },
+    {
+      "condition": "ordering_concurrency",
+      "path": "runs/core001.log",
+      "selector": "precheck_checkpoint_reuses_raw_roll",
+      "passed_names": [
+        "game::world::tests::map_flow::precheck_checkpoint_reuses_raw_roll_for_different_valid_choice_and_employee"
+      ]
+    },
+    {
+      "condition": "boundary_empty_max",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_shortage_overflow",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_shortage_overflow_and_unavailable_sale_preserve_all_roots"
+      ]
+    },
+    {
+      "condition": "boundary_empty_max",
+      "path": "runs/final-public001.log",
+      "selector": "u08_public_shop_rejects_all_relic",
+      "passed_names": [
+        "sell::u08_public_shop_rejects_all_relic_variants_and_loadouts_with_a_specific_reason"
+      ]
+    },
+    {
+      "condition": "boundary_empty_max",
+      "path": "runs/core001.log",
+      "selector": "u12_lifecycle_paid_recruitment",
+      "passed_names": [
+        "game::world::tests::u12_lifecycle::recruitment::u12_lifecycle_paid_recruitment_debits_once_grants_normal_loadout_and_caps_session_at_two"
+      ]
+    },
+    {
+      "condition": "boundary_empty_max",
+      "path": "runs/core001.log",
+      "selector": "u12_lifecycle_insufficient_money",
+      "passed_names": [
+        "game::world::tests::u12_lifecycle::recruitment::u12_lifecycle_insufficient_money_and_unknown_recruit_preserve_queue_and_identity_stream"
+      ]
+    },
+    {
+      "condition": "boundary_empty_max",
+      "path": "runs/core001.log",
+      "selector": "u12_lifecycle_depth_five",
+      "passed_names": [
+        "game::world::tests::u12_lifecycle::recruitment::u12_lifecycle_depth_five_hq_disables_recruitment_but_supplies_and_shop_still_complete"
+      ]
+    },
+    {
+      "condition": "boundary_empty_max",
+      "path": "runs/core001.log",
+      "selector": "u06_starter_public_recruitment_stops_at_ten",
+      "passed_names": [
+        "game::world::tests::u06_starter::u06_starter_public_recruitment_stops_at_ten_with_exact_ownership"
+      ]
+    },
+    {
+      "condition": "boundary_empty_max",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_hq_terms",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_hq_terms_match_price_loadout_and_remaining_hires"
+      ]
+    },
+    {
+      "condition": "boundary_empty_max",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_inventory_display_size",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_inventory_display_size_does_not_limit_relic_purchase"
+      ]
+    },
+    {
+      "condition": "boundary_empty_max",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_expanded_carried",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_expanded_carried_equipment_and_shop_goods_continue_with_default_budget"
+      ]
+    },
+    {
+      "condition": "disconnect_restart_persistence",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_completed_shop_continue",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_completed_shop_continue_keeps_goods_unfinished_continue_rewinds_all_goods"
+      ]
+    },
+    {
+      "condition": "disconnect_restart_persistence",
+      "path": "runs/core001.log",
+      "selector": "precheck_checkpoint_reuses_raw_roll",
+      "passed_names": [
+        "game::world::tests::map_flow::precheck_checkpoint_reuses_raw_roll_for_different_valid_choice_and_employee"
+      ]
+    },
+    {
+      "condition": "disconnect_restart_persistence",
+      "path": "runs/core001.log",
+      "selector": "u15_restore_keeps_precheckpoint_warehouse_spend",
+      "passed_names": [
+        "game::world::tests::u15_economy::u15_restore_keeps_precheckpoint_warehouse_spend_and_first_copy_investment"
+      ]
+    },
+    {
+      "condition": "live_data",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_basic_revival_offer",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_basic_revival_offer_is_guaranteed_and_nonrepeatable_after_purchase"
+      ]
+    },
+    {
+      "condition": "producer_consumer",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_new_goods_query",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_new_goods_query_and_atomic_purchase_publish_exact_distinct_assets"
+      ]
+    },
+    {
+      "condition": "producer_consumer",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_shortage_overflow",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_shortage_overflow_and_unavailable_sale_preserve_all_roots"
+      ]
+    },
+    {
+      "condition": "legacy_fallback_absence",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_shortage_overflow",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_shortage_overflow_and_unavailable_sale_preserve_all_roots"
+      ]
+    },
+    {
+      "condition": "legacy_fallback_absence",
+      "path": "runs/final-public001.log",
+      "selector": "u08_public_shop_rejects_all_relic",
+      "passed_names": [
+        "sell::u08_public_shop_rejects_all_relic_variants_and_loadouts_with_a_specific_reason"
+      ]
+    },
+    {
+      "condition": "legacy_fallback_absence",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_basic_revival_offer",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_basic_revival_offer_is_guaranteed_and_nonrepeatable_after_purchase"
+      ]
+    },
+    {
+      "condition": "legacy_fallback_absence",
+      "path": "runs/core001.log",
+      "selector": "u12_lifecycle_paid_recruitment",
+      "passed_names": [
+        "game::world::tests::u12_lifecycle::recruitment::u12_lifecycle_paid_recruitment_debits_once_grants_normal_loadout_and_caps_session_at_two"
+      ]
+    },
+    {
+      "condition": "legacy_fallback_absence",
+      "path": "runs/core001.log",
+      "selector": "u12_lifecycle_insufficient_money",
+      "passed_names": [
+        "game::world::tests::u12_lifecycle::recruitment::u12_lifecycle_insufficient_money_and_unknown_recruit_preserve_queue_and_identity_stream"
+      ]
+    },
+    {
+      "condition": "legacy_fallback_absence",
+      "path": "runs/core001.log",
+      "selector": "u12_lifecycle_depth_five",
+      "passed_names": [
+        "game::world::tests::u12_lifecycle::recruitment::u12_lifecycle_depth_five_hq_disables_recruitment_but_supplies_and_shop_still_complete"
+      ]
+    },
+    {
+      "condition": "legacy_fallback_absence",
+      "path": "runs/core001.log",
+      "selector": "u06_starter_public_recruitment_stops_at_ten",
+      "passed_names": [
+        "game::world::tests::u06_starter::u06_starter_public_recruitment_stops_at_ten_with_exact_ownership"
+      ]
+    },
+    {
+      "condition": "legacy_fallback_absence",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_hq_terms",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_hq_terms_match_price_loadout_and_remaining_hires"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G23",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_new_goods_query",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_new_goods_query_and_atomic_purchase_publish_exact_distinct_assets"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G23",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_shortage_overflow",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_shortage_overflow_and_unavailable_sale_preserve_all_roots"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G23",
+      "path": "runs/core001.log",
+      "selector": "quote_rounding_is_checked",
+      "passed_names": [
+        "game::world::shop::tests::quote_rounding_is_checked_and_directional"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G23",
+      "path": "runs/core001.log",
+      "selector": "refresh_is_full_sized",
+      "passed_names": [
+        "game::world::shop::tests::refresh_is_full_sized_charged_and_excludes_purchased_nonrepeatable_merchandise"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G23",
+      "path": "runs/core001.log",
+      "selector": "exhausted_refresh_rejects",
+      "passed_names": [
+        "game::world::shop::tests::exhausted_refresh_rejects_without_currency_use_or_page_mutation"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G23",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_shortage_overflow",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_shortage_overflow_and_unavailable_sale_preserve_all_roots"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G23",
+      "path": "runs/final-public001.log",
+      "selector": "u08_public_shop_rejects_all_relic",
+      "passed_names": [
+        "sell::u08_public_shop_rejects_all_relic_variants_and_loadouts_with_a_specific_reason"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G23",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_basic_revival_offer",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_basic_revival_offer_is_guaranteed_and_nonrepeatable_after_purchase"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G23",
+      "path": "runs/core001.log",
+      "selector": "u12_lifecycle_paid_recruitment",
+      "passed_names": [
+        "game::world::tests::u12_lifecycle::recruitment::u12_lifecycle_paid_recruitment_debits_once_grants_normal_loadout_and_caps_session_at_two"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G23",
+      "path": "runs/core001.log",
+      "selector": "u12_lifecycle_insufficient_money",
+      "passed_names": [
+        "game::world::tests::u12_lifecycle::recruitment::u12_lifecycle_insufficient_money_and_unknown_recruit_preserve_queue_and_identity_stream"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G23",
+      "path": "runs/core001.log",
+      "selector": "u12_lifecycle_depth_five",
+      "passed_names": [
+        "game::world::tests::u12_lifecycle::recruitment::u12_lifecycle_depth_five_hq_disables_recruitment_but_supplies_and_shop_still_complete"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G23",
+      "path": "runs/core001.log",
+      "selector": "u06_starter_public_recruitment_stops_at_ten",
+      "passed_names": [
+        "game::world::tests::u06_starter::u06_starter_public_recruitment_stops_at_ten_with_exact_ownership"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G23",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_hq_terms",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_hq_terms_match_price_loadout_and_remaining_hires"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G24",
+      "path": "runs/core001.log",
+      "selector": "event_check_outcomes_pin",
+      "passed_names": [
+        "game::world::event_node::tests::event_check_outcomes_pin_natural_extremes_and_modified_threshold"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G24",
+      "path": "runs/core001.log",
+      "selector": "outcome_matrix_exhausts",
+      "passed_names": [
+        "game::world::event_node::tests::outcome_matrix_exhausts_every_face_dc_and_modifier_boundary"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G24",
+      "path": "runs/core001.log",
+      "selector": "precheck_checkpoint_reuses_raw_roll",
+      "passed_names": [
+        "game::world::tests::map_flow::precheck_checkpoint_reuses_raw_roll_for_different_valid_choice_and_employee"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G24",
+      "path": "runs/core001.log",
+      "selector": "evaluator_uses_stored_aptitude_highest_only",
+      "passed_names": [
+        "game::world::event_node::tests::evaluator_uses_stored_aptitude_highest_only_uuid_ties_and_owned_equipped_key"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G24",
+      "path": "runs/core001.log",
+      "selector": "condition_reason_precedes",
+      "passed_names": [
+        "game::world::event_node::tests::condition_reason_precedes_missing_key_and_mismatch_is_zero_not_ineligible"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G24",
+      "path": "runs/core001.log",
+      "selector": "event_resolve_revalidates_equipped_key",
+      "passed_names": [
+        "game::world::tests::map_flow::event_resolve_revalidates_equipped_key_and_commits_shared_evaluator_provenance"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G24",
+      "path": "runs/core001.log",
+      "selector": "event_check_rejects_stale",
+      "passed_names": [
+        "game::world::tests::map_flow::event_check_rejects_stale_scene_choice_and_employee_identities_without_mutation"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G24",
+      "path": "runs/core001.log",
+      "selector": "event_check_persists_one_result",
+      "passed_names": [
+        "game::world::tests::map_flow::event_check_persists_one_result_and_commits_success_grant_at_most_once"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G24",
+      "path": "runs/core001.log",
+      "selector": "event_check_failure_is_persisted",
+      "passed_names": [
+        "game::world::tests::map_flow::event_check_failure_is_persisted_gameplay_state_and_final_advance_completes"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G24",
+      "path": "runs/core001.log",
+      "selector": "event_started_combat_victory",
+      "passed_names": [
+        "game::world::tests::combat::event_started_combat_victory_consumes_event_node"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G24",
+      "path": "runs/core001.log",
+      "selector": "event_started_combat_defeat",
+      "passed_names": [
+        "game::world::tests::combat::event_started_combat_defeat_consumes_node_and_clears_session",
+        "game::world::tests::combat::event_started_combat_defeat_has_no_duplicate_event_reward_policy"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G24",
+      "path": "runs/core001.log",
+      "selector": "event_success_action_starts_combat_and_retreat",
+      "passed_names": [
+        "game::world::tests::map_flow::event_success_action_starts_combat_and_retreat_preserves_committed_check"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G24",
+      "path": "runs/final-public001.log",
+      "selector": "event_normal_reward_grants_feed_multiple_free",
+      "passed_names": [
+        "event::u08_public_event_normal_reward_grants_feed_multiple_free_exact_copy_selections"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G24",
+      "path": "runs/final-public001.log",
+      "selector": "event_rejects_wrong_authority",
+      "passed_names": [
+        "event::u08_public_event_rejects_wrong_authority_and_follows_the_committed_employee_check_branch"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G24",
+      "path": "runs/final-public001.log",
+      "selector": "unfinished_event_continue_rewinds",
+      "passed_names": [
+        "lifecycle::u08_public_unfinished_event_continue_rewinds_variants_and_history_but_keeps_pre_entry_paid_cost"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G24",
+      "path": "runs/restore-regression001.log",
+      "selector": "u08_external_ron_normal_grants_savepoint_event_replay_and_fresh_process",
+      "passed_names": [
+        "authoring::trial::tests::u08_relics::u08_external_ron_normal_grants_savepoint_event_replay_and_fresh_process"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G25",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_immediate_treatment",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_immediate_treatment_replaces_modifier_and_consumes_exactly_one"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G25",
+      "path": "runs/core001.log",
+      "selector": "use_consumable_item_rejects_dead",
+      "passed_names": [
+        "game::world::tests::equipment::use_consumable_item_rejects_dead_target"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G25",
+      "path": "runs/core001.log",
+      "selector": "use_consumable_item_replaces_existing",
+      "passed_names": [
+        "game::world::tests::equipment::use_consumable_item_replaces_existing_modifier_without_refund"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G25",
+      "path": "runs/core001.log",
+      "selector": "consumable_modifier_survives_abandonment",
+      "passed_names": [
+        "game::world::tests::combat::consumable_modifier_survives_abandonment_and_expires_on_committed_result"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G25",
+      "path": "runs/core001.log",
+      "selector": "sweep_stages_stable_battle_independent_result",
+      "passed_names": [
+        "game::world::tests::mastered_elite_sweep::sweep_stages_stable_battle_independent_result_then_commits_every_effect_once"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G25",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_inventory_display_size",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_inventory_display_size_does_not_limit_relic_purchase"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-G25",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_expanded_carried",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_expanded_carried_equipment_and_shop_goods_continue_with_default_budget"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-STORE",
+      "path": "runs/final-focused001.log",
+      "selector": "u16_completed_shop_continue",
+      "passed_names": [
+        "game::world::tests::u16_support::u16_completed_shop_continue_keeps_goods_unfinished_continue_rewinds_all_goods"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-STORE",
+      "path": "runs/core001.log",
+      "selector": "precheck_checkpoint_reuses_raw_roll",
+      "passed_names": [
+        "game::world::tests::map_flow::precheck_checkpoint_reuses_raw_roll_for_different_valid_choice_and_employee"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-STORE",
+      "path": "runs/core001.log",
+      "selector": "u15_restore_keeps_precheckpoint_warehouse_spend",
+      "passed_names": [
+        "game::world::tests::u15_economy::u15_restore_keeps_precheckpoint_warehouse_spend_and_first_copy_investment"
+      ]
+    },
+    {
+      "condition": "IVA-CSNA-AUTHOR",
+      "path": "runs/restore-regression001.log",
+      "selector": "u08_continue_stages_are_cumulative",
+      "passed_names": [
+        "game::world::tests::u08_continue_owner::u08_continue_stages_are_cumulative_and_one_short_refusal_is_atomic"
+      ]
+    }
+  ],
+  "host": {
+    "fresh_processes": 15,
+    "commands": 84,
+    "actual_io_and_retry": [
+      {
+        "name": "shop_rewind_complete004",
+        "command": {
+          "type": "exit_shop"
+        },
+        "error": "player profile filesystem error: Is a directory (os error 21)",
+        "successful_retry": true
+      },
+      {
+        "name": "shop_savepoint004",
+        "command": {
+          "type": "load_run_checkpoint"
+        },
+        "error": "player profile filesystem error: Is a directory (os error 21)",
+        "successful_retry": true
+      },
+      {
+        "name": "hq_rewind_complete004",
+        "command": {
+          "type": "exit_shop"
+        },
+        "error": "player profile filesystem error: Is a directory (os error 21)",
+        "successful_retry": true
+      },
+      {
+        "name": "event_rewind_complete004",
+        "command": {
+          "current_scene_id": "archive_power_stabilized",
+          "event_id": "sealed_archive_recovery_01",
+          "node_id": "de57cec8-49c2-41da-8cd3-f2a1f1da61fd",
+          "type": "advance_event_scene"
+        },
+        "error": "player profile filesystem error: Is a directory (os error 21)",
+        "successful_retry": true
+      }
+    ],
+    "rewind_completed_savepoint_and_fixed_receipt_checked": true,
+    "expanded_equipment": 71
+  },
+  "other_public": {
+    "authoring_valid": 1,
+    "invalid_rejected": 12,
+    "sale_rejected": 11,
+    "consumable_actual_outcomes": 2
+  },
+  "cost": {
+    "shared_processes": 6,
+    "shared_stages": 72,
+    "value_bound_cases": 30,
+    "expanded_continue_processes": 3,
+    "exact_heap_recovery": true,
+    "limits_changed": false
+  },
+  "passed": true
+}

@@ -42,7 +42,7 @@ impl GameCore {
             MapNodeCategory::Gate => (self.run_policy().gate_trauma_recovery, false),
             _ => return Ok(None),
         };
-        let employees = self
+        let mut employees: Vec<_> = self
             .roster()?
             .iter()
             .map(|employee| {
@@ -66,6 +66,7 @@ impl GameCore {
                 }
             })
             .collect();
+        employees.sort_by_key(|employee|employee.employee_uuid);
         Ok(Some(TraumaRecoveryPreviewDto {
             recovery,
             employees,
@@ -87,6 +88,8 @@ impl GameCore {
     pub(super) fn maintenance_options(&self) -> MaintenanceOptionsDto {
         let Ok(inventory) = self.inventory() else {
             return MaintenanceOptionsDto {
+            selected_bloom_payment: None,
+                warehouse_materials: vec![],
                 items: Vec::new(),
                 materials: self.maintenance_materials_snapshot(),
             };
@@ -108,6 +111,8 @@ impl GameCore {
         });
 
         MaintenanceOptionsDto {
+            selected_bloom_payment: None,
+            warehouse_materials: self.state.player_profile.lifecycle.vault.materials.iter().map(|(id, amount)| MaintenanceMaterialAmountDto { material_id: id.clone(), amount: *amount }).collect(),
             items,
             materials: self.maintenance_materials_snapshot(),
         }
@@ -148,11 +153,7 @@ impl GameCore {
             },
             MaintenanceMaterialAmountDto {
                 material_id: "equipment_dust".to_string(),
-                amount: self
-                    .state
-                    .inventory
-                    .equipment_materials
-                    .amount("equipment_dust"),
+                amount: self.state.crafting_resources.equipment_dust,
             },
         ];
         for (material_id, amount) in self.state.inventory.equipment_materials.iter() {
@@ -188,6 +189,8 @@ impl GameCore {
         };
 
         MaintenanceItemPreviewDto {
+            investment: equipment.investment.clone(),
+            investment_refund: equipment.investment.refunds().unwrap_or_default().into_iter().map(|(material_id, amount)| MaintenanceMaterialAmountDto { material_id, amount }).collect(),
             target_id: equipment.instance_uuid.to_string(),
             target_kind: MaintenanceTargetKind::Equipment,
             fragment_forms: vec![],
@@ -222,36 +225,11 @@ impl GameCore {
         before: MaintenanceTargetStatePreviewDto,
         will_unequip: bool,
     ) -> MaintenanceOperationPreviewDto {
-        let gains = self
-            .game_data
-            .equipment_data
-            .get_dismantle_recipe_by_equipment_id(&equipment.meta.id)
-            .map(|recipe| {
-                recipe
-                    .yields
-                    .iter()
-                    .map(|material| MaintenanceMaterialAmountDto {
-                        material_id: material.material_id.clone(),
-                        amount: material.amount,
-                    })
-                    .collect::<Vec<_>>()
-            })
-            .unwrap_or_default();
-        let can_execute = !equipment.meta.bound
-            && self
-                .game_data
-                .equipment_data
-                .get_dismantle_recipe_by_equipment_id(&equipment.meta.id)
-                .is_some_and(|recipe| {
-                    recipe.yields.iter().all(|material| {
-                        let current = self
-                            .state
-                            .inventory
-                            .equipment_materials
-                            .amount(&material.material_id);
-                        current <= u32::MAX.saturating_sub(material.amount)
-                    })
-                });
+        let effects = self.equipment_dismantle_effects(equipment.instance_uuid);
+        let gains = effects.as_ref().map(|effects| effects.iter().filter_map(|effect| match effect {
+            crate::game::reward::RewardEffect::GrantEquipmentMaterial { material_id, amount } => Some(MaintenanceMaterialAmountDto { material_id: material_id.clone(), amount: *amount }), _ => None,
+        }).collect()).unwrap_or_default();
+        let can_execute = effects.is_ok_and(|effects| self.preview_grant_effects(&effects).is_ok());
         MaintenanceOperationPreviewDto {
             can_execute,
             disabled_reason: (!can_execute).then(|| "cannot_dismantle_equipment".to_string()),
@@ -287,19 +265,7 @@ impl GameCore {
                 amount: material.amount,
             })
             .collect::<Vec<_>>();
-        let can_execute = !equipment.meta.bound
-            && recipe
-                .zip(aggregated_costs.as_ref())
-                .is_some_and(|(recipe, costs)| {
-                    equipment.enhancement_level < recipe.max_level
-                        && costs.iter().all(|cost| {
-                            self.state
-                                .inventory
-                                .equipment_materials
-                                .amount(&cost.material_id)
-                                >= cost.amount
-                        })
-                });
+        let can_execute = self.validate_enhance_equipment_payload(equipment.instance_uuid).is_ok();
         MaintenanceOperationPreviewDto {
             can_execute,
             disabled_reason: (!can_execute).then(|| "cannot_enhance_equipment".to_string()),
@@ -381,6 +347,8 @@ impl GameCore {
                 .collect();
         }
         MaintenanceItemPreviewDto {
+            investment: copy.investment.clone(),
+            investment_refund: copy.investment.refunds().unwrap_or_default().into_iter().map(|(material_id, amount)| MaintenanceMaterialAmountDto { material_id, amount }).collect(),
             target_id: copy.copy_uuid.to_string(),
             target_kind: MaintenanceTargetKind::SkillFragment,
             equipment_type: None,
@@ -447,7 +415,10 @@ impl GameCore {
             StagedRecoveryEffect::None => Ok(()),
             StagedRecoveryEffect::SavePoint => self.apply_save_point_recovery(),
             StagedRecoveryEffect::GateTransition => self.apply_gate_recovery(),
-        }
+        }?;
+        // A SavePoint captures inside the command, before application epilogue.
+        self.reconcile_employee_breakdown();
+        Ok(())
     }
 
     fn apply_save_point_recovery(&mut self) -> Result<(), GameError> {

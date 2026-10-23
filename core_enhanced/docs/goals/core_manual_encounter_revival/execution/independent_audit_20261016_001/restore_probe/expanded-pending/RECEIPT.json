@@ -1,0 +1,21 @@
+{
+  "name": "expanded-pending",
+  "argv": [
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_manual_encounter_revival/execution/storage_refactor/artifacts/diagnostic001/restore_cost",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_manual_encounter_revival/execution/storage_refactor/test_parts/expanded_inputs001/admission.json",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_manual_encounter_revival/execution/independent_audit_20261016_001/restore_probe/expanded-pending",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_manual_encounter_revival/execution/storage_refactor/runs/current001/expanded-forward/Stage3_choice_pending.json",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_manual_encounter_revival/execution/independent_audit_20261016_001/restore_probe/expanded-pending/RESULT.json"
+  ],
+  "exit_code": 0,
+  "seconds": 4.6825033810000605,
+  "inputs": {
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_manual_encounter_revival/execution/storage_refactor/runs/current001/expanded-forward/milestones/Stage3_choice_pending/active/active_run.json": "539f54cf06a4cbb93eaa0d72f780f8b6fc3a496c34ee6705bbb4d18446411760",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_manual_encounter_revival/execution/storage_refactor/runs/current001/expanded-forward/milestones/Stage3_choice_pending/profile/player_profile.json": "710548527e9c0fdcfac6869653621a17ca2a8672be78bffad6f1f8cabfabbc13",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_manual_encounter_revival/execution/storage_refactor/runs/current001/expanded-forward/Stage3_choice_pending.json": "e0c407acd027bb31b081879660853eb1edc550b4be6e374e0393c351adec77e3",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_manual_encounter_revival/execution/storage_refactor/test_parts/expanded_inputs001/admission.json": "059a7df4632fd6587d73af53499a54f3e7355f9f95353cd744c260e3cde84b4a",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_manual_encounter_revival/execution/storage_refactor/artifacts/diagnostic001/restore_cost": "0a52c033972a1b580476e09a5a19cc2d230ac95c921f51c36f4b6c981f06b228",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_manual_encounter_revival/execution/independent_audit_20261016_001/restore_probe/expanded-pending/core_payload.json": "a7ef3ded5986b90af3ec4cae541f6ee1ded82b50d784f5d4a0fe2cb2475e99d5"
+  },
+  "conversion": "base64 decode and envelope extraction only; no payload/checksum/semantic edits"
+}

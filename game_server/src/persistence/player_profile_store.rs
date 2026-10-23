@@ -10,11 +10,13 @@ use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
 use super::{replace_file, sync_directory};
+use super::mod_requirements::ApprovedStoreGate;
+use std::sync::Arc;
 
 mod application_intent;
 pub use application_intent::AcceptedApplication;
 
-const PROFILE_VERSION: u32 = 3;
+const PROFILE_VERSION: u32 = 6;
 const CURRENT_FILE: &str = "player_profile.json";
 const BACKUP_FILE: &str = "player_profile.backup.json";
 const TEMP_FILE: &str = "player_profile.tmp";
@@ -114,11 +116,13 @@ impl PlayerProfileEnvelope {
             profile: unsigned.profile,
             checksum_sha256: format!("{:x}", Sha256::digest(unsigned_bytes)),
         };
-        serde_json::to_vec_pretty(&envelope)
-            .map_err(|error| PlayerProfileStoreError::InvalidEnvelope(error.to_string()))
+        let bytes = serde_json::to_vec_pretty(&envelope).map_err(|error| PlayerProfileStoreError::InvalidEnvelope(error.to_string()))?;
+        if bytes.len() > super::mod_requirements::PROFILE_MAX_BYTES { return Err(PlayerProfileStoreError::InvalidEnvelope("profile exceeds supported byte ceiling".into())); }
+        Ok(bytes)
     }
 
     fn decode(bytes: &[u8]) -> Result<PlayerProfileState, PlayerProfileStoreError> {
+        if bytes.len() > super::mod_requirements::PROFILE_MAX_BYTES { return Err(PlayerProfileStoreError::InvalidEnvelope("profile exceeds supported byte ceiling".into())); }
         #[derive(Deserialize)]
         struct Header {
             version: u32,
@@ -155,6 +159,7 @@ impl PlayerProfileEnvelope {
 pub struct PlayerProfileStore {
     root: PathBuf,
     _lock: File,
+    gate: Option<Arc<ApprovedStoreGate>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -246,17 +251,17 @@ impl PlayerProfilePersistence {
     pub fn merge_and_persist<P: Into<PlayerProfileState>>(
         &mut self,
         profile: P,
-    ) -> PlayerProfilePersistOutcome {
+    ) -> Result<PlayerProfilePersistOutcome, PlayerProfileStoreError> {
         if matches!(
             self.state,
             PlayerProfilePersistenceState::ApplicationRecoveryPending { .. }
                 | PlayerProfilePersistenceState::Protected { .. }
                 | PlayerProfilePersistenceState::Fatal { .. }
         ) {
-            return PlayerProfilePersistOutcome::Unchanged;
+            return Ok(PlayerProfilePersistOutcome::Unchanged);
         }
         let before = self.profile.clone();
-        self.profile.merge(profile.into());
+        self.profile.merge(profile.into()).map_err(PlayerProfileStoreError::InvalidEnvelope)?;
         let changed = self.profile != before;
         let retry_needed = matches!(
             self.state,
@@ -264,10 +269,10 @@ impl PlayerProfilePersistence {
                 | PlayerProfilePersistenceState::RecoveredFromBackup
         );
         if !changed && !retry_needed {
-            return PlayerProfilePersistOutcome::Unchanged;
+            return Ok(PlayerProfilePersistOutcome::Unchanged);
         }
         let was_dirty = matches!(self.state, PlayerProfilePersistenceState::Dirty { .. });
-        match self.store.publish(&self.profile) {
+        Ok(match self.store.publish(&self.profile) {
             Ok(()) => {
                 self.state = PlayerProfilePersistenceState::Clean;
                 self.recovery_notification_pending = false;
@@ -283,11 +288,11 @@ impl PlayerProfilePersistence {
                     PlayerProfilePersistOutcome::BecameDirty
                 }
             }
-        }
+        })
     }
 
-    pub fn retry(&mut self) -> PlayerProfilePersistOutcome {
-        self.merge_and_persist(PlayerProfileState::default())
+    pub fn retry(&mut self) -> Result<PlayerProfilePersistOutcome, PlayerProfileStoreError> {
+        self.merge_and_persist(self.profile.clone())
     }
 
     pub fn reload(&mut self) -> Result<(), PlayerProfileStoreError> {
@@ -314,6 +319,7 @@ impl PlayerProfilePersistence {
     }
 
     pub fn reset(&mut self) -> Result<(), PlayerProfileStoreError> {
+        if self.profile.lifecycle.active_expedition.is_some() { return Err(PlayerProfileStoreError::InvalidEnvelope("Continue and abandon the active expedition before resetting the profile".into())); }
         self.store.reset()?;
         self.profile = PlayerProfileState::default();
         self.state = PlayerProfilePersistenceState::Clean;
@@ -333,7 +339,15 @@ impl PlayerProfileStore {
             .open(root.join(LOCK_FILE))?;
         lock.try_lock_exclusive()
             .map_err(PlayerProfileStoreError::LockUnavailable)?;
-        Ok(Self { root, _lock: lock })
+        Ok(Self { root, _lock: lock, gate: None })
+    }
+
+    pub(crate) fn open_approved(root: impl AsRef<Path>, gate: Arc<ApprovedStoreGate>) -> Result<Self, PlayerProfileStoreError> {
+        gate.preflight().map_err(PlayerProfileStoreError::ActiveRun)?;
+        let mut store = Self::open(root)?;
+        store.gate = Some(gate);
+        store.protect_originals()?;
+        Ok(store)
     }
 
     pub fn load(&self) -> Result<PlayerProfileLoad, PlayerProfileStoreError> {
@@ -467,7 +481,7 @@ mod tests {
 
     fn active_checkpoint() -> ActiveRunCheckpointExport {
         ActiveRunCheckpointExport {
-            core_payload_json: br#"{"version":11,"standard":"in_progress"}"#.to_vec(),
+            core_payload_json: br#"{"version":12,"standard":"in_progress"}"#.to_vec(),
             loads_used: 0,
             run_peak_certified_power: 100,
         }
@@ -475,11 +489,12 @@ mod tests {
 
     fn completed_standard_profile() -> PlayerProfileState {
         PlayerProfileState {
+            facility_knowledge: Default::default(),
             encounter_compendium: full_profile(),
-            standard_tutorial_completed: true,
             highest_floor_reached: 3,
             longest_deathless_floor_streak: 3,
             all_live_final_bosses_defeated: false,
+            lifecycle: Default::default(),
         }
     }
 
@@ -569,16 +584,16 @@ mod tests {
         let mut persistence = PlayerProfilePersistence::bootstrap(store);
         fs::create_dir(directory.path().join(TEMP_FILE)).unwrap();
         assert_eq!(
-            persistence.merge_and_persist(profile("first", false)),
+            persistence.merge_and_persist(profile("first", false)).unwrap(),
             PlayerProfilePersistOutcome::BecameDirty
         );
         assert!(matches!(
             persistence.state(),
             PlayerProfilePersistenceState::Dirty { .. }
         ));
-        persistence.profile.merge(profile("second", true));
+        persistence.profile.merge(profile("second", true)).unwrap();
         fs::remove_dir(directory.path().join(TEMP_FILE)).unwrap();
-        assert_eq!(persistence.retry(), PlayerProfilePersistOutcome::Saved);
+        assert_eq!(persistence.retry().unwrap(), PlayerProfilePersistOutcome::Saved);
         let loaded = persistence.store.load().unwrap();
         let PlayerProfileLoad::Loaded { profile, .. } = loaded else {
             panic!("retry must publish the latest full profile");

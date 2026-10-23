@@ -1,0 +1,204 @@
+{
+  "schema_version": "p2g40.phase_plan_validation_receipt/v1",
+  "phase_plan_validation_receipt_ref": "PVR-CDMG-001",
+  "evaluated_phase_plan": {
+    "ref": "PP-CDMG-001",
+    "path": "core_enhanced/docs/goals/core_dealer_minigames/P2G_40_PHASE_PLAN_001.json",
+    "sha256": "7f5f497f0ade0f03f1c9c0901d8fb43b3e8d312ab62c580b906371cbae100988"
+  },
+  "bound_final_policy_freeze": {
+    "ref": "FPF-CDMG-001",
+    "path": "core_enhanced/docs/goals/core_dealer_minigames/P2G_30_FREEZE_001.json",
+    "sha256": "51ea854c4764ce04cd1dd4e53433882e1dd68d460726e130146fdff8c1a0770a"
+  },
+  "validator": {
+    "method_version": "p2g40-receipt-validator/1.2.0",
+    "invocation": "node core_enhanced/docs/tools/validate_p2g40_receipt.mjs --plan <plan> --freeze <freeze> --receipt <receipt>",
+    "methods": [
+      "sha256sum exact-input binding",
+      "stable selector set comparison",
+      "Tarjan SCC and atomic-group condensation audit",
+      "final-execution-node cardinality comparison",
+      "phase/audit/integration row cardinality comparison"
+    ]
+  },
+  "freeze_prerequisite_repair_basis_exact_match": {
+    "result": "passed",
+    "working_revision_ref": "WR-CDMG-003",
+    "review_batch_ref": "RB-CDMG-001",
+    "reviewed_source_basis_ref": "RSB-CDMG-001",
+    "code_review_binding_count": 5,
+    "bound_final_policy_freeze_ref": "FPF-CDMG-001",
+    "applicable_p2g40_obligation_key_count": 0,
+    "resolution_record_ref_count": 0,
+    "obligation_supersession_record_ref_count": 0
+  },
+  "selector_resolution": {
+    "result": "passed",
+    "resolved_unique_count": 5,
+    "missing_count": 0,
+    "ambiguous_count": 0,
+    "extra_count": 0,
+    "exact_resolution": [
+      {
+        "element_id": "PE-CDMG-FLOW",
+        "policy_element_revision_ref": "PER-CDMG-FLOW-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CDMG-GAME",
+        "policy_element_revision_ref": "PER-CDMG-GAME-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CDMG-LOAN",
+        "policy_element_revision_ref": "PER-CDMG-LOAN-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CDMG-SHOP",
+        "policy_element_revision_ref": "PER-CDMG-SHOP-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CDMG-STORE",
+        "policy_element_revision_ref": "PER-CDMG-STORE-REVIEWED-001"
+      }
+    ]
+  },
+  "primary_phase_coverage": {
+    "result": "passed",
+    "covered_count": 5,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0,
+    "assignments": [
+      {
+        "element_id": "PE-CDMG-FLOW",
+        "phase_id": "PHASE-CDMG-01"
+      },
+      {
+        "element_id": "PE-CDMG-GAME",
+        "phase_id": "PHASE-CDMG-01"
+      },
+      {
+        "element_id": "PE-CDMG-LOAN",
+        "phase_id": "PHASE-CDMG-01"
+      },
+      {
+        "element_id": "PE-CDMG-SHOP",
+        "phase_id": "PHASE-CDMG-01"
+      },
+      {
+        "element_id": "PE-CDMG-STORE",
+        "phase_id": "PHASE-CDMG-01"
+      }
+    ]
+  },
+  "work_package_atomic_group_partition": {
+    "result": "passed",
+    "work_package_count": 4,
+    "atomic_group_count": 1,
+    "atomic_group_member_count": 3,
+    "standalone_work_package_count": 1,
+    "missing_count": 0,
+    "duplicate_or_overlap_count": 0,
+    "atomic_groups": {
+      "AG-CDMG-RUN": [
+        "WP-CDMG-FLOW",
+        "WP-CDMG-ASSETS",
+        "WP-CDMG-STORE"
+      ]
+    },
+    "standalone_work_packages": [
+      "WP-CDMG-VERIFY"
+    ]
+  },
+  "dependency_graph": {
+    "result": "passed",
+    "work_package_node_count": 4,
+    "edge_count": 9,
+    "cyclic_scc_count": 1,
+    "cyclic_scc_disposition_count": 1,
+    "cyclic_sccs": [
+      [
+        "WP-CDMG-ASSETS",
+        "WP-CDMG-FLOW",
+        "WP-CDMG-STORE"
+      ]
+    ],
+    "final_execution_node_count": 2,
+    "condensation_edge_count": 1,
+    "condensation_acyclic": true
+  },
+  "final_execution_node_to_phase_cardinality": {
+    "result": "passed",
+    "final_execution_node_count": 2,
+    "assigned_once_count": 2,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "ordered_phase_count": 1,
+    "assignment": {
+      "AG-CDMG-RUN": "PHASE-CDMG-01",
+      "WP-CDMG-VERIFY": "PHASE-CDMG-01"
+    }
+  },
+  "intermediate_state_audit_row_completeness": {
+    "result": "passed",
+    "ordered_phase_count": 1,
+    "audit_row_count": 1,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0
+  },
+  "parallelization_evidence_check": {
+    "result": "not_claimed",
+    "plan_disposition": "none approved",
+    "approved_pair_count": 0
+  },
+  "integration_validation_ownership_coverage": {
+    "result": "passed",
+    "required_acceptance_count": 5,
+    "mapped_count": 5,
+    "assigned_execution_node_count": 5,
+    "existing_read_only_count": 0,
+    "audit_local_read_only_count": 0,
+    "missing_owner_count": 0,
+    "invalid_seam_disposition_count": 0
+  },
+  "goal_structure_fact_check": {
+    "result": "passed",
+    "ordered_phase_count": 1,
+    "expected": "single_phase",
+    "actual": "single_phase"
+  },
+  "failure_summary": [],
+  "overall_result": "passed",
+  "structural_input_evidence": {
+    "scope": "references, coverage, graph, validation ownership; semantic review remains separate",
+    "exact_freeze_ref": {
+      "Artifact Type": "Final Policy Freeze",
+      "Artifact ID": "FPF-CDMG-001",
+      "Content Digest": "sha256:6de8c97c086079da0fdaaee33c87680266224d5049306b335eb6c736855238d8"
+    },
+    "exact_plan_ref": {
+      "Artifact Type": "Phase Plan",
+      "Artifact ID": "PP-CDMG-001",
+      "Content Digest": "sha256:8214cea92c83582796563edf8134e5147e566af28c0ae63e10ce8b1b0804ffbe"
+    },
+    "resolved_artifact_sources": [
+      {
+        "path": "core_enhanced/docs/goals/core_dealer_minigames/P2G_00_INITIAL_001.json",
+        "sha256": "6d2bcb64d5011f01bc653a8de9a31aeb7d002ffb131035922fdfe6e920440411"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_dealer_minigames/P2G_10_DECISIONS_001.json",
+        "sha256": "f44f2b24005a66964132e916d048df977ce85d43f9122d029947ff78262e2908"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_dealer_minigames/P2G_20_REVIEW_001.json",
+        "sha256": "b7f07354be8b1e0d57356206dbf5f4322d355fd85597cea82b9bda28002dce8b"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_dealer_minigames/P2G_30_FREEZE_001.json",
+        "sha256": "51ea854c4764ce04cd1dd4e53433882e1dd68d460726e130146fdff8c1a0770a"
+      }
+    ]
+  }
+}

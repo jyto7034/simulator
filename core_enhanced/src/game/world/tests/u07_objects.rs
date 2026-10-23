@@ -316,6 +316,9 @@ fn u07_public_official_owned_forms_preview_cast_paused_reconnect_clone_and_conti
         );
         let saved = app.export_active_run_checkpoint().unwrap().unwrap();
         let mut restarted = GameCore::new(data, 0xC007DEAD);
+        restarted.install_authoritative_player_profile(serde_json::from_value(
+            app.snapshot(crate::application::ApplicationSnapshotKind::PlayerProfile).unwrap().read_model().as_value().clone()
+        ).unwrap()).unwrap();
         restarted
             .continue_from_active_run_checkpoint(
                 player,

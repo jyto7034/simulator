@@ -1,0 +1,294 @@
+{
+  "command": {
+    "room_id": "B1-01",
+    "type": "move_to_facility_room"
+  },
+  "result": {
+    "disposition": "accepted",
+    "kind": "map_state",
+    "meaning": "MapState",
+    "payload": {
+      "map": {
+        "facility_template_version": 1,
+        "map_template_id": "facility_9C",
+        "nodes": [
+          {
+            "category": "Combat",
+            "difficulty_band": "Easy",
+            "entry_preview": {
+              "breakdown": [],
+              "charged_cost": 1,
+              "combat_deterrence": {
+                "enemy_attack_percent": 100,
+                "enemy_health_percent": 100,
+                "seal_released": false,
+                "unrestrained": false,
+                "victory_quantity_multiplier": 1
+              },
+              "deterrence_after": 5,
+              "regulated_cost": 1,
+              "sealed_golden_bough": false,
+              "unrestrained_after_entry": false
+            },
+            "id": "2ed7f05f-8d55-4a78-9cf0-c3400fbf7e5b",
+            "kind_id": "combat_monster",
+            "payload": {
+              "Encounter": {
+                "encounter_id": "normal_breach_response"
+              }
+            },
+            "relative_threat": "Low",
+            "slot_id": "1",
+            "state": "Available",
+            "visibility": "Revealed"
+          },
+          {
+            "category": "SavePoint",
+            "entry_preview": {
+              "breakdown": [],
+              "charged_cost": 0,
+              "combat_deterrence": null,
+              "deterrence_after": 6,
+              "regulated_cost": 1,
+              "sealed_golden_bough": false,
+              "unrestrained_after_entry": false
+            },
+            "id": "2ed7f05f-8d55-4a78-87c1-8c1a2e277c44",
+            "kind_id": "save_point",
+            "payload": "SavePoint",
+            "slot_id": "2",
+            "state": "Completed",
+            "visibility": "Revealed"
+          },
+          {
+            "category": "Combat",
+            "difficulty_band": "Standard",
+            "entry_preview": {
+              "breakdown": [],
+              "charged_cost": 1,
+              "combat_deterrence": {
+                "enemy_attack_percent": 100,
+                "enemy_health_percent": 100,
+                "seal_released": false,
+                "unrestrained": false,
+                "victory_quantity_multiplier": 1
+              },
+              "deterrence_after": 5,
+              "regulated_cost": 1,
+              "sealed_golden_bough": false,
+              "unrestrained_after_entry": false
+            },
+            "id": "2ed7f05f-8d55-4a78-b28e-b0801727373a",
+            "kind_id": "combat_monster",
+            "payload": {
+              "Encounter": {
+                "encounter_id": "normal_breach_response"
+              }
+            },
+            "relative_threat": "Low",
+            "slot_id": "3",
+            "state": "Unavailable",
+            "visibility": "Revealed"
+          },
+          {
+            "category": "Combat",
+            "difficulty_band": "Hard",
+            "entry_preview": {
+              "breakdown": [],
+              "charged_cost": 1,
+              "combat_deterrence": {
+                "enemy_attack_percent": 100,
+                "enemy_health_percent": 100,
+                "seal_released": false,
+                "unrestrained": false,
+                "victory_quantity_multiplier": 1
+              },
+              "deterrence_after": 5,
+              "regulated_cost": 1,
+              "sealed_golden_bough": false,
+              "unrestrained_after_entry": false
+            },
+            "id": "2ed7f05f-8d55-4a78-859d-7854cbd86c1e",
+            "kind_id": "combat_monster",
+            "payload": {
+              "Encounter": {
+                "encounter_id": "normal_corroded_patrol"
+              }
+            },
+            "relative_threat": "Low",
+            "slot_id": "4",
+            "state": "Unavailable",
+            "visibility": "Revealed"
+          },
+          {
+            "category": "Maintenance",
+            "entry_preview": {
+              "breakdown": [],
+              "charged_cost": 0,
+              "combat_deterrence": null,
+              "deterrence_after": 6,
+              "regulated_cost": 1,
+              "sealed_golden_bough": false,
+              "unrestrained_after_entry": false
+            },
+            "id": "2ed7f05f-8d55-4a78-b7ea-cf1ed04458cc",
+            "kind_id": "maintenance",
+            "payload": "Maintenance",
+            "slot_id": "5",
+            "state": "Completed",
+            "visibility": "Revealed"
+          },
+          {
+            "category": "Combat",
+            "difficulty_band": "Standard",
+            "entry_preview": {
+              "breakdown": [],
+              "charged_cost": 1,
+              "combat_deterrence": {
+                "enemy_attack_percent": 100,
+                "enemy_health_percent": 100,
+                "seal_released": false,
+                "unrestrained": false,
+                "victory_quantity_multiplier": 1
+              },
+              "deterrence_after": 5,
+              "regulated_cost": 1,
+              "sealed_golden_bough": false,
+              "unrestrained_after_entry": false
+            },
+            "id": "2ed7f05f-8d55-4a78-b9d5-65e24d677d85",
+            "kind_id": "combat_monster",
+            "payload": {
+              "Encounter": {
+                "encounter_id": "normal_corroded_patrol"
+              }
+            },
+            "relative_threat": "Low",
+            "slot_id": "6",
+            "state": "Available",
+            "visibility": "Revealed"
+          },
+          {
+            "category": "Combat",
+            "difficulty_band": "Hard",
+            "entry_preview": {
+              "breakdown": [],
+              "charged_cost": 1,
+              "combat_deterrence": {
+                "enemy_attack_percent": 100,
+                "enemy_health_percent": 100,
+                "seal_released": false,
+                "unrestrained": false,
+                "victory_quantity_multiplier": 1
+              },
+              "deterrence_after": 5,
+              "regulated_cost": 1,
+              "sealed_golden_bough": false,
+              "unrestrained_after_entry": false
+            },
+            "id": "2ed7f05f-8d55-4a78-9821-3e124b4d1c49",
+            "kind_id": "combat_monster",
+            "payload": {
+              "Encounter": {
+                "encounter_id": "normal_breach_response"
+              }
+            },
+            "relative_threat": "Low",
+            "slot_id": "7",
+            "state": "Available",
+            "visibility": "Revealed"
+          },
+          {
+            "category": "Shop",
+            "entry_preview": {
+              "breakdown": [],
+              "charged_cost": 0,
+              "combat_deterrence": null,
+              "deterrence_after": 6,
+              "regulated_cost": 1,
+              "sealed_golden_bough": false,
+              "unrestrained_after_entry": false
+            },
+            "id": "2ed7f05f-8d55-4a78-b067-4ef5145400e9",
+            "kind_id": "shop_general",
+            "payload": {
+              "Shop": {
+                "shop_id": null,
+                "shop_pool_id": "default_shops"
+              }
+            },
+            "slot_id": "8",
+            "state": "Completed",
+            "visibility": "Revealed"
+          },
+          {
+            "category": "Combat",
+            "difficulty_band": "Standard",
+            "entry_preview": {
+              "breakdown": [],
+              "charged_cost": 1,
+              "combat_deterrence": {
+                "enemy_attack_percent": 100,
+                "enemy_health_percent": 100,
+                "seal_released": false,
+                "unrestrained": false,
+                "victory_quantity_multiplier": 1
+              },
+              "deterrence_after": 5,
+              "regulated_cost": 1,
+              "sealed_golden_bough": false,
+              "unrestrained_after_entry": false
+            },
+            "id": "2ed7f05f-8d55-4a78-bed4-a7ddef0d461d",
+            "kind_id": "combat_monster",
+            "payload": {
+              "Encounter": {
+                "encounter_id": "normal_corroded_patrol"
+              }
+            },
+            "relative_threat": "Low",
+            "slot_id": "9",
+            "state": "Available",
+            "visibility": "Revealed"
+          },
+          {
+            "category": "Gate",
+            "entry_preview": {
+              "breakdown": [],
+              "charged_cost": 0,
+              "combat_deterrence": null,
+              "deterrence_after": 6,
+              "regulated_cost": 0,
+              "sealed_golden_bough": false,
+              "unrestrained_after_entry": false
+            },
+            "id": "2ed7f05f-8d55-4a78-9e05-c51c7f709e5f",
+            "kind_id": "gate_stairs",
+            "payload": "None",
+            "slot_id": "G",
+            "state": "Completed",
+            "visibility": "Revealed"
+          },
+          {
+            "category": "Start",
+            "entry_preview": {
+              "breakdown": [],
+              "charged_cost": 0,
+              "combat_deterrence": null,
+              "deterrence_after": 6,
+              "regulated_cost": 0,
+              "sealed_golden_bough": false,
+              "unrestrained_after_entry": false
+            },
+            "id": "2ed7f05f-8d55-4a78-89f5-6bafa70df9a9",
+            "kind_id": "start",
+            "payload": "None",
+            "slot_id": "S",
+            "state": "Completed",
+            "visibility": "Revealed"
+          }
+        ]
+      }
+    }
+  }
+}

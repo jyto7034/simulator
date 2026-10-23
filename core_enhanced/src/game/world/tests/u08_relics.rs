@@ -8,7 +8,7 @@ use crate::game::{
 };
 
 pub(super) fn setup() -> (GameCore, Uuid, Vec<Uuid>) {
-    let base = GameCore::new(legacy_sword_live_game_data_from_ron(), 0x808);
+    let base = GameCore::new(live_game_data_from_ron(), 0x808);
     let relics: RelicDatabase = ron::de::from_str(include_str!(concat!(
         env!("CARGO_MANIFEST_DIR"),
         "/tests/fixtures/u08/relics.ron"
@@ -19,7 +19,7 @@ pub(super) fn setup() -> (GameCore, Uuid, Vec<Uuid>) {
         .build_arc();
     let mut core = GameCore::new(data, 0x808);
     let player = Uuid::from_u128(1);
-    start_new_game_with_default_starters(&mut core, player);
+    start_new_game_with_legacy_sword_fixture(&mut core, player);
     let employees = core.state.roster.combat_eligible_employee_ids();
     (core, player, employees)
 }
@@ -110,7 +110,7 @@ fn canonical_checksum_valid_forged_relic_slot_graphs_refuse_continue_without_cha
         refresh_active_run_checksum(&mut wire);
         assert_ne!(wire["continuation_sha256"], original["continuation_sha256"]);
         let forged = serde_json::to_vec(&wire).unwrap();
-        let mut target = GameCore::new(source.game_data.clone(), 0x808_f0);
+        let mut target = core_with_profile_for_continue(&source, 0x808_f0);
         let before = roots(&target);
         for _ in 0..2 {
             let error = target
@@ -144,7 +144,7 @@ fn canonical_checksum_valid_forged_relic_slot_graphs_refuse_continue_without_cha
         }
         println!("U08_FORGED_SLOT_GRAPH case={case} canonical_checksum_valid=true exact_graph_rejection=true roots_unchanged=true");
     }
-    let mut valid = GameCore::new(source.game_data.clone(), 0x808_f1);
+    let mut valid = core_with_profile_for_continue(&source, 0x808_f1);
     valid
         .continue_from_active_run_checkpoint(
             player,
@@ -185,7 +185,10 @@ fn corruption_host_fixture(cap: usize) -> (GameCore, Uuid, Uuid, Uuid) {
     prepared.save_run_checkpoint_for_test().unwrap();
     let before = roots(&prepared);
     let defaults = native::RuntimeFactLimits::default();
-    assert!(cap <= defaults.max_retained_bytes && cap <= 8 * 1024 * 1024);
+    let embedded = crate::runtime_safety::RuntimeSafetySettings::embedded();
+    assert_eq!(defaults, embedded.native_runtime());
+    assert!(embedded.development_measurement().is_none());
+    assert!(cap <= defaults.max_retained_bytes);
     let raw = std::str::from_utf8(crate::runtime_safety::EMBEDDED_RUNTIME_SAFETY_RON).unwrap();
     let original = format!("max_retained_bytes: {},", defaults.max_retained_bytes);
     assert!(raw.contains(&original));
@@ -699,10 +702,10 @@ fn durable_continue_and_savepoint_keep_independent_variant_cost_and_slot_owners(
         .unwrap();
     let export = core.export_active_run_checkpoint().unwrap().unwrap();
     let wire: Value = serde_json::from_slice(&export.core_payload_json).unwrap();
-    assert_eq!(wire["version"], 11);
+    assert_eq!(wire["version"], 18);
     assert!(wire["continuation"]["current"]["relics"].is_object());
     assert!(wire["continuation"]["savepoint"]["snapshot"]["checkpoint"]["relics"].is_object());
-    let mut restarted = GameCore::new(core.game_data.clone(), 0xDEAD);
+    let mut restarted = core_with_profile_for_continue(&core, 0xDEAD);
     let (result, admissions) = native::observe_retained_admissions(|| {
         restarted.continue_from_active_run_checkpoint(
             player,
@@ -762,7 +765,7 @@ fn durable_empty_fields_preserve_old_codec_and_present_malformed_forgery_or_gene
     assert!(empty["continuation"]["current"]
         .get("crafting_resources")
         .is_none());
-    let mut restored = GameCore::new(core.game_data.clone(), 0xDEAD);
+    let mut restored = core_with_profile_for_continue(&core, 0xDEAD);
     restored
         .continue_from_active_run_checkpoint(
             player,
@@ -825,7 +828,7 @@ fn uuid_stream_remains_an_owned_root_after_last_copy_is_dismantled() {
     assert!(core.state.has_relic_owner());
     assert_eq!(core.state.uuid_manager.relic_stream_extent().unwrap(), 400);
     let unfinished = core.export_active_run_checkpoint().unwrap().unwrap();
-    let mut pre_entry = GameCore::new(core.game_data.clone(), 0xDEAD);
+    let mut pre_entry = core_with_profile_for_continue(&core, 0xDEAD);
     pre_entry
         .continue_from_active_run_checkpoint(
             player,
@@ -838,7 +841,7 @@ fn uuid_stream_remains_an_owned_root_after_last_copy_is_dismantled() {
     assert!(pre_entry.state.relics.get(copy).is_some());
     core.execute(player, PlayerBehavior::CompleteNode).unwrap();
     let export = core.export_active_run_checkpoint().unwrap().unwrap();
-    let mut restored = GameCore::new(core.game_data.clone(), 0xDEAD);
+    let mut restored = core_with_profile_for_continue(&core, 0xDEAD);
     restored
         .continue_from_active_run_checkpoint(
             player,

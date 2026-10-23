@@ -1,0 +1,37 @@
+--- R04 audited source
++++ core_enhanced/src/game/battle/core/movement/rapier_backend.rs
+@@ -239,7 +239,8 @@
+             &mut self.islands,
+             &mut self.colliders,
+             self.impulse_joints.get_or_insert_with(ImpulseJointSet::new),
+-            self.multibody_joints.get_or_insert_with(MultibodyJointSet::new),
++            self.multibody_joints
++                .get_or_insert_with(MultibodyJointSet::new),
+             true,
+         );
+         self.clone_history
+@@ -390,7 +391,8 @@
+             &mut self.islands,
+             &mut self.colliders,
+             self.impulse_joints.get_or_insert_with(ImpulseJointSet::new),
+-            self.multibody_joints.get_or_insert_with(MultibodyJointSet::new),
++            self.multibody_joints
++                .get_or_insert_with(MultibodyJointSet::new),
+             true,
+         );
+         self.clone_history
+@@ -632,7 +634,13 @@
+         let mut branch = world.clone();
+         branch.forget_unit(sample.unit_id).unwrap();
+         assert!(branch.impulse_joints.as_ref().unwrap().is_empty());
+-        assert!(branch.multibody_joints.as_ref().unwrap().iter().next().is_none());
++        assert!(branch
++            .multibody_joints
++            .as_ref()
++            .unwrap()
++            .iter()
++            .next()
++            .is_none());
+         assert!(world.handles_for(sample.unit_id).is_some());
+         assert!(world.impulse_joints.is_none());
+         assert!(world.multibody_joints.is_none());

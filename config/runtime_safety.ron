@@ -13,7 +13,7 @@
         max_control_steps: 4096,
         max_strike_segments: 8192,
         max_predeath_buffs: 4096,
-        max_retained_bytes: 8388608,
+        max_retained_bytes: 16777216,
     ),
     authoring_execution: (
         max_work: 10000000,

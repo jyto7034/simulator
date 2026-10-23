@@ -1,0 +1,27 @@
+const fs=require('fs');
+const {chromium}=require('/tmp/crso-s2-browser/node_modules/playwright');
+(async()=>{
+ const out=process.argv[2]; const responses=[], errors=[];
+ const ended=JSON.parse(fs.readFileSync(out+'/../live006/ended.json'));
+ const from=ended.ring[0].wall_unix_ms-1000, to=ended.ring[ended.ring.length-1].wall_unix_ms+1000;
+ const base='http://127.0.0.1:3000/d/core-runtime?from='+from+'&to='+to;
+ const browser=await chromium.launch({headless:true});
+ const page=await browser.newPage({viewport:{width:1600,height:1000}});
+ page.on('pageerror',e=>errors.push(String(e)));
+ page.on('response',async r=>{if(r.url().includes('/api/ds/query')) {try {responses.push({url:r.url(),status:r.status(),body:await r.json()});}catch(e){errors.push(String(e));}}});
+ await page.goto(base);
+ await page.waitForTimeout(3500);
+ await page.screenshot({path:out+'/dashboard.png',fullPage:true});
+ fs.writeFileSync(out+'/dashboard.txt',await page.locator('body').innerText());
+ await page.goto(base+'&viewPanel=panel-11');
+ await page.waitForTimeout(2000);
+ await page.screenshot({path:out+'/duration-distribution.png',fullPage:true});
+ fs.writeFileSync(out+'/duration-distribution.txt',await page.locator('body').innerText());
+ await page.goto(base+'&viewPanel=panel-19');
+ await page.waitForTimeout(3500);
+ await page.screenshot({path:out+'/simulation-time.png',fullPage:true});
+ fs.writeFileSync(out+'/simulation-time.txt',await page.locator('body').innerText());
+ fs.writeFileSync(out+'/browser.json',JSON.stringify({browser:browser.version(),playwright:require('/tmp/crso-s2-browser/node_modules/playwright/package.json').version,errors,responses},null,2));
+ await browser.close();
+ console.log(JSON.stringify({errors,queries:responses.length}));
+})().catch(e=>{console.error(e);process.exit(1)});

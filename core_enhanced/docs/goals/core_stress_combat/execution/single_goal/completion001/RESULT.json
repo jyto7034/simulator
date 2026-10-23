@@ -1,0 +1,359 @@
+{
+  "implementation_validation_passed": true,
+  "independent_audit_performed": false,
+  "checks": [
+    {
+      "check": "FULL002",
+      "passed": true,
+      "artifact": "FULL002.json"
+    },
+    {
+      "check": "UNRESTRAINED002",
+      "passed": true,
+      "artifact": "UNRESTRAINED002.json"
+    },
+    {
+      "check": "EXTRACT001",
+      "passed": true,
+      "artifact": "EXTRACT001.json"
+    },
+    {
+      "check": "RETREAT001",
+      "passed": true,
+      "artifact": "RETREAT001.json"
+    },
+    {
+      "check": "DEFEAT001",
+      "passed": true,
+      "artifact": "DEFEAT001.json"
+    },
+    {
+      "check": "SAVEPOINT003",
+      "passed": true,
+      "artifact": "SAVEPOINT003.json"
+    },
+    {
+      "check": "EXPANDED006",
+      "passed": true,
+      "artifact": "EXPANDED006.json"
+    },
+    {
+      "check": "EXPANDED_FRESH006",
+      "passed": true,
+      "artifact": "EXPANDED_FRESH006.json"
+    },
+    {
+      "check": "unfinished002",
+      "passed": true,
+      "artifact": "unfinished002.json"
+    },
+    {
+      "check": "full_fresh002",
+      "passed": true,
+      "artifact": "full_fresh002.json"
+    },
+    {
+      "check": "unrestrained_fresh002",
+      "passed": true,
+      "artifact": "unrestrained_fresh002.json"
+    },
+    {
+      "check": "extract001_fresh",
+      "passed": true,
+      "artifact": "extract001_fresh.json"
+    },
+    {
+      "check": "retreat001_fresh",
+      "passed": true,
+      "artifact": "retreat001_fresh.json"
+    },
+    {
+      "check": "defeat_fresh001",
+      "passed": true,
+      "artifact": "defeat_fresh001.json"
+    },
+    {
+      "check": "savepoint_fresh003",
+      "passed": true,
+      "artifact": "savepoint_fresh003.json"
+    },
+    {
+      "check": "unfinished fresh restores entry cost and expedition progression",
+      "passed": true
+    },
+    {
+      "check": "all five waves retain authored normal/unrestrained enemy scale",
+      "passed": true,
+      "normal": [
+        90,
+        10
+      ],
+      "unrestrained": [
+        135,
+        15
+      ],
+      "actors_per_profile": 9
+    },
+    {
+      "check": "all four Continues preserve exact HP unit IDs deployment resources effects and time",
+      "passed": true
+    },
+    {
+      "check": "real paired journal IO failure and same request retry",
+      "passed": true,
+      "cases": [
+        {
+          "host": "full002",
+          "request": {
+            "delta_ms": 60000,
+            "fail": true,
+            "op": "tick"
+          },
+          "retry_index": 35
+        },
+        {
+          "host": "extract001",
+          "request": {
+            "command": {
+              "battle_uuid": "58e4a7af-8732-45f1-9881-fe115eca7fb1",
+              "completed_rounds": 1,
+              "extract": true,
+              "type": "stress_combat_act"
+            },
+            "fail": true,
+            "op": "command",
+            "reject": false
+          },
+          "retry_index": 7
+        },
+        {
+          "host": "retreat001",
+          "request": {
+            "command": {
+              "type": "retreat_battle"
+            },
+            "fail": true,
+            "op": "command",
+            "reject": false
+          },
+          "retry_index": 8
+        },
+        {
+          "host": "savepoint003",
+          "request": {
+            "command": {
+              "type": "complete_node"
+            },
+            "fail": true,
+            "op": "command",
+            "reject": false
+          },
+          "retry_index": 12
+        }
+      ],
+      "memory_and_disk_atomicity": "asserted by approved host roots/file_bytes before and after rejected publication"
+    },
+    {
+      "check": "actual host incapacitation and memory_fixative mitigation",
+      "passed": true,
+      "scope": "observed loss branch from failed expanded victory strategy",
+      "injury": 1,
+      "trauma": 26,
+      "expected": "40 - ceil(40*35/100)",
+      "incapacitated_xp": 0
+    },
+    {
+      "check": "four supported authoring and real battle boundary probes",
+      "passed": true,
+      "log": "runs/completion-probes005.log",
+      "sha256": "bee827fa42a741fbe2cb714126218a9e744f46d359377db41bb036d1b076434a"
+    },
+    {
+      "check": "all intake product data config test and contract inputs unchanged",
+      "passed": true,
+      "changed": [
+        "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/EXPERIMENTS.md",
+        "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/PLAN.md"
+      ]
+    },
+    {
+      "check": "normal and expanded same-binary isolated cost replays",
+      "passed": true,
+      "artifact": "completion001/cost001/RESULT.json",
+      "measurements": 6
+    }
+  ],
+  "host_processes": [
+    {
+      "name": "prepare001",
+      "exit_code": 0,
+      "seconds": 119.83155196999724,
+      "operations": 14,
+      "store": "/tmp/u164-completion-ftysnxs2/stores/base",
+      "pid": 4,
+      "trace_sha256": "757c2a193907070924aa60f4a040f1b3d8466867e0f65657f6d78375006627d0"
+    },
+    {
+      "name": "pilot001",
+      "exit_code": 0,
+      "seconds": 300.1607547090098,
+      "operations": 26,
+      "store": "/tmp/u164-completion-ftysnxs2/stores/pilot",
+      "pid": 29,
+      "trace_sha256": "f94c767bec01821c86d64f346049937a623c3efb710d53c68e019b6655c9dc09"
+    },
+    {
+      "name": "full002",
+      "exit_code": 0,
+      "seconds": 603.539315061993,
+      "operations": 39,
+      "store": "/tmp/u164-completion-ftysnxs2/stores/full002",
+      "pid": 5,
+      "trace_sha256": "9b387feef6e8603d0534873139a4e6db80d06ef71eb62d0829c813d8cf7b8ede"
+    },
+    {
+      "name": "full_fresh002",
+      "exit_code": 0,
+      "seconds": 10.438694078009576,
+      "operations": 1,
+      "store": "/tmp/u164-completion-ftysnxs2/stores/full002",
+      "pid": 12,
+      "trace_sha256": "bc9226988309d3f3f3f870ea36a093b94c2918c16496afdb3b2203711b5ebb7d"
+    },
+    {
+      "name": "unfinished002",
+      "exit_code": 0,
+      "seconds": 3.99211098899832,
+      "operations": 1,
+      "store": "/tmp/u164-completion-ftysnxs2/stores/pilot",
+      "pid": 4,
+      "live_trace_directory": "/tmp/u164-host-unfinished002-4_g1b9nc",
+      "trace_sha256": "d25fdaf305a04839f0e90a9b4946b0b1cc62b847a294c1211231ff575b6b525f"
+    },
+    {
+      "name": "extract001",
+      "exit_code": 0,
+      "seconds": 4.462544677007827,
+      "operations": 9,
+      "store": "/tmp/u164-completion-ftysnxs2/stores/extract001",
+      "pid": 11,
+      "live_trace_directory": "/tmp/u164-host-extract001-x0jz205p",
+      "trace_sha256": "f98f77fffbba24cf49166e7a33baae5aba1385c3da42ddb4be11dcc6107857b0"
+    },
+    {
+      "name": "extract001_fresh",
+      "exit_code": 0,
+      "seconds": 4.1149038310104515,
+      "operations": 1,
+      "store": "/tmp/u164-completion-ftysnxs2/stores/extract001",
+      "pid": 18,
+      "live_trace_directory": "/tmp/u164-host-extract001_fresh-6xll9ho9",
+      "trace_sha256": "bb41c4e61fa6d5f747ce58668739dabb71d4fb5519f328ba66a3c9e3d74c63ae"
+    },
+    {
+      "name": "retreat001",
+      "exit_code": 0,
+      "seconds": 4.433951127997716,
+      "operations": 9,
+      "store": "/tmp/u164-completion-ftysnxs2/stores/retreat001",
+      "pid": 25,
+      "live_trace_directory": "/tmp/u164-host-retreat001-5axpamht",
+      "trace_sha256": "edd45e65573c559aef86248a845a336ab6feae0e13a602c11383e338824c4d1c"
+    },
+    {
+      "name": "retreat001_fresh",
+      "exit_code": 0,
+      "seconds": 3.8870619840017753,
+      "operations": 1,
+      "store": "/tmp/u164-completion-ftysnxs2/stores/retreat001",
+      "pid": 32,
+      "live_trace_directory": "/tmp/u164-host-retreat001_fresh-2hybkt_3",
+      "trace_sha256": "978451d11a74c2203b082253f7081da905aa9fab6ad93ce010465d30f599769d"
+    },
+    {
+      "name": "unrestrained002",
+      "exit_code": 0,
+      "seconds": 5.1158364479924785,
+      "operations": 25,
+      "store": "/tmp/u164-completion-ftysnxs2/stores/unrestrained002",
+      "pid": 4,
+      "live_trace_directory": "/tmp/u164-host-unrestrained002-wc98lrh7",
+      "trace_sha256": "8f9657179ce9da0a466ac80f92201db1980ebb2e72fec9db70b4de6f8283c4fb"
+    },
+    {
+      "name": "unrestrained_fresh002",
+      "exit_code": 0,
+      "seconds": 3.4305236660002265,
+      "operations": 1,
+      "store": "/tmp/u164-completion-ftysnxs2/stores/unrestrained002",
+      "pid": 11,
+      "live_trace_directory": "/tmp/u164-host-unrestrained_fresh002-alda2913",
+      "trace_sha256": "4da169ab10aec68449f52c85bb50e9225f0753661ffff595c9d7d6f0faa16d6d"
+    },
+    {
+      "name": "savepoint003",
+      "exit_code": 0,
+      "seconds": 4.442085235990817,
+      "operations": 13,
+      "store": "/tmp/u164-completion-ftysnxs2/stores/savepoint003",
+      "pid": 4,
+      "live_trace_directory": "/tmp/u164-host-savepoint003-i5y1fc19",
+      "trace_sha256": "c596960f8bb8c8582095938ffba1117ec1ca2738385bb9047d7ce50ed9db1bf3"
+    },
+    {
+      "name": "savepoint_fresh003",
+      "exit_code": 0,
+      "seconds": 3.7529531799955294,
+      "operations": 1,
+      "store": "/tmp/u164-completion-ftysnxs2/stores/savepoint003",
+      "pid": 11,
+      "live_trace_directory": "/tmp/u164-host-savepoint_fresh003-f33xx_dt",
+      "trace_sha256": "9d63268f1f1d1032bc765f4824c2d0a5ad6d70d82b6246acc7253a55f9f79fb8"
+    },
+    {
+      "name": "defeat001",
+      "exit_code": 0,
+      "seconds": 5.151908893996733,
+      "operations": 16,
+      "store": "/tmp/u164-completion-ftysnxs2/stores/defeat001",
+      "pid": 5,
+      "live_trace_directory": "/tmp/u164-host-defeat001-wz0driv1",
+      "trace_sha256": "127869f2327f9d422c6c75cfd1962d56ef75061d985004d92cb6a63884aeafcd"
+    },
+    {
+      "name": "defeat_fresh001",
+      "exit_code": 0,
+      "seconds": 4.077565739004058,
+      "operations": 1,
+      "store": "/tmp/u164-completion-ftysnxs2/stores/defeat001",
+      "pid": 12,
+      "live_trace_directory": "/tmp/u164-host-defeat_fresh001-0ald75s0",
+      "trace_sha256": "7e18d8a9aa81fb77ec4565ac80bf33f4a964b102ee0eace2ead018708fb273fa"
+    },
+    {
+      "name": "expanded006",
+      "exit_code": 0,
+      "seconds": 6.872664612994413,
+      "operations": 33,
+      "store": "/tmp/u164-expanded2-7kbd9_b2/store006",
+      "pid": 6,
+      "live_trace_directory": "/tmp/u164-host-expanded006-02muk_mi",
+      "trace_sha256": "93d5446d86832317fda56ba17be0855d3cd594a04731a9cd7e63b6f81c1b2bf9"
+    },
+    {
+      "name": "expanded_fresh006",
+      "exit_code": 0,
+      "seconds": 4.334192741996958,
+      "operations": 1,
+      "store": "/tmp/u164-expanded2-7kbd9_b2/store006",
+      "pid": 4,
+      "live_trace_directory": "/tmp/u164-host-expanded_fresh006-qhgpx_07",
+      "trace_sha256": "3ab47fce3dc2ac31d2a08db1f8fa982b1dc4d98599b252f3235f71e75f4bab11"
+    }
+  ],
+  "host_operations": 192,
+  "native_boundary_probes": 4,
+  "cost_measurements": 6,
+  "scope": "new remaining integration only; prior audit/loader/broad regression reused separately",
+  "canonical_product_changed": false
+}

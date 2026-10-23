@@ -120,13 +120,29 @@ pub struct NodeOutcomeEmployeeChange {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SkillFragmentBloomPreviewDto {
+    pub weapon_copy_uuid: Option<Uuid>,
+    pub copy_uuid: Uuid,
+    pub form_id: String,
+    pub enkephalin: u32,
+    pub can_execute: bool,
+    pub disabled_reason: Option<String>,
+    pub payment: crate::game::material_economy::MaterialPaymentPreview,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MaintenanceOptionsDto {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub selected_bloom_payment: Option<SkillFragmentBloomPreviewDto>,
+    pub warehouse_materials: Vec<MaintenanceMaterialAmountDto>,
     pub items: Vec<MaintenanceItemPreviewDto>,
     pub materials: Vec<MaintenanceMaterialAmountDto>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MaintenanceItemPreviewDto {
+    pub investment: crate::game::material_economy::MaterialInvestment,
+    pub investment_refund: Vec<MaintenanceMaterialAmountDto>,
     pub target_id: String,
     pub target_kind: MaintenanceTargetKind,
     pub equipment_type: Option<EquipmentType>,
@@ -261,6 +277,9 @@ macro_rules! define_action_kinds {
 
 define_action_kinds!(
     StartNewGame,
+    SkipTutorial,
+    AcknowledgeFirstReturnStory,
+    ChooseExpeditionContinuation,
     ContinueRun,
     ResetActiveRun,
     RetryPlayerProfile,
@@ -284,11 +303,14 @@ define_action_kinds!(
     RequestRelicEffectivePlan,
     PreviewRelicCorruption,
     CorruptRelic,
+    PreviewSkillFragmentBloom,
     PreviewRelicDismantle,
     DismantleRelic,
     RequestMapData,
+    MoveToFacilityRoom,
     SelectMapNode,
     ConvertMapNodeWithMonolith,
+    HatchEncounter,
     ConfirmEnterNode,
     CancelSelectedNode,
     CompleteNode,
@@ -299,6 +321,11 @@ define_action_kinds!(
     RequestEmergencySupplies,
     OpenHeadquartersShop,
     SelectReward,
+    InvestRelicReward,
+    SelectRelicFusionInputs,
+    ConfirmRelicFusion,
+    DealerAct,
+    StressCombatAct,
     PurchaseItem,
     SellItem,
     RefreshShop,
@@ -430,6 +457,7 @@ impl ActionKind {
             | Self::CorruptRelic
             | Self::DismantleRelic
             | Self::ConvertMapNodeWithMonolith
+            | Self::HatchEncounter
             | Self::PurchaseItem
             | Self::SellItem
             | Self::RefreshShop
@@ -458,6 +486,7 @@ impl ActionKind {
             | Self::BeginSkillTargeting
             | Self::CancelSkillTargeting
             | Self::ActivateSkill
+            | Self::StressCombatAct
             | Self::RetreatBattle
             | Self::PauseBattle
             | Self::ResumeBattle
@@ -468,15 +497,20 @@ impl ActionKind {
             | Self::RequestRelicNumericPlan
             | Self::RequestRelicEffectivePlan
             | Self::PreviewRelicCorruption
+            | Self::PreviewSkillFragmentBloom
             | Self::PreviewRelicDismantle => ActionDescriptor::new(CoreCommon, Query, false),
             Self::LoadRunCheckpoint => ActionDescriptor::new(CoreCommon, Recovery, false),
             Self::StartNewGame
+            | Self::SkipTutorial
+            | Self::AcknowledgeFirstReturnStory
+            | Self::ChooseExpeditionContinuation
             | Self::SelectStarterEmployees
             | Self::SelectSkillFragmentForm
             | Self::AwakenSkillFragment
             | Self::DismantleSkillFragment
             | Self::DismantleEquipment
             | Self::EnhanceEquipment
+            | Self::MoveToFacilityRoom
             | Self::SelectMapNode
             | Self::ConfirmEnterNode
             | Self::CancelSelectedNode
@@ -487,6 +521,10 @@ impl ActionKind {
             | Self::RequestEmergencySupplies
             | Self::OpenHeadquartersShop
             | Self::SelectReward
+            | Self::InvestRelicReward
+            | Self::SelectRelicFusionInputs
+            | Self::ConfirmRelicFusion
+            | Self::DealerAct
             | Self::ClaimReward
             | Self::ExitReward
             | Self::AdvanceEventScene
@@ -522,7 +560,9 @@ pub enum ActionScope {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum ActionDisabledReasonCode {
+    RetiredFeature,
     CorrosionForcedPause,
+    SkillPresentationPause,
     SettingsOpen,
     SelectionActive,
     ContextIrrelevant,
@@ -574,7 +614,9 @@ pub enum ActionDisabledReasonCode {
 impl ActionDisabledReasonCode {
     pub const fn as_str(self) -> &'static str {
         match self {
+            Self::RetiredFeature => "retired_feature",
             Self::CorrosionForcedPause => "corrosion_forced_pause",
+            Self::SkillPresentationPause => "skill_presentation_pause",
             Self::SettingsOpen => "settings_open",
             Self::SelectionActive => "selection_active",
             Self::ContextIrrelevant => "context_irrelevant",
@@ -713,6 +755,10 @@ impl ActionCapabilityDto {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RunProgressionSnapshotDto {
     pub run_seed: u64,
+    pub instance_namespace: Uuid,
+    pub expedition_instance: Option<crate::game::expedition_lifecycle::ExpeditionInstance>,
+    pub deterrence: u32,
+    pub pending_continuation: Option<crate::game::expedition_lifecycle::PendingExpeditionContinuation>,
     pub game_mode: GameMode,
     pub floor_index: u32,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -728,7 +774,7 @@ pub struct EncounterCompendiumSnapshotDto {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct PlayerProfileSnapshotDto {
-    pub standard_tutorial_completed: bool,
+    pub lifecycle: crate::game::expedition_lifecycle::ExpeditionLifecycle,
     pub highest_floor_reached: u32,
     pub longest_deathless_floor_streak: u32,
     pub all_live_final_bosses_defeated: bool,
@@ -782,7 +828,7 @@ pub struct MonolithConversionSnapshotDto {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct MonolithRemanifestationSnapshotDto {
+pub struct RevivalSnapshotDto {
     pub abnormality_id: String,
     pub abnormality_uuid: Uuid,
     pub display_name: String,
@@ -1057,7 +1103,7 @@ pub struct InventorySnapshotDto {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EmployeeConditionSnapshotDto {
-    pub breakdown_remaining_nodes: Option<u32>,
+    pub breakdown_remaining_cost: Option<u32>,
     pub physical_damage: u8,
     pub physical_state: PhysicalDamageState,
     pub trauma: u32,
@@ -1073,32 +1119,6 @@ pub struct EmployeeEligibilitySnapshotDto {
     pub loadout: EmployeeEligibility,
     pub physical_treatment: EmployeeEligibility,
     pub trauma_recovery: EmployeeEligibility,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct EmployeePsychologyMemorySnapshotDto {
-    pub kind: String,
-    pub subject: crate::game::employee_psychology::PsychologySubject,
-    pub occurrence_count: u32,
-    pub intensity: u8,
-    pub first_source: crate::game::employee_psychology::PsychologyEventSource,
-    pub last_source: crate::game::employee_psychology::PsychologyEventSource,
-    pub remaining_nodes: Option<u32>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct EmployeePsychologyRecentEventSnapshotDto {
-    pub event: String,
-    pub source: crate::game::employee_psychology::PsychologyEventSource,
-    pub trust_delta: i16,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct EmployeePsychologySnapshotDto {
-    pub trust_score: i16,
-    pub trust_band: String,
-    pub memories: Vec<EmployeePsychologyMemorySnapshotDto>,
-    pub recent_events: Vec<EmployeePsychologyRecentEventSnapshotDto>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -1154,6 +1174,7 @@ pub struct ActiveConsumableModifierSnapshotDto {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EmployeeEquippedItemSnapshotDto {
+    pub weapon_stage: crate::game::ability::weapon_marks::WeaponStage,
     pub instance_uuid: Uuid,
     pub base_uuid: Uuid,
     pub equipment_type: EquipmentType,
@@ -1167,6 +1188,7 @@ pub struct EmployeeEquippedItemSnapshotDto {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EmployeeSnapshotDto {
+    pub role: crate::game::employee::EmployeeRole,
     pub uuid: Uuid,
     pub employee_definition_id: String,
     pub name: String,
@@ -1175,7 +1197,6 @@ pub struct EmployeeSnapshotDto {
     pub experience: u32,
     pub condition: EmployeeConditionSnapshotDto,
     pub eligibility: EmployeeEligibilitySnapshotDto,
-    pub psychology: EmployeePsychologySnapshotDto,
     pub combat_profile: EmployeeCombatProfileSnapshotDto,
     pub skill_fragments: EmployeeSkillFragmentsSnapshotDto,
     pub active_consumable_modifier: Option<ActiveConsumableModifierSnapshotDto>,
@@ -1237,11 +1258,38 @@ pub struct DisplayMonolithItemSnapshotDto {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DisplayRelicItemSnapshotDto {
+    pub uuid: Uuid,
+    pub kind: String,
+    pub id: String,
+    pub definition_id: String,
+    pub relic: crate::game::data::relic_data::RelicDefinition,
+    pub variant: crate::game::relic::RelicVariant,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DisplayCatalystItemSnapshotDto {
+    pub uuid: Uuid,
+    pub kind: String,
+    pub id: String,
+    pub definition_id: String,
+    pub name: String,
+    pub description: String,
+    pub purpose: ShopCatalystPurpose,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ShopCatalystPurpose { Revival, RelicCorruption }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum DisplayItemSnapshotDto {
     Equipment(DisplayEquipmentItemSnapshotDto),
     Consumable(DisplayConsumableItemSnapshotDto),
     Monolith(DisplayMonolithItemSnapshotDto),
+    Relic(DisplayRelicItemSnapshotDto),
+    Catalyst(DisplayCatalystItemSnapshotDto),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -1308,6 +1356,15 @@ pub struct TraumaRecoveryPreviewDto {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct HeadquartersRecruitmentTermsDto {
+    pub recruit_price: u32,
+    pub includes_basic_weapon_and_fragment: bool,
+    pub remaining_recruits: u8,
+    pub maximum_depth: u32,
+    pub can_recruit: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum SelectedEventSnapshotDto {
     Shop {
@@ -1326,6 +1383,10 @@ pub enum SelectedEventSnapshotDto {
         rewards: Vec<RewardOptionSnapshotDto>,
         selected_reward_uuid: Option<Uuid>,
         can_skip: bool,
+        #[serde(default)]
+        relic_activity: Option<crate::game::relic_reward::RelicRewardView>,
+        #[serde(default)]
+        dealer: Option<crate::game::dealer::DealerView>,
     },
     SavePoint {
         node_id: MapNodeId,
@@ -1339,6 +1400,7 @@ pub enum SelectedEventSnapshotDto {
         node_id: MapNodeId,
         options: Vec<HeadquartersContactOption>,
         recruitment_candidates: Vec<EmployeeDefinition>,
+        recruitment_terms: HeadquartersRecruitmentTermsDto,
         shop_pool_id: Option<String>,
     },
     Event {
@@ -1452,7 +1514,7 @@ pub enum GameStateContextDto {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         monolith_conversion: Option<MonolithConversionSnapshotDto>,
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        monolith_remanifestation: Option<MonolithRemanifestationSnapshotDto>,
+        monolith_remanifestation: Option<RevivalSnapshotDto>,
         #[serde(default, skip_serializing_if = "Option::is_none")]
         mastered_elite_resolution: Option<MasteredEliteResolutionDto>,
     },
@@ -1488,6 +1550,8 @@ pub enum GameStateContextDto {
         playback: Option<BattlePlaybackState>,
         abnormality_attempt: Option<AbnormalityAttemptDto>,
         can_retreat: bool,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        stress_combat: Option<crate::game::stress_combat::StressCombatView>,
     },
     GameOver,
     RunComplete,
@@ -1509,11 +1573,16 @@ pub struct RunSnapshotDto<SelectedEvent = SelectedEventSnapshotDto> {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub combat_recovery_restriction: Option<CombatRecoveryRestrictionSnapshotDto>,
     pub run_progression: Option<RunProgressionSnapshotDto>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub monolith: Option<MonolithRunSnapshotDto>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub revival: Option<crate::game::revival::RevivalRunSnapshot>,
     pub player_profile: PlayerProfileSnapshotDto,
     pub encounter_compendium: EncounterCompendiumSnapshotDto,
     pub map_navigation: Option<MapNavigationSnapshotDto>,
     pub map: Option<MapViewDto>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub facility: Option<crate::game::map::FacilityViewDto>,
     pub current_node_session: Option<NodeSession>,
     pub visual_novel: Option<VisualNovelSnapshotDto>,
     pub selected_event: Option<SelectedEvent>,
@@ -1536,10 +1605,12 @@ impl<SelectedEvent> RunSnapshotDto<SelectedEvent> {
             combat_recovery_restriction,
             run_progression,
             monolith,
+            revival,
             player_profile,
             encounter_compendium,
             map_navigation,
             map,
+            facility,
             current_node_session,
             visual_novel,
             selected_event,
@@ -1557,10 +1628,12 @@ impl<SelectedEvent> RunSnapshotDto<SelectedEvent> {
             combat_recovery_restriction,
             run_progression,
             monolith,
+            revival,
             player_profile,
             encounter_compendium,
             map_navigation,
             map,
+            facility,
             current_node_session,
             visual_novel,
             selected_event: f(selected_event),
@@ -1610,6 +1683,12 @@ pub(crate) enum PlayerBehavior {
         game_mode: GameMode,
         replace_active_run: bool,
     },
+    /// Leave the tutorial briefing without changing the permanent profile.
+    SkipTutorial,
+    /// Consume the pending first successful-return story exactly once.
+    AcknowledgeFirstReturnStory,
+    ReturnFromExpedition { materials: Vec<crate::game::material_economy::MaterialRecovery> },
+    ChooseExpeditionContinuation { choice: crate::game::expedition_lifecycle::ExpeditionContinuationChoice },
     /// Host의 local-install active-run을 마지막 완료 SavePoint에서 이어감
     ContinueRun,
     /// 손상된 local-install active-run 원본을 명시적으로 초기화
@@ -1621,6 +1700,7 @@ pub(crate) enum PlayerBehavior {
     /// 시작 후보 직원 중 이번 런에 투입할 3명을 선택
     SelectStarterEmployees {
         employee_definition_ids: Vec<String>,
+        loan_copy_ids: Vec<Uuid>,
     },
     // 아이템 장착 해제
     UnEquipItem {
@@ -1650,6 +1730,8 @@ pub(crate) enum PlayerBehavior {
         copy_uuid: Uuid,
         target_employee_uuid: Uuid,
     },
+    AwakenSkillFragmentWithWeapon { copy_uuid: Uuid, form_id: String, weapon_copy_uuid: Uuid, materials: Option<Vec<crate::game::material_economy::MaterialPayment>> },
+    AwakenSkillFragmentWithMaterials { copy_uuid: Uuid, form_id: String, materials: Vec<crate::game::material_economy::MaterialPayment> },
     AwakenSkillFragment {
         copy_uuid: Uuid,
         form_id: String,
@@ -1663,6 +1745,7 @@ pub(crate) enum PlayerBehavior {
         confirmed: bool,
     },
     /// Maintenance에서 완성 장비를 분해해 장비 재료로 전환
+    DismantleEquipmentConfirmed { item_uuid: Uuid, confirmed: bool },
     DismantleEquipment {
         item_uuid: Uuid,
     },
@@ -1692,6 +1775,13 @@ pub(crate) enum PlayerBehavior {
     CorruptRelic {
         copy_uuid: Uuid,
     },
+    PreviewSkillFragmentBloom {
+        #[serde(default)]
+        weapon_copy_uuid: Option<Uuid>,
+        copy_uuid: Uuid,
+        form_id: String,
+        materials: Vec<crate::game::material_economy::MaterialPayment>,
+    },
     PreviewRelicDismantle {
         copy_uuid: Uuid,
     },
@@ -1701,9 +1791,18 @@ pub(crate) enum PlayerBehavior {
     },
     /// 현재 런 맵 상태 요청
     RequestMapData,
+    /// Move through a reached Gate along an authored room connection.
+    MoveToFacilityRoom { room_id: String },
     /// 사용 가능한 맵 노드 선택
     SelectMapNode {
         node_id: MapNodeId,
+    },
+    /// Consume an expedition egg and the explicitly allocated catalyst without entering combat.
+    HatchEncounter {
+        node_id: MapNodeId,
+        reward_source_id: String,
+        stage: crate::game::revival::RevivalStage,
+        payment: Vec<crate::game::material_economy::MaterialPayment>,
     },
     /// NodeConfirm의 일반 전투 노드를 선택한 모노리스 재현 노드로 원자적으로 치환
     ConvertMapNodeWithMonolith {
@@ -1734,6 +1833,14 @@ pub(crate) enum PlayerBehavior {
     SelectReward {
         reward_id: Uuid,
     },
+    /// Pay the whole next relic-investment threshold.
+    InvestRelicReward,
+    /// Select or clear two unequipped copies; this does not consume them.
+    SelectRelicFusionInputs { copies: Option<[Uuid; 2]> },
+    /// Consume the selected inputs and complete the relic node atomically.
+    ConfirmRelicFusion,
+    DealerAct { revision: u64, action: crate::game::dealer::DealerAction },
+    StressCombatAct { battle_uuid: Uuid, completed_rounds: u8, extract: bool },
     // ============================================================
     // 상점 관련 행동
     // ============================================================
@@ -1872,6 +1979,9 @@ pub(crate) enum PlayerBehavior {
         #[serde(default)]
         target: Option<SkillCastTarget>,
     },
+    /// Commit the complete prepared volley against this battle and revision.
+    CommitInputPlan { battle_uuid:Uuid, revision:u64, employee_uuid:Uuid, input:crate::game::ability::input_plan::ShotCommitInput },
+    CancelInputPlan { battle_uuid:Uuid, revision:u64, employee_uuid:Uuid, preparation:u64 },
     /// 현재 source activation을 정확히 소비하는 지속 스킬 재입력.
     ReinputSustainedSkill {
         employee_uuid: Uuid,
@@ -1896,6 +2006,9 @@ impl PlayerBehavior {
     pub fn kind(&self) -> ActionKind {
         match self {
             PlayerBehavior::StartNewGame { .. } => ActionKind::StartNewGame,
+            PlayerBehavior::ReturnFromExpedition { .. } | PlayerBehavior::ChooseExpeditionContinuation { .. } => ActionKind::ChooseExpeditionContinuation,
+            PlayerBehavior::SkipTutorial => ActionKind::SkipTutorial,
+            PlayerBehavior::AcknowledgeFirstReturnStory => ActionKind::AcknowledgeFirstReturnStory,
             PlayerBehavior::ContinueRun => ActionKind::ContinueRun,
             PlayerBehavior::ResetActiveRun => ActionKind::ResetActiveRun,
             PlayerBehavior::RetryPlayerProfile => ActionKind::RetryPlayerProfile,
@@ -1908,9 +2021,9 @@ impl PlayerBehavior {
             PlayerBehavior::UnequipSkillFragment { .. } => ActionKind::UnequipSkillFragment,
             PlayerBehavior::SelectSkillFragmentForm { .. } => ActionKind::SelectSkillFragmentForm,
             PlayerBehavior::TransferSkillFragment { .. } => ActionKind::TransferSkillFragment,
-            PlayerBehavior::AwakenSkillFragment { .. } => ActionKind::AwakenSkillFragment,
+            PlayerBehavior::AwakenSkillFragmentWithWeapon { .. } | PlayerBehavior::AwakenSkillFragmentWithMaterials { .. } | PlayerBehavior::AwakenSkillFragment { .. } => ActionKind::AwakenSkillFragment,
             PlayerBehavior::DismantleSkillFragment { .. } => ActionKind::DismantleSkillFragment,
-            PlayerBehavior::DismantleEquipment { .. } => ActionKind::DismantleEquipment,
+            PlayerBehavior::DismantleEquipmentConfirmed { .. } | PlayerBehavior::DismantleEquipment { .. } => ActionKind::DismantleEquipment,
             PlayerBehavior::EnhanceEquipment { .. } => ActionKind::EnhanceEquipment,
             PlayerBehavior::EquipRelic { .. } => ActionKind::EquipRelic,
             PlayerBehavior::UnequipRelic { .. } => ActionKind::UnequipRelic,
@@ -1921,10 +2034,13 @@ impl PlayerBehavior {
             }
             PlayerBehavior::PreviewRelicCorruption { .. } => ActionKind::PreviewRelicCorruption,
             PlayerBehavior::CorruptRelic { .. } => ActionKind::CorruptRelic,
+            PlayerBehavior::PreviewSkillFragmentBloom { .. } => ActionKind::PreviewSkillFragmentBloom,
             PlayerBehavior::PreviewRelicDismantle { .. } => ActionKind::PreviewRelicDismantle,
             PlayerBehavior::DismantleRelic { .. } => ActionKind::DismantleRelic,
             PlayerBehavior::RequestMapData => ActionKind::RequestMapData,
+            PlayerBehavior::MoveToFacilityRoom { .. } => ActionKind::MoveToFacilityRoom,
             PlayerBehavior::SelectMapNode { .. } => ActionKind::SelectMapNode,
+            PlayerBehavior::HatchEncounter { .. } => ActionKind::HatchEncounter,
             PlayerBehavior::ConvertMapNodeWithMonolith { .. } => {
                 ActionKind::ConvertMapNodeWithMonolith
             }
@@ -1938,6 +2054,11 @@ impl PlayerBehavior {
             PlayerBehavior::RequestEmergencySupplies => ActionKind::RequestEmergencySupplies,
             PlayerBehavior::OpenHeadquartersShop => ActionKind::OpenHeadquartersShop,
             PlayerBehavior::SelectReward { .. } => ActionKind::SelectReward,
+            PlayerBehavior::InvestRelicReward => ActionKind::InvestRelicReward,
+            PlayerBehavior::SelectRelicFusionInputs { .. } => ActionKind::SelectRelicFusionInputs,
+            PlayerBehavior::ConfirmRelicFusion => ActionKind::ConfirmRelicFusion,
+            PlayerBehavior::DealerAct { .. } => ActionKind::DealerAct,
+            PlayerBehavior::StressCombatAct { .. } => ActionKind::StressCombatAct,
             PlayerBehavior::PurchaseItem { .. } => ActionKind::PurchaseItem,
             PlayerBehavior::SellItem { .. } => ActionKind::SellItem,
             PlayerBehavior::RefreshShop => ActionKind::RefreshShop,
@@ -1974,7 +2095,7 @@ impl PlayerBehavior {
             PlayerBehavior::CancelSkillTargeting => ActionKind::CancelSkillTargeting,
             PlayerBehavior::PreviewSkillTarget { .. } => ActionKind::PreviewSkillTarget,
             PlayerBehavior::PreviewTacticalCommand { .. } => ActionKind::PreviewTacticalCommand,
-            PlayerBehavior::ActivateSkill { .. } | PlayerBehavior::ReinputSustainedSkill { .. } => {
+            PlayerBehavior::CommitInputPlan {..} | PlayerBehavior::CancelInputPlan {..} | PlayerBehavior::ActivateSkill { .. } | PlayerBehavior::ReinputSustainedSkill { .. } => {
                 ActionKind::ActivateSkill
             }
             PlayerBehavior::RetreatBattle => ActionKind::RetreatBattle,
@@ -2108,6 +2229,8 @@ pub struct LiveBattleSkillReadinessDto {
 pub enum LiveBattleTacticalFocusPurposeDto {
     PlayerUnitSkill,
     PlayerTileSkill,
+    PlayerTilePairSkill,
+    PlayerDirectionSkill,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -3208,6 +3331,24 @@ impl From<BattleEventLogEntry> for LiveBattlePresentationEventDto {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LiveBattleStateCheckpointDto {
     #[serde(default)]
+    pub presence_marks: crate::game::ability::marks::PresenceMarksSnapshot,
+    #[serde(default)]
+    pub weapon_marks: crate::game::ability::weapon_marks::WeaponMarksSnapshot,
+    #[serde(default)]
+    pub tile_bursts: crate::game::ability::tile_burst::TileBurstsSnapshot,
+    #[serde(default)]
+    pub counter_channels: crate::game::ability::counter_channel::CounterChannelsSnapshot,
+    #[serde(default)]
+    pub relation_actions: crate::game::ability::relation_action::RelationActionsSnapshot,
+    #[serde(default)]
+    pub input_plans: crate::game::ability::input_plan::InputPlansSnapshot,
+    #[serde(default)]
+    pub prepared_volleys: crate::game::ability::prepared_volley::PreparedVolleysSnapshot,
+    #[serde(default)]
+    pub mobile_effects: crate::game::ability::mobile_effect::MobileEffectsSnapshot,
+    #[serde(default)]
+    pub paired_areas: crate::game::ability::paired_areas::PairedAreasSnapshot,
+    #[serde(default)]
     pub sustained_effects: crate::game::ability::sustained::SustainedEffectsSnapshot,
     #[serde(default)]
     pub independent_objects: crate::game::battle::core::IndependentObjectsSnapshot,
@@ -3333,6 +3474,8 @@ pub enum LiveBattleActiveSkillTargetingKind {
     AutoUnit,
     ManualUnit,
     ManualTile,
+    ManualTilePair,
+    ManualDirection,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -3451,6 +3594,8 @@ pub struct SkillCatalogCastTargetDto {
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct SkillTargetPreviewResultDto {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub counter_channel: Option<crate::game::ability::counter_channel::CounterChannelPreview>,
     pub employee_uuid: Uuid,
     pub unit_instance_id: UnitInstanceId,
     pub skill_id: SkillId,
@@ -3503,6 +3648,7 @@ pub struct SkillCatalogTileAreaDto {
 /// 등. 클라이언트는 해당 값들을 반영만 하게끔 해야함.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) enum BehaviorResult {
+    DealerState { dealer: crate::game::dealer::DealerView },
     /// 새 런 시작 흐름 진입
     RunStartFlowStarted {
         game_mode: GameMode,
@@ -3669,6 +3815,8 @@ pub(crate) enum BehaviorResult {
     PurchaseItem {
         enkephalin: u32,
         inventory_diff: InventoryDiffDto,
+        relic_diffs: Vec<crate::game::relic::OwnedRelic>,
+        crafting_resources: Option<crate::game::relic::RunCraftingResources>,
     },
 
     /// 본사 연락 노드에서 직원 채용 완료
@@ -3702,6 +3850,7 @@ pub(crate) enum BehaviorResult {
         inventory_diff: InventoryDiffDto,
         skill_fragment_diffs: Vec<SkillFragmentGrantDiffDto>,
         employee_experience_diffs: Vec<crate::game::reward::EmployeeExperienceDiffDto>,
+        relic_activity: Option<crate::game::relic_reward::RelicRewardReceipt>,
     },
 
     /// 전투 리플레이 종료 후 자동 지급된 보상과 이어진 노드 진행 결과
@@ -4104,12 +4253,15 @@ pub(crate) enum ShopCommandResult {
     PurchaseItem {
         enkephalin: u32,
         inventory_diff: InventoryDiffDto,
+        relic_diffs: Vec<crate::game::relic::OwnedRelic>,
+        crafting_resources: Option<crate::game::relic::RunCraftingResources>,
     },
 }
 
 #[cfg(test)]
 #[derive(Debug, Clone)]
 pub(crate) enum RewardCommandResult {
+    DealerState { dealer: crate::game::dealer::DealerView },
     RewardState {
         mode: RewardMode,
         rewards: Vec<RewardOption>,
@@ -4120,6 +4272,7 @@ pub(crate) enum RewardCommandResult {
         inventory_diff: InventoryDiffDto,
         skill_fragment_diffs: Vec<SkillFragmentGrantDiffDto>,
         employee_experience_diffs: Vec<crate::game::reward::EmployeeExperienceDiffDto>,
+        relic_activity: Option<crate::game::relic_reward::RelicRewardReceipt>,
     },
     CombatRewardsGranted {
         enkephalin: u32,
@@ -4478,11 +4631,15 @@ impl BehaviorResult {
             BehaviorResult::PurchaseItem {
                 enkephalin,
                 inventory_diff,
+                relic_diffs,
+                crafting_resources,
             } => command_payload!(
                 "PurchaseItem",
                 json!({
                     "enkephalin": enkephalin,
                     "inventory_diff": inventory_diff,
+                    "relic_diffs": relic_diffs,
+                    "crafting_resources": crafting_resources,
                 })
             ),
             BehaviorResult::EmployeeRecruited {
@@ -4527,6 +4684,7 @@ impl BehaviorResult {
                 inventory_diff,
                 skill_fragment_diffs,
                 employee_experience_diffs,
+                relic_activity,
             } => command_payload!(
                 "RewardGranted",
                 json!({
@@ -4534,6 +4692,7 @@ impl BehaviorResult {
                     "inventory_diff": inventory_diff,
                     "skill_fragment_diffs": skill_fragment_diffs,
                     "employee_experience_diffs": employee_experience_diffs,
+                    "relic_activity": relic_activity,
                 })
             ),
             BehaviorResult::CombatRewardsGranted {
@@ -4614,6 +4773,7 @@ impl BehaviorResult {
                     crate::authoring::projection::to_value(result)?
                 )
             }
+            BehaviorResult::DealerState { dealer } => command_payload!("DealerState", json!({"dealer": dealer})),
             BehaviorResult::RewardState {
                 mode,
                 rewards,
@@ -4967,10 +5127,14 @@ impl BehaviorResult {
             BehaviorResult::PurchaseItem {
                 enkephalin,
                 inventory_diff,
+                relic_diffs,
+                crafting_resources,
             } => BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Shop(
                 ShopCommandResult::PurchaseItem {
                     enkephalin,
                     inventory_diff,
+                relic_diffs,
+                crafting_resources,
                 },
             )),
             BehaviorResult::EmployeeRecruited {
@@ -5002,12 +5166,14 @@ impl BehaviorResult {
                 inventory_diff,
                 skill_fragment_diffs,
                 employee_experience_diffs,
+                relic_activity,
             } => BehaviorCommandResultContract::CommandPayload(
                 CommandResultPayloadContract::Reward(RewardCommandResult::RewardGranted {
                     enkephalin,
                     inventory_diff,
                     skill_fragment_diffs,
                     employee_experience_diffs,
+                    relic_activity,
                 }),
             ),
             BehaviorResult::CombatRewardsGranted {
@@ -5070,6 +5236,7 @@ impl BehaviorResult {
                     }),
                 )
             }
+            BehaviorResult::DealerState { dealer } => BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Reward(RewardCommandResult::DealerState { dealer })),
             BehaviorResult::RewardState {
                 mode,
                 rewards,
@@ -5149,6 +5316,7 @@ impl BehaviorResult {
             BehaviorResult::PurchaseItem {
                 enkephalin,
                 inventory_diff,
+                ..
             } => Some((*enkephalin, inventory_diff)),
             _ => None,
         }
@@ -5481,9 +5649,13 @@ impl ShopCommandResult {
             ShopCommandResult::PurchaseItem {
                 enkephalin,
                 inventory_diff,
+                relic_diffs,
+                crafting_resources,
             } => BehaviorResult::PurchaseItem {
                 enkephalin,
                 inventory_diff,
+                relic_diffs,
+                crafting_resources,
             },
         }
     }
@@ -5493,6 +5665,7 @@ impl ShopCommandResult {
 impl RewardCommandResult {
     fn into_behavior_result(self) -> BehaviorResult {
         match self {
+            RewardCommandResult::DealerState { dealer } => BehaviorResult::DealerState { dealer },
             RewardCommandResult::RewardState {
                 mode,
                 rewards,
@@ -5507,11 +5680,13 @@ impl RewardCommandResult {
                 inventory_diff,
                 skill_fragment_diffs,
                 employee_experience_diffs,
+                relic_activity,
             } => BehaviorResult::RewardGranted {
                 enkephalin,
                 inventory_diff,
                 skill_fragment_diffs,
                 employee_experience_diffs,
+                relic_activity,
             },
             RewardCommandResult::CombatRewardsGranted {
                 enkephalin,
@@ -5740,6 +5915,9 @@ mod tests {
 
         let cases = [
             (StartNewGame, CoreCommon, Gameplay, false),
+            (SkipTutorial, CoreCommon, Gameplay, false),
+            (AcknowledgeFirstReturnStory, CoreCommon, Gameplay, false),
+            (ChooseExpeditionContinuation, CoreCommon, Gameplay, false),
             (ContinueRun, HostRecovery, Recovery, false),
             (ResetActiveRun, HostRecovery, Recovery, false),
             (RetryPlayerProfile, HostRecovery, Recovery, false),
@@ -5763,11 +5941,14 @@ mod tests {
             (RequestRelicEffectivePlan, CoreCommon, Query, false),
             (PreviewRelicCorruption, CoreCommon, Query, false),
             (CorruptRelic, CoreDomain, Gameplay, false),
+            (PreviewSkillFragmentBloom, CoreCommon, Query, false),
             (PreviewRelicDismantle, CoreCommon, Query, false),
             (DismantleRelic, CoreDomain, Gameplay, false),
             (RequestMapData, CoreCommon, Query, false),
+            (MoveToFacilityRoom, CoreCommon, Gameplay, false),
             (SelectMapNode, CoreCommon, Gameplay, false),
             (ConvertMapNodeWithMonolith, CoreDomain, Gameplay, false),
+            (HatchEncounter, CoreDomain, Gameplay, false),
             (ConfirmEnterNode, CoreCommon, Gameplay, false),
             (CancelSelectedNode, CoreCommon, Gameplay, false),
             (CompleteNode, CoreCommon, Gameplay, false),
@@ -5778,6 +5959,10 @@ mod tests {
             (RequestEmergencySupplies, CoreCommon, Gameplay, false),
             (OpenHeadquartersShop, CoreCommon, Gameplay, false),
             (SelectReward, CoreCommon, Gameplay, false),
+            (InvestRelicReward, CoreCommon, Gameplay, false),
+            (SelectRelicFusionInputs, CoreCommon, Gameplay, false),
+            (ConfirmRelicFusion, CoreCommon, Gameplay, false),
+            (DealerAct, CoreCommon, Gameplay, false),
             (PurchaseItem, CoreDomain, Gameplay, false),
             (SellItem, CoreDomain, Gameplay, false),
             (RefreshShop, CoreDomain, Gameplay, false),
@@ -5812,6 +5997,7 @@ mod tests {
             (PreviewTacticalCommand, CoreBattle, Query, false),
             (ActivateSkill, CoreBattle, Gameplay, true),
             (RetreatBattle, CoreBattle, Gameplay, true),
+            (StressCombatAct, CoreBattle, Gameplay, true),
             (PauseBattle, CoreBattle, Gameplay, true),
             (ResumeBattle, CoreBattle, Gameplay, true),
             (SetBattleSpeed, CoreBattle, Gameplay, true),
@@ -5819,7 +6005,7 @@ mod tests {
 
         assert_eq!(
             cases.len(),
-            76,
+            87,
             "the current command vocabulary is exhaustive"
         );
         let characterized_actions = cases
@@ -6060,7 +6246,7 @@ mod tests {
     #[test]
     fn behavior_result_helpers_match_variants() {
         assert!(BehaviorResult::RunStartFlowStarted {
-            game_mode: GameMode::Standard,
+            game_mode: GameMode::Expedition,
             visual_novel: None,
         }
         .is_run_start_flow_started());
@@ -6078,6 +6264,8 @@ mod tests {
         let purchase = BehaviorResult::PurchaseItem {
             enkephalin: 7,
             inventory_diff: InventoryDiffDto::default(),
+            relic_diffs: Vec::new(),
+            crafting_resources: None,
         };
         let (remaining, diff) = purchase.as_purchase_item().unwrap();
         assert_eq!(remaining, 7);
@@ -6146,6 +6334,7 @@ mod tests {
 
     fn characterized_combat_preview() -> CombatPreview {
         CombatPreview {
+            deterrence: Default::default(),
             node_id: MapNodeId::new(Uuid::from_u128(0x3304)),
             encounter_id: Some("result_encounter".to_string()),
             battlefield_template_id: "result_battlefield".to_string(),
@@ -6183,6 +6372,15 @@ mod tests {
                 events: Vec::new(),
             },
             checkpoint: LiveBattleStateCheckpointDto {
+                presence_marks: Default::default(),
+                weapon_marks: Default::default(),
+                tile_bursts: Default::default(),
+                counter_channels: Default::default(),
+                relation_actions: Default::default(),
+                input_plans: Default::default(),
+                prepared_volleys: Default::default(),
+                mobile_effects: Default::default(),
+                paired_areas: Default::default(),
                 sustained_effects: Default::default(),
                 independent_objects: Default::default(),
                 at_seq: 5,
@@ -6334,6 +6532,7 @@ mod tests {
             | BehaviorResult::MasteredEliteSweepResultStaged { .. }
             | BehaviorResult::MasteredEliteSweepCompleted { .. }
             | BehaviorResult::RewardState { .. }
+            | BehaviorResult::DealerState { .. }
             | BehaviorResult::Ok => CharacterizedResultTransport::CommandPayload,
         }
     }
@@ -6397,7 +6596,7 @@ mod tests {
 
         vec![
             BehaviorResult::RunStartFlowStarted {
-                game_mode: GameMode::Standard,
+                game_mode: GameMode::Expedition,
                 visual_novel: None,
             },
             BehaviorResult::StarterEmployeesSelected {
@@ -6441,6 +6640,8 @@ mod tests {
             BehaviorResult::MaintenanceState {
                 node_id: MapNodeId::new(Uuid::from_u128(0x3311)),
                 maintenance_options: MaintenanceOptionsDto {
+                    selected_bloom_payment: None,
+                    warehouse_materials: vec![],
                     items: Vec::new(),
                     materials: Vec::new(),
                 },
@@ -6452,7 +6653,7 @@ mod tests {
                 shop_pool_id: Some("hq_shop".to_string()),
             },
             BehaviorResult::FloorAdvanced {
-                game_mode: GameMode::Standard,
+                game_mode: GameMode::Expedition,
                 floor_index: 2,
                 map: characterized_map(),
             },
@@ -6541,7 +6742,7 @@ mod tests {
                 active_copy_uuid: Some(Uuid::from_u128(99)),
             },
             BehaviorResult::SkillFragmentFormSelected {
-                copy: OwnedFragment {
+                copy: OwnedFragment { investment: Default::default(),
                     copy_uuid: Uuid::from_u128(99),
                     definition_id: SkillFragmentId::from("fragment"),
                     unlocked_forms: std::collections::BTreeSet::from(["base".into()]),
@@ -6551,7 +6752,7 @@ mod tests {
                 changed: true,
             },
             BehaviorResult::SkillFragmentTransferred {
-                copy: OwnedFragment {
+                copy: OwnedFragment { investment: Default::default(),
                     copy_uuid: Uuid::from_u128(99),
                     definition_id: SkillFragmentId::from("fragment"),
                     unlocked_forms: std::collections::BTreeSet::from(["base".into()]),
@@ -6562,7 +6763,7 @@ mod tests {
                 changed: true,
             },
             BehaviorResult::SkillFragmentAwakened {
-                copy: OwnedFragment {
+                copy: OwnedFragment { investment: Default::default(),
                     copy_uuid: Uuid::from_u128(99),
                     definition_id: SkillFragmentId::from("fragment"),
                     unlocked_forms: std::collections::BTreeSet::from(["base".into()]),
@@ -6604,6 +6805,8 @@ mod tests {
             BehaviorResult::PurchaseItem {
                 enkephalin: 12,
                 inventory_diff: InventoryDiffDto::default(),
+            relic_diffs: Vec::new(),
+            crafting_resources: None,
             },
             BehaviorResult::EmployeeRecruited {
                 employee_definition_id: "recruit".to_string(),
@@ -6639,6 +6842,7 @@ mod tests {
                 inventory_diff: InventoryDiffDto::default(),
                 skill_fragment_diffs: Vec::new(),
                 employee_experience_diffs: Vec::new(),
+                relic_activity: None,
             },
             BehaviorResult::CombatRewardsGranted {
                 enkephalin: 15,
@@ -6647,7 +6851,7 @@ mod tests {
                 employee_experience_diffs: Vec::new(),
                 outcome: characterized_outcome(),
                 completion: Box::new(BehaviorResult::FloorAdvanced {
-                    game_mode: GameMode::Standard,
+                    game_mode: GameMode::Expedition,
                     floor_index: 3,
                     map: characterized_map(),
                 }),
@@ -6717,6 +6921,7 @@ mod tests {
             },
             BehaviorResult::SkillTargetPreview {
                 result: SkillTargetPreviewResultDto {
+                    counter_channel: None,
                     object_placements: Vec::new(),
                     employee_uuid,
                     unit_instance_id,
@@ -6811,13 +7016,18 @@ mod tests {
                 rewards: Vec::new(),
                 selected_reward_uuid: None,
             },
+            BehaviorResult::DealerState { dealer: serde_json::from_value(json!({
+                "phase":"GameSelection","game_rules":null,"revision":1,"points":30,"first_explanation":true,"assigned_multiplier":3,"gambit":null,"applied_multiplier":1,
+                "selected_game":null,"wager":0,"maximum_loss":0,"double_maximum_loss":null,"minimum_wager":1,"flip_loss":10,"flip_first_bonus":20,"round_number":0,"round":null,"last_result":null,
+                "eligible_actions":["choose_game","settle"],"copies":[],"collateral":[],"selected_copies":[],"selected_principal":0,"points_after_selection":30,"can_confirm_selection":false,"selection_reason":null,"forfeited_copies":[],"offers":[],"points_expire_on_leave":true
+            })).unwrap() },
             BehaviorResult::Ok,
         ]
     }
 
     #[test]
     fn every_behavior_result_has_exact_old_command_projection_contract() {
-        const EXPECTED_RESULT_TYPES: [&str; 55] = [
+        const EXPECTED_RESULT_TYPES: [&str; 56] = [
             "RunStartFlowStarted",
             "StarterEmployeesSelected",
             "MapState",
@@ -6872,6 +7082,7 @@ mod tests {
             "BattleSkillTargetingFocusChanged",
             "BattleSkillActivated",
             "RewardState",
+            "DealerState",
             "Ok",
         ];
         let cases = characterized_results();

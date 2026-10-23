@@ -1,0 +1,6 @@
+{
+  "workspace": "/tmp/u164-independent-audit002",
+  "copy_mismatches": [],
+  "workspace_manifest": "[workspace.package]\nversion = \"0.1.0\"\nedition = \"2021\"\ndescription = \"card backend\"\n\n[workspace]\nmembers = [ \n    \"core_enhanced\",\n    \"game_server\",\n    \"core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/probe\",\n    \"core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/test_parts/runtime001/probe\",\n]\n\nresolver = \"2\"\n\n# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html\n",
+  "support_archive": "independent_audit001/REPLAY_SUPPORT.tar.gz"
+}

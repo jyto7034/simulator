@@ -1,0 +1,645 @@
+{
+  "audit": "u13_independent_001",
+  "target": "u13_current_001",
+  "verdict": "Not Complete",
+  "acceptance": [
+    {
+      "id": "A01",
+      "requirement": "A01: 같은 제약의 후보에 추가 위치 가중치가 없고 seed와 입력이 같으면 동일 배정이다.",
+      "audit_disposition": "supported",
+      "source_review": "facility_layout.rs:sample_activities / facility_generator.rs:generate_room",
+      "independent_review": "Free eligible slots are shuffled; elite candidates use uniform choose; seed uses run/layout/room identity. No coordinate or extra branch weight enters allocation. Existing coordinate/determinism test inspected.",
+      "reused_evidence": [
+        "test013.stdout.log"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    },
+    {
+      "id": "A02",
+      "requirement": "A02: 좌표만 바뀌면 연결/도달성과 배정 의미가 유지된다.",
+      "audit_disposition": "supported",
+      "source_review": "facility_generator.rs:generate_room / RAW_REVIEW.json",
+      "independent_review": "Display coordinates and asset refs do not enter topology or seed. Adopted room/edge correspondence is independently checked.",
+      "reused_evidence": [
+        "test013.stdout.log"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    },
+    {
+      "id": "A03",
+      "requirement": "A03: 초반 예약은 단순 선택형이며 나머지는 다섯 유형이 양의 동일 비중이다. 매5개 각1개 보장/플레이어 직접 유형 선택을 추가하지 않는다.",
+      "audit_disposition": "supported",
+      "source_review": "facility_layout.rs:sample_activities",
+      "independent_review": "Reserved early metadata is copied; each additional reward independently chooses one of five enum members with gen_range(0..5). Existing 5000-seed counts are a frequency sanity check, not a balance guarantee.",
+      "reused_evidence": [
+        "test013.stdout.log"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    },
+    {
+      "id": "A04",
+      "requirement": "A04: 재방문/Continue/SavePoint 복원에서 유형과 원정 배정을 보존하고 진입 전 공개 조건 내 유형·이용 조건을 제공한다. 활동 executor 전체 구현은 U16이다.",
+      "audit_disposition": "supported",
+      "source_review": "facility_rooms.rs:handle_move_to_facility_room / state.rs:RunCheckpointPayload",
+      "independent_review": "Revisit restores saved map and metadata; Continue includes current/noncurrent rooms. External saved/resumed roots match exactly. Executor availability remains separate and all five U16 activities are refused.",
+      "reused_evidence": [
+        "test013.stdout.log",
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    },
+    {
+      "id": "A05",
+      "requirement": "A05: 초기89방/846활동을 작성 입력과 대조하고 엔진의 고정 상한으로 하드코딩하지 않는다.",
+      "audit_disposition": "supported",
+      "source_review": "RAW_REVIEW.json:authored_graph / facility_layout.rs:validate",
+      "independent_review": "89 total rooms, 88 activity rooms, 846 activities and all 139 connections match adopted input. No engine89/846 cap; expanded177 input was measured.",
+      "reused_evidence": [
+        "test013.stdout.log",
+        "measurements002/RESULT.json",
+        "probe_prepare002.result.json"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    },
+    {
+      "id": "A06",
+      "requirement": "A06: 동층은 작성된 양방향 연결·층간은 하강만 허용하며 모든7층은 지정8층과 연결된다. 심층 동간 횡단·흉탄의 A6-05외 직접 연결·상승을 거절한다.",
+      "audit_disposition": "supported",
+      "source_review": "facility_layout.rs:validate / RAW_REVIEW.json:authored_graph",
+      "independent_review": "Same-depth bidirectionality, exactly one-depth descent, deep wing restriction,7->8 same-wing connection and exclusive hidden approach checked in source and authored edge comparison.",
+      "reused_evidence": [
+        "test013.stdout.log"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    },
+    {
+      "id": "A07",
+      "requirement": "A07: 방당 한 계열을 유지하며 합류나 진입 방향으로 바뀌지 않는다. 표시 좌표/자산 ID는 전장 판정 좌표와 분리한다.",
+      "audit_disposition": "supported",
+      "source_review": "facility_layout.rs:FacilityRoom / facility_generator.rs:generate_room",
+      "independent_review": "Wing stays authored per room; destination ID selects the same room on merges/revisit. Display metadata is distinct from combat setup geometry.",
+      "reused_evidence": [
+        "test013.stdout.log",
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    },
+    {
+      "id": "A08",
+      "requirement": "A08: 중복/누락ID·끊어진 참조·Gate 미도달·잘못된 방향/예약 충돌을 정상 작성 오류로 거절한다.",
+      "audit_disposition": "affected_by_F-U13-002",
+      "source_review": "facility_layout.rs:validate / live_ron.rs:validate_facility_layout_authoring",
+      "independent_review": "Duplicate/missing IDs, broken refs, reachability/category/reservation checks have valid existing evidence. Allocation-role reference existence does not ensure role semantics; supported authoring validation remains incomplete.",
+      "reused_evidence": [
+        "test013.stdout.log"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    },
+    {
+      "id": "A09",
+      "requirement": "A09: 지원 총수에 고정 HQ/정비 포함 최대2, SavePoint/유물은 제외. 예약을 이중 집계하거나 삭제하지 않는다.",
+      "audit_disposition": "failed_F-U13-002",
+      "source_review": "observations/wrong_normal_role/run.json",
+      "independent_review": "Normal loader accepted normal_activity_id=maintenance. Public current room contains6Maintenance and0Combat; support<=2 does not hold for this supported authored input.",
+      "reused_evidence": [
+        "test013.stdout.log"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    },
+    {
+      "id": "A10",
+      "requirement": "A10: 지원 총수의 분포를 유지한 채 이벤트·추가보상·정예의 유효 개수 조합을 추첨하고 남는 곳은 일반전이다. 1~2층 일반전>=2,3~7층 치환전>=3/후>=2를 유지한다.",
+      "audit_disposition": "failed_F-U13-002",
+      "source_review": "facility_layout.rs:count_combinations / observations/wrong_normal_role/run.json",
+      "independent_review": "Counting leaves a numerical minimum of normal slots, but does not ensure those slots resolve to ordinary combat. Counterexample has0 normal combat; support-first marginal reasoning for the official role mapping remains valid.",
+      "reused_evidence": [
+        "test013.stdout.log"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    },
+    {
+      "id": "A11",
+      "requirement": "A11:1층 정예0/2~7층 최대1, 작성 후보 제한과 고정 조우 우회·동층 거점 접근을 유지한다. 예약 포화로 분포를 실현할 수 없는 입력을 거절한다.",
+      "audit_disposition": "supported",
+      "source_review": "facility_layout.rs:validate,count_combinations,sample_activities / RAW_REVIEW.json",
+      "independent_review": "Official elite candidates and safe-access lists match adopted data. First depth elite0, later max1, reservation exclusion and fixed-encounter bypass inspected; existing seed/authoring tests reused.",
+      "reused_evidence": [
+        "test013.stdout.log"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    },
+    {
+      "id": "A12",
+      "requirement": "A12: 일반전 난도20/50/30 정수배분을 소비하며 지원 종류 가중치30/45/25·예약별 지원 분포와 개수표는 §1.8 초기값을 따른다. 최종 밸런스 완료를 주장하지 않는다.",
+      "audit_disposition": "supported_for_official_role_mapping",
+      "source_review": "facility_layout.rs / facility_generator.rs:assign_combat_difficulties / game_resources/data/run/policy.ron",
+      "independent_review": "Official30/45/25 support weights and20/50/30 ordinary difficulty allocation are consumed by existing shared routines/tests. This is not approval of the malformed role mapping identified by F-U13-002 or final balance.",
+      "reused_evidence": [
+        "test013.stdout.log",
+        "external004/BATTLE_ORACLE.json",
+        "probe_prepare002.result.json"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    },
+    {
+      "id": "A13",
+      "requirement": "A13:전조 없는 층/계열·후보없음·후보있음+자리있음/없음을 구분해 검증하고 불가능한 작성 입력은 거절한다.",
+      "audit_disposition": "supported_with_U20_boundary",
+      "source_review": "facility_layout.rs:validate,sample_activities",
+      "independent_review": "Depth1/2 omit omen; nonfinal3-7 require valid unreserved ordinary-compatible slot and sufficient ordinary capacity. Missing/conflicting candidates rejected. Actual omen eligibility producer is U20, not claimed tested here.",
+      "reused_evidence": [
+        "test013.stdout.log"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    },
+    {
+      "id": "A14",
+      "requirement": "A14:호환 자리는 전조 확정 배정이 아니다. U20의 계열/층별 첫진입·미완료 후보·재방문/부화대체 소비 경계를 인계한다. 두건 선행 전 늑대 발생 금지는 유지한다.",
+      "audit_disposition": "supported_with_U20_boundary",
+      "source_review": "node_flow.rs:generate_current_floor_map / facility_rooms.rs:facility_node_support",
+      "independent_review": "Fixed-layout branch returns before legacy automatic omen/boss replacement. Omen marker stays ordinary. Authored wolf condition is unsupported and entry refused; no fake producer/early wolf execution.",
+      "reused_evidence": [
+        "test013.stdout.log"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    },
+    {
+      "id": "A15",
+      "requirement": "A15:실제 연결/도달 가능한 Gate를 통하여 목적 방으로 이동한다. 정보 미공개만으로 일반 방을 잠그지 않고 조회만으로 이동/배정/비용을 바꾸지 않는다.",
+      "audit_disposition": "supported",
+      "source_review": "facility_rooms.rs:facility_gate_reached,handle_move_to_facility_room / RAW_REVIEW.json:normal_host",
+      "independent_review": "Completed reachable Gate plus actual connection is required. Queries/prepare-discard do not move/debit. Actual approved host traverses supported room edges and rejects premature move.",
+      "reused_evidence": [
+        "test013.stdout.log",
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    },
+    {
+      "id": "A16",
+      "requirement": "A16:동층 왕복/재방문 시 기존 노드 배정·해결·최초 입장 기록을 보존하며 방 사이 이동 추가 비용/중복 입장 비용이 없다.",
+      "audit_disposition": "supported",
+      "source_review": "facility_rooms.rs:handle_move_to_facility_room / progression.rs:reenter_room",
+      "independent_review": "Noncurrent map/progression restored, shared metadata/receipt identity retained. No move debit path. Existing actual same-floor roundtrip and Continue evidence reused.",
+      "reused_evidence": [
+        "test013.stdout.log",
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    },
+    {
+      "id": "A17",
+      "requirement": "A17:하강 Gate에서만 생존 직원 현재 트라우마10% 올림 회복(Critical/Breakdown 포함/Dead 제외); 동층 이동·귀환 회복 없음. 장비/인벤토리/자원은 수명대로 보존한다.",
+      "audit_disposition": "supported",
+      "source_review": "facility_rooms.rs:handle_move_to_facility_room / facility.rs / u13_facility.rs",
+      "independent_review": "Recovery invoked only for descent, policy ceil current10%, alive eligibility includes Critical/Breakdown and excludes Dead via shared recovery.37->33 and100->90 fixture oracles inspected; no claim those fixture states were publicly constructed.",
+      "reused_evidence": [
+        "test013.stdout.log",
+        "test014.stdout.log",
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    },
+    {
+      "id": "A18",
+      "requirement": "A18:Gate 도달에 추가 일반 보스 처치·노드 완료 수 조건이 없고 안전지대 허용 장착은 무료로 유지한다. U12 귀환/실패/첫입장 계약을 보존한다.",
+      "audit_disposition": "supported",
+      "source_review": "facility_rooms.rs:facility_gate_reached / helpers.rs:is_* / node_flow.rs:handle_gate_transition",
+      "independent_review": "Reachable completed route is sufficient without kill/count quota. Gate safe-loadout allowance added. Real support route reaches Gate; U12 first-entry/recovery regressions retained.",
+      "reused_evidence": [
+        "test013.stdout.log",
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    },
+    {
+      "id": "A19",
+      "requirement": "A19:일반 위치·연결·방향은 처음부터, 인접 이름/컨셉은 조건 내 공개하고 미탐사 보스 정체/내부정보·숨은 연결·초상은 누설하지 않는다.",
+      "audit_disposition": "failed_F-U13-001",
+      "source_review": "node_flow.rs:current_map_view / facility_rooms.rs:facility_view / observations/hidden_concrete",
+      "independent_review": "Facility nested map masks encounter_id, but Run.map and RequestMapData expose suppress_little_red before exploration. Official initial final-room/name filtering tests do not cover this accepted authored fixed encounter.",
+      "reused_evidence": [
+        "test013.stdout.log"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    },
+    {
+      "id": "A20",
+      "requirement": "A20:실제 Gate 떠남/깊이>=3 Gate 정상귀환에서 방완료·영구 지식 확정, Gate 조회/취소·소진 조기귀환·클리어 전 전멸은 신규 완료를 만들지 않는다. 이미 확정한 지식은 실패/Checkpoint 복구에서 유지한다.",
+      "audit_disposition": "supported",
+      "source_review": "facility_rooms.rs:record_facility_room_completion,handle_move_to_facility_room / expedition_lifecycle.rs",
+      "independent_review": "Completion commits after successful departure or depth>=3 Gate Return, not Gate arrival/query/cancel or exhaustion cause. Profile is outside run checkpoint; actual checkpoint restore keeps knowledge.",
+      "reused_evidence": [
+        "test013.stdout.log",
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    },
+    {
+      "id": "A21",
+      "requirement": "A21:실패 소비와 성공 개방을 구분하고 지난 원정 상품/보상/배정 정보를 새 원정에 공개하지 않는다.",
+      "audit_disposition": "supported",
+      "source_review": "encounter_compendium.rs:merge_knowledge / facility_rooms.rs:facility_view",
+      "independent_review": "Persistent knowledge stores room IDs only. New run has no visited variable maps/receipts; completed static reservations can be shown. Failure is distinct from success in existing U12 lifecycle and current tests.",
+      "reused_evidence": [
+        "test013.stdout.log",
+        "normal_route001/RESULT.json"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    },
+    {
+      "id": "A22",
+      "requirement": "A22:승리의 실제 등장 적 profile만 도감 등록하고 미출현wave/소환/미리보기는 제외한다. 미인식 외부/기존 보스ID와 기존 영구 기록을 보존한다.",
+      "audit_disposition": "supported",
+      "source_review": "world/combat.rs:consume victory / encounter_compendium.rs / RAW_REVIEW.json:battle",
+      "independent_review": "Actual public battle ended with only guard/marksman registered. Reviewed existing actual-candidate victory, unspawned-wave/summon/preview and defeat/retreat evidence is reused; set union preserves historical unknown IDs.",
+      "reused_evidence": [
+        "test013.stdout.log",
+        "external004/BATTLE_ORACLE.json"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    },
+    {
+      "id": "A23",
+      "requirement": "A23:전체graph·연결·기존기록을 보존하고 유효참조와 실행지원 상태를 분리한다. 누락 참조 무시·가짜boss executor·자동귀환/클리어/보상을 만들지 않는다.",
+      "audit_disposition": "supported_except_disclosure_in_F-U13-001",
+      "source_review": "live_ron.rs / node_flow.rs:generate_current_floor_map / facility_rooms.rs:facility_node_support",
+      "independent_review": "Graph and valid catalog references remain distinct from executor availability. Unsupported activity cannot enter; no generic reward completion. Hidden public projection has separate F-U13-001.",
+      "reused_evidence": [
+        "test013.stdout.log",
+        "probe_prepare002.result.json",
+        "external004/route/RESULT.json"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    },
+    {
+      "id": "A24",
+      "requirement": "A24:공개 전 미구현 표시로 숨은정보를 누설하지 않고 공개 후 지원상태/입장불가 사유를 제공한다. 자격 충족/미충족·직접/재전송·복원후 입장을 거절하고 비용/진행 무변경이다.",
+      "audit_disposition": "failed_confidentiality_F-U13-001",
+      "source_review": "facility_rooms.rs:validate_facility_node_entry / observations/hidden_concrete",
+      "independent_review": "Unsupported repeated/Continue entry refusal preserves roots in valid existing tests. Nevertheless a hidden unsupported authored encounter identity leaks through alternate public map, so full confidentiality/unsupported-disclosure condition is not satisfied.",
+      "reused_evidence": [
+        "test013.stdout.log",
+        "normal_route001/RESULT.json"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    },
+    {
+      "id": "A25",
+      "requirement": "A25:일반 활동 개발profile의 정상 로더/입장/결과/복원을 실행하고 제외된 공식 콘텐츠 사유를 명시한다. 구조 검증 성공을 정식 전체 플레이 완료로 집계하지 않는다.",
+      "audit_disposition": "supported",
+      "source_review": "RAW_REVIEW.json:normal_host,battle / test_parts/public_inputs002",
+      "independent_review": "Trusted-base development content uses normal packaging/loading and actual supported activity/battle/host store. Official SimpleChoice is honestly unsupported; no complete official playthrough claim.",
+      "reused_evidence": [
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json",
+        "external004/BATTLE_ORACLE.json"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    },
+    {
+      "id": "A26",
+      "requirement": "A26:실제 전장과 브리핑이 일치하고 배치/비용/입장 후 유예사망·자격 정보를 제공한다. 숨긴wave/미공개보상은 공개하지 않고 예상/확정 상태를 구분한다.",
+      "audit_disposition": "supported_for_reviewed_combat_seam",
+      "source_review": "RAW_REVIEW.json:battle / world/combat.rs / node_flow.rs",
+      "independent_review": "Re-evaluated10briefing/setup fields directly from raw public traces, actual3deploys/202ticks. Existing negative hidden-wave and current entry-eligibility tests remain scoped; fixed encounter confidentiality is F-U13-001.",
+      "reused_evidence": [
+        "test013.stdout.log",
+        "external004/BATTLE_ORACLE.json"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    },
+    {
+      "id": "A27",
+      "requirement": "A27:조회/미리보기 취소는 비용/진행 무변경이며 입장 전에 변경된 자원/직원 자격을 재검증한다. 보상 활동의 사전 조건을 공개하고 실제 실행 지원과 구분한다.",
+      "audit_disposition": "supported",
+      "source_review": "node_flow.rs:handle_select_map_node,handle_confirm_enter_node / facility_rooms.rs",
+      "independent_review": "Support rechecked on Select/Confirm; live entry validation and cost apply only on confirmation. Query/cancel/discard roots equality established; prior required reward metadata does not imply executor support.",
+      "reused_evidence": [
+        "test013.stdout.log",
+        "external004/route/RESULT.json"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    },
+    {
+      "id": "A28",
+      "requirement": "A28:동일 원정 배정/현재방·방별 진행/최초입장/보상유형과 공개 상태를 새프로세스 Continue 및 SavePoint복원에서 보존한다. 새 원정은 새 가변상태, 영구 지식은 유지한다.",
+      "audit_disposition": "supported",
+      "source_review": "active_run/continuation.rs / state.rs / RAW_REVIEW.json:continue,normal_host",
+      "independent_review": "V14 writer/current reader carries all room state; exact new-process Continue equality independently compared. Actual approved SavePoint and Return/new-start preserve permanent knowledge and reset variable state.",
+      "reused_evidence": [
+        "test013.stdout.log",
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json",
+        "external004/CHECKPOINT_ORACLE.json"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    },
+    {
+      "id": "A29",
+      "requirement": "A29:지원 구writer/미지원 저장·잘못된 지원 작성/명령·실제 IO실패에서 원본 보호와 실패 원자성을 검증한다. 임의 변조만 가능한 입력은 검증범위 밖이다.",
+      "audit_disposition": "affected_by_F-U13-002",
+      "source_review": "legacy001 / active_run_store.rs / player_profile_store.rs / BASELINE_REUSE.json",
+      "independent_review": "Genuine prior12/4,current14/5 and real profile temp-file IO failure/retry supported by valid evidence. Paired CAS/journal unchanged. Role authoring error is accepted, so broad supported-invalid-input claim is incomplete. Arbitrary save tamper excluded.",
+      "reused_evidence": [
+        "test013.stdout.log",
+        "legacy001/RESULT.json",
+        "external004/CHECKPOINT_ORACLE.json",
+        "normal_route001/RESULT.json",
+        "server_test001.stdout.log"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    },
+    {
+      "id": "A30",
+      "requirement": "A30:공식89방/846활동 및 제한된 확장 입력에서 결정론·실시간 비용·메모리peak/회수·작업량을 구분해 측정하고 정상profile과 미지원/초과입력 거부를 구분한다. U12/U04/U11의 유효 비영향 증거를 재사용한다.",
+      "audit_disposition": "supported_for_finite_measurement_scope",
+      "source_review": "measurements002 / NORMAL_LIMIT_REVIEW_003.json / BASELINE_REUSE.json",
+      "independent_review": "Six official/expanded fresh-process samples report real timing and requested heap recovery separately from work. Exact/one-short movement budget and current approved host evidence retained. No native limit increases, no whole89room-visit or finalSLO claim.",
+      "reused_evidence": [
+        "measurements002/RESULT.json",
+        "test012.stdout.log",
+        "NORMAL_LIMIT_REVIEW_003.json",
+        "normal_route001/RESULT.json"
+      ],
+      "new_evidence": "audit/u13_independent_001/RAW_REVIEW.json; PROBE_RECEIPT.json; observations/RESULT.json where applicable"
+    }
+  ],
+  "validation_dimensions": [
+    {
+      "dimension": "success",
+      "disposition": "not_fully_satisfied_due_to_findings",
+      "evidence": [
+        "test013.stdout.log",
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json",
+        "external004/BATTLE_ORACLE.json"
+      ],
+      "note": "Existing passing evidence retained; supported authored role/public disclosure counterexamples supersede blanket satisfaction."
+    },
+    {
+      "dimension": "invalid_input",
+      "disposition": "not_fully_satisfied_due_to_findings",
+      "evidence": [
+        "test013.stdout.log"
+      ],
+      "note": "Existing passing evidence retained; supported authored role/public disclosure counterexamples supersede blanket satisfaction."
+    },
+    {
+      "dimension": "failure_rollback",
+      "disposition": "supported_by_reviewed_scoped_evidence",
+      "evidence": [
+        "test013.stdout.log",
+        "legacy001/RESULT.json"
+      ],
+      "note": "Reused only within current source/input and explicit limitations; no newly executed gameplay suite claim."
+    },
+    {
+      "dimension": "retry_idempotency",
+      "disposition": "supported_by_reviewed_scoped_evidence",
+      "evidence": [
+        "test013.stdout.log",
+        "legacy001/RESULT.json",
+        "normal_route001/RESULT.json"
+      ],
+      "note": "Reused only within current source/input and explicit limitations; no newly executed gameplay suite claim."
+    },
+    {
+      "dimension": "ordering_concurrency",
+      "disposition": "supported_by_reviewed_scoped_evidence",
+      "evidence": [
+        "test013.stdout.log",
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json",
+        "BASELINE_REUSE.json"
+      ],
+      "note": "Reused only within current source/input and explicit limitations; no newly executed gameplay suite claim."
+    },
+    {
+      "dimension": "boundary_empty_max",
+      "disposition": "supported_by_reviewed_scoped_evidence",
+      "evidence": [
+        "test013.stdout.log",
+        "measurements002/RESULT.json"
+      ],
+      "note": "Reused only within current source/input and explicit limitations; no newly executed gameplay suite claim."
+    },
+    {
+      "dimension": "disconnect_restart_persistence",
+      "disposition": "supported_by_reviewed_scoped_evidence",
+      "evidence": [
+        "external004/route/RESULT.json",
+        "legacy001/RESULT.json",
+        "normal_route001/RESULT.json"
+      ],
+      "note": "Reused only within current source/input and explicit limitations; no newly executed gameplay suite claim."
+    },
+    {
+      "dimension": "live_data",
+      "disposition": "not_fully_satisfied_due_to_findings",
+      "evidence": [
+        "probe_prepare002.result.json",
+        "test013.stdout.log",
+        "measurements002/RESULT.json"
+      ],
+      "note": "Existing passing evidence retained; supported authored role/public disclosure counterexamples supersede blanket satisfaction."
+    },
+    {
+      "dimension": "producer_consumer",
+      "disposition": "not_fully_satisfied_due_to_findings",
+      "evidence": [
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json",
+        "external004/BATTLE_ORACLE.json",
+        "legacy001/RESULT.json"
+      ],
+      "note": "Existing passing evidence retained; supported authored role/public disclosure counterexamples supersede blanket satisfaction."
+    },
+    {
+      "dimension": "legacy_fallback_absence",
+      "disposition": "supported_by_reviewed_scoped_evidence",
+      "evidence": [
+        "test013.stdout.log",
+        "legacy001/RESULT.json",
+        "test014.DISPOSITION.json",
+        "BASELINE_REUSE.json"
+      ],
+      "note": "Reused only within current source/input and explicit limitations; no newly executed gameplay suite claim."
+    }
+  ],
+  "integration": [
+    {
+      "id": "IVA-CFMN-ALLOCATION-01",
+      "acceptance": [
+        "A01",
+        "A02"
+      ],
+      "owner": "GOAL-CFMN-01/WP-CFMN-VERIFY",
+      "evidence": [
+        "test013.stdout.log"
+      ],
+      "audit_disposition": "supported_with_scoped_limits"
+    },
+    {
+      "id": "IVA-CFMN-ALLOCATION-02",
+      "acceptance": [
+        "A03",
+        "A04"
+      ],
+      "owner": "GOAL-CFMN-01/WP-CFMN-VERIFY",
+      "evidence": [
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json",
+        "test013.stdout.log"
+      ],
+      "audit_disposition": "supported_with_scoped_limits"
+    },
+    {
+      "id": "IVA-CFMN-GRAPH",
+      "acceptance": [
+        "A05",
+        "A06",
+        "A07",
+        "A08"
+      ],
+      "owner": "GOAL-CFMN-01/WP-CFMN-VERIFY",
+      "evidence": [
+        "external004/route/RESULT.json",
+        "measurements002/RESULT.json",
+        "normal_route001/RESULT.json",
+        "probe_prepare002.result.json",
+        "test013.stdout.log"
+      ],
+      "audit_disposition": "not_complete"
+    },
+    {
+      "id": "IVA-CFMN-ASSIGNMENT",
+      "acceptance": [
+        "A09",
+        "A10",
+        "A11",
+        "A12"
+      ],
+      "owner": "GOAL-CFMN-01/WP-CFMN-VERIFY",
+      "evidence": [
+        "external004/BATTLE_ORACLE.json",
+        "probe_prepare002.result.json",
+        "test013.stdout.log"
+      ],
+      "audit_disposition": "not_complete"
+    },
+    {
+      "id": "IVA-CFMN-OMEN",
+      "acceptance": [
+        "A13",
+        "A14"
+      ],
+      "owner": "GOAL-CFMN-01/WP-CFMN-VERIFY",
+      "evidence": [
+        "test013.stdout.log"
+      ],
+      "audit_disposition": "supported_with_scoped_limits"
+    },
+    {
+      "id": "IVA-CFMN-NAVIGATION",
+      "acceptance": [
+        "A15",
+        "A16",
+        "A17",
+        "A18"
+      ],
+      "owner": "GOAL-CFMN-01/WP-CFMN-VERIFY",
+      "evidence": [
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json",
+        "test013.stdout.log",
+        "test014.stdout.log"
+      ],
+      "audit_disposition": "supported_with_scoped_limits"
+    },
+    {
+      "id": "IVA-CFMN-KNOWLEDGE",
+      "acceptance": [
+        "A19",
+        "A20",
+        "A21",
+        "A22"
+      ],
+      "owner": "GOAL-CFMN-01/WP-CFMN-VERIFY",
+      "evidence": [
+        "external004/BATTLE_ORACLE.json",
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json",
+        "test013.stdout.log"
+      ],
+      "audit_disposition": "not_complete"
+    },
+    {
+      "id": "IVA-CFMN-SUPPORT",
+      "acceptance": [
+        "A23",
+        "A24",
+        "A25"
+      ],
+      "owner": "GOAL-CFMN-01/WP-CFMN-VERIFY",
+      "evidence": [
+        "external004/BATTLE_ORACLE.json",
+        "external004/route/RESULT.json",
+        "normal_route001/RESULT.json",
+        "probe_prepare002.result.json",
+        "test013.stdout.log"
+      ],
+      "audit_disposition": "not_complete"
+    },
+    {
+      "id": "IVA-CFMN-BRIEFING",
+      "acceptance": [
+        "A26",
+        "A27"
+      ],
+      "owner": "GOAL-CFMN-01/WP-CFMN-VERIFY",
+      "evidence": [
+        "external004/BATTLE_ORACLE.json",
+        "external004/route/RESULT.json",
+        "test013.stdout.log"
+      ],
+      "audit_disposition": "supported_with_scoped_limits"
+    },
+    {
+      "id": "IVA-CFMN-PERSISTENCE",
+      "acceptance": [
+        "A28",
+        "A29",
+        "A30"
+      ],
+      "owner": "GOAL-CFMN-01/WP-CFMN-VERIFY",
+      "evidence": [
+        "NORMAL_LIMIT_REVIEW_003.json",
+        "external004/CHECKPOINT_ORACLE.json",
+        "external004/route/RESULT.json",
+        "legacy001/RESULT.json",
+        "measurements002/RESULT.json",
+        "normal_route001/RESULT.json",
+        "server_test001.stdout.log",
+        "test012.stdout.log",
+        "test013.stdout.log"
+      ],
+      "audit_disposition": "not_complete"
+    }
+  ],
+  "execution_nodes": [
+    "WP-CFMN-DATA",
+    "WP-CFMN-FLOW",
+    "WP-CFMN-STORE",
+    "WP-CFMN-PUBLIC",
+    "WP-CFMN-VERIFY"
+  ],
+  "review_scope": "All30conditions traced. Supported means scoped current source + validated evidence reuse, not a standalone Goal Complete verdict. Findings require GEX10 correction and successor GEX20."
+}

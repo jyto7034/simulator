@@ -176,7 +176,7 @@ impl GameCore {
             "relic_admin_definition",
         )?;
         if self.game_data.relic_data.get_by_id(definition_id).is_none() {
-            return Err(GameError::InvalidAction);
+            return Err(GameError::InvalidCommandData(format!("admin grant references missing relic '{definition_id}'")));
         }
         let mut copies = Vec::new();
         crate::game::battle::runtime_control::admit_retained_growth(

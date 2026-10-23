@@ -1,0 +1,12 @@
+{
+  "stage": "P2G-40",
+  "status": "complete",
+  "phase_plan_ref": {
+    "Artifact Type": "Phase Plan",
+    "Artifact ID": "PP-CBRR-002",
+    "Content Digest": "sha256:881cb24d02c4979b1080261d91dd722df5f4aa102392c560602fb6e98eebbf93"
+  },
+  "validation_receipt": "P2G_40_VALIDATION_RECEIPT_002.json",
+  "validation_result": "passed",
+  "semantic_review": "17acceptance/5elements; RUNTIME/STORE/PUBLIC atomic and VERIFY same Phase; no gameplay test claim"
+}

@@ -45,6 +45,7 @@ impl SourceReceipt {
 #[derive(Clone)]
 pub(super) struct PackSnapshot {
     pub manifest: PackManifest,
+    pub manifest_text: String,
     pub manifest_source: String,
     pub catalogs: Vec<(super::CatalogKind, String, String)>,
 }
@@ -291,6 +292,7 @@ fn acquire_with_hook(
         }
         packs.push(PackSnapshot {
             manifest,
+            manifest_text: input,
             manifest_source,
             catalogs,
         });
@@ -325,6 +327,7 @@ pub(super) fn acquire_official(
     Ok(SourceSnapshot {
         packs: vec![PackSnapshot {
             manifest,
+            manifest_text: String::new(),
             manifest_source: "pack.ron".into(),
             catalogs,
         }],

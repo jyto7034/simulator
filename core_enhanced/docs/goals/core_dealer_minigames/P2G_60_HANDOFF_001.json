@@ -1,0 +1,41 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Handoff Artifact",
+        "Artifact ID": "HA-CDMG-001",
+        "Content Digest": "sha256:7afe6e713b124365d0c6f5d4c55f98a9a9d39e7c6e8c21858d90693492082f49"
+      },
+      "payload": {
+        "Result Composite Basis": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CDMG-003",
+            "Content Digest": "sha256:d879b75b443363a747a95c82c73b0c093f73c90ba7d728818e7391e563b28533"
+          },
+          "Final Policy Freeze Ref": {
+            "Artifact Type": "Final Policy Freeze",
+            "Artifact ID": "FPF-CDMG-001",
+            "Content Digest": "sha256:6de8c97c086079da0fdaaee33c87680266224d5049306b335eb6c736855238d8"
+          },
+          "Phase Plan Ref": {
+            "Artifact Type": "Phase Plan",
+            "Artifact ID": "PP-CDMG-001",
+            "Content Digest": "sha256:8214cea92c83582796563edf8134e5147e566af28c0ae63e10ce8b1b0804ffbe"
+          },
+          "Goal Set Ref": {
+            "Artifact Type": "Goal Set",
+            "Artifact ID": "GS-CDMG-001",
+            "Content Digest": "sha256:e0ccbc8d517869071560c931249da0406c3321e40d05e40a480cb5e60be93256"
+          },
+          "Post-Freeze Change Record Ref Set": []
+        },
+        "Scope/Authorization Boundary": "P2G authors only; current direct user separately authorizes U16-3 implementation and independent subagent audit; overrides no-subagent and stop-at-audit-request. No U16-4",
+        "Remaining Gap/Blocker/Limitation Summary": [
+          "Runtime, authoring, host persistence and costs await GEX10. Official empty relic content is not U21 completion. Numerical tuning is provisional."
+        ],
+        "Lifecycle Disposition": "current"
+      }
+    }
+  ]
+}

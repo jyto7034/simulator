@@ -15,6 +15,8 @@ pub struct FacilityTemplateDatabase {
     pub tag_catalog: Vec<String>,
     pub templates: Vec<FacilityTemplate>,
     pub pools: Vec<FacilityTemplatePool>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub layouts: Vec<super::FacilityLayout>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -209,6 +211,8 @@ pub struct FacilityScheduleCycleEntry {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
 pub struct FacilityRunState {
     pub pools: BTreeMap<String, FacilityPoolRunState>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rooms: Option<super::FacilityExplorationState>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
@@ -287,6 +291,18 @@ impl FacilityTemplateDatabase {
                 }
             }
         }
+        let mut layout_ids = HashSet::new();
+        let mut active = 0;
+        for layout in &self.layouts {
+            if !layout_ids.insert(&layout.id) {
+                return Err(format!("duplicate facility layout '{}'", layout.id));
+            }
+            active += usize::from(layout.expedition_default);
+            layout.validate(self)?;
+        }
+        if active > 1 {
+            return Err("multiple default expedition facility layouts".into());
+        }
         Ok(())
     }
 }
@@ -354,7 +370,7 @@ impl NodeAssignmentProfileDatabase {
             .checked_add(1)
             .ok_or_else(|| "facility floor overflowed u32".to_string())?;
         let (pool_id, profile_id) = match mode {
-            GameMode::Standard => {
+            GameMode::Tutorial => {
                 let matches = self
                     .standard_schedule
                     .iter()
@@ -368,7 +384,7 @@ impl NodeAssignmentProfileDatabase {
                 }
                 (&matches[0].pool_id, &matches[0].profile_id)
             }
-            GameMode::Endless => {
+            GameMode::Expedition => {
                 let stage = self
                     .endless_stages
                     .iter()
@@ -576,7 +592,7 @@ fn validate_template(
                 if slot.allowed_categories.iter().any(|category| {
                     matches!(
                         category,
-                        MapNodeCategory::Start | MapNodeCategory::Gate | MapNodeCategory::Boss
+                        MapNodeCategory::Start | MapNodeCategory::Gate
                     )
                 }) {
                     return Err(format!(
@@ -1046,6 +1062,7 @@ mod tests {
     #[test]
     fn template_accepts_authored_semantic_slots_and_typed_terminal() {
         let database = FacilityTemplateDatabase {
+            layouts: vec![],
             tag_catalog: vec![],
             templates: vec![minimal_template()],
             pools: vec![FacilityTemplatePool {
@@ -1089,7 +1106,7 @@ mod tests {
     }
 }
 
-crate::authoring::clone_shape::struct_shape!(FacilityRunState { pools });
+crate::authoring::clone_shape::struct_shape!(FacilityRunState { pools, rooms });
 
 crate::authoring::clone_shape::struct_shape!(FacilityPoolRunState {
     cycle,

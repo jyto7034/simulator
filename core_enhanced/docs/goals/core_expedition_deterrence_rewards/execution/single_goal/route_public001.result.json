@@ -1,0 +1,11 @@
+{
+  "command": [
+    ".cache/u12-vault-cost-target/debug/u14_deterrence_consumer",
+    "route",
+    "core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/route_public001"
+  ],
+  "exit_code": 0,
+  "seconds": 1151.653167331002,
+  "stdout": "route_public001.stdout.log",
+  "stderr": "route_public001.stderr.log"
+}

@@ -1,0 +1,12 @@
+{
+  "command": [
+    "core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/artifacts/public_consumer004/u14_deterrence_consumer",
+    "prepare-growth",
+    "game_resources",
+    "core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/test_parts/public_inputs004"
+  ],
+  "exit_code": 0,
+  "seconds": 2.0214656419993844,
+  "stdout": "growth_package004.stdout.log",
+  "stderr": "growth_package004.stderr.log"
+}

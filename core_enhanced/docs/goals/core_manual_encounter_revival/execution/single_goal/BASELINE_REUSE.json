@@ -1,0 +1,113 @@
+{
+  "initial": "Actual pre-edit 515 files plus separately captured 2 canonical documents. Inherited U16 current Complete/High, Core2228/server96/probes11; no new initial full run claimed.",
+  "final_integration": {
+    "raw": "runs/raw_logs/u17-workspace-tests001.log",
+    "exit_code": 101,
+    "core_library": {
+      "passed": 2121,
+      "failed": 37,
+      "ignored": 6
+    },
+    "core_integration": {
+      "passed": 71,
+      "failed": 1
+    },
+    "server": {
+      "passed": 96,
+      "failed": 0,
+      "ignored": 22
+    },
+    "external_probes": {
+      "passed": 11,
+      "failed": 0
+    },
+    "zero_test_binaries_not_counted": true
+  },
+  "failure_closure": {
+    "original_failed_names": [
+      "application::tests::command_kind_is_exactly_bijective_with_all_domain_actions",
+      "game::behavior::tests::every_action_kind_has_one_characterized_route_scope_and_authority_contract",
+      "game::data::content_pack::snapshot::tests::unix::socket_inputs_return_errors",
+      "game::data::content_pack::tests::custom_policy_generated_failures_keep_winning_wave_fields_and_contributors_on_retry",
+      "game::world::application::tests::every_behavior_kind_has_exactly_one_application_owner",
+      "game::world::tests::checkpoint_validation::current_v12_checkpoint_continue_then_v12_capture_is_semantically_identical",
+      "game::world::tests::checkpoint_validation::current_v12_checkpoint_document_has_exact_envelope_and_checksum",
+      "game::world::tests::checkpoint_validation::current_v12_checkpoint_document_has_exact_flat_semantic_field_set_and_values",
+      "game::world::tests::checkpoint_validation::current_v12_checkpoint_round_trips_exact_inventory_reservation_boundary",
+      "game::world::tests::checkpoint_validation::external_generations_bind_save_continue_explicit_load_and_cached_export",
+      "game::world::tests::checkpoint_validation::public_application_checkpoint_port_round_trips_into_a_fresh_application",
+      "game::world::tests::combat::resource_lifetimes::actual_run_result_failure_retry_and_fresh_public_checkpoint_preserve_nonempty_values",
+      "game::world::tests::facility::active_run_checkpoint_round_trip_preserves_monotonic_loads_without_local_profile",
+      "game::world::tests::u08_carriers::basic_auto_and_authored_extra_melee_projectile_use_final_amount_once_and_keep_raw_attack",
+      "game::world::tests::u08_carriers::basic_stale_auto_epoch_after_expired_normal_channel_cancels_while_actor_stays_active",
+      "game::world::tests::u08_carriers::follow_area_initial_hit_is_positive_then_withdraw_cancels_ticks_and_pending_step",
+      "game::world::tests::u08_carriers::literal_observation_off_same_skill_two_employees_keep_distinct_actual_bindings",
+      "game::world::tests::u08_carriers::live_source_stat_projectile_is_positive_alive_and_missing_context_after_withdraw_is_atomic",
+      "game::world::tests::u08_carriers::ordinary_active_battle_rejects_relic_loadout_mutations_without_changing_any_root",
+      "game::world::tests::u08_carriers::original_authored_effect_add_remove_rebuilds_fresh_battle_damage_without_rewriting_catalogs",
+      "game::world::tests::u08_carriers::physical_magic_modifiers_and_resistance_consume_relic_once_and_negative_penalties_in_real_hp",
+      "game::world::tests::u08_carriers::released_ground_fixed_snapshot_area_keeps_binding_for_ticks_after_withdraw",
+      "game::world::tests::u08_carriers::released_snapshot_projectile_survives_withdraw_and_unreleased_step_is_cancelled",
+      "game::world::tests::u08_carriers::repeated_battle_delayed_capture_and_terminal_cache_release_old_relic_owners",
+      "game::world::tests::u08_carriers::typed_form_and_weapon_changes_rebind_actual_skill_and_basic_damage_in_fresh_battles",
+      "game::world::tests::u08_lifecycle::actual_retreat_restores_nonempty_entry_relics_and_materials_then_reentry_consumes_fresh_binding",
+      "game::world::tests::u08_lifecycle::all_three_copy_slot_permutations_preserve_actual_damage_penalties_and_certified_base",
+      "game::world::tests::u08_lifecycle::living_withdraw_and_real_cooldown_redeploy_keep_three_slots_and_rebind_actual_damage",
+      "game::world::tests::u08_lifecycle::real_lethal_hit_then_terminal_settlement_clears_slots_and_complete_only_acknowledges_once",
+      "game::world::tests::u08_relics::durable_continue_and_savepoint_keep_independent_variant_cost_and_slot_owners",
+      "game::world::tests::u09_structural::publication_cases::tb002_duplicate_trigger_bindings_share_one_provider_but_keep_runtime_dispatches",
+      "game::world::tests::u12_lifecycle::codec::u12_lifecycle_old_continue_eleven_and_savepoint_twelve_reject_after_current_positive",
+      "game::world::tests::u12_lifecycle::cost::u12_vault_entry_checkpoint_restore_preserves_profile_boundary",
+      "game::world::tests::u12_lifecycle::cost::u12_vault_prepare_import_budget_failures_preserve_roots",
+      "game::world::tests::u12_lifecycle::cost::u12_vault_prepared_discard_and_commit_keep_exact_profile",
+      "game::world::tests::u12_lifecycle::cost::u12_vault_profile_capture_charges_owned_graph",
+      "game::world::tests::u12_lifecycle::recruitment::u12_lifecycle_depth_five_hq_disables_recruitment_but_supplies_and_shop_still_complete",
+      "live_pve_rewards_use_fixed_current_grant_set"
+    ],
+    "all_closed": true,
+    "logs": [
+      "runs/raw_logs/u17-regression002.log",
+      "runs/raw_logs/u17-regression003.log",
+      "runs/raw_logs/u17-ron-regression002.log",
+      "runs/raw_logs/u17-socket001.log"
+    ],
+    "socket": "OS permission failure rerun in the authorized environment: 1 actual pass; not skipped"
+  },
+  "post_integration_product_change": {
+    "paths": [
+      "core_enhanced/src/game/world/node_flow.rs",
+      "core_enhanced/src/game/world/combat.rs"
+    ],
+    "change": "Retire combat preview cache only when node is consumed. Completed node cannot reenter; durable result/choice and unresolved preview have independent owners.",
+    "reproduction": "runs/raw_logs/u17-public-restore-repro001.log",
+    "affected_default_tests": {
+      "raw": "runs/raw_logs/u17-preview-retirement001.log",
+      "passed": 223,
+      "failed": 0
+    },
+    "affected_native_tests": {
+      "raw": "runs/raw_logs/u17-native002.log",
+      "passed": 35,
+      "failed": 0
+    },
+    "fresh_current_host": [
+      "runs/current001/normal/ASSERTIONS.json",
+      "runs/current001/expanded/ASSERTIONS.json",
+      "runs/current001/fresh_readers/ASSERTIONS.json",
+      "runs/current001/io_replay/ASSERTIONS.json"
+    ],
+    "reuse_basis": "Remaining suites exercise unchanged loaders, definitions, general APIs and server persistence. Combat completion/defeat/checkpoint/Continue and U08/G11 owner boundaries rerun after cache lifetime change. Current release build/admission/public fresh reader close wrapper/default-limit impact."
+  },
+  "effective_unique_default": {
+    "core_library": 2159,
+    "core_integration": 72,
+    "core_total": 2231,
+    "server": 96,
+    "probes": 11,
+    "core_ignored": 6,
+    "server_ignored": 22,
+    "single_green_workspace_invocation": false
+  },
+  "G11": "Current official U17 schema/pack with byte-identical old empty/normal/expanded profiles and Return source receipts. Inherited identity_update_reason/u16_successor strings describe predecessor history only; current identity and source_receipt describe the new package. Four current cases pass in native002 and affected default suite.",
+  "forward_cost_reuse": "Three normal forward processes from cost001 reused with identical binary/config/content/trace; independent restore measurement tool changed. Three expanded forward and six Continue processes executed in cost002."
+}

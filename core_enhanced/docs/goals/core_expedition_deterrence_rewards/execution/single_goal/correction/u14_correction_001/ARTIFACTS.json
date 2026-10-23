@@ -1,0 +1,26 @@
+{
+  "artifacts": [
+    {
+      "build_result": "public_build001.result.json",
+      "binary": "artifacts/build001/u14_correction_probe",
+      "receipt": "artifacts/build001/RECEIPT.json",
+      "sha256": "367563d7f928308cc9976777b189723e276da3b0812506c6091f6e4da458b3e4",
+      "bytes": 36870184
+    },
+    {
+      "build_result": "public_build002.result.json",
+      "binary": "artifacts/build002/u14_correction_probe",
+      "receipt": "artifacts/build002/RECEIPT.json",
+      "sha256": "dee98e671c2ad3831ac1f7f2be02ebac6aadc1bb42cdc0611ed1af29eba1c45e",
+      "bytes": 36872256
+    },
+    {
+      "build_result": "public_build003.result.json",
+      "binary": "artifacts/u14_correction_probe",
+      "receipt": "artifacts/RECEIPT.json",
+      "sha256": "fb3c58119245bc54b08f4fef8b512e40e75a1db88ff877b1fdf490a7945eaf5a",
+      "bytes": 37013480
+    }
+  ],
+  "historical_receipts": "Original build001/002 receipt bytes retained; their relative build locator was authored against artifacts/ before relocation. Use build_result in this index relative to correction root."
+}

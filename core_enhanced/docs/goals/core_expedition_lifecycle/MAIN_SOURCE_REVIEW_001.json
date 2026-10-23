@@ -1,0 +1,226 @@
+{
+  "reviewer": "/root/core_main_astra gpt-6-astra high",
+  "basis": "WR-CEXL-007 / RSP-CEXL-002",
+  "method": "Direct bounded source reading and caller/field search; no runtime execution. CODE_REVIEW.ko.md contains semantic review and proposals. Formal binding not yet published.",
+  "sources": [
+    {
+      "path": "core_enhanced/src/application.rs",
+      "read_span": "967–1007,1300–1350,1680–1720,1750–1805",
+      "requirements": [
+        "RQ01",
+        "RQ04"
+      ],
+      "bytes": 91496,
+      "sha256": "917c4afd7a3cea97b2ecaebe5891a936fb7b65fb9a5010080c9a62bb232d2e9d"
+    },
+    {
+      "path": "core_enhanced/src/game/world.rs",
+      "read_span": "140–230,840–1100",
+      "requirements": [
+        "RQ01",
+        "RQ02",
+        "RQ03",
+        "RQ04"
+      ],
+      "bytes": 40703,
+      "sha256": "a80724cda27845f2d5136c73c603644b3e3e39b88232ca7462c3f7ac586b8ffc"
+    },
+    {
+      "path": "core_enhanced/src/game/world/application.rs",
+      "read_span": "465–550",
+      "requirements": [
+        "RQ01",
+        "RQ04"
+      ],
+      "bytes": 23133,
+      "sha256": "e76032b69779d220ff5cd97fd6dcae4c45690be8cbc0d05baa5fa8354463a613"
+    },
+    {
+      "path": "core_enhanced/src/game/world/state.rs",
+      "read_span": "2200–2250; field/capture locations via rg, independent Astra read545–661/835–905",
+      "requirements": [
+        "RQ01",
+        "RQ04"
+      ],
+      "bytes": 92658,
+      "sha256": "4aadbd4d28f995fcdc96d23a55b074ada9fbb9462e609342717de7f23436417b"
+    },
+    {
+      "path": "core_enhanced/src/game/world/node_flow.rs",
+      "read_span": "595–780,1190–1245",
+      "requirements": [
+        "RQ01",
+        "RQ03"
+      ],
+      "bytes": 69047,
+      "sha256": "6af28e7a3981b0ff899ce387914bc225bab9ba3b1d35510ab7828d421c718cd2"
+    },
+    {
+      "path": "core_enhanced/src/game/world/combat.rs",
+      "read_span": "760–795,990–1320",
+      "requirements": [
+        "RQ01",
+        "RQ02",
+        "RQ03"
+      ],
+      "bytes": 139882,
+      "sha256": "bf18e05534bfdfe9218b96d551d1ff3659286e7e099578935d0fe7de54dd80f0"
+    },
+    {
+      "path": "core_enhanced/src/game/world/headquarters.rs",
+      "read_span": "whole file (1–147)",
+      "requirements": [
+        "RQ02"
+      ],
+      "bytes": 6257,
+      "sha256": "8eb24cc23a2a4475e81065a28844735033f58a35c36de12818cefd27db0ff820"
+    },
+    {
+      "path": "core_enhanced/src/game/world/map_content.rs",
+      "read_span": "250–330",
+      "requirements": [
+        "RQ02",
+        "RQ06"
+      ],
+      "bytes": 14098,
+      "sha256": "938537d3b23dd8cacdb9a1c861a69297ab3816ab4cd57c95af3e661182ae1ba9"
+    },
+    {
+      "path": "core_enhanced/src/game/world/helpers.rs",
+      "read_span": "591–690",
+      "requirements": [
+        "RQ02",
+        "RQ03"
+      ],
+      "bytes": 27591,
+      "sha256": "7a11ea149e108fc56fdb1de48ebec9e51787a85c003c96bb1157f20262932974"
+    },
+    {
+      "path": "core_enhanced/src/game/recruitment.rs",
+      "read_span": "1–160",
+      "requirements": [
+        "RQ02"
+      ],
+      "bytes": 8716,
+      "sha256": "647beeb970d657d699247a0bdb5279d3d488f8d3bd936cca70ced305b18f6245"
+    },
+    {
+      "path": "core_enhanced/src/game/data/employee_data.rs",
+      "read_span": "1–145",
+      "requirements": [
+        "RQ02",
+        "RQ06"
+      ],
+      "bytes": 8633,
+      "sha256": "bed7d6f4bebf981a2bab274f323e6cd53d89feec39507fc95c4fcc939f3a25d4"
+    },
+    {
+      "path": "core_enhanced/src/game/data/run_policy_data.rs",
+      "read_span": "1–130",
+      "requirements": [
+        "RQ02",
+        "RQ06"
+      ],
+      "bytes": 64394,
+      "sha256": "2857ef73a097be23ea77ee25afc383b52bd50b1121e2e32d9bf71dcd08b78373"
+    },
+    {
+      "path": "core_enhanced/src/game/encounter_compendium.rs",
+      "read_span": "1–200",
+      "requirements": [
+        "RQ03",
+        "RQ04"
+      ],
+      "bytes": 10330,
+      "sha256": "a340cd035b775a4c56ea6cbcfb3900098c9d3147da94993521788d4571fbde4c"
+    },
+    {
+      "path": "core_enhanced/src/game/resources/inventory.rs",
+      "read_span": "510–610",
+      "requirements": [
+        "RQ03"
+      ],
+      "bytes": 32545,
+      "sha256": "7df5925984526071a76f08ebae5a7be54227e0f2a86fb1394fd427037154dc09"
+    },
+    {
+      "path": "core_enhanced/src/game/skill_fragment.rs",
+      "read_span": "1–115",
+      "requirements": [
+        "RQ03"
+      ],
+      "bytes": 14977,
+      "sha256": "9d88d378471268ddab9abaee1ad1e0f68438dc44947184fc964116daca05ccfc"
+    },
+    {
+      "path": "core_enhanced/src/game/map/progression.rs",
+      "read_span": "1–205",
+      "requirements": [
+        "RQ01",
+        "RQ03"
+      ],
+      "bytes": 32025,
+      "sha256": "798c04a1fe8dce510e67832884ae5c32b45a1ea49556fe324caf52e055bfe014"
+    },
+    {
+      "path": "core_enhanced/src/game/managers/uuid_manager.rs",
+      "read_span": "1–110",
+      "requirements": [
+        "RQ02",
+        "RQ03",
+        "RQ04"
+      ],
+      "bytes": 8049,
+      "sha256": "2802db75245dda76b6472d87f748415809ac72a2d0938b69ad06e8db90b7395f"
+    },
+    {
+      "path": "core_enhanced/src/game/world/active_run/continuation.rs",
+      "read_span": "288–342,730–825",
+      "requirements": [
+        "RQ04",
+        "RQ05"
+      ],
+      "bytes": 49854,
+      "sha256": "5558f49c6f7a7c2f8e7f761aaf9d526918dd32d83d262a287613a116d315f06b"
+    },
+    {
+      "path": "game_server/src/game/player_game_actor/handlers.rs",
+      "read_span": "180–420,548–628,3880–3985",
+      "requirements": [
+        "RQ01",
+        "RQ04",
+        "RQ07"
+      ],
+      "bytes": 159244,
+      "sha256": "27cb9826b432b6b720cbc18fd20def81ea85a13a458e45c312c2deb96d7f4a74"
+    },
+    {
+      "path": "game_server/src/mod_admission/persistence.rs",
+      "read_span": "whole file (1–115)",
+      "requirements": [
+        "RQ04",
+        "RQ07"
+      ],
+      "bytes": 4347,
+      "sha256": "76bed5aa6e0ad5c0749fefbd3371731ff21e35938f9637c5821a8b0384f49f89"
+    },
+    {
+      "path": "game_server/src/persistence/player_profile_store.rs",
+      "read_span": "1–110,220–285",
+      "requirements": [
+        "RQ04"
+      ],
+      "bytes": 31042,
+      "sha256": "70bf1ed409b236d84d73c5ebac9836de041c7b2a938a810333f35b4da09a5617"
+    },
+    {
+      "path": "game_server/src/persistence/player_profile_store/application_intent.rs",
+      "read_span": "1–364; sample existing CAS tests through450",
+      "requirements": [
+        "RQ04"
+      ],
+      "bytes": 30897,
+      "sha256": "b964127e6ef336aea60bf1cb1fc919a9a98ea915112e1939f6bce864756ed618"
+    }
+  ]
+}

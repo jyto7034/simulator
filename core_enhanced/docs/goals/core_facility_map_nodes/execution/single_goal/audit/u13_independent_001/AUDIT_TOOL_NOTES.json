@@ -1,0 +1,17 @@
+{
+  "raw_review_first_attempt": {
+    "exit_code": 1,
+    "error": "KeyError: ENTRY",
+    "location": "review_evidence.py adopted connection comparison",
+    "cause": "Parser anchored room definitions to start-of-line, excluding ENTRY after rooms: [ on same line",
+    "correction": "Removed only start-of-line anchor from room header matcher",
+    "successor": "RAW_REVIEW.json",
+    "product_or_test_input_changed": false
+  },
+  "probe_build": {
+    "exit_code": 0,
+    "elapsed_from_cargo": "1m 15s",
+    "warnings": "Existing dependency warnings and unused copied diagnostic helpers; no build errors"
+  },
+  "audit_scope": "Audit tooling correction only; frozen product/evidence untouched"
+}

@@ -1,0 +1,153 @@
+{
+  "command": {
+    "choice": "Return",
+    "type": "choose_expedition_continuation"
+  },
+  "result": {
+    "disposition": "accepted",
+    "kind": "run_complete",
+    "meaning": "RunComplete",
+    "payload": {
+      "facility_template_version": 1,
+      "map_template_id": "facility_9C",
+      "nodes": [
+        {
+          "category": "Reward",
+          "id": "1b0e2b11-e4d2-40de-be9e-b6bd4e255df7",
+          "kind_id": "reward_treasure",
+          "payload": {
+            "Reward": {
+              "reward_pool_id": "default_treasures"
+            }
+          },
+          "slot_id": "1",
+          "state": "Unavailable",
+          "visibility": "Revealed"
+        },
+        {
+          "category": "SavePoint",
+          "id": "1b0e2b11-e4d2-40de-9a60-9ac2d6b19b87",
+          "kind_id": "save_point",
+          "payload": "SavePoint",
+          "slot_id": "2",
+          "state": "Completed",
+          "visibility": "Revealed"
+        },
+        {
+          "category": "Combat",
+          "difficulty_band": "Standard",
+          "id": "1b0e2b11-e4d2-40de-beaf-00cd3b6eac32",
+          "kind_id": "combat_monster",
+          "payload": {
+            "Encounter": {
+              "encounter_id": "normal_black_box_pressure"
+            }
+          },
+          "relative_threat": "High",
+          "slot_id": "3",
+          "state": "Unavailable",
+          "visibility": "Revealed"
+        },
+        {
+          "category": "Combat",
+          "difficulty_band": "Standard",
+          "id": "1b0e2b11-e4d2-40de-b914-aff90a3a9713",
+          "kind_id": "combat_monster",
+          "payload": {
+            "Encounter": {
+              "encounter_id": "normal_breach_response"
+            }
+          },
+          "relative_threat": "High",
+          "slot_id": "4",
+          "state": "Unavailable",
+          "visibility": "Revealed"
+        },
+        {
+          "category": "Maintenance",
+          "id": "1b0e2b11-e4d2-40de-9a9f-b66617d8f083",
+          "kind_id": "maintenance",
+          "payload": "Maintenance",
+          "slot_id": "5",
+          "state": "Completed",
+          "visibility": "Revealed"
+        },
+        {
+          "category": "Combat",
+          "difficulty_band": "Easy",
+          "id": "1b0e2b11-e4d2-40de-9104-faf887a8bd94",
+          "kind_id": "combat_monster",
+          "payload": {
+            "Encounter": {
+              "encounter_id": "normal_corroded_patrol"
+            }
+          },
+          "relative_threat": "Equal",
+          "slot_id": "6",
+          "state": "Unavailable",
+          "visibility": "Revealed"
+        },
+        {
+          "category": "Event",
+          "id": "1b0e2b11-e4d2-40de-8e63-b75dd3fee76f",
+          "kind_id": "event_sealed_archive",
+          "payload": {
+            "Event": {
+              "event_id": "sealed_archive_recovery_01"
+            }
+          },
+          "slot_id": "7",
+          "state": "Unavailable",
+          "visibility": "Revealed"
+        },
+        {
+          "category": "Shop",
+          "id": "1b0e2b11-e4d2-40de-9afc-e87dd5a1eb53",
+          "kind_id": "shop_general",
+          "payload": {
+            "Shop": {
+              "shop_id": null,
+              "shop_pool_id": "default_shops"
+            }
+          },
+          "slot_id": "8",
+          "state": "Completed",
+          "visibility": "Revealed"
+        },
+        {
+          "category": "Combat",
+          "difficulty_band": "Hard",
+          "id": "1b0e2b11-e4d2-40de-9a43-bf8424f5d503",
+          "kind_id": "combat_monster",
+          "payload": {
+            "Encounter": {
+              "encounter_id": "normal_corroded_patrol"
+            }
+          },
+          "relative_threat": "High",
+          "slot_id": "9",
+          "state": "Unavailable",
+          "visibility": "Revealed"
+        },
+        {
+          "category": "Gate",
+          "id": "1b0e2b11-e4d2-40de-9d7d-cd60a7a58fc7",
+          "kind_id": "gate_stairs",
+          "payload": "None",
+          "slot_id": "G",
+          "state": "Completed",
+          "visibility": "Revealed"
+        },
+        {
+          "category": "Start",
+          "id": "1b0e2b11-e4d2-40de-896c-38b400e0f081",
+          "kind_id": "start",
+          "payload": "None",
+          "slot_id": "S",
+          "state": "Completed",
+          "visibility": "Revealed"
+        }
+      ]
+    }
+  }
+}

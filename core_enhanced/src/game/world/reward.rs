@@ -26,6 +26,9 @@ impl GameCore {
                 if let Some(continuation) = self.state.combat_reward_continuation.take() {
                     self.state.active_node_content = None;
                     self.transition_to(continuation.return_phase)?;
+                    if matches!(self.state.lifecycle.phase(), GameState::RunComplete) {
+                        self.settle_expedition_terminal(false)?;
+                    }
                     return self.handle_request_map_data();
                 }
 
@@ -38,6 +41,9 @@ impl GameCore {
     }
 
     pub(super) fn claim_current_reward_session(&mut self) -> Result<BehaviorResult, GameError> {
+        if self.state.active_node_content.as_ref().and_then(|c| c.as_reward().ok()).is_some_and(|r| r.relic_activity.is_some()) {
+            return self.claim_basic_relic_reward();
+        }
         let reward = {
             let selected = self
                 .state
@@ -63,6 +69,7 @@ impl GameCore {
         })?;
 
         Ok(BehaviorResult::RewardGranted {
+            relic_activity: None,
             enkephalin,
             inventory_diff,
             skill_fragment_diffs,

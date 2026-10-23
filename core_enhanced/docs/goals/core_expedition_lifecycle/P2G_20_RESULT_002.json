@@ -1,0 +1,246 @@
+{
+  "stage": "P2G-20",
+  "status": "complete",
+  "Input Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CEXL-007",
+    "Content Digest": "sha256:47ef539d03103b7f3d5609b01dd154b605e38248890a871c0301c21efbec2d8b"
+  },
+  "Result Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CEXL-008",
+    "Content Digest": "sha256:2acd788219ab11f4dcbb9f268c51d68dcaa627c23a9ee06e0e01f77f4094ceaa"
+  },
+  "Review Scope/Source Requirement Plan Ref": {
+    "Artifact Type": "Review Scope/Source Requirement Plan",
+    "Artifact ID": "RSP-CEXL-002",
+    "Content Digest": "sha256:4373dbc2132a493f3c094b208cc91b1d018c14e7487b20229559ac0496e6c4e7"
+  },
+  "Reviewed Source Basis Ref": {
+    "Artifact Type": "Reviewed Source Basis",
+    "Artifact ID": "RSB-CEXL-002",
+    "Content Digest": "sha256:dfd134406574c1eb7b7985bb1fa225262adef83758db2abdb12ceb2b9f025a27"
+  },
+  "Code Review Artifact Ref Set": [
+    {
+      "Artifact Type": "Code Review Artifact",
+      "Artifact ID": "CRA-CEXL-002",
+      "Content Digest": "sha256:2f7025e8e1051eb157e6adbd64e0389b55a7b42cceb7db7457af95f18a70c64f"
+    }
+  ],
+  "Source Observation Ref Set": [
+    {
+      "Artifact Type": "Source Observation",
+      "Artifact ID": "SO-CEXL-RQ01-002",
+      "Content Digest": "sha256:32c3fe6cdbabf07d28f054a0f6d7149caff273f09a5dc4e48d63d4b199bfef8f"
+    },
+    {
+      "Artifact Type": "Source Observation",
+      "Artifact ID": "SO-CEXL-RQ02-002",
+      "Content Digest": "sha256:cbc9ccab9d1dfe58b3e4f465cf658de8901558b65e6672f050930874bd8477fe"
+    },
+    {
+      "Artifact Type": "Source Observation",
+      "Artifact ID": "SO-CEXL-RQ03-002",
+      "Content Digest": "sha256:4686a2eb8acb47394da8dc161bd57e194116a969ae0a49f75cfafb7267975e85"
+    },
+    {
+      "Artifact Type": "Source Observation",
+      "Artifact ID": "SO-CEXL-RQ04-002",
+      "Content Digest": "sha256:e71c8bed8e58acb02fe5f1da741821a1327640df670d1bc6a08cfe61e22e7453"
+    },
+    {
+      "Artifact Type": "Source Observation",
+      "Artifact ID": "SO-CEXL-RQ05-002",
+      "Content Digest": "sha256:a53a7860dba265fa6876ad65fa0d5cf4e7ac6e5acdacbe914b65667e264bf3f1"
+    },
+    {
+      "Artifact Type": "Source Observation",
+      "Artifact ID": "SO-CEXL-RQ06-002",
+      "Content Digest": "sha256:18913c056e7465fb4b5e9a0af33d8fd3661e09acf7c03ee84372c5b108a94484"
+    },
+    {
+      "Artifact Type": "Source Observation",
+      "Artifact ID": "SO-CEXL-RQ07-002",
+      "Content Digest": "sha256:b26b5ff8f1b9167e7883a0260a40853f9705843b7bb954012b60fea0173bdc21"
+    },
+    {
+      "Artifact Type": "Source Observation",
+      "Artifact ID": "SO-CEXL-RQ08-002",
+      "Content Digest": "sha256:dc481242da77c4b7f10d424c5aa1679954f61f838acd06bba4ef028a132c7356"
+    },
+    {
+      "Artifact Type": "Source Observation",
+      "Artifact ID": "SO-CEXL-RQ09-002",
+      "Content Digest": "sha256:34e5048404490eb4c447c4c6ecf288439e5ae677585f6b41208e525ea65f1f17"
+    },
+    {
+      "Artifact Type": "Source Observation",
+      "Artifact ID": "SO-CEXL-RQ10-002",
+      "Content Digest": "sha256:2f7119ba7528302ce07ace037a9157f5361c4fc7b81e410ad43cfdc024477072"
+    },
+    {
+      "Artifact Type": "Source Observation",
+      "Artifact ID": "SO-CEXL-RQ11-002",
+      "Content Digest": "sha256:4cc4a404d80b00e00d8b929908196f096721da7bc244c05e3fc13dd6010ddb00"
+    }
+  ],
+  "Review Evidence Ref Set": [
+    {
+      "Artifact Type": "Review Evidence",
+      "Artifact ID": "REV-CEXL-RQ01-002",
+      "Content Digest": "sha256:8780afdb6ed7b1f8c1052719cf960ddee823607e3388eea99d108ac7cc85a51d"
+    },
+    {
+      "Artifact Type": "Review Evidence",
+      "Artifact ID": "REV-CEXL-RQ02-002",
+      "Content Digest": "sha256:7bfab9095b36c4a839d25cad54623832f4200f375c555d94fc8805ccb2e632e2"
+    },
+    {
+      "Artifact Type": "Review Evidence",
+      "Artifact ID": "REV-CEXL-RQ03-002",
+      "Content Digest": "sha256:cbbbbdc215ee416e7896ef2ab4123cddb9425eef839b6291766ad106f6885c4a"
+    },
+    {
+      "Artifact Type": "Review Evidence",
+      "Artifact ID": "REV-CEXL-RQ04-002",
+      "Content Digest": "sha256:7b0aebb844184d3c2fda03ab2c303907d8964a9054554152aaebec3ad595433e"
+    },
+    {
+      "Artifact Type": "Review Evidence",
+      "Artifact ID": "REV-CEXL-RQ05-002",
+      "Content Digest": "sha256:c8d05a816ce1dc2e0c3c6c117354020bac06434991c75170298a5c46b955657d"
+    },
+    {
+      "Artifact Type": "Review Evidence",
+      "Artifact ID": "REV-CEXL-RQ06-002",
+      "Content Digest": "sha256:26ef92b2c5aac3d45a94206071765cc63c8a2558e161b5c27056d46c9006ffb3"
+    },
+    {
+      "Artifact Type": "Review Evidence",
+      "Artifact ID": "REV-CEXL-RQ07-002",
+      "Content Digest": "sha256:e8e6d75a9b43c135e10b574a9c733dd919341ec58d63bf421cbee115cd31bfda"
+    },
+    {
+      "Artifact Type": "Review Evidence",
+      "Artifact ID": "REV-CEXL-RQ08-002",
+      "Content Digest": "sha256:6721a405d4a1f0674cee5cae12171d139ca2cf184140960061d60bac2912f278"
+    },
+    {
+      "Artifact Type": "Review Evidence",
+      "Artifact ID": "REV-CEXL-RQ09-002",
+      "Content Digest": "sha256:d8d12a30f50990f1eff82ae81deafac8280db3a55140d6e112cc78e2ea6c8a8a"
+    },
+    {
+      "Artifact Type": "Review Evidence",
+      "Artifact ID": "REV-CEXL-RQ10-002",
+      "Content Digest": "sha256:a5fa6d45c21c038d3e563b2668e7573b273ced9f053ad40f4016b4f096350294"
+    },
+    {
+      "Artifact Type": "Review Evidence",
+      "Artifact ID": "REV-CEXL-RQ11-002",
+      "Content Digest": "sha256:c2cf9292a03750f17b1344e3c6fab310caa2b83efc7cedfa8abf8540c4d5120d"
+    }
+  ],
+  "Result-basis Code Review Binding Ref Set": [
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CEXL-PS01-002",
+      "Content Digest": "sha256:cf66feddb2cfd367bda3b1e378e545ffff57a4072da4aa60d3ce14cd77f96272"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CEXL-PS02-002",
+      "Content Digest": "sha256:05d1505ccac5574e8d0a4ebc1fedac97f727b3d650ab2d81b74a2f9af02c0a86"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CEXL-01-002",
+      "Content Digest": "sha256:4c13aab6cd94eee326909b91bdb41133c1391e4037be6d027d6d652d925241c2"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CEXL-02-002",
+      "Content Digest": "sha256:3819072f941da25f4f752ea6cdd23ff7a9eb57370467a1f2c36e651069ddb342"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CEXL-03-002",
+      "Content Digest": "sha256:9f716b538c38a40efd5737f507bbae8f0fff2756d4b6b52f154fa6c8a1125470"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CEXL-04-002",
+      "Content Digest": "sha256:361cdcd5a4f8494d90c0459b8116a03d702097b9778b49c39e0f8d28be28cb29"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CEXL-05-002",
+      "Content Digest": "sha256:b44061300afb3906ae938dc5cf49ef6a148753c20dd56a19c6f89da308add211"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CEXL-06-002",
+      "Content Digest": "sha256:3bdf28442a6b91c03e8ed3f0b753a98d9a739a9efd5cde1a32f6c1d028181453"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CEXL-07-002",
+      "Content Digest": "sha256:d59bdf1a8705dee644a5d844d815ec6392f5434cd085172ec2602dad456c637e"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CEXL-08-002",
+      "Content Digest": "sha256:a088729ec136991b148ee53a9003e1f0edf7e4475500ce5f8ca25fc02bc45445"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CEXL-09-002",
+      "Content Digest": "sha256:9fad461c4391f19e1c24af898024739d9fc0ded2a220c68fb78437f408568458"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CEXL-10-002",
+      "Content Digest": "sha256:fcbf1795e92c84341f9fd051b9ebae8235d505f8f4d3a33bfc20297c935c55a8"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CEXL-11-002",
+      "Content Digest": "sha256:83f625b4187a0f91702b080774aa703a634a565b1b7210496a7ddb79647b21ed"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CEXL-12-002",
+      "Content Digest": "sha256:e09b6995406bdc08e7bea7c5ee11aace1d62f7034df9b3296f484b02d314fe68"
+    },
+    {
+      "Artifact Type": "Code Review Binding",
+      "Artifact ID": "CRB-CEXL-13-002",
+      "Content Digest": "sha256:d71e55f2040dad5b06ee86bec3fea8a3be448f0e2575e41ef9a605014f6319ce"
+    }
+  ],
+  "Review Batch Ref": {
+    "Artifact Type": "Review Batch",
+    "Artifact ID": "RB-CEXL-002",
+    "Content Digest": "sha256:21319ad3b3015be0547cece04c97fceaedd5a86073bc68f7762b90b5c8871766"
+  },
+  "P2G-20 Resolution Record Ref Set": [],
+  "validation": {
+    "required_elements": 15,
+    "reviewed_elements": 15,
+    "acceptance_items": 38,
+    "required_source_boundaries": 8,
+    "confirmed_source_boundaries": 8,
+    "not_applicable_boundaries": 3,
+    "acceptance_unchanged": true,
+    "one_result_working_revision": true,
+    "all_bindings_match_result": true,
+    "blocking_material_findings": 0,
+    "blocking_evidence_gaps": 0,
+    "source_files_unchanged_during_capture": true
+  },
+  "meaning_change": false,
+  "runtime_tests_executed": 0,
+  "limitations": "No U12 product/test execution; all code-informed delta and independent validation remain required GEX. Prior aborted batch not reused as current binding.",
+  "next": "P2G-30 then P2G40/50/60 and authorized GEX without stage stop"
+}

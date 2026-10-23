@@ -1,0 +1,16 @@
+{
+  "record_ref": "ATR-CRAR-C2-P06-GEX20-003",
+  "goal_id": "GOAL-CRAR-C2-P06-CHECKPOINT-MIGRATION",
+  "successor_goal_id": "GOAL-CRAR-C2-P07-CORE-PUBLIC-PROJECTION",
+  "captured_date": "2026-08-23",
+  "verdict": "Complete / High",
+  "currentness": "current / P07 assertion-only delta on P06 caller fixture",
+  "previous_currentness_ref": "ATR-CRAR-C2-P06-GEX20-002",
+  "changed_members": [
+    {"path":"src/game/world/tests/combat.rs","sha256":"07b0a4c26719e342e46066cd96eb9a9a04f3e349d554ca7fa41c6e3dcf67930b","disposition":"adds existing diagnostic capability assertion only"}
+  ],
+  "active_run_sha256": "f8c02ba347d5d6800413cade30a72a4b34b7a4806fcc145854a27acb9bea72a8",
+  "node_flow_sha256": "79e61208e0a84a81a2b8571d4a45385d32eb54506cf927518648ac44fc421b08",
+  "validation": ["release checkpoint validation 16/16", "active-run round trip pass", "V4 writer 0 / certified importer 1 / V5 sole writer", "current Core 1159/1159"],
+  "external_scope": "game_server, Unity, sibling resources and external consumers uninspected and unclaimed"
+}

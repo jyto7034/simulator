@@ -1,0 +1,40 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Handoff Artifact",
+        "Artifact ID": "HA-CMER-001",
+        "Content Digest": "sha256:4d42dcdd9a71271000d5e029ba41431d77feb94c69d5732381adfd391543a381"
+      },
+      "payload": {
+        "Result Composite Basis": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CMER-004",
+            "Content Digest": "sha256:044a2704e36e24c196c54281b37833244819374bb6c1379d3ac7238fe8d7e91a"
+          },
+          "Final Policy Freeze Ref": {
+            "Artifact Type": "Final Policy Freeze",
+            "Artifact ID": "FPF-CMER-001",
+            "Content Digest": "sha256:310832cad4a43d369bf2a96941d942195c11b2f5738fc0a2a37e5f2a1c2ce166"
+          },
+          "Phase Plan Ref": {
+            "Artifact Type": "Phase Plan",
+            "Artifact ID": "PP-CMER-001",
+            "Content Digest": "sha256:5b5f4adb4e9206dac5aaa4a5068c8e28e6dfebcfa93b46b95e04c16682e5e5db"
+          },
+          "Goal Set Ref": {
+            "Artifact Type": "Goal Set",
+            "Artifact ID": "GS-CMER-001",
+            "Content Digest": "sha256:e71b3905c1b616d1aea266056a48d4ea0e78a7f0de3c836983465a0914f5c86a"
+          },
+          "Post-Freeze Change Record Ref Set": []
+        },
+        "Remaining Gap/Blocker/Limitation Summary": "No open material question. Runtime and costs unverified; CODE_REVIEW technical detail owner and future content boundaries preserved.",
+        "Scope/Authorization Boundary": "P2G only authored policy/plan/Goal. Existing direct U17 start authorize GEX implementation/self-validation separately; stop at final audit request. No automatic U18/audit. Single executor/no subagents.",
+        "Out-of-Scope Summary": "Goal Set exclusions including Unity/final bosses/future activity bodies/arbitrary external tampering",
+        "Lifecycle Disposition": "current"
+      }
+    }
+  ]
+}

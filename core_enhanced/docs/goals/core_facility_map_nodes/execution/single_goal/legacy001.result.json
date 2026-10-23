@@ -1,0 +1,15 @@
+{
+  "command": [
+    "env",
+    "U13_LEGACY_CONTENT=/mnt/f/work/simulator/core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/product_parts/official_content001",
+    ".cache/u12-vault-cost-target/release/u13_facility_consumer",
+    "legacy",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/test_parts/legacy_inputs001/input.json",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/probe_route001/saved.json",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/legacy001"
+  ],
+  "exit_code": 0,
+  "seconds": 0.567303420000826,
+  "stdout": "legacy001.stdout.log",
+  "stderr": "legacy001.stderr.log"
+}

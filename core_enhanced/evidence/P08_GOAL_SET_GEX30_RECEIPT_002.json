@@ -1,0 +1,208 @@
+{
+  "record_ref": "RCP-CRAR-C2-MASTER-GEX30-002",
+  "captured_at_utc": "2026-08-22T22:11:42Z",
+  "handoff_ref": "HA-CRAR-P2G60-002",
+  "goal_set_ref": "GS-CRAR-P2G50-002",
+  "goal_id": "GOAL-CRAR-C2-MASTER",
+  "execution_pass": "GEX-30",
+  "attempt": 3,
+  "verdict": "Complete / High",
+  "audit_target": {
+    "record_ref": "ATR-CRAR-C2-MASTER-GEX30-002",
+    "path": "evidence/P08_MASTER_AUDIT_TARGET_002.json",
+    "sha256": "8d858ace7809537a51de5d82c3999ebdc5a61f68f32a416becec818b12f34fe0",
+    "initial_exactness": {
+      "master_bindings": "32/32",
+      "correction_currentness_submanifest": "16/16",
+      "original_implementation_submanifest": "95/95"
+    },
+    "exit_exactness": {
+      "master_bindings": "32/32",
+      "correction_currentness_submanifest": "16/16",
+      "original_implementation_submanifest": "95/95"
+    },
+    "implementation_mutation_during_gex30": 0
+  },
+  "repository": {
+    "workspace_locator": "/mnt/f/work/simulator/core_enhanced",
+    "revision": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+    "branch": "cleanup/simulator-dirty-worktree-20260803"
+  },
+  "phase_currentness": [
+    {
+      "phase": "P01",
+      "record_ref": "ATR-CRAR-C2-P01-GEX20-009",
+      "verdict": "Complete / High"
+    },
+    {
+      "phase": "P02",
+      "record_ref": "ATR-CRAR-C2-P02-GEX20-007",
+      "verdict": "Complete / High"
+    },
+    {
+      "phase": "P03",
+      "record_ref": "ATR-CRAR-C2-P03-GEX20-007",
+      "verdict": "Complete / High"
+    },
+    {
+      "phase": "P04",
+      "record_ref": "ATR-CRAR-C2-P04-GEX20-005",
+      "verdict": "Complete / High"
+    },
+    {
+      "phase": "P05",
+      "record_ref": "ATR-CRAR-C2-P05-GEX20-005",
+      "verdict": "Complete / High"
+    },
+    {
+      "phase": "P06",
+      "record_ref": "ATR-CRAR-C2-P06-GEX20-003",
+      "verdict": "Complete / High"
+    },
+    {
+      "phase": "P07",
+      "record_ref": "ATR-CRAR-C2-P07-GEX20-002",
+      "verdict": "Complete / High"
+    },
+    {
+      "phase": "P08",
+      "record_ref": "ATR-CRAR-C2-P08-GEX20-001",
+      "verdict": "Complete / High"
+    }
+  ],
+  "goal_set_closure": {
+    "phase_goals": "8/8 Complete / High",
+    "final_freeze_selectors": "10/10",
+    "final_execution_nodes": "9/9",
+    "integration_acceptance_seams": "12/12",
+    "policy_acceptance": "10/10",
+    "validation_dimensions": "10/10",
+    "feature_inventory": "57/57",
+    "completion_blocking_unknowns": 0,
+    "unresolved_structural_findings": 0
+  },
+  "fresh_performance": {
+    "standard_receipt_sha256": "4514bc5a5212b83d6b270c42428b36e33bd5d395ec72a3d5158b670e0cc40b08",
+    "event_heavy": {
+      "sample_count": 21,
+      "p95_ns": 9292787,
+      "absolute_cap_ns": 25000000,
+      "absolute_cap_pass": true,
+      "one_sided_exact_regression_p": 1.0,
+      "statistically_supported_regression": false,
+      "deterministic_baseline_parity": true
+    },
+    "concurrent_sessions": {
+      "sample_count": 21,
+      "p95_ns": 6808171,
+      "absolute_cap_ns": 10000000,
+      "absolute_cap_pass": true,
+      "one_sided_exact_regression_p": 1.0,
+      "statistically_supported_regression": false,
+      "deterministic_baseline_parity": true
+    },
+    "allocation_receipt_sha256": "de3778dce9ba60f1a73bad4962794a341e547b0dc7a086c9a02452ba52d6378e",
+    "event_allocation_max": {
+      "allocations": 14295,
+      "reallocations": 25896,
+      "peak_bytes": 260550,
+      "retained_bytes": 260550,
+      "guard_pass": true
+    },
+    "concurrent_allocation_max": {
+      "allocations": 170740,
+      "reallocations": 140036,
+      "peak_bytes": 8006028,
+      "retained_bytes": 4196928,
+      "guard_pass": true
+    },
+    "p01_exact_replay": {
+      "receipt_sha256": "a2117b256f9c9afe1d8722add36eeb37c32eb5e456ec4d87da3dd119fdab10c4",
+      "event_samples": 5,
+      "concurrent_samples": 5,
+      "both_repeatable": true
+    }
+  },
+  "fresh_public_guards": {
+    "receipt_sha256": "00f550c550423b1a89d6a3c32487526996025466c43e0d2c1201bf50b897e15a",
+    "snapshot": {
+      "p95_ns": 229664,
+      "encoded_bytes": 48493,
+      "passed": true
+    },
+    "checkpoint": {
+      "p95_ns": 8164,
+      "encoded_bytes": 17956,
+      "passed": true
+    },
+    "bounded_query": {
+      "small_p95_ns": 182,
+      "large_p95_ns": 210,
+      "passed": true
+    },
+    "transaction_staging": {
+      "low_p95_ns": 24586,
+      "high_p95_ns": 24002,
+      "rollback_exact": true,
+      "passed": true
+    },
+    "allocation_receipt_sha256": "52442a1087713ee83f42fc474d5ad8c167bfd9632aba2daef10dfd87b0cf2bb0",
+    "low_and_high_allocation": {
+      "allocations": 675,
+      "reallocations": 0,
+      "peak_bytes": 84409,
+      "retained_bytes": 0,
+      "passed": true
+    }
+  },
+  "fresh_integration": {
+    "format_check": "exit 0",
+    "diff_check": "exit 0",
+    "release_library_check": "exit 0",
+    "release_rustdoc_with_denied_warnings": "exit 0",
+    "manifest": {
+      "result": "passed",
+      "features": 57,
+      "rulebook_headings": 57,
+      "evidence_bundles": 14,
+      "validation_dimensions": 10,
+      "legacy_removal_targets": 10,
+      "locator_contents": 44,
+      "locator_content_set_sha256": "07f3b56b4e16fa39fa4f6547a9f881469c5c6aee7326c86947d44e01326fb8a7",
+      "errors": 0
+    },
+    "api_probes": {
+      "valid_exit_0": 5,
+      "invalid_expected_exit_101": 5,
+      "default_fixture_expected_exit_101": 1,
+      "expected_outcomes": "11/11"
+    },
+    "full_core": {
+      "library_passed": 1108,
+      "integration_passed": 51,
+      "total_passed": 1159,
+      "failed": 0,
+      "ignored": 0
+    }
+  },
+  "fresh_structural_counts": {
+    "application_commit_writer_definitions": 1,
+    "runtime_cfg_test_benchmark_switches": 0,
+    "runtime_environment_test_benchmark_switches": 0,
+    "unbounded_battle_event_log_vec_fields": 0,
+    "v4_serializer_calls": 0,
+    "typed_v4_import_bindings": 1,
+    "default_fixture_api_exposure": 0,
+    "unresolved": 0
+  },
+  "dirty_preservation": {
+    "unrelated_core_baseline": "92 modified / 23 deleted / 675 untracked / total 790",
+    "porcelain_sha256": "d9e815c705367387b6a610aa699e2eaa0968172c4c287cb567b822d6be7fd622",
+    "disposition": "preserved; no unrelated work normalized, discarded or attributed"
+  },
+  "limitations": [
+    "system perf sampling is unavailable; exact-output source-instrumented A/B plus repeated standard and allocator evidence is the applicable Core evidence",
+    "whole-library Clippy retains a previously recorded unrelated denied never_loop; required release check and denied-warning rustdoc pass"
+  ],
+  "external_scope": "game_server, Unity, sibling resources, external consumers, deployment, release rollout and product SLA were not inspected, modified, validated or claimed"
+}

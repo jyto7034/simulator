@@ -982,6 +982,16 @@ mod tests {
                 events: Vec::new(),
             },
             checkpoint: LiveBattleStateCheckpointDto {
+                presence_marks: Default::default(),
+                weapon_marks: Default::default(),
+                tile_bursts: Default::default(),
+                counter_channels: Default::default(),
+                relation_actions: Default::default(),
+                input_plans: Default::default(),
+                prepared_volleys: Default::default(),
+                mobile_effects: Default::default(),
+                paired_areas: Default::default(),
+
                 sustained_effects: Default::default(),
                 independent_objects: Default::default(),
                 at_seq: to_seq,
@@ -1155,6 +1165,7 @@ mod tests {
         let target_id = UnitInstanceId::from(Uuid::from_u128(0x703));
         let result = result!(SkillTargetPreview {
             result: SkillTargetPreviewResultDto {
+                counter_channel: None,
                 object_placements: Vec::new(),
                 employee_uuid,
                 unit_instance_id,

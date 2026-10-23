@@ -1,0 +1,114 @@
+[
+  {
+    "name": "game::data::content_pack::tests::u11_issuer_lifetime::u11_actual_issuer_approval_host_trial_last_pins_release_independently",
+    "reason": "requires actual reviewed matching Core accepted cache and exclusive evidence"
+  },
+  {
+    "name": "mod_validation::u11_cache_tests::u11_actual_accepted_pending_stale_and_restart",
+    "reason": "requires real calibrated issuer cache and exclusive evidence; run explicit U11 selector"
+  },
+  {
+    "name": "mod_validation::u11_cache_tests::u11_actual_accepted_pending_then_current_recovery",
+    "reason": "requires real calibrated issuer cache and exclusive evidence; run explicit U11 selector"
+  },
+  {
+    "name": "mod_validation::u11_cache_tests::u11_actual_cache_calibration_administration",
+    "reason": "explicit management entry; actual calibration/adoption is not a functional pass"
+  },
+  {
+    "name": "mod_validation::u11_cache_tests::u11_actual_lab_cancel_before_publication",
+    "reason": "requires real calibrated issuer cache and exclusive evidence; run explicit U11 selector"
+  },
+  {
+    "name": "mod_validation::u11_cache_tests::u11_actual_lab_stale_before_publication",
+    "reason": "requires real calibrated issuer cache and exclusive evidence; run explicit U11 selector"
+  },
+  {
+    "name": "mod_admission::u11_normal_save_tests::actors::u11_normal_actor_pins_a_new_actor_uses_b_and_transport_has_no_approval",
+    "reason": "requires actual reviewed same-executable calibration cases and exclusive evidence; run explicit U11 selector"
+  },
+  {
+    "name": "mod_admission::u11_normal_save_tests::actors::u11_normal_approved_actor_real_u03_fault_isolated",
+    "reason": "requires actual approved expression adversarial config and exclusive evidence; run explicit U11 selector"
+  },
+  {
+    "name": "mod_admission::u11_normal_save_tests::u11_accepted_v2_a_to_b_crash_boundaries_and_exact_original_protection",
+    "reason": "requires actual reviewed same-executable calibration cases and exclusive evidence; run explicit U11 selector"
+  },
+  {
+    "name": "mod_admission::u11_normal_save_tests::u11_durable_b_remains_usable_when_future_c_is_installed",
+    "reason": "requires actual reviewed same-executable calibration cases and exclusive evidence; run explicit U11 selector"
+  },
+  {
+    "name": "mod_admission::u11_normal_save_tests::u11_normal_host_calibration_administration",
+    "reason": "explicit management entry; actual diagnostic/adoption is not a functional pass"
+  },
+  {
+    "name": "mod_admission::u11_normal_save_tests::u11_normal_missing_mod_preflight_preserves_same_original_and_restored_continue",
+    "reason": "requires actual reviewed same-executable calibration cases and exclusive evidence; run explicit U11 selector"
+  },
+  {
+    "name": "mod_admission::u11_normal_save_tests::u11_normal_save_crash_child",
+    "reason": "subprocess-only crash helper; execute parent u11_accepted_v2 tests"
+  },
+  {
+    "name": "mod_admission::u11_normal_save_tests::updates::u11_normal_update_checks_all_individuals_reduces_selection_and_requires_combination",
+    "reason": "requires actual reviewed same-executable orchestration calibration inputs and exclusive evidence; run explicit U11 selector"
+  },
+  {
+    "name": "mod_admission::u12_normal_host_tests::actor_management::u12_normal_admitted_corrupt_reset_is_atomic_and_preserves_vault_before_next_start",
+    "reason": "requires actual reviewed same-executable U12_NORMAL_CONFIG and exclusive U12_NORMAL_OUTPUT"
+  },
+  {
+    "name": "mod_admission::u12_normal_host_tests::actor_management::u12_normal_corrupt_reset_crash_child",
+    "reason": "subprocess-only helper; select the reset crash parent"
+  },
+  {
+    "name": "mod_admission::u12_normal_host_tests::actor_management::u12_normal_corrupt_reset_crash_recovery_protects_exact_originals_and_next_departure",
+    "reason": "requires actual reviewed same-executable U12_NORMAL_CONFIG and exclusive U12_NORMAL_OUTPUT"
+  },
+  {
+    "name": "mod_admission::u12_normal_host_tests::actor_management::u12_normal_title_profile_reset_cannot_orphan_saved_active_expedition",
+    "reason": "requires actual reviewed same-executable U12_NORMAL_CONFIG and exclusive U12_NORMAL_OUTPUT"
+  },
+  {
+    "name": "mod_admission::u12_normal_host_tests::return_cycle::u12_normal_full_tutorial_preserves_real_pending_and_consumed_profiles",
+    "reason": "requires genuine nonempty Pending and Consumed U12_CYCLE_SEED_ROOT, same-executable config, exclusive output"
+  },
+  {
+    "name": "mod_admission::u12_normal_host_tests::return_cycle::u12_normal_profile_only_story_ack_rejects_stale_and_preserves_no_change",
+    "reason": "requires genuine U12_CYCLE_SEED_ROOT, reviewed same-executable config, exclusive output"
+  },
+  {
+    "name": "mod_admission::u12_normal_host_tests::return_cycle::u12_normal_public_return_loan_cycle_preserves_exact_copies_and_instances",
+    "reason": "requires actual same-executable U12_NORMAL_CONFIG and exclusive U12_NORMAL_OUTPUT"
+  },
+  {
+    "name": "mod_admission::u12_normal_host_tests::return_cycle::u12_normal_return_cycle_child",
+    "reason": "subprocess-only helper; parent test requires an explicit child result and real exit"
+  },
+  {
+    "name": "mod_admission::u12_normal_host_tests::return_cycle::u12_normal_return_does_not_reissue_copies_absent_from_current_but_retained_in_savepoint",
+    "reason": "requires current approved configuration and genuine U12_CYCLE_SEED_ROOT"
+  },
+  {
+    "name": "mod_admission::u12_normal_host_tests::return_cycle::u12_normal_return_loan_and_story_crashes_recover_exact_public_seeds",
+    "reason": "requires explicit genuine U12_CYCLE_SEED_ROOT from public_return_cycle, same-executable config, exclusive output"
+  },
+  {
+    "name": "mod_admission::u12_normal_host_tests::u12_normal_abandon_crash_boundaries_recover_exact_pair",
+    "reason": "requires actual reviewed same-executable U12_NORMAL_CONFIG and exclusive U12_NORMAL_OUTPUT"
+  },
+  {
+    "name": "mod_admission::u12_normal_host_tests::u12_normal_legacy_profile_active_and_journal_headers_protect_originals",
+    "reason": "requires actual reviewed same-executable U12_NORMAL_CONFIG and exclusive U12_NORMAL_OUTPUT"
+  },
+  {
+    "name": "mod_admission::u12_normal_host_tests::u12_normal_lifecycle_crash_child",
+    "reason": "subprocess-only helper; run u12_normal_abandon_crash_boundaries_recover_exact_pair"
+  },
+  {
+    "name": "mod_admission::u12_normal_host_tests::u12_normal_unanchored_and_stale_initial_drafts_cannot_overwrite_newer_lifecycle",
+    "reason": "requires actual reviewed same-executable U12_NORMAL_CONFIG and exclusive U12_NORMAL_OUTPUT"
+  }
+]

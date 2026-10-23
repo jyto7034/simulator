@@ -1,0 +1,11 @@
+{
+  "stage": "P2G-20",
+  "status": "complete",
+  "runtime_tests": 0,
+  "source_members": 14,
+  "result_working_revision_ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CSCB-003",
+    "Content Digest": "sha256:657835a0d2bfdc62fd7146345d6cce63bcdc4d3f35f233818c1845829044752e"
+  }
+}

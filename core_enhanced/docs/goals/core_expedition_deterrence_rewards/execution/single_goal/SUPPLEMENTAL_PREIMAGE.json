@@ -1,0 +1,8 @@
+{
+  "path": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/test_parts/runtime001/probe/Cargo.toml",
+  "preimage": "test_parts/u12_probe_Cargo.before.toml",
+  "source_archive": "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/target/u13_current_002/SOURCE.tar.gz",
+  "sha256": "42ff4b22b49cff7e0e4a69e0bd0d7c67b35b129562a22c5ba79cbbe4980c6547",
+  "basis": "historical immutable target member matching the manifest read before U14 append; current starts with exact original; not reconstructed by deleting current lines",
+  "other_preimage": "tools/cmva_build.py is already in BASELINE_SOURCE_001 and independently copied to test_parts/cmva_build.before.py"
+}

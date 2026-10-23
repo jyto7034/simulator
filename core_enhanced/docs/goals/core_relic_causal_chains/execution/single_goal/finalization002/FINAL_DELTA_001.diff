@@ -1,0 +1,774 @@
+--- frozen001/collect_finalization.py
++++ successor002/collect_finalization.py
+@@ -212,13 +212,18 @@
+     expected = bindings["expected_predecessor_ids"]
+     if len(inputs) != 288 or len(set(x[0] for x in inputs)) != 288 or [x[0] for x in inputs] != expected:
+         raise ValueError("predecessor latest254 + U09 sentences34 exact ordered ID mismatch")
++    supplements = bindings.get("row_supplements", {})
++    if not set(supplements) <= set(expected):
++        raise ValueError("unknown predecessor row supplement")
+     rows = []
+     for identifier, row, path, pointer, literal, category_name in inputs:
+         category = bindings["categories"][category_name]
++        supplement = supplements.get(identifier, {})
++        current_evidence = list(dict.fromkeys(category["evidence"] + supplement.get("evidence", [])))
+         for affected in category["paths"]:
+             if not (ROOT / affected).is_file():
+                 raise ValueError(f"missing affected source: {affected}")
+-        pending = [key for key in category["evidence"] if evidence[key]["status"] == "pending"]
++        pending = [key for key in current_evidence if evidence[key]["status"] == "pending"]
+         rows.append({"id": identifier, "original_literal": literal,
+                      "original_owner": row.get("original_owner", ref(old_coverage_path)),
+                      "original_ref_with_pointer_and_digest": row.get("original_ref_with_pointer_and_digest", ref(path, pointer, row)),
+@@ -227,7 +232,8 @@
+                      "inherited_current_evidence_refs": row.get("current_evidence_refs", row.get("evidence_refs", [])),
+                      "category": category_name, "disposition": "split_inherited_component_and_current_changed_consumer",
+                      "unchanged_component": category["unchanged"], "changed_component": category["changed"],
+-                     "changed_component_paths": category["paths"], "current_evidence_refs": category["evidence"],
++                     "row_specific_changed_predicate": supplement.get("changed_predicate"),
++                     "changed_component_paths": category["paths"], "current_evidence_refs": current_evidence,
+                      "inherited_exact_selectors_selected_if_any": sorted(inherited_selectors(row) & current_selectors),
+                      "pending_or_unresolved_evidence": pending,
+                      "status": "pending_current_evidence" if pending else "split_evidence_available_root_currentness_and_audit_required"})
+--- frozen001/freeze_target.py
++++ successor002/freeze_target.py
+@@ -31,6 +31,8 @@
+ GOAL = E.parent.parent
+ PRIOR = ROOT / "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/target/u09_current_038"
+ PRIOR_AUDIT = ROOT / "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_038_pass002"
++PREVIOUS_U10 = E / "target/u10_current_001"
++PREVIOUS_U10_AUDIT = GOAL / "post_audit/u10_current_001_pass001"
+ BASELINE = E / "baseline/BASELINE_001.json"
+ SCANNER = E / "test_parts/runtime001/run.py"
+ 
+@@ -238,7 +240,9 @@
+         else:
+             table[row["path"]] = entry
+ 
+-    # Retain the immediate predecessor and its existing exact external bindings.
++    # Retain U09 completion and the first U10 failed audit as separate roles.
++    # The baseline still comes from U09+P2G20 above: never substitute the
++    # immediately preceding U10 correction state for the original 497 files.
+     prior_closure = read(PRIOR_AUDIT / "AUDIT_CLOSURE.json")
+     closure_refs = {}
+     for row in refs_in(prior_closure):
+@@ -248,9 +252,16 @@
+     prior_specs = [("SOURCE_BEFORE.tar.gz", "MANIFEST.json", "/before_files"),
+                    ("SOURCE_AFTER.tar.gz", "MANIFEST.json", "/source_files"),
+                    ("RECORDS.tar.gz", "RECORDS.json", ""), ("REFERENCES.tar.gz", "REFERENCES.json", "")]
+-    inherited = read(PRIOR / "EXTERNAL_ARCHIVES.json")
+-    for item in inherited + [{"archive": ref(PRIOR / archive), "members_manifest": ref(PRIOR / manifest), "members_pointer": field}
+-                             for archive, manifest, field in prior_specs]:
++    # U10-001's inherited archive list already includes the U09 history. Verify
++    # and index both full targets before resolving changed PLAN/NOTES/source
++    # references. A current workspace digest cannot replace a historical ref.
++    inherited = read(PREVIOUS_U10 / "EXTERNAL_ARCHIVES.json")
++    target_archives = [
++        {"archive": ref(base / archive), "members_manifest": ref(base / manifest), "members_pointer": field}
++        for base in (PRIOR, PREVIOUS_U10)
++        for archive, manifest, field in prior_specs
++    ]
++    for item in inherited + target_archives:
+         archive = check_ref(item["archive"])
+         if "members_manifest" not in item:
+             external[item["archive"]["path"]] = dict(item)
+@@ -285,6 +296,29 @@
+         "AUDIT_CLOSURE.json", "COMPLETION_AUDIT.md", "CONDITION_REVIEW.json", "ENTRY_CURRENTNESS.json",
+         "EVIDENCE_REVIEW.json", "EXIT_CURRENTNESS.json", "FINDINGS.json", "PREDECESSOR_REVIEW.json"}, "Exact U09 pass002 closure/supporting files"
+     for path in prior_audit_files:
++        add_reference(ref(path))
++    previous_u10_closure = read(PREVIOUS_U10_AUDIT / "AUDIT_CLOSURE.json")
++    previous_u10_manifest = read(PREVIOUS_U10 / "MANIFEST.json")
++    assert previous_u10_closure["target_manifest"] == ref(PREVIOUS_U10 / "MANIFEST.json")
++    assert previous_u10_closure["runtime_source"]["sha256"] == previous_u10_manifest["source_sha256"]
++    assert previous_u10_closure["restoration_source"]["before_files"] == 497
++    assert previous_u10_manifest["before_files"] == before
++    assert previous_u10_closure["audit_work_complete"] is True
++    assert previous_u10_closure["whole_goal_review_complete"] is True
++    assert previous_u10_closure["goal_complete"] is False
++    assert previous_u10_closure["verdict"] == "Not Complete" and previous_u10_closure["confidence"] == "High"
++    assert previous_u10_closure["open_findings"] == 2 and previous_u10_closure["complete_high_open0"] is False
++    assert previous_u10_closure["finding_ids"] == ["U10-AUD-F01", "U10-AUD-F02"]
++    previous_u10_closure_refs = list(refs_in(previous_u10_closure))
++    for row in previous_u10_closure_refs:
++        add_reference(row)
++    previous_u10_audit_files = [path for path in sorted(PREVIOUS_U10_AUDIT.iterdir()) if path.is_file()]
++    assert {p.name for p in previous_u10_audit_files} == {
++        "AUDIT_CLOSURE.json", "COMPLETION_AUDIT.md", "CONDITION_REVIEW.json", "ENTRY_CURRENTNESS.json",
++        "EVIDENCE_REVIEW.json", "EXIT_CURRENTNESS.json", "FINDINGS.json", "PREDECESSOR_REVIEW.json"}, "Exact U10 pass001 failed audit/supporting files"
++    for path in previous_u10_audit_files:
++        add_reference(ref(path))
++    for path in (PREVIOUS_U10 / "MANIFEST.json", PREVIOUS_U10 / "EXTERNAL_ARCHIVES.json"):
+         add_reference(ref(path))
+     for path in (BASELINE, source_path, handoff_path, PRIOR / "MANIFEST.json", PRIOR / "EXTERNAL_ARCHIVES.json"):
+         add_reference(ref(path))
+@@ -401,6 +435,12 @@
+         "selection": ref(generated / "EVIDENCE_SELECTION.json"), "coverage": ref(generated / "COVERAGE.json"),
+         "predecessor_impact": ref(generated / "PREDECESSOR_IMPACT.json"), "documentation_handoff": ref(handoff_path),
+         "predecessor_independent_closure": ref(PRIOR_AUDIT / "AUDIT_CLOSURE.json"),
++        "previous_u10_target": ref(PREVIOUS_U10 / "MANIFEST.json"),
++        "previous_u10_independent_audit": ref(PREVIOUS_U10_AUDIT / "AUDIT_CLOSURE.json"),
++        "previous_u10_audit_disposition": "Preserved Not Complete/High/open2. New evidence and restoration do not retroactively close this audit or award successor completion.",
++        "previous_u10_audit_references": [{"reference": row,
++            "already_preserved_in_exact_external_archives": archived_members.get((row["path"], row["sha256"], row["bytes"]), []),
++            "direct_reference": row["path"] in references} for row in previous_u10_closure_refs],
+         "predecessor_closure_references": [{"reference": closure_refs[path],
+             "already_preserved_in_exact_external_archives": archived_closure_refs.get(path, []),
+             "direct_reference": path in references} for path in sorted(closure_refs)],
+--- frozen001/EVIDENCE_INPUT.json
++++ successor002/EVIDENCE_INPUT.json
+@@ -2,7 +2,7 @@
+   "schema": "U10_INDEPENDENT_FINALIZATION_INPUT_V1",
+   "goal": "GOAL-CRCE-01",
+   "goal_set": "GS-CRCE-001",
+-  "status": "actual_runtime_bindings_ready_for_root_review_and_sole_collection",
++  "status": "successor_actual_runtime_bindings_ready_for_root_review",
+   "author_role": "Independent test author; sole Sol execution; Root semantic currentness; nonparticipant independent completion",
+   "currentness_review": "PLAN.md",
+   "selection_rule": "Only explicit named PASS rows; preserve whole failed receipts and original source identities. Root helper/provider/owner/consumer review required; no blanket old-equals-current claim.",
+@@ -211,6 +211,21 @@
+       "raw_format": "generic_combined_log",
+       "selected_count": 46,
+       "scope": "Actual final25 + CMRP17/default2/original external1/smallhost1, uninstrumented runtime-observation feature libtest;46PASS0FAIL0ignored; source20a79 unchanged. Original external nominal16 fourmode HP100 and periodic24; no extra measurement profile."
++    },
++    {
++      "id": "audit_existing_controls",
++      "receipt": "test_parts/runtime001/evidence/u10_audit_joint_tests001.json",
++      "raw_format": "generic_combined_log",
++      "selected_count": 5,
++      "include_suffixes": [
++        "u10_a_basic_attack_subscription_without_fragment_is_active_and_queries_are_pure",
++        "item_on_hit_counterpart_bonus_damage_retaliates_once_without_reflection_recursion",
++        "on_hit_retaliation_plan_skips_dead_or_missing_attacker_without_amplification",
++        "r09_public_equipment_death_reactions_are_suppressed_only_for_corrosion",
++        "u10_e_no_fragment_dead_owner_death_subscriber_uses_actual_killer_once"
++      ],
++      "preserve_enclosing_failure": true,
++      "scope": "Actual five unchanged controls PASS within preserved first failed9 batch. New4 stopped during setup; do not reclassify whole batch. Only new sibling prepare_joint changed afterwards, old helpers and controls byte-identical."
+     }
+   ],
+   "bounded_subcases": [],
+@@ -266,6 +281,21 @@
+       "id": "independent_completion",
+       "scope": "Nonparticipant whole Goal audit; never implied by author, collection or restore.",
+       "status": "pending_actual_execution_or_review"
++    },
++    {
++      "id": "audit_joint_basic",
++      "scope": "F01 normal published basic+counter+subscriber and actual dead/missing attacker released-hit guards; actual named PASS rows available.",
++      "status": "actual_late_binding_available"
++    },
++    {
++      "id": "audit_joint_corrosion",
++      "scope": "F02 actual public World Corrosion with active causal owner plus normal Kill and released DOT/wave; native opponent Death/AllyDeath normal/special comparison. Actual named PASS rows available.",
++      "status": "actual_late_binding_available"
++    },
++    {
++      "id": "audit_basic_guard",
++      "scope": "Real release/committed lethal damage then dead branch World advance100; explicit missing-unit native preparation uses existing BattleExecutionState native timestamp step_by100. Expectedlaunch0→10/hit/originaldamage10/nooptionalguard unchanged. Both completed branch markers and terminal actual PASS present in tests004.",
++      "status": "actual_late_binding_available"
+     }
+   ],
+   "historical_failures_to_preserve": [
+@@ -280,6 +310,8 @@
+     "all raw failed builds/prepare/measurement receipts and source archives remain immutable",
+     "PC001 compile-only E0753 remains101; appended helper mechanical fix for PC002",
+     "PC002 unchanged strict cost comparator remains FAIL1; Root-reviewed causal-empty successor001 separately PASS with declared exact fixed-cost delta",
+-    "R05 current original exit101 concurrent peak guard false; inherited peak-only summary0 does not reclassify original asPASS"
++    "R05 current original exit101 concurrent peak guard false; inherited peak-only summary0 does not reclassify original asPASS",
++    "audit_joint_tests001 whole9 exit101: five controls PASS, all four new cases failed preparation; original raw/source/bundle preserved.",
++    "u10_current_001_pass001 independent audit: Not Complete/High/open2; new evidence never retroactively changes original audit."
+   ]
+ }
+--- frozen001/LATE_BINDINGS.json
++++ successor002/LATE_BINDINGS.json
+@@ -1,7 +1,41 @@
+ {
+   "schema": "U10_ACTUAL_LATE_BINDINGS_V1",
+   "status": "actual_functional_and_performance_bindings_available_collector_unexecuted",
+-  "receipts": [],
++  "receipts": [
++    {
++      "id": "audit_basic_counter",
++      "receipt": "test_parts/runtime001/evidence/u10_audit_joint_tests002.json",
++      "raw_format": "generic_combined_log",
++      "selected_count": 1,
++      "include_suffixes": [
++        "u10_audit_f01_real_basic_counter_and_published_subscriber_share_one_battle"
++      ],
++      "preserve_enclosing_failure": true,
++      "scope": "Actual normally published basic10/counter8+5/child7 with source/copy/targets, exact4 HP rows/total30, attack+hit marker2 and no further reflection. This positive case PASS within preserved failed4. Only other projectile guard body changes in C003; prepare_joint, this body and native helpers unchanged. Combined F01 group remains pending guard."
++    },
++    {
++      "id": "audit_joint_corrosion",
++      "receipt": "test_parts/runtime001/evidence/u10_audit_joint_tests002.json",
++      "raw_format": "generic_combined_log",
++      "selected_count": 2,
++      "include_suffixes": [
++        "u10_audit_f02_public_corrosion_suppresses_active_kill_and_preserves_released_effect_and_wave",
++        "u10_audit_f02_prepared_opponent_death_and_allydeath_share_actual_corrosion_suppression"
++      ],
++      "preserve_enclosing_failure": true,
++      "scope": "Both actual PASS at source730710e294ea2c26716af442f9f89da109cbda32a9e18aa23e8253b0da1708f0. Public World Kill11 versus actual Corrosion causalSome/cost100/special source suppress=true/optional0, already released live ally DOT19 twice with suppress=false and required futurewave. Separate explicitly prepared Opponent-side normal Death7/Kill11/AllyDeath13+equipment2+3+5 pays actual source/copy/killer, while actual Corrosion optional queue/cast/heal stays0 after finite original-envelope drain. Native side/drain scope is not public opponent configuration or whole scheduler/budget evidence. Original failed4 remains101; C003 changes only unrelated released-projectile guard body, these cases and fixture helpers byte-identical."
++    },
++    {
++      "id": "audit_basic_guard",
++      "receipt": "test_parts/runtime001/evidence/u10_audit_joint_tests004.json",
++      "raw_format": "generic_combined_log",
++      "selected_count": 1,
++      "include_suffixes": [
++        "u10_audit_f01_released_basic_skips_counter_for_dead_or_missing_attacker_with_causal_owner"
++      ],
++      "scope": "Actual current source76aba953/533 unmodified: one test PASS0ignored; raw completed missing=false World and missing=true native_timestamp each after real launch0/expected10 and actual hit<=10. Original damage10,100ms bound, one defender hit marker and no counter/echo/amplification with causal owner Some. Missing is explicit native unit removal, consumed by original BattleExecutionState native timestamp scheduler, not an invalid World host success. No dead-prefix PASS was inferred from failed003."
++    }
++  ],
+   "artifacts": [
+     {
+       "id": "external_current_pair",
+@@ -128,15 +162,93 @@
+         "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/performance001/evidence/r05_harness_001/PROOF.json"
+       ],
+       "scope": "Fresh original R05 event-heavy and64session, each21 latency and5 allocator samples, current source02e185 unchanged. Original runtime exit101 is preserved; original concurrent peak guard remains false at max9703429 versus unchanged9030188. Original summary exits0 only with inherited warning_concurrent_peak_only and no other hard guard failures. Both families parity/repeatability true; event ops44206/retained266102/peak271927 and concurrent ops370928/retained4196928 equal U09. Latency p95 16.732216ms/9.300247ms is observation only: latency_gate_applicable=false. No whole-original-PASS or uninstrumented latency claim."
++    },
++    {
++      "id": "audit_joint_provenance",
++      "path": "test_parts/runtime001/evidence/u10_audit_joint_tests004.json",
++      "raw_format": "generic_combined_log",
++      "result_artifact": "product_parts/runtime001/AUDIT_JOINT_RESULT_004.json",
++      "expected_json_fields": {
++        "counts.selected": 1,
++        "counts.passed": 1,
++        "counts.failed": 0,
++        "counts.ignored": 0,
++        "build_exit": 0,
++        "list_exit": 0,
++        "test_exit": 0,
++        "source_sha256": "76aba953d84c644d3659b553e50f99f342c5826c709952c1fe808984ebfc340d",
++        "source_members": 533,
++        "source_unchanged": true,
++        "actual_completed_branches": [
++          "u10_joint_guard_completed missing=false boundary=World original_loss=10 additional_damage_rows=0 hit_markers=1",
++          "u10_joint_guard_completed missing=true boundary=native_timestamp original_loss=10 additional_damage_rows=0 hit_markers=1"
++        ],
++        "effective_selected_coverage.unique_named_tests": 9,
++        "effective_selected_coverage.new_joint_tests": 4,
++        "effective_selected_coverage.existing_controls": 5,
++        "effective_selected_coverage.fresh_tests004": 1,
++        "effective_selected_coverage.reused_tests002_actual_pass": 3,
++        "effective_selected_coverage.reused_tests001_actual_pass": 5,
++        "effective_selected_coverage.not_a_fresh_nine_test_pass": true
++      },
++      "supporting_artifacts": [
++        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_RESULT_001.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_BINARY_001.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_SELECTORS_001.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_INPUT_001_BEFORE.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_INPUT_001_AFTER.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/audit_correction001/HANDOFF.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/audit_correction001/SOURCE_PROOF.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_RESULT_002.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_BINARY_002.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_SELECTORS_002.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_INPUT_002_BEFORE.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_INPUT_002_AFTER.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/audit_correction002/HANDOFF.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/audit_correction002/SOURCE_PROOF.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_RESULT_003.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_BINARY_003.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_SELECTORS_003.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_INPUT_003_BEFORE.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_INPUT_003_AFTER.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/audit_correction003/HANDOFF.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/audit_correction003/SOURCE_PROOF.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_RESULT_004.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_BINARY_004.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_SELECTORS_004.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_INPUT_004_BEFORE.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_INPUT_004_AFTER.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/audit_correction004/HANDOFF.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/audit_correction004/SOURCE_PROOF.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/SOURCE_NONIMPACT_001.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_001_pass001/AUDIT_CLOSURE.json",
++        "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_001_pass001/FINDINGS.json"
++      ],
++      "scope": "Actual composite provenance: tests0015 PASS rows + tests0023 PASS rows + tests0041 PASS row, unique9. All original failed001/002/003 parents/raw/archives and correction bundle before/after bindings retained. Root source diff and exact530 unchanged+cfgtest2+new1 justify scoped reuse; no product/config/limits/performance change or independent closure claimed."
+     }
+   ],
+-  "composites": [],
++  "composites": [
++    {
++      "id": "audit_joint_basic",
++      "members": [
++        "audit_basic_counter",
++        "audit_basic_guard"
++      ],
++      "scope": "F01 actual positive basic/counter/child from tests002 one PASS plus current guard from tests004 one PASS. Separate exact source identities and failed tests002 parent retained; only guard body changed between these executions."
++    }
++  ],
+   "preserved_failed_attempts": [
+     "test_parts/runtime001/performance001/evidence/compat_pc_001.json",
+     "test_parts/runtime001/performance001/evidence/compat_pc_001.log",
+     "test_parts/runtime001/performance001/evidence/compat_pc_cost_002.json",
+     "test_parts/runtime001/performance001/evidence/compat_pc_cost_002.log",
+     "test_parts/runtime001/performance001/evidence/compat_r05_001.json",
+-    "test_parts/runtime001/performance001/evidence/compat_r05_001.log"
++    "test_parts/runtime001/performance001/evidence/compat_r05_001.log",
++    "test_parts/runtime001/evidence/u10_audit_joint_tests001.json",
++    "test_parts/runtime001/evidence/u10_audit_joint_tests001.log",
++    "test_parts/runtime001/evidence/u10_audit_joint_tests002.json",
++    "test_parts/runtime001/evidence/u10_audit_joint_tests002.log",
++    "test_parts/runtime001/evidence/u10_audit_joint_tests003.json",
++    "test_parts/runtime001/evidence/u10_audit_joint_tests003.log"
+   ]
+ }
+--- frozen001/COVERAGE_INPUT.json
++++ successor002/COVERAGE_INPUT.json
+@@ -1,6 +1,6 @@
+ {
+   "schema": "U10_INDEPENDENT_COVERAGE_MAPPING_V1",
+-  "status": "prepared_root_semantic_review_pending",
++  "status": "successor_actual9_scoped_evidence_root_currentness_pending",
+   "literal_rule": "Collector copies28 exact FPF001 sentences and19 exact P2G40 integration rows; mappings cannot rewrite literal authority.",
+   "requirement_evidence": {
+     "PE-CRCE-01.1": {
+@@ -96,9 +96,12 @@
+       "evidence": [
+         "ancestry_active",
+         "death_chain",
+-        "final46"
+-      ],
+-      "oracle": "Basic equipment reflection and relic subscriber coexist; actual basic-only item contexts, no reflection recursion, dead/missing source skips retain original tests."
++        "final46",
++        "audit_joint_basic",
++        "audit_existing_controls",
++        "audit_joint_provenance"
++      ],
++      "oracle": "One normally published/equipped/deployed relic battle: actual basic10, defender flat8+half-original5 counter, delayed child7; exact actors/targets/equipment/copy/cause and four damage rows/total30. Exactly two original attack/hit markers; no reflected recreated context. Real released projectile covers dead and removed original attacker guards. Original controls remain explicit actual PASS rows. Dead source uses normal World advance; explicitly removed native source uses the original BattleExecutionState native timestamp scheduler, since a removed deployed unit is invalid World input. No host deployment-map bypass or public missing-unit operation claim."
+     },
+     "PE-CRCE-07.2": {
+       "evidence": [
+@@ -119,9 +122,12 @@
+     "PE-CRCE-08.2": {
+       "evidence": [
+         "death_chain",
+-        "final46"
+-      ],
+-      "oracle": "Normal kill versus actual Corrosion kill; mandatory death state/facts kept while suppressed item/relic extra reactions and derived source semantics remain suppressed."
++        "final46",
++        "audit_joint_corrosion",
++        "audit_existing_controls",
++        "audit_joint_provenance"
++      ],
++      "oracle": "Actual World Corrosion with causal Some versus normal Kill11: cost100, special death state/facts/source suppress=true, optional queue/cast/heal absent after drain, living-ally already released DOT19 twice with suppress=false, future wave. Additional explicit native opponent side setup retains World-published plans and proves normal delayed Death7/Kill11/AllyDeath13 with actual killer/victim/copy/source versus actual Corrosion suppression. Corrosion dispatch=false creates no applicable optional derived child; no synthetic suppressed child or public opponent relic configuration claim."
+     },
+     "PE-CRCE-09.1": {
+       "evidence": [
+@@ -227,7 +233,9 @@
+       "join",
+       "periodic",
+       "wedge_arithmetic",
+-      "final46"
++      "final46",
++      "audit_joint_basic",
++      "audit_joint_corrosion"
+     ],
+     "invalid_input": [
+       "invalid_external",
+@@ -249,13 +257,17 @@
+       "join",
+       "wedge_lifetime",
+       "death_chain",
+-      "final46"
++      "final46",
++      "audit_joint_basic",
++      "audit_joint_corrosion"
+     ],
+     "boundary_empty_max": [
+       "ancestry_base",
+       "wedge_arithmetic",
+       "admission",
+-      "final46"
++      "final46",
++      "audit_joint_basic",
++      "audit_joint_corrosion"
+     ],
+     "disconnect_restart_persistence": [
+       "periodic",
+@@ -265,7 +277,9 @@
+     "live_data": [
+       "final46",
+       "invalid_external",
+-      "external_current_pair"
++      "external_current_pair",
++      "audit_joint_basic",
++      "audit_joint_corrosion"
+     ],
+     "producer_consumer": [
+       "ancestry_active",
+@@ -274,7 +288,9 @@
+       "death_chain",
+       "resonance",
+       "wedge_arithmetic",
+-      "final46"
++      "final46",
++      "audit_joint_basic",
++      "audit_joint_corrosion"
+     ],
+     "legacy_fallback_absence": [
+       "numeric_controls",
+@@ -284,7 +300,9 @@
+       "predecessor_impact",
+       "pc_current",
+       "r05_current",
+-      "independent_completion"
++      "independent_completion",
++      "audit_joint_basic",
++      "audit_joint_corrosion"
+     ]
+   },
+   "execution_nodes": {
+@@ -309,7 +327,10 @@
+         "join_cost",
+         "external_development_cost",
+         "pc_current",
+-        "r05_current"
++        "r05_current",
++        "audit_joint_basic",
++        "audit_joint_corrosion",
++        "audit_existing_controls"
+       ],
+       "meaning": "Atomic WP-CRCE-AUTHORING/CAUSAL/STRIKE/STATE integrated runtime; exact frozen node membership."
+     },
+@@ -317,7 +338,10 @@
+       "evidence": [
+         "final46",
+         "invalid_external",
+-        "external_current_pair"
++        "external_current_pair",
++        "audit_joint_basic",
++        "audit_joint_corrosion",
++        "audit_existing_controls"
+       ],
+       "meaning": "Normal external content/current default; canonical examples/docs require Root product review."
+     },
+@@ -328,7 +352,11 @@
+         "pc_current",
+         "r05_current",
+         "frozen_restore",
+-        "independent_completion"
++        "independent_completion",
++        "audit_joint_basic",
++        "audit_joint_corrosion",
++        "audit_existing_controls",
++        "audit_joint_provenance"
+       ],
+       "meaning": "Independent authored oracles; Sol raw execution; Root currentness; nonparticipant completion."
+     }
+@@ -413,7 +441,9 @@
+         "ancestry_active",
+         "death_chain",
+         "final46",
+-        "ancestry_base"
++        "ancestry_base",
++        "audit_joint_basic",
++        "audit_joint_provenance"
+       ]
+     },
+     "IVA-CRCE-V08": {
+@@ -424,7 +454,9 @@
+       "evidence": [
+         "death_chain",
+         "ancestry_identity",
+-        "final46"
++        "final46",
++        "audit_joint_corrosion",
++        "audit_joint_provenance"
+       ]
+     },
+     "IVA-CRCE-V09": {
+@@ -508,7 +540,10 @@
+       "evidence": [
+         "final46",
+         "invalid_external",
+-        "external_current_pair"
++        "external_current_pair",
++        "audit_joint_basic",
++        "audit_joint_corrosion",
++        "audit_joint_provenance"
+       ]
+     },
+     "IVA-CRCE-LIFETIME": {
+@@ -542,7 +577,11 @@
+         "timestamp_controls",
+         "selected825_reuse",
+         "pc_current",
+-        "r05_current"
++        "r05_current",
++        "audit_joint_basic",
++        "audit_joint_corrosion",
++        "audit_existing_controls",
++        "audit_joint_provenance"
+       ]
+     },
+     "IVA-CRCE-FINAL": {
+@@ -562,6 +601,7 @@
+     "Current nominal16, explicit authoring_dev8hard, and historical legacy8+development16/32 are distinct host profiles.",
+     "Graph/native declarations/SystemLayout/RSS scopes differ and are never summed as equivalent heap.",
+     "Own pre-entry checkpoint corrected from obsolete prior-node baseline; HP100/periodic24/step20 fresh child and invalids unchanged.",
+-    "Author or collector cannot award Complete/High/open0; frozen restore and nonparticipant audit separate."
++    "Author or collector cannot award Complete/High/open0; frozen restore and nonparticipant audit separate.",
++    "Original target001/audit001 remain frozen Not Complete/High/open2. Successor actual9 is selected5+3+1 at original exact sources, not one fresh9 batch. Original failed001/002/003 remain failed. Unchanged product/config and old helper/test bodies justify scoped final46/PC/R05 reuse; no new performance or whole-suite freshness claim. Successor independent whole-Goal audit still required."
+   ]
+ }
+--- frozen001/PREDECESSOR_BINDINGS.json
++++ successor002/PREDECESSOR_BINDINGS.json
+@@ -1,6 +1,6 @@
+ {
+   "schema": "U10_PREDECESSOR_SPLIT_BINDINGS_V1",
+-  "status": "author_proposal_root_actual_currentness_review_pending",
++  "status": "successor_actual_joint_rows_ready_root_currentness_pending",
+   "review": "PREDECESSOR_REVIEW.ko.md",
+   "basis": "Use exact latest U09 generated004254 rows plus34 literal U09 acceptances. Preserve inherited original refs and latest row digest; new category support never awards fresh whole-row PASS.",
+   "expected_predecessor_ids": [
+@@ -348,7 +348,7 @@
+     },
+     "corrosion": {
+       "unchanged": "Original conversion/cost/timing and killer policy retain prior evidence.",
+-      "changed": "New committed damage/death fact subscribers must preserve existing Corrosion suppression across derived sources.",
++      "changed": "New committed damage/death fact subscribers must preserve existing Corrosion suppression across derived sources. F02 now requires actual causal Some Corrosion and otherwise eligible normal Death/Kill/AllyDeath; public Kill/DOT/futurewave plus explicit native opponent side comparison cover reachable scopes separately. Suppressed Corrosion source and absent optional child are the reachable boundary, not a fabricated Corrosion child.",
+       "paths": [
+         "core_enhanced/src/game/battle/core/corrosion.rs",
+         "core_enhanced/src/game/battle/core/death_runtime.rs",
+@@ -357,7 +357,10 @@
+       "evidence": [
+         "final46",
+         "death_chain",
+-        "ancestry_identity"
++        "ancestry_identity",
++        "audit_joint_corrosion",
++        "audit_existing_controls",
++        "audit_joint_provenance"
+       ]
+     },
+     "flow": {
+@@ -393,7 +396,7 @@
+     },
+     "protection": {
+       "unchanged": "Prior shield pool/priority and passive equipment selection policies retain prior evidence.",
+-      "changed": "Actual HP-loss witness excludes absorbed/zero/invulnerable amounts; reflection does not recreate eligible basic item context or Wedge strike.",
++      "changed": "Actual HP-loss witness excludes absorbed/zero/invulnerable amounts; reflection does not recreate eligible basic item context or Wedge strike. F01 now requires real basic/counter/active-subscriber coexistence and released original dead/missing-source guards in the same normal relic battle. Dead-source guard runs World; explicit missing-source guard runs native timestamp scheduler with original execution state, not an invalid World deployment mapping.",
+       "paths": [
+         "core_enhanced/src/game/battle/core/damage_runtime.rs",
+         "core_enhanced/src/game/battle/core/relic_wedge.rs",
+@@ -403,7 +406,10 @@
+         "final46",
+         "ancestry_base",
+         "wedge_arithmetic",
+-        "wedge_lifetime"
++        "wedge_lifetime",
++        "audit_joint_basic",
++        "audit_existing_controls",
++        "audit_joint_provenance"
+       ]
+     },
+     "value_kernel": {
+@@ -604,7 +610,7 @@
+     },
+     "completion": {
+       "unchanged": "Prior U09 frozen038 independent Complete/High/open0 closure and its historical predecessor references remain immutable.",
+-      "changed": "U10 changes require exact288 row split impact,28 sentences/19integration/10dimensions/3nodes, current results, isolated497baseline restore and independent nonparticipant audit. Prior closure never proves U10 completion.",
++      "changed": "U10 changes require exact288 row split impact,28 sentences/19integration/10dimensions/3nodes, current results, isolated497baseline restore and independent nonparticipant audit. Prior closure never proves U10 completion. First U10 target001/audit001 Not Complete/High/open2 is preserved separately from U09 Complete/High/open0. Only successor exact-source evidence and fresh independent whole-Goal audit can close it.",
+       "paths": [
+         "core_enhanced/src/game/battle/core/relic_causal.rs",
+         "core_enhanced/src/game/battle/core/relic_wedge.rs"
+@@ -624,6 +630,17 @@
+     "Final46 and003 actual; PC002 strictFAIL preserved and causal-empty successor actualPASS separately bound; R05 actual original101 peak-only warning and summary0 bound; no runtime evidence pending.",
+     "Preserve current16 vs explicit authoring_dev8hard vs historical development16/32 distinction.",
+     "Unmatched IDs, missing source paths or unresolved functional/performance evidence block freeze.",
+-    "Nonparticipant audit stays pending separately; author and collector never award completion."
+-  ]
++    "Nonparticipant audit stays pending separately; author and collector never award completion.",
++    "Correction changes only new sibling test preparation/helper additions, no production/config/runner bytes. Actual controls5 reuse from failed9 remains row-scoped; final46/PC/R05 nonimpact review does not change original failures or warning."
++  ],
++  "row_supplements": {
++    "PE-CRNV-08.2": {
++      "evidence": [
++        "audit_joint_corrosion",
++        "audit_existing_controls",
++        "audit_joint_provenance"
++      ],
++      "changed_predicate": "R09 suppression bypass subpredicate only: actual causal Some Corrosion versus normal published Kill/Death/AllyDeath, absent optional child plus unrelated released DOT. Original forged/stale generation/copy/authority/source-reinput predicates retain their existing explicit numeric/external/publication evidence."
++    }
++  }
+ }
+--- frozen001/PREDECESSOR_REVIEW.ko.md
++++ successor002/PREDECESSOR_REVIEW.ko.md
+@@ -48,3 +48,26 @@
+ 
+ 
+ R05 actual 연결: source02e185에서 원 실행282.992초/exit101, 원 summary2.601초/exit0이다. 양 workload는 각각21 latency/5 allocator이며 parity·repeatability=true다. event는5회 모두 operations44206/retained266102/peak271927로 원 cap 안이다. concurrent는5회 모두 operations370928/retained4196928로 U09와 동일하고 peak는 최대9703429(원9030188보다673241초과)이다. 원 concurrent guard=false 및 원101을 보존하고 기존 warning_concurrent_peak_only 분류와 other_hard_guard_failures=[]만 수용한다. p95 event16.732216ms/concurrent9.300247ms는 latency_gate_applicable=false 환경 관찰이며 성능 PASS gate가 아니다. Root가 기존 peak-only warning 범위로 실제 결과를 수용했다. 이는 PC의 별도 causal-empty 고정비용 successor와도 분리한다. 기능·성능 actual 결속은 모두 준비됐으며 앞으로 남는 단계는 Root 최종 currentness, 수집, 격리 복원 및 독립 완료 감사다.
++
++
++## U10 감사001 후속 결합증거 보강 — 실제4 결과 대기
++
++첫 target001과 독립 pass001의 Not Complete/High/open2는 원본으로 보존한다. U09 Complete/High/open0는 선행 closure이며 첫 U10 실패나 후속 완결 판정을 대체하지 않는다. 첫 joint9 실행은 기존5PASS/신규4fixtureFAIL로 보존한다. 신규4가 결합 runtime assertion에 도달하기 전 empty relic validation과 static obstacle 준비에서 멈췄으므로 제품 실패로 분류하지 않는다. 새 준비는 empty 역할을 게시하지 않고 실제 generated walkable 위치를 선택한다. 모든 oracle body는 byte 동일하며 기존5PASS만 명시 재사용한다.
++
++F01은 protection category의 actual basic/counter/active-subscriber 상호작용과 dead/missing source guard를 새 joint 증거로 보강한다. F02는 corrosion category의12행(A09-04, X04, PE-CRSA-12.2 포함)에 causal Some actual Corrosion 비교를 추가한다. PE-CRNV-08.2는 row supplement로 R09 suppression 하위술어만 추가하고 forged/stale/copy/authority/source-reinput의 기존 증거를 유지한다. 288 원문/ID/분류와 그 밖 unchanged component는 바꾸지 않는다.
++
++공개World에서 reachable한 Kill11, cost100, mandatory death/source suppress=true, 기존release된 살아있는 아군 DOT19×2/suppress=false, 후속 required wave를 본다. Death7/AllyDeath13은 정상World가 게시/장착/배치한 owner의 native side만 Opponent로 준비한 추가 consumer 비교다. 해당 native finite drain은 budget 또는 전체World scheduler 증거가 아니며 별도 public case가 host 통합을 맡는다. Corrosion dispatch=false가 optional child를 만들지 않는 경계에서 실제 suppressed source와 empty queue/cast를 검사하며 수동 derived child를 합성하지 않는다.
++
++후속 freeze는 원497 baseline을 유지하며 target001의 SOURCE_BEFORE/SOURCE_AFTER/RECORDS/REFERENCES 전체member를 먼저 검증·index한다. 이를 통해 바뀐 PLAN/NOTES 또는 이전 F001 refs의 역사적 bytes를 유지한다. first pass001의8개 감사파일은 명시 references로 보존한다. 제품/config/기존 helper body가 변하지 않아 최종46·PC·R05는 영향없음 범위로 재사용하며 원 strictPC실패 및 R05 peak warning을 그대로 둔다. 실제4가 성공한 것으로 미리 결속하지 않으며 collector/freeze는 저자가 실행하지 않는다.
++
++실제 tests002는3PASS/1FAIL/0ignored이며 전체101은 유지한다. basic/counter positive와 public/native Corrosion 두 case가 원수치/source/queue/wave/DOT oracle로 통과했다. 이3행만 partial receipt로 결속한다. 남은 guard는 speed100 data units가 adjacent10,000ms flight인 fixture단위오류여서100ms에 아직 hit하지 못했다. Root가 source단위/flight공식을 직접 확인했고 C003은 speed1e6/10으로 준비를 교정하며 actuallaunch0/expected10와 sameprojectilehit1을 강화한다. original10피해·100ms·dead/missing/no-counter/noecho 조건은 유지한다. guard실제성공 전 F01결합그룹은 계속 pending이다.
++
++C003 exact1은 application_deployed_unit Invariant로0PASS/1FAIL이다. raw에는branch표시가없어 dead부분PASS를따로주장하지않는다. World state.rs439–442는deployed map이참조하는unit제거를정상적으로거절한다. C004는dead경계Worldadvance100을유지하고,처음부터명시된native missing-source준비만original active.execution으로native timestamp step_by100을실행한다. finite-envelope shortcut이나deployment map수정/host검사완화는없다. actual launch/hit,피해10,100ms,반격·child0,causalSome원assert를유지하며모든검사뒤두branch완료marker를기록하도록보강한다. 실제remaining1은계속pending이고원001/002/003전체FAIL은보존한다.
++
++## C004 실제 결과와 최종 선택
++
++저자는 tests004 raw500B/receipt 및 Sol RESULT004 전문을 직접 읽었다. source76aba953d84c644d3659b553e50f99f342c5826c709952c1fe808984ebfc340d의533파일이 전후 동일하고 exact1 PASS/0FAIL/0ignored다. raw에는 missing=false boundary=World 및 missing=true boundary=native_timestamp 완료 marker가 각각 한 번 있으며 각 branch가 실제 release/impact, original10, additional0, hit1 검사를 끝낸 뒤 기록된다. C003의 미표시 prefix는 여전히 PASS 증거로 취급하지 않는다.
++
++최종 유효 named9는001의기존5 +002의신규3 +004의신규1이다. 한번에 fresh9을통과한것으로표기하지않는다. 001/002/003 전체실패와각source/archive/bundle을그대로보존한다. 공개World와명시native준비 경계를 COVERAGE/selection scope에 구분한다. F01positive와guard는각각원source에결속한composite이며 F02public/native두case도원002의부분PASS다. Actual provenance의1+3+5와두marker를별도결속한다.
++
++SOURCE_NONIMPACT_001의directhash/byte검사는동결runtime532중530파일이그대로임을확인했다. 기존수정은cfg(test) helper추가파일과module등록파일2뿐이며새siblingtest1이추가됐다. 원native helper body 및World공통helper전체가byte동일하고제품/Cargo/config/content/기존tools·fixtures·rosters는불변이다. 따라서최종46/PC/R05와001/002의명시PASS를영향없는범위로재사용한다. 원PC strictFAIL+명시fixed8예외와R05 peak-only warning/한도는바꾸지않는다. 저자도구실행0이며새수집/복원은Sol,최종판정은독립whole-Goal감사에게남는다.
+--- frozen001/ADAPTATION.json
++++ successor002/ADAPTATION.json
+@@ -1,16 +1,16 @@
+ {
+-  "schema": "U10_FINALIZATION_ADAPTATION_V1",
+-  "status": "author_preparation_only_no_execution",
++  "schema": "U10_FINALIZATION_SUCCESSOR_ADAPTATION_V1",
++  "status": "author_actual_bindings_ready_for_root_review",
+   "reused_tools": [
+     {
+-      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/finalization001/collect_finalization.py",
+-      "bytes": 19976,
+-      "sha256": "291ea2c3ced06324d675c39a900db70192561d945e6f6e54b5f7ca7b659dd108"
++      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization001/collect_finalization.py",
++      "sha256": "6def75011b6bd2a55d615d5e79bdf6b6222f49bf52c9af273e083abce9c5ee1b",
++      "bytes": 21802
+     },
+     {
+-      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/finalization001/freeze_target.py",
+-      "bytes": 21018,
+-      "sha256": "4553433781d88fc3cb62ba7493c21f1a1ac76ce487c7efe6504a04c89186869a"
++      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization001/freeze_target.py",
++      "sha256": "554959468b680b81a3b21b97cf7b89a6a7d16b977f960d3032940e89a36aa37a",
++      "bytes": 22875
+     }
+   ],
+   "mechanics_preserved": [
+@@ -20,17 +20,17 @@
+     "fresh output/target, parent logger ban, no workspace restore"
+   ],
+   "schema_adaptations": [
+-    "latest U09 rows254+sentences34 instead old U08 conditions/r06 arrays",
+-    "28literal/19actual integration/10dimensions/3nodes instead34/17/10/3",
+-    "before495+selected2 instead438+3",
+-    "current038 closure target object and actual8files/nonparticipation names",
+-    "blob-only historical archive support and exact old-member resolution when live source differs"
++    "Retain F001 collector/parser/source/receipt oracles; optional exact row supplement unions evidence and reports its narrow changed predicate without altering 288 original IDs/literals.",
++    "Retain U09 baseline495+2=497 and current source union restoration mechanics.",
++    "Index old U10-001 four full archives in addition to inherited/U09 archives before resolving historical refs.",
++    "Preserve old U10 pass001 eight audit artifacts as Not Complete/High/open2; keep U09 Complete/High/open0 as a separate role.",
++    "Add F01/F02 joint pending keys and explicit actual five PASS controls from original failed9; preserve all old raw/failures/warning."
+   ],
+-  "execution_inputs_unchanged": "Only finalization001 files authored; T source/config/tests/fixtures/roster/performance/external inputs stay writer0.",
+-  "actual_available": "final46 actual46PASS; external003 actual retained2 closed with current default16 PASS and legacy8 original101; previous bounded U10 rows and Join002/external002 costs scoped reuse. PC002 gameplay PASS, unchanged strict cost FAIL preserved, explicit causal-empty successor001 actual PASS with43 rejected negative controls. R05 original101 concurrent peak-only; inherited summary0 with parity/repeatability and all other guards unchanged. No runtime evidence remains unbound.",
++  "execution_inputs_unchanged": "Only F002 paths modified after Sol C002 input freeze. Existing scanner roots/additional exact files and correction002 referenced files exclude F002; source/config/tests/C001/C002 unchanged.",
++  "actual_available": "Final46 and all original scoped U10 evidence remain unchanged. PC original strictFAIL plus accepted fixed empty-state cost successor and R05 original peak-only warning retained. Correction effective9 named PASS rows=tests001 five existing controls + tests002 three new joint cases + tests004 one guard. Original failed001/002/003 parents/raw/source archives and failed first independent audit remain immutable. Actual004 source76aba953/533 is unchanged; both World-dead/native-missing raw markers present; no remaining functional/performance binding pending.",
+   "still_pending": [
+-    "Root entire currentness review",
+-    "isolated freeze/restore",
+-    "independent completion"
++    "Root final currentness review and four current document bindings",
++    "Sol collector and isolated baseline497→current freeze/restore",
++    "Nonparticipant whole-Goal successor audit"
+   ]
+ }
+--- frozen001/RUNPLAN.json
++++ successor002/RUNPLAN.json
+@@ -1,25 +1,25 @@
+ {
+   "schema": "U10_FINALIZATION_MECHANICAL_RUNPLAN_V1",
+-  "status": "prepared_unexecuted_root_review_pending",
++  "status": "actual_runtime_complete_root_document_review_pending",
+   "executor": "Assigned sole Sol only; author never executes collector/freeze/restore/tests/measurement",
+   "sequence": [
+-    "003 retained2 and PC002 plus causal-empty successor actuals available; R05 original101 peak-only summary0 available; preserve original strict PC002 failure and all raw receipts.",
+-    "Root actual source/currentness/cost review; bind exact successful results with LATE_BINDINGS.json only after receipt exists.",
+-    "Freeze inputs; select exact current scanner files/sha256 manifest from closed receipt; save as CURRENT_SOURCE.json without inventing success.",
+-    "Run collector in fresh generated001; inspect exact outputs and pending list.",
+-    "Root final document/currentness handoff, all writers and runners0; run freeze directly with raw capture outside goal tree.",
+-    "Nonparticipant auditor receives exact frozen MANIFEST; never mutate frozen target after audit."
++    "Preserve first U10 frozen target/Not Complete High open2 audit and whole failed joint001/002/003. Actual selected9=001five+002three+004one; no remaining joint runtime pending.",
++    "Actual LATE_BINDINGS selects exact bounded PASS rows and both branch markers/provenance; preserve original sources and whole failed parents.",
++    "Root product/source/helper nonimpact and full currentness review; retain final46/PC/R05 scoped evidence without rerun for test-only edits.",
++    "Select exact current scanner identity from closed receipt as CURRENT_SOURCE.json only after writers/runners0.",
++    "Sol collector to fresh F002/generated001; Root reads outputs and current documents; freeze unwrapped to fresh u10_current_002 with outside-goal raw.",
++    "Nonparticipant whole-Goal re-audit of exact successor MANIFEST. No historical audit is rewritten."
+   ],
+   "command": [
+     "python3",
+     "-B",
+-    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization001/collect_finalization.py",
++    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/collect_finalization.py",
+     "--source-manifest",
+-    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization001/CURRENT_SOURCE.json",
++    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/CURRENT_SOURCE.json",
+     "--late-bindings",
+-    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization001/LATE_BINDINGS.json",
++    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/LATE_BINDINGS.json",
+     "--output",
+-    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization001/generated001"
++    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/generated001"
+   ],
+   "inputs": [
+     "EVIDENCE_INPUT.json",
+@@ -30,7 +30,7 @@
+     "CURRENT_SOURCE.json exact current files/sha256",
+     "LATE_BINDINGS.json actual remaining results"
+   ],
+-  "output_contract": "Exact288 predecessor IDs/literals;28 exact policy sentences;19 verbatim phase-plan integration rows with pointers;10dimensions;3nodes. Original failed parent receipts remain failed. No completion awarded.",
++  "output_contract": "Exact288 predecessor IDs/literals;28 exact policy sentences;19 verbatim phase-plan integration rows with pointers;10dimensions;3nodes. Original failed parent receipts remain failed. No completion awarded. Exact row-specific suppression supplement for PE-CRNV-08.2; other category/source literal authority unchanged. New joint9 are selected1+3+5 with two distinct execution scopes for dead World and missing native scheduler.",
+   "on_failure": "Preserve raw/partial directory, report exact parsing/path/hash/status gap; routine adapter correction only in safe author window and fresh output label; no oracle changes.",
+   "late_binding_schema": {
+     "receipts": [],
+--- frozen001/FREEZE_RUNPLAN.json
++++ successor002/FREEZE_RUNPLAN.json
+@@ -1,19 +1,19 @@
+ {
+   "schema": "U10_THIN_FREEZE_ADAPTER_RUNPLAN_V1",
+-  "status": "prepared_unexecuted_root_review_pending",
++  "status": "actual_runtime_complete_root_document_review_pending",
+   "executor": "Sole Sol; author does not execute",
+   "command": [
+     "python3",
+     "-B",
+-    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization001/freeze_target.py",
++    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/freeze_target.py",
+     "--source-manifest",
+-    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization001/CURRENT_SOURCE.json",
++    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/CURRENT_SOURCE.json",
+     "--generated",
+-    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization001/generated001",
++    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/generated001",
+     "--handoff",
+-    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization001/HANDOFF_001.json",
++    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/HANDOFF_001.json",
+     "--target",
+-    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/target/u10_current_001"
++    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/target/u10_current_002"
+   ],
+   "execution_mode": "Direct unwrapped; capture stdout/stderr/exit outside U10 goal tree. Parent run.py logger is rejected.",
+   "handoff_schema": {
+@@ -29,8 +29,8 @@
+   "before_scope": "BASELINE_001 source_currentness prior_manifest source_files495/reused SOURCE_AFTER exact members; P2G20 blob-bound archive2 selected canonical preimages independently match old expected size/hash. Total497. Existing authoring_dev profile is already in before set, not newly created.",
+   "after_scope": "Union497 preimage paths with exact current T/run.py scanner membership; current canonical docs captured even when outside runtime identity.",
+   "prior_closure": "U09 current038 pass002 actual eight filenames. target.manifest binds prior MANIFEST; product identity492 and restoration495 distinguished; both actual nonparticipation fields required.",
+-  "historical_references": "Inherited blob-only archives verified by size/hash only. Independent exact-member manifests validated against full regular unique archive membership; historical expected refs resolved from matching verified member bytes if workspace now differs. HISTORICAL_REFERENCES.json binds every such resolution without copying two versions to one path.",
+-  "records_scope": "All U10 goal history except target/post_audit/__pycache__; archives external by size/hash, never recursive embedding. Includes original failed raw receipts.",
++  "historical_references": "Inherited blob-only archives verified by size/hash only. Independent exact-member manifests validated against full regular unique archive membership; historical expected refs resolved from matching verified member bytes if workspace now differs. HISTORICAL_REFERENCES.json binds every such resolution without copying two versions to one path. Successor explicitly verifies/indexes all four old U10-001 archives and preserves eight pass001 audit artifacts with Not Complete/High/open2 assertions, independently of required U09 Complete/High/open0 closure.",
++  "records_scope": "All U10 goal history except target/post_audit/__pycache__; archives external by size/hash, never recursive embedding. Includes original failed raw receipts. Original F001/C001/C002 materials and failed joint raw retained; post_audit001 eight files are explicit REFERENCES.",
+   "oracles": [
+     "Exact unique regular archive member paths/size/SHA256; no links/extras/missing for full manifests.",
+     "Safe selected2 P2G20 preimages verify expected old bytes; no claim to an independent whole47-member manifest.",

@@ -1,0 +1,488 @@
+{
+  "schema": "U09_PREDECESSOR_SPLIT_BINDINGS_V1",
+  "review": "F01_CURRENTNESS_REVIEW.ko.md",
+  "basis": "Root actually reviewed original row meanings, baseline438/current source and shared branches. These are split semantic bindings, not a claim to rerun every original selector. The collector retains each original row by exact pointer+digest, requirement literal, owner and original evidence reference. F01 successor appends only the selected-reach producer/consumer boundary to affected categories. Category evidence is split support, not a claim every original row was rerun or each historical predicate changed. GEX10 adds only the accepted-source/effective-skill target lifecycle and actual Employee work boundary. Shared category additions remain split support, not fresh PASS for every historical row. Root currentness review explicitly distinguishes original PC/R05 workloads from Employee uses.",
+  "categories": {
+    "boss": {
+      "unchanged": "Boss-specific stationary actor/direction/state selection/autonomous authority and existing opcode validation remain in their reviewed original branches.",
+      "changed": "Shared Flow release/settlement/source/cancellation/clone owners.",
+      "paths": [
+        "core_enhanced/src/game/ability/flow.rs",
+        "core_enhanced/src/game/battle/core/skill_runtime/flow.rs",
+        "core_enhanced/src/game/battle/runtime_facts.rs"
+      ],
+      "evidence": [
+        "flow",
+        "flow_rollback",
+        "pending_owner",
+        "current_impact_69",
+        "pc_current",
+        "r05_current"
+      ]
+    },
+    "corrosion": {
+      "unchanged": "Corrosion start/suppression/forced-pause clock/Breakdown and result policy predicates were not replaced. Reuse their original nonzero evidence only for those named predicates.",
+      "changed": "Shared damage/protection/source end and rollback; current69 is not a dedicated corrosion rerun.",
+      "paths": [
+        "core_enhanced/src/game/battle/core/damage_runtime.rs",
+        "core_enhanced/src/game/battle/core/skill_runtime/flow.rs",
+        "core_enhanced/src/game/world/application.rs"
+      ],
+      "evidence": [
+        "personal",
+        "flow_rollback",
+        "current_impact_69",
+        "pc_current"
+      ]
+    },
+    "flow": {
+      "unchanged": "Original static finite Flow support/errors and Compare action aggregate retain original branches; no side_branches yields original cancellation path.",
+      "changed": "Scoped EffectCompare, finite side owners, settlement/withdrawal, shared wait/clone/cost. GEX10: Accepted action retains the effective target contract across original action dispatch and generated finite continuation; current owner removal cannot cause canonical fallback. Ordinary target/CC cancellations remain exercised.",
+      "paths": [
+        "core_enhanced/src/game/battle/core/sim.rs",
+        "core_enhanced/src/game/ability/flow.rs",
+        "core_enhanced/src/game/battle/core/skill_runtime/flow.rs",
+        "core_enhanced/src/game/battle/runtime_facts.rs",
+        "core_enhanced/src/game/battle/core/resonance_runtime.rs"
+      ],
+      "evidence": [
+        "post_lethal_impact",
+        "flow",
+        "flow_rollback",
+        "pending_owner",
+        "current_impact_69",
+        "pc_current",
+        "gex10_selected8"
+      ]
+    },
+    "support": {
+      "unchanged": "Legacy modifier/base/overlay schema and actor-owned reinput authority remain; regular_aura_count0 takes original aura calculation.",
+      "changed": "RegularOnly occurrence/contributor capture, fixed recipient/channel and source-owner consumers. F01: actual equal-reach original Self channel plus generated selected personal effect retains admission2m, fixed recipient, out/back and terminal no-retarget; retained control/cost cases supplement it. GEX10: Finite selected personal child and original Self fixed channel both execute; current owner removal preserves accepted PlayerUnit plan,1ms release,2m geometry,out/back and terminal no-retarget.",
+      "paths": [
+        "core_enhanced/src/game/battle/core/damage_runtime.rs",
+        "core_enhanced/src/game/battle/core/sustained.rs",
+        "core_enhanced/src/game/battle/core/basic_attack.rs",
+        "core_enhanced/src/game/relic/structural/execution.rs",
+        "core_enhanced/src/game/battle/core/resonance_runtime.rs"
+      ],
+      "evidence": [
+        "support_corrupt",
+        "selected_support_world",
+        "literal_gap_extensions",
+        "current_impact_69",
+        "external_support",
+        "f01_selected9",
+        "gex10_selected8"
+      ]
+    },
+    "protection": {
+      "unchanged": "Control/parry/floor/death-prevent-specific predicates and legacy recharge authority remain unchanged; invulnerability extension is prepared native state, not new public parry validation.",
+      "changed": "Shared damage mitigation/actual HpLost, personal-before-shared priority, HealthCost, source/recipient reclamation. F01: original/generated and generated/generated personal selection contributions reject unequal1m/4m versus2m; legal equal2m reaches the selected personal200 consumer. Other protection predicates keep their previous evidence. GEX10: Generated personal200 reaches only the selected recipient while original fixed support remains valid; actual footprint empty/invulnerable/lethal/nonlethal and ordinary target cancellation retain their scoped semantics.",
+      "paths": [
+        "core_enhanced/src/game/battle/core/sustained.rs",
+        "core_enhanced/src/game/battle/core/damage_runtime.rs",
+        "core_enhanced/src/game/battle/core/target_usefulness.rs",
+        "core_enhanced/src/game/relic/structural/execution.rs",
+        "core_enhanced/src/game/battle/core/resonance_runtime.rs"
+      ],
+      "evidence": [
+        "personal",
+        "flow",
+        "literal_gap_extensions",
+        "current_impact_69",
+        "external_area",
+        "external_single",
+        "external_monk",
+        "f01_selected9",
+        "gex10_selected8"
+      ]
+    },
+    "value_kernel": {
+      "unchanged": "Pure typed compiler/evaluator, checked integer rounding/grouping, stat/growth and resource binding semantics are unchanged. Original catalog wrapper passes false/None and no recipe sites for the legacy branch.",
+      "changed": "Where the compound row also consumes runtime capture/basic speed/amount/admission, use current source and cost evidence; no blanket exact old owner-work equality.",
+      "paths": [
+        "core_enhanced/src/game/value_expr/catalog.rs",
+        "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+        "core_enhanced/src/game/battle/runtime_facts.rs",
+        "core_enhanced/src/authoring/amount_query.rs"
+      ],
+      "evidence": [
+        "legacy_amount",
+        "flow",
+        "personal",
+        "support_corrupt",
+        "current_impact_69",
+        "pc_current"
+      ]
+    },
+    "value_runtime": {
+      "unchanged": "Malformed syntax, original unsupported opcode and save envelope themselves retain original implementation and literal evidence.",
+      "changed": "Snapshot/Live owner capture, settled result source, query projection, rollback and cumulative clone/admission. GEX10: Accepted source captures the effective owner through current-owner removal and sameSkillId actor separation. Existing pending personal825 and two-owner immediate/delayed consumers are freshly checked; no new expression parser or numeric matrix claim.",
+      "paths": [
+        "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+        "core_enhanced/src/game/battle/runtime_facts.rs",
+        "core_enhanced/src/authoring/amount_query.rs",
+        "core_enhanced/src/game/world/application.rs",
+        "core_enhanced/src/game/battle/core/resonance_runtime.rs"
+      ],
+      "evidence": [
+        "flow",
+        "flow_rollback",
+        "personal",
+        "legacy_amount",
+        "external_core",
+        "cli_public",
+        "publication_adversaries",
+        "current_impact_69",
+        "pc_current",
+        "gex10_selected8"
+      ]
+    },
+    "fragment_assets": {
+      "unchanged": "Fragment UUID/material/dust/unlock/backbinding and grant/save codec ledger semantics remain. skill_fragment_data only adds capacity accounting.",
+      "changed": "Equip/form/transfer/Continue structural preflight and current owner publication; original ledger and changed caller are separate.",
+      "paths": [
+        "core_enhanced/src/game/world/application.rs",
+        "core_enhanced/src/game/world/relic_runtime.rs",
+        "core_enhanced/src/game/relic/structural.rs"
+      ],
+      "evidence": [
+        "storage_bindings",
+        "selected_support_world",
+        "external_core",
+        "current_impact_69",
+        "publication_forms"
+      ]
+    },
+    "configuration": {
+      "unchanged": "Runtime safety trust boundary/parser/cache/engine ceiling/embedded default/native limits and profile transport remain unchanged.",
+      "changed": "Explicit development authoring preset and effective identity, new structural compiler budgets/cancellation and nonempty equipped-roster scan costs. F01: normal builder rejects mixed generated selection-reach conflicts before publishing a candidate generation; the valid held catalog remains original. Runtime-profile trust/parser/default predicates are unchanged.",
+      "paths": [
+        "config/runtime_safety_authoring_dev.ron",
+        "core_enhanced/src/game/relic/structural/publication.rs",
+        "core_enhanced/src/game/world/relic_runtime.rs",
+        "core_enhanced/src/game/relic/structural/execution.rs"
+      ],
+      "evidence": [
+        "authoring_preset",
+        "publication_adversaries",
+        "owner_install",
+        "flow_rollback",
+        "personal",
+        "current_impact_69",
+        "publication_measurement",
+        "pc_current",
+        "r05_current",
+        "f01_selected9"
+      ]
+    },
+    "observation": {
+      "unchanged": "Exporter/Grafana/bounded registry/RSS sampler/heap observer/session ownership and transport are unchanged and reuse original evidence for their own invariants.",
+      "changed": "Projection/retained cost of new Core owners and structural amount observations; distinguish native admitted extent, allocator retained bytes and RSS.",
+      "paths": [
+        "core_enhanced/src/game/battle/runtime_facts.rs",
+        "core_enhanced/src/authoring/amount_query.rs",
+        "core_enhanced/src/game/relic/structural/storage.rs"
+      ],
+      "evidence": [
+        "personal",
+        "external_core",
+        "legacy_amount",
+        "cli_public",
+        "current_impact_69",
+        "pc_current",
+        "r05_current"
+      ]
+    },
+    "fault": {
+      "unchanged": "First-fault routing/gates/postcommit transport/other-player isolation and host fault implementation remain unchanged.",
+      "changed": "Actual Core tick/manual withdraw/clone/owner faults consumed by host; current4 server cases supplement original routing breadth. GEX10: Actual Employee native consumption-tick WorkLimit at one-short326254 restores all accepted transaction roots and exact326255 retry matches clean. Original host routing/isolation evidence remains separate.",
+      "paths": [
+        "core_enhanced/src/game/world/application.rs",
+        "core_enhanced/src/game/battle/core/skill_runtime/flow.rs",
+        "core_enhanced/src/game/battle/runtime_facts.rs",
+        "core_enhanced/src/game/battle/core/resonance_runtime.rs"
+      ],
+      "evidence": [
+        "post_lethal_impact",
+        "flow_rollback",
+        "personal",
+        "publication_adversaries",
+        "current_impact_69",
+        "gex10_selected8"
+      ]
+    },
+    "persistence": {
+      "unchanged": "Result/reward/load-count/intent/revision/codec/unsupported-original-protection implementations and original host writer evidence remain.",
+      "changed": "Continue/checkpoint/retreat structural preflight reconstructs from current copy/form/variant/generation; new battle plan is not saved authority.",
+      "paths": [
+        "core_enhanced/src/game/world/application.rs",
+        "core_enhanced/src/game/world/relic_runtime.rs",
+        "core_enhanced/src/game/battle/runtime_facts.rs"
+      ],
+      "evidence": [
+        "selected_support_world",
+        "external_core",
+        "personal",
+        "current_impact_69"
+      ]
+    },
+    "resonance": {
+      "unchanged": "Resonance policy/clocks/recharge/silence rules and original target format remain unchanged.",
+      "changed": "Selected usefulness and accepted/released owner lifetimes, employee withdrawal and structural side Flow. F01: equal-reach World focus/activation and selected recipient qualification are exercised; original charge, target lifetime and resonance policy retain prior scoped evidence. GEX10: Continuation admission and step-count now resolve the immutable accepted action source and bound skill. Ordinary direct withdrawal, manual invalid target and hardCC still cancel without refund; selected effective PlayerUnit continuation survives canonical Self/current-owner removal. Original broader clock/recharge predicates are not all rerun.",
+      "paths": [
+        "core_enhanced/src/game/battle/core/sim.rs",
+        "core_enhanced/src/game/battle/core/target_usefulness.rs",
+        "core_enhanced/src/game/battle/core/skill_runtime/flow.rs",
+        "core_enhanced/src/game/world/application.rs",
+        "core_enhanced/src/game/relic/structural/execution.rs",
+        "core_enhanced/src/game/battle/core/resonance_runtime.rs"
+      ],
+      "evidence": [
+        "post_lethal_impact",
+        "selected_support_world",
+        "pending_owner",
+        "flow_rollback",
+        "literal_gap_extensions",
+        "current_impact_69",
+        "f01_selected9",
+        "gex10_selected8"
+      ]
+    },
+    "tactics": {
+      "unchanged": "TP/deployment cap/physical movement/relocation/work/Rest/blocking geometry/settings playback policy and algorithms retain original branches and evidence.",
+      "changed": "New personal/fixed selection reach and recipient identity, shared target/source-withdraw/clone/cost consumers. The new recipe never globally replaces physical geometry. F01: shared selected reach and fixed connection geometry retain2m under equal composition. Physical movement/deployment geometry and broader tactics predicates are not reexecuted by this selection. GEX10: Accepted selected target remains bound through multi-action continuation and recipient withdrawal becomes terminal without another ally inheriting the connection. Physical movement/deployment algorithms remain original.",
+      "paths": [
+        "core_enhanced/src/game/battle/core/target_usefulness.rs",
+        "core_enhanced/src/game/battle/core/sustained.rs",
+        "core_enhanced/src/game/world/application.rs",
+        "core_enhanced/src/game/relic/structural/execution.rs",
+        "core_enhanced/src/game/battle/core/resonance_runtime.rs"
+      ],
+      "evidence": [
+        "personal",
+        "selected_support_world",
+        "literal_gap_extensions",
+        "current_impact_69",
+        "pc_current",
+        "f01_selected9",
+        "gex10_selected8"
+      ]
+    },
+    "objects": {
+      "unchanged": "Object registry/spawn/pool/evolution/TTL/wave/reward/wall and parent/object-specific lifetime implementation unchanged. Structural Grant closed union does not add CreateObject.",
+      "changed": "Object consumers still pass through shared damage/protection/source/clone and resource admission; original object policy evidence is combined with current common consumer/cost evidence.",
+      "paths": [
+        "core_enhanced/src/game/battle/core/damage_runtime.rs",
+        "core_enhanced/src/game/battle/runtime_facts.rs",
+        "core_enhanced/src/game/battle/core/sustained.rs"
+      ],
+      "evidence": [
+        "flow",
+        "personal",
+        "current_impact_69",
+        "pc_current",
+        "r05_current"
+      ]
+    },
+    "relic_assets": {
+      "unchanged": "Relic UUID/slot ownership/catalyst/dust/Event rights/grant/removal/save ledger semantics unchanged.",
+      "changed": "Shared structural preflight/owner scanning, real corruption/form/current configuration/restore; equipped numeric-only scan costs are assessed currently. F01: candidate-generation refusal preserves a valid held catalog, live loadout/resources and owner. Invalid conflicting content cannot reach an ordinary equip/form command; no artificial invalid catalog is injected. GEX10: Removing only current effective owner after acceptance does not replace the retained action plan. This is a native lifetime seam following normal World acceptance, not a new public removal/ledger command claim.",
+      "paths": [
+        "core_enhanced/src/game/world/application.rs",
+        "core_enhanced/src/game/world/relic_runtime.rs",
+        "core_enhanced/src/game/relic/structural.rs",
+        "core_enhanced/src/game/relic/structural/execution.rs",
+        "core_enhanced/src/game/battle/core/resonance_runtime.rs"
+      ],
+      "evidence": [
+        "support_corrupt",
+        "selected_support_world",
+        "external_core",
+        "storage_bindings",
+        "current_impact_69",
+        "pc_current",
+        "f01_selected9",
+        "gex10_selected8"
+      ]
+    },
+    "relic_numeric": {
+      "unchanged": "Original numeric selector/flat/percent/immutable-definition and unknown-effect contract retain their existing branch; new rules are opt-in support.",
+      "changed": "Effective source/capture/query order, publication context and actual shared consumers; numeric-only no fallback/double composition. F01: structural generated selection contributions and normal lowering refuse conflicting reach consistently. Original numeric-only branch is reused by reviewed nonimpact, not a new numeric matrix run. GEX10: Two sameSkillId actors retain independent effective owner/copy/query graphs and immediate/delayed outcomes. Original numeric-only and broader numeric matrix remain reviewed scoped reuse.",
+      "paths": [
+        "core_enhanced/src/game/battle/runtime_facts.rs",
+        "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
+        "core_enhanced/src/authoring/amount_query.rs",
+        "core_enhanced/src/game/relic/structural/publication.rs",
+        "core_enhanced/src/game/relic/structural/execution.rs",
+        "core_enhanced/src/game/battle/core/resonance_runtime.rs"
+      ],
+      "evidence": [
+        "legacy_amount",
+        "external_core",
+        "publication_adversaries",
+        "publication_forms",
+        "publication_variants",
+        "selected_support_world",
+        "current_impact_69",
+        "pc_current",
+        "f01_selected9",
+        "gex10_selected8"
+      ]
+    },
+    "budget": {
+      "unchanged": "Engine ceilings/ledger refusal semantics and original hard error classifications remain; historical exact costs are retained as historical values.",
+      "changed": "New source/plan/compiler/cache retained capacity, cumulative work, clone and cancellation costs require exact/one-short/retry plus PC/R05 raw comparison. F01: retained publication exact-work/retained/cancel/retry control and fixed authored-cost control are selected. The local reach equality check adds no allocation or meter site; raw PC/R05 remain historical scoped measurements subject to actual product-delta review. GEX10: Effective accepted skill steps are metered in target lifecycle. Native exact326255/one-short326254 full rollback and clean retry are current; old326456 remains historical and aggregate−201 is not assigned to a particular site. Settled/cancelled Employee uses lacking accepted source no longer add the old conservative canonical-step debit; unit/cast floor remains. PC TestFixture/R05 Abnormality bypass this Employee path, so their original measured evidence is scoped reuse, not product-wide unchanged cost.",
+      "paths": [
+        "core_enhanced/src/game/battle/core/sim.rs",
+        "core_enhanced/src/game/relic/structural/storage.rs",
+        "core_enhanced/src/game/relic/structural/publication.rs",
+        "core_enhanced/src/game/battle/runtime_facts.rs",
+        "core_enhanced/src/game/world/relic_runtime.rs",
+        "core_enhanced/src/game/relic/structural/execution.rs",
+        "core_enhanced/src/game/battle/core/resonance_runtime.rs"
+      ],
+      "evidence": [
+        "literal_gap_extensions",
+        "post_lethal_impact",
+        "owner_install",
+        "storage_bindings",
+        "pending_owner",
+        "flow_rollback",
+        "personal",
+        "publication_adversaries",
+        "current_impact_69",
+        "pc_current",
+        "r05_current",
+        "f01_selected9",
+        "gex10_selected8"
+      ]
+    },
+    "completion": {
+      "unchanged": "Original goal closure, exact archived evidence, prior audit and historical limitations are preserved; they establish predecessor completion only.",
+      "changed": "U09 selected evidence/currentness/223+31 impact, fixed target restoration and nonparticipant whole-goal audit must close independently under current user-directed impact-based execution scope. F01: retain failed target029/audit NotComplete-High-open1, bind actual focused correction evidence, then require a fresh exact restore and nonparticipant whole-Goal audit. No current completion verdict is prefilled. GEX10: Preserve additional failed033/034 and all prior timing/fixture histories. Bind disjoint033 success7 plus actual0368 with source2fdaa433, then fresh restore and nonparticipant entire-Goal review; audit029 remains NotComplete/High/open1 historical.",
+      "paths": [
+        "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/PLAN.md",
+        "core_enhanced/src/game/relic/structural/execution.rs",
+        "core_enhanced/src/game/battle/core/resonance_runtime.rs"
+      ],
+      "evidence": [
+        "post_lethal_impact",
+        "current_impact_69",
+        "pc_current",
+        "r05_current",
+        "frozen_restore",
+        "independent_completion",
+        "f01_selected9",
+        "gex10_selected8"
+      ]
+    }
+  },
+  "ordered_id_rules": [
+    {
+      "pattern": "^(X09|X10|IVA-CAVER-21|PE-CRSO-12|PE-CRFI-12|PE-CRSL-14|PE-CBST-20|PE-CIOB-(19|20)|PE-CMRP-(09|10)|PE-CRNV-16[.])",
+      "category": "completion"
+    },
+    {
+      "pattern": "^(X08|PE-CRNV-15[.])",
+      "category": "budget"
+    },
+    {
+      "pattern": "^(A08-|X01$)",
+      "category": "boss"
+    },
+    {
+      "pattern": "^(A09-|X04$)",
+      "category": "corrosion"
+    },
+    {
+      "pattern": "^(A10-|X06$)",
+      "category": "flow"
+    },
+    {
+      "pattern": "^(A11-|X02$)",
+      "category": "support"
+    },
+    {
+      "pattern": "^(A12-|X03$)",
+      "category": "protection"
+    },
+    {
+      "pattern": "^IVA-CAVER-(01|02|03|04|07|08|09|10|11|12|16)$",
+      "category": "value_kernel"
+    },
+    {
+      "pattern": "^IVA-CAVER-",
+      "category": "value_runtime"
+    },
+    {
+      "pattern": "^F[0-9]",
+      "category": "fragment_assets"
+    },
+    {
+      "pattern": "^(PE-CRSO-(01|02|03|04|05|06|07)$|PE-CMRP-(01|02|03|06)$)",
+      "category": "configuration"
+    },
+    {
+      "pattern": "^(PE-CRSO-|PE-CMRP-|X07$)",
+      "category": "observation"
+    },
+    {
+      "pattern": "^PE-CRFI-",
+      "category": "fault"
+    },
+    {
+      "pattern": "^(PE-CRRP-|X05$)",
+      "category": "persistence"
+    },
+    {
+      "pattern": "^PE-CRSL-",
+      "category": "resonance"
+    },
+    {
+      "pattern": "^PE-CBST-",
+      "category": "tactics"
+    },
+    {
+      "pattern": "^PE-CIOB-",
+      "category": "objects"
+    },
+    {
+      "pattern": "^PE-CRNV-(01|02|03|04|09|10|11|12|13)[.]",
+      "category": "relic_assets"
+    },
+    {
+      "pattern": "^PE-CRNV-",
+      "category": "relic_numeric"
+    },
+    {
+      "pattern": "^PER-CAVER-E(01|03|04|06)-",
+      "category": "value_kernel"
+    },
+    {
+      "pattern": "^PER-CAVER-E",
+      "category": "value_runtime"
+    }
+  ],
+  "mandatory_per_row_output": [
+    "id",
+    "original_literal",
+    "original_owner",
+    "original_ref_with_pointer_and_digest",
+    "category",
+    "unchanged_component_and_original_evidence_ref",
+    "changed_component_paths",
+    "current_evidence_refs",
+    "original_exact_selectors_reexecuted_if_any",
+    "pending_or_unresolved_evidence"
+  ],
+  "limits": [
+    "Do not expand unchanged-component review into a claim every old test is current.",
+    "Do not hide a new strict PC cost failure by rebaselining or changing old oracles.",
+    "Compound runtime/kernel rows keep both sides; no whole-row pure reuse inferred from family alone.",
+    "Any unmatched ID, missing required source/ref, or still-unbound current evidence remains an explicit gap.",
+    "F01 per-category additions identify only the shared selection-reach boundary; preserve original row literals, old evidence and unaffected component reasons. An affected category does not turn all of its rows into freshly executed PASS claims.",
+    "GEX10 successor evidence comprises actual0368 plus scoped0337 reuse. Preserve original source receipts, failed enclosing runs and literal predecessor rows; no fresh entire-category, full-suite or performance rerun is implied.",
+    "Employee lifecycle work may differ after effective step resolution or accepted-source cleanup; actual native boundary is current. PC TestFixture/R05 Abnormality do not reach the new Employee path and retain only their original measurement status and limitations."
+  ]
+}

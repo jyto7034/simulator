@@ -1,0 +1,182 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CBRR-001",
+        "Content Digest": "sha256:08495a1c4745d09d4c6aef52125aa114eb0730b2ce795c2878fac57e615a0743"
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CBRR-004",
+          "Content Digest": "sha256:710bc2b546868ef4175c934a7cfa13857af20901695814408d0984e5ae5b5da1"
+        },
+        "Review Batch Ref": {
+          "Artifact Type": "Review Batch",
+          "Artifact ID": "RB-CBRR-001",
+          "Content Digest": "sha256:0ed2368bede0dbeab05ba4f6d57cd3e4f202b8f691127837f0ec963876d42185"
+        },
+        "Predecessor Freeze": null,
+        "Ordered code_reviewed Policy Element Revision Ref Set": [
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CBRR-AUTHOR-REVIEWED-001",
+            "Content Digest": "sha256:6a881073d670e3d9ec964408cabccab96ab2cc01ddef44fac60f98443a5ee222"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CBRR-CHOICE-REVIEWED-001",
+            "Content Digest": "sha256:35122cdc13a809df7e8b8ab00525ed5b23c2f4766943e415ab8de1c686591863"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CBRR-DUST-REVIEWED-001",
+            "Content Digest": "sha256:9b92d2d682a8089e013aea10f97da6054bd07d8486ac6ba51eb6427afcadd75a"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CBRR-FUSION-REVIEWED-001",
+            "Content Digest": "sha256:8261fdb6a895fa52b8666136ffc055d60e912a825990c6143a80545271e64531"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CBRR-STORE-REVIEWED-001",
+            "Content Digest": "sha256:c41e4214e5cc8fb309e04e0ed315565ed0666ccafb73802b45f83ce1cf479c55"
+          }
+        ],
+        "Decision Revision Ref Set": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CBRR-CHOICE-001",
+            "Content Digest": "sha256:9d9855726120a59907e3c01ad79d15835b7943a79fd445b6a2adb0d1fcd10cca"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CBRR-DUST-001",
+            "Content Digest": "sha256:77ede57691a7d49d42c6c43312eb79e3962040e1a488d6a8ca8bf187e9aedfad"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CBRR-FUSION-001",
+            "Content Digest": "sha256:032cf816c458bcb5c377bea35224978cb04b7ce5d37fe51fa449ebf37ef07042"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CBRR-STORE-001",
+            "Content Digest": "sha256:e2158787c0b25eb56357236f4b3163b81deeec0108b6ecd56d3ad21ceacf865e"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CBRR-AUTHOR-001",
+            "Content Digest": "sha256:57f0ba96decd2fe116e22f7f843329e868df8106449cffea172e881f354f6c38"
+          }
+        ],
+        "Observable Policy Acceptance Set": [
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CBRR-AUTHOR-REVIEWED-001",
+              "Content Digest": "sha256:6a881073d670e3d9ec964408cabccab96ab2cc01ddef44fac60f98443a5ee222"
+            },
+            "Observable Policy Acceptance": [
+              "A14: 정상 RON/pack으로 후보 종류·양수 가중치·증가하는 양수 가루 임계치를 작성하고 실행한다. 누락 참조/중복 종류/미지원 등급/0가중치/합계 overflow/잘못된 임계치를 로더에서 거절한다. 빈/부족 후보는 유효 입력이다.",
+              "A15: 대표 원정의 U13배정/예약·U14입장비용·정상조회/명령·공통grant·노드완료를 검증한다. 공식 유물 catalog 공백과 외부 지원pack fixture를 구별하며 U21 콘텐츠나 전체 U16 완료를 주장하지 않는다.",
+              "A16: 정상/확장 후보·사본의 시간/실제 메모리 peak/회수와 내부 작업량을 구분 관측하고 기존 유한 한도를 평가한다. 지원 입력 오류/실제IO는 범위 안이며 임의변조 전용 사례는 제외한다.",
+              "A17: 기존 보상/상점/Event/소비품/저장 영향 회귀를 관련 호출 경계로 선정하고 실제 실행과 동일/비영향 재사용을 구별한다. 감사 전 복원 가능한 baseline과 최종 target을 고정한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CBRR-CHOICE-REVIEWED-001",
+              "Content Digest": "sha256:35122cdc13a809df7e8b8ab00525ed5b23c2f4766943e415ab8de1c686591863"
+            },
+            "Observable Policy Acceptance": [
+              "A01: 지도 생성의 고정 유형/초반 단순 선택 예약을 유지하고 입장 전 유형·가루 요구량·합성 조건을 공개한다. U16-3/4는 실행 지원으로 표시하지 않는다.",
+              "A02: 단순 선택은 서로 다른 최대3종 중1개를 Normal 사본으로 지급한다. 후보1/2개는 실제 수,0개는 이유 안내/선택 생략을 제공한다. 기존 보유/장착 제한을 후보 획득 제한으로 추가하지 않는다.",
+              "A03: 재조회/선택 변경으로 후보를 재추첨하지 않고 미이용 퇴장은 보상/활동 비용 없이 노드를 소비한다. 최초 입장 억제력은 별도다. 중복 수령/퇴장은 추가 지급하지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CBRR-DUST-REVIEWED-001",
+              "Content Digest": "sha256:9b92d2d682a8089e013aea10f97da6054bd07d8486ac6ba51eb6427afcadd75a"
+            },
+            "Observable Policy Acceptance": [
+              "A04: 일반 최초 투자와 각 승급은 다음 누적 임계치 차액 전부를 지불한다. 부족/부분투입/최고등급 추가 투입을 거절하며 자원과 후보는 유지한다.",
+              "A05: 투입 전에 다음 등급 후보가 존재하는지 검사한다. 불가하면 비용/기존 후보/확보한 권리를 보존한다. 현재 등급 후보/효과와 다음 등급/차액을 공개하되 미래 후보는 공개하지 않는다.",
+              "A06: 성공한 투입은 보장 등급의 서로 다른 최대3후보로 이전 후보/선택을 대체한다. 이전 등급 수령과 누적 지급을 막고 최종 선택1개만 공통 grant로 지급하며 노드를 소비한다. 활동 내 취소 환불은 없다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CBRR-FUSION-REVIEWED-001",
+              "Content Digest": "sha256:8261fdb6a895fa52b8666136ffc055d60e912a825990c6143a80545271e64531"
+            },
+            "Observable Policy Acceptance": [
+              "A07: 미장착의 서로 다른 사본2개를 선택한다. 침식 입력은 허용하고 장착/없는 사본/동일 사본은 거절한다. 투입 종류는 결과에서 제외하며 그 외 보유 종류는 허용한다.",
+              "A08: 선택 후 확정 전 일반/희귀/특급 확률을 표시한다. 여섯 조합은80/19/1,40/55/5,0/70/30,0/80/20,0/40/60,0/0/100이며 입력 순서에 무관하고0% 등급은 결과가 되지 않는다.",
+              "A09: 입력 종류 제외 뒤 확률이 양수인 모든 등급에 결과 후보가 있어야 확정 가능하다. 불가 이유를 공개하고 소비/선택/원본을 유지하며 확률 재분배/대체 지급/재추첨을 하지 않는다.",
+              "A10: 확정은 두 입력 제거와 Normal 결과1개 공통 지급 및 노드 완료를 원자적으로 처리한다. 노드당1회이며 결과 재투입/중복확정/재접속 재지급을 막는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CBRR-STORE-REVIEWED-001",
+              "Content Digest": "sha256:c41e4214e5cc8fb309e04e0ed315565ed0666ccafb73802b45f83ce1cf479c55"
+            },
+            "Observable Policy Acceptance": [
+              "A11: 같은 프로세스 재조회/재접속은 현재 활동 진행을 유지한다. 미완료 노드 새프로세스 Continue는 입장 전 비용/사본/진행을 함께 복원하고 재입장 시 같은 지도/동일입력 후보와 추첨을 유지한다.",
+              "A12: 완료한 수령/합성/미이용 퇴장의 결과와 소비를 새프로세스에서 유지한다. SavePoint도 그 시점의 비용/결과를 함께 복원하며 무관한 영구기록/창고를 보존한다.",
+              "A13: 실제 정상host 저장 IO실패 때 메모리/active/profile의 부분 변경을 남기지 않고 유효 재시도로 한번만 처리한다. reader/writer와 공개consumer를 함께 검증한다."
+            ]
+          }
+        ],
+        "Current Code Review Binding Ref Set": [
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CBRR-CHOICE-001",
+            "Content Digest": "sha256:1fcca2add80052f21e10e5522f66240f3a6c7a1a1ec7e1d11f7e56f56227c8f3"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CBRR-DUST-001",
+            "Content Digest": "sha256:3722bce274fb85b2df36c0311a3b2eedc723f5f37f81bd81fb3fd4660440689a"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CBRR-FUSION-001",
+            "Content Digest": "sha256:e4391735adaa9306f3ef86e3652b9b5e3b4b4ae9e0aa8292cf996fcd14de11e7"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CBRR-STORE-001",
+            "Content Digest": "sha256:f4cc658a1856b61f456b45380d592a0082c903303a8905326e2b031e1762369f"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CBRR-AUTHOR-001",
+            "Content Digest": "sha256:8accd76756b2cf9395d64b105dd669a6a0ac62d2343ec4dd6f6652392c2e13e2"
+          }
+        ],
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CBRR-001",
+          "Content Digest": "sha256:ff5f94cdf54bd4a149e2219d09b7b40fcdbaf253ce0dd168f4349451dff655fc"
+        },
+        "Binding Completeness Evidence": "P2G20 complete: every exact current member has reviewed owner/delta/seams;17acceptance preserved",
+        "Applicable Change/Obligation Basis": [],
+        "Resolved Prerequisite Evidence": [],
+        "Known Unknowns": [
+          "U16-3/4 remain later bundles. Dust3/9/18 and equal initial candidate weight1 are provisional authored balance. Official relic catalog remains empty; supported external pack supplies representative validation. Current three activities and restore semantics fixed."
+        ],
+        "Compatibility/Migration Disposition": "Preserve current readable saves when wire shape remains compatible; if actual codec needs a successor, CF-D01 permits explicit unsupported development-save rejection with original preservation. Current supported Continue/SavePoint/IO recovery remains mandatory.",
+        "Lifecycle Disposition": "current"
+      }
+    }
+  ]
+}

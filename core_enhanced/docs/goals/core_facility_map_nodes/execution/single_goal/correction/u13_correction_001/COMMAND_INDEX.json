@@ -1,0 +1,127 @@
+[
+  {
+    "command": [
+      "/home/blast/.cargo/bin/cargo",
+      "test",
+      "-p",
+      "game_core",
+      "--lib",
+      "--offline",
+      "--locked",
+      "--no-run"
+    ],
+    "exit_code": 0,
+    "seconds": 59.351336391002405,
+    "stdout": "build002.stdout.log",
+    "stderr": "build002.stderr.log",
+    "receipt": "build002.result.json"
+  },
+  {
+    "command": [
+      "/home/blast/.cargo/bin/cargo",
+      "test",
+      "-p",
+      "game_core",
+      "--lib",
+      "--offline",
+      "--locked",
+      "--no-run"
+    ],
+    "exit_code": 0,
+    "seconds": 45.42290843700175,
+    "stdout": "build003.stdout.log",
+    "stderr": "build003.stderr.log",
+    "receipt": "build003.result.json"
+  },
+  {
+    "command": [
+      ".cache/d07-static-explain-product-target/debug/deps/game_core-705cc9514d94a1fe",
+      "u13_allocation_roles",
+      "u13_fixed_encounter",
+      "--test-threads=2",
+      "--nocapture"
+    ],
+    "exit_code": 101,
+    "seconds": 7.1394146230013575,
+    "stdout": "focused001.stdout.log",
+    "stderr": "focused001.stderr.log",
+    "receipt": "focused001.result.json"
+  },
+  {
+    "command": [
+      ".cache/d07-static-explain-product-target/debug/deps/game_core-705cc9514d94a1fe",
+      "u13_fixed_encounter",
+      "--test-threads=1",
+      "--nocapture"
+    ],
+    "exit_code": 0,
+    "seconds": 5.230712482996751,
+    "stdout": "focused002.stdout.log",
+    "stderr": "focused002.stderr.log",
+    "receipt": "focused002.result.json"
+  },
+  {
+    "command": [
+      ".cache/u12-vault-cost-target/release/u13_correction_probe",
+      "/tmp/u13-correction-public-001"
+    ],
+    "exit_code": 0,
+    "seconds": 2.3242822649990558,
+    "stdout": "public001.stdout.log",
+    "stderr": "public001.stderr.log",
+    "receipt": "public001.result.json"
+  },
+  {
+    "command": [
+      "/home/blast/.cargo/bin/cargo",
+      "build",
+      "--release",
+      "--offline",
+      "--locked",
+      "--manifest-path",
+      "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/correction/u13_correction_001/probe/Cargo.toml"
+    ],
+    "exit_code": 0,
+    "seconds": 81.94325453900092,
+    "stdout": "public_build001.stdout.log",
+    "stderr": "public_build001.stderr.log",
+    "receipt": "public_build001.result.json"
+  },
+  {
+    "command": [
+      "/home/blast/.cargo/bin/cargo",
+      "build",
+      "--release",
+      "--offline",
+      "--locked",
+      "--manifest-path",
+      "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/correction/u13_correction_001/probe/Cargo.toml"
+    ],
+    "exit_code": 0,
+    "seconds": 80.42411193699809,
+    "stdout": "public_build002.stdout.log",
+    "stderr": "public_build002.stderr.log",
+    "receipt": "public_build002.result.json"
+  },
+  {
+    "command": [
+      ".cache/d07-static-explain-product-target/debug/deps/game_core-705cc9514d94a1fe",
+      "u13_",
+      "u04_",
+      "u12_lifecycle",
+      "encounter_compendium",
+      "map::",
+      "consuming_victory_commits_all_attempt_candidates",
+      "every_defeat_and_retreat_leave_registered_set",
+      "live_cwbs_reference_connects_conditional_wave",
+      "presentation_and_battle_start_resolvers",
+      "compendium_candidates_are_ordered",
+      "--test-threads=4"
+    ],
+    "exit_code": 0,
+    "seconds": 57.216178212998784,
+    "stdout": "regression001.stdout.log",
+    "stderr": "regression001.stderr.log",
+    "receipt": "regression001.result.json"
+  }
+]

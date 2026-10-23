@@ -363,7 +363,7 @@ fn u08_external_relic_invalid_catalogs_preserve_published_token_and_nonempty_run
             |data: &mut RelicDatabase| data.relics[0].corruption.as_mut().unwrap().effects.clear(),
             vec![
                 "relics[0].corruption.effects",
-                "at least one numeric effect is required",
+                "at least one effect or rule is required",
             ],
         ),
         (
@@ -574,12 +574,11 @@ fn u08_external_changed_or_missing_relic_generation_rejects_original_nonempty_sa
         }
         let mut destination = CoreApplication::new(changed.token().clone(), 0xB808);
         let profile = crate::game::encounter_compendium::PlayerProfileState {
-            standard_tutorial_completed: true,
             highest_floor_reached: 99,
             ..Default::default()
         };
         destination
-            .merge_player_profile(serde_json::to_value(profile).unwrap().into())
+            .install_authoritative_player_profile(serde_json::to_value(profile).unwrap().into())
             .unwrap();
         let destination_before = external_public_roots(&destination);
         for _ in 0..2 {
@@ -618,7 +617,7 @@ fn u08_external_changed_or_missing_relic_generation_rejects_original_nonempty_sa
     // Continue restores run state; the host supplies separately persisted
     // profile roots through their existing bootstrap ports.
     restored
-        .merge_player_profile(
+        .install_authoritative_player_profile(
             app.snapshot(ApplicationSnapshotKind::PlayerProfile)
                 .unwrap()
                 .read_model()
@@ -740,6 +739,7 @@ fn restore_child(directory: &Path) {
     );
     let player = serde_json::from_value(saved["player_id"].clone()).unwrap();
     let mut app = CoreApplication::new(token, 900);
+    app.install_authoritative_player_profile(saved["profile"].clone().into()).unwrap();
     let checkpoint = ApplicationCheckpoint::new(
         serde_json::to_vec(&saved["checkpoint"]).unwrap(),
         saved["loads_used"].as_u64().unwrap() as u8,
@@ -1110,7 +1110,7 @@ fn u08_external_ron_normal_grants_savepoint_event_replay_and_fresh_process() {
                         .clone();
                     write_json(
                         &directory.join("save.json"),
-                        &json!({"parent_pid":std::process::id(),"player_id":player,"selection":fixture.selection(),"generation":token.identity(),"checkpoint":serde_json::from_slice::<Value>(saved.core_payload_json()).unwrap(),"loads_used":saved.loads_used(),"peak":saved.run_peak_certified_power(),"relics":payload,"inventory":session.state.application.snapshot(ApplicationSnapshotKind::Inventory).unwrap(),"fingerprint":session.state.application.certified_input_fingerprint().unwrap(),"employee":employee,"event_node":event_node,"history":expected_history(&expected_copy)}),
+                        &json!({"profile":session.state.application.snapshot(ApplicationSnapshotKind::PlayerProfile).unwrap().read_model().clone(),"parent_pid":std::process::id(),"player_id":player,"selection":fixture.selection(),"generation":token.identity(),"checkpoint":serde_json::from_slice::<Value>(saved.core_payload_json()).unwrap(),"loads_used":saved.loads_used(),"peak":saved.run_peak_certified_power(),"relics":payload,"inventory":session.state.application.snapshot(ApplicationSnapshotKind::Inventory).unwrap(),"fingerprint":session.state.application.certified_input_fingerprint().unwrap(),"employee":employee,"event_node":event_node,"history":expected_history(&expected_copy)}),
                     );
                     let output = std::process::Command::new(std::env::current_exe().unwrap())
                         .args(["--exact", TEST_NAME, "--nocapture"])

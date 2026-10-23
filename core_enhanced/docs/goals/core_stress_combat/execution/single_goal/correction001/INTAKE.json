@@ -1,0 +1,20 @@
+{
+  "utc": "2026-10-15T07:22:26.429006+00:00",
+  "finding": "F-U164-IA001",
+  "predecessor": "independent_audit001/AUDIT_INPUT.json",
+  "files": [
+    {
+      "path": "core_enhanced/src/game/stress_combat.rs",
+      "sha256": "40e3d7728d3c33b96467fdf9e2719e1160269bad0927ef8adb210a68af009d3c"
+    },
+    {
+      "path": "core_enhanced/src/game/world/tests/u164_stress.rs",
+      "sha256": "bbbc70634b9415a06a59fc3cac61e78d04d26c51d3ebee4abd2bf3f095ed7d32"
+    },
+    {
+      "path": "core_enhanced/docs/data_loading_contract.md",
+      "sha256": "e65fa4281c6a9e5b8d3a49e1c0593c283124650e1b37a655637264f92796149b"
+    }
+  ],
+  "scope": "cumulative fungible reward validation and impacted tests; existing host/storage/cost omissions remain separate Goal work"
+}

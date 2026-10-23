@@ -1,0 +1,9 @@
+{
+  "command": [
+    "/mnt/f/work/simulator/.cache/u12-vault-cost-target/debug/deps/u08_relic_public-89392407b475577e"
+  ],
+  "exit_code": 101,
+  "seconds": 16.405371721004485,
+  "stdout": "diagnostic002.stdout.log",
+  "stderr": "diagnostic002.stderr.log"
+}

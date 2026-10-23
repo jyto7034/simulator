@@ -1,0 +1,40 @@
+{
+  "stage": "P2G-00",
+  "status": "complete",
+  "recorded_at_utc": "2026-10-11T23:51:38.460426+00:00",
+  "Working Revision Ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CEXL-001",
+    "Content Digest": "sha256:b2de16aa38bc53ab0eea593a208855a1b0009c7fa0bf9d226d981c4f0f76b3e6"
+  },
+  "Policy Intake Snapshot Ref": {
+    "Artifact Type": "Policy Intake Snapshot",
+    "Artifact ID": "PIS-CEXL-001",
+    "Content Digest": "sha256:b3c3570a2f98b952fc075e6fb7543f6ee8d5206bc0a3ad9431a76e27e360608a"
+  },
+  "path": "core_enhanced/docs/goals/core_expedition_lifecycle/WORKING_POLICY.ko.md",
+  "entry_identity_search": {
+    "scope": "Direct Goal WORKING_POLICY*.md and P2G_00*.json; exact WPD-CEXL-20261012/PIS-CEXL-001/core_expedition_lifecycle before creation",
+    "files_checked": 58,
+    "identity_matches": [],
+    "path_was_unoccupied": true
+  },
+  "checks": {
+    "new_conforming_document": true,
+    "scope_approval_per_item": true,
+    "raw_intake_exact_archive": true,
+    "empty_initial_policy_sets": true,
+    "no_later_stage_artifacts": true,
+    "producer_exact_refs_bound": true,
+    "U11_whole_independent_Complete_High_open0_consumed": true
+  },
+  "archive": {
+    "repository": "/mnt/f/work/simulator",
+    "path": "core_enhanced/docs/goals/core_expedition_lifecycle/INTAKE_SOURCE_001.tar.gz",
+    "bytes": 746306,
+    "sha256": "b8163371423d21a00ed2ec11dc15944535f76229b2175e67ca2ffac55db0f7a5"
+  },
+  "production_or_test_or_validator_mutation": false,
+  "next": "P2G-10",
+  "new_user_request_required": false
+}

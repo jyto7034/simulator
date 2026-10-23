@@ -229,6 +229,8 @@ fn apply_draft_stat_scale(
         stats.defense = exact.defense;
         stats.magic_resist = exact.magic_resistance;
     }
+    stats.set_max_health(percent_amount_ceil(stats.max_health, scale.encounter_health_percent));
+    stats.attack = percent_amount_ceil(stats.attack, scale.encounter_attack_percent);
 }
 
 fn scale_i32_percent_ceil(value: i32, percent: u32) -> i32 {
@@ -321,6 +323,7 @@ mod tests {
         );
 
         EquipmentMetadata {
+            content_family: None,
             id: "test_weapon".to_string(),
             uuid,
             name: "Test Weapon".to_string(),
@@ -417,6 +420,7 @@ mod tests {
             growth_stacks,
             equipment_layout: None,
             equipped_items: vec![crate::game::battle::types::BattleEquipmentBinding {
+            weapon_stage: Default::default(),
                 base_uuid: weapon_uuid,
                 persistent_copy_uuid: None,
                 slot: None,
@@ -451,6 +455,8 @@ mod tests {
                 attack_percent: 125,
                 defense_percent: 150,
                 exact_override: None,
+                encounter_health_percent: 100,
+                encounter_attack_percent: 100,
             },
             growth_stacks: GrowthStack::new(),
             equipment_layout: None,
@@ -486,6 +492,8 @@ mod tests {
                 attack_percent: 182,
                 defense_percent: 182,
                 exact_override: None,
+                encounter_health_percent: 100,
+                encounter_attack_percent: 100,
             },
             growth_stacks: GrowthStack::new(),
             equipment_layout: None,
@@ -525,6 +533,7 @@ mod tests {
             growth_stacks: GrowthStack::new(),
             equipment_layout: None,
             equipped_items: vec![crate::game::battle::types::BattleEquipmentBinding {
+            weapon_stage: Default::default(),
                 base_uuid: weapon_uuid,
                 persistent_copy_uuid: None,
                 slot: None,
@@ -586,6 +595,7 @@ mod tests {
             growth_stacks: GrowthStack::new(),
             equipment_layout: None,
             equipped_items: vec![crate::game::battle::types::BattleEquipmentBinding {
+            weapon_stage: Default::default(),
                 base_uuid: weapon_uuid,
                 persistent_copy_uuid: None,
                 slot: None,
@@ -605,5 +615,28 @@ mod tests {
         // consumable +50% => 18, then equipment +10% => 19.
         // If equipment percent applied before the consumable stage, this would be 20.
         assert_eq!(stats.attack, 19);
+    }
+}
+
+#[cfg(test)]
+mod u14_scaling_tests {
+    use super::*;
+    use crate::game::battle::types::{BattleUnitStatScale,BattleUnitExactStatOverride};
+    #[test]
+    fn u14_revival_times_unrestrained_and_exact_stats_keep_non_targets() {
+        let mut stats=crate::game::stats::UnitStats::with_values(100,100,40,20,30);
+        stats.magic_resist=30;
+        apply_draft_stat_scale(&mut stats,BattleUnitStatScale{
+            max_health_percent:150,attack_percent:150,defense_percent:100,
+            encounter_health_percent:150,encounter_attack_percent:150,exact_override:None,
+        });
+        assert_eq!((stats.max_health,stats.attack,stats.defense,stats.magic_resist),(225,90,20,30));
+        apply_draft_stat_scale(&mut stats,BattleUnitStatScale{
+            max_health_percent:300,attack_percent:300,defense_percent:300,
+            encounter_health_percent:200,encounter_attack_percent:150,
+            exact_override:Some(BattleUnitExactStatOverride{max_health:120,attack:60,defense:7,magic_resistance:13}),
+        });
+        assert_eq!((stats.max_health,stats.attack,stats.defense,stats.magic_resist),(240,90,7,13));
+        assert_eq!((stats.attack_interval_ms,stats.move_speed_units_per_ms),(30,1));
     }
 }

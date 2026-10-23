@@ -5,7 +5,7 @@ use uuid::Uuid;
 use crate::game::data::boss_omen_data::{BossOmenRevealLevel, BossOmenSourceKind};
 use crate::game::map::facility::FacilityTerminalResolution;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub struct MapNodeId(pub Uuid);
 
 impl MapNodeId {
@@ -184,7 +184,7 @@ pub struct MapNodeCombatDifficulty {
     pub difficulty_profile_id: String,
     pub class: MapNodeCombatDifficultyClass,
     #[serde(deserialize_with = "deserialize_required_option")]
-    pub monolith_stage: Option<MonolithRemanifestationStage>,
+    pub revival: Option<crate::game::revival::RevivalNodeTuning>,
     pub floor_power_anchor: u64,
     pub target_power: u64,
 }
@@ -197,32 +197,7 @@ where
     Option::<T>::deserialize(deserializer)
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum MonolithRemanifestationStage {
-    Stage2,
-    Stage3,
-}
-
-impl MonolithRemanifestationStage {
-    pub const fn as_u8(self) -> u8 {
-        match self {
-            Self::Stage2 => 2,
-            Self::Stage3 => 3,
-        }
-    }
-}
-
-impl TryFrom<u8> for MonolithRemanifestationStage {
-    type Error = ();
-
-    fn try_from(value: u8) -> Result<Self, Self::Error> {
-        match value {
-            2 => Ok(Self::Stage2),
-            3 => Ok(Self::Stage3),
-            _ => Err(()),
-        }
-    }
-}
+pub use crate::game::revival::RevivalStage;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum MapNodeCombatDifficultyClass {
@@ -234,6 +209,9 @@ pub enum MapNodeCombatDifficultyClass {
 #[serde(deny_unknown_fields)]
 pub struct MapNodeDefinition {
     pub kind_id: MapNodeKindId,
+    /// Omission inherits the run's authored default; explicit zero is a free activity.
+    #[serde(default)]
+    pub first_entry_cost: Option<u32>,
     pub category: MapNodeCategory,
     pub weight: u32,
     #[serde(default)]
@@ -514,6 +492,9 @@ impl RunMap {
                     node.slot_id.as_str()
                 ));
             }
+            if node.category == MapNodeCategory::Gate && node.payload != MapNodePayload::None {
+                return Err(format!("gate node {:?} must not carry an activity payload", node.id));
+            }
         }
         for slot in &template.slots {
             if !slot_ids.contains(slot.id.as_str()) {
@@ -589,8 +570,31 @@ impl RunMap {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct BreakdownEntryPreviewDto {
+    pub employee_uuid: Uuid,
+    pub remaining_cost_before: u32,
+    pub remaining_cost_after: u32,
+    pub dies_on_entry: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct NodeEntryPreviewDto {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub stress_combat: Option<crate::game::stress_combat::StressCombatEntryView>,
+    pub combat_deterrence: Option<crate::game::combat_preview::BattleDeterrenceSnapshot>,
+    pub sealed_golden_bough: bool,
+    pub regulated_cost: u32,
+    pub charged_cost: u32,
+    pub deterrence_after: u32,
+    pub unrestrained_after_entry: bool,
+    pub breakdown: Vec<BreakdownEntryPreviewDto>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct MapNodeDto {
     pub id: MapNodeId,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub entry_preview: Option<NodeEntryPreviewDto>,
     pub slot_id: MapSlotId,
     pub kind_id: MapNodeKindId,
     pub category: MapNodeCategory,
@@ -616,7 +620,7 @@ pub enum MapNodeDifficultyBandDto {
     NormalBoss,
     FinalBoss,
     BossOmen,
-    MonolithRemanifestation,
+    Revival,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -638,6 +642,7 @@ impl From<&MapNode> for MapNodeDto {
     fn from(value: &MapNode) -> Self {
         Self {
             id: value.id,
+            entry_preview: None,
             slot_id: value.slot_id.clone(),
             kind_id: value.kind_id.clone(),
             category: value.category,
@@ -671,8 +676,8 @@ impl From<&MapNode> for MapNodeDto {
                         crate::game::data::run_policy_data::CombatNodeDifficultyRole::BossOmen => {
                             MapNodeDifficultyBandDto::BossOmen
                         }
-                        crate::game::data::run_policy_data::CombatNodeDifficultyRole::MonolithRemanifestation => {
-                            MapNodeDifficultyBandDto::MonolithRemanifestation
+                        crate::game::data::run_policy_data::CombatNodeDifficultyRole::Revival => {
+                            MapNodeDifficultyBandDto::Revival
                         }
                     },
                 }
@@ -703,23 +708,23 @@ mod combat_difficulty_schema_tests {
     use super::*;
 
     #[test]
-    fn monolith_stage_field_is_required_even_when_none() {
+    fn revival_field_is_required_even_when_none() {
         let legacy = "(power_model_version:2,difficulty_profile_id:\"default_facility\",class:Ordinary(Standard),floor_power_anchor:100,target_power:100)";
         let error = ron::de::from_str::<MapNodeCombatDifficulty>(legacy)
             .expect_err("legacy difficulty without typed monolith stage must reject");
 
-        assert!(error.to_string().contains("monolith_stage"));
+        assert!(error.to_string().contains("revival"));
     }
 
     #[test]
-    fn typed_monolith_stage_round_trips_exactly() {
+    fn typed_revival_round_trips_exactly() {
         let difficulty = MapNodeCombatDifficulty {
             power_model_version: 2,
             difficulty_profile_id: "default_facility".to_string(),
             class: MapNodeCombatDifficultyClass::Role(
-                crate::game::data::run_policy_data::CombatNodeDifficultyRole::MonolithRemanifestation,
+                crate::game::data::run_policy_data::CombatNodeDifficultyRole::Revival,
             ),
-            monolith_stage: Some(MonolithRemanifestationStage::Stage3),
+            revival: Some(crate::game::revival::RevivalNodeTuning { stage: RevivalStage::Stage3, stat_multiplier_percent: 200 }),
             floor_power_anchor: 100,
             target_power: 275,
         };

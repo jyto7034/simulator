@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "receipt_ref": "VR-CRAR-C2-P02-GEX10-002",
+  "captured_at_utc": "2026-08-22T15:08:34Z",
+  "goal_id": "GOAL-CRAR-C2-P02-VALIDATED-DATA",
+  "execution_node": "WP-CRAR-C2-04",
+  "publication_contract": {
+    "entrypoint": "game_core::game::data::ValidatedGameData::load_live_embedded",
+    "production_constructor_consumers": [
+      "game_core::game::world::GameCore",
+      "game_core::game::battle::core::BattleCore::new_from_scenario"
+    ],
+    "default_release_bare_builder_available": false,
+    "default_release_parts_available": false,
+    "default_release_bare_arc_into_validated": false,
+    "default_release_public_combat_bare_constructor_helper": false,
+    "fixture_feature": "test-fixtures",
+    "fixture_binary_count": 4,
+    "live_source_count_excluding_manifest": 24
+  },
+  "validation": {
+    "release_check": "exit 0; warnings 0",
+    "test_target_compile": "exit 0",
+    "fixture_feature_bins": "exit 0; four bins",
+    "valid_release_probe": "exit 0; actual publication and GameCore construction",
+    "invalid_release_probe": "expected non-zero; E0432 builder; E0603 parts; E0277 bare Arc conversion; E0599 removed combat helper",
+    "combat_setup_test_module": "14 passed; 0 failed",
+    "semantic_parity_test": "1 passed; 0 failed",
+    "rollback_test": "1 passed; 0 failed",
+    "retry_idempotency_test": "1 passed; 0 failed",
+    "ron_loading_integration": "25 passed; 0 failed",
+    "full_core_suite": "1132 passed; 0 failed; 0 ignored",
+    "p01_successor_reaudit": "Complete / High; ATR-CRAR-C2-P01-GEX20-002"
+  },
+  "validation_dimensions": {
+    "success": "pass",
+    "invalid_input": "pass",
+    "failure_rollback": "pass",
+    "retry_idempotency": "pass",
+    "ordering_concurrency": "N/A: startup publication has no hot reload owner",
+    "boundary_empty_max": "pass",
+    "disconnect_restart_persistence": "N/A: no session/save lifetime change",
+    "live_data": "pass",
+    "producer_consumer": "pass",
+    "legacy_fallback_absence": "pass"
+  },
+  "known_nonblocking_baseline": {
+    "whole_package_clippy": "pre-existing denied never_loop at src/game/data/boss_runtime_data.rs:1680 plus 81 broad unrelated warnings; outside P02 hunks",
+    "performance": "P02 non-blocking by Phase contract; P08 owns final gates"
+  }
+}

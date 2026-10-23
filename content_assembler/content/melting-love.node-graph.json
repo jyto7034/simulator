@@ -1,0 +1,1009 @@
+{
+  "format": "node-graph",
+  "version": 1,
+  "id": "04b0bf27-4b2c-456c-96eb-a08bf85dba31",
+  "name": "녹아내리는 사랑 · 공격형 포자 감염",
+  "nodes": [
+    {
+      "id": "0ee6fcb0-20ad-4ac3-b7dd-f2ce07ab7d8b",
+      "kind": "skill-population-power",
+      "title": "출처별 연속 위력 · 0숙주 유예 후 감소",
+      "position": {
+        "x": 480,
+        "y": 1066
+      },
+      "values": {
+        "cap": "",
+        "decay": "",
+        "growth": "",
+        "preventDecay": false
+      },
+      "note": "",
+      "frame": "cbb06a53-a3c8-4503-8039-76c05ea2f333"
+    },
+    {
+      "id": "12155134-5174-4985-b416-afc6a17dea3f",
+      "kind": "skill-resonance-cost",
+      "title": "수동 · 공명 전량 소비",
+      "position": {
+        "x": 1360,
+        "y": 2281.2
+      },
+      "values": {
+        "minimumCost": "",
+        "mode": "all",
+        "percent": ""
+      },
+      "note": "",
+      "frame": "d02d09be-1c4e-4422-813a-e95fae247d35"
+    },
+    {
+      "id": "193ffdd2-b76d-49e2-a6b9-aeaa77d6e170",
+      "kind": "skill-target-selection",
+      "title": "자기 자신에게 시전",
+      "position": {
+        "x": 40,
+        "y": 3172.2
+      },
+      "values": {
+        "mode": "self"
+      },
+      "note": "",
+      "frame": "d02d09be-1c4e-4422-813a-e95fae247d35"
+    },
+    {
+      "id": "1c378d8b-59fc-4d39-8e5a-daa1250fb423",
+      "kind": "skill-range",
+      "title": "각 폭발 중심 1칸",
+      "position": {
+        "x": 40,
+        "y": 1838
+      },
+      "values": {
+        "includeAnchor": true,
+        "pattern": "@"
+      },
+      "note": "",
+      "frame": "5fc11dfe-dd29-4e86-afc6-e926af73c1fc"
+    },
+    {
+      "id": "22cdff8a-67f5-4f29-9297-58e234ffdd98",
+      "kind": "skill-seconds",
+      "title": "0숙주 위력 보존 유예",
+      "position": {
+        "x": 40,
+        "y": 1089
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "cbb06a53-a3c8-4503-8039-76c05ea2f333"
+    },
+    {
+      "id": "2ce02127-cb7e-4ec0-96ee-13b928129168",
+      "kind": "skill-resonance-admit",
+      "title": "원자적 접수·비용 확정",
+      "position": {
+        "x": 2240,
+        "y": 2378.5
+      },
+      "values": {},
+      "note": "",
+      "frame": "d02d09be-1c4e-4422-813a-e95fae247d35"
+    },
+    {
+      "id": "2e59bd01-234e-4ce6-b5f4-1d8451f4aa9b",
+      "kind": "skill-mark-burst-plan",
+      "title": "일제 기폭 · 자기 숙주 3배 · 전파 억제",
+      "position": {
+        "x": 480,
+        "y": 1596.2
+      },
+      "values": {
+        "coefficient": 1,
+        "hostMultiplier": 3
+      },
+      "note": "",
+      "frame": "5fc11dfe-dd29-4e86-afc6-e926af73c1fc"
+    },
+    {
+      "id": "37adf672-5f02-47af-b3a3-3a814c9f1653",
+      "kind": "skill-equipment-condition",
+      "title": "압축 화약 · 장착 여부",
+      "position": {
+        "x": 40,
+        "y": 3802.2
+      },
+      "values": {
+        "copies": "once",
+        "definition": "explosion-vulnerability",
+        "slot": "relic",
+        "variant": "normal"
+      },
+      "note": "",
+      "frame": "480bee5a-cd5e-4dd8-a50e-aad8f86ac57c"
+    },
+    {
+      "id": "3ca8ba52-786f-4e83-9952-bfcbcdc4c6a7",
+      "kind": "skill-resonance-amount",
+      "title": "최대 공명 · 미정",
+      "position": {
+        "x": 40,
+        "y": 2608.9380952380952
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "d02d09be-1c4e-4422-813a-e95fae247d35"
+    },
+    {
+      "id": "41c1fee3-ecb3-4266-9075-a0bd00b3c854",
+      "kind": "skill-request",
+      "title": "일제 폭발 시전 입력",
+      "position": {
+        "x": 480,
+        "y": 3168.2
+      },
+      "values": {},
+      "note": "",
+      "frame": "d02d09be-1c4e-4422-813a-e95fae247d35"
+    },
+    {
+      "id": "420d84a3-81e6-49ce-bbeb-41553c773692",
+      "kind": "skill-equipment-condition",
+      "title": "중첩된폭발 · 장착 여부",
+      "position": {
+        "x": 40,
+        "y": 3502.2
+      },
+      "values": {
+        "copies": "once",
+        "definition": "overlapping-explosions",
+        "slot": "relic",
+        "variant": "normal"
+      },
+      "note": "",
+      "frame": "480bee5a-cd5e-4dd8-a50e-aad8f86ac57c"
+    },
+    {
+      "id": "4406aa64-4162-41b1-b51c-d1643ebb11cd",
+      "kind": "skill-resonance-requirement",
+      "title": "수동 · 공명 만충",
+      "position": {
+        "x": 1360,
+        "y": 3097.2
+      },
+      "values": {
+        "mode": "full"
+      },
+      "note": "",
+      "frame": "d02d09be-1c4e-4422-813a-e95fae247d35"
+    },
+    {
+      "id": "4bfadcf0-8900-4d33-bf5a-226a9e2e6ed3",
+      "kind": "skill-action-entry",
+      "title": "폭발 즉시 시작 · 비용 전 최종 검사",
+      "position": {
+        "x": 1360,
+        "y": 2795.2
+      },
+      "values": {
+        "interruption": "standard",
+        "start": "immediate"
+      },
+      "note": "",
+      "frame": "d02d09be-1c4e-4422-813a-e95fae247d35"
+    },
+    {
+      "id": "5785bccf-5ce6-478a-9f97-51b8efa03651",
+      "kind": "skill-equipment-condition",
+      "title": "증식의 배양액 · 장착 여부",
+      "position": {
+        "x": 840,
+        "y": 3826.2
+      },
+      "values": {
+        "copies": "once",
+        "definition": "growth-medium",
+        "slot": "relic",
+        "variant": "normal"
+      },
+      "note": "",
+      "frame": "480bee5a-cd5e-4dd8-a50e-aad8f86ac57c"
+    },
+    {
+      "id": "7a665ed5-b88b-44b5-8557-121c254c8570",
+      "kind": "skill-equipment-condition",
+      "title": "재촉하는 맥박 · 장착 여부",
+      "position": {
+        "x": 840,
+        "y": 3523.2
+      },
+      "values": {
+        "copies": "once",
+        "definition": "hastened-pulse",
+        "slot": "relic",
+        "variant": "normal"
+      },
+      "note": "",
+      "frame": "480bee5a-cd5e-4dd8-a50e-aad8f86ac57c"
+    },
+    {
+      "id": "7fa43685-5c0b-4fef-9593-ad7738012dde",
+      "kind": "skill-resonance-read",
+      "title": "이번 요청의 공명 조회",
+      "position": {
+        "x": 920,
+        "y": 2619.2714285714287
+      },
+      "values": {},
+      "note": "",
+      "frame": "d02d09be-1c4e-4422-813a-e95fae247d35"
+    },
+    {
+      "id": "814d6587-8e00-42b6-8b52-46912dc737d2",
+      "kind": "skill-modifier-duration",
+      "title": "재촉하는 맥박 → 감염 피해 주기",
+      "position": {
+        "x": 1280,
+        "y": 3502.2
+      },
+      "values": {
+        "percent": ""
+      },
+      "note": "",
+      "frame": "480bee5a-cd5e-4dd8-a50e-aad8f86ac57c"
+    },
+    {
+      "id": "81b671a9-4440-4e90-8356-afff7d823c35",
+      "kind": "skill-mark-periodic-damage",
+      "title": "현재 공유 위력으로 각 숙주 주기 피해",
+      "position": {
+        "x": 920,
+        "y": 854.5
+      },
+      "values": {
+        "coefficient": 1,
+        "damageType": "magic"
+      },
+      "note": "",
+      "frame": "cbb06a53-a3c8-4503-8039-76c05ea2f333"
+    },
+    {
+      "id": "9b7a5b9e-2489-459d-ad9d-4c868ca17d57",
+      "kind": "skill-resonance-settings",
+      "title": "사본 공명 저장 설정",
+      "position": {
+        "x": 480,
+        "y": 2626.9380952380952
+      },
+      "values": {},
+      "note": "",
+      "frame": "d02d09be-1c4e-4422-813a-e95fae247d35"
+    },
+    {
+      "id": "a7dc9ddb-a742-4ad9-90ec-0ebf8c7f953b",
+      "kind": "skill-run-action",
+      "title": "표식 고정·소비와 폭발 계획 실행",
+      "position": {
+        "x": 2680,
+        "y": 2200
+      },
+      "values": {},
+      "note": "",
+      "frame": "d02d09be-1c4e-4422-813a-e95fae247d35"
+    },
+    {
+      "id": "a969756e-2b3b-4132-8952-0c29a4513e8f",
+      "kind": "skill-mark-filter",
+      "title": "지상 적 · 보스 포함 · 소환·임시 제외",
+      "position": {
+        "x": 40,
+        "y": 80
+      },
+      "values": {
+        "abnormality": true,
+        "air": false,
+        "boss": true,
+        "summon": false,
+        "temporary": false
+      },
+      "note": "",
+      "frame": "ad4b8fcf-f4f9-4f3d-9fb8-5a1805aab304"
+    },
+    {
+      "id": "adb5fbcb-9d48-470f-9f04-1be7507af083",
+      "kind": "skill-explosion-rule",
+      "title": "차례당 대상 1회 · 폭발 피해 증가 별도",
+      "position": {
+        "x": 40,
+        "y": 1544
+      },
+      "values": {
+        "bonus": 0,
+        "damageType": "magic",
+        "dedup": "wave"
+      },
+      "note": "",
+      "frame": "5fc11dfe-dd29-4e86-afc6-e926af73c1fc"
+    },
+    {
+      "id": "b0e03be0-23d6-43f3-916d-ec9ea799846a",
+      "kind": "skill-resonance-qualify",
+      "title": "대상·공명·자원 자격 검사",
+      "position": {
+        "x": 1800,
+        "y": 2462
+      },
+      "values": {},
+      "note": "",
+      "frame": "d02d09be-1c4e-4422-813a-e95fae247d35"
+    },
+    {
+      "id": "bd8ce9f0-0683-4393-926d-aa9f359f86e1",
+      "kind": "skill-mark-spread",
+      "title": "사망 우선 · 다음 세대는 별도 사건",
+      "position": {
+        "x": 920,
+        "y": 149
+      },
+      "values": {
+        "limit": "",
+        "radius": ""
+      },
+      "note": "",
+      "frame": "ad4b8fcf-f4f9-4f3d-9fb8-5a1805aab304"
+    },
+    {
+      "id": "c88fff72-a83d-4d7e-a08f-515f1a734d50",
+      "kind": "skill-modifier-range",
+      "title": "넓어진 지평 → 각 폭발 중심 1칸",
+      "position": {
+        "x": 1280,
+        "y": 4084.2
+      },
+      "values": {
+        "mode": "square-step"
+      },
+      "note": "",
+      "frame": "480bee5a-cd5e-4dd8-a50e-aad8f86ac57c"
+    },
+    {
+      "id": "c8dbfd16-770f-4f76-ae0d-2baec729ee32",
+      "kind": "skill-target-marks",
+      "title": "파편 사본의 포자 감염 숙주",
+      "position": {
+        "x": 40,
+        "y": 446
+      },
+      "values": {
+        "death": "remove",
+        "lifetime": "deployment",
+        "mode": "presence"
+      },
+      "note": "",
+      "frame": "ad4b8fcf-f4f9-4f3d-9fb8-5a1805aab304"
+    },
+    {
+      "id": "ccbbed42-06cc-4499-a6c3-1d8a5929aff7",
+      "kind": "skill-mark-weapon-hit",
+      "title": "자기 기본 공격의 대상별 최초 감염",
+      "position": {
+        "x": 480,
+        "y": 117
+      },
+      "values": {
+        "amount": 1,
+        "binding": "fragment",
+        "chance": "",
+        "grantMultiplier": 1,
+        "weapon": ""
+      },
+      "note": "",
+      "frame": "ad4b8fcf-f4f9-4f3d-9fb8-5a1805aab304"
+    },
+    {
+      "id": "ce8253c3-6034-4c80-9105-4bd82f2e0178",
+      "kind": "skill-modifier-explosion-power",
+      "title": "압축 화약 → 차례당 대상 1회 · 폭발 피해 증가 별도",
+      "position": {
+        "x": 480,
+        "y": 3781.2
+      },
+      "values": {
+        "percent": ""
+      },
+      "note": "",
+      "frame": "480bee5a-cd5e-4dd8-a50e-aad8f86ac57c"
+    },
+    {
+      "id": "ce8c9e4a-3360-4d85-8f77-a0febbb4c698",
+      "kind": "skill-modifier-explosion-overlap",
+      "title": "중첩된폭발 → 차례당 대상 1회 · 폭발 피해 증가 별도",
+      "position": {
+        "x": 480,
+        "y": 3505.2
+      },
+      "values": {},
+      "note": "",
+      "frame": "480bee5a-cd5e-4dd8-a50e-aad8f86ac57c"
+    },
+    {
+      "id": "ded34972-11b1-4440-bee8-f7a900c85fcb",
+      "kind": "skill-equipment-condition",
+      "title": "넓어진 지평 · 장착 여부",
+      "position": {
+        "x": 840,
+        "y": 4155.7
+      },
+      "values": {
+        "copies": "once",
+        "definition": "widened-horizon",
+        "slot": "relic",
+        "variant": "normal"
+      },
+      "note": "",
+      "frame": "480bee5a-cd5e-4dd8-a50e-aad8f86ac57c"
+    },
+    {
+      "id": "f22427af-68b6-4cbd-8540-f818cad07239",
+      "kind": "skill-seconds",
+      "title": "감염 피해 주기",
+      "position": {
+        "x": 480,
+        "y": 844
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "cbb06a53-a3c8-4503-8039-76c05ea2f333"
+    },
+    {
+      "id": "f6b82659-9159-4e46-9b47-0035871b9971",
+      "kind": "skill-modifier-population",
+      "title": "증식의 배양액 → 출처별 연속 위력 · 0숙주 유예 후 감소",
+      "position": {
+        "x": 1280,
+        "y": 3781.2
+      },
+      "values": {
+        "mode": "growth",
+        "percent": ""
+      },
+      "note": "",
+      "frame": "480bee5a-cd5e-4dd8-a50e-aad8f86ac57c"
+    },
+    {
+      "id": "f85cfad3-4a60-475f-8837-1c6ae55c53a0",
+      "kind": "skill-equipment-condition",
+      "title": "밀봉된 배양병 · 장착 여부",
+      "position": {
+        "x": 40,
+        "y": 4129.2
+      },
+      "values": {
+        "copies": "once",
+        "definition": "sealed-culture",
+        "slot": "relic",
+        "variant": "normal"
+      },
+      "note": "",
+      "frame": "480bee5a-cd5e-4dd8-a50e-aad8f86ac57c"
+    },
+    {
+      "id": "fe08fd6b-b012-47d7-a939-69b714275897",
+      "kind": "skill-modifier-population",
+      "title": "밀봉된 배양병 → 출처별 연속 위력 · 0숙주 유예 후 감소",
+      "position": {
+        "x": 480,
+        "y": 4084.2
+      },
+      "values": {
+        "mode": "preserve",
+        "percent": ""
+      },
+      "note": "",
+      "frame": "480bee5a-cd5e-4dd8-a50e-aad8f86ac57c"
+    }
+  ],
+  "edges": [
+    {
+      "id": "02a19e12-e5d0-4623-9073-7c1645cfc5e6",
+      "source": {
+        "node": "0ee6fcb0-20ad-4ac3-b7dd-f2ce07ab7d8b",
+        "port": "power"
+      },
+      "target": {
+        "node": "2e59bd01-234e-4ce6-b5f4-1d8451f4aa9b",
+        "port": "power"
+      }
+    },
+    {
+      "id": "08337e3b-6c5a-4022-8aa3-bcfac4a48e48",
+      "source": {
+        "node": "4bfadcf0-8900-4d33-bf5a-226a9e2e6ed3",
+        "port": "program"
+      },
+      "target": {
+        "node": "a7dc9ddb-a742-4ad9-90ec-0ebf8c7f953b",
+        "port": "program"
+      }
+    },
+    {
+      "id": "0bb2e6f6-8c0b-4450-8e1f-a5abf55e65e8",
+      "source": {
+        "node": "7fa43685-5c0b-4fef-9593-ad7738012dde",
+        "port": "snapshot"
+      },
+      "target": {
+        "node": "b0e03be0-23d6-43f3-916d-ec9ea799846a",
+        "port": "snapshot"
+      }
+    },
+    {
+      "id": "0c3d3ca1-9712-4959-aa9b-8535c288319d",
+      "source": {
+        "node": "420d84a3-81e6-49ce-bbeb-41553c773692",
+        "port": "condition"
+      },
+      "target": {
+        "node": "ce8c9e4a-3360-4d85-8f77-a0febbb4c698",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "130b98bc-3318-4d29-8d9d-1bec73c467dd",
+      "source": {
+        "node": "0ee6fcb0-20ad-4ac3-b7dd-f2ce07ab7d8b",
+        "port": "power"
+      },
+      "target": {
+        "node": "81b671a9-4440-4e90-8356-afff7d823c35",
+        "port": "power"
+      }
+    },
+    {
+      "id": "21598a1b-1d77-4862-956a-36ca53295737",
+      "source": {
+        "node": "193ffdd2-b76d-49e2-a6b9-aeaa77d6e170",
+        "port": "selection"
+      },
+      "target": {
+        "node": "41c1fee3-ecb3-4266-9075-a0bd00b3c854",
+        "port": "selection"
+      }
+    },
+    {
+      "id": "2186f8fc-d9d6-4040-a6fe-d489b31875ae",
+      "source": {
+        "node": "0ee6fcb0-20ad-4ac3-b7dd-f2ce07ab7d8b",
+        "port": "power"
+      },
+      "target": {
+        "node": "f6b82659-9159-4e46-9b47-0035871b9971",
+        "port": "target"
+      }
+    },
+    {
+      "id": "24f9f55b-d9e6-4072-b546-96ab42805ba6",
+      "source": {
+        "node": "ded34972-11b1-4440-bee8-f7a900c85fcb",
+        "port": "condition"
+      },
+      "target": {
+        "node": "c88fff72-a83d-4d7e-a08f-515f1a734d50",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "2aeee668-92fe-4f91-91f5-21f44fec1274",
+      "source": {
+        "node": "22cdff8a-67f5-4f29-9297-58e234ffdd98",
+        "port": "value"
+      },
+      "target": {
+        "node": "0ee6fcb0-20ad-4ac3-b7dd-f2ce07ab7d8b",
+        "port": "grace"
+      }
+    },
+    {
+      "id": "2d8da821-d851-4a2d-9550-56515a65d4e7",
+      "source": {
+        "node": "a969756e-2b3b-4132-8952-0c29a4513e8f",
+        "port": "filter"
+      },
+      "target": {
+        "node": "bd8ce9f0-0683-4393-926d-aa9f359f86e1",
+        "port": "filter"
+      }
+    },
+    {
+      "id": "2f1e96ca-2a5d-4a47-ab7a-993e8ef2bae8",
+      "source": {
+        "node": "ccbbed42-06cc-4499-a6c3-1d8a5929aff7",
+        "port": "source"
+      },
+      "target": {
+        "node": "bd8ce9f0-0683-4393-926d-aa9f359f86e1",
+        "port": "source"
+      }
+    },
+    {
+      "id": "59f8edbe-3cff-43d7-b626-bdcb9306a633",
+      "source": {
+        "node": "c8dbfd16-770f-4f76-ae0d-2baec729ee32",
+        "port": "marks"
+      },
+      "target": {
+        "node": "81b671a9-4440-4e90-8356-afff7d823c35",
+        "port": "marks"
+      }
+    },
+    {
+      "id": "5e02c4d5-ee17-49b7-9268-6e923a2e0040",
+      "source": {
+        "node": "b0e03be0-23d6-43f3-916d-ec9ea799846a",
+        "port": "permit"
+      },
+      "target": {
+        "node": "2ce02127-cb7e-4ec0-96ee-13b928129168",
+        "port": "permit"
+      }
+    },
+    {
+      "id": "63736143-acb5-457d-9393-9730e3bfbdd2",
+      "source": {
+        "node": "4406aa64-4162-41b1-b51c-d1643ebb11cd",
+        "port": "requirement"
+      },
+      "target": {
+        "node": "b0e03be0-23d6-43f3-916d-ec9ea799846a",
+        "port": "requirement"
+      }
+    },
+    {
+      "id": "63c7e507-2054-4acb-ab7f-ad450f8df0b8",
+      "source": {
+        "node": "adb5fbcb-9d48-470f-9f04-1be7507af083",
+        "port": "explosion"
+      },
+      "target": {
+        "node": "ce8253c3-6034-4c80-9105-4bd82f2e0178",
+        "port": "target"
+      }
+    },
+    {
+      "id": "655a5d74-d34d-4c36-954d-926c2f822356",
+      "source": {
+        "node": "7a665ed5-b88b-44b5-8557-121c254c8570",
+        "port": "condition"
+      },
+      "target": {
+        "node": "814d6587-8e00-42b6-8b52-46912dc737d2",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "65f66300-f56e-45a1-a502-388ed2a56724",
+      "source": {
+        "node": "5785bccf-5ce6-478a-9f97-51b8efa03651",
+        "port": "condition"
+      },
+      "target": {
+        "node": "f6b82659-9159-4e46-9b47-0035871b9971",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "66c23650-1464-4948-a7f2-ee07ad6db05b",
+      "source": {
+        "node": "41c1fee3-ecb3-4266-9075-a0bd00b3c854",
+        "port": "request"
+      },
+      "target": {
+        "node": "7fa43685-5c0b-4fef-9593-ad7738012dde",
+        "port": "request"
+      }
+    },
+    {
+      "id": "6bb0c95a-96e5-47d6-870c-7eedb88c7dc1",
+      "source": {
+        "node": "c8dbfd16-770f-4f76-ae0d-2baec729ee32",
+        "port": "marks"
+      },
+      "target": {
+        "node": "ccbbed42-06cc-4499-a6c3-1d8a5929aff7",
+        "port": "marks"
+      }
+    },
+    {
+      "id": "6f1036a2-c0ef-4d2e-870f-5abf250e4adb",
+      "source": {
+        "node": "7fa43685-5c0b-4fef-9593-ad7738012dde",
+        "port": "snapshot"
+      },
+      "target": {
+        "node": "12155134-5174-4985-b416-afc6a17dea3f",
+        "port": "snapshot"
+      }
+    },
+    {
+      "id": "709d6451-6d1d-4879-b383-ee9193a3c085",
+      "source": {
+        "node": "f22427af-68b6-4cbd-8540-f818cad07239",
+        "port": "value"
+      },
+      "target": {
+        "node": "81b671a9-4440-4e90-8356-afff7d823c35",
+        "port": "interval"
+      }
+    },
+    {
+      "id": "760b7a66-4013-43cf-ac4d-7dbe69c15963",
+      "source": {
+        "node": "41c1fee3-ecb3-4266-9075-a0bd00b3c854",
+        "port": "request"
+      },
+      "target": {
+        "node": "b0e03be0-23d6-43f3-916d-ec9ea799846a",
+        "port": "request"
+      }
+    },
+    {
+      "id": "7d16d0c9-9ba6-4386-993e-fddbcbe3ea6e",
+      "source": {
+        "node": "37adf672-5f02-47af-b3a3-3a814c9f1653",
+        "port": "condition"
+      },
+      "target": {
+        "node": "ce8253c3-6034-4c80-9105-4bd82f2e0178",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "7e3beaa7-90f5-4bde-a3ba-68462fe75c65",
+      "source": {
+        "node": "c8dbfd16-770f-4f76-ae0d-2baec729ee32",
+        "port": "marks"
+      },
+      "target": {
+        "node": "2e59bd01-234e-4ce6-b5f4-1d8451f4aa9b",
+        "port": "marks"
+      }
+    },
+    {
+      "id": "81a6d7c1-1b5b-4a32-9454-1573231c7b4e",
+      "source": {
+        "node": "9b7a5b9e-2489-459d-ad9d-4c868ca17d57",
+        "port": "settings"
+      },
+      "target": {
+        "node": "7fa43685-5c0b-4fef-9593-ad7738012dde",
+        "port": "settings"
+      }
+    },
+    {
+      "id": "82a32412-acec-4482-a524-3980672a4819",
+      "source": {
+        "node": "f85cfad3-4a60-475f-8837-1c6ae55c53a0",
+        "port": "condition"
+      },
+      "target": {
+        "node": "fe08fd6b-b012-47d7-a939-69b714275897",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "8583cf43-de1d-4e37-a6cb-1d3210699aaa",
+      "source": {
+        "node": "2e59bd01-234e-4ce6-b5f4-1d8451f4aa9b",
+        "port": "plan"
+      },
+      "target": {
+        "node": "4bfadcf0-8900-4d33-bf5a-226a9e2e6ed3",
+        "port": "plan"
+      }
+    },
+    {
+      "id": "8fc3a81f-d324-45a3-9d5e-6ccf78b95e57",
+      "source": {
+        "node": "2ce02127-cb7e-4ec0-96ee-13b928129168",
+        "port": "use"
+      },
+      "target": {
+        "node": "a7dc9ddb-a742-4ad9-90ec-0ebf8c7f953b",
+        "port": "use"
+      }
+    },
+    {
+      "id": "9375bdb1-91f6-4c1f-940e-c9bc3e38ba64",
+      "source": {
+        "node": "c8dbfd16-770f-4f76-ae0d-2baec729ee32",
+        "port": "marks"
+      },
+      "target": {
+        "node": "0ee6fcb0-20ad-4ac3-b7dd-f2ce07ab7d8b",
+        "port": "marks"
+      }
+    },
+    {
+      "id": "9382e460-d076-4203-a873-9c912d5820be",
+      "source": {
+        "node": "3ca8ba52-786f-4e83-9952-bfcbcdc4c6a7",
+        "port": "value"
+      },
+      "target": {
+        "node": "9b7a5b9e-2489-459d-ad9d-4c868ca17d57",
+        "port": "capacity"
+      }
+    },
+    {
+      "id": "9d47e525-e8b2-4333-9eca-d18257cfc900",
+      "source": {
+        "node": "adb5fbcb-9d48-470f-9f04-1be7507af083",
+        "port": "explosion"
+      },
+      "target": {
+        "node": "2e59bd01-234e-4ce6-b5f4-1d8451f4aa9b",
+        "port": "explosion"
+      }
+    },
+    {
+      "id": "a03a5f1b-f633-4e4f-a911-396d3c042e06",
+      "source": {
+        "node": "0ee6fcb0-20ad-4ac3-b7dd-f2ce07ab7d8b",
+        "port": "power"
+      },
+      "target": {
+        "node": "fe08fd6b-b012-47d7-a939-69b714275897",
+        "port": "target"
+      }
+    },
+    {
+      "id": "a8a9028e-b29b-4fe0-8f1f-9542c5a435c6",
+      "source": {
+        "node": "f22427af-68b6-4cbd-8540-f818cad07239",
+        "port": "value"
+      },
+      "target": {
+        "node": "814d6587-8e00-42b6-8b52-46912dc737d2",
+        "port": "target"
+      }
+    },
+    {
+      "id": "bdcb54c7-82c9-4dc6-b8c0-9fabe866bd2f",
+      "source": {
+        "node": "12155134-5174-4985-b416-afc6a17dea3f",
+        "port": "cost"
+      },
+      "target": {
+        "node": "b0e03be0-23d6-43f3-916d-ec9ea799846a",
+        "port": "cost"
+      }
+    },
+    {
+      "id": "c5e54f95-7be8-417d-a57b-459bec76d302",
+      "source": {
+        "node": "c8dbfd16-770f-4f76-ae0d-2baec729ee32",
+        "port": "marks"
+      },
+      "target": {
+        "node": "bd8ce9f0-0683-4393-926d-aa9f359f86e1",
+        "port": "marks"
+      }
+    },
+    {
+      "id": "cf26bff1-64d7-4793-ac07-77772bd1a3df",
+      "source": {
+        "node": "4bfadcf0-8900-4d33-bf5a-226a9e2e6ed3",
+        "port": "program"
+      },
+      "target": {
+        "node": "b0e03be0-23d6-43f3-916d-ec9ea799846a",
+        "port": "program"
+      }
+    },
+    {
+      "id": "d4f20a49-149f-44fd-8d87-66bec78acb93",
+      "source": {
+        "node": "b0e03be0-23d6-43f3-916d-ec9ea799846a",
+        "port": "out"
+      },
+      "target": {
+        "node": "2ce02127-cb7e-4ec0-96ee-13b928129168",
+        "port": "in"
+      }
+    },
+    {
+      "id": "d53dda88-9c0d-46b5-b82a-5c625f753965",
+      "source": {
+        "node": "41c1fee3-ecb3-4266-9075-a0bd00b3c854",
+        "port": "out"
+      },
+      "target": {
+        "node": "b0e03be0-23d6-43f3-916d-ec9ea799846a",
+        "port": "in"
+      }
+    },
+    {
+      "id": "e6e2b887-5b90-4fb8-81ff-fe2e58ef3346",
+      "source": {
+        "node": "2ce02127-cb7e-4ec0-96ee-13b928129168",
+        "port": "out"
+      },
+      "target": {
+        "node": "a7dc9ddb-a742-4ad9-90ec-0ebf8c7f953b",
+        "port": "in"
+      }
+    },
+    {
+      "id": "f47f2348-c743-4d5e-9e8b-85435fb4e189",
+      "source": {
+        "node": "a969756e-2b3b-4132-8952-0c29a4513e8f",
+        "port": "filter"
+      },
+      "target": {
+        "node": "ccbbed42-06cc-4499-a6c3-1d8a5929aff7",
+        "port": "filter"
+      }
+    },
+    {
+      "id": "f4d25448-7074-48b9-8446-b20b4a3f800f",
+      "source": {
+        "node": "adb5fbcb-9d48-470f-9f04-1be7507af083",
+        "port": "explosion"
+      },
+      "target": {
+        "node": "ce8c9e4a-3360-4d85-8f77-a0febbb4c698",
+        "port": "target"
+      }
+    },
+    {
+      "id": "f85c9ba9-935a-440c-b5c8-59fc7043c34c",
+      "source": {
+        "node": "1c378d8b-59fc-4d39-8e5a-daa1250fb423",
+        "port": "range"
+      },
+      "target": {
+        "node": "2e59bd01-234e-4ce6-b5f4-1d8451f4aa9b",
+        "port": "range"
+      }
+    },
+    {
+      "id": "ff1a09e0-7b0f-470d-b9dc-b03b91d12ed3",
+      "source": {
+        "node": "1c378d8b-59fc-4d39-8e5a-daa1250fb423",
+        "port": "range"
+      },
+      "target": {
+        "node": "c88fff72-a83d-4d7e-a08f-515f1a734d50",
+        "port": "target"
+      }
+    }
+  ],
+  "frames": [
+    {
+      "id": "480bee5a-cd5e-4dd8-a50e-aad8f86ac57c",
+      "title": "장착 유물 → 지정 효과의 변경 · 원본 값 보존"
+    },
+    {
+      "id": "5fc11dfe-dd29-4e86-afc6-e926af73c1fc",
+      "title": "숙주 존재 검사 · 위치·위력 고정 · 전량 소비"
+    },
+    {
+      "id": "ad4b8fcf-f4f9-4f3d-9fb8-5a1805aab304",
+      "title": "장착 intrinsic · 최초 감염과 비치명 피격/사망 전파"
+    },
+    {
+      "id": "cbb06a53-a3c8-4503-8039-76c05ea2f333",
+      "title": "감염체 수×시간의 성장 · 독립 피해 주기"
+    },
+    {
+      "id": "d02d09be-1c4e-4422-813a-e95fae247d35",
+      "title": "시작 → 자격·비용 → 폭발 → 사용 종료"
+    }
+  ]
+}

@@ -22,6 +22,7 @@ pub struct TrialLimits {
     pub max_receipt_bytes: usize,
     pub trace: super::trace::TraceOptions,
     pub amount_observation: bool,
+    pub coverage: Option<Arc<crate::mod_validation::CoveragePlan>>,
 }
 
 impl Default for TrialLimits {
@@ -34,6 +35,7 @@ impl Default for TrialLimits {
                 .trial_max_receipt_bytes(),
             trace: Default::default(),
             amount_observation: false,
+            coverage: None,
         }
     }
 }
@@ -46,6 +48,7 @@ impl TrialLimits {
             max_receipt_bytes: settings.trial_max_receipt_bytes(),
             trace: Default::default(),
             amount_observation: false,
+            coverage: None,
         }
     }
 
@@ -95,6 +98,7 @@ pub(super) struct TrialState {
     limits: TrialLimits,
     initial_receipt: Arc<PreparedReceipt>,
     preparation_receipt: Option<Arc<PreparedReceipt>>,
+    lab_preparation: Option<Arc<super::LabPreparationReceipt>>,
     records: Vec<Arc<AcceptedStep>>,
     copied_bytes: usize,
     receipt_bytes: usize,
@@ -123,6 +127,7 @@ pub struct TrialFailure {
     position: TrialPosition,
     operation_phase: ExecutionPhase,
     error: AuthoringError,
+    attempt_usage: Option<control::ExecutionUsage>,
 }
 impl TrialFailure {
     fn new(
@@ -134,6 +139,7 @@ impl TrialFailure {
             position,
             operation_phase,
             error,
+            attempt_usage: None,
         }
     }
     pub fn position(&self) -> TrialPosition {
@@ -144,6 +150,9 @@ impl TrialFailure {
     }
     pub fn error(&self) -> &AuthoringError {
         &self.error
+    }
+    pub fn attempt_usage(&self) -> Option<&control::ExecutionUsage> {
+        self.attempt_usage.as_ref()
     }
     pub fn into_error(self) -> AuthoringError {
         self.error
@@ -222,6 +231,9 @@ impl std::fmt::Debug for TrialSession {
     }
 }
 impl TrialSession {
+    pub fn lab_preparation(&self) -> Option<&super::LabPreparationReceipt> {
+        self.state.lab_preparation.as_deref()
+    }
     pub fn prepare(
         content: AuthoringContent,
         scenario: TrialScenario,
@@ -232,6 +244,9 @@ impl TrialSession {
             .map(|state| Self { state })
     }
 
+    pub fn prepare_with_lab(content:AuthoringContent,scenario:TrialScenario,recipe:super::LabPreparation,limits:TrialLimits,cancellation:&CancellationToken)->Result<Self,TrialFailure>{
+        TrialState::prepare_positioned_with_lab(content,scenario,limits,cancellation,Some(recipe)).map(|state|Self{state})
+    }
     pub fn replace(
         &mut self,
         content: AuthoringContent,
@@ -329,6 +344,12 @@ impl TrialSession {
     }
     pub fn accepted_work(&self) -> u64 {
         self.state.accepted_work
+    }
+    pub fn lab_coverage(&self)->Result<crate::mod_validation::CoverageReport,AuthoringError>{
+        self.state.application.lab_coverage().map_err(|diagnostic|AuthoringError::Application{phase:ExecutionPhase::Inspection,diagnostic})?.ok_or_else(||request_error(ExecutionPhase::Inspection,"lab_coverage_missing","Lab coverage owner is absent."))
+    }
+    pub(crate) fn lab_checkpoint(&mut self)->Result<Option<Vec<u8>>,AuthoringError>{
+        self.state.application.export_active_run_checkpoint().map(|c|c.map(|c|c.core_payload_json().to_owned())).map_err(|diagnostic|AuthoringError::Application{phase:ExecutionPhase::Inspection,diagnostic})
     }
     pub fn copied_bytes(&self) -> usize {
         self.state.copied_bytes
@@ -551,6 +572,9 @@ impl TrialState {
         limits: TrialLimits,
         cancellation: &CancellationToken,
     ) -> Result<Self, TrialFailure> {
+        Self::prepare_positioned_with_lab(content,scenario,limits,cancellation,None)
+    }
+    fn prepare_positioned_with_lab(content:AuthoringContent,scenario:TrialScenario,limits:TrialLimits,cancellation:&CancellationToken,recipe:Option<super::LabPreparation>)->Result<Self,TrialFailure>{
         let phase = ExecutionPhase::TrialPreparation;
         let mut position = TrialPosition::Initial;
         let effective = limits
@@ -573,12 +597,21 @@ impl TrialState {
                     candidate = candidate.prepare_step(phase)?;
                 }
                 position = TrialPosition::PreparationReady;
+                if let Some(recipe)=&recipe {
+                    let receipt = candidate.application.prepare_lab(recipe).map_err(|diagnostic|AuthoringError::Application{phase,diagnostic})?;
+                    control::metadata_size(&receipt).map_err(interrupted)?;
+                    candidate.lab_preparation = Some(Arc::new(receipt));
+                }
                 candidate.finish_preparation_in_scope()?;
                 Ok::<_, AuthoringError>(candidate)
             },
         )
         .map_err(|diagnostic| TrialFailure::new(position, phase, execution_error(diagnostic)))?;
-        let mut candidate = candidate.map_err(|error| TrialFailure::new(position, phase, error))?;
+        let mut candidate = candidate.map_err(|error| {
+            let mut failure = TrialFailure::new(position, phase, error);
+            failure.attempt_usage = Some(usage.clone());
+            failure
+        })?;
         candidate.native_storage = native_storage;
         candidate.accepted_work = usage.work;
         Ok(candidate)
@@ -714,6 +747,7 @@ impl TrialState {
             CoreApplication::new_for_authoring(token, scenario.initial().run_seed);
         application.set_authoring_trace_options(limits.trace);
         application.set_amount_observation_enabled(limits.amount_observation);
+        application.set_lab_coverage(limits.coverage.clone()).map_err(|diagnostic| AuthoringError::Application{phase,diagnostic})?;
         let profile = application
             .snapshot(ApplicationSnapshotKind::PlayerProfile)
             .map_err(|diagnostic| AuthoringError::Application { phase, diagnostic })?;
@@ -764,6 +798,7 @@ impl TrialState {
             limits: limits.clone(),
             initial_receipt: receipt,
             preparation_receipt: None,
+            lab_preparation: None,
             records: Vec::new(),
             copied_bytes: 0,
             receipt_bytes,
@@ -927,6 +962,7 @@ impl TrialState {
         let initial_receipt = controlled_clone(&self.initial_receipt).map_err(interrupted)?;
         let preparation_receipt =
             controlled_clone(&self.preparation_receipt).map_err(interrupted)?;
+        let lab_preparation = controlled_clone(&self.lab_preparation).map_err(interrupted)?;
         control::charge(1, "trial_step_record").map_err(interrupted)?;
         let mut record = Arc::new(AcceptedStep {
             public_result,
@@ -988,6 +1024,7 @@ impl TrialState {
             limits: self.limits.clone(),
             initial_receipt,
             preparation_receipt,
+            lab_preparation,
             records,
             copied_bytes,
             receipt_bytes,
@@ -1061,6 +1098,9 @@ mod tests {
     mod r07_copies;
     mod u07_objects;
     mod u08_relics;
+    mod u09_structural;
+    mod u10_causal;
+    mod u11_lab_continuation;
     use super::*;
     use crate::game::data::{content_pack::tests::ExternalFixture, ValidatedGameData};
     use serde_json::json;
@@ -1087,7 +1127,7 @@ mod tests {
         let start = command(
             &mut app,
             player,
-            json!({"type":"start_new_game", "game_mode":"Standard", "replace_active_run":false}),
+            json!({"type":"start_new_game", "game_mode":"Expedition", "replace_active_run":false}),
         );
         command(
             &mut app,
@@ -1098,39 +1138,35 @@ mod tests {
             serde_json::to_value(app.snapshot(ApplicationSnapshotKind::Run).unwrap()).unwrap();
         let context = &snapshot["read_model"]["game_state_context"];
         let count = context["required_count"].as_u64().unwrap() as usize;
-        let ids: Vec<_> = context["candidates"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .take(count)
-            .map(|entry| entry["employee_definition_id"].clone())
-            .collect();
+        let indices: Vec<_> = ["records_clerk", "breach_guard", "field_medic"].iter()
+            .map(|id| context["candidates"].as_array().unwrap().iter().position(|c| c["employee_definition_id"] == *id).unwrap()).collect();
+        let ids: Vec<_> = indices.iter().map(|index| context["candidates"][*index]["employee_definition_id"].clone()).collect();
         assert_eq!(ids.len(), count);
         let selected = command(
             &mut app,
             player,
-            json!({"type":"select_starter_employees", "employee_definition_ids":ids}),
+            json!({"type":"select_starter_employees", "employee_definition_ids":ids,"loan_copy_ids":[]}),
         );
         let node_index = selected["payload"]["map"]["nodes"]
             .as_array()
             .unwrap()
             .iter()
-            .position(|node| node["state"] == "Available" && node["category"] == "Combat")
+            .position(|node| node["state"] == "Available" && node["slot_id"] == "intake_corridor")
             .unwrap();
-        let starter_bindings: Vec<_> = (0..count).map(|index| json!({
-            "from":{"step":2,"pointer":format!("/read_model/game_state_context/candidates/{index}/employee_definition_id")},
+        let starter_bindings: Vec<_> = indices.iter().enumerate().map(|(index, candidate)| json!({
+            "from":{"step":2,"pointer":format!("/read_model/game_state_context/candidates/{candidate}/employee_definition_id")},
             "to":format!("/command/employee_definition_ids/{index}"), "value_type":"string"
         })).collect();
         json!({
             "initial":{"player_id":player, "run_seed":77, "profile":"default_memory"},
             "preparation_steps":[
-                {"kind":"command", "command":{"type":"start_new_game", "game_mode":"Standard", "replace_active_run":false}},
+                {"kind":"command", "command":{"type":"start_new_game", "game_mode":"Expedition", "replace_active_run":false}},
                 {"kind":"command", "command":{"type":"advance_visual_novel", "session_id":null,"current_scene_id":null}, "bindings":[
                     {"from":{"step":0,"pointer":"/payload/visual_novel/session_id"},"to":"/command/session_id","value_type":"string"},
                     {"from":{"step":0,"pointer":"/payload/visual_novel/current_scene_id"},"to":"/command/current_scene_id","value_type":"string"}
                 ]},
                 {"kind":"snapshot", "snapshot":"run"},
-                {"kind":"command", "command":{"type":"select_starter_employees","employee_definition_ids":vec![Value::Null;count]}, "bindings":starter_bindings},
+                {"kind":"command", "command":{"type":"select_starter_employees","employee_definition_ids":vec![Value::Null;count],"loan_copy_ids":[]}, "bindings":starter_bindings},
                 {"kind":"command", "command":{"type":"select_map_node","node_id":null},"bindings":[
                     {"from":{"step":3,"pointer":format!("/payload/map/nodes/{node_index}/id")},"to":"/command/node_id","value_type":"string"}
                 ]},
@@ -1162,7 +1198,7 @@ mod tests {
             authoring::TrialPreview,
             game::{ability::SkillId, resources::board::Position},
         };
-        let fixture = ExternalFixture::official_with_legacy_starters();
+        let fixture = ExternalFixture::official_with_trial_route();
         let token = fixture.load();
         let document = preparation_document(&token);
         let cancel = CancellationToken::default();
@@ -1200,18 +1236,21 @@ mod tests {
             direct_explanation.document()
         );
         assert_eq!(delegated_explanation.usage(), direct_explanation.usage());
+        let entry = session.step(5).unwrap().public_result().unwrap();
+        let employee_index = trial_deploy_employee_index(&session.state.application,entry,"records_clerk");
+        let (ground,positions) = trial_ground_plan(entry);
         let employee_uuid = serde_json::from_value(
             session.step(6).unwrap().public_result().unwrap()["payload"]["battle_update"]
-                ["checkpoint"]["deployment"]["unit_deploy_costs"][0]["employee_uuid"]
+                ["checkpoint"]["deployment"]["unit_deploy_costs"][employee_index]["employee_uuid"]
                 .clone(),
         )
         .unwrap();
-        let zones = session.step(4).unwrap().public_result().unwrap()["payload"]["combat_preview"]
+        let zones = session.step(5).unwrap().public_result().unwrap()["payload"]["battle_setup_snapshot"]
             ["deployment_zones"]
             .as_array()
             .unwrap();
         let position: Position = serde_json::from_value(
-            zones.iter().find(|zone| zone["kind"] == "Ground").unwrap()["cells"][0].clone(),
+            zones[ground]["cells"][positions[0].0].clone(),
         )
         .unwrap();
         let request = || TrialPreview::RequestDeploymentRangePreview {
@@ -1313,7 +1352,7 @@ mod tests {
 
     #[test]
     fn public_trial_session_preserves_receipt_order_none_slots_and_finite_completion() {
-        let token = ValidatedGameData::load_live_embedded().unwrap();
+        let token = ExternalFixture::official_with_trial_route().load();
         let document = preparation_document(&token);
         let cancel = CancellationToken::default();
         let mut session = TrialSession::prepare(
@@ -1422,7 +1461,7 @@ mod tests {
 
     #[test]
     fn public_trial_failures_keep_preparation_position_and_partial_simulation_owner() {
-        let token = ValidatedGameData::load_live_embedded().unwrap();
+        let token = ExternalFixture::official_with_trial_route().load();
         let document = preparation_document(&token);
         let cancel = CancellationToken::default();
         let cancelled = CancellationToken::default();
@@ -1548,7 +1587,7 @@ mod tests {
     #[test]
     fn optional_trace_private_trial_keeps_complete_receipts_and_public_results_identical() {
         use super::super::trace::{TraceLimits, TraceOptions};
-        let fixture = ExternalFixture::official_with_legacy_starters();
+        let fixture = ExternalFixture::official_with_trial_route();
         let token = fixture.load();
         let mut document = preparation_document(&token);
         let cancel = CancellationToken::default();
@@ -1561,22 +1600,18 @@ mod tests {
             &cancel,
         )
         .unwrap();
-        let zones = probe.records[4].public_result.as_ref().unwrap()["payload"]["combat_preview"]
-            ["deployment_zones"]
-            .as_array()
-            .unwrap();
-        let ground = zones
-            .iter()
-            .position(|zone| zone["kind"] == "Ground")
-            .unwrap();
+        let entry = probe.records[5].public_result.as_ref().unwrap();
+        let (ground,positions) = trial_ground_plan(entry);
+        let (cell,facing) = positions[0];
+        let employee_index = trial_deploy_employee_index(&probe.application,entry,"records_clerk");
         let mut deploy = authority_step("deploy_unit", 6);
         deploy["command"]["employee_uuid"] = Value::Null;
         deploy["command"]["position"] = Value::Null;
-        deploy["command"]["facing"] = json!("right");
+        deploy["command"]["facing"] = json!(facing);
         deploy["bindings"].as_array_mut().unwrap().extend([
-            json!({"from":{"step":6,"pointer":"/payload/battle_update/checkpoint/deployment/unit_deploy_costs/0/employee_uuid"},
+            json!({"from":{"step":6,"pointer":format!("/payload/battle_update/checkpoint/deployment/unit_deploy_costs/{employee_index}/employee_uuid")},
                 "to":"/command/employee_uuid", "value_type":"string"}),
-            json!({"from":{"step":4,"pointer":format!("/payload/combat_preview/deployment_zones/{ground}/cells/0")},
+            json!({"from":{"step":5,"pointer":format!("/payload/battle_setup_snapshot/deployment_zones/{ground}/cells/{cell}")},
                 "to":"/command/position", "value_type":"object"}),
         ]);
         drop(probe);
@@ -1734,7 +1769,7 @@ mod tests {
 
     #[test]
     fn private_trial_preparation_uses_one_scope_keeps_none_slots_and_rejects_late_output() {
-        let token = ValidatedGameData::load_live_embedded().unwrap();
+        let token = ExternalFixture::official_with_trial_route().load();
         let document = preparation_document(&token);
         let cancel = CancellationToken::default();
         let mut state = TrialState::prepare_owned(
@@ -1847,7 +1882,7 @@ mod tests {
 
     #[test]
     fn private_trial_preparation_and_execution_enforce_actual_clock_and_final_readiness() {
-        let token = ValidatedGameData::load_live_embedded().unwrap();
+        let token = ExternalFixture::official_with_trial_route().load();
         let document = preparation_document(&token);
         let mut scenario_limits = super::super::ScenarioLimits::default();
         scenario_limits.max_total_clock_ms = 1;
@@ -1941,7 +1976,7 @@ mod tests {
             "initial": {"player_id":"00000000-0000-0000-0000-000000000019", "run_seed":77, "profile":"default_memory"},
             "preparation_steps": [],
             "steps": [
-                {"kind":"command", "command":{"type":"start_new_game", "game_mode":"Standard", "replace_active_run":false}},
+                {"kind":"command", "command":{"type":"start_new_game", "game_mode":"Expedition", "replace_active_run":false}},
                 {"kind":"assert", "from":{"step":0,"pointer":"/kind"}, "assertion":{"test":"type","value_type":"string"}},
                 {"kind":"snapshot", "snapshot":"run"},
                 {"kind":"clock", "clock":{"mode":"elapsed","delta_ms":1,"after_seq":0}}
@@ -1978,7 +2013,7 @@ mod tests {
 
     #[test]
     fn private_trial_step_receipt_failure_discards_real_start_and_retries_identically() {
-        let token = ValidatedGameData::load_live_embedded().unwrap();
+        let token = ExternalFixture::official_with_trial_route().load();
         let mut measured = initial(&token);
         let initial_work = measured.accepted_work;
         measured.advance(&CancellationToken::default()).unwrap();
@@ -2042,7 +2077,7 @@ mod tests {
 
     #[test]
     fn private_trial_prefix_keeps_public_slots_and_survives_domain_and_control_failure() {
-        let token = ValidatedGameData::load_live_embedded().unwrap();
+        let token = ExternalFixture::official_with_trial_route().load();
         let mut state = initial(&token);
         state.advance(&CancellationToken::default()).unwrap();
         let first = Arc::clone(&state.records[0]);
@@ -2094,7 +2129,7 @@ mod tests {
     fn d07_b09_b14_amount_query_states_are_typed_and_do_not_advance_the_trial() {
         use crate::authoring::{AmountBattle, AmountQuery};
 
-        let token = ValidatedGameData::load_live_embedded().unwrap();
+        let token = ExternalFixture::official_with_trial_route().load();
         let document = preparation_document(&token);
         let cancellation = CancellationToken::default();
         let disabled = TrialSession::prepare(
@@ -2169,10 +2204,49 @@ mod tests {
         assert_eq!(enabled.next_step_index(), next);
     }
 
+    // Fixture planning reads the actual public roster and entry snapshot. Roster
+    // serialization order and generated battlefield orientation are not contracts.
+    fn trial_deploy_employee_index(app: &CoreApplication, entry: &Value, definition: &str) -> usize {
+        let roster = app.snapshot(ApplicationSnapshotKind::EmployeeRoster).unwrap();
+        let employee = roster.read_model().as_value()["employees"].as_array().unwrap().iter()
+            .find(|e|e["employee_definition_id"] == definition).unwrap()["uuid"].clone();
+        entry["payload"]["battle_update"]["checkpoint"]["deployment"]["unit_deploy_costs"].as_array().unwrap()
+            .iter().position(|e|e["employee_uuid"] == employee).unwrap()
+    }
+
+    fn trial_ground_plan(entry: &Value) -> (usize, Vec<(usize, &'static str)>) {
+        let setup = &entry["payload"]["battle_setup_snapshot"];
+        let zones = setup["deployment_zones"].as_array().unwrap();
+        let ground = zones.iter().position(|zone|zone["kind"] == "Ground").unwrap();
+        let end = &setup["routes"].as_array().unwrap().iter().find(|r|r["id"] == "defense_main").unwrap()["end"];
+        let (x,y) = (end["x"].as_i64().unwrap(),end["y"].as_i64().unwrap());
+        let units = entry["payload"]["battle_update"]["checkpoint"]["units"].as_array().unwrap();
+        let mut cells: Vec<_> = zones[ground]["cells"].as_array().unwrap().iter().enumerate()
+            .filter(|(_,cell)| !units.iter().any(|u|u["position"] == **cell))
+            .filter_map(|(index,cell)| {
+                let (cx,cy) = (cell["x"].as_i64().unwrap(),cell["y"].as_i64().unwrap());
+                let (dx,dy) = (x-cx,y-cy);
+                if dx.abs()+dy.abs() != 1 {return None;}
+                let facing = if dx < 0 {"left"} else if dx > 0 {"right"} else if dy < 0 {"up"} else {"down"};
+                Some((cy,cx,index,facing))
+            }).collect();
+        cells.sort();
+        assert!(!cells.is_empty(), "authored route needs a free adjacent firing cell");
+        (ground,cells.into_iter().map(|(_,_,index,facing)|(index,facing)).collect())
+    }
+
     fn public_amount_trial_fixture(
         configure: impl FnOnce(&ExternalFixture),
     ) -> (ExternalFixture, ValidatedGameData, Value) {
-        let fixture = ExternalFixture::official_with_legacy_starters();
+        let fixture = ExternalFixture::official();
+        // This authored loadout leaves the sword dealer's active slot vacant
+        // for the fragment granted by the first real combat reward.
+        let employees_path = "official/data/employees/definitions.ron";
+        let mut employees: crate::game::data::employee_data::EmployeeDefinitionDatabase = ron::de::from_str(&fixture.read(employees_path)).unwrap();
+        let dealer = employees.definitions.iter_mut().find(|e|e.employee_definition_id == "records_clerk").unwrap();
+        dealer.initial_loadout.active_skill_fragment_id = None;
+        dealer.initial_loadout.baseline_skill_fragment_ids = vec!["starter_basic_attack_enhancement".into()];
+        fixture.write(employees_path,ron::ser::to_string(&employees).unwrap());
         let fragments_path = "official/data/skill_fragments/base.ron";
         let fragments = fixture.read(fragments_path).replacen(
             "fragments: [",
@@ -2199,6 +2273,7 @@ dependencies:[],compatibility:(),effect:ActiveSkill(forms:{"base":(skill_id:"fra
             .replacen("attack: 12,", "attack: 1,", 1);
         fixture.write(enemies_path, enemies);
         configure(&fixture);
+        fixture.author_trial_facility();
         let token = fixture.load();
         let mut document = preparation_document(&token);
         let cancellation = CancellationToken::default();
@@ -2212,35 +2287,34 @@ dependencies:[],compatibility:(),effect:ActiveSkill(forms:{"base":(skill_id:"fra
             &cancellation,
         )
         .unwrap();
-        let zones = probe.step(4).unwrap().public_result().unwrap()["payload"]["combat_preview"]
-            ["deployment_zones"]
-            .as_array()
-            .unwrap();
-        let ground = zones
-            .iter()
-            .position(|zone| zone["kind"] == "Ground")
-            .unwrap();
+        let entry = probe.step(5).unwrap().public_result().unwrap();
+        let (ground,positions) = trial_ground_plan(entry);
+        assert!(positions.len() >= 2);
+        let (first_cell,first_facing) = positions[0];
+        let (second_cell,second_facing) = positions[1];
+        let first_employee = trial_deploy_employee_index(&probe.state.application,entry,"records_clerk");
+        let second_employee = trial_deploy_employee_index(&probe.state.application,entry,"breach_guard");
         let mut first_deploy = authority_step("deploy_unit", 6);
         first_deploy["command"]["employee_uuid"] = Value::Null;
         first_deploy["command"]["position"] = Value::Null;
-        first_deploy["command"]["facing"] = json!("right");
+        first_deploy["command"]["facing"] = json!(first_facing);
         first_deploy["bindings"].as_array_mut().unwrap().extend([
-            json!({"from":{"step":6,"pointer":"/payload/battle_update/checkpoint/deployment/unit_deploy_costs/0/employee_uuid"},
+            json!({"from":{"step":6,"pointer":format!("/payload/battle_update/checkpoint/deployment/unit_deploy_costs/{first_employee}/employee_uuid")},
                 "to":"/command/employee_uuid", "value_type":"string"}),
-            json!({"from":{"step":4,"pointer":format!("/payload/combat_preview/deployment_zones/{ground}/cells/3")},
+            json!({"from":{"step":5,"pointer":format!("/payload/battle_setup_snapshot/deployment_zones/{ground}/cells/{first_cell}")},
                 "to":"/command/position", "value_type":"object"}),
         ]);
         let mut second_initial_deploy = authority_step("deploy_unit", 9);
         second_initial_deploy["command"]["employee_uuid"] = Value::Null;
         second_initial_deploy["command"]["position"] = Value::Null;
-        second_initial_deploy["command"]["facing"] = json!("right");
+        second_initial_deploy["command"]["facing"] = json!(second_facing);
         second_initial_deploy["bindings"]
             .as_array_mut()
             .unwrap()
             .extend([
-                json!({"from":{"step":6,"pointer":"/payload/battle_update/checkpoint/deployment/unit_deploy_costs/1/employee_uuid"},
+                json!({"from":{"step":6,"pointer":format!("/payload/battle_update/checkpoint/deployment/unit_deploy_costs/{second_employee}/employee_uuid")},
                     "to":"/command/employee_uuid", "value_type":"string"}),
-                json!({"from":{"step":4,"pointer":format!("/payload/combat_preview/deployment_zones/{ground}/cells/2")},
+                json!({"from":{"step":5,"pointer":format!("/payload/battle_setup_snapshot/deployment_zones/{ground}/cells/{second_cell}")},
                     "to":"/command/position", "value_type":"object"}),
             ]);
         drop(probe);
@@ -2259,7 +2333,7 @@ dependencies:[],compatibility:(),effect:ActiveSkill(forms:{"base":(skill_id:"fra
             TrialLimits::default(),
             &cancellation,
         )
-        .unwrap();
+        .expect("two correctly oriented employees must finish the authored opening encounter");
         let next_nodes = completion_discovery
             .step(13)
             .unwrap()
@@ -2313,7 +2387,7 @@ dependencies:[],compatibility:(),effect:ActiveSkill(forms:{"base":(skill_id:"fra
             .unwrap_or_else(|| panic!("unexpected public reward result: {reward_result}"));
         let combat_node_index = post_reward_nodes
             .iter()
-            .position(|node| node["state"] == "Available" && node["category"] == "Combat")
+            .position(|node| node["state"] == "Available" && node["slot_id"] == "containment_guard")
             .unwrap_or_else(|| panic!("no combat after public reward: {post_reward_nodes:?}"));
         let mut select_combat = json!({
             "kind":"command", "command":{"type":"select_map_node", "node_id":Value::Null},
@@ -2323,25 +2397,26 @@ dependencies:[],compatibility:(),effect:ActiveSkill(forms:{"base":(skill_id:"fra
             json!({"from":{"step":18,"pointer":format!("/payload/map/nodes/{combat_node_index}/id")},
                 "to":"/command/node_id", "value_type":"string"}),
         );
-        let mut second_deploy = authority_step("deploy_unit", 21);
-        second_deploy["command"]["employee_uuid"] = Value::Null;
-        second_deploy["command"]["position"] = Value::Null;
-        second_deploy["command"]["facing"] = json!("right");
-        second_deploy["bindings"].as_array_mut().unwrap().extend([
-            json!({"from":{"step":9,"pointer":"/payload/employee_uuid"},
-                "to":"/command/employee_uuid", "value_type":"string"}),
-            json!({"from":{"step":19,"pointer":format!("/payload/combat_preview/deployment_zones/{ground}/cells/3")},
-                "to":"/command/position", "value_type":"object"}),
-        ]);
         let mut common_steps = bridge_steps;
         common_steps.extend([
             select_combat,
             json!({"kind":"command", "command":{"type":"confirm_enter_node"}}),
             authority_step("pause_battle", 20),
             json!({"kind":"snapshot", "snapshot":"run"}),
-            second_deploy,
-            json!({"kind":"clock", "clock":{"mode":"elapsed", "delta_ms":23000, "after_seq":0}}),
         ]);
+        document["steps"] = Value::Array(common_steps.clone());
+        let second_entry = simulate(fixture_content(&token),checked(&document),TrialLimits::default(),&cancellation).unwrap();
+        let (ground,positions) = trial_ground_plan(second_entry.step(20).unwrap().public_result().unwrap());
+        let (cell,facing) = positions[0];
+        let mut second_deploy = authority_step("deploy_unit",21);
+        second_deploy["command"]["employee_uuid"] = Value::Null;
+        second_deploy["command"]["position"] = Value::Null;
+        second_deploy["command"]["facing"] = json!(facing);
+        second_deploy["bindings"].as_array_mut().unwrap().extend([
+            json!({"from":{"step":9,"pointer":"/payload/employee_uuid"},"to":"/command/employee_uuid","value_type":"string"}),
+            json!({"from":{"step":20,"pointer":format!("/payload/battle_setup_snapshot/deployment_zones/{ground}/cells/{cell}")},"to":"/command/position","value_type":"object"}),
+        ]);
+        common_steps.extend([second_deploy,json!({"kind":"clock","clock":{"mode":"elapsed","delta_ms":23000,"after_seq":0}})]);
         document["steps"] = Value::Array(common_steps.clone());
         let discovery = simulate(
             fixture_content(&token),

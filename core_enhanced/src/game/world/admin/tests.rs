@@ -59,7 +59,7 @@ fn core_with_run(game_data: Arc<GameDataBase>) -> GameCore {
             resolution: FacilityTerminalResolution::RunFinalBoss,
         }],
     };
-    let run_progression = RunProgression::new(123, GameMode::Standard, 1);
+    let run_progression = RunProgression::new(123, GameMode::Expedition, 1);
     core.state.run = Some(RunState::new(
         map,
         MapProgression::default(),
@@ -75,6 +75,7 @@ fn empty_core_with_run() -> GameCore {
 
 fn core_with_admin_map_content() -> GameCore {
     let shop_equipment = EquipmentMetadata {
+        content_family: None,
         id: "admin_shop_armor".to_string(),
         uuid: Uuid::from_u128(10_002),
         name: "Admin Shop Armor".to_string(),
@@ -106,6 +107,8 @@ fn core_with_admin_map_content() -> GameCore {
                         equipment_id: "admin_shop_armor".to_string(),
                     },
                     quantity: 1,
+            base_price: None,
+            guaranteed: false,
                     weight: 1,
                     repeatable: false,
                     buy_percent: None,
@@ -139,6 +142,7 @@ fn core_with_admin_map_content() -> GameCore {
 
 fn core_with_admin_grant_catalog_data() -> GameCore {
     let equipment = EquipmentMetadata {
+        content_family: None,
         id: "fixture_armor".to_string(),
         uuid: Uuid::from_u128(30_001),
         name: "Fixture Armor".to_string(),
@@ -245,7 +249,7 @@ fn admin_save_point_fixture_uses_authored_slot_and_produces_a_valid_checkpoint()
         .execute(
             player_id,
             PlayerBehavior::StartNewGame {
-                game_mode: GameMode::Standard,
+                game_mode: GameMode::Expedition,
                 replace_active_run: false,
             },
         )
@@ -279,6 +283,7 @@ fn admin_save_point_fixture_uses_authored_slot_and_produces_a_valid_checkpoint()
         player_id,
         PlayerBehavior::SelectStarterEmployees {
             employee_definition_ids,
+            loan_copy_ids: Vec::new(),
         },
     )
     .expect("starter selection should create the run");
@@ -289,7 +294,7 @@ fn admin_save_point_fixture_uses_authored_slot_and_produces_a_valid_checkpoint()
 
     assert_eq!(output.result_type, "AdminEnteredSavePoint");
     let run = core.state.run.as_ref().expect("run state");
-    assert_eq!(run.map.map_template_id.as_str(), "standard_branching_a");
+    assert_eq!(run.map.map_template_id.as_str(), "facility_9C");
     let save_point_id = run
         .map_progression
         .current_node_id
@@ -300,7 +305,7 @@ fn admin_save_point_fixture_uses_authored_slot_and_produces_a_valid_checkpoint()
         .completed_node_ids
         .contains(&save_point_id));
     let save_point_node = run.map.node(save_point_id).expect("SavePoint node");
-    assert_eq!(save_point_node.slot_id.as_str(), "save_archive");
+    assert_eq!(save_point_node.slot_id.as_str(), "1");
     assert_eq!(save_point_node.state, MapNodeState::Unavailable);
     assert_eq!(save_point_node.visibility, MapNodeVisibility::Revealed);
     let template = core.facility_template_for_map(&run.map).unwrap();

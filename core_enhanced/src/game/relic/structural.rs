@@ -1,11 +1,15 @@
 //! Personal immutable structural plans. Compilation/explanation is read-only;
 //! these crate-private owners cannot be deserialized into execution authority.
 pub mod authoring;
+pub mod support;
+pub(crate) mod action;
 pub mod capabilities;
+pub(crate) mod causal;
 mod closure;
 mod compiler;
 mod execution;
 mod publication;
+mod storage;
 pub(crate) use execution::EffectiveProviderPlan;
 pub mod compose;
 pub mod dto;
@@ -62,7 +66,8 @@ pub(crate) fn employee_has_structural_rules(
             .ok_or_else(|| {
                 RelicPlanError::new(FaultCode::InvalidReference, "missing relic definition")
             })?;
-        if !validation::rules_for(definition, copy.variant).is_empty() {
+        if !validation::rules_for(definition, copy.variant).is_empty()
+            || support::declares_conversion_for(data, &copy.definition_id, copy.variant)? {
             return Ok(true);
         }
     }
@@ -305,9 +310,14 @@ pub(crate) struct EffectivePlanComponents {
     pub effects: Vec<EffectiveEffect>,
     pub grants: Vec<EffectiveGrant>,
     pub execution: Vec<execution::EffectiveProviderPlan>,
+    pub causal_rules: Vec<causal::EffectiveCausalRule>,
+    pub wedge_rules: Vec<causal::EffectiveWedgeRule>,
+    pub action_modifiers: Vec<action::EffectiveActionModifier>,
     pub rules: Vec<dto::RelicRuleStateDto>,
     pub fingerprint: String,
     pub usage: CompileUsage,
+    /// Completed immutable payload, separate from cumulative compiler storage.
+    retained_bytes: usize,
 }
 pub(crate) struct UnpublishedPlanInput<'a> {
     pub data: &'a crate::game::data::GameDataBase,
@@ -317,6 +327,10 @@ pub(crate) struct UnpublishedPlanInput<'a> {
     pub providers: &'a [ProspectiveProvider],
 }
 impl EmployeeEffectivePlan {
+    pub(crate) fn retained_extent(&self) -> usize {
+        self.components.retained_bytes
+    }
+
     pub(crate) fn explain(&self) -> Result<dto::RelicEffectivePlanDto, RelicPlanError> {
         dto::explain(self)
     }
@@ -325,6 +339,7 @@ pub(crate) struct Work {
     pub work: u64,
     pub reserved: usize,
     limit: u64,
+    retained_basis: usize,
 }
 impl Work {
     pub(crate) fn new(limit: u64) -> Self {
@@ -332,6 +347,15 @@ impl Work {
             work: 0,
             reserved: 0,
             limit,
+            retained_basis: 0,
+        }
+    }
+    // Only publication has other invocation-local owners alive beside this
+    // compiler. Runtime plans keep the original zero-basis accounting.
+    pub(super) fn for_publication(limit: u64, retained_basis: usize) -> Self {
+        Self {
+            retained_basis,
+            ..Self::new(limit)
         }
     }
     pub(crate) fn charge(&mut self, n: usize, site: &'static str) -> Result<(), RelicPlanError> {
@@ -366,8 +390,12 @@ impl Work {
             .checked_add(bytes)
             .ok_or_else(|| RelicPlanError::new(FaultCode::ArithmeticOverflow, "storage sum"))?;
         crate::game::battle::runtime_control::admit_retained_growth(
-            self.reserved,
-            Some(next),
+            self.retained_basis
+                .checked_add(self.reserved)
+                .ok_or_else(|| {
+                    RelicPlanError::new(FaultCode::ArithmeticOverflow, "storage basis")
+                })?,
+            self.retained_basis.checked_add(next),
             site,
         )
         .map_err(RelicPlanError::control)?;

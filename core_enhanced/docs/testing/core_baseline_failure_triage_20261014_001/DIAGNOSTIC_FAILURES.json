@@ -1,0 +1,310 @@
+[
+  {
+    "test": "authoring::resolve::tests::whole_resolved_node_count_includes_template_and_all_inserted_values",
+    "failure": "\nthread 'authoring::resolve::tests::whole_resolved_node_count_includes_template_and_all_inserted_values' (308) panicked at core_enhanced/src/authoring/resolve.rs:958:47:\ncalled `Result::unwrap()` on an `Err` value: Request { diagnostic: RequestFailure { code: \"authoring_resolved_node_limit\", phase: TrialExecution, field_path: \"scenario\", reason: \"Resolved JSON exceeds the node ceiling.\" } }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+  },
+  {
+    "test": "authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process",
+    "failure": "\nthread 'authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process' (329) panicked at core_enhanced/src/game/data/content_pack/tests.rs:69:67:\ncalled `Result::unwrap()` on an `Err` value: LiveRonError { code: \"content_validation\", phase: FinalValidation, source_file: \"official/data/map/facility_templates.ron\", domain: \"facility_templates\", object_id: None, action_id: None, effect_id: None, field_path: None, cause: \"facility template 'facility_6A' has invalid connection 'intake_corridor' -> 'r07_maintenance'\", related_sources: [], pack_id: Some(\"official\"), catalog_kind: Some(FacilityTemplates), definition_kind: None, position: None, parser_reason: None, expected: None, actual: None }\n"
+  },
+  {
+    "test": "authoring::trial::tests::amount_order::d07_f03_c07_public_replacement_rejects_actual_old_exact_and_retains_zero",
+    "failure": "\nthread 'authoring::trial::tests::amount_order::d07_f03_c07_public_replacement_rejects_actual_old_exact_and_retains_zero' (318) panicked at core_enhanced/src/authoring/trial.rs:1124:84:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }\n"
+  },
+  {
+    "test": "authoring::trial::tests::u07_objects::u07_public_external_ron_trial_creates_actor_traps_walls_and_detaches_pool",
+    "failure": "\nthread 'authoring::trial::tests::u07_objects::u07_public_external_ron_trial_creates_actor_traps_walls_and_detaches_pool' (330) panicked at core_enhanced/src/authoring/trial.rs:1124:84:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }\n"
+  },
+  {
+    "test": "authoring::trial::tests::u08_relics::u08_external_relic_invalid_catalogs_preserve_published_token_and_nonempty_run",
+    "failure": "\nthread 'authoring::trial::tests::u08_relics::u08_external_relic_invalid_catalogs_preserve_published_token_and_nonempty_run' (332) panicked at core_enhanced/src/authoring/trial.rs:1124:84:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }\n"
+  },
+  {
+    "test": "authoring::trial::tests::d07_b15_public_trial_amount_preview_explain_and_exact_use_actual_legacy_execution",
+    "failure": "\nthread 'authoring::trial::tests::d07_b15_public_trial_amount_preview_explain_and_exact_use_actual_legacy_execution' (320) panicked at core_enhanced/src/authoring/trial.rs:1124:84:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }\n"
+  },
+  {
+    "test": "authoring::trial::tests::amount_completion::r06_public_operator_units_reject_before_publication_and_preserve_held_run",
+    "failure": "\nthread 'authoring::trial::tests::amount_completion::r06_public_operator_units_reject_before_publication_and_preserve_held_run' (313) panicked at core_enhanced/src/authoring/trial.rs:1124:84:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }\n"
+  },
+  {
+    "test": "authoring::trial::tests::amount_completion::r06_public_dynamic_query_limits_identity_lifecycle_and_trace_independence",
+    "failure": "\nthread 'authoring::trial::tests::amount_completion::r06_public_dynamic_query_limits_identity_lifecycle_and_trace_independence' (311) panicked at core_enhanced/src/authoring/trial.rs:1124:84:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }\n"
+  },
+  {
+    "test": "authoring::trial::tests::optional_trace_private_trial_keeps_complete_receipts_and_public_results_identical",
+    "failure": "\nthread 'authoring::trial::tests::optional_trace_private_trial_keeps_complete_receipts_and_public_results_identical' (321) panicked at core_enhanced/src/authoring/trial.rs:1124:84:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }\n"
+  },
+  {
+    "test": "authoring::trial::tests::amount_completion::r06_public_literal_expression_delivery_matrix_and_actual_damage_prefix",
+    "failure": "\nthread 'authoring::trial::tests::amount_completion::r06_public_literal_expression_delivery_matrix_and_actual_damage_prefix' (312) panicked at core_enhanced/src/authoring/trial.rs:1124:84:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }\n"
+  },
+  {
+    "test": "authoring::trial::tests::amount_completion::r12_public_boss_flow_projectile_area_milestones_and_cli_export",
+    "failure": "\nthread 'authoring::trial::tests::amount_completion::r12_public_boss_flow_projectile_area_milestones_and_cli_export' (316) panicked at core_enhanced/src/authoring/trial.rs:1124:84:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }\n"
+  },
+  {
+    "test": "authoring::trial::tests::u08_relics::u08_external_changed_or_missing_relic_generation_rejects_original_nonempty_save_atomically",
+    "failure": "\nthread 'authoring::trial::tests::u08_relics::u08_external_changed_or_missing_relic_generation_rejects_original_nonempty_save_atomically' (331) panicked at core_enhanced/src/authoring/trial.rs:1124:84:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }\n"
+  },
+  {
+    "test": "authoring::trial::tests::u08_relics::u08_external_ron_normal_grants_savepoint_event_replay_and_fresh_process",
+    "failure": "\nthread 'authoring::trial::tests::u08_relics::u08_external_ron_normal_grants_savepoint_event_replay_and_fresh_process' (333) panicked at core_enhanced/src/authoring/trial.rs:1124:84:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }\n"
+  },
+  {
+    "test": "authoring::trial::tests::amount_completion::r12_public_sustained_protection_amount_trace_and_cli_export",
+    "failure": "\nthread 'authoring::trial::tests::amount_completion::r12_public_sustained_protection_amount_trace_and_cli_export' (317) panicked at core_enhanced/src/authoring/trial.rs:1124:84:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }\n"
+  },
+  {
+    "test": "authoring::trial::tests::u10_causal::u10_p_invalid_causal_external_candidates_preserve_the_held_generation",
+    "failure": "\nthread 'authoring::trial::tests::u10_causal::u10_p_invalid_causal_external_candidates_preserve_the_held_generation' (339) panicked at core_enhanced/src/authoring/trial.rs:1124:84:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }\n"
+  },
+  {
+    "test": "authoring::trial::tests::u08_relics::u08_external_ron_normal_reward_and_declined_corruption_consume_authored_damage_in_real_hp",
+    "failure": "\nthread 'authoring::trial::tests::u08_relics::u08_external_ron_normal_reward_and_declined_corruption_consume_authored_damage_in_real_hp' (334) panicked at core_enhanced/src/authoring/trial.rs:1124:84:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }\n"
+  },
+  {
+    "test": "authoring::trial::tests::public_trial_preview_is_bounded_and_preserves_the_accepted_session",
+    "failure": "\nthread 'authoring::trial::tests::public_trial_preview_is_bounded_and_preserves_the_accepted_session' (327) panicked at core_enhanced/src/authoring/trial.rs:1124:84:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }\n"
+  },
+  {
+    "test": "authoring::trial::tests::amount_completion::r10_public_flow_amount_generation_query_trace_and_cli_export",
+    "failure": "\nthread 'authoring::trial::tests::amount_completion::r10_public_flow_amount_generation_query_trace_and_cli_export' (315) panicked at core_enhanced/src/authoring/trial.rs:1124:84:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }\n"
+  },
+  {
+    "test": "authoring::trial::tests::amount_completion::r06_public_zero_points_and_weapon_interval_refuse_and_preserve_held_run",
+    "failure": "\nthread 'authoring::trial::tests::amount_completion::r06_public_zero_points_and_weapon_interval_refuse_and_preserve_held_run' (314) panicked at core_enhanced/src/authoring/trial.rs:1124:84:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }\n"
+  },
+  {
+    "test": "authoring::trial::tests::u10_causal::u10_p_external_causal_join_periodic_wedge_and_fresh_continue",
+    "failure": "\nthread 'authoring::trial::tests::u10_causal::u10_p_external_causal_join_periodic_wedge_and_fresh_continue' (338) panicked at core_enhanced/src/authoring/trial.rs:1124:84:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }\n"
+  },
+  {
+    "test": "authoring::trial::tests::u09_structural::families::rv003_external_representatives_and_cross_relic_closure_consume_normal_public_commands",
+    "failure": "\nthread 'authoring::trial::tests::u09_structural::families::rv003_external_representatives_and_cross_relic_closure_consume_normal_public_commands' (336) panicked at core_enhanced/src/authoring/trial.rs:1124:84:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }\n"
+  },
+  {
+    "test": "authoring::trial::tests::u09_structural::amount_cases::rv004_external_structural_amount_active_exact_preview_explain_are_read_only",
+    "failure": "\nthread 'authoring::trial::tests::u09_structural::amount_cases::rv004_external_structural_amount_active_exact_preview_explain_are_read_only' (335) panicked at core_enhanced/src/authoring/trial.rs:1124:84:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }\n"
+  },
+  {
+    "test": "authoring::trial::tests::u09_structural::rv003_external_structural_grants_queries_consumption_and_fresh_continue",
+    "failure": "\nthread 'authoring::trial::tests::u09_structural::rv003_external_structural_grants_queries_consumption_and_fresh_continue' (337) panicked at core_enhanced/src/authoring/trial.rs:1124:84:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }\n"
+  },
+  {
+    "test": "authoring::trial::tests::private_trial_preparation_and_execution_enforce_actual_clock_and_final_readiness",
+    "failure": "\nthread 'authoring::trial::tests::private_trial_preparation_and_execution_enforce_actual_clock_and_final_readiness' (323) panicked at core_enhanced/src/authoring/trial.rs:1124:84:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }\n"
+  },
+  {
+    "test": "authoring::trial::tests::private_trial_prefix_keeps_public_slots_and_survives_domain_and_control_failure",
+    "failure": "\nthread 'authoring::trial::tests::private_trial_prefix_keeps_public_slots_and_survives_domain_and_control_failure' (322) panicked at core_enhanced/src/authoring/trial.rs:2087:54:\ncalled `Result::unwrap()` on an `Err` value: Application { phase: TrialExecution, diagnostic: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) } }\n"
+  },
+  {
+    "test": "authoring::trial::tests::public_trial_session_preserves_receipt_order_none_slots_and_finite_completion",
+    "failure": "\nthread 'authoring::trial::tests::public_trial_session_preserves_receipt_order_none_slots_and_finite_completion' (328) panicked at core_enhanced/src/authoring/trial.rs:1124:84:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }\n"
+  },
+  {
+    "test": "authoring::trial::tests::public_trial_failures_keep_preparation_position_and_partial_simulation_owner",
+    "failure": "\nthread 'authoring::trial::tests::public_trial_failures_keep_preparation_position_and_partial_simulation_owner' (326) panicked at core_enhanced/src/authoring/trial.rs:1124:84:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }\n"
+  },
+  {
+    "test": "authoring::trial::tests::d07_b09_b14_amount_query_states_are_typed_and_do_not_advance_the_trial",
+    "failure": "\nthread 'authoring::trial::tests::d07_b09_b14_amount_query_states_are_typed_and_do_not_advance_the_trial' (319) panicked at core_enhanced/src/authoring/trial.rs:1124:84:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }\n"
+  },
+  {
+    "test": "authoring::trial::tests::private_trial_preparation_uses_one_scope_keeps_none_slots_and_rejects_late_output",
+    "failure": "\nthread 'authoring::trial::tests::private_trial_preparation_uses_one_scope_keeps_none_slots_and_rejects_late_output' (324) panicked at core_enhanced/src/authoring/trial.rs:1124:84:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }\n"
+  },
+  {
+    "test": "authoring::trial::tests::private_trial_step_receipt_failure_discards_real_start_and_retries_identically",
+    "failure": "\nthread 'authoring::trial::tests::private_trial_step_receipt_failure_discards_real_start_and_retries_identically' (325) panicked at core_enhanced/src/authoring/trial.rs:2024:57:\ncalled `Result::unwrap()` on an `Err` value: Application { phase: TrialExecution, diagnostic: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) } }\n"
+  },
+  {
+    "test": "authoring::trial::tests::u11_lab_continuation::world_lab_preparation_retreat_preserves_bulk_loadouts_and_normal_continue_rejects_duplicates",
+    "failure": "\nthread 'authoring::trial::tests::u11_lab_continuation::world_lab_preparation_retreat_preserves_bulk_loadouts_and_normal_continue_rejects_duplicates' (340) panicked at core_enhanced/src/authoring/trial.rs:1124:84:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: InvalidCommand, code: \"invalid_application_command\", details: ApplicationDocument(Object {\"message\": String(\"unknown variant `Standard`, expected `Tutorial` or `Expedition`\")}) }\n"
+  },
+  {
+    "test": "game::data::content_pack::snapshot::tests::unix::invalid_utf8_directories_and_socket_inputs_return_errors",
+    "failure": "\nthread 'game::data::content_pack::snapshot::tests::unix::invalid_utf8_directories_and_socket_inputs_return_errors' (343) panicked at core_enhanced/src/game/data/content_pack/snapshot/tests.rs:232:67:\ncalled `Result::unwrap()` on an `Err` value: Os { code: 1, kind: PermissionDenied, message: \"Operation not permitted\" }\n"
+  },
+  {
+    "test": "game::data::live_ron::tests::manifest_requires_exact_supported_schema_version",
+    "failure": "\nthread 'game::data::live_ron::tests::manifest_requires_exact_supported_schema_version' (345) panicked at core_enhanced/src/game/data/live_ron.rs:2586:14:\ncurrent schema version should load: LiveRonError { code: \"content_validation\", phase: FinalValidation, source_file: \"data/bundle.ron\", domain: \"bundle_manifest\", object_id: None, action_id: None, effect_id: None, field_path: Some(\"schema_version\"), cause: \"unsupported schema version 5; expected exactly 6\", related_sources: [], pack_id: None, catalog_kind: None, definition_kind: None, position: None, parser_reason: None, expected: None, actual: None }\n"
+  },
+  {
+    "test": "game::data::run_policy_data::tests::run_policy_rejects_legacy_or_unknown_fields",
+    "failure": "\nthread 'game::data::run_policy_data::tests::run_policy_rejects_legacy_or_unknown_fields' (346) panicked at core_enhanced/src/game/data/run_policy_data.rs:1469:9:\nassertion failed: err.contains(\"legacy_fallback\")\n"
+  },
+  {
+    "test": "game::recruitment::tests::session_is_fixed_and_recruitment_returns_unselected_candidates_to_tail",
+    "failure": "\nthread 'game::recruitment::tests::session_is_fixed_and_recruitment_returns_unselected_candidates_to_tail' (347) panicked at core_enhanced/src/game/recruitment.rs:231:9:\nassertion `left == right` failed\n  left: [\"employee_1\", \"employee_3\"]\n right: [\"employee_1\", \"employee_3\", \"employee_4\", \"employee_2\"]\n"
+  },
+  {
+    "test": "game::world::tests::combat::resource_lifetimes::actual_same_copy_transfer_enhance_sale_and_dismantle_preserve_or_discard_only_that_run_key",
+    "failure": "\nthread 'game::world::tests::combat::resource_lifetimes::actual_same_copy_transfer_enhance_sale_and_dismantle_preserve_or_discard_only_that_run_key' (374) panicked at core_enhanced/src/game/data/content_pack/tests.rs:69:67:\ncalled `Result::unwrap()` on an `Err` value: LiveRonError { code: \"content_validation\", phase: FinalValidation, source_file: \"official/data/employees/definitions.ron\", domain: \"employee_definitions\", object_id: Some(\"field_medic\"), action_id: None, effect_id: None, field_path: Some(\"definitions[0].initial_loadout.equipment_ids[0]\"), cause: \"starter weapon must match its declared role\", related_sources: [], pack_id: Some(\"official\"), catalog_kind: Some(Employees), definition_kind: Some(Employee), position: None, parser_reason: None, expected: None, actual: None }\n"
+  },
+  {
+    "test": "game::world::tests::combat::resource_lifetimes::actual_run_result_failure_retry_and_fresh_public_checkpoint_preserve_nonempty_values",
+    "failure": "\nthread 'game::world::tests::combat::resource_lifetimes::actual_run_result_failure_retry_and_fresh_public_checkpoint_preserve_nonempty_values' (373) panicked at core_enhanced/src/game/data/content_pack/tests.rs:69:67:\ncalled `Result::unwrap()` on an `Err` value: LiveRonError { code: \"content_validation\", phase: FinalValidation, source_file: \"official/data/employees/definitions.ron\", domain: \"employee_definitions\", object_id: Some(\"field_medic\"), action_id: None, effect_id: None, field_path: Some(\"definitions[0].initial_loadout.equipment_ids[0]\"), cause: \"starter weapon must match its declared role\", related_sources: [], pack_id: Some(\"official\"), catalog_kind: Some(Employees), definition_kind: Some(Employee), position: None, parser_reason: None, expected: None, actual: None }\n"
+  },
+  {
+    "test": "game::world::tests::combat::resource_lifetimes::actual_retreat_restores_run_resource_entry_timeline_and_attempt_identity",
+    "failure": "\nthread 'game::world::tests::combat::resource_lifetimes::actual_retreat_restores_run_resource_entry_timeline_and_attempt_identity' (372) panicked at core_enhanced/src/game/data/content_pack/tests.rs:69:67:\ncalled `Result::unwrap()` on an `Err` value: LiveRonError { code: \"content_validation\", phase: FinalValidation, source_file: \"official/data/employees/definitions.ron\", domain: \"employee_definitions\", object_id: Some(\"field_medic\"), action_id: None, effect_id: None, field_path: Some(\"definitions[0].initial_loadout.equipment_ids[0]\"), cause: \"starter weapon must match its declared role\", related_sources: [], pack_id: Some(\"official\"), catalog_kind: Some(Employees), definition_kind: Some(Employee), position: None, parser_reason: None, expected: None, actual: None }\n"
+  },
+  {
+    "test": "game::world::tests::combat::resource_lifetimes::actual_shop_and_reward_acquisitions_create_distinct_spendable_copy_owners",
+    "failure": "\nthread 'game::world::tests::combat::resource_lifetimes::actual_shop_and_reward_acquisitions_create_distinct_spendable_copy_owners' (375) panicked at core_enhanced/src/game/data/content_pack/tests.rs:69:67:\ncalled `Result::unwrap()` on an `Err` value: LiveRonError { code: \"content_validation\", phase: FinalValidation, source_file: \"official/data/employees/definitions.ron\", domain: \"employee_definitions\", object_id: Some(\"field_medic\"), action_id: None, effect_id: None, field_path: Some(\"definitions[0].initial_loadout.equipment_ids[0]\"), cause: \"starter weapon must match its declared role\", related_sources: [], pack_id: Some(\"official\"), catalog_kind: Some(Employees), definition_kind: Some(Employee), position: None, parser_reason: None, expected: None, actual: None }\n"
+  },
+  {
+    "test": "game::world::tests::combat::resource_lifetimes::actual_withdraw_redeploy_resets_deployment_but_preserves_attempt_and_run",
+    "failure": "\nthread 'game::world::tests::combat::resource_lifetimes::actual_withdraw_redeploy_resets_deployment_but_preserves_attempt_and_run' (376) panicked at core_enhanced/src/game/data/content_pack/tests.rs:69:67:\ncalled `Result::unwrap()` on an `Err` value: LiveRonError { code: \"content_validation\", phase: FinalValidation, source_file: \"official/data/employees/definitions.ron\", domain: \"employee_definitions\", object_id: Some(\"field_medic\"), action_id: None, effect_id: None, field_path: Some(\"definitions[0].initial_loadout.equipment_ids[0]\"), cause: \"starter weapon must match its declared role\", related_sources: [], pack_id: Some(\"official\"), catalog_kind: Some(Employees), definition_kind: Some(Employee), position: None, parser_reason: None, expected: None, actual: None }\n"
+  },
+  {
+    "test": "game::world::tests::combat::resource_lifetimes::actual_event_defeat_commits_nonempty_resources_once_before_ack_and_restart",
+    "failure": "\nthread 'game::world::tests::combat::resource_lifetimes::actual_event_defeat_commits_nonempty_resources_once_before_ack_and_restart' (371) panicked at core_enhanced/src/game/data/content_pack/tests.rs:69:67:\ncalled `Result::unwrap()` on an `Err` value: LiveRonError { code: \"content_validation\", phase: FinalValidation, source_file: \"official/data/employees/definitions.ron\", domain: \"employee_definitions\", object_id: Some(\"field_medic\"), action_id: None, effect_id: None, field_path: Some(\"definitions[0].initial_loadout.equipment_ids[0]\"), cause: \"starter weapon must match its declared role\", related_sources: [], pack_id: Some(\"official\"), catalog_kind: Some(Employees), definition_kind: Some(Employee), position: None, parser_reason: None, expected: None, actual: None }\n"
+  },
+  {
+    "test": "game::world::tests::combat::resource_lifetimes::actual_admin_acquisition_recruitment_and_employee_status_preserve_owner_identity",
+    "failure": "\nthread 'game::world::tests::combat::resource_lifetimes::actual_admin_acquisition_recruitment_and_employee_status_preserve_owner_identity' (370) panicked at core_enhanced/src/game/data/content_pack/tests.rs:69:67:\ncalled `Result::unwrap()` on an `Err` value: LiveRonError { code: \"content_validation\", phase: FinalValidation, source_file: \"official/data/employees/definitions.ron\", domain: \"employee_definitions\", object_id: Some(\"field_medic\"), action_id: None, effect_id: None, field_path: Some(\"definitions[0].initial_loadout.equipment_ids[0]\"), cause: \"starter weapon must match its declared role\", related_sources: [], pack_id: Some(\"official\"), catalog_kind: Some(Employees), definition_kind: Some(Employee), position: None, parser_reason: None, expected: None, actual: None }\n"
+  },
+  {
+    "test": "game::world::tests::combat::durable_continue_recomputes_battle_setup_instead_of_trusting_serialized_preview_cache",
+    "failure": "\nthread 'game::world::tests::combat::durable_continue_recomputes_battle_setup_instead_of_trusting_serialized_preview_cache' (361) panicked at core_enhanced/src/game/world/tests/combat.rs:956:18:\nstandard branching fixture slot\n"
+  },
+  {
+    "test": "game::world::tests::combat::resource_lifetimes::cmrp_external_world_active_terminal_and_pending_keep_effective_owner_limits",
+    "failure": "\nthread 'game::world::tests::combat::resource_lifetimes::cmrp_external_world_active_terminal_and_pending_keep_effective_owner_limits' (377) panicked at core_enhanced/src/game/world/tests/resource_lifetimes.rs:51:10:\ncalled `Result::unwrap()` on an `Err` value: LiveRonError { code: \"content_validation\", phase: FinalValidation, source_file: \"official/data/employees/definitions.ron\", domain: \"employee_definitions\", object_id: Some(\"field_medic\"), action_id: None, effect_id: None, field_path: Some(\"definitions[0].initial_loadout.equipment_ids[0]\"), cause: \"starter weapon must match its declared role\", related_sources: [], pack_id: Some(\"official\"), catalog_kind: Some(Employees), definition_kind: Some(Employee), position: None, parser_reason: None, expected: None, actual: None }\n"
+  },
+  {
+    "test": "game::world::tests::combat::combat_map_node_fails_run_when_no_employee_can_be_deployed",
+    "failure": "\nthread 'game::world::tests::combat::combat_map_node_fails_run_when_no_employee_can_be_deployed' (360) panicked at core_enhanced/src/game/world/tests/combat.rs:2178:5:\nassertion `left == right` failed\n  left: [ActionCapabilityDto { action: StartNewGame, scope: Gameplay, enabled: true, disabled_reason_code: None }, ActionCapabilityDto { action: RequestRelicState, scope: Query, enabled: true, disabled_reason_code: None }, ActionCapabilityDto { action: RequestRelicNumericPlan, scope: Query, enabled: true, disabled_reason_code: None }, ActionCapabilityDto { action: RequestRelicEffectivePlan, scope: Query, enabled: true, disabled_reason_code: None }]\n right: [ActionCapabilityDto { action: RequestRelicState, scope: Query, enabled: true, disabled_reason_code: None }, ActionCapabilityDto { action: RequestRelicNumericPlan, scope: Query, enabled: true, disabled_reason_code: None }]\n"
+  },
+  {
+    "test": "game::world::tests::combat::resource_lifetimes::external_ron_executes_each_lifetime_with_actual_employee_and_copy_sources",
+    "failure": "\nthread 'game::world::tests::combat::resource_lifetimes::external_ron_executes_each_lifetime_with_actual_employee_and_copy_sources' (378) panicked at core_enhanced/src/game/data/content_pack/tests.rs:69:67:\ncalled `Result::unwrap()` on an `Err` value: LiveRonError { code: \"content_validation\", phase: FinalValidation, source_file: \"official/data/employees/definitions.ron\", domain: \"employee_definitions\", object_id: Some(\"field_medic\"), action_id: None, effect_id: None, field_path: Some(\"definitions[0].initial_loadout.equipment_ids[0]\"), cause: \"starter weapon must match its declared role\", related_sources: [], pack_id: Some(\"official\"), catalog_kind: Some(Employees), definition_kind: Some(Employee), position: None, parser_reason: None, expected: None, actual: None }\n"
+  },
+  {
+    "test": "game::world::tests::combat::resource_lifetimes::external_ron_second_cost_shortage_preserves_actual_timestamp_candidate",
+    "failure": "\nthread 'game::world::tests::combat::resource_lifetimes::external_ron_second_cost_shortage_preserves_actual_timestamp_candidate' (379) panicked at core_enhanced/src/game/data/content_pack/tests.rs:69:67:\ncalled `Result::unwrap()` on an `Err` value: LiveRonError { code: \"content_validation\", phase: FinalValidation, source_file: \"official/data/employees/definitions.ron\", domain: \"employee_definitions\", object_id: Some(\"field_medic\"), action_id: None, effect_id: None, field_path: Some(\"definitions[0].initial_loadout.equipment_ids[0]\"), cause: \"starter weapon must match its declared role\", related_sources: [], pack_id: Some(\"official\"), catalog_kind: Some(Employees), definition_kind: Some(Employee), position: None, parser_reason: None, expected: None, actual: None }\n"
+  },
+  {
+    "test": "game::world::tests::content_generation::fixture_b_late_briefing_preparation_failure_preserves_complete_a_authority_on_retry",
+    "failure": "\nthread 'game::world::tests::content_generation::fixture_b_late_briefing_preparation_failure_preserves_complete_a_authority_on_retry' (389) panicked at core_enhanced/src/game/data/mod.rs:1143:10:\ninvalid starter employee loadout reference: DataValidationError { object_id: Some(\"candidate_2\"), field_path: Some(\"definitions[2].initial_loadout.equipment_ids[0]\"), cause: \"references missing equipment 'test_starter_shield'\" }\n"
+  },
+  {
+    "test": "game::world::tests::combat::resource_lifetimes::nonempty_run_survives_repeat_retreat_second_result_floor_and_ends_at_new_run",
+    "failure": "\nthread 'game::world::tests::combat::resource_lifetimes::nonempty_run_survives_repeat_retreat_second_result_floor_and_ends_at_new_run' (381) panicked at core_enhanced/src/game/data/content_pack/tests.rs:69:67:\ncalled `Result::unwrap()` on an `Err` value: LiveRonError { code: \"content_validation\", phase: FinalValidation, source_file: \"official/data/employees/definitions.ron\", domain: \"employee_definitions\", object_id: Some(\"field_medic\"), action_id: None, effect_id: None, field_path: Some(\"definitions[0].initial_loadout.equipment_ids[0]\"), cause: \"starter weapon must match its declared role\", related_sources: [], pack_id: Some(\"official\"), catalog_kind: Some(Employees), definition_kind: Some(Employee), position: None, parser_reason: None, expected: None, actual: None }\n"
+  },
+  {
+    "test": "game::world::tests::combat::forced_boss_omen_defeat_immediately_fails_endless_run",
+    "failure": "\nthread 'game::world::tests::combat::forced_boss_omen_defeat_immediately_fails_endless_run' (364) panicked at core_enhanced/src/game/world/tests/combat.rs:11930:5:\nassertion `left == right` failed\n  left: [ActionCapabilityDto { action: StartNewGame, scope: Gameplay, enabled: true, disabled_reason_code: None }, ActionCapabilityDto { action: RequestRelicState, scope: Query, enabled: true, disabled_reason_code: None }, ActionCapabilityDto { action: RequestRelicNumericPlan, scope: Query, enabled: true, disabled_reason_code: None }, ActionCapabilityDto { action: RequestRelicEffectivePlan, scope: Query, enabled: true, disabled_reason_code: None }]\n right: [ActionCapabilityDto { action: RequestRelicState, scope: Query, enabled: true, disabled_reason_code: None }, ActionCapabilityDto { action: RequestRelicNumericPlan, scope: Query, enabled: true, disabled_reason_code: None }]\n"
+  },
+  {
+    "test": "game::world::tests::combat::resource_lifetimes::extra_attack_child_cast_preserves_its_actual_causal_chain",
+    "failure": "\nthread 'game::world::tests::combat::resource_lifetimes::extra_attack_child_cast_preserves_its_actual_causal_chain' (380) panicked at core_enhanced/src/game/data/content_pack/tests.rs:69:67:\ncalled `Result::unwrap()` on an `Err` value: LiveRonError { code: \"content_validation\", phase: FinalValidation, source_file: \"official/data/employees/definitions.ron\", domain: \"employee_definitions\", object_id: Some(\"field_medic\"), action_id: None, effect_id: None, field_path: Some(\"definitions[0].initial_loadout.equipment_ids[0]\"), cause: \"starter weapon must match its declared role\", related_sources: [], pack_id: Some(\"official\"), catalog_kind: Some(Employees), definition_kind: Some(Employee), position: None, parser_reason: None, expected: None, actual: None }\n"
+  },
+  {
+    "test": "game::world::tests::combat::resource_lifetimes::released_fixed_area_keeps_delivery_and_chain_resources_after_controller_withdrawal",
+    "failure": "\nthread 'game::world::tests::combat::resource_lifetimes::released_fixed_area_keeps_delivery_and_chain_resources_after_controller_withdrawal' (382) panicked at core_enhanced/src/game/data/content_pack/tests.rs:69:67:\ncalled `Result::unwrap()` on an `Err` value: LiveRonError { code: \"content_validation\", phase: FinalValidation, source_file: \"official/data/employees/definitions.ron\", domain: \"employee_definitions\", object_id: Some(\"field_medic\"), action_id: None, effect_id: None, field_path: Some(\"definitions[0].initial_loadout.equipment_ids[0]\"), cause: \"starter weapon must match its declared role\", related_sources: [], pack_id: Some(\"official\"), catalog_kind: Some(Employees), definition_kind: Some(Employee), position: None, parser_reason: None, expected: None, actual: None }\n"
+  },
+  {
+    "test": "game::world::tests::combat::resource_lifetimes::released_payload_cannot_reuse_closed_activation_and_failure_keeps_committed_withdrawal",
+    "failure": "\nthread 'game::world::tests::combat::resource_lifetimes::released_payload_cannot_reuse_closed_activation_and_failure_keeps_committed_withdrawal' (383) panicked at core_enhanced/src/game/data/content_pack/tests.rs:69:67:\ncalled `Result::unwrap()` on an `Err` value: LiveRonError { code: \"content_validation\", phase: FinalValidation, source_file: \"official/data/employees/definitions.ron\", domain: \"employee_definitions\", object_id: Some(\"field_medic\"), action_id: None, effect_id: None, field_path: Some(\"definitions[0].initial_loadout.equipment_ids[0]\"), cause: \"starter weapon must match its declared role\", related_sources: [], pack_id: Some(\"official\"), catalog_kind: Some(Employees), definition_kind: Some(Employee), position: None, parser_reason: None, expected: None, actual: None }\n"
+  },
+  {
+    "test": "game::world::tests::combat::resource_lifetimes::released_projectile_completion_retains_delivery_after_motion_and_controller_end",
+    "failure": "\nthread 'game::world::tests::combat::resource_lifetimes::released_projectile_completion_retains_delivery_after_motion_and_controller_end' (384) panicked at core_enhanced/src/game/data/content_pack/tests.rs:69:67:\ncalled `Result::unwrap()` on an `Err` value: LiveRonError { code: \"content_validation\", phase: FinalValidation, source_file: \"official/data/employees/definitions.ron\", domain: \"employee_definitions\", object_id: Some(\"field_medic\"), action_id: None, effect_id: None, field_path: Some(\"definitions[0].initial_loadout.equipment_ids[0]\"), cause: \"starter weapon must match its declared role\", related_sources: [], pack_id: Some(\"official\"), catalog_kind: Some(Employees), definition_kind: Some(Employee), position: None, parser_reason: None, expected: None, actual: None }\n"
+  },
+  {
+    "test": "game::world::tests::snapshots_and_start::missing_run_start_visual_novel_trigger_fails_start_new_game",
+    "failure": "\nthread 'game::world::tests::snapshots_and_start::missing_run_start_visual_novel_trigger_fails_start_new_game' (396) panicked at core_enhanced/src/game/data/mod.rs:1143:10:\ninvalid starter employee loadout reference: DataValidationError { object_id: Some(\"candidate_2\"), field_path: Some(\"definitions[2].initial_loadout.equipment_ids[0]\"), cause: \"references missing equipment 'test_starter_shield'\" }\n"
+  },
+  {
+    "test": "game::world::tests::combat::resource_lifetimes::terminal_nonempty_result_enforces_native_and_authoring_budgets_before_commit",
+    "failure": "\nthread 'game::world::tests::combat::resource_lifetimes::terminal_nonempty_result_enforces_native_and_authoring_budgets_before_commit' (386) panicked at core_enhanced/src/game/data/content_pack/tests.rs:69:67:\ncalled `Result::unwrap()` on an `Err` value: LiveRonError { code: \"content_validation\", phase: FinalValidation, source_file: \"official/data/employees/definitions.ron\", domain: \"employee_definitions\", object_id: Some(\"field_medic\"), action_id: None, effect_id: None, field_path: Some(\"definitions[0].initial_loadout.equipment_ids[0]\"), cause: \"starter weapon must match its declared role\", related_sources: [], pack_id: Some(\"official\"), catalog_kind: Some(Employees), definition_kind: Some(Employee), position: None, parser_reason: None, expected: None, actual: None }\n"
+  },
+  {
+    "test": "game::world::tests::combat::resource_lifetimes::two_real_same_definition_copies_and_target_employee_selector_do_not_alias",
+    "failure": "\nthread 'game::world::tests::combat::resource_lifetimes::two_real_same_definition_copies_and_target_employee_selector_do_not_alias' (387) panicked at core_enhanced/src/game/data/content_pack/tests.rs:69:67:\ncalled `Result::unwrap()` on an `Err` value: LiveRonError { code: \"content_validation\", phase: FinalValidation, source_file: \"official/data/employees/definitions.ron\", domain: \"employee_definitions\", object_id: Some(\"field_medic\"), action_id: None, effect_id: None, field_path: Some(\"definitions[0].initial_loadout.equipment_ids[0]\"), cause: \"starter weapon must match its declared role\", related_sources: [], pack_id: Some(\"official\"), catalog_kind: Some(Employees), definition_kind: Some(Employee), position: None, parser_reason: None, expected: None, actual: None }\n"
+  },
+  {
+    "test": "game::world::tests::snapshots_and_start::run_start_session_blocking_is_owned_only_by_the_matching_trigger",
+    "failure": "\nthread 'game::world::tests::snapshots_and_start::run_start_session_blocking_is_owned_only_by_the_matching_trigger' (400) panicked at core_enhanced/src/game/data/mod.rs:1143:10:\ninvalid starter employee loadout reference: DataValidationError { object_id: Some(\"candidate_2\"), field_path: Some(\"definitions[2].initial_loadout.equipment_ids[0]\"), cause: \"references missing equipment 'test_starter_shield'\" }\n"
+  },
+  {
+    "test": "game::world::tests::node_sessions::headquarters_recruit_employee_completes_node_and_adds_roster_member",
+    "failure": "\nthread 'game::world::tests::node_sessions::headquarters_recruit_employee_completes_node_and_adds_roster_member' (393) panicked at core_enhanced/src/game/world/tests/node_sessions.rs:170:5:\nassertion failed: matches!(result, BehaviorResult::EmployeeRecruited\n    { employee_definition_id: id, completion, .. } if id ==\n    employee_definition_id &&\n    matches!(*completion, BehaviorResult::NodeCompleted { .. }))\n"
+  },
+  {
+    "test": "game::world::tests::combat::resource_lifetimes::runtime_safety_checkpoint_restore_uses_current_host_profile_and_preserves_original",
+    "failure": "\nthread 'game::world::tests::combat::resource_lifetimes::runtime_safety_checkpoint_restore_uses_current_host_profile_and_preserves_original' (385) panicked at core_enhanced/src/game/data/content_pack/tests.rs:69:67:\ncalled `Result::unwrap()` on an `Err` value: LiveRonError { code: \"content_validation\", phase: FinalValidation, source_file: \"official/data/employees/definitions.ron\", domain: \"employee_definitions\", object_id: Some(\"field_medic\"), action_id: None, effect_id: None, field_path: Some(\"definitions[0].initial_loadout.equipment_ids[0]\"), cause: \"starter weapon must match its declared role\", related_sources: [], pack_id: Some(\"official\"), catalog_kind: Some(Employees), definition_kind: Some(Employee), position: None, parser_reason: None, expected: None, actual: None }\n"
+  },
+  {
+    "test": "game::world::tests::node_sessions::headquarters_session_is_fixed_and_recruitment_moves_exactly_one_definition_to_roster",
+    "failure": "\nthread 'game::world::tests::node_sessions::headquarters_session_is_fixed_and_recruitment_moves_exactly_one_definition_to_roster' (394) panicked at core_enhanced/src/game/world/tests/node_sessions.rs:330:5:\nassertion `left == right` failed\n  left: [\"recruit_5\", \"recruit_1\", \"recruit_4\", \"recruit_0\", \"recruit_2\", \"candidate_5\"]\n right: [\"recruit_5\", \"recruit_1\", \"recruit_4\", \"recruit_0\", \"recruit_2\", \"candidate_5\", \"candidate_4\", \"candidate_3\"]\n"
+  },
+  {
+    "test": "game::world::tests::map_flow::combat_node_confirm_starts_live_battle",
+    "failure": "\nthread 'game::world::tests::map_flow::combat_node_confirm_starts_live_battle' (392) panicked at core_enhanced/src/game/world/tests/map_flow.rs:810:5:\nassertion `left == right` failed\n  left: [ActionCapabilityDto { action: RequestRelicState, scope: Query, enabled: true, disabled_reason_code: None }, ActionCapabilityDto { action: RequestRelicNumericPlan, scope: Query, enabled: true, disabled_reason_code: None }, ActionCapabilityDto { action: RequestRelicEffectivePlan, scope: Query, enabled: true, disabled_reason_code: None }]\n right: [ActionCapabilityDto { action: RequestRelicState, scope: Query, enabled: true, disabled_reason_code: None }, ActionCapabilityDto { action: RequestRelicNumericPlan, scope: Query, enabled: true, disabled_reason_code: None }]\n"
+  },
+  {
+    "test": "game::world::tests::facility::load_run_checkpoint_restores_visible_state_and_anchor_but_not_load_count_or_peak",
+    "failure": "\nthread 'game::world::tests::facility::load_run_checkpoint_restores_visible_state_and_anchor_but_not_load_count_or_peak' (391) panicked at core_enhanced/src/game/world/tests/facility.rs:522:5:\nassertion `left == right` failed\n  left: String(\"Expedition\")\n right: \"Standard\"\n"
+  },
+  {
+    "test": "game::world::tests::snapshots_and_start::run_snapshot_exposes_current_flow_after_start",
+    "failure": "\nthread 'game::world::tests::snapshots_and_start::run_snapshot_exposes_current_flow_after_start' (398) panicked at core_enhanced/src/game/world/tests/snapshots_and_start.rs:1344:5:\nassertion `left == right` failed\n  left: String(\"expedition_development_v1\")\n right: \"standard_intro_a\"\n"
+  },
+  {
+    "test": "game::world::tests::snapshots_and_start::run_snapshot_exposes_current_node_session_after_node_entry",
+    "failure": "\nthread 'game::world::tests::snapshots_and_start::run_snapshot_exposes_current_node_session_after_node_entry' (399) panicked at core_enhanced/src/game/world/tests/snapshots_and_start.rs:1405:5:\nassertion `left == right` failed\n  left: String(\"expedition_development_v1\")\n right: \"standard_branching_a\"\n"
+  },
+  {
+    "test": "game::world::tests::snapshots_and_start::start_new_game_creates_starter_employee_roster_and_equipment",
+    "failure": "\nthread 'game::world::tests::snapshots_and_start::start_new_game_creates_starter_employee_roster_and_equipment' (401) panicked at core_enhanced/src/game/world/tests/snapshots_and_start.rs:1110:9:\nassertion `left == right` failed\n  left: [\"test_starter_shield\", \"standard_armor\"]\n right: [\"standard_training_sword\", \"standard_armor\"]\n"
+  },
+  {
+    "test": "game::world::tests::combat::r12_world_two_employees_shared_personal_parry_cost_result_and_fresh_restore",
+    "failure": "\nthread 'game::world::tests::combat::r12_world_two_employees_shared_personal_parry_cost_result_and_fresh_restore' (369) panicked at core_enhanced/src/game/world/tests/r09_combat.inc.rs:378:5:\nassertion failed: !matches!(core.get_state(), GameState::InBattle { .. })\n"
+  },
+  {
+    "test": "application::fault_tests::native_fault_preserves_last_root_first_cause_and_every_public_mutation_gate",
+    "failure": "\nthread 'application::fault_tests::native_fault_preserves_last_root_first_cause_and_every_public_mutation_gate' (305) panicked at core_enhanced/src/application/fault_tests.rs:96:56:\ncalled `Result::unwrap()` on an `Err` value: ApplicationError { kind: BattleRuntimeFault, code: \"battle_runtime_work_limit\", details: ApplicationDocument(Object {\"code\": String(\"work_limit\"), \"limit\": Number(1000), \"requested\": Number(1078), \"site\": String(\"battle_entry_snapshot_owner\")}) }\n"
+  },
+  {
+    "test": "game::data::content_pack::tests::authoring_generation_lifetime::real_trial_replacement_failures_and_last_pin_reclaim_generations",
+    "failure": "\nthread 'game::data::content_pack::tests::authoring_generation_lifetime::real_trial_replacement_failures_and_last_pin_reclaim_generations' (344) panicked at core_enhanced/src/game/data/content_pack/tests.rs:1588:14:\ncalled `Option::unwrap()` on a `None` value\n"
+  },
+  {
+    "test": "game::world::admin::tests::admin_save_point_fixture_uses_authored_slot_and_produces_a_valid_checkpoint",
+    "failure": "\nthread 'game::world::admin::tests::admin_save_point_fixture_uses_authored_slot_and_produces_a_valid_checkpoint' (348) panicked at core_enhanced/src/game/world/admin/tests.rs:293:5:\nassertion `left == right` failed\n  left: \"facility_9C\"\n right: \"standard_branching_a\"\n"
+  },
+  {
+    "test": "game::world::tests::combat::track_and_rejoin_raw_live_bundle_reaches_typed_world_setup_identity",
+    "failure": "\nthread 'game::world::tests::combat::track_and_rejoin_raw_live_bundle_reaches_typed_world_setup_identity' (388) panicked at core_enhanced/src/game/world/tests/combat.rs:4105:6:\nplayer should deploy before the raw authored actor wave: InvalidAction\n"
+  },
+  {
+    "test": "game::world::tests::combat::battle_setup_snapshot_live_defense_state_request_returns_battle_update_without_advancing_cursor",
+    "failure": "\nthread 'game::world::tests::combat::battle_setup_snapshot_live_defense_state_request_returns_battle_update_without_advancing_cursor' (357) panicked at core_enhanced/src/game/world/tests/combat.rs:2906:5:\nassertion `left == right` failed\n  left: [ActionCapabilityDto { action: RequestRelicState, scope: Query, enabled: true, disabled_reason_code: None }, ActionCapabilityDto { action: RequestRelicNumericPlan, scope: Query, enabled: true, disabled_reason_code: None }, ActionCapabilityDto { action: RequestRelicEffectivePlan, scope: Query, enabled: true, disabled_reason_code: None }]\n right: [ActionCapabilityDto { action: RequestRelicState, scope: Query, enabled: true, disabled_reason_code: None }, ActionCapabilityDto { action: RequestRelicNumericPlan, scope: Query, enabled: true, disabled_reason_code: None }]\n"
+  },
+  {
+    "test": "game::world::tests::combat::paused_live_battle_commits_deploy_and_withdraw_without_advancing_time",
+    "failure": "\nthread 'game::world::tests::combat::paused_live_battle_commits_deploy_and_withdraw_without_advancing_time' (368) panicked at core_enhanced/src/game/world/tests/combat.rs:6636:6:\ncalled `Result::unwrap()` on an `Err` value: InvalidAction\n"
+  },
+  {
+    "test": "game::world::tests::snapshots_and_start::run_checkpoint_preserves_encounter_progression_graph",
+    "failure": "\nthread 'game::world::tests::snapshots_and_start::run_checkpoint_preserves_encounter_progression_graph' (397) panicked at core_enhanced/src/game/world/tests/snapshots_and_start.rs:908:10:\ncalled `Result::unwrap()` on an `Err` value: ActionUnavailable { action: LoadRunCheckpoint, reason: CheckpointUnavailable }\n"
+  },
+  {
+    "test": "game::world::tests::combat::live_ron_defense_route_playable_path_runs_to_combat_result",
+    "failure": "\nthread 'game::world::tests::combat::live_ron_defense_route_playable_path_runs_to_combat_result' (367) panicked at core_enhanced/src/game/world/tests/combat.rs:2781:5:\nassertion failed: event_log.entries.iter().any(|entry|\n        matches!(entry.event, BattleLogEvent::UnitSpawned { .. }))\n"
+  },
+  {
+    "test": "game::world::tests::u08_event_owner::relic_event_history_survives_a_later_legal_dismantle_of_its_selected_copy",
+    "failure": "\nthread 'game::world::tests::u08_event_owner::relic_event_history_survives_a_later_legal_dismantle_of_its_selected_copy' (402) panicked at core_enhanced/src/game/world/tests/u08_event_owner.rs:342:5:\nassertion `left != right` failed\n  left: MapNodeId(bda711b1-39f3-42bc-807e-872bdd72772b)\n right: MapNodeId(bda711b1-39f3-42bc-807e-872bdd72772b)\n"
+  },
+  {
+    "test": "game::world::tests::node_sessions::live_shop_pool_separates_standard_shop_from_endless_floor_four_wandering_merchant",
+    "failure": "\nthread 'game::world::tests::node_sessions::live_shop_pool_separates_standard_shop_from_endless_floor_four_wandering_merchant' (395) panicked at core_enhanced/src/game/world/tests/node_sessions.rs:1121:42:\ncalled `Result::unwrap()` on an `Err` value: InvalidStaticData(\"saved facility room no longer matches authored layout\")\n\n"
+  }
+]

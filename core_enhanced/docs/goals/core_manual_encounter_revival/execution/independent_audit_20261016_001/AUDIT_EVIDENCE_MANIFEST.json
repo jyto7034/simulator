@@ -1,0 +1,446 @@
+{
+  "files": [
+    {
+      "path": "AUDIT_ENVIRONMENT.json",
+      "bytes": 385,
+      "sha256": "3165fc611e50f453925a230f2d4a5f7a96d2ecc39e4ba1a5055ed3e5ca47b952"
+    },
+    {
+      "path": "AUDIT_PLAN.ko.md",
+      "bytes": 6741,
+      "sha256": "d255f32448c8c2366e7bc4b6a695f9a29cf0745dca2d739dab5e3edbec98c1e5"
+    },
+    {
+      "path": "AUDIT_TARGET_RECORD.json",
+      "bytes": 2534,
+      "sha256": "321cfc597454e0edffbfd56562ea0b3e53da01ba4b5d60f22e2f0077da17e69a"
+    },
+    {
+      "path": "COMPLETION_AUDIT.md",
+      "bytes": 15576,
+      "sha256": "e3f8ab75ab57c183be2cedba501da686787318ee6e4a5d1dfa68c94d04fc2d69"
+    },
+    {
+      "path": "CONDITION_REVIEW.json",
+      "bytes": 18023,
+      "sha256": "c6d939a9a3d54e2298ad7643140fcc3fb11f2e853be2966ba6ccd1a726645bd3"
+    },
+    {
+      "path": "ENTRY_CURRENTNESS.json",
+      "bytes": 1593,
+      "sha256": "dd56cf3af8b868db95592596ff39e826884c35aec6f503a6f426c44d7698c754"
+    },
+    {
+      "path": "EXIT_CURRENTNESS.json",
+      "bytes": 2037,
+      "sha256": "d7d9ad72306d682d1c246e753e85db4323890c97fd2f06517cac0628d0ecf41c"
+    },
+    {
+      "path": "FREEZE_VERIFICATION.json",
+      "bytes": 2740,
+      "sha256": "6dcbccc8bfe3c8435e0e29b8acd4c3639f6c0cc4f2132c04539e5d268782df5f"
+    },
+    {
+      "path": "RESULT.json",
+      "bytes": 2241,
+      "sha256": "9ae996f916f082e0360a49a4b5e702d97715edf4578aadb5b470777c4f068868"
+    },
+    {
+      "path": "ROADMAP_DELTA.diff",
+      "bytes": 7283,
+      "sha256": "d86307a37f9aa74f7aa6d21eaa13fe94fe40082e52ac835565c3d95356ad1a4e"
+    },
+    {
+      "path": "ROADMAP_REVIEWED.ko.md",
+      "bytes": 384984,
+      "sha256": "800e09bfdb310c28d328cf695bb69660c26c2817e3f623cba15eb2e91f28e1f2"
+    },
+    {
+      "path": "VERIFIED_RESULTS.json",
+      "bytes": 2351,
+      "sha256": "e03e428ea4dcb2ce84c9dd412e2a8f0ffbb7f08cfc41c7bf9531c3b0a1d5b81b"
+    },
+    {
+      "path": "check_currentness.py",
+      "bytes": 3357,
+      "sha256": "34a8434f65fd5689c5445dd7aa89c2978fa6e413b2ad28fff101099eabe1fb8d"
+    },
+    {
+      "path": "currentness-exit001.log",
+      "bytes": 2037,
+      "sha256": "d7d9ad72306d682d1c246e753e85db4323890c97fd2f06517cac0628d0ecf41c"
+    },
+    {
+      "path": "dependencies001.log",
+      "bytes": 352,
+      "sha256": "113a27112f337a3304120cfe7396b1837647860e9fd805609ff24cd3805569e3"
+    },
+    {
+      "path": "dependencies002.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence001.log",
+      "bytes": 2351,
+      "sha256": "e03e428ea4dcb2ce84c9dd412e2a8f0ffbb7f08cfc41c7bf9531c3b0a1d5b81b"
+    },
+    {
+      "path": "focused001.log",
+      "bytes": 324,
+      "sha256": "cbccf7628a70a585d58ce68146744859e06b95d1e7eec2ca353977fccf4d6dc2"
+    },
+    {
+      "path": "focused002.log",
+      "bytes": 324,
+      "sha256": "cbccf7628a70a585d58ce68146744859e06b95d1e7eec2ca353977fccf4d6dc2"
+    },
+    {
+      "path": "focused003.log",
+      "bytes": 13810,
+      "sha256": "ed744739f62cc98c37f196502905d1ada973df083a500a8fe2b1885d6e56a5b9"
+    },
+    {
+      "path": "freeze001.log",
+      "bytes": 363,
+      "sha256": "129d9c6f40f65c1bb8e1d7df3a319c431e2857390ffdfc9f1efb9f7fe6dd52e9"
+    },
+    {
+      "path": "freeze002.log",
+      "bytes": 328,
+      "sha256": "d54f45e7efa3200b3e208c51e103046edbdd959d75c1518f25d8021ddd87109c"
+    },
+    {
+      "path": "kind-package001.receipt.json",
+      "bytes": 530,
+      "sha256": "727f65c840a5fcd74c3228ab47754bd057a6a99d6f0f1e83c84e9987709c602f"
+    },
+    {
+      "path": "kind-package001.stderr",
+      "bytes": 519,
+      "sha256": "31cac253b17b0f5a1125e7d7a732c067a1a71395641bc7940cd7668c0d4d9601"
+    },
+    {
+      "path": "kind-package001.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "kind-probe001.log",
+      "bytes": 897,
+      "sha256": "d3e6adfd1a2d515d255ff1fac4d2dfa7d8ec5a37081a36b8cd17af7ca71e407a"
+    },
+    {
+      "path": "kind_id_inputs/INPUT_DELTA.json",
+      "bytes": 465,
+      "sha256": "40f9efebf56f50f4f31de7f453b9b04d3542ee550f2836d7673a7333244cb784"
+    },
+    {
+      "path": "kind_id_inputs/source/data/abnormalities/base.ron",
+      "bytes": 25861,
+      "sha256": "7f350b73bd3b736edcc9e33e3f4c17fd783ec2f587dd77286da3d0e69772c1d2"
+    },
+    {
+      "path": "kind_id_inputs/source/data/boss_omen/chains.ron",
+      "bytes": 799,
+      "sha256": "8ababe6019c5a4f371b728ec321c7bb72e213131bc93870fed482b4838bdd8b0"
+    },
+    {
+      "path": "kind_id_inputs/source/data/boss_runtime/base.ron",
+      "bytes": 15863,
+      "sha256": "58805dbc82ee3d4513c571acf8c034646b1389e070fcaebacd08f84ba4966d04"
+    },
+    {
+      "path": "kind_id_inputs/source/data/buffs/base.ron",
+      "bytes": 917,
+      "sha256": "e7cc335f4243b4fc0ac907a72356ba44a1eae2669aa340147a0fbbc14f9c448b"
+    },
+    {
+      "path": "kind_id_inputs/source/data/bundle.ron",
+      "bytes": 27,
+      "sha256": "f75b0805480c82e5607dd931f9b0dbb1e1244947e9b3a288945444687b0d771e"
+    },
+    {
+      "path": "kind_id_inputs/source/data/consumables/base.ron",
+      "bytes": 4154,
+      "sha256": "bdaa2b1f4667ebd20234d0541dd50dd5241f3828b2a417b44980d7390cccdd0a"
+    },
+    {
+      "path": "kind_id_inputs/source/data/employees/definitions.ron",
+      "bytes": 9974,
+      "sha256": "d56593946a7c615e05628c96819bbf247a3989e9760f6043d5cc614b4dea0baa"
+    },
+    {
+      "path": "kind_id_inputs/source/data/enemies/corroded_employees.ron",
+      "bytes": 4083,
+      "sha256": "1d3f537d9623e95b62d313de517a03788ab7a54ce20b22e02dbd7f36ad0fa924"
+    },
+    {
+      "path": "kind_id_inputs/source/data/enemies/corroded_wave_presets.ron",
+      "bytes": 3346,
+      "sha256": "c638648cdc9999b07fd8dcd8e1f6e699c9f5c6650d41959d7b1f0bca6764b751"
+    },
+    {
+      "path": "kind_id_inputs/source/data/equipments/base.ron",
+      "bytes": 82318,
+      "sha256": "f8659db0cd4f098d9a79396345661f7a8ef762f36731c5541d5300bdf1b22ccd"
+    },
+    {
+      "path": "kind_id_inputs/source/data/events/rewards/base.ron",
+      "bytes": 5148,
+      "sha256": "8f02b9119f31a244934324e263791902b4fc6ad582d351abd99bd951c447829a"
+    },
+    {
+      "path": "kind_id_inputs/source/data/events/shops/base.ron",
+      "bytes": 6616,
+      "sha256": "24831ebeccd5558d3ab6e667f24562a9e7110369124de445483d496bfe83ee47"
+    },
+    {
+      "path": "kind_id_inputs/source/data/events/story/base.ron",
+      "bytes": 5693,
+      "sha256": "9832b9a0efe187b733e146d941d6499958c38984d41da6722c82f84f0a003242"
+    },
+    {
+      "path": "kind_id_inputs/source/data/map/battlefield_archetypes.ron",
+      "bytes": 1823,
+      "sha256": "c8251aab51532ee5f045fe182999e0f627e89c7e8ca936f2714bf165fc043dd9"
+    },
+    {
+      "path": "kind_id_inputs/source/data/map/battlefield_templates.ron",
+      "bytes": 12299,
+      "sha256": "1f51d0e4cc1a784c684e60cf4bef9ee4b4e943aa776cd7db781ad7078144223f"
+    },
+    {
+      "path": "kind_id_inputs/source/data/map/facility_templates.ron",
+      "bytes": 74012,
+      "sha256": "3932b65a28c5b65be991245a76167c98bfa7d2be4aaea56929f9f67501413117"
+    },
+    {
+      "path": "kind_id_inputs/source/data/map/node_assignment_profiles.ron",
+      "bytes": 10591,
+      "sha256": "d27bb55245dcff74bc4bf801f32168104926698162589009470641d6d69c10a3"
+    },
+    {
+      "path": "kind_id_inputs/source/data/map/node_definitions.ron",
+      "bytes": 2631,
+      "sha256": "3a2a7ae8cab932e37786ec7de9fbac8143dd5dc039d68ec6a4f1e338e3be59cf"
+    },
+    {
+      "path": "kind_id_inputs/source/data/pve/encounters.ron",
+      "bytes": 68978,
+      "sha256": "b65ec90acf48888fa4bb29cc2f6bccd867dda45dceedf05b40417c8b9b922b1a"
+    },
+    {
+      "path": "kind_id_inputs/source/data/relics/base.ron",
+      "bytes": 83,
+      "sha256": "6d3a1b7f298fe2d4b4e7995549f88e78b21e45db65b1d4856dbfabfe8c768d27"
+    },
+    {
+      "path": "kind_id_inputs/source/data/resources/base.ron",
+      "bytes": 91,
+      "sha256": "2bba22ea16ddc7967d507ca9fcd8278931f1581da3f55a79aee895862a642449"
+    },
+    {
+      "path": "kind_id_inputs/source/data/run/policy.ron",
+      "bytes": 16886,
+      "sha256": "0fe8b3776627ebcaa646919cfbc91b5f866e77e1d83b1bd5489763779bd8b430"
+    },
+    {
+      "path": "kind_id_inputs/source/data/skill_fragments/base.ron",
+      "bytes": 33860,
+      "sha256": "8dda6e6dd958125b8d9804d5c6693dfbd1920fc88a92ff4a98cae4be96ae3c4a"
+    },
+    {
+      "path": "kind_id_inputs/source/data/skills/base.ron",
+      "bytes": 53805,
+      "sha256": "8cfecd4db355aa40082ac0ebc463f73987a4c7e845a122f1d0b2b33ef6dd87f2"
+    },
+    {
+      "path": "kind_id_inputs/source/data/summoned_units/base.ron",
+      "bytes": 2918,
+      "sha256": "341047f471a809ceed21edb14270eb76779cd90e09f4080d67d42c3fc2182966"
+    },
+    {
+      "path": "kind_id_inputs/source/data/visual_novel_triggers/base.ron",
+      "bytes": 725,
+      "sha256": "63b11363113f621f782d34aa0e6b5883fa87e4b4486f2e71afec5d833c25b1af"
+    },
+    {
+      "path": "kind_id_inputs/source/data/visual_novels/base.ron",
+      "bytes": 6051,
+      "sha256": "c76d2d1fb76dcdafb58b42dac195bb1a9605999efcf925a873386951595433e3"
+    },
+    {
+      "path": "kind_id_probe.py",
+      "bytes": 6692,
+      "sha256": "ff6411f474ba74efd7f4814d5ed55754e59db1ffe61bb213f3fffff6f13620ea"
+    },
+    {
+      "path": "restore-probe001.log",
+      "bytes": 653,
+      "sha256": "191b15d5208341c4dc01645b335103696a57e86bec1f431044874b3c13d6cae3"
+    },
+    {
+      "path": "restore_probe/SUMMARY.json",
+      "bytes": 899,
+      "sha256": "bc2cbe35d4ad62dc84bf12496f78c1235c4db58eefea4010005ee2264a7eee08"
+    },
+    {
+      "path": "restore_probe/expanded-pending/RECEIPT.json",
+      "bytes": 2477,
+      "sha256": "bbf2e07fc879d86013facf7de41505fea957d9130e9cf892c81239f226a48262"
+    },
+    {
+      "path": "restore_probe/expanded-pending/RESULT.json",
+      "bytes": 7522,
+      "sha256": "8891eab231cbbf1fcd72004391572cced50522ad9cdcc4cf22a4d63fdcbc2aee"
+    },
+    {
+      "path": "restore_probe/expanded-pending/core_payload.json",
+      "bytes": 70529,
+      "sha256": "a7ef3ded5986b90af3ec4cae541f6ee1ded82b50d784f5d4a0fe2cb2475e99d5"
+    },
+    {
+      "path": "restore_probe/expanded-pending/metadata.json",
+      "bytes": 50,
+      "sha256": "1aa169abdef1e97b252a9cdc4f50c99dd2159006b4424bed46c6b08e4dab80dc"
+    },
+    {
+      "path": "restore_probe/expanded-pending/profile.json",
+      "bytes": 532,
+      "sha256": "80f9c34ea808e356dc1cd16285d978c3f7204e5df44ad1ecca91e15e132f3059"
+    },
+    {
+      "path": "restore_probe/expanded-pending/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "restore_probe/expanded-pending/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "restore_probe/normal-savepoint/RECEIPT.json",
+      "bytes": 2448,
+      "sha256": "2f2894733b80f3281f32420e19260a49f495f22b7dfe9b0147ef356a8e7d8c60"
+    },
+    {
+      "path": "restore_probe/normal-savepoint/RESULT.json",
+      "bytes": 7511,
+      "sha256": "9a8f3ff8b7e8ce464eecd0218ab6de340c560775d971256ae2d2b25d8c207987"
+    },
+    {
+      "path": "restore_probe/normal-savepoint/core_payload.json",
+      "bytes": 24158,
+      "sha256": "419f65892f1c03ac2a2635688c62d67946f4310df0ca42df24cd4bbc11fc9f51"
+    },
+    {
+      "path": "restore_probe/normal-savepoint/metadata.json",
+      "bytes": 50,
+      "sha256": "1aa169abdef1e97b252a9cdc4f50c99dd2159006b4424bed46c6b08e4dab80dc"
+    },
+    {
+      "path": "restore_probe/normal-savepoint/profile.json",
+      "bytes": 532,
+      "sha256": "80f9c34ea808e356dc1cd16285d978c3f7204e5df44ad1ecca91e15e132f3059"
+    },
+    {
+      "path": "restore_probe/normal-savepoint/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "restore_probe/normal-savepoint/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "restore_probe/normal-selected/RECEIPT.json",
+      "bytes": 2465,
+      "sha256": "ab72912460e942b603c3aa3b62cfbe0813034e065cd1772b7e5f974e018d0fdf"
+    },
+    {
+      "path": "restore_probe/normal-selected/RESULT.json",
+      "bytes": 7517,
+      "sha256": "8d1e64c24aebd98de81e6c061e8e760180b49d0782fa6d1fa04c3de053621448"
+    },
+    {
+      "path": "restore_probe/normal-selected/core_payload.json",
+      "bytes": 50896,
+      "sha256": "871910af44ef54fd3b4fa540ab7f1d17b783d070a87463ca8edc6ccc9a66b9f5"
+    },
+    {
+      "path": "restore_probe/normal-selected/metadata.json",
+      "bytes": 50,
+      "sha256": "1aa169abdef1e97b252a9cdc4f50c99dd2159006b4424bed46c6b08e4dab80dc"
+    },
+    {
+      "path": "restore_probe/normal-selected/profile.json",
+      "bytes": 532,
+      "sha256": "80f9c34ea808e356dc1cd16285d978c3f7204e5df44ad1ecca91e15e132f3059"
+    },
+    {
+      "path": "restore_probe/normal-selected/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "restore_probe/normal-selected/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "restore_probe/old-writer/RECEIPT.json",
+      "bytes": 2360,
+      "sha256": "230c6ef8f1014b014151a5e69cd60f1f34e730694c4ceb5dac8a72dbab8e3976"
+    },
+    {
+      "path": "restore_probe/old-writer/RESULT.json",
+      "bytes": 7498,
+      "sha256": "b06e36191f3baa2df350d41ea45257d0327b32cd715340932b4d8fc5d0bc3099"
+    },
+    {
+      "path": "restore_probe/old-writer/core_payload.json",
+      "bytes": 58032,
+      "sha256": "0e5b3d385da98ab3e3f7a50d2a8bc35a58aba0a5c45ab7e367d0ac82593320f3"
+    },
+    {
+      "path": "restore_probe/old-writer/metadata.json",
+      "bytes": 50,
+      "sha256": "1aa169abdef1e97b252a9cdc4f50c99dd2159006b4424bed46c6b08e4dab80dc"
+    },
+    {
+      "path": "restore_probe/old-writer/profile.json",
+      "bytes": 532,
+      "sha256": "80f9c34ea808e356dc1cd16285d978c3f7204e5df44ad1ecca91e15e132f3059"
+    },
+    {
+      "path": "restore_probe/old-writer/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "restore_probe/old-writer/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "restore_probe.py",
+      "bytes": 2909,
+      "sha256": "f0fcaef780fa59a4dcc32787dce3cc9a02280fe8282af6de1bee0b432994c8e4"
+    },
+    {
+      "path": "verify_evidence.py",
+      "bytes": 6066,
+      "sha256": "27706204af5040d2b85b9e588b034d67541bf5bcf25387a32c7162363478901c"
+    },
+    {
+      "path": "verify_freeze.py",
+      "bytes": 4148,
+      "sha256": "9d825b398ae7528e3e2177d09a5ddd53a8609c792e0c46b9bfe98eb3c372f096"
+    }
+  ],
+  "private_keys": "none created; none included",
+  "note": "audit-local outputs, separate from inherited implementation source/evidence"
+}

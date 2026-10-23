@@ -1,0 +1,12 @@
+{
+  "command": [
+    ".cache/u12-vault-cost-target/release/u13_facility_consumer",
+    "measure",
+    "expanded",
+    "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/measure_expanded001.json"
+  ],
+  "exit_code": 0,
+  "seconds": 1.1200821849997737,
+  "stdout": "measure_expanded001.stdout.log",
+  "stderr": "measure_expanded001.stderr.log"
+}

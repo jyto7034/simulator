@@ -1,0 +1,17 @@
+{
+  "record_ref": "ATR-CRAR-C2-P03-GEX20-007",
+  "goal_id": "GOAL-CRAR-C2-P03-APPLICATION-AUTHORITY",
+  "successor_goal_id": "GOAL-CRAR-C2-P07-CORE-PUBLIC-PROJECTION",
+  "captured_date": "2026-08-23",
+  "verdict": "Complete / High",
+  "currentness": "current / expected P07 compile-time projection correction",
+  "previous_currentness_ref": "ATR-CRAR-C2-P03-GEX20-006",
+  "changed_members": [
+    {"path":"src/game/world/snapshot.rs","sha256":"35759cd8335ef6565b0dabded301d69a7513be125ddbb0014eda29e37294c10e"},
+    {"path":"src/game/world/tests/combat.rs","sha256":"07b0a4c26719e342e46066cd96eb9a9a04f3e349d554ca7fa41c6e3dcf67930b"}
+  ],
+  "application_executor_sha256": "7d9c8f707a90ff5c32cf3de2355d4188f2906045248445ccdcac336d56e20df1",
+  "validation": ["runtime test/benchmark switches 0", "default and test-fixtures release checks pass", "combat snapshot 1/1", "application/authority 9/9", "authority API outcomes expected", "current Core 1159/1159"],
+  "external_scope": "game_server, Unity, sibling resources and external consumers uninspected and unclaimed"
+}
+

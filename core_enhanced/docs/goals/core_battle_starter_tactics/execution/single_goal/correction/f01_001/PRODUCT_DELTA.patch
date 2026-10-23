@@ -1,0 +1,366 @@
+--- a/core_enhanced/src/game/battle/core/basic_heal.rs
++++ b/core_enhanced/src/game/battle/core/basic_heal.rs
+@@ -13,7 +13,22 @@
+     },
+ };
+ 
+-use super::BattleCore;
++use super::{BattleCore, RuntimeUnit};
++
++fn effective_basic_heal_amount(unit: &RuntimeUnit) -> Option<i32> {
++    let BasicAttackAction::Heal {
++        flat,
++        spell_power_percent,
++        ..
++    } = &unit.basic_attack.action
++    else {
++        return None;
++    };
++    let amount = u64::from(*flat)
++        .saturating_add(u64::from(unit.stats.spell_power) * u64::from(*spell_power_percent) / 100)
++        .min(i32::MAX as u64) as i32;
++    (amount > 0).then_some(amount)
++}
+ 
+ impl BattleCore {
+     pub(super) fn is_basic_heal_target(
+@@ -26,6 +41,7 @@
+             .zip(self.units.get(&target))
+             .is_some_and(|(source, target)| {
+                 source.is_active()
++                    && effective_basic_heal_amount(source).is_some()
+                     && target.is_active()
+                     && source.owner == target.owner
+                     && target.stats.current_health < target.stats.max_health
+@@ -148,24 +164,17 @@
+         let Some(unit) = self.units.get(&actor) else {
+             return false;
+         };
++        let Some(amount) = effective_basic_heal_amount(unit) else {
++            return false;
++        };
+         if control::charge_serialized(&unit.basic_attack, "basic_heal_release_profile_copy")
+             .is_err()
+         {
+             return false;
+         }
+-        let BasicAttackAction::Heal {
+-            flat,
+-            spell_power_percent,
+-            footprint,
+-        } = unit.basic_attack.action.clone()
+-        else {
+-            return false;
+-        };
+-        let amount = u64::from(flat)
+-            .saturating_add(
+-                u64::from(unit.stats.spell_power) * u64::from(spell_power_percent) / 100,
+-            )
+-            .min(i32::MAX as u64) as i32;
++        let BasicAttackAction::Heal { footprint, .. } = unit.basic_attack.action.clone() else {
++            return false;
++        };
+         let owner = unit.owner;
+         let facing = unit.facing_direction;
+         let air_capable = unit.basic_attack.air_capable;
+--- a/core_enhanced/src/game/battle/core/targeting.rs
++++ b/core_enhanced/src/game/battle/core/targeting.rs
+@@ -936,6 +936,114 @@
+             assert_eq!(core.choose_attack_target_in_range(actor), Some(near));
+             core.units.get_mut(&actor).unwrap().stats.current_health = 10;
+             assert_eq!(core.choose_attack_target_in_range(actor), Some(actor));
++        }
++
++        #[test]
++        fn basic_heal_zero_effective_amount_is_idle_and_absent_from_query() {
++            for footprint in [
++                None,
++                Some(TileRangePattern {
++                    include_anchor_tile: true,
++                    rows: vec!["X@X".into()],
++                }),
++            ] {
++                for (flat, spell_power_percent, spell_power) in [(0, 0, 0), (0, 100, 0), (0, 1, 99)]
++                {
++                    let mut core = test_core();
++                    let actor = healer(&mut core);
++                    let target = add_player_target(&mut core, 10, WorldVec2::new(1.0, 1.0));
++                    core.units.get_mut(&target).unwrap().stats.current_health = 50;
++                    let unit = core.units.get_mut(&actor).unwrap();
++                    unit.basic_attack.action = BasicAttackAction::Heal {
++                        flat,
++                        spell_power_percent,
++                        footprint: footprint.clone(),
++                    };
++                    unit.stats.spell_power = spell_power;
++                    assert!(unit.basic_attack.try_validate_runtime_contract().is_ok());
++                    assert_eq!(core.choose_attack_target_in_range(actor), None);
++                    let preview = core.basic_action_snapshot(actor, true).unwrap();
++                    assert!(preview.eligible_target_ids.is_empty());
++                    assert_eq!(preview.selected_target_id, None);
++                    start(&mut core, actor);
++                    assert!(core.event_queue.is_empty());
++                    assert_eq!(core.units[&target].stats.current_health, 50);
++                    assert_eq!(core.runtime_fact_view().active_actions().count(), 0);
++                    assert!(!core.event_log.entries_after_seq(0).iter().any(|entry| {
++                        matches!(entry.event, BattleLogEvent::AttackStart { .. })
++                    }));
++
++                    if spell_power_percent > 0 {
++                        // A current stat increase makes the same authored definition useful.
++                        core.units.get_mut(&actor).unwrap().stats.spell_power = 100;
++                        let preview = core.basic_action_snapshot(actor, true).unwrap();
++                        assert_eq!(preview.eligible_target_ids, vec![target]);
++                        assert_eq!(preview.selected_target_id, Some(target));
++                        start(&mut core, actor);
++                        let event = core.event_queue.pop().unwrap();
++                        core.process_event(event, 50).unwrap();
++                        assert!(core.units[&target].stats.current_health > 50);
++                        assert_eq!(core.runtime_fact_summary().damage_hp_lost, 0);
++                    }
++                }
++            }
++        }
++
++        #[test]
++        fn basic_heal_release_rechecks_current_amount_and_closes_failed_action() {
++            for footprint in [
++                None,
++                Some(TileRangePattern {
++                    include_anchor_tile: true,
++                    rows: vec!["X@X".into()],
++                }),
++            ] {
++                let mut core = test_core();
++                let actor = healer(&mut core);
++                let target = add_player_target(&mut core, 10, WorldVec2::new(1.0, 1.0));
++                let other = add_player_target(&mut core, 11, WorldVec2::new(5.0, 1.0));
++                core.units.get_mut(&target).unwrap().stats.current_health = 50;
++                core.units.get_mut(&other).unwrap().stats.current_health = 60;
++                core.units.get_mut(&actor).unwrap().basic_attack.action = BasicAttackAction::Heal {
++                    flat: 0,
++                    spell_power_percent: 50,
++                    footprint,
++                };
++                start(&mut core, actor);
++                let event = core.event_queue.pop().unwrap();
++                let mut positive = crate::authoring::clone_shape::controlled_clone(&core).unwrap();
++                // Both copies retain the fixed target even when another ally becomes needier.
++                for candidate in [&mut core, &mut positive] {
++                    candidate
++                        .units
++                        .get_mut(&other)
++                        .unwrap()
++                        .stats
++                        .current_health = 1;
++                }
++                core.units.get_mut(&actor).unwrap().stats.spell_power = 0;
++                positive.units.get_mut(&actor).unwrap().stats.spell_power = 40;
++                let preview = core.basic_action_snapshot(actor, true).unwrap();
++                assert!(preview.eligible_target_ids.is_empty());
++                core.process_event(event.clone(), 50).unwrap();
++                positive.process_event(event, 50).unwrap();
++                assert_eq!(core.units[&target].stats.current_health, 50);
++                assert_eq!(positive.units[&target].stats.current_health, 70);
++                for candidate in [&core, &positive] {
++                    assert_eq!(candidate.units[&other].stats.current_health, 1);
++                    assert_eq!(candidate.runtime_fact_view().active_actions().count(), 0);
++                    assert_eq!(candidate.units[&actor].basic_attack_windup_until_ms, None);
++                    assert_eq!(candidate.runtime_fact_summary().damage_hp_lost, 0);
++                }
++                assert!(core
++                    .event_log
++                    .entries_after_seq(0)
++                    .iter()
++                    .any(|entry| { matches!(entry.event, BattleLogEvent::AttackMiss { .. }) }));
++                assert!(!core.event_log.entries_after_seq(0).iter().any(|entry| {
++                    matches!(entry.event, BattleLogEvent::HpChanged { delta, .. } if delta > 0)
++                }));
++            }
+         }
+ 
+         #[test]
+--- a/core_enhanced/src/game/world/tests/u06_starter.rs
++++ b/core_enhanced/src/game/world/tests/u06_starter.rs
+@@ -2,7 +2,11 @@
+ use crate::game::employee::Employee;
+ 
+ fn start_selected(ids: &[&str]) -> (GameCore, Uuid) {
+-    let mut core = GameCore::new(live_game_data_from_ron(), 0xC006);
++    start_selected_with_data(ids, live_game_data_from_ron())
++}
++
++fn start_selected_with_data(ids: &[&str], data: Arc<GameDataBase>) -> (GameCore, Uuid) {
++    let mut core = GameCore::new(data, 0xC006);
+     let player = Uuid::from_u128(1);
+     let result = core
+         .execute(
+@@ -568,6 +572,168 @@
+ }
+ 
+ #[test]
++fn u06_basic_heal_public_query_and_clock_agree_on_current_recovery() {
++    use crate::application::{
++        ApplicationBattleAuthority, ApplicationCommand, ApplicationDocument,
++        ApplicationExecutionContext, CoreApplication,
++    };
++    use crate::game::{
++        behavior::{LiveBattleBasicActionKind, LiveBattleStateCheckpointDto},
++        data::{abnormality_data::BasicAttackAction, ValidatedGameData},
++    };
++    for (definition, weapon) in [
++        ("field_medic", "standard_training_healing_staff"),
++        ("maintenance_tech", "standard_training_area_healing_staff"),
++    ] {
++        for (flat, percent, spell_power, useful) in [
++            (0, 0, 0, false),
++            (0, 100, 0, false),
++            (0, 1, 99, false),
++            (0, 50, 40, true),
++        ] {
++            let live = ValidatedGameData::load_live_embedded().unwrap();
++            let mut equipment = live.equipment_data.as_ref().clone();
++            let profile = equipment
++                .items
++                .iter_mut()
++                .find(|item| item.id == weapon)
++                .unwrap()
++                .weapon_profile
++                .as_mut()
++                .unwrap();
++            let BasicAttackAction::Heal {
++                flat: authored_flat,
++                spell_power_percent,
++                ..
++            } = &mut profile.action
++            else {
++                panic!("authored healing staff")
++            };
++            *authored_flat = flat;
++            *spell_power_percent = percent;
++            // Preserve the live area footprint and use normal grants/equipment/deployment.
++            let data = GameDataBuilder::from_validated(&live)
++                .with_equipment_data(Arc::new(equipment))
++                .build_arc();
++            let (mut core, player) =
++                start_selected_with_data(&[definition, "breach_guard", "records_clerk"], data);
++            let employee = core
++                .state
++                .roster
++                .iter()
++                .find(|e| e.employee_definition_id == definition)
++                .unwrap()
++                .uuid;
++            let node = force_first_available_node(
++                &mut core,
++                MapNodeCategory::Combat,
++                "combat_monster",
++                MapNodePayload::Encounter {
++                    encounter_id: Some("suppress_burrowing_heaven".into()),
++                },
++            );
++            select_and_confirm_map_node(&mut core, player, node);
++            let profile =
++                crate::game::combat_setup::player_spawns::effective_combat_profile_for_employee(
++                    core.roster().unwrap(),
++                    core.inventory().unwrap(),
++                    &core.state.skill_fragments,
++                    core.game_data.as_ref(),
++                    employee,
++                )
++                .unwrap();
++            let position = core
++                .state
++                .active_battle
++                .as_ref()
++                .unwrap()
++                .combat_preview
++                .deployment_zones
++                .iter()
++                .find(|zone| zone.kind.supports_affinity(profile.deployment_affinity))
++                .unwrap()
++                .cells[0];
++            execute_current_battle_mutation(
++                &mut core,
++                player,
++                PlayerBehavior::DeployUnit {
++                    employee_uuid: employee,
++                    position,
++                    facing: FacingDirection::Right,
++                },
++            )
++            .unwrap();
++            let active = core.state.active_battle.as_mut().unwrap();
++            let unit_id =
++                active.live_deployment.as_ref().unwrap().deployed_units[&employee].unit_instance_id;
++            // Explicit injury/current-stat fixture; the authored action is not replaced in memory.
++            let unit = active.battle.units.get_mut(&unit_id).unwrap();
++            unit.stats.current_health = 50;
++            unit.stats.spell_power = spell_power;
++            let authority = ApplicationBattleAuthority {
++                battle_uuid: active.battle_uuid,
++                battle_state_revision: active.battle_state_revision,
++            };
++            let mut app = CoreApplication::from_core(core);
++            let command = ApplicationCommand::from_document(ApplicationDocument::new(
++                serde_json::to_value(PlayerBehavior::FocusBattleUnit {
++                    unit_instance_id: unit_id,
++                })
++                .unwrap(),
++            ))
++            .unwrap();
++            app.execute(
++                player,
++                command,
++                ApplicationExecutionContext {
++                    expected_battle_authority: Some(authority),
++                    ..Default::default()
++                },
++            )
++            .unwrap();
++            let checkpoint = |app: &mut CoreApplication| {
++                let result = app.active_battle_reconnect(0).unwrap();
++                serde_json::from_value::<LiveBattleStateCheckpointDto>(
++                    result.payload().as_value()["battle_update"]["checkpoint"].clone(),
++                )
++                .unwrap()
++            };
++            let before = checkpoint(&mut app);
++            let before = before
++                .units
++                .iter()
++                .find(|unit| unit.unit_instance_id == unit_id)
++                .unwrap();
++            assert_eq!(before.basic_action.kind, LiveBattleBasicActionKind::Heal);
++            assert!(before.basic_action.preview_available);
++            assert_eq!(
++                before.basic_action.eligible_target_ids,
++                if useful { vec![unit_id] } else { vec![] }
++            );
++            assert_eq!(
++                before.basic_action.selected_target_id,
++                useful.then_some(unit_id)
++            );
++            app.advance_active_battle_by(2500, 0).unwrap();
++            let after = checkpoint(&mut app);
++            let after = after
++                .units
++                .iter()
++                .find(|unit| unit.unit_instance_id == unit_id)
++                .unwrap();
++            if useful {
++                assert!(after.stats.current_health > 50);
++            } else {
++                assert_eq!(after.stats.current_health, 50);
++                assert!(after.basic_action.eligible_target_ids.is_empty());
++                assert_eq!(after.basic_action.selected_target_id, None);
++            }
++            println!("F01 public {definition}: flat={flat}, percent={percent}, SP={spell_power}, useful={useful}, final_hp={}", after.stats.current_health);
++        }
++    }
++}
++
++#[test]
+ fn u06_starter_all_six_copies_transfer_by_weapon_compatibility() {
+     for definition in [
+         "scout_runner",

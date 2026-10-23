@@ -22,6 +22,122 @@ use crate::authoring::control::{self, ExecutionPhase, Resource};
 use sha2::{Digest, Sha256};
 use std::{path::Path, sync::Arc};
 
+/// Private frozen acquisition used by the issuer; publication and subset runs
+/// consume these bytes rather than reopening content after validation.
+pub(crate) struct FrozenContent {
+    snapshot: snapshot::SourceSnapshot,
+}
+pub(crate) struct PublishedDefinition {
+    pub key: DefinitionKey,
+    pub fingerprint: String,
+    pub authored: serde_json::Value,
+}
+pub(crate) struct FrozenPublication {
+    pub token: ValidatedGameData,
+    pub definitions: Vec<PublishedDefinition>,
+}
+impl FrozenContent {
+    pub(crate) fn acquire(root: &Path, selection: &ContentSelection, limits: &InputLimits,settings:&crate::runtime_safety::RuntimeSafetySettings) -> Result<Self, LiveRonError> {
+        let limits=effective_input_limits(limits,settings);
+        snapshot::acquire(root, selection, &limits).map(|snapshot| Self { snapshot })
+    }
+    /// Project the complete source membership from the already acquired bytes.
+    /// This proves correspondence to a trusted publication without rerunning
+    /// its generated setup or reopening files.
+    pub(crate) fn matches_source_receipt(
+        &self,
+        selection: &ContentSelection,
+        expected: &SourceReceipt,
+    ) -> Result<bool, LiveRonError> {
+        control::charge_serialized(
+            &(selection, &self.snapshot.receipt),
+            "mod_base_receipt_scan",
+        )
+        .map_err(control_error)?;
+        let selected: std::collections::BTreeSet<_> = selection
+            .packs
+            .iter()
+            .map(|path| path.to_string_lossy().into_owned())
+            .collect();
+        let mut ids = std::collections::BTreeSet::new();
+        let mut matched = 0;
+        for pack in &self.snapshot.packs {
+            control::charge_serialized(
+                &(&pack.manifest_source, &pack.manifest.pack_id),
+                "mod_base_receipt_membership",
+            )
+            .map_err(control_error)?;
+            let directory = pack
+                .manifest_source
+                .strip_suffix("/pack.ron")
+                .unwrap_or(&pack.manifest_source);
+            if selected.contains(directory) {
+                matched += 1;
+                ids.insert(pack.manifest.pack_id.clone());
+            }
+        }
+        if selected.len() != selection.packs.len() || matched != selected.len() {
+            return Err(LiveRonError::validation(
+                "mod_candidate",
+                "frozen_base",
+                None::<String>,
+                None::<String>,
+                "trusted base pack membership was not captured exactly",
+            ));
+        }
+        let mut files = Vec::new();
+        for row in &self.snapshot.receipt.files {
+            if ids.contains(&row.pack_id) {
+                control::metadata_size(row).map_err(control_error)?;
+                control::charge_serialized(row, "mod_base_receipt_clone")
+                    .map_err(control_error)?;
+                files.push(row.clone());
+            }
+        }
+        let receipt = SourceReceipt { files };
+        control::charge_serialized(&(&receipt, expected), "mod_base_receipt_compare")
+            .map_err(control_error)?;
+        Ok(&receipt == expected)
+    }
+    pub(crate) fn publish(&self, selection: &ContentSelection, limits: &InputLimits, settings: Arc<crate::runtime_safety::RuntimeSafetySettings>) -> Result<FrozenPublication, LiveRonError> {
+        let effective_limits=effective_input_limits(limits,&settings);let limits=&effective_limits;
+        let selected: std::collections::BTreeSet<_> = selection.packs.iter().map(|p|p.to_string_lossy().into_owned()).collect();
+        let mut packs = Vec::new();
+        let mut ids = std::collections::BTreeSet::new();
+        for pack in &self.snapshot.packs {
+            let directory = pack.manifest_source.strip_suffix("/pack.ron").unwrap_or(&pack.manifest_source);
+            if selected.contains(directory) {
+                control::metadata_size(&(&pack.manifest,&pack.manifest_text,&pack.manifest_source,&pack.catalogs)).map_err(control_error)?;
+                control::charge_serialized(&(&pack.manifest,&pack.manifest_text,&pack.manifest_source,&pack.catalogs),"mod_frozen_pack_clone").map_err(control_error)?;
+                ids.insert(pack.manifest.pack_id.clone());
+                packs.push(pack.clone());
+            }
+        }
+        if packs.len()!=selected.len() { return Err(LiveRonError::validation("mod_candidate","frozen_subset",None::<String>,None::<String>,"requested pack was not captured")); }
+        let receipt=snapshot::SourceReceipt { files:self.snapshot.receipt.files.iter().filter(|r|ids.contains(&r.pack_id)).cloned().collect() };
+        let mut definitions=Vec::new();
+        let token=publish_snapshot_inner(snapshot::SourceSnapshot{packs,receipt},selection,limits,settings,Some(&mut definitions))?;
+        Ok(FrozenPublication{token,definitions})
+    }
+    pub(crate) fn manifests(&self, selection:&ContentSelection)->Vec<(String,PackManifest)> {
+        let selected:std::collections::BTreeSet<_>=selection.packs.iter().map(|p|p.to_string_lossy().into_owned()).collect();
+        self.snapshot.packs.iter().filter_map(|p|{
+            let path=p.manifest_source.strip_suffix("/pack.ron")?;
+            selected.contains(path).then(||(path.to_owned(),p.manifest.clone()))
+        }).collect()
+    }
+    pub(crate) fn materialize(&self,root:&Path)->Result<(),std::io::Error> {
+        use std::io::Write;
+        for pack in &self.snapshot.packs {
+            for (path,bytes) in std::iter::once((&pack.manifest_source,&pack.manifest_text)).chain(pack.catalogs.iter().map(|(_,p,b)|(p,b))) {
+                if bytes.is_empty() && path==&pack.manifest_source {return Err(std::io::Error::other("no original external manifest bytes"));}
+                let destination=root.join(path);if let Some(parent)=destination.parent(){std::fs::create_dir_all(parent)?;}
+                let mut file=std::fs::OpenOptions::new().write(true).create_new(true).open(destination)?;file.write_all(bytes.as_bytes())?;file.sync_all()?;
+            }
+        }Ok(())
+    }
+}
+
 /// Immutable explanation data from the same resolution that produced a token.
 /// These are existing loader records, retained without keeping raw input text
 /// or reinterpreting paths after publication.
@@ -72,6 +188,16 @@ pub fn load_with_runtime_safety(
     limits: &InputLimits,
     settings: Arc<crate::runtime_safety::RuntimeSafetySettings>,
 ) -> Result<ValidatedGameData, LiveRonError> {
+    let limits=effective_input_limits(limits,&settings);
+    let limits = &limits;
+    let _phase = control::phase(ExecutionPhase::Acquisition);
+    control::charge(1, "content_acquisition").map_err(control_error)?;
+    let snapshot = snapshot::acquire(trusted_root, selection, limits)?;
+    control::poll("content_acquired").map_err(control_error)?;
+    publish_snapshot_with_runtime_safety(snapshot, selection, limits, settings)
+}
+
+fn effective_input_limits(limits:&InputLimits,settings:&crate::runtime_safety::RuntimeSafetySettings)->InputLimits {
     let mut limits = limits.clone();
     let parse = settings.expression_parse();
     limits.value_expr.max_input_bytes =
@@ -82,12 +208,7 @@ pub fn load_with_runtime_safety(
         .value_expr
         .max_authored_members
         .min(parse.max_authored_members);
-    let limits = &limits;
-    let _phase = control::phase(ExecutionPhase::Acquisition);
-    control::charge(1, "content_acquisition").map_err(control_error)?;
-    let snapshot = snapshot::acquire(trusted_root, selection, limits)?;
-    control::poll("content_acquired").map_err(control_error)?;
-    publish_snapshot_with_runtime_safety(snapshot, selection, limits, settings)
+    limits
 }
 
 fn control_error(error: crate::game::behavior::GameError) -> LiveRonError {
@@ -118,6 +239,16 @@ fn publish_snapshot_with_runtime_safety(
     selection: &ContentSelection,
     limits: &InputLimits,
     settings: Arc<crate::runtime_safety::RuntimeSafetySettings>,
+) -> Result<ValidatedGameData, LiveRonError> {
+    publish_snapshot_inner(snapshot,selection,limits,settings,None)
+}
+
+fn publish_snapshot_inner(
+    snapshot: snapshot::SourceSnapshot,
+    selection: &ContentSelection,
+    limits: &InputLimits,
+    settings: Arc<crate::runtime_safety::RuntimeSafetySettings>,
+    mut definition_observation: Option<&mut Vec<PublishedDefinition>>,
 ) -> Result<ValidatedGameData, LiveRonError> {
     let _phase = control::phase(ExecutionPhase::Parse);
     let mut packs = Vec::new();
@@ -162,6 +293,14 @@ fn publish_snapshot_with_runtime_safety(
         semantic_sha256: format!("{:x}", Sha256::digest(resolved.semantic_bytes()?)),
     };
     let sources = raw::SourceTable::from_definitions(&resolved.definitions);
+    if let Some(observation) = definition_observation.as_mut() {
+        for located in &resolved.definitions {
+            control::metadata_size(&located.definition).map_err(control_error)?;
+            let bytes=canonical::bytes(&located.definition).map_err(|e|LiveRonError::validation("mod_candidate","definition",None::<String>,None::<String>,e.to_string()))?;
+            let authored=serde_json::from_slice(&bytes).map_err(|e|LiveRonError::validation("mod_candidate","definition",None::<String>,None::<String>,e.to_string()))?;
+            observation.push(PublishedDefinition { key:located.definition.key(),fingerprint:format!("{:x}",Sha256::digest(&bytes)),authored });
+        }
+    }
     control::metadata_size(&(&sources.0, &resolved.writers)).map_err(control_error)?;
     let _phase = control::phase(ExecutionPhase::FinalValidation);
     let validated = raw::assemble(resolved.definitions)?

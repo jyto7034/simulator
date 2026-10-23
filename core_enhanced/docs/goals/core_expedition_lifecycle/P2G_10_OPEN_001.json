@@ -1,0 +1,347 @@
+{
+  "created_at": "2026-10-12T08:57:31.550560+09:00",
+  "purpose": "P2G-10 durable open checkpoint before policy discussion; not complete stage result",
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CEXL-PS01-001",
+        "Content Digest": "sha256:c124a97849d76a62a5973c557808d1faf1121335ded101e91910a1ef03c084e4"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CEXL-PS01",
+        "Predecessor Policy Element Revision Ref": null,
+        "Policy statement": "신뢰를 제거하면서 기억 합침·기간·최근 반응 최대8·후퇴/checkpoint/사망 기록·같은 개인 수명과 새 인원 미계승을 보존한다. 현재 비어 있는 사건 종류와 생산자 부재에서 U12가 지원할 비어 있지 않은 기억의 의미/생성 범위는 사용자 확인 전 미결이다.",
+        "Decision Revision Ref": null,
+        "Observable Policy Acceptance": null,
+        "Intrinsic status": "open"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Open Policy Question",
+        "Artifact ID": "OPQ-CEXL-001",
+        "Content Digest": "sha256:b1603a0a0c42e085745154e016eaee76026c75d4a850804ada95dcad3d4a05d1"
+      },
+      "payload": {
+        "Affected Element IDs": [
+          "PE-CEXL-PS01"
+        ],
+        "Question": "U12에서 실제 기억을 만드는 게임 사건은 추가하지 않고, 신뢰와 독립된 기억 보존 기반(합침·기간·최근8·저장/복원·개인 수명)을 구현하고 비어 있지 않은 검증용 기록으로 확인하는 범위로 진행할까요?",
+        "Options and Observable Impact": [
+          {
+            "option": "보존 기반만 구현·검증 (권고)",
+            "impact": "빈 목록만으로 보존 성공을 주장하지 않는다. 신뢰 없는 비어 있지 않은 기록을 표현하고 합침·기간·최근8·후퇴/checkpoint/사망 기록과 새 인원 미계승을 검증한다. 실제 gameplay 생산 사건·보상·능력 효과는 추가하지 않으며 정상 플레이 기억 생산은 미구현으로 명시한다. 표현의 구체 설계는 답변 후 P2G-20에서 정한다."
+          },
+          {
+            "option": "이번에 실제 기억 생성 사건도 정함",
+            "impact": "어떤 사건에서 어떤 기억이 생기는지 별도 정책을 먼저 확정해야 한다. U12가 새 gameplay 생산 범위를 자동 승인받은 것으로 간주하지 않는다."
+          }
+        ],
+        "Recommendation": "보존 기반만 구현·검증. 현재 SavePoint/Gate 비생산 규칙과 신뢰 제거를 유지하고, 새 기억 gameplay를 추정하지 않는다.",
+        "Why User Input Is Required": "기존 보존 요구는 비어 있지 않은 기록을 전제하지만 현재 enum은 비어 있고 합침/recent8 생산도 없다. 새로 지원할 기억 의미는 placeholder에서 도출할 수 없고, U12는 실제 구조 충돌에서 해당 변경만 질문하라고 명시한다. 보존 기반 검증과 정상 플레이 생산을 같은 완료 주장으로 취급할 수 없다.",
+        "Evidence": [
+          {
+            "path": "core_enhanced/src/game/employee_psychology.rs",
+            "bytes": 3036,
+            "sha256": "fc130cf2cb5bb3182962f6feae485078b8d63cd7dbbb4c73971d364a01ef9f69",
+            "read_span": "14–50,66–73",
+            "observed_fact": "Empty PsychologyEventKind makes nonempty typed/Serde memories and recent events uninhabitable; only node expiry remains."
+          },
+          {
+            "path": "core_enhanced/docs/goals/employee_psychology_state_contract/COMPLETION_REVIEW.md",
+            "bytes": 1808,
+            "sha256": "311ef5ff262bd3517215f980db621de273e7945b5e9ff42af70500d911ae65ee",
+            "read_span": "contract evidence",
+            "observed_fact": "Historical July18 RestedAtSupportRest producer/merge/idempotence report; historical evidence, not current functionality."
+          },
+          {
+            "path": "core_enhanced/docs/game_rules/results-and-save.md",
+            "bytes": 42320,
+            "sha256": "178fe8bc441d8e5c81076d7643d2e190a647184f4d540b823ce876df52f7bfaf",
+            "read_span": "404–421",
+            "observed_fact": "Current comparison policy says SavePoint/Gate do not produce memories/recent events; merge, expiry and recent8 remain requirements."
+          },
+          {
+            "path": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+            "bytes": 340158,
+            "sha256": "43dbd55f4168d3a02dbc67ecd23178aa5031e1597105da456d11fc79b69701ef",
+            "read_span": "281–283,586–587,998–1017",
+            "observed_fact": "USER04 removes trust only; PS01 positive memory preservation; U12 instructs asking only about actual memory preservation structure conflicts."
+          }
+        ],
+        "Status": "open",
+        "Decision Revision Ref": null
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CPED-CEXL-001",
+        "Content Digest": "sha256:f15eae48d3ac1208df0f9e432cfc7708acf2fc906b10ff5f07c9b43d919110ba"
+      },
+      "payload": {
+        "Candidate ID": "CAND-CEXL-PS01",
+        "Evaluated Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEXL-001",
+          "Content Digest": "sha256:b2de16aa38bc53ab0eea593a208855a1b0009c7fa0bf9d226d981c4f0f76b3e6"
+        },
+        "Approved Target Scope/Change Request Ref": null,
+        "Evaluated Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CEXL-001",
+          "Content Digest": "sha256:b3c3570a2f98b952fc075e6fb7543f6ee8d5206bc0a3ad9431a76e27e360608a"
+        },
+        "Exact intake/source reference": {
+          "intake": "IN-002 ROADMAP PS01/U12 and IN-008 results-and-save:404–421",
+          "snapshot": {
+            "Artifact Type": "Policy Intake Snapshot",
+            "Artifact ID": "PIS-CEXL-001",
+            "Content Digest": "sha256:b3c3570a2f98b952fc075e6fb7543f6ee8d5206bc0a3ad9431a76e27e360608a"
+          },
+          "source": [
+            {
+              "path": "core_enhanced/src/game/employee_psychology.rs",
+              "bytes": 3036,
+              "sha256": "fc130cf2cb5bb3182962f6feae485078b8d63cd7dbbb4c73971d364a01ef9f69",
+              "read_span": "14–50,66–73",
+              "observed_fact": "Empty PsychologyEventKind makes nonempty typed/Serde memories and recent events uninhabitable; only node expiry remains."
+            },
+            {
+              "path": "core_enhanced/docs/goals/employee_psychology_state_contract/COMPLETION_REVIEW.md",
+              "bytes": 1808,
+              "sha256": "311ef5ff262bd3517215f980db621de273e7945b5e9ff42af70500d911ae65ee",
+              "read_span": "contract evidence",
+              "observed_fact": "Historical July18 RestedAtSupportRest producer/merge/idempotence report; historical evidence, not current functionality."
+            },
+            {
+              "path": "core_enhanced/docs/game_rules/results-and-save.md",
+              "bytes": 42320,
+              "sha256": "178fe8bc441d8e5c81076d7643d2e190a647184f4d540b823ce876df52f7bfaf",
+              "read_span": "404–421",
+              "observed_fact": "Current comparison policy says SavePoint/Gate do not produce memories/recent events; merge, expiry and recent8 remain requirements."
+            },
+            {
+              "path": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+              "bytes": 340158,
+              "sha256": "43dbd55f4168d3a02dbc67ecd23178aa5031e1597105da456d11fc79b69701ef",
+              "read_span": "281–283,586–587,998–1017",
+              "observed_fact": "USER04 removes trust only; PS01 positive memory preservation; U12 instructs asking only about actual memory preservation structure conflicts."
+            }
+          ]
+        },
+        "Predecessor Candidate Policy Element Disposition Record Ref": null,
+        "P2G-10 result": "promoted",
+        "Evidence/decision ref": {
+          "Artifact Type": "Open Policy Question",
+          "Artifact ID": "OPQ-CEXL-001",
+          "Content Digest": "sha256:b1603a0a0c42e085745154e016eaee76026c75d4a850804ada95dcad3d4a05d1"
+        },
+        "Promoted Element ID": "PE-CEXL-PS01",
+        "Initial Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CEXL-PS01-001",
+          "Content Digest": "sha256:c124a97849d76a62a5973c557808d1faf1121335ded101e91910a1ef03c084e4"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CEXL-002",
+        "Content Digest": "sha256:d0e18cf5a8d9e9b44d094b229cf22728bdf9de9ded2c835eb32641e5368948a4"
+      },
+      "payload": {
+        "Predecessor Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CEXL-001",
+          "Content Digest": "sha256:b2de16aa38bc53ab0eea593a208855a1b0009c7fa0bf9d226d981c4f0f76b3e6"
+        },
+        "Predecessor Final Policy Freeze Ref": null,
+        "Approved Metadata and Scope": {
+          "Working Policy Document ID": "WPD-CEXL-20261012",
+          "Policy Topic": "U12 튜토리얼·원정 시작·귀환과 개인 상태 수명",
+          "Requested Result": "bounded_pipeline P2G-00 through P2G-60, then existing separately authorized GEX implementation/independent tests/prepared execution/whole-Goal audit and approved roadmap continuation",
+          "Target Project/Repository": {
+            "project": "simulator",
+            "workspace": "/mnt/f/work/simulator",
+            "head_at_intake": "2f725172edbffd27c5078d29000a1a2ba6ddc4d9"
+          },
+          "Approval Reference": {
+            "user_request": "IN-001 exact direct continuation and IN-003 invoked revised instructions; IN-004 stored continuous request",
+            "scope": "IN-002 ROADMAP U12 and S09/G01–G06/PS01–PS02, USER-04/11 and exact October10 tutorial policy in IN-007",
+            "boundary": "U11 independent closure IN-013, exact target IN-014 and actual completion intake IN-015/016. Existing continuous authority includes P2G handoff then separately staged GEX implementation/tests/audit and following approved roadmap work."
+          },
+          "Scope Items": [
+            {
+              "Scope Item ID": "I01",
+              "Approved Disposition": "in",
+              "Statement": "튜토리얼/원정 두 모드·첫 실행 원정·선택/반복/skip 및 확정 고정3층 튜토리얼의 현재 활동/전투/저장 규칙 포팅과 자산/영구 기록/첫 귀환 story 격리",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 exact direct continuation and IN-003 invoked revised instructions; IN-004 stored continuous request",
+                "scope": "IN-002 ROADMAP U12 and S09/G01–G06/PS01–PS02, USER-04/11 and exact October10 tutorial policy in IN-007",
+                "boundary": "U11 independent closure IN-013, exact target IN-014 and actual completion intake IN-015/016. Existing continuous authority includes P2G handoff then separately staged GEX implementation/tests/audit and following approved roadmap work.",
+                "specific_locator": "U12 confirmed tutorial/implementation/completion; G01; run-and-map tutorial port"
+              }
+            },
+            {
+              "Scope Item ID": "I02",
+              "Approved Disposition": "in",
+              "Statement": "6후보 중3선발·10보유/8배치·기본세트·예산1회·고정 채용 queue/offer/roster ownership·definition/instance 구분과 위험/사회 성격 두 축 보존",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 exact direct continuation and IN-003 invoked revised instructions; IN-004 stored continuous request",
+                "scope": "IN-002 ROADMAP U12 and S09/G01–G06/PS01–PS02, USER-04/11 and exact October10 tutorial policy in IN-007",
+                "boundary": "U11 independent closure IN-013, exact target IN-014 and actual completion intake IN-015/016. Existing continuous authority includes P2G handoff then separately staged GEX implementation/tests/audit and following approved roadmap work.",
+                "specific_locator": "U12 implementation; G02/G03; run-and-map employee selection"
+              }
+            },
+            {
+              "Scope Item ID": "I03",
+              "Approved Disposition": "in",
+              "Statement": "장비·파편 총2사본 대여와 정상 획득/자산 귀환·실패 손실·미반입 회수품 보존의 실제 copy ledger",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 exact direct continuation and IN-003 invoked revised instructions; IN-004 stored continuous request",
+                "scope": "IN-002 ROADMAP U12 and S09/G01–G06/PS01–PS02, USER-04/11 and exact October10 tutorial policy in IN-007",
+                "boundary": "U11 independent closure IN-013, exact target IN-014 and actual completion intake IN-015/016. Existing continuous authority includes P2G handoff then separately staged GEX implementation/tests/audit and following approved roadmap work.",
+                "specific_locator": "U12 output/implementation; G04; results-and-save recovery and loans"
+              }
+            },
+            {
+              "Scope Item ID": "I04",
+              "Approved Disposition": "in",
+              "Statement": "깊이2/3 귀환 경계·실제 회복 가능성 및 원정 귀환/실패 정산·직원 미계승·첫 성공 귀환 story pending/ack/skip와 중복 방지",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 exact direct continuation and IN-003 invoked revised instructions; IN-004 stored continuous request",
+                "scope": "IN-002 ROADMAP U12 and S09/G01–G06/PS01–PS02, USER-04/11 and exact October10 tutorial policy in IN-007",
+                "boundary": "U11 independent closure IN-013, exact target IN-014 and actual completion intake IN-015/016. Existing continuous authority includes P2G handoff then separately staged GEX implementation/tests/audit and following approved roadmap work.",
+                "specific_locator": "U12 completion/output; S09/G05/G06; results-and-save and expedition flow"
+              }
+            },
+            {
+              "Scope Item ID": "I05",
+              "Approved Disposition": "in",
+              "Statement": "신뢰 score/band·권위 상태·초기화·신규 writer/query/전용 입력 제거, 미지원 구형 저장 명시 거절/원본 보호, 기억·최근 반응·고정 성격의 분리 보존과 개인/원정 수명",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 exact direct continuation and IN-003 invoked revised instructions; IN-004 stored continuous request",
+                "scope": "IN-002 ROADMAP U12 and S09/G01–G06/PS01–PS02, USER-04/11 and exact October10 tutorial policy in IN-007",
+                "boundary": "U11 independent closure IN-013, exact target IN-014 and actual completion intake IN-015/016. Existing continuous authority includes P2G handoff then separately staged GEX implementation/tests/audit and following approved roadmap work.",
+                "specific_locator": "U12 responsibility/together-transition; USER-04/11; PS01/PS02; D01/D08"
+              }
+            },
+            {
+              "Scope Item ID": "I06",
+              "Approved Disposition": "in",
+              "Statement": "새 모드/원정의 정상 Core 명령·현재 local/server/authoring/mod 승인·저장/Continue/체크포인트·조회/문서/fixture 경계를 함께 연결하고 영향받는 선행 계약과 whole-Goal 독립 완료 검증",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 exact direct continuation and IN-003 invoked revised instructions; IN-004 stored continuous request",
+                "scope": "IN-002 ROADMAP U12 and S09/G01–G06/PS01–PS02, USER-04/11 and exact October10 tutorial policy in IN-007",
+                "boundary": "U11 independent closure IN-013, exact target IN-014 and actual completion intake IN-015/016. Existing continuous authority includes P2G handoff then separately staged GEX implementation/tests/audit and following approved roadmap work.",
+                "specific_locator": "U12 together-transition and prerequisite; U11 immediate valid state and new capability owner obligation; global Core-first validation"
+              }
+            },
+            {
+              "Scope Item ID": "O01",
+              "Approved Disposition": "out",
+              "Statement": "전체 시설 지도의 최초 구현(U13), 미래 자산 필드 선추가(U15), Unity 실제 메뉴/VN 장면(U26-B)",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 exact direct continuation and IN-003 invoked revised instructions; IN-004 stored continuous request",
+                "scope": "IN-002 ROADMAP U12 and S09/G01–G06/PS01–PS02, USER-04/11 and exact October10 tutorial policy in IN-007",
+                "boundary": "U11 independent closure IN-013, exact target IN-014 and actual completion intake IN-015/016. Existing continuous authority includes P2G handoff then separately staged GEX implementation/tests/audit and following approved roadmap work.",
+                "specific_locator": "U12 explicit exclusions and global Core-first/Unity-later owner assignment"
+              }
+            },
+            {
+              "Scope Item ID": "O02",
+              "Approved Disposition": "out",
+              "Statement": "직원 영구 승계·신뢰 기능 재도입·기억/성격 묵시 삭제, 자동 구저장 변환·원본 삭제/덮어쓰기",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 exact direct continuation and IN-003 invoked revised instructions; IN-004 stored continuous request",
+                "scope": "IN-002 ROADMAP U12 and S09/G01–G06/PS01–PS02, USER-04/11 and exact October10 tutorial policy in IN-007",
+                "boundary": "U11 independent closure IN-013, exact target IN-014 and actual completion intake IN-015/016. Existing continuous authority includes P2G handoff then separately staged GEX implementation/tests/audit and following approved roadmap work.",
+                "specific_locator": "U12 explicit exclusions; USER-04/11 and CF-D01"
+              }
+            },
+            {
+              "Scope Item ID": "O03",
+              "Approved Disposition": "out",
+              "Statement": "개별 최종보스 고유 전투, 튜토리얼의 옛 Standard→Endless 해금/재도전/영구 도감 규칙 자동 계승·전투력 자동 난이도 조정·별도 파편 학습",
+              "Exact User Approval Reference": {
+                "user_request": "IN-001 exact direct continuation and IN-003 invoked revised instructions; IN-004 stored continuous request",
+                "scope": "IN-002 ROADMAP U12 and S09/G01–G06/PS01–PS02, USER-04/11 and exact October10 tutorial policy in IN-007",
+                "boundary": "U11 independent closure IN-013, exact target IN-014 and actual completion intake IN-015/016. Existing continuous authority includes P2G handoff then separately staged GEX implementation/tests/audit and following approved roadmap work.",
+                "specific_locator": "U12 confirmed tutorial scope/completion/exclusions; October10 port and global unique-final-boss exclusion"
+              }
+            }
+          ]
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CEXL-001",
+          "Content Digest": "sha256:b3c3570a2f98b952fc075e6fb7543f6ee8d5206bc0a3ad9431a76e27e360608a"
+        },
+        "Current Policy Element Revision Map": {
+          "PE-CEXL-PS01": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CEXL-PS01-001",
+            "Content Digest": "sha256:c124a97849d76a62a5973c557808d1faf1121335ded101e91910a1ef03c084e4"
+          }
+        },
+        "Decision Revision Ref Set": [],
+        "Open Policy Question Ref Set": [
+          {
+            "Artifact Type": "Open Policy Question",
+            "Artifact ID": "OPQ-CEXL-001",
+            "Content Digest": "sha256:b1603a0a0c42e085745154e016eaee76026c75d4a850804ada95dcad3d4a05d1"
+          }
+        ],
+        "Post-Freeze Change/Closure Basis": {
+          "Post-Freeze Change Record Ref Set": [],
+          "Authoritative Change Obligation Declaration Ref Set": []
+        }
+      }
+    }
+  ],
+  "Current Candidate Policy Element Disposition Effective View": [
+    {
+      "Candidate ID": "CAND-CEXL-PS01",
+      "Effective current record": {
+        "Artifact Type": "Candidate Policy Element Disposition Record",
+        "Artifact ID": "CPED-CEXL-001",
+        "Content Digest": "sha256:f15eae48d3ac1208df0f9e432cfc7708acf2fc906b10ff5f07c9b43d919110ba"
+      },
+      "Result": "promoted",
+      "Initial revision": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CEXL-PS01-001",
+        "Content Digest": "sha256:c124a97849d76a62a5973c557808d1faf1121335ded101e91910a1ef03c084e4"
+      }
+    }
+  ],
+  "Finding Triage Log": [
+    {
+      "Finding ID": "F-CEXL-001",
+      "Affected elements": [
+        "PE-CEXL-PS01"
+      ],
+      "Primary classification": "material_policy",
+      "Disposition": "await actual user decision; no new gameplay or positive preservation claim inferred",
+      "Evidence/decision ref": {
+        "Artifact Type": "Open Policy Question",
+        "Artifact ID": "OPQ-CEXL-001",
+        "Content Digest": "sha256:b1603a0a0c42e085745154e016eaee76026c75d4a850804ada95dcad3d4a05d1"
+      }
+    }
+  ],
+  "Current Working Checkpoint": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CEXL-002",
+    "Content Digest": "sha256:d0e18cf5a8d9e9b44d094b229cf22728bdf9de9ded2c835eb32641e5368948a4"
+  },
+  "P2G-10 Completion": false,
+  "Completion limits": "Only the discovered PS01 candidate is promoted. Other approved U12 policy elements remain to be formally identified/reviewed. No Decision, formal code_reviewed revision, P2G-20 basis, freeze, Goal, product/test edit or new run.",
+  "Cross-reference review": "Producer checked exact predecessor/intake refs, unchanged approved metadata/scope, promoted candidate-to-initial-open element, question-to-element and current element/question selection. This is checkpoint reference consistency only, not P2G-10 complete predicate.",
+  "Limited fact investigation boundary": "Read-only candidate PS01 investigation: determine whether current typed records can represent positive preservation and whether an approved gameplay producer exists. Stop condition met: current enum uninhabited, historical producer report superseded by explicit current nonproduction, scope decision needed. No build/test/probe. Captured exact relevant source bytes; broad dirty status was not recaptured. U11 source baseline remains separately recorded; no U12 runtime writers were assigned.",
+  "Authority": "Existing continuous request authorizes ordinary internal decisions; this unresolved support/production choice is handled under ROADMAP U12 actual memory conflict clause and invoked P2G 8.6. No new authority inferred.",
+  "Role status": "Root stops main progression after minimal checkpoint/handoff. Sol idle. Previously running independent read-only reviewer completed factual investigation without writes/tests; findings preserved separately and await post-answer review. No new tasks assigned."
+}

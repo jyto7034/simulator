@@ -48,6 +48,10 @@ impl ResourceId {
     pub fn as_str(&self) -> &str {
         &self.0
     }
+
+    pub(crate) fn retained_text_capacity(&self) -> usize {
+        self.0.capacity()
+    }
 }
 
 impl<'de> Deserialize<'de> for ResourceId {
@@ -296,3 +300,6 @@ mod tests {
         }
     }
 }
+
+mod weapon_growth;
+pub use weapon_growth::{WeaponKillGrowthDef, WeaponGrowthMultiplier};

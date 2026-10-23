@@ -1,0 +1,79 @@
+{
+  "stage": "P2G-10",
+  "created_at": "2026-10-13T14:31:56.802715+00:00",
+  "status": "complete",
+  "current_working_revision_ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CFMN-004",
+    "Content Digest": "sha256:2abf0401b99673c449771ec46fc9f2bd6810a95fa7b3c4b22eba142c9eb032ea"
+  },
+  "policy_intake_snapshot_ref": {
+    "Artifact Type": "Policy Intake Snapshot",
+    "Artifact ID": "PIS-CFMN-002",
+    "Content Digest": "sha256:abf9cd97c68288a6d1ae8a2a508e09795682c910513d654ad0a0b0912c209894"
+  },
+  "element_count": 10,
+  "acceptance_count": 30,
+  "open_policy_question_refs": [],
+  "current_disposition_refs": [
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CPED-CFMN-001",
+      "Content Digest": "sha256:49bf7653f413bfe0f3760409571154641c95e8c3f6f467ab3325fa3b63678f41"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CPED-CFMN-002",
+      "Content Digest": "sha256:b6b9da84335a7f44bed59d867e3aba3141d8747693966115b995fadd723deb6f"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CPED-CFMN-003",
+      "Content Digest": "sha256:5bec6b1b0ecd2f68980dfbf8f0f3b992b32e281cae7a2dfce13466c773a6990a"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CPED-CFMN-004",
+      "Content Digest": "sha256:ad09e6ee3f20540b6b5688b86e16e38cf2ce19d893538b35660944c18474aa65"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CPED-CFMN-005",
+      "Content Digest": "sha256:75ffcafe9d864db883374d40e02b98afb8c9152d985692ee9bb88eef58754bc9"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CPED-CFMN-006",
+      "Content Digest": "sha256:845bc85af29bd9abde6db6af6709eae3e25a60faade1e05e31130a8ae7cdb16d"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CPED-CFMN-007",
+      "Content Digest": "sha256:fb6a5725cea5f4e86929a1ea9c8bb591379ddb445887a6eca7f8755f1185a44c"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CPED-CFMN-008",
+      "Content Digest": "sha256:2b773c21c93597205841a967f51fe4253908e4f5b8f38abb71fafb5e7476f8ba"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CPED-CFMN-009",
+      "Content Digest": "sha256:54a711c01812e8e9091f756d9b57c85064b7e602f753b1e9e4d784162baa945a"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CPED-CFMN-010",
+      "Content Digest": "sha256:25a1ec98cb46898cfcc1abb0e3fbde99a38208a3f7c5a32d6b192c03a12023f0"
+    }
+  ],
+  "validation": {
+    "selected_elements_decided": true,
+    "each_element_has_decision_and_observable_acceptance": true,
+    "resolved_user_questions": 2,
+    "scope_unchanged": true,
+    "coverage": "U13 S11/G07-G12 plus §1.8 latest input/validation/support and accepted allocation decisions"
+  },
+  "next_stage": "P2G-20",
+  "product_validation_claim": false
+}

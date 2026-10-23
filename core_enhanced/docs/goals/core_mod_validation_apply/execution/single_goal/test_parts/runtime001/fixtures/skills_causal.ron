@@ -1,0 +1,13 @@
+SkillDatabase(skills:[SkillDef(
+ id:"u11_causal_strike",name:"Independent causal source",kind:Targeted,
+ focus_time_ms:0,use_lifetime:Action,
+ cast_targeting:Explicit(selection:automatic_unit,target:EnemySingle(rule:Nearest),reach:global,air_capable:true),
+ steps:[
+  (id:"first",delay_ms:0,target:EnemySingle(rule:Nearest),delivery:Instant,
+   effects:[(id:"first",tags:["u11_direct","u11_multi_hit"],op:Damage(amount:10,damage_type:True))]),
+  (id:"second",delay_ms:10,target:EnemySingle(rule:Nearest),delivery:Instant,
+   effects:[(id:"second",tags:["u11_direct","u11_multi_hit"],op:Damage(amount:10,damage_type:True))]),
+  (id:"third",delay_ms:20,target:EnemySingle(rule:Nearest),delivery:Instant,
+   effects:[(id:"third",tags:["u11_direct","u11_multi_hit"],op:Damage(amount:20,damage_type:True))]),
+ ]
+)])

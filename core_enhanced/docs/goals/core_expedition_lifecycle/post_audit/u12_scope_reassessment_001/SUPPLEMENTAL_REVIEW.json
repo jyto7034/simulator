@@ -1,0 +1,67 @@
+{
+  "employee_data": {
+    "selected_pass_cases": [
+      "game::data::employee_data::tests::duplicate_definition_id_is_rejected",
+      "game::data::employee_data::tests::employee_definitions_deserialize_from_one_strict_catalog",
+      "game::data::employee_data::tests::missing_required_profile_is_rejected_during_deserialization",
+      "game::data::employee_data::tests::u12_authored_role_is_required_and_does_not_use_profile_text_as_fallback",
+      "game::data::employee_data::tests::u12_starter_count_and_each_role_count_are_independent_contracts",
+      "game::data::employee_data::tests::zero_attack_speed_is_rejected"
+    ],
+    "argv_filter": "game::data::employee_data::tests (prefix selection, not --exact)",
+    "stdout": {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/product_parts/functional007/stdout.log",
+      "bytes": 6296,
+      "sha256": "f70f09f3fdcb613b0b5df714b389a5e37ca5da20dbd51539aa346dccff0cdecb"
+    },
+    "receipt": {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/product_parts/functional007/RESULT_001.json",
+      "bytes": 4000,
+      "sha256": "0dcab8ffb4b018873cd29827591aece9b2da29e9dea477ce8a504e0f0f8d282b"
+    },
+    "source_unchanged_for": [
+      "core_enhanced/src/game/data/employee_data.rs",
+      "core_enhanced/src/game/employee.rs",
+      "Cargo.lock",
+      "core_enhanced/Cargo.toml"
+    ],
+    "batch_scope": "43 PASS / 1 unrelated later-corrected HQ fixture FAIL; reuse only these six named tests, not whole batch success"
+  },
+  "fresh_continue_comparisons": [
+    {
+      "start": {
+        "path": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/product_parts/normal_local_start002/evidence/RESULT.json",
+        "bytes": 374837,
+        "sha256": "e44f0b18fdc57e238111a802e27a8f0c0a07a86895205218c74ccaec7a377c73"
+      },
+      "fresh_continue": {
+        "path": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/product_parts/normal_local_continue002/evidence/RESULT.json",
+        "bytes": 374840,
+        "sha256": "4c98f89f9d301d565b8fd1fa6fd4f24f23c5a6ef2db44602bb368d3d8ec4e8c6"
+      },
+      "roots_required_revision_equal": true,
+      "actual_admission_individuals_passed": true
+    },
+    {
+      "start": {
+        "path": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/product_parts/full60_accept002/evidence/RESULT.json",
+        "bytes": 375086,
+        "sha256": "7fa1e10b0025d8c394b3573c63813c4179bc943b60010e7fed97934465959a3c"
+      },
+      "fresh_continue": {
+        "path": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/product_parts/full60_continue002/evidence/RESULT.json",
+        "bytes": 375089,
+        "sha256": "b7541ee3c37ce37d146ff830763eec126e582f44d4f6479b95ee1bce7f1ec3fb"
+      },
+      "roots_required_revision_equal": true,
+      "actual_admission_individuals_passed": true
+    }
+  ],
+  "late_corrections": {
+    "aptitude": "Read u06_starter.rs:99 and actual final_coverage_correction001 diff. Same loadout/base stats with alternate display aptitude yields identical effective battle inputs; final_coverage_regression002 exact raw PASS.",
+    "recruitment": "Funded wallet fixture, explicit HQ completion and tenth/eleventh boundary are retained. Current official shield/last_line replaces stale breakthrough oracle; no product changes.",
+    "functional012_013": "012 eight named PASS retained; two failed HQ recovery cases corrected only to finish actual supplies service then prove same-instance Continue. 013 exact two PASS. Later delta is test/driver/docs; application.rs is test-only count.",
+    "g11": "Read 12 isolated measurement windows, default safety, exact warmed-baseline release; prepared discard/current profile/Continue, exact/short budget/retry/pre-cancel oracles.",
+    "reader_format_corrections": "Read-only aggregator assumptions corrected from lab.rs: Plain heap/RSS intentionally null; raw worker repeat_index=0 assigned repeat by parent. functional007 uses prefix selectors, not --exact. No product, test-oracle or input changed."
+  }
+}

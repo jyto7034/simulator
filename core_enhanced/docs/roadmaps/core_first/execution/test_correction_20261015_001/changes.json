@@ -1,0 +1,32 @@
+[
+  {
+    "path": "game_server/src/game/player_game_actor/handlers.rs",
+    "before_sha256": "8aa8abbb54ac6fbb596017839f4fccb130b2690b1bb6985505648d20cb1cbb0a",
+    "after_sha256": "936afb94f1bdceca34bc2447433512d54d6a769e461b30b73473232b5a463003"
+  },
+  {
+    "path": "game_server/src/game/player_game_actor/handlers/tests/durable.rs",
+    "before_sha256": "b29ef6d01786e00e740df6e0108a0783193062fd6b087dda37ae6e8ec2dbc355",
+    "after_sha256": "c6336eb1476866eb4f0862ee46750542746a5328a97119a08f933e6983df7ac0"
+  },
+  {
+    "path": "game_server/src/game/player_game_actor/handlers/tests/fault.rs",
+    "before_sha256": "a7434bf8dc4267bf54812ca5a86ee3244cb898a142618bd364a4e0e93c52b70d",
+    "after_sha256": "c47e2d963b6f3578fc9b3833e14066e486d14b9a6c09a7fbd69387e6757b3f08"
+  },
+  {
+    "path": "game_server/src/runtime_measurement/playback.rs",
+    "before_sha256": "d58d031dfb18134536db8484b94ad1ec2e1603c20d867c413002b5c562e93175",
+    "after_sha256": "ffc99bc86bbe673e041ef9f371e8bd51dba5dc93c952c45dfbc9c682642b071f"
+  },
+  {
+    "path": "core_enhanced/src/application/fault_tests.rs",
+    "before_sha256": "8fbf8738d7e3bf8cb092f9e631246d9dd9bb6eaebf8212a908a77b37c1ebccce",
+    "after_sha256": "bd1f974ce3a379b01be158a19f15c0b6bf72c50149523af3b11bb9535fed4780"
+  },
+  {
+    "path": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/test_parts/runtime001/shared/normal_host_tests.rs",
+    "before_sha256": "2e8b751791898edb549dad73732a5f79a01e4844e2590e97ef56fc3584b4458d",
+    "after_sha256": "2c71762eb8a91ccfc3644d361159001db01be3ac52fc9a699f896587cdeaccef"
+  }
+]

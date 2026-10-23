@@ -1,0 +1,37 @@
+{
+  "written_utc": "2026-10-15T07:15:00.190152+00:00",
+  "basis": "AUDIT_EXIT_CHECK.json; documentation appended after source/archive exit check",
+  "preserved_handoff": "core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_20261015_049.ko.md",
+  "changes": [
+    {
+      "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/PLAN.md",
+      "before_sha256": "d821d5ff1a7a1edc9215258d55051883089956135d2ffe8efd57a04cb56e99e5",
+      "after_sha256": "c3e5bde508e9f65ddb937adc333713be4165f5c7650d370394e77a32406cd91a",
+      "impact": "audit result locator/status only; no requirement, product, test, or prior verdict edit"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/EXPERIMENTS.md",
+      "before_sha256": "1c1cc6ec04ae59c85544075593511b4a94157e9bdd9ca7ff84bd7883a5c2f07d",
+      "after_sha256": "be0a5e59a25e0d14f0daaafdfde7a57d3a4f6be8f4289213d457f10b66f6a5c2",
+      "impact": "audit result locator/status only; no requirement, product, test, or prior verdict edit"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_LATEST.ko.md",
+      "before_sha256": "a2a8d7502063c1d4d438ce6e0539acee763b38372c09f8f02bdf553ab7aa25a0",
+      "after_sha256": "3710da02538e78fecdec54792bc97cf083d381152e9e9611046c0abb22d0c353",
+      "impact": "audit result locator/status only; no requirement, product, test, or prior verdict edit"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/EXECUTION_HISTORY.ko.md",
+      "before_sha256": "dbabcb12144f78eab52afe551effe40153aa18aa14b0ca668502ea83070a328b",
+      "after_sha256": "309ea3cbd9c6f37e5140f8f1a5e54a29a5b203d28495b16c244596f7092219f8",
+      "impact": "audit result locator/status only; no requirement, product, test, or prior verdict edit"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "before_sha256": "1381f3e7268b70c314f735ce2c69d5ac607964ee50bcc2738c90bb6b14dbc7a5",
+      "after_sha256": "7e6d27c949e75c68576873b4f1d4958e623672f62f21a37f9df81366ba4e1d2f",
+      "impact": "audit result locator/status only; no requirement, product, test, or prior verdict edit"
+    }
+  ]
+}

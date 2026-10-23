@@ -1,0 +1,109 @@
+{
+  "review-focused001": {
+    "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/runs/review-focused001.log",
+    "sha256": "3f68cc8a0683e9fbeff60cb309769cb0c279cd714417fae762855adf6e0a1c02",
+    "results": [
+      "test result: FAILED. 6 passed; 2 failed; 0 ignored; 0 measured; 2147 filtered out; finished in 8.96s"
+    ],
+    "failed_tests": [
+      "game::battle::core::field_work::tests::u164_stress_generic_sustained_protection_cannot_reach_objective",
+      "game::world::tests::u164_stress::u164_authoring_rejects_unrepresentable_later_round_reward"
+    ]
+  },
+  "review-focused002": {
+    "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/runs/review-focused002.log",
+    "sha256": "893ee23d1f88cd7670cede6bfbc87f596454357d096d45b7f99e5522e0791b32",
+    "results": [],
+    "failed_tests": []
+  },
+  "review-focused003": {
+    "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/runs/review-focused003.log",
+    "sha256": "844de28a8610eadecd054abefeb43a1930fcd158cc70eec6dbda3afec66b47bf",
+    "results": [
+      "test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 2147 filtered out; finished in 9.23s"
+    ],
+    "failed_tests": []
+  },
+  "review-core001": {
+    "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/runs/review-core001.log",
+    "sha256": "b71b8047254e2fb7d0317f24df5da6712c2d43d6b34c6693d33bcfa866c8cd13",
+    "results": [
+      "test result: FAILED. 2143 passed; 7 failed; 6 ignored; 0 measured; 0 filtered out; finished in 216.75s"
+    ],
+    "failed_tests": [
+      "application::tests::command_kind_is_exactly_bijective_with_all_domain_actions",
+      "game::data::content_pack::snapshot::tests::unix::socket_inputs_return_errors",
+      "game::world::application::tests::every_behavior_kind_has_exactly_one_application_owner",
+      "game::world::tests::u12_lifecycle::cost::u12_vault_entry_checkpoint_restore_preserves_profile_boundary",
+      "game::world::tests::u12_lifecycle::cost::u12_vault_prepare_import_budget_failures_preserve_roots",
+      "game::world::tests::u12_lifecycle::cost::u12_vault_prepared_discard_and_commit_keep_exact_profile",
+      "game::world::tests::u12_lifecycle::cost::u12_vault_profile_capture_charges_owned_graph"
+    ]
+  },
+  "review-regression-fixes001": {
+    "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/runs/review-regression-fixes001.log",
+    "sha256": "37bc7da2376b7a6680155d0a5b19a75bfd86c75ab14c6c825fbd90a645ebc5de",
+    "results": [
+      "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 2150 filtered out; finished in 4.91s"
+    ],
+    "failed_tests": []
+  },
+  "review-socket001": {
+    "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/runs/review-socket001.log",
+    "sha256": "14b08950f343e09116d69552aa52575406eefe84e66c3343ed2f156ac1530a7a",
+    "results": [
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2155 filtered out; finished in 0.08s"
+    ],
+    "failed_tests": []
+  },
+  "review-integration001": {
+    "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/runs/review-integration001.log",
+    "sha256": "286030c3862af2ef80ae2bb7b2f5a079c1366fb9d5aa3290f3fc0de3fcf8dae8",
+    "results": [
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+      "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.45s",
+      "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.69s",
+      "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.38s",
+      "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.72s",
+      "test result: FAILED. 24 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.21s"
+    ],
+    "failed_tests": [
+      "live_pve_rewards_use_fixed_current_grant_set"
+    ]
+  },
+  "review-integration002": {
+    "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/runs/review-integration002.log",
+    "sha256": "2f6e582d12be1dc474422fb8a68ffcd6fdbcfad1b0218ffb015f480d07813a45",
+    "results": [
+      "test result: ok. 25 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.87s",
+      "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 13.79s",
+      "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.21s",
+      "test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 15.09s"
+    ],
+    "failed_tests": []
+  },
+  "review-server001": {
+    "path": "core_enhanced/docs/goals/core_stress_combat/execution/single_goal/runs/review-server001.log",
+    "sha256": "40c5a9558aa5124b47f48709a4091cac5d26531d86bf92a49dc7aa75641725e0",
+    "results": [
+      "test result: FAILED. 8 passed; 1 failed; 0 ignored; 0 measured; 111 filtered out; finished in 0.04s"
+    ],
+    "failed_tests": [
+      "game::player_game_actor::messages::tests::deserializes_snake_case_node_flow_requests"
+    ]
+  },
+  "assessment": {
+    "core_lib_unique_passed": 2150,
+    "core_lib_ignored": 6,
+    "core_integration_unique_passed": 72,
+    "core_unique_passed": 2222,
+    "server_message_passed": 8,
+    "server_message_preexisting_failure": 1,
+    "all_targets_single_green": false,
+    "stress_focused_included_in_core_count": 9,
+    "independent_audit_performed": false,
+    "normal_host_scenarios_executed": false
+  }
+}

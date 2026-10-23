@@ -1,0 +1,12 @@
+{
+  "command": [
+    "core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/audit/u14_independent_002/u14_reaudit_probe",
+    "correction-visited",
+    "/mnt/f/work/simulator/game_resources",
+    "/tmp/u14-reaudit-public001"
+  ],
+  "exit_code": 0,
+  "seconds": 5.782252747994789,
+  "stdout": "public001.stdout.log",
+  "stderr": "public001.stderr.log"
+}

@@ -1,0 +1,11 @@
+node_modules/
+dist/
+src-tauri/target/
+src-tauri/gen/
+package-lock.json
+src-tauri/Cargo.lock
+THIRD_PARTY_NOTICES.md
+licenses/npm-runtime.json
+artifacts/
+test-results/
+playwright-report/

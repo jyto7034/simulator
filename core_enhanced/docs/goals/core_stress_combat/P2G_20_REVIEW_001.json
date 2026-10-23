@@ -1,0 +1,926 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Review Scope/Source Requirement Plan",
+        "Artifact ID": "RSP-CSCB-001",
+        "Content Digest": "sha256:70253a9197656d496b1519b73f258e88176211922b2dc5975d5a8d1bceb6a1ed"
+      },
+      "payload": {
+        "Evaluated Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSCB-002",
+          "Content Digest": "sha256:5e429afc1a2fd769278b23e1d8d2abe7ca9ad9ea60f9da8775d73ade468ae744"
+        },
+        "Requirements": [
+          {
+            "Requirement ID": "FLOW",
+            "Affected Element IDs": [
+              "PE-CSCB-FLOW"
+            ],
+            "Source locators": [
+              "core_enhanced/src/game/world/map_content.rs",
+              "core_enhanced/src/game/world/combat.rs",
+              "core_enhanced/src/game/world/battle_capability.rs"
+            ],
+            "Method": "bounded source/symbol read; CODE_REVIEW.ko.md"
+          },
+          {
+            "Requirement ID": "GAME",
+            "Affected Element IDs": [
+              "PE-CSCB-GAME"
+            ],
+            "Source locators": [
+              "core_enhanced/src/game/battle/core/wave_runtime.rs",
+              "core_enhanced/src/game/battle/core/sim.rs",
+              "core_enhanced/src/game/battle/scenario.rs"
+            ],
+            "Method": "bounded source/symbol read; CODE_REVIEW.ko.md"
+          },
+          {
+            "Requirement ID": "LOAN",
+            "Affected Element IDs": [
+              "PE-CSCB-LOAN"
+            ],
+            "Source locators": [
+              "core_enhanced/src/game/world/grant_state.rs",
+              "core_enhanced/src/game/combat_setup/rewards.rs",
+              "core_enhanced/src/game/world/combat.rs"
+            ],
+            "Method": "bounded source/symbol read; CODE_REVIEW.ko.md"
+          },
+          {
+            "Requirement ID": "SHOP",
+            "Affected Element IDs": [
+              "PE-CSCB-SHOP"
+            ],
+            "Source locators": [
+              "core_enhanced/src/game/world/state.rs",
+              "core_enhanced/src/game/world/combat.rs",
+              "core_enhanced/src/game/world/expedition_lifecycle.rs"
+            ],
+            "Method": "bounded source/symbol read; CODE_REVIEW.ko.md"
+          },
+          {
+            "Requirement ID": "STORE",
+            "Affected Element IDs": [
+              "PE-CSCB-STORE"
+            ],
+            "Source locators": [
+              "core_enhanced/src/game/data/live_ron.rs",
+              "core_enhanced/src/game/world/active_run.rs",
+              "core_enhanced/src/game/behavior.rs",
+              "core_enhanced/src/application.rs"
+            ],
+            "Method": "bounded source/symbol read; CODE_REVIEW.ko.md"
+          }
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "REV-CSCB-FLOW-001",
+        "Content Digest": "sha256:38a0363c7da39f8a66069e4e6fffaafa78fa85d104e118a77e35f85cfc47366c"
+      },
+      "payload": {
+        "Source Set": [
+          {
+            "path": "core_enhanced/src/game/world/map_content.rs",
+            "sha256": "6815e83c71e7fb7babb3e746b83fe199dd82c598f0df36cb1bac12eebae7d98c"
+          },
+          {
+            "path": "core_enhanced/src/game/world/combat.rs",
+            "sha256": "70d8c4f793a9b4228a6afe110a8d59dc5dc4fa6a45d7b26b7420f3c65754594d"
+          },
+          {
+            "path": "core_enhanced/src/game/world/battle_capability.rs",
+            "sha256": "78cd20dea728789e624b44f2f1e757d3e8d270781eeaa2ce928435aa00d36d5f"
+          }
+        ],
+        "Exact Source Archive": "P2G_20_SOURCE_001.tar.gz",
+        "Observed result": "CODE_REVIEW.ko.md FLOW",
+        "Limitations": "static owner/consumer review only; no runtime verification"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "REV-CSCB-GAME-001",
+        "Content Digest": "sha256:f65a2d98c6839b30112e2abc345edb54535a01cd9e398ca4ab2c8a8b6dacaeae"
+      },
+      "payload": {
+        "Source Set": [
+          {
+            "path": "core_enhanced/src/game/battle/core/wave_runtime.rs",
+            "sha256": "9c16c2c3f67c494a7e3274a498662490492017c09c670c6d06298357581b0b33"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/core/sim.rs",
+            "sha256": "a3e932b1706a11cd435d91dcfd11c26743c1992778b07a0265394055f433077c"
+          },
+          {
+            "path": "core_enhanced/src/game/battle/scenario.rs",
+            "sha256": "24f02e519ea7e334e2b6731a6cf62c2aeb69b2e61b3a79f32e4f43604c49e445"
+          }
+        ],
+        "Exact Source Archive": "P2G_20_SOURCE_001.tar.gz",
+        "Observed result": "CODE_REVIEW.ko.md GAME",
+        "Limitations": "static owner/consumer review only; no runtime verification"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "REV-CSCB-LOAN-001",
+        "Content Digest": "sha256:88f8d8a3163632c2083dece6c73c19a4a410541c7d462828f47bc6e60ddbd2c6"
+      },
+      "payload": {
+        "Source Set": [
+          {
+            "path": "core_enhanced/src/game/world/grant_state.rs",
+            "sha256": "05e283078e23587251b8c64252393518eacee8ae7b9a601e9c6ea39b2fceb4cf"
+          },
+          {
+            "path": "core_enhanced/src/game/combat_setup/rewards.rs",
+            "sha256": "d77013ed86185f70cc4d865fbc30e8e2d9fe342044f4b4b58b079b89f89d86cc"
+          },
+          {
+            "path": "core_enhanced/src/game/world/combat.rs",
+            "sha256": "70d8c4f793a9b4228a6afe110a8d59dc5dc4fa6a45d7b26b7420f3c65754594d"
+          }
+        ],
+        "Exact Source Archive": "P2G_20_SOURCE_001.tar.gz",
+        "Observed result": "CODE_REVIEW.ko.md LOAN",
+        "Limitations": "static owner/consumer review only; no runtime verification"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "REV-CSCB-SHOP-001",
+        "Content Digest": "sha256:2c68c5466d2866ec5e42631d9393ea76b2cf1236c222dd38c0589e1e8a9ac2cd"
+      },
+      "payload": {
+        "Source Set": [
+          {
+            "path": "core_enhanced/src/game/world/state.rs",
+            "sha256": "45de3101b3e65fbd69e7d5d3eba627842a5fde54cce47cf343b621ce7d090091"
+          },
+          {
+            "path": "core_enhanced/src/game/world/combat.rs",
+            "sha256": "70d8c4f793a9b4228a6afe110a8d59dc5dc4fa6a45d7b26b7420f3c65754594d"
+          },
+          {
+            "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+            "sha256": "874d8c79e85ceb60e5f5a8581182d640c9b02c8369b4ce6955293dbd5d584a5d"
+          }
+        ],
+        "Exact Source Archive": "P2G_20_SOURCE_001.tar.gz",
+        "Observed result": "CODE_REVIEW.ko.md SHOP",
+        "Limitations": "static owner/consumer review only; no runtime verification"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Review Evidence",
+        "Artifact ID": "REV-CSCB-STORE-001",
+        "Content Digest": "sha256:aae1bc9db78f1690e66c002af50d7816656d3b6852391cc0ab9e55540088ba2b"
+      },
+      "payload": {
+        "Source Set": [
+          {
+            "path": "core_enhanced/src/game/data/live_ron.rs",
+            "sha256": "9bd7e4fd70ec97fff9eafcdd3fb76aaa031033f916b3b274e63008f0e0fe7cf2"
+          },
+          {
+            "path": "core_enhanced/src/game/world/active_run.rs",
+            "sha256": "dda2d80d3b76250387f91ae3933c318abc761f1a32fb0b981c4a5a1f8e8ceac1"
+          },
+          {
+            "path": "core_enhanced/src/game/behavior.rs",
+            "sha256": "9db5d2a0a9defd2b59feea335171e20cb7ac1dc91c5b1afe03d39e43e936ea3d"
+          },
+          {
+            "path": "core_enhanced/src/application.rs",
+            "sha256": "37ab2ec9c5aff59fa50e3baf681dfe01f53876d1302c115dfec4a9a894f21ff4"
+          }
+        ],
+        "Exact Source Archive": "P2G_20_SOURCE_001.tar.gz",
+        "Observed result": "CODE_REVIEW.ko.md STORE",
+        "Limitations": "static owner/consumer review only; no runtime verification"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Reviewed Source Basis",
+        "Artifact ID": "RSB-CSCB-001",
+        "Content Digest": "sha256:e063d4371ae976699336aaaaa6ea196327475343cf882b31e758f9d2517913e9"
+      },
+      "payload": {
+        "Selected Source Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-FLOW-001",
+            "Content Digest": "sha256:38a0363c7da39f8a66069e4e6fffaafa78fa85d104e118a77e35f85cfc47366c"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-GAME-001",
+            "Content Digest": "sha256:f65a2d98c6839b30112e2abc345edb54535a01cd9e398ca4ab2c8a8b6dacaeae"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-LOAN-001",
+            "Content Digest": "sha256:88f8d8a3163632c2083dece6c73c19a4a410541c7d462828f47bc6e60ddbd2c6"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-SHOP-001",
+            "Content Digest": "sha256:2c68c5466d2866ec5e42631d9393ea76b2cf1236c222dd38c0589e1e8a9ac2cd"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-STORE-001",
+            "Content Digest": "sha256:aae1bc9db78f1690e66c002af50d7816656d3b6852391cc0ab9e55540088ba2b"
+          }
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Artifact",
+        "Artifact ID": "CRA-CSCB-001",
+        "Content Digest": "sha256:6182e2b4ee384b6ffd401809b6b4b4ae856eeed191346607e4d6564049aa2c72"
+      },
+      "payload": {
+        "Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSCB-002",
+          "Content Digest": "sha256:5e429afc1a2fd769278b23e1d8d2abe7ca9ad9ea60f9da8775d73ade468ae744"
+        },
+        "Review Scope/Source Requirement Plan Ref": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CSCB-001",
+          "Content Digest": "sha256:70253a9197656d496b1519b73f258e88176211922b2dc5975d5a8d1bceb6a1ed"
+        },
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CSCB-001",
+          "Content Digest": "sha256:e063d4371ae976699336aaaaa6ea196327475343cf882b31e758f9d2517913e9"
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-FLOW-001",
+            "Content Digest": "sha256:38a0363c7da39f8a66069e4e6fffaafa78fa85d104e118a77e35f85cfc47366c"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-GAME-001",
+            "Content Digest": "sha256:f65a2d98c6839b30112e2abc345edb54535a01cd9e398ca4ab2c8a8b6dacaeae"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-LOAN-001",
+            "Content Digest": "sha256:88f8d8a3163632c2083dece6c73c19a4a410541c7d462828f47bc6e60ddbd2c6"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-SHOP-001",
+            "Content Digest": "sha256:2c68c5466d2866ec5e42631d9393ea76b2cf1236c222dd38c0589e1e8a9ac2cd"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-STORE-001",
+            "Content Digest": "sha256:aae1bc9db78f1690e66c002af50d7816656d3b6852391cc0ab9e55540088ba2b"
+          }
+        ],
+        "Review body": "CODE_REVIEW.ko.md"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CSCB-FLOW-REVIEWED-001",
+        "Content Digest": "sha256:b179c8a79dfd9b346b5e1f2fbe91ae5fe8f78cdcb7d1e086efdc51b8c0b15472"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CSCB-FLOW",
+        "Policy statement": "정상 StressCombat 노드에서 작성된 보호 방어전을 시작한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CSCB-FLOW-001",
+          "Content Digest": "sha256:7eea258ffc7c3ec6eb6fc38c6976b60d07af4d4fc0896e3cb4ae91098d556f17"
+        },
+        "Observable Policy Acceptance": [
+          "A01: 정상 RON의 StressCombat 배정에서 보호 대상 방어 연속 전투를 시작하고 첫 라운드 보상을 공개한다.",
+          "A02: 선택 구간은 계속 방어와 보상 받고 철수만 허용하며 누적/다음 보상에 적용 배율을 공개한다."
+        ],
+        "Intrinsic status": "code_reviewed",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CSCB-FLOW-DECIDED-001",
+          "Content Digest": "sha256:f1a36663fc9cd80e538dad24a445ca2500eaab56835d1a9248a70f995c034ee9"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CSCB-GAME-REVIEWED-001",
+        "Content Digest": "sha256:c43b8826deea8736480bc29158013082c8571aa6f5a4f32149e3484e42a1bab2"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CSCB-GAME",
+        "Policy statement": "같은 BattleCore와 timestamp 경계를 유지하며 작성 웨이브를 진행한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CSCB-GAME-001",
+          "Content Digest": "sha256:4e0904caef03e826d55d1bcbaf5623cec4ef97fb4d9577f5fe1b2376e12638cd"
+        },
+        "Observable Policy Acceptance": [
+          "A03: 최대5라운드의 작성된 웨이브를 모두 처치해야 각 라운드를 완료한다. 뒤 라운드는 콘텐츠로 강화한다.",
+          "A04: HP/배치/자원/쿨다운/전투당 기록/보호 대상을 같은 전투에서 유지하며 라운드 사이 시간은 정지한다."
+        ],
+        "Intrinsic status": "code_reviewed",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CSCB-GAME-DECIDED-001",
+          "Content Digest": "sha256:16e72f284554c4452e1350587bc88d4e11add44ff634516dc6eedcfba3c25295"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CSCB-LOAN-REVIEWED-001",
+        "Content Digest": "sha256:ba31570fc7dc2d67967d0875e3b02dc795a9ef02769fb65a9bbc38fd79f5bbba"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CSCB-LOAN",
+        "Policy statement": "미수령 누적보상과 공통 손실·XP를 성공/패배에서 원자 정산한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CSCB-LOAN-001",
+          "Content Digest": "sha256:ed559e315ea422609e977542ed3f6ce2d51b2a31462195f5be57a12ee0de454f"
+        },
+        "Observable Policy Acceptance": [
+          "A05: 개별 라운드에는 실제 보상/XP/노드 소비를 하지 않고 성공 철수 또는5라운드 완료에서 누적분을 한번 지급한다.",
+          "A06: 보호 대상 파괴 등의 패배는 미수령 보상을 전부 상실하고 공통 직원 손실/생존 XP는 전투 전체1회 적용한다."
+        ],
+        "Intrinsic status": "code_reviewed",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CSCB-LOAN-DECIDED-001",
+          "Content Digest": "sha256:483a47513afd5035c74cc5de7a3b7af55e9df099bf4e7061c1e9e7f3144ad340"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CSCB-SHOP-REVIEWED-001",
+        "Content Digest": "sha256:fc6351d9c92a8ba829808d3a82bd577e761d65a9b1f84631222ab2c881fbe0e1"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CSCB-SHOP",
+        "Policy statement": "전투중후퇴 복원/소비와 무억제 전체전투 자격·수량을 유지한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CSCB-SHOP-001",
+          "Content Digest": "sha256:f4b30236e0570cff51ceb39f9f371542cfefab493c4214cf27ffc55d34f64cab"
+        },
+        "Observable Policy Acceptance": [
+          "A07: 전투 중 수동 후퇴는 직원/소비/장비/유물을 진입 전 복원하고 노드 소비/보상 상실/재도전 불가를 유지한다. 최초 입장 비용은 유지하며 XP는 지급하지 않는다.",
+          "A08: 무억제 진입의 적 HP/공격력 강화를 전 라운드 유지하고 성공 XP/재료/엔케팔린 총량2배, 유물 수량 불변, 패배 기본 XP 기존량을 검증한다."
+        ],
+        "Intrinsic status": "code_reviewed",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CSCB-SHOP-DECIDED-001",
+          "Content Digest": "sha256:b87b2ff512f6d2530f5c3bca0844d59306fbc8065b8b762f5e1355edf0283e78"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Policy Element Revision",
+        "Artifact ID": "PER-CSCB-STORE-REVIEWED-001",
+        "Content Digest": "sha256:db1cc4fea696750e449a354b0139570e9be6107964f1629467f4fd96e7d48722"
+      },
+      "payload": {
+        "Stable Element ID": "PE-CSCB-STORE",
+        "Policy statement": "공개 writer/reader·복원·실제IO·자원한도로 통합 검증한다.",
+        "Decision Revision Ref": {
+          "Artifact Type": "Decision Revision",
+          "Artifact ID": "DR-CSCB-STORE-001",
+          "Content Digest": "sha256:0e8771b1ad9c85cd1cb7bfa41a8dd12af35cf22e383829bd89e9c3bf55d282b0"
+        },
+        "Observable Policy Acceptance": [
+          "A09: 같은 프로세스 재접속은 선택/미수령 상태를 유지하고 fresh Continue 미완료는 입장전, 완료는 결과/소비를 함께 보존한다. SavePoint와 실제 IO 실패/동일명령 재시도를 검증한다.",
+          "A10: 정상/오류 작성과 공개 application/host/query/consumer 및 기존 영향 회귀를 검증하고 정상/확장 비용과 실제 메모리 회수를 측정한다. 외부 임의 변조 방어는 제외한다."
+        ],
+        "Intrinsic status": "code_reviewed",
+        "Predecessor Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CSCB-STORE-DECIDED-001",
+          "Content Digest": "sha256:470e9e6e1b8dac62a3e2b9dff755fd14c38291774c91dbf7e70892cb624992bf"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CSCB-003",
+        "Content Digest": "sha256:657835a0d2bfdc62fd7146345d6cce63bcdc4d3f35f233818c1845829044752e"
+      },
+      "payload": {
+        "Approved metadata and scope": {
+          "Working Policy Document ID": "WPD-CSCB-20261015",
+          "Policy Topic": "U16-4 스트레스 연속 방어전",
+          "Target Documentation Root": "core_enhanced/docs",
+          "Policy Directory Name": "core_stress_combat",
+          "Requested Result": "U16-4 구현/검증/고정 뒤 비참여 서브에이전트 독립감사",
+          "User-Approved Scope": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u16-4 작업 착수 및 완수 후 서브에이전트를 소환하여 독립 감사 작업에 착수해줄래? 현재 명령을 지침서보다 더 우선시해.",
+          "Excluded": "U17/U21/Unity/개별최종보스/외부임의변조; 전체U16 완료 아님"
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CSCB-001",
+          "Content Digest": "sha256:18422c9c4caf12c354a0c0a1801f99513d4f5fb3f08a855fd0892af2d9d92536"
+        },
+        "Current Policy Element Revision Map": {
+          "PE-CSCB-FLOW": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSCB-FLOW-REVIEWED-001",
+            "Content Digest": "sha256:b179c8a79dfd9b346b5e1f2fbe91ae5fe8f78cdcb7d1e086efdc51b8c0b15472"
+          },
+          "PE-CSCB-GAME": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSCB-GAME-REVIEWED-001",
+            "Content Digest": "sha256:c43b8826deea8736480bc29158013082c8571aa6f5a4f32149e3484e42a1bab2"
+          },
+          "PE-CSCB-LOAN": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSCB-LOAN-REVIEWED-001",
+            "Content Digest": "sha256:ba31570fc7dc2d67967d0875e3b02dc795a9ef02769fb65a9bbc38fd79f5bbba"
+          },
+          "PE-CSCB-SHOP": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSCB-SHOP-REVIEWED-001",
+            "Content Digest": "sha256:fc6351d9c92a8ba829808d3a82bd577e761d65a9b1f84631222ab2c881fbe0e1"
+          },
+          "PE-CSCB-STORE": {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSCB-STORE-REVIEWED-001",
+            "Content Digest": "sha256:db1cc4fea696750e449a354b0139570e9be6107964f1629467f4fd96e7d48722"
+          }
+        },
+        "Decision Revision Ref Set": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CSCB-FLOW-001",
+            "Content Digest": "sha256:7eea258ffc7c3ec6eb6fc38c6976b60d07af4d4fc0896e3cb4ae91098d556f17"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CSCB-GAME-001",
+            "Content Digest": "sha256:4e0904caef03e826d55d1bcbaf5623cec4ef97fb4d9577f5fe1b2376e12638cd"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CSCB-LOAN-001",
+            "Content Digest": "sha256:ed559e315ea422609e977542ed3f6ce2d51b2a31462195f5be57a12ee0de454f"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CSCB-SHOP-001",
+            "Content Digest": "sha256:f4b30236e0570cff51ceb39f9f371542cfefab493c4214cf27ffc55d34f64cab"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CSCB-STORE-001",
+            "Content Digest": "sha256:0e8771b1ad9c85cd1cb7bfa41a8dd12af35cf22e383829bd89e9c3bf55d282b0"
+          }
+        ],
+        "Open Policy Question Ref Set": [],
+        "Predecessor Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSCB-002",
+          "Content Digest": "sha256:5e429afc1a2fd769278b23e1d8d2abe7ca9ad9ea60f9da8775d73ade468ae744"
+        }
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CSCB-FLOW-001",
+        "Content Digest": "sha256:c07aa6f62e59229a4ebbcd39c25d1b8ab1f2a0180bebc9f6dc30fac44fe4783c"
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSCB-003",
+          "Content Digest": "sha256:657835a0d2bfdc62fd7146345d6cce63bcdc4d3f35f233818c1845829044752e"
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CSCB-FLOW-REVIEWED-001",
+          "Content Digest": "sha256:b179c8a79dfd9b346b5e1f2fbe91ae5fe8f78cdcb7d1e086efdc51b8c0b15472"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CSCB-001",
+          "Content Digest": "sha256:6182e2b4ee384b6ffd401809b6b4b4ae856eeed191346607e4d6564049aa2c72"
+        },
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CSCB-001",
+          "Content Digest": "sha256:e063d4371ae976699336aaaaa6ea196327475343cf882b31e758f9d2517913e9"
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-FLOW-001",
+            "Content Digest": "sha256:38a0363c7da39f8a66069e4e6fffaafa78fa85d104e118a77e35f85cfc47366c"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-GAME-001",
+            "Content Digest": "sha256:f65a2d98c6839b30112e2abc345edb54535a01cd9e398ca4ab2c8a8b6dacaeae"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-LOAN-001",
+            "Content Digest": "sha256:88f8d8a3163632c2083dece6c73c19a4a410541c7d462828f47bc6e60ddbd2c6"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-SHOP-001",
+            "Content Digest": "sha256:2c68c5466d2866ec5e42631d9393ea76b2cf1236c222dd38c0589e1e8a9ac2cd"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-STORE-001",
+            "Content Digest": "sha256:aae1bc9db78f1690e66c002af50d7816656d3b6852391cc0ab9e55540088ba2b"
+          }
+        ],
+        "Covered Required Claim/Boundary Set": [
+          "FLOW",
+          "shared publication/query/restore"
+        ],
+        "Review Path": "policy_revision_review"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CSCB-GAME-001",
+        "Content Digest": "sha256:08108f18a7e24f155b20a28b66fb968421b308dec6313f21c63572b1f232ea54"
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSCB-003",
+          "Content Digest": "sha256:657835a0d2bfdc62fd7146345d6cce63bcdc4d3f35f233818c1845829044752e"
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CSCB-GAME-REVIEWED-001",
+          "Content Digest": "sha256:c43b8826deea8736480bc29158013082c8571aa6f5a4f32149e3484e42a1bab2"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CSCB-001",
+          "Content Digest": "sha256:6182e2b4ee384b6ffd401809b6b4b4ae856eeed191346607e4d6564049aa2c72"
+        },
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CSCB-001",
+          "Content Digest": "sha256:e063d4371ae976699336aaaaa6ea196327475343cf882b31e758f9d2517913e9"
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-FLOW-001",
+            "Content Digest": "sha256:38a0363c7da39f8a66069e4e6fffaafa78fa85d104e118a77e35f85cfc47366c"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-GAME-001",
+            "Content Digest": "sha256:f65a2d98c6839b30112e2abc345edb54535a01cd9e398ca4ab2c8a8b6dacaeae"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-LOAN-001",
+            "Content Digest": "sha256:88f8d8a3163632c2083dece6c73c19a4a410541c7d462828f47bc6e60ddbd2c6"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-SHOP-001",
+            "Content Digest": "sha256:2c68c5466d2866ec5e42631d9393ea76b2cf1236c222dd38c0589e1e8a9ac2cd"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-STORE-001",
+            "Content Digest": "sha256:aae1bc9db78f1690e66c002af50d7816656d3b6852391cc0ab9e55540088ba2b"
+          }
+        ],
+        "Covered Required Claim/Boundary Set": [
+          "GAME",
+          "shared publication/query/restore"
+        ],
+        "Review Path": "policy_revision_review"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CSCB-LOAN-001",
+        "Content Digest": "sha256:adac1f522afda0fe2e7136586cc12b38c3d0eef51ded40ad27aef20541982bc9"
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSCB-003",
+          "Content Digest": "sha256:657835a0d2bfdc62fd7146345d6cce63bcdc4d3f35f233818c1845829044752e"
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CSCB-LOAN-REVIEWED-001",
+          "Content Digest": "sha256:ba31570fc7dc2d67967d0875e3b02dc795a9ef02769fb65a9bbc38fd79f5bbba"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CSCB-001",
+          "Content Digest": "sha256:6182e2b4ee384b6ffd401809b6b4b4ae856eeed191346607e4d6564049aa2c72"
+        },
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CSCB-001",
+          "Content Digest": "sha256:e063d4371ae976699336aaaaa6ea196327475343cf882b31e758f9d2517913e9"
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-FLOW-001",
+            "Content Digest": "sha256:38a0363c7da39f8a66069e4e6fffaafa78fa85d104e118a77e35f85cfc47366c"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-GAME-001",
+            "Content Digest": "sha256:f65a2d98c6839b30112e2abc345edb54535a01cd9e398ca4ab2c8a8b6dacaeae"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-LOAN-001",
+            "Content Digest": "sha256:88f8d8a3163632c2083dece6c73c19a4a410541c7d462828f47bc6e60ddbd2c6"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-SHOP-001",
+            "Content Digest": "sha256:2c68c5466d2866ec5e42631d9393ea76b2cf1236c222dd38c0589e1e8a9ac2cd"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-STORE-001",
+            "Content Digest": "sha256:aae1bc9db78f1690e66c002af50d7816656d3b6852391cc0ab9e55540088ba2b"
+          }
+        ],
+        "Covered Required Claim/Boundary Set": [
+          "LOAN",
+          "shared publication/query/restore"
+        ],
+        "Review Path": "policy_revision_review"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CSCB-SHOP-001",
+        "Content Digest": "sha256:d21e39b87c1c8b4c4251ba1270a367af43e7ba3cde5315a89315dc57682b13fa"
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSCB-003",
+          "Content Digest": "sha256:657835a0d2bfdc62fd7146345d6cce63bcdc4d3f35f233818c1845829044752e"
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CSCB-SHOP-REVIEWED-001",
+          "Content Digest": "sha256:fc6351d9c92a8ba829808d3a82bd577e761d65a9b1f84631222ab2c881fbe0e1"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CSCB-001",
+          "Content Digest": "sha256:6182e2b4ee384b6ffd401809b6b4b4ae856eeed191346607e4d6564049aa2c72"
+        },
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CSCB-001",
+          "Content Digest": "sha256:e063d4371ae976699336aaaaa6ea196327475343cf882b31e758f9d2517913e9"
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-FLOW-001",
+            "Content Digest": "sha256:38a0363c7da39f8a66069e4e6fffaafa78fa85d104e118a77e35f85cfc47366c"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-GAME-001",
+            "Content Digest": "sha256:f65a2d98c6839b30112e2abc345edb54535a01cd9e398ca4ab2c8a8b6dacaeae"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-LOAN-001",
+            "Content Digest": "sha256:88f8d8a3163632c2083dece6c73c19a4a410541c7d462828f47bc6e60ddbd2c6"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-SHOP-001",
+            "Content Digest": "sha256:2c68c5466d2866ec5e42631d9393ea76b2cf1236c222dd38c0589e1e8a9ac2cd"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-STORE-001",
+            "Content Digest": "sha256:aae1bc9db78f1690e66c002af50d7816656d3b6852391cc0ab9e55540088ba2b"
+          }
+        ],
+        "Covered Required Claim/Boundary Set": [
+          "SHOP",
+          "shared publication/query/restore"
+        ],
+        "Review Path": "policy_revision_review"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Code Review Binding",
+        "Artifact ID": "CRB-CSCB-STORE-001",
+        "Content Digest": "sha256:5ae56f231fbb0f2490574af1f4983036efca8af85bd0d9f28beee80753f259f3"
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSCB-003",
+          "Content Digest": "sha256:657835a0d2bfdc62fd7146345d6cce63bcdc4d3f35f233818c1845829044752e"
+        },
+        "Policy Element Revision Ref": {
+          "Artifact Type": "Policy Element Revision",
+          "Artifact ID": "PER-CSCB-STORE-REVIEWED-001",
+          "Content Digest": "sha256:db1cc4fea696750e449a354b0139570e9be6107964f1629467f4fd96e7d48722"
+        },
+        "Code Review Artifact Ref": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CSCB-001",
+          "Content Digest": "sha256:6182e2b4ee384b6ffd401809b6b4b4ae856eeed191346607e4d6564049aa2c72"
+        },
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CSCB-001",
+          "Content Digest": "sha256:e063d4371ae976699336aaaaa6ea196327475343cf882b31e758f9d2517913e9"
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-FLOW-001",
+            "Content Digest": "sha256:38a0363c7da39f8a66069e4e6fffaafa78fa85d104e118a77e35f85cfc47366c"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-GAME-001",
+            "Content Digest": "sha256:f65a2d98c6839b30112e2abc345edb54535a01cd9e398ca4ab2c8a8b6dacaeae"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-LOAN-001",
+            "Content Digest": "sha256:88f8d8a3163632c2083dece6c73c19a4a410541c7d462828f47bc6e60ddbd2c6"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-SHOP-001",
+            "Content Digest": "sha256:2c68c5466d2866ec5e42631d9393ea76b2cf1236c222dd38c0589e1e8a9ac2cd"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-STORE-001",
+            "Content Digest": "sha256:aae1bc9db78f1690e66c002af50d7816656d3b6852391cc0ab9e55540088ba2b"
+          }
+        ],
+        "Covered Required Claim/Boundary Set": [
+          "STORE",
+          "shared publication/query/restore"
+        ],
+        "Review Path": "policy_revision_review"
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Review Batch",
+        "Artifact ID": "RB-CSCB-001",
+        "Content Digest": "sha256:ae8a77362ae289aa50b9899ccb4b3714fd0cf31c493c1b9c5487bc49f9b8ad60"
+      },
+      "payload": {
+        "Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSCB-002",
+          "Content Digest": "sha256:5e429afc1a2fd769278b23e1d8d2abe7ca9ad9ea60f9da8775d73ade468ae744"
+        },
+        "Result Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSCB-003",
+          "Content Digest": "sha256:657835a0d2bfdc62fd7146345d6cce63bcdc4d3f35f233818c1845829044752e"
+        },
+        "Result Current code_reviewed Policy Element Revision Ref Set": [
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSCB-FLOW-REVIEWED-001",
+            "Content Digest": "sha256:b179c8a79dfd9b346b5e1f2fbe91ae5fe8f78cdcb7d1e086efdc51b8c0b15472"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSCB-GAME-REVIEWED-001",
+            "Content Digest": "sha256:c43b8826deea8736480bc29158013082c8571aa6f5a4f32149e3484e42a1bab2"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSCB-LOAN-REVIEWED-001",
+            "Content Digest": "sha256:ba31570fc7dc2d67967d0875e3b02dc795a9ef02769fb65a9bbc38fd79f5bbba"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSCB-SHOP-REVIEWED-001",
+            "Content Digest": "sha256:fc6351d9c92a8ba829808d3a82bd577e761d65a9b1f84631222ab2c881fbe0e1"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CSCB-STORE-REVIEWED-001",
+            "Content Digest": "sha256:db1cc4fea696750e449a354b0139570e9be6107964f1629467f4fd96e7d48722"
+          }
+        ],
+        "Result-basis Code Review Binding Ref Set": [
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CSCB-FLOW-001",
+            "Content Digest": "sha256:c07aa6f62e59229a4ebbcd39c25d1b8ab1f2a0180bebc9f6dc30fac44fe4783c"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CSCB-GAME-001",
+            "Content Digest": "sha256:08108f18a7e24f155b20a28b66fb968421b308dec6313f21c63572b1f232ea54"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CSCB-LOAN-001",
+            "Content Digest": "sha256:adac1f522afda0fe2e7136586cc12b38c3d0eef51ded40ad27aef20541982bc9"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CSCB-SHOP-001",
+            "Content Digest": "sha256:d21e39b87c1c8b4c4251ba1270a367af43e7ba3cde5315a89315dc57682b13fa"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CSCB-STORE-001",
+            "Content Digest": "sha256:5ae56f231fbb0f2490574af1f4983036efca8af85bd0d9f28beee80753f259f3"
+          }
+        ],
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CSCB-001",
+          "Content Digest": "sha256:e063d4371ae976699336aaaaa6ea196327475343cf882b31e758f9d2517913e9"
+        },
+        "Review Evidence Ref Set": [
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-FLOW-001",
+            "Content Digest": "sha256:38a0363c7da39f8a66069e4e6fffaafa78fa85d104e118a77e35f85cfc47366c"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-GAME-001",
+            "Content Digest": "sha256:f65a2d98c6839b30112e2abc345edb54535a01cd9e398ca4ab2c8a8b6dacaeae"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-LOAN-001",
+            "Content Digest": "sha256:88f8d8a3163632c2083dece6c73c19a4a410541c7d462828f47bc6e60ddbd2c6"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-SHOP-001",
+            "Content Digest": "sha256:2c68c5466d2866ec5e42631d9393ea76b2cf1236c222dd38c0589e1e8a9ac2cd"
+          },
+          {
+            "Artifact Type": "Review Evidence",
+            "Artifact ID": "REV-CSCB-STORE-001",
+            "Content Digest": "sha256:aae1bc9db78f1690e66c002af50d7816656d3b6852391cc0ab9e55540088ba2b"
+          }
+        ]
+      }
+    }
+  ]
+}

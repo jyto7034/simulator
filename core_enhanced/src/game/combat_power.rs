@@ -229,6 +229,7 @@ mod tests {
 
     fn certification_weapon() -> EquipmentMetadata {
         EquipmentMetadata {
+            content_family: None,
             id: "certification_weapon".to_string(),
             uuid: Uuid::from_u128(0xCE47_1F1C_A710_0001),
             name: "Certification Weapon".to_string(),

@@ -2,9 +2,9 @@ use crate::game::{
     battle::{
         core::{
             commands::RuntimeCommandBatch, movement::ActionState,
-            triggers::TriggerOccurrenceContext, types::RuntimeUnitLifecycle, BattleCore,
+            triggers::TriggerOccurrenceContext, types::RuntimeUnitLifecycle, BattleCore, UnitBuffRemovalCause,
         },
-        event_log::{BattleLogEvent, BuffExpireReason, MovementStopReason},
+        event_log::{BattleLogEvent, MovementStopReason},
         ids::UnitInstanceId,
     },
     enums::Side,
@@ -158,34 +158,32 @@ impl BattleCore {
                 return;
             }
         }
-        let interrupted = self.interrupt_movement(
+        if let Some(target) = self.units.get_mut(&target_instance_id) {
+            target.lifecycle = RuntimeUnitLifecycle::Dead;
+            target.stats.current_health = 0;
+            target.move_epoch = target.move_epoch.wrapping_add(1);
+            target.action_state = ActionState::Dead;
+        }
+        self.record_movement_stopped(
             time_ms,
             target_instance_id,
             MovementStopReason::Died,
             None,
-            ActionState::Dead,
         );
-        if !interrupted {
-            if let Some(target) = self.units.get_mut(&target_instance_id) {
-                target.lifecycle = RuntimeUnitLifecycle::Dead;
-                target.stats.current_health = 0;
-                target.move_epoch = target.move_epoch.wrapping_add(1);
-                target.action_state = ActionState::Dead;
-            }
-            self.record_movement_stopped(
-                time_ms,
-                target_instance_id,
-                MovementStopReason::Died,
-                None,
-            );
+
+        if self
+            .cancel_causal_periodics_for(target_instance_id)
+            .is_err()
+        {
+            return;
         }
-        if interrupted {
-            if let Some(target) = self.units.get_mut(&target_instance_id) {
-                target.lifecycle = RuntimeUnitLifecycle::Dead;
-                target.stats.current_health = 0;
-                target.action_state = ActionState::Dead;
-            }
-        }
+
+        if self.status_target_died(target_instance_id,lethal_damage.as_deref(),prepared.cause==crate::game::battle::runtime_facts::DeathCause::Ordinary,time_ms).is_err() {return;}
+        if self.mobile_target_died(target_instance_id,time_ms).is_err() {return;}
+        if self.volley_target_died(target_instance_id,time_ms).is_err() {return;}
+        if self.relation_target_died(target_instance_id,time_ms).is_err() { return; }
+        if self.weapon_mark_death(target_instance_id, time_ms).is_err() { return; }
+        if self.presence_death(target_instance_id, time_ms).is_err() { return; }
 
         // Wave ActorDefeated is an edge observed after actor binding. Keeping
         // this epoch in active-battle state prevents absence/despawn from being
@@ -223,7 +221,11 @@ impl BattleCore {
             return;
         }
 
-        self.clear_active_buffs_for_dead_unit(time_ms, target_instance_id);
+        self.clear_active_buffs_for_removed_unit(
+            time_ms,
+            target_instance_id,
+            UnitBuffRemovalCause::Died,
+        );
 
         if let Some(target) = self.units.get(&target_instance_id) {
             self.graveyard.insert(
@@ -248,6 +250,18 @@ impl BattleCore {
             },
         );
 
+        if self
+            .observe_causal_death(
+                source_instance_id,
+                target_instance_id,
+                target_owner,
+                time_ms,
+                dispatch_optional,
+            )
+            .is_err()
+        {
+            return;
+        }
         let death_command_batches = if dispatch_optional {
             self.death_trigger_commands(
                 source_instance_id,
@@ -268,48 +282,5 @@ impl BattleCore {
 
         // Death changes both occupancy and target validity globally.
         self.schedule_continuous_movement_tick(time_ms.saturating_add(1));
-    }
-
-    fn clear_active_buffs_for_dead_unit(&mut self, time_ms: u64, dead_unit_id: UnitInstanceId) {
-        let mut expired = self
-            .buffs
-            .keys()
-            .copied()
-            .filter_map(|key| {
-                if key.target_instance_id == dead_unit_id {
-                    Some((key, BuffExpireReason::TargetDied))
-                } else if key.caster_instance_id == dead_unit_id {
-                    Some((key, BuffExpireReason::CasterDied))
-                } else {
-                    None
-                }
-            })
-            .collect::<Vec<_>>();
-        expired.sort_by(|(left_key, left_reason), (right_key, right_reason)| {
-            left_key
-                .target_instance_id
-                .cmp(&right_key.target_instance_id)
-                .then_with(|| {
-                    left_key
-                        .caster_instance_id
-                        .cmp(&right_key.caster_instance_id)
-                })
-                .then_with(|| left_key.buff_id.as_u64().cmp(&right_key.buff_id.as_u64()))
-                .then_with(|| (*left_reason as u8).cmp(&(*right_reason as u8)))
-        });
-        for (key, reason) in expired {
-            if self.buffs.remove(&key).is_none() {
-                continue;
-            }
-            self.record_event_log(
-                time_ms,
-                BattleLogEvent::BuffExpired {
-                    caster_instance_id: key.caster_instance_id,
-                    target_instance_id: key.target_instance_id,
-                    buff_id: key.buff_id,
-                    reason,
-                },
-            );
-        }
     }
 }

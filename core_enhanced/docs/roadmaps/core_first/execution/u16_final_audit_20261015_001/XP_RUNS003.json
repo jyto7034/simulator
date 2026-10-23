@@ -1,0 +1,27 @@
+{
+  "preparation_correction": "Identical input/binary and assertions. Only trace/output destination is local /tmp; measured Core-operation windows already exclude file writes. Prior timeout was outside target XP grant and is not product evidence.",
+  "runs": [
+    {
+      "variant": "small",
+      "argv": [
+        "/mnt/f/work/simulator/.cache/u164-review-dev-target/debug/u16_xp_audit",
+        "/mnt/f/work/simulator/core_enhanced/docs/roadmaps/core_first/execution/u16_final_audit_20261015_001/xp_small/config002.json",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_stress_combat/execution/single_goal/completion001/cost001/normal.trace.jsonl",
+        "/tmp/u16-xp-audit-_xxp6gj0/small.json"
+      ],
+      "exit_code": 0,
+      "seconds": 6.534674283000641
+    },
+    {
+      "variant": "large",
+      "argv": [
+        "/mnt/f/work/simulator/.cache/u164-review-dev-target/debug/u16_xp_audit",
+        "/mnt/f/work/simulator/core_enhanced/docs/roadmaps/core_first/execution/u16_final_audit_20261015_001/xp_large/config002.json",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_stress_combat/execution/single_goal/completion001/cost001/normal.trace.jsonl",
+        "/tmp/u16-xp-audit-_xxp6gj0/large.json"
+      ],
+      "exit_code": 0,
+      "seconds": 6.88599021799746
+    }
+  ]
+}

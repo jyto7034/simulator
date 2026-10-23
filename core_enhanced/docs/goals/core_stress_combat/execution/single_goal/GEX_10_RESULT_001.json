@@ -1,0 +1,51 @@
+{
+  "stage": "GEX-10",
+  "status": "implementation_and_self_validation_ended_separate_nonparticipating_audit_pending",
+  "recorded_utc": "2026-10-15T10:43:13.233785+00:00",
+  "goal_set": "GS-CSCB-001",
+  "goal": "GOAL-CSCB-01",
+  "phase": "PHASE-CSCB-01",
+  "target": "target/u164_current_001/AUDIT_TARGET_RECORD.json",
+  "source_sha256": "e97f62e376c2fb3902887e55283a162bb126c4ba62e9a2071e57a3c31924f7f4",
+  "source_members": 920,
+  "evidence_members": 550,
+  "delta_members": 353,
+  "restore_passed": true,
+  "freeze_exit_code": 0,
+  "freeze_log": "runs/completion-final-freeze001.log",
+  "freeze_log_sha256": "e9a1107f6dc19de193c7d924a4cc03618180c77a73e322f4625fc94084b4719d",
+  "acceptance": 10,
+  "validation_dimensions": 10,
+  "integration_acceptance": 5,
+  "execution_nodes": 2,
+  "new_integration": {
+    "successful_host_processes": 17,
+    "host_operations": 192,
+    "real_journal_io_failure_retry_paths": 4,
+    "native_boundary_probes_passed": 4,
+    "cost_replays_passed": 6,
+    "exact_requested_heap_recovered_all": true
+  },
+  "reused_regression": {
+    "core_unique_passed": 2222,
+    "ignored": 6,
+    "correction_audit_impact_passed": 49,
+    "ron_loading_passed": 25,
+    "server_message_passed": 8,
+    "server_preexisting_fixture_failed": 1,
+    "nonimpact_contract": "BASELINE_REUSE.json"
+  },
+  "single_full_green_invocation_claimed": false,
+  "canonical_product_changed_this_pass": false,
+  "production_limits_changed": false,
+  "goal_complete": false,
+  "audit_performed": false,
+  "remaining": "mandatory final nonparticipating completion audit; separate executor required by current continuous instructions section8, no automatic subagent delegation",
+  "post_freeze_documents": [
+    "GEX_10_RESULT_001.json",
+    "runs/completion-final-freeze001.log",
+    "HANDOFF_LATEST.ko.md",
+    "EXECUTION_HISTORY.ko.md",
+    "ROADMAP_STATUS.md"
+  ]
+}

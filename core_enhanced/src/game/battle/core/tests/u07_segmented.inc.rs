@@ -284,7 +284,7 @@ fn u07_segmented_fallback_health_cost_bypasses_shield_parry_and_survival() {
     for definition in [
         SustainedEffectDef::Shield { duration_ms: 5000, amount: 100, priority: 0, shared_radius_units: None },
         SustainedEffectDef::Survival { duration_ms: 5000, policy: SurvivalPolicy::FloorOne },
-        SustainedEffectDef::Parry { duration_ms: 5000, window_ms: 1000, invulnerable_ms: 1000, miss_recovery_ms: 1000, reduction_percent: 100, counter_skill: SkillId::from("counter") },
+        SustainedEffectDef::Parry { duration_ms: 5000, window_ms: 1000, invulnerable_ms: 1000, miss_recovery_ms: 1000, reduction_percent: 100, counter_skill: SkillId::from("counter"), end_on_resolution: false, guard_charge: None, fragment_guard: None },
     ] { core.begin_sustained(creator, creator, definition, 0).unwrap(); }
     let before = core.sustained_effect_snapshot().unwrap();
     let mut request = input(creator, "wall", vec![Position::new(2, 1)]);

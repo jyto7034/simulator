@@ -1,0 +1,177 @@
+{
+  "schema": "U10_SUCCESSOR_INDEPENDENT_AUDIT_CLOSURE_V1",
+  "closed_at_utc": "2026-10-09T15:35:13.549656+00:00",
+  "goal": "GOAL-CRCE-01",
+  "goal_set": "GS-CRCE-001",
+  "auditor": "/root/u09_independent_audit029",
+  "model": "previously confirmed gpt-6-astra/high",
+  "independence": "Prior U09 and first U10 independent audits only; no U10 plan/design/product/test/execution participation. Whole Goal re-audited using exact own prior review/current nonimpact plus independent new code/oracle/raw/provenance and restoration review. Root/Sol self-acceptance is not the verdict. No product/test/tool/old-doc/target writes or build/test/collector/restore execution; only these eight new audit artifacts.",
+  "audit_work_complete": true,
+  "whole_goal_review_complete": true,
+  "goal_complete": true,
+  "verdict": "Complete",
+  "confidence": "High",
+  "open_findings": 0,
+  "complete_high_open0": true,
+  "finding_ids": [],
+  "resolved_prior_findings": [
+    "U10-AUD-F01",
+    "U10-AUD-F02"
+  ],
+  "target_manifest": {
+    "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/target/u10_current_002/MANIFEST.json",
+    "bytes": 228308,
+    "sha256": "e9785f69c28ba4bbb5379c5415be69cb6ea13d0309dce39da65be2ae1f48fe1a"
+  },
+  "runtime_source": {
+    "files": 533,
+    "sha256": "76aba953d84c644d3659b553e50f99f342c5826c709952c1fe808984ebfc340d",
+    "source_manifest": {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/CURRENT_SOURCE.json",
+      "sha256": "7f5f4dc2cd89350557a158d424527688e45d04952f82c0618cbbe095819832b7",
+      "bytes": 101309
+    }
+  },
+  "runtime_nonimpact": {
+    "prior_files": 532,
+    "unchanged_old_files": 530,
+    "changed_old_test_only_files": 2,
+    "added_test_only_files": 1,
+    "removed": 0,
+    "production_config_changes": 0,
+    "old_shared_helpers_and_test_bodies_unchanged": true
+  },
+  "restoration_source": {
+    "before_files": 497,
+    "after_files": 543,
+    "before_sha256": "4223935c6ec0dc1107dc39a05cf05b6fe562da6e06844e66e65a57d77d3d50d1",
+    "after_sha256": "a3e1337a9f21f4a690f18d78134efbedbef3a761be1dc14efa2608158dd2a7ae",
+    "changed": 86,
+    "added": 46,
+    "deleted": 0,
+    "verification": {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/target/u10_current_002/RESTORE_VERIFICATION.json",
+      "bytes": 2316,
+      "sha256": "641bc852c8e536543c5903549b6415b9d261576df680bd8c628ebc6220a5a634"
+    },
+    "isolated_forward_membership_bytes_match": true,
+    "isolated_reverse_membership_bytes_match": true,
+    "workspace_reverse": false
+  },
+  "outside_target_freeze_execution": [
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u10_freeze_20261010_003/EXECUTION_RECEIPT.json",
+      "bytes": 5441,
+      "sha256": "7b1e26686a4ae494d7a20f06bdde15146abb9750924e19f8289acb7b807b949e"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u10_freeze_20261010_003/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u10_freeze_20261010_003/stdout.log",
+      "bytes": 261,
+      "sha256": "20647952ae65adf0848a0348080ebd9ecc45ff4c60abc0b1c11d9b5e25c68591"
+    }
+  ],
+  "prior_u09_closure_preserved": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_038_pass002/AUDIT_CLOSURE.json",
+    "sha256": "edb2b94bb4bf89ab1d372767320a888ef4125c1f3d609986cccccfb3839c7559",
+    "bytes": 8346
+  },
+  "previous_u10_target_preserved": {
+    "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/target/u10_current_001/MANIFEST.json",
+    "sha256": "c24c6e90c48b81f432deeaf78258bb6b0e5110bd5b770d0851927c4b37961c95",
+    "bytes": 218265
+  },
+  "previous_u10_audit_preserved": {
+    "path": "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_001_pass001/AUDIT_CLOSURE.json",
+    "bytes": 6445,
+    "sha256": "54982e7f52243c64fd230e20acd5816cf6b1b3af99eedda47cd4f957b00de33f"
+  },
+  "previous_u10_disposition": "Exact immutable Not Complete/High/open2 remains. The two prior evidence findings are resolved only for this successor source/evidence/target; no history is edited.",
+  "scope": {
+    "policy_sentences_reviewed_and_supported": 28,
+    "integration_rows_reviewed_and_supported": 19,
+    "required_dimensions_reviewed_and_supported": 10,
+    "execution_nodes_reviewed_and_complete": 3,
+    "predecessor_rows_reviewed": 288,
+    "predecessor_scoped_supported": 272,
+    "predecessor_completion_gates_satisfied_by_current_audit": 16
+  },
+  "evidence": {
+    "named_selected_pass_rows": 103,
+    "not_unique_or_fresh_whole_suite": true,
+    "prior_rows": 94,
+    "correction_rows": 9,
+    "correction_actual_runs": "001 five existing PASS +002 three new PASS +004 current one PASS; failed whole001/002/003 preserved",
+    "all_selected_raw_blocks_exact": true,
+    "four_new_source_archives_exact_members_each": 533,
+    "current_actual_binary_size_sha_verified": true,
+    "final46_external003_PC_R05_scoped_reuse": true
+  },
+  "currentness": {
+    "entry_checks": 2499,
+    "exit_checks": 2499,
+    "mismatches": 0,
+    "generated_reference_checks": 1302,
+    "generated_row_pointer_checks": 883,
+    "generated_mismatches": 0,
+    "audit_output_reference_checks": 1382,
+    "audit_output_row_pointer_checks": 1304,
+    "audit_output_mismatches": 0,
+    "four_new_archives_exact_members_bytes_hash": {
+      "SOURCE_BEFORE": 497,
+      "SOURCE_AFTER": 543,
+      "RECORDS": 1797,
+      "REFERENCES": 26
+    }
+  },
+  "audit_artifacts": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_002_pass001/COMPLETION_AUDIT.md",
+      "bytes": 10776,
+      "sha256": "b2cc7add5908198923d933ff74e31552b14a9717085357b2acda04406b6308cf"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_002_pass001/CONDITION_REVIEW.json",
+      "bytes": 101494,
+      "sha256": "a4bb5101530bc16eb78edad03e61294395ede8ebf079ffcfae64ed46a2d6ae58"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_002_pass001/PREDECESSOR_REVIEW.json",
+      "bytes": 982968,
+      "sha256": "cafc6c5bbc34465095292e5d06f068d3275609427781b9ecde9d4adc2a4a30ef"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_002_pass001/EVIDENCE_REVIEW.json",
+      "bytes": 101137,
+      "sha256": "a04a62670f3ba059b7fcb533501bdc11c81b301ba12dc85c31fa666fa68f46ac"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_002_pass001/FINDINGS.json",
+      "bytes": 10430,
+      "sha256": "a2b662cb06dabbea42b2bd7537fb767d6010c8c9efc05e97b8009a40355b5a20"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_002_pass001/ENTRY_CURRENTNESS.json",
+      "bytes": 1021,
+      "sha256": "367cbe504dd3214c600b39e86aa998fc6453cbca93a6724dc3c699fe44d7a3ba"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_002_pass001/EXIT_CURRENTNESS.json",
+      "bytes": 1543,
+      "sha256": "4bb4afbc7f846fd86e8daba6a64b991f73f1bb64d7d78eda403ac6e271fa0cda"
+    }
+  ],
+  "future_gate_disposition": "Fresh successor isolated restore, this completed nonparticipant whole-Goal judgment and actual exit currentness satisfy16 inherited completion gates and verification aggregates. Generated pending fields remain immutable historical pre-audit collection statements; there are no residual functional findings.",
+  "limits": [
+    "No fresh nine-test or whole-suite rerun is claimed; source nonimpact and actual row selection justify scoped reuse.",
+    "Native equipment/side/missing-source/finite-drain preparation is not expanded into unsupported public World or PvE configuration support.",
+    "Actual Corrosion dispatchfalse creates no optional derived child; reachable suppression source/absent queue and normal positive/unrelated derived controls are the proof.",
+    "Original PC strict failure, exact authorized empty-state fixed cost, original R05 execution101 and inherited concurrent peak-only warning retained.",
+    "Authorized current16 versus explicit legacy8/trusted profiles remain distinct; shared-environment cost data is not an all-platform/all-content production guarantee.",
+    "Any later source/document/evidence change needs its own currentness assessment; this verdict binds the exact target and eight audit artifacts."
+  ]
+}

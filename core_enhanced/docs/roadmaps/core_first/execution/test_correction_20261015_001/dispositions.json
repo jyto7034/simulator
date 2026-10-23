@@ -1,0 +1,251 @@
+[
+  {
+    "original_name": "game::player_game_actor::handlers::tests::corrupt_local_active_run_requires_explicit_reset",
+    "disposition": "removed",
+    "reason": "외부 파일을 직접 corrupt로 덮어써야 하는 범위 밖 사례. 실제 IO/journal 복구 회귀는 유지."
+  },
+  {
+    "original_name": "game::player_game_actor::handlers::tests::application_preintent_write_failure_keeps_core_and_profile_unchanged",
+    "current_name": "game::player_game_actor::handlers::tests::application_preintent_write_failure_keeps_core_and_profile_unchanged",
+    "disposition": "corrected_and_passed",
+    "evidence_logs": [
+      "server001.log",
+      "feature_final001.log"
+    ]
+  },
+  {
+    "original_name": "game::player_game_actor::handlers::tests::local_active_run_is_projected_and_requires_explicit_new_run_replacement",
+    "current_name": "game::player_game_actor::handlers::tests::local_active_run_requires_continue_then_abandon_before_new_start",
+    "disposition": "corrected_and_passed",
+    "evidence_logs": [
+      "server001.log",
+      "feature_final001.log"
+    ]
+  },
+  {
+    "original_name": "game::player_game_actor::handlers::tests::accepted_application_profile_write_failure_commits_core_and_requires_recovery",
+    "current_name": "game::player_game_actor::handlers::tests::accepted_application_profile_write_failure_commits_core_and_requires_recovery",
+    "disposition": "corrected_and_passed",
+    "evidence_logs": [
+      "server001.log",
+      "feature_final001.log"
+    ]
+  },
+  {
+    "original_name": "mod_admission::u12_normal_host_tests::u12_profile_store_current_checksum_positive_then_duplicate_raw_vault_key_rejects",
+    "disposition": "removed",
+    "reason": "외부 raw JSON 중복키 변조 전용. 정상 publish/load는 기존 persistence 회귀와 중복."
+  },
+  {
+    "original_name": "game::player_game_actor::handlers::tests::finished_live_battle_tick_pushes_combat_result_snapshot_after_final_update",
+    "current_name": "game::player_game_actor::handlers::tests::finished_live_battle_tick_pushes_combat_result_snapshot_after_final_update",
+    "disposition": "corrected_and_passed",
+    "evidence_logs": [
+      "server001.log",
+      "feature_final001.log"
+    ]
+  },
+  {
+    "original_name": "game::player_game_actor::handlers::tests::state_snapshot_overlay_matrix_preserves_old_full_json_order_and_uniqueness",
+    "current_name": "game::player_game_actor::handlers::tests::state_snapshot_overlay_matrix_preserves_old_full_json_order_and_uniqueness",
+    "disposition": "corrected_and_passed",
+    "evidence_logs": [
+      "server001.log",
+      "feature_final001.log"
+    ]
+  },
+  {
+    "original_name": "game::player_game_actor::handlers::tests::missing_battle_authority_emits_error_then_current_resync_without_mutation",
+    "current_name": "game::player_game_actor::handlers::tests::missing_battle_authority_emits_error_then_current_resync_without_mutation",
+    "disposition": "corrected_and_passed",
+    "evidence_logs": [
+      "server001.log",
+      "feature_final001.log"
+    ]
+  },
+  {
+    "original_name": "game::player_game_actor::handlers::tests::fault::fault_is_per_actor_and_other_player_ticks_commands_and_real_saves_continue",
+    "current_name": "game::player_game_actor::handlers::tests::fault::fault_is_per_actor_and_other_player_ticks_commands_and_real_saves_continue",
+    "disposition": "corrected_and_passed",
+    "evidence_logs": [
+      "focused004.log",
+      "feature_final001.log"
+    ]
+  },
+  {
+    "original_name": "game::player_game_actor::handlers::tests::durable::u05_paused_accepted_use_survives_same_actor_reconnect_and_spends_once",
+    "current_name": "game::player_game_actor::handlers::tests::durable::u05_paused_accepted_use_survives_same_actor_reconnect_and_spends_once",
+    "disposition": "corrected_and_passed",
+    "evidence_logs": [
+      "server001.log",
+      "feature_final001.log"
+    ]
+  },
+  {
+    "original_name": "game::player_game_actor::handlers::tests::prepared_battle_entry_drop_preserves_root_and_commit_matches_direct_execution",
+    "current_name": "game::player_game_actor::handlers::tests::prepared_battle_entry_drop_preserves_root_and_commit_matches_direct_execution",
+    "disposition": "corrected_and_passed",
+    "evidence_logs": [
+      "server001.log",
+      "feature_final001.log"
+    ]
+  },
+  {
+    "original_name": "game::player_game_actor::handlers::tests::durable::u07_host_wall_cast_and_object_survive_paused_same_actor_reconnect",
+    "current_name": "game::player_game_actor::handlers::tests::durable::u07_host_wall_cast_and_object_survive_paused_same_actor_reconnect",
+    "disposition": "corrected_and_passed",
+    "evidence_logs": [
+      "server001.log",
+      "feature_final001.log"
+    ]
+  },
+  {
+    "original_name": "game::player_game_actor::handlers::tests::live_battle_resync_rejects_future_since_seq",
+    "current_name": "game::player_game_actor::handlers::tests::live_battle_resync_rejects_future_since_seq",
+    "disposition": "corrected_and_passed",
+    "evidence_logs": [
+      "server001.log",
+      "feature_final001.log"
+    ]
+  },
+  {
+    "original_name": "game::player_game_actor::handlers::tests::u06::u06_actor_selection_settings_disconnect_and_reconnect_restore_priority",
+    "current_name": "game::player_game_actor::handlers::tests::u06::u06_actor_selection_settings_disconnect_and_reconnect_restore_priority",
+    "disposition": "corrected_and_passed",
+    "evidence_logs": [
+      "server001.log",
+      "feature_final001.log"
+    ]
+  },
+  {
+    "original_name": "game::player_game_actor::handlers::tests::detached_live_battle_has_no_ttl_and_reconnects_paused",
+    "current_name": "game::player_game_actor::handlers::tests::detached_live_battle_has_no_ttl_and_reconnects_paused",
+    "disposition": "corrected_and_passed",
+    "evidence_logs": [
+      "server001.log",
+      "feature_final001.log"
+    ]
+  },
+  {
+    "original_name": "game::player_game_actor::handlers::tests::first_public_battle_entry_uses_host_work_limit_and_active_battle_has_no_rollback_token",
+    "current_name": "game::player_game_actor::handlers::tests::first_public_battle_entry_uses_host_work_limit_and_active_battle_has_no_rollback_token",
+    "disposition": "corrected_and_passed",
+    "evidence_logs": [
+      "focused003.log",
+      "feature_final001.log"
+    ]
+  },
+  {
+    "original_name": "game::player_game_actor::handlers::tests::paused_live_battle_tick_does_not_push_delta_until_resumed",
+    "current_name": "game::player_game_actor::handlers::tests::paused_live_battle_tick_does_not_push_delta_until_resumed",
+    "disposition": "corrected_and_passed",
+    "evidence_logs": [
+      "server001.log",
+      "feature_final001.log"
+    ]
+  },
+  {
+    "original_name": "game::player_game_actor::handlers::tests::fault::real_manual_retreat_failure_publishes_fault_and_cancels_the_scheduled_timer",
+    "current_name": "game::player_game_actor::handlers::tests::fault::real_manual_retreat_failure_publishes_fault_and_cancels_the_scheduled_timer",
+    "disposition": "corrected_and_passed",
+    "evidence_logs": [
+      "server001.log",
+      "feature_final001.log"
+    ]
+  },
+  {
+    "original_name": "game::player_game_actor::handlers::tests::durable::u04_two_restored_actors_cannot_publish_a_stale_terminal_disposition",
+    "current_name": "game::player_game_actor::handlers::tests::durable::u04_newer_profile_blocks_stale_restored_actor_terminal_disposition",
+    "disposition": "corrected_and_passed",
+    "evidence_logs": [
+      "focused004.log",
+      "feature_final001.log"
+    ]
+  },
+  {
+    "original_name": "game::player_game_actor::handlers::tests::durable::u04_real_terminal_host_tick_preintent_failure_does_not_publish_end_then_retry_settles_once",
+    "current_name": "game::player_game_actor::handlers::tests::durable::u04_real_terminal_host_tick_preintent_failure_does_not_publish_end_then_retry_settles_once",
+    "disposition": "corrected_and_passed",
+    "evidence_logs": [
+      "focused003.log",
+      "feature_final001.log"
+    ]
+  },
+  {
+    "original_name": "game::player_game_actor::handlers::tests::second_mutation_using_same_revision_is_stale_after_first_commit",
+    "current_name": "game::player_game_actor::handlers::tests::second_mutation_using_same_revision_is_stale_after_first_commit",
+    "disposition": "corrected_and_passed",
+    "evidence_logs": [
+      "server001.log",
+      "feature_final001.log"
+    ]
+  },
+  {
+    "original_name": "game::player_game_actor::handlers::tests::live_battle_tick_pushes_update_without_state_snapshot_after_confirm_enter",
+    "current_name": "game::player_game_actor::handlers::tests::live_battle_tick_pushes_update_without_state_snapshot_after_confirm_enter",
+    "disposition": "corrected_and_passed",
+    "evidence_logs": [
+      "server001.log",
+      "feature_final001.log"
+    ]
+  },
+  {
+    "original_name": "game::player_game_actor::handlers::tests::durable::u08_nonempty_relics_and_current_live_battle_survive_real_detach_attach_without_continue",
+    "current_name": "game::player_game_actor::handlers::tests::durable::u08_nonempty_relics_and_current_live_battle_survive_real_detach_attach_without_continue",
+    "disposition": "corrected_and_passed",
+    "evidence_logs": [
+      "server001.log",
+      "feature_final001.log"
+    ]
+  },
+  {
+    "original_name": "game::player_game_actor::handlers::tests::durable::u04_admin_prepared_drop_and_io_failures_share_application_acceptance",
+    "current_name": "game::player_game_actor::handlers::tests::durable::u04_admin_prepared_drop_and_io_failures_share_application_acceptance",
+    "disposition": "corrected_and_passed",
+    "evidence_logs": [
+      "focused003.log",
+      "feature_final001.log"
+    ]
+  },
+  {
+    "original_name": "game::player_game_actor::handlers::tests::attaching_replacement_session_auto_pauses_and_returns_recovery_batch",
+    "current_name": "game::player_game_actor::handlers::tests::attaching_replacement_session_auto_pauses_and_returns_recovery_batch",
+    "disposition": "corrected_and_passed",
+    "evidence_logs": [
+      "server001.log",
+      "feature_final001.log"
+    ]
+  },
+  {
+    "original_name": "game::player_game_actor::handlers::tests::fault::real_tick_fault_blocks_late_ticks_management_reconnect_and_stop_writes_then_existing_continue",
+    "current_name": "game::player_game_actor::handlers::tests::fault::real_tick_fault_blocks_late_ticks_management_reconnect_and_stop_writes_then_existing_continue",
+    "disposition": "corrected_and_passed",
+    "evidence_logs": [
+      "focused003.log",
+      "feature_final001.log"
+    ]
+  },
+  {
+    "original_name": "application::fault_tests::terminal_observation_keeps_failure_work_and_lease_without_a_fake_commit_or_repeat",
+    "current_name": "application::fault_tests::terminal_observation_keeps_failure_work_and_lease_without_a_fake_commit_or_repeat",
+    "disposition": "corrected_and_passed",
+    "evidence_logs": [
+      "feature_preflight001.log",
+      "feature_final001.log"
+    ]
+  },
+  {
+    "original_name": "runtime_measurement::playback::tests::cmrp_script_preserved_u07_actor_trap_wall_reach_normal_public_combat",
+    "disposition": "removed",
+    "reason": "과거 pack gameplay 재생은 현재 Core U07 공개 제작/전투 및 object lifecycle 회귀와 중복. 고유 Script 바인딩/명령/결과 assertion은 정상 외부전투 계측시험으로 통합."
+  },
+  {
+    "original_name": "runtime_measurement::playback::tests::cmrp_playback_normal_external_combat_modes_keep_typed_results_and_gameplay",
+    "current_name": "runtime_measurement::playback::tests::cmrp_playback_normal_external_combat_modes_keep_typed_results_and_gameplay",
+    "disposition": "corrected_and_passed",
+    "evidence_logs": [
+      "feature_preflight001.log",
+      "feature_final001.log"
+    ]
+  }
+]

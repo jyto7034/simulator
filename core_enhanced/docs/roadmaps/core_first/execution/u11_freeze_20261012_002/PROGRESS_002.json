@@ -1,0 +1,29 @@
+{
+  "observed_at_utc": "2026-10-11T23:12:52.889858+00:00",
+  "pid": 475717,
+  "process_directory_exists": true,
+  "elapsed_seconds": 764.0,
+  "state": "D",
+  "wchan": "p9_client_rpc",
+  "cpu_seconds": 131.09,
+  "elapsed_delta_from_prior_seconds": 295.46,
+  "cpu_delta_from_prior_seconds": 68.3,
+  "current_workspace_fds": [
+    {
+      "fd": "4",
+      "path": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/target/u11_current_001/RECORDS.tar.gz"
+    }
+  ],
+  "target_exists": true,
+  "target_file_names": [
+    "FORWARD.patch",
+    "RECORDS.tar.gz",
+    "RESTORE_FORWARD.log",
+    "RESTORE_REVERSE.log",
+    "RESTORE_VERIFICATION.json",
+    "REVERSE.patch",
+    "SOURCE_AFTER.tar.gz",
+    "SOURCE_BEFORE.tar.gz"
+  ],
+  "internal_phase_not_determined": true
+}

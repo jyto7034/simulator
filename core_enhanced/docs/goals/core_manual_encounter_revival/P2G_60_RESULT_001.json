@@ -1,0 +1,10 @@
+{
+  "stage": "P2G-60",
+  "status": "complete",
+  "handoff_ref": {
+    "Artifact Type": "Handoff Artifact",
+    "Artifact ID": "HA-CMER-001",
+    "Content Digest": "sha256:4d42dcdd9a71271000d5e029ba41431d77feb94c69d5732381adfd391543a381"
+  },
+  "checks": "exact basis/6element trace/limitations/authorization boundary; no product mutation in P2G"
+}

@@ -1,0 +1,75 @@
+{
+  "log_counts": {
+    "u14-focused011": {
+      "failed": 0,
+      "summary": [
+        "test result: ok. 82 passed; 0 failed; 0 ignored; 0 measured; 2020 filtered out; finished in 22.24s"
+      ],
+      "standalone_pass_lines": 82,
+      "summary_passed": 82
+    },
+    "u14-core-regression002": {
+      "failed": 154,
+      "summary": [
+        "test result: FAILED. 1940 passed; 154 failed; 6 ignored; 0 measured; 0 filtered out; finished in 195.91s"
+      ],
+      "standalone_pass_lines": 1928,
+      "summary_passed": 1940
+    },
+    "u14-baseline-failures001": {
+      "failed": 138,
+      "summary": [
+        "test result: FAILED. 15 passed; 138 failed; 0 ignored; 0 measured; 1937 filtered out; finished in 23.63s"
+      ],
+      "standalone_pass_lines": 15,
+      "summary_passed": 15
+    },
+    "u14-g11-default001": {
+      "failed": 0,
+      "summary": [
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 2098 filtered out; finished in 6.19s"
+      ],
+      "standalone_pass_lines": 4,
+      "summary_passed": 4
+    },
+    "u14-g11-native001": {
+      "failed": 0,
+      "summary": [
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 2117 filtered out; finished in 7.27s"
+      ],
+      "standalone_pass_lines": 4,
+      "summary_passed": 4
+    },
+    "u14-server-persistence001": {
+      "failed": 0,
+      "summary": [
+        "test result: ok. 29 passed; 0 failed; 0 ignored; 0 measured; 91 filtered out; finished in 0.38s"
+      ],
+      "standalone_pass_lines": 29,
+      "summary_passed": 29
+    }
+  },
+  "coverage_test_link_issues": [],
+  "preexisting_failures_are_full_run_subset": true,
+  "new_or_changed_failures": [
+    "game::world::tests::checkpoint_validation::current_v12_checkpoint_round_trips_with_canonical_map_order_independent_checksum",
+    "game::world::tests::combat::final_boss_retreat_changes_only_its_budget",
+    "game::world::tests::combat::owned_clone_shape_complete_world_preserves_entry_checkpoint_and_retreat_continuation",
+    "game::world::tests::combat::retreat_battle_restores_exact_pre_entry_snapshot_and_rng_continuation",
+    "game::world::tests::combat::two_retreats_consume_only_retreat_budget_and_third_entry_cannot_retreat",
+    "game::world::tests::combat::u04_each_unfinished_interactive_node_restores_its_preentry_roots",
+    "game::world::tests::combat::u04_unfinished_event_combat_restores_before_event_instead_of_after_choice",
+    "game::world::tests::u12_lifecycle::cost::u12_vault_entry_checkpoint_restore_preserves_profile_boundary",
+    "game::world::tests::u12_lifecycle::cost::u12_vault_prepare_import_budget_failures_preserve_roots",
+    "game::world::tests::u12_lifecycle::cost::u12_vault_prepared_discard_and_commit_keep_exact_profile",
+    "game::world::tests::u12_lifecycle::cost::u12_vault_profile_capture_charges_owned_graph",
+    "game::world::tests::u12_lifecycle::recovery::u12_lifecycle_recovery_gate_continue_uses_actual_next_floor_hq_and_rolls_back_unrecoverable_depth_five",
+    "game::world::tests::u12_lifecycle::recovery::u12_lifecycle_recovery_gate_keeps_bag_compound_restriction_and_exhaustion_rejects_false_continue",
+    "game::world::tests::u12_lifecycle::return_exhaustion::u12_lifecycle_pending_choice_cannot_be_hidden_in_current_or_snapshot_savepoint",
+    "game::world::tests::u12_lifecycle::return_exhaustion::u12_lifecycle_pending_continue_rejects_each_phase_session_node_and_cause_mismatch",
+    "game::world::tests::u14_deterrence::u14_actual_time_boundary_and_defeat_survival_xp"
+  ],
+  "not_closed_by_final_logs": [],
+  "unmanifested_production_files": [],
+  "count_note": "Full-run concurrent/child output has 1928 isolated test-ok lines; authoritative summary reports1940. No assertion that the regex recovers every passing test. All selected coverage test references and154 failed names are located directly."
+}

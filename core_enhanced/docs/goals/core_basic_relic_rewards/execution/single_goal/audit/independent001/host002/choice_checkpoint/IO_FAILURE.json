@@ -1,0 +1,9 @@
+{
+  "command": {
+    "type": "load_run_checkpoint"
+  },
+  "error": "player profile filesystem error: Is a directory (os error 21)",
+  "index": 0,
+  "memory_and_disk_unchanged": true,
+  "passed": true
+}

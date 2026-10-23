@@ -463,8 +463,23 @@ impl BattleCore {
             None => Ok(stats),
         }
     }
+    pub(super) fn equipped_employee_normal_relic_copy(&self,employee:Uuid,definition:&str)->Option<Uuid>{
+        let owner=self.relic_numeric_owner.as_ref()?;
+        owner.inventory.employee_slots(employee).into_iter().flatten().filter_map(|id|owner.inventory.get(id)).find(|copy|copy.definition_id==definition&&copy.variant==crate::game::relic::RelicVariant::Normal).map(|copy|copy.copy_uuid)
+    }
+    pub(super) fn equipped_normal_relic_copy(&self, actor: UnitInstanceId, definition: &str) -> Option<uuid::Uuid> {
+        let owner = self.relic_numeric_owner.as_ref()?;
+        let unit = self.units.get(&actor)?;
+        let BattleUnitSourceIdentity::Employee { employee_uuid, .. } = unit.source_identity else { return None; };
+        owner.inventory.employee_slots(employee_uuid).into_iter().flatten()
+            .filter_map(|id| owner.inventory.get(id))
+            .find(|copy| copy.definition_id == definition && copy.variant == crate::game::relic::RelicVariant::Normal)
+            .map(|copy| copy.copy_uuid)
+    }
     pub(super) fn source_has_relics(&self, source: &RuntimeFactSource) -> bool {
-        if source.relic_effective().is_some() {
+        if source.relic_effective().is_some()
+            || source.causal().and_then(|c| c.program.as_ref()).is_some()
+        {
             return true;
         }
         let Some(owner) = &self.relic_numeric_owner else {
@@ -489,24 +504,33 @@ impl BattleCore {
         plan: &CompiledAmountPlan,
         source: &RuntimeFactSource,
     ) -> Result<RuntimeFactSource, GameError> {
-        if kind != AmountPlanKind::Damage || self.relic_numeric_owner.is_none() {
+        let causal = source.causal().and_then(|c| c.program.as_ref());
+        let selected_owner = match causal {
+            Some(binding) => binding.numeric_owner.as_ref(),
+            None => self.relic_numeric_owner.as_ref(),
+        };
+        if kind != AmountPlanKind::Damage || selected_owner.is_none() {
             return Ok(source.clone());
         }
-        let owner = self.relic_numeric_owner.as_ref().unwrap();
+        let owner = selected_owner.expect("selected numeric owner");
         let Some(actor) = source.actor else {
             return Ok(source.clone());
         };
-        let Some(unit) = self.units.get(&actor) else {
-            return Ok(source.clone());
-        };
-        let BattleUnitSourceIdentity::Employee { employee_uuid, .. } = unit.source_identity else {
-            return Ok(source.clone());
+        let employee_uuid = if let Some(binding) = causal {
+            binding.employee_uuid
+        } else {
+            let Some(unit) = self.units.get(&actor) else {
+                return Ok(source.clone());
+            };
+            let BattleUnitSourceIdentity::Employee { employee_uuid, .. } = unit.source_identity
+            else {
+                return Ok(source.clone());
+            };
+            employee_uuid
         };
         // Resolve metadata from the exact already-validated original source.
         let skill = self
-            .game_data
-            .skill_data
-            .get_by_id(plan.source().site.action.definition_id.as_str())
+            .skill_for_source(&plan.source().site.action.definition_id, source)
             .ok_or_else(|| invalid("relic numeric skill missing"))?;
         crate::authoring::control::charge(
             skill.steps.len() as u64,

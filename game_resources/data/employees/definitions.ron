@@ -2,6 +2,7 @@
     definitions: [
         (
             employee_definition_id: "field_medic",
+            role: Healer,
             name: "이서연",
             starter_eligible: true,
             initial_loadout: (equipment_ids: ["standard_training_healing_staff", "standard_armor"], baseline_skill_fragment_ids: [], active_skill_fragment_id: Some("training_single_heal")),
@@ -17,6 +18,7 @@
         ),
         (
             employee_definition_id: "breach_guard",
+            role: Tank,
             name: "강민재",
             starter_eligible: true,
             initial_loadout: (equipment_ids: ["standard_training_shield", "standard_armor"], baseline_skill_fragment_ids: [], active_skill_fragment_id: Some("training_last_line")),
@@ -32,6 +34,7 @@
         ),
         (
             employee_definition_id: "records_clerk",
+            role: Dealer,
             name: "한유진",
             starter_eligible: true,
             initial_loadout: (equipment_ids: ["standard_training_sword", "standard_armor"], baseline_skill_fragment_ids: [], active_skill_fragment_id: Some("training_berserker")),
@@ -47,6 +50,7 @@
         ),
         (
             employee_definition_id: "scout_runner",
+            role: Dealer,
             name: "오지훈",
             starter_eligible: true,
             initial_loadout: (equipment_ids: ["standard_training_gun", "standard_armor"], baseline_skill_fragment_ids: [], active_skill_fragment_id: Some("training_adrenaline")),
@@ -62,9 +66,10 @@
         ),
         (
             employee_definition_id: "containment_trainee",
+            role: Tank,
             name: "박하린",
             starter_eligible: true,
-            initial_loadout: (equipment_ids: ["standard_training_greatsword", "standard_armor"], baseline_skill_fragment_ids: [], active_skill_fragment_id: Some("training_breakthrough")),
+            initial_loadout: (equipment_ids: ["standard_training_shield", "standard_armor"], baseline_skill_fragment_ids: [], active_skill_fragment_id: Some("training_last_line")),
             profile: (
                 role: "격리 절차 훈련생",
                 background: "훈련 성적은 낮지만, 위험 명령을 끝까지 듣는 편이다.",
@@ -77,6 +82,7 @@
         ),
         (
             employee_definition_id: "maintenance_tech",
+            role: Healer,
             name: "최도윤",
             starter_eligible: true,
             initial_loadout: (equipment_ids: ["standard_training_area_healing_staff", "standard_armor", "archive_scanner"], baseline_skill_fragment_ids: [], active_skill_fragment_id: Some("training_area_heal")),
@@ -92,6 +98,7 @@
         ),
         (
             employee_definition_id: "hq_field_medic",
+            role: Healer,
             name: "윤채린",
             starter_eligible: false,
             initial_loadout: (equipment_ids: ["standard_training_healing_staff", "standard_armor"], baseline_skill_fragment_ids: [], active_skill_fragment_id: Some("training_single_heal")),
@@ -107,6 +114,7 @@
         ),
         (
             employee_definition_id: "hq_security_guard",
+            role: Tank,
             name: "서강우",
             starter_eligible: false,
             initial_loadout: (equipment_ids: ["standard_training_shield", "standard_armor"], baseline_skill_fragment_ids: [], active_skill_fragment_id: Some("training_last_line")),
@@ -122,6 +130,7 @@
         ),
         (
             employee_definition_id: "hq_recovery_runner",
+            role: Dealer,
             name: "임하늘",
             starter_eligible: false,
             initial_loadout: (equipment_ids: ["standard_training_gun", "standard_armor"], baseline_skill_fragment_ids: [], active_skill_fragment_id: Some("training_adrenaline")),
@@ -137,6 +146,7 @@
         ),
         (
             employee_definition_id: "hq_containment_aide",
+            role: Dealer,
             name: "장유나",
             starter_eligible: false,
             initial_loadout: (equipment_ids: ["standard_training_greatsword", "standard_armor"], baseline_skill_fragment_ids: [], active_skill_fragment_id: Some("training_breakthrough")),
@@ -152,6 +162,7 @@
         ),
         (
             employee_definition_id: "hq_maintenance_aide",
+            role: Healer,
             name: "민도겸",
             starter_eligible: false,
             initial_loadout: (equipment_ids: ["standard_training_area_healing_staff", "standard_armor"], baseline_skill_fragment_ids: [], active_skill_fragment_id: Some("training_area_heal")),
@@ -167,6 +178,7 @@
         ),
         (
             employee_definition_id: "hq_records_observer",
+            role: Dealer,
             name: "백수아",
             starter_eligible: false,
             initial_loadout: (equipment_ids: ["standard_training_sword", "standard_armor"], baseline_skill_fragment_ids: [], active_skill_fragment_id: Some("training_berserker")),

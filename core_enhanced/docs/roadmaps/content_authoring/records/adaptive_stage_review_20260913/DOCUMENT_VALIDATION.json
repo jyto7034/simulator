@@ -1,0 +1,227 @@
+{
+  "kind": "document-change-checks-not-goal-audit",
+  "checked_at": "2026-09-13T05:53:48.138Z",
+  "passed": true,
+  "checks": [
+    {
+      "name": "changed: core_enhanced/docs/README.md",
+      "passed": true
+    },
+    {
+      "name": "no trailing whitespace: core_enhanced/docs/README.md",
+      "passed": true
+    },
+    {
+      "name": "changed: core_enhanced/docs/goal_execution_pipeline(1).md",
+      "passed": true
+    },
+    {
+      "name": "no trailing whitespace: core_enhanced/docs/goal_execution_pipeline(1).md",
+      "passed": true
+    },
+    {
+      "name": "changed: core_enhanced/docs/policy_to_goal_pipeline_revised_v2.md",
+      "passed": true
+    },
+    {
+      "name": "no trailing whitespace: core_enhanced/docs/policy_to_goal_pipeline_revised_v2.md",
+      "passed": true
+    },
+    {
+      "name": "changed: core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+      "passed": true
+    },
+    {
+      "name": "no trailing whitespace: core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+      "passed": true
+    },
+    {
+      "name": "changed: core_enhanced/docs/roadmaps/content_authoring/OPERATING_RULES.md",
+      "passed": true
+    },
+    {
+      "name": "no trailing whitespace: core_enhanced/docs/roadmaps/content_authoring/OPERATING_RULES.md",
+      "passed": true
+    },
+    {
+      "name": "new link: core_enhanced/docs/roadmaps/content_authoring/OPERATING_RULES.md -> records/adaptive_stage_review_20260913/README.ko.md",
+      "passed": true
+    },
+    {
+      "name": "changed: core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "passed": true
+    },
+    {
+      "name": "no trailing whitespace: core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "passed": true
+    },
+    {
+      "name": "new link: core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md -> records/adaptive_stage_review_20260913/README.ko.md",
+      "passed": true
+    },
+    {
+      "name": "changed: core_enhanced/docs/roadmaps/content_authoring/guides/policy_to_goal_pipeline_revised_v2.md",
+      "passed": true
+    },
+    {
+      "name": "no trailing whitespace: core_enhanced/docs/roadmaps/content_authoring/guides/policy_to_goal_pipeline_revised_v2.md",
+      "passed": true
+    },
+    {
+      "name": "changed: core_enhanced/docs/roadmaps/content_authoring/guides/policy_to_goal_pipeline_roadmap_usage_v2_1.ko.md",
+      "passed": true
+    },
+    {
+      "name": "no trailing whitespace: core_enhanced/docs/roadmaps/content_authoring/guides/policy_to_goal_pipeline_roadmap_usage_v2_1.ko.md",
+      "passed": true
+    },
+    {
+      "name": "new link: core_enhanced/docs/roadmaps/content_authoring/guides/policy_to_goal_pipeline_roadmap_usage_v2_1.ko.md -> ../records/adaptive_stage_review_20260913/README.ko.md",
+      "passed": true
+    },
+    {
+      "name": "eight edited documents have original snapshots",
+      "passed": true
+    },
+    {
+      "name": "P2G main and distribution copy identical",
+      "passed": true
+    },
+    {
+      "name": "existing roadmap history unchanged",
+      "passed": true
+    },
+    {
+      "name": "obsolete active .bak removed",
+      "passed": true
+    },
+    {
+      "name": "retired original remains recoverable",
+      "passed": true
+    },
+    {
+      "name": "GEX contract marker: 2026-09-13-gex-r7",
+      "passed": true
+    },
+    {
+      "name": "GEX contract marker: ### 기본 구현 인계와 선택적 단계검토",
+      "passed": true
+    },
+    {
+      "name": "GEX contract marker: #### 명시적으로 요청한 단계검토",
+      "passed": true
+    },
+    {
+      "name": "GEX contract marker: #### 구현 전후 고정",
+      "passed": true
+    },
+    {
+      "name": "GEX contract marker: 모델 변경·자동 재개·시간 경과·검토 PASS는 진행 승인이 아니다.",
+      "passed": true
+    },
+    {
+      "name": "GEX contract marker: 부분 구현·검증 종료 / 단계검토 요청 대기",
+      "passed": true
+    },
+    {
+      "name": "GEX contract marker: 해시는 내용 복원 수단이 아니다.",
+      "passed": true
+    },
+    {
+      "name": "GEX contract marker: 새 감사 요청 전에는 GEX-20/30을 시작하지 않는다.",
+      "passed": true
+    },
+    {
+      "name": "removed mandatory preplanned checkpoint scope",
+      "passed": true
+    },
+    {
+      "name": "removed mandatory implementation checkpoint plan",
+      "passed": true
+    },
+    {
+      "name": "runtime selection criterion exists",
+      "passed": true
+    },
+    {
+      "name": "optional candidates do not block implementation",
+      "passed": true
+    },
+    {
+      "name": "baseline before segment preserved",
+      "passed": true
+    },
+    {
+      "name": "partial review does not require future functionality",
+      "passed": true
+    },
+    {
+      "name": "P2G optional candidates",
+      "passed": true
+    },
+    {
+      "name": "P2G handoff not blocked by missing candidates",
+      "passed": true
+    }
+  ],
+  "documents": [
+    {
+      "path": "core_enhanced/docs/README.md",
+      "before_path": "core_enhanced/docs/roadmaps/content_authoring/records/adaptive_stage_review_20260913/before/core_enhanced/docs/README.md",
+      "before_sha256": "519e6adfcef5243d39ce54bafe9d58f53d4c2d33b93a4205cfac704bfa14ac44",
+      "after_sha256": "085af013bff6f28c699d88a6094ebccdd608cab3a42226d7ffa5712c4bdcba7c"
+    },
+    {
+      "path": "core_enhanced/docs/goal_execution_pipeline(1).md",
+      "before_path": "core_enhanced/docs/roadmaps/content_authoring/records/adaptive_stage_review_20260913/before/core_enhanced/docs/goal_execution_pipeline(1).md",
+      "before_sha256": "cb3dc0130c6cfa540764df025a3424b7f7c431b23a253d429c24f88ce4a123de",
+      "after_sha256": "fa26ccacb976aca00becd06de5cc5a5d76cbbbf746e99106ddab9c3c62c329ab"
+    },
+    {
+      "path": "core_enhanced/docs/policy_to_goal_pipeline_revised_v2.md",
+      "before_path": "core_enhanced/docs/roadmaps/content_authoring/records/adaptive_stage_review_20260913/before/core_enhanced/docs/policy_to_goal_pipeline_revised_v2.md",
+      "before_sha256": "9550b47242fd9fbae497eda0530981de4db7c8141ac5123f3a158569310f8269",
+      "after_sha256": "6a5b422697937059aa631c7db499e8d08f86a080660ccbf021a13a9e80650fd8"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+      "before_path": "core_enhanced/docs/roadmaps/content_authoring/records/adaptive_stage_review_20260913/before/core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+      "before_sha256": "e7f604fec76fe50e8c27ee44de6e7f870448a0ab0a63ce83c5311a2cb5e6540c",
+      "after_sha256": "c187ff5e23c8c31cb5f97fedc12a5d6c1d34ab5f58ea730aa413a658be5e0525"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/OPERATING_RULES.md",
+      "before_path": "core_enhanced/docs/roadmaps/content_authoring/records/adaptive_stage_review_20260913/before/core_enhanced/docs/roadmaps/content_authoring/OPERATING_RULES.md",
+      "before_sha256": "a9a3d3b831a0261a5e9b98248a5783ce6b1368d336f7d41622e946931fdfbd7b",
+      "after_sha256": "70fb2e2914a8a8b87017aef188f07827eba3479b7e9a5f77283fede08fd94e83"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "before_path": "core_enhanced/docs/roadmaps/content_authoring/records/adaptive_stage_review_20260913/before/core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "before_sha256": "f68b8730326d1dba3c1454cf8488c59af44e9b0d54eac16b34d4c5314c0952f1",
+      "after_sha256": "dd092da2808dbe8b83b1b85a8e031cc18c419e65cb1d863ae342b3dc81656b72"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/guides/policy_to_goal_pipeline_revised_v2.md",
+      "before_path": "core_enhanced/docs/roadmaps/content_authoring/records/adaptive_stage_review_20260913/before/core_enhanced/docs/roadmaps/content_authoring/guides/policy_to_goal_pipeline_revised_v2.md",
+      "before_sha256": "9550b47242fd9fbae497eda0530981de4db7c8141ac5123f3a158569310f8269",
+      "after_sha256": "6a5b422697937059aa631c7db499e8d08f86a080660ccbf021a13a9e80650fd8"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/guides/policy_to_goal_pipeline_roadmap_usage_v2_1.ko.md",
+      "before_path": "core_enhanced/docs/roadmaps/content_authoring/records/adaptive_stage_review_20260913/before/core_enhanced/docs/roadmaps/content_authoring/guides/policy_to_goal_pipeline_roadmap_usage_v2_1.ko.md",
+      "before_sha256": "9b5a14649ceaf8b6765c162c6e6a282810ec0bb1bbc2db0664373632cee3ada9",
+      "after_sha256": "5cd3953989567cd550474ebe5566ea414b4921245f124a91b90b06eb2e277873"
+    }
+  ],
+  "retired": {
+    "original_path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md.bak",
+    "preserved_path": "core_enhanced/docs/roadmaps/content_authoring/records/optional_stage_review_20260913/retired/AUTORUN_REQUEST.ko.md.bak",
+    "sha256": "3e05b131d445cd10ecf478ef959b80f55ce718c41c8a1820e5a5b7d969f9a252"
+  },
+  "limitations": [
+    "Checks changed documents only, not all repository links.",
+    "Marker presence does not prove natural-language semantics or runner/model behavior.",
+    "No game compilation, runtime test, Goal activation, or GEX audit performed."
+  ]
+}

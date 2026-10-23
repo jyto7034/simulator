@@ -289,7 +289,7 @@ mod tests {
             .node_assignment_profiles
             .resolve(
                 &game_data.map_catalogs.facility_templates,
-                GameMode::Standard,
+                GameMode::Tutorial,
                 2,
             )
             .unwrap();

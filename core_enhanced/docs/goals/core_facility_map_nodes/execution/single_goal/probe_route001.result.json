@@ -1,0 +1,11 @@
+{
+  "command": [
+    ".cache/u12-vault-cost-target/release/u13_facility_consumer",
+    "route",
+    "core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/probe_route001"
+  ],
+  "exit_code": 0,
+  "seconds": 1.235694652001257,
+  "stdout": "probe_route001.stdout.log",
+  "stderr": "probe_route001.stderr.log"
+}

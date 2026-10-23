@@ -1,0 +1,28 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Goal Set",
+        "Artifact ID": "GS-CSNA-001",
+        "Content Digest": "sha256:4f7174046db33d87858cdc44a9d54b16350ca6d2b51ce4688113ab20c2aaf49e"
+      },
+      "payload": {
+        "Goal Set Document": "P2G_50_GOAL_SET.ko.md",
+        "Goal Set Document SHA256": "c436cb31955e60efc9c8db3f14b0235ea80a083fa4d059bbd8534ee64b165240",
+        "Complete Goal Member Set": [
+          "GOAL-CSNA-01"
+        ],
+        "Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CSNA-001",
+          "Content Digest": "sha256:0c01ece127ced2dbcacc591b9c823d571343059a416006db576c2a737ce06699"
+        },
+        "Phase Plan Ref": {
+          "Artifact Type": "Phase Plan",
+          "Artifact ID": "PP-CSNA-002",
+          "Content Digest": "sha256:f1de57f650b565850bfcc47d7b8108752f5f84083e8e44de6c8438ad53c56897"
+        }
+      }
+    }
+  ]
+}

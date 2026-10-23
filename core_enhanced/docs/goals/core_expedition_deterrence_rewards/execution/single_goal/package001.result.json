@@ -1,0 +1,12 @@
+{
+  "command": [
+    ".cache/u12-vault-cost-target/debug/u14_deterrence_consumer",
+    "prepare",
+    "game_resources",
+    "core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/test_parts/public_inputs001"
+  ],
+  "exit_code": 1,
+  "seconds": 58.869481302004715,
+  "stdout": "package001.stdout.log",
+  "stderr": "package001.stderr.log"
+}

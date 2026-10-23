@@ -1,0 +1,3060 @@
+{
+  "recorded_at_utc": "2026-10-09T15:02:55.463921+00:00",
+  "goal": "GOAL-CRCE-01",
+  "goal_set": "GS-CRCE-001",
+  "source": {
+    "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/CURRENT_SOURCE.json",
+    "bytes": 101309,
+    "sha256": "7f5f4dc2cd89350557a158d424527688e45d04952f82c0618cbbe095819832b7"
+  },
+  "source_sha256": "76aba953d84c644d3659b553e50f99f342c5826c709952c1fe808984ebfc340d",
+  "collector": {
+    "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/collect_finalization.py",
+    "bytes": 22204,
+    "sha256": "e22680389a35b37da85c8ab78c840c1880ec43b93579c02c0096838317485acc"
+  },
+  "independent_completion": "pending_nonparticipant_audit_not_implied_by_collection",
+  "schema": "U10_EVIDENCE_SELECTION_V1",
+  "selection_input": {
+    "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/EVIDENCE_INPUT.json",
+    "bytes": 17958,
+    "sha256": "e420642b744acd83075cf4f6bbb627b667e6c2452bf4d1bfc9006e6d822704af"
+  },
+  "late_bindings": {
+    "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/LATE_BINDINGS.json",
+    "bytes": 19145,
+    "sha256": "40a720d06348a209f96653904d90e656003668d5c9a4a98f8b9a933de3ecfeae"
+  },
+  "late_failed_attempts_to_preserve": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/performance001/evidence/compat_pc_001.json",
+      "bytes": 214283,
+      "sha256": "4c29886fbc8ce80617391d25b06db4195433887fb6383287a6bfb80fe3961e72"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/performance001/evidence/compat_pc_001.log",
+      "bytes": 3765,
+      "sha256": "5e5d401aad9d39a48391aa2adf9ce409a90b1e74c06d71f2d7dc7f175b6125a9"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/performance001/evidence/compat_pc_cost_002.json",
+      "bytes": 214002,
+      "sha256": "f22c359f18b8be1ab41bf03e0e75c87e4cd67d3d15ed567dcc9599e35d4c544e"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/performance001/evidence/compat_pc_cost_002.log",
+      "bytes": 1267,
+      "sha256": "ef6283dfc5139fe95cd176dfc8c56b15273e0551669ad2e99d30b93c9c1787be"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/performance001/evidence/compat_r05_001.json",
+      "bytes": 215351,
+      "sha256": "5aaf924f623804b1435cd65e49721cf2de6bba6e35002b454e482cdc51e18441"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/performance001/evidence/compat_r05_001.log",
+      "bytes": 44468,
+      "sha256": "1adda894aafbdf8afc2ee4614d26a2e5766f4ae06fb2fbff69bd8ed78700cefe"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_audit_joint_tests001.json",
+      "bytes": 215795,
+      "sha256": "57803f4768245c1b02223a82d1a73b85d011537660739f1add6af5722a4aa66a"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_audit_joint_tests001.log",
+      "bytes": 4163,
+      "sha256": "3d10656208293784c471ec46a80e8e69e7e9edaf13485c80cdedce5478a648ea"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_audit_joint_tests002.json",
+      "bytes": 215172,
+      "sha256": "a4dab8ddac50d306f0985944294d11203e06101839e75114e6fc6e45e1e29f34"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_audit_joint_tests002.log",
+      "bytes": 1319,
+      "sha256": "efb9af59e6aa083f6ad8e4f01c371787dd519cabd68fa86656e20d1f6cbe3dbd"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_audit_joint_tests003.json",
+      "bytes": 214743,
+      "sha256": "a743f8d0fc59ea85a19a7975dadb82c8fd2a19f5da6e235c9d2524b2f859cc50"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_audit_joint_tests003.log",
+      "bytes": 936,
+      "sha256": "11e138029be67cee67e07a01345d9fbfdf183371ef07014afd42591f1f68031e"
+    }
+  ],
+  "source_review": {
+    "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/PLAN.md",
+    "bytes": 24599,
+    "sha256": "987a02b0843e0f1b08d372d473ad1cd1efa9cb53a999e4e86fd366e611df7104"
+  },
+  "evidence": {
+    "invalid_external": {
+      "id": "invalid_external",
+      "status": "named_pass_rows_available_currentness_review_required",
+      "scope": "Eight typed external invalid candidates preserve held generation and live roots.",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_tests005.json",
+        "bytes": 202418,
+        "sha256": "230fb3dedf4abc059d7e6ad82117fb941d4d96c0e556b39db6885460f8c6eb23"
+      },
+      "command_index": null,
+      "enclosing_exit_code": 101,
+      "enclosing_failure_preserved": true,
+      "source": {
+        "embedded_in_receipt": true,
+        "sha256": "b76521f0948c4937b132e877f9d951442f00c4f3b5156582a02666fea258ef49",
+        "canonical_row_sha256": "2069fe60f334fbe8d4ef7ea0b4747d5f82bbfc27fadb018069fae3833f0b0e0e"
+      },
+      "source_unchanged": true,
+      "stdout": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_tests005.log",
+        "bytes": 9232,
+        "sha256": "87b655378bca7741470e84c341f25c6c6ab848083e1b53f316d7c9a7030a61c6"
+      },
+      "stderr": null,
+      "selected_count": 1,
+      "selected_tests": [
+        {
+          "selector": "authoring::trial::tests::u10_causal::u10_p_invalid_causal_external_candidates_preserve_the_held_generation",
+          "status": "ok",
+          "raw_block": "U10_P rejected zero_interval: LiveRonError { code: \"content_validation\", phase: FinalValidation, source_file: \"official/data/relics/base.ron\", domain: \"relics\", object_id: None, action_id: None, effect_id: None, field_path: Some(\"relics\"), cause: \"relics[0].rules: relic_structural_invalid_reference at Some(\\\"u10_invalid\\\")/Some(\\\"invalid\\\")/Some(\\\"rules[0]\\\"): independent periodic interval must be positive\", related_sources: [], pack_id: Some(\"official\"), catalog_kind: Some(Relics), definition_kind: Some(Relic), position: None, parser_reason: None, expected: None, actual: None }\nU10_P rejected forged_root: LiveRonError { code: \"ron_parse\", phase: Parse, source_file: \"official/data/relics/base.ron\", domain: \"content_pack\", object_id: None, action_id: None, effect_id: None, field_path: Some(\"relics[0].rules[0].apply.Periodic.new_root\"), cause: \"unknown field `new_root`, expected `interval_ms` or `payload`\", related_sources: [], pack_id: Some(\"official\"), catalog_kind: Some(Relics), definition_kind: None, position: None, parser_reason: None, expected: None, actual: None }\nU10_P rejected negative_wedge: LiveRonError { code: \"ron_parse\", phase: Parse, source_file: \"official/data/relics/base.ron\", domain: \"content_pack\", object_id: None, action_id: None, effect_id: None, field_path: Some(\"relics[0].rules[0].apply.Wedge.increment_percent\"), cause: \"6:64: Expected integer\", related_sources: [], pack_id: Some(\"official\"), catalog_kind: Some(Relics), definition_kind: None, position: Some(RonPosition { line: 6, column: 64 }), parser_reason: Some(\"ExpectedInteger\"), expected: None, actual: None }\nU10_P rejected periodic_effect_selector: LiveRonError { code: \"content_validation\", phase: FinalValidation, source_file: \"official/data/relics/base.ron\", domain: \"relics\", object_id: None, action_id: None, effect_id: None, field_path: Some(\"relics\"), cause: \"relics[0].rules: relic_structural_invalid_reference at Some(\\\"u10_invalid\\\")/Some(\\\"invalid\\\")/Some(\\\"rules[0]\\\"): independent periodic requires owner-only predicates; no triggering effect exists\", related_sources: [], pack_id: Some(\"official\"), catalog_kind: Some(Relics), definition_kind: Some(Relic), position: None, parser_reason: None, expected: None, actual: None }\nU10_P rejected periodic_nested_same_effect: LiveRonError { code: \"content_validation\", phase: FinalValidation, source_file: \"official/data/relics/base.ron\", domain: \"relics\", object_id: None, action_id: None, effect_id: None, field_path: Some(\"relics\"), cause: \"relics[0].rules: relic_structural_invalid_reference at Some(\\\"u10_invalid\\\")/Some(\\\"invalid\\\")/Some(\\\"rules[0]\\\"): independent periodic requires owner-only predicates; no triggering effect exists\", related_sources: [], pack_id: Some(\"official\"), catalog_kind: Some(Relics), definition_kind: Some(Relic), position: None, parser_reason: None, expected: None, actual: None }\nU10_P rejected empty_join: LiveRonError { code: \"content_validation\", phase: FinalValidation, source_file: \"official/data/relics/base.ron\", domain: \"relics\", object_id: None, action_id: None, effect_id: None, field_path: Some(\"relics\"), cause: \"relics[0].rules: relic_structural_invalid_reference at Some(\\\"u10_invalid\\\")/Some(\\\"invalid\\\")/Some(\\\"rules[0]\\\"): causal branches must be nonempty\", related_sources: [], pack_id: Some(\"official\"), catalog_kind: Some(Relics), definition_kind: Some(Relic), position: None, parser_reason: None, expected: None, actual: None }\nU10_P rejected missing_flow_step: LiveRonError { code: \"relic_structural_invalid_reference\", phase: Compile, source_file: \"official/data/relics/base.ron\", domain: \"relics\", object_id: Some(\"u10_invalid\"), action_id: None, effect_id: None, field_path: Some(\"relics[0].causal\"), cause: \"relic_structural_invalid_reference at Some(\\\"u10_invalid\\\")/Some(\\\"invalid\\\")/Some(\\\"causal\\\"): causal flow flow.step_id: unknown action 'does_not_exist'\", related_sources: [], pack_id: Some(\"official\"), catalog_kind: Some(Relics), definition_kind: Some(Relic), position: None, parser_reason: None, expected: None, actual: None }\nU10_P rejected wrong_amount_type: LiveRonError { code: \"ron_parse\", phase: Parse, source_file: \"official/data/relics/base.ron\", domain: \"content_pack\", object_id: None, action_id: None, effect_id: None, field_path: Some(\"relics[0].rules[0].apply.Subscribe.payload.Program.steps[0].effects[0].op.Damage.amount\"), cause: \"7:82: Expected integer\", related_sources: [], pack_id: Some(\"official\"), catalog_kind: Some(Relics), definition_kind: None, position: Some(RonPosition { line: 7, column: 82 }), parser_reason: Some(\"ExpectedInteger\"), expected: None, actual: None }\nok",
+          "raw_block_sha256": "1922b81b50d8e9a25801ea050f28984725579a0fb61d3295a3f9abc037884d15"
+        }
+      ],
+      "unselected_rows": [
+        {
+          "selector": "authoring::trial::tests::u10_causal::u10_p_external_causal_join_periodic_wedge_and_fresh_continue",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::admission_cases::u10_h_actual_fact_subscriber_admission_has_exact_limits_and_atomic_retry",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::admission_cases::u10_h_join_final_receipt_and_wedge_commit_preserve_prior_prefix_on_refusal",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_equal_definition_copies_and_distinct_rule_ids_are_independent_visits",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_recompiled_owner_and_plan_do_not_reset_same_copy_rule_visits",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_same_copy_rule_survives_form_and_fingerprint_replacement",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_same_copy_rule_visit_survives_rebinding_to_another_employee",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_e_no_fragment_dead_owner_death_subscriber_uses_actual_killer_once",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_e_taken_delayed_child_preserves_public_original_source_and_actual_killer_after_log_eviction",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_authored_then_branch_and_join_continuation_have_distinct_program_and_amount_identity",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_cancelled_incomplete_participant_never_commits_joined_payload",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_join_excludes_same_clock_nonparticipant_and_clones_waiting_state",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_local_bucket_descendants_hold_join_until_their_actual_visits_complete",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_real_fork_siblings_inherit_a_but_each_may_visit_b_once",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_real_join_waits_for_descendants_then_uses_participant_union",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_c_derived_dot_ticks_keep_ancestry_and_do_not_refresh_their_own_source",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_c_detached_periodic_keeps_accepted_child_program_and_numeric_owner_only",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_c_periodic_occurrences_are_independent_roots_without_active_fragment",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_d_released_subscriber_projectile_keeps_ancestry_after_action_end",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_d_trace_modes_do_not_change_delayed_causal_damage_or_clone_progress",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::resonance_cases::u10_e_queued_and_periodic_positive_resonance_use_the_existing_gate_without_banking",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_other_relic_child_damage_does_not_advance_original_cast_wedge",
+          "status": "ok"
+        }
+      ]
+    },
+    "admission": {
+      "id": "admission",
+      "status": "named_pass_rows_available_currentness_review_required",
+      "scope": "Actual subscriber/Join/Wedge work/clone/retained exact and one-short, prefix rollback and clean retry.",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_tests005.json",
+        "bytes": 202418,
+        "sha256": "230fb3dedf4abc059d7e6ad82117fb941d4d96c0e556b39db6885460f8c6eb23"
+      },
+      "command_index": null,
+      "enclosing_exit_code": 101,
+      "enclosing_failure_preserved": true,
+      "source": {
+        "embedded_in_receipt": true,
+        "sha256": "b76521f0948c4937b132e877f9d951442f00c4f3b5156582a02666fea258ef49",
+        "canonical_row_sha256": "2069fe60f334fbe8d4ef7ea0b4747d5f82bbfc27fadb018069fae3833f0b0e0e"
+      },
+      "source_unchanged": true,
+      "stdout": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_tests005.log",
+        "bytes": 9232,
+        "sha256": "87b655378bca7741470e84c341f25c6c6ab848083e1b53f316d7c9a7030a61c6"
+      },
+      "stderr": null,
+      "selected_count": 2,
+      "selected_tests": [
+        {
+          "selector": "game::world::tests::u10_causal::admission_cases::u10_h_actual_fact_subscriber_admission_has_exact_limits_and_atomic_retry",
+          "status": "ok",
+          "raw_block": "U10_H fact_subscriber work_exact=3976 one_short=3975 rollback=true retry=true\nU10_H fact_subscriber clone_exact=177 one_short=176 rollback=true retry=true\nU10_H fact_subscriber retained_exact=69306 site=queued_event_payload rollback_retry=true\nok",
+          "raw_block_sha256": "fa213b3d933b34b61d00a1ca3f827c63837ee1105950b133295d57e6c9f249ac"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::admission_cases::u10_h_join_final_receipt_and_wedge_commit_preserve_prior_prefix_on_refusal",
+          "status": "ok",
+          "raw_block": "U10_H join work_exact=71205 prefix=26 finished=44\nU10_H join clone_exact=695 prefix=26 finished=44\nU10_H join retained_exact=1143226 site=object_request_query_storage prefix=26 finished=44\nU10_H wedge work_exact=54337 prefix=110 finished=230\nU10_H wedge clone_exact=535 prefix=110 finished=230\nU10_H wedge retained_exact=882118 site=object_request_query_storage prefix=110 finished=230\nok",
+          "raw_block_sha256": "007047d1a065f5b83a849669ebb3a31df86001354695bfab335e8894a8317381"
+        }
+      ],
+      "unselected_rows": [
+        {
+          "selector": "authoring::trial::tests::u10_causal::u10_p_external_causal_join_periodic_wedge_and_fresh_continue",
+          "status": "FAILED"
+        },
+        {
+          "selector": "authoring::trial::tests::u10_causal::u10_p_invalid_causal_external_candidates_preserve_the_held_generation",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_equal_definition_copies_and_distinct_rule_ids_are_independent_visits",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_recompiled_owner_and_plan_do_not_reset_same_copy_rule_visits",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_same_copy_rule_survives_form_and_fingerprint_replacement",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_same_copy_rule_visit_survives_rebinding_to_another_employee",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_e_no_fragment_dead_owner_death_subscriber_uses_actual_killer_once",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_e_taken_delayed_child_preserves_public_original_source_and_actual_killer_after_log_eviction",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_authored_then_branch_and_join_continuation_have_distinct_program_and_amount_identity",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_cancelled_incomplete_participant_never_commits_joined_payload",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_join_excludes_same_clock_nonparticipant_and_clones_waiting_state",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_local_bucket_descendants_hold_join_until_their_actual_visits_complete",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_real_fork_siblings_inherit_a_but_each_may_visit_b_once",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_real_join_waits_for_descendants_then_uses_participant_union",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_c_derived_dot_ticks_keep_ancestry_and_do_not_refresh_their_own_source",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_c_detached_periodic_keeps_accepted_child_program_and_numeric_owner_only",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_c_periodic_occurrences_are_independent_roots_without_active_fragment",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_d_released_subscriber_projectile_keeps_ancestry_after_action_end",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_d_trace_modes_do_not_change_delayed_causal_damage_or_clone_progress",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::resonance_cases::u10_e_queued_and_periodic_positive_resonance_use_the_existing_gate_without_banking",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_other_relic_child_damage_does_not_advance_original_cast_wedge",
+          "status": "ok"
+        }
+      ]
+    },
+    "ancestry_active": {
+      "id": "ancestry_active",
+      "status": "named_pass_rows_available_currentness_review_required",
+      "scope": "No-fragment basic subscriber and static dormancy/eligible event gates; repeated queries have no children.",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_tests003.json",
+        "bytes": 202743,
+        "sha256": "4b1c0ef45e1a49cd40d168ded39e14a45db1fcc02698b7c91b3f6da1cf5f6363"
+      },
+      "command_index": null,
+      "enclosing_exit_code": 101,
+      "enclosing_failure_preserved": true,
+      "source": {
+        "embedded_in_receipt": true,
+        "sha256": "fcda7606076e746f4e08aa0cb54d4b9283b210b08fc0717f028275166ccf5fa4",
+        "canonical_row_sha256": "1136ef7377d1210ec41359c69d42a908d9665a9b2383980376d1dfc1a2ecb85c"
+      },
+      "source_unchanged": true,
+      "stdout": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_tests003.log",
+        "bytes": 5644,
+        "sha256": "fa3c9f608fd8c94c25a64f29a6474f12632e8b65723ec9f348e977c602d22d9b"
+      },
+      "stderr": null,
+      "selected_count": 2,
+      "selected_tests": [
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_basic_attack_subscription_without_fragment_is_active_and_queries_are_pure",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_static_dormancy_and_event_conditions_preserve_no_fragment_active_consumers",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        }
+      ],
+      "unselected_rows": [
+        {
+          "selector": "authoring::trial::tests::u10_causal::u10_p_external_causal_join_periodic_wedge_and_fresh_continue",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::battle::core::commands::tests::death_item_occurrences_execute_dead_caster_and_sorted_ally_plans",
+          "status": "ok"
+        },
+        {
+          "selector": "game::battle::core::commands::tests::typed_item_occurrence_plan_preserves_attack_hit_and_death_context_rules",
+          "status": "ok"
+        },
+        {
+          "selector": "game::battle::core::relic_causal_tests::u10_f_dead_owner_damage_creates_new_victim_death_and_preserves_equipment_eligibility",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::battle::core::tests::cast_usefulness_uses_actual_area_targets_for_automatic_and_manual_selection",
+          "status": "ok"
+        },
+        {
+          "selector": "game::battle::core::tests::hostile_skill_targeting_excludes_zero_damage_without_hostile_effect",
+          "status": "ok"
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::relic_amount::relic_literal_off_expr_snapshot_live_same_skill_two_employees_and_replay",
+          "status": "ok"
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::relic_amount::relic_original_catalog_ptr_guard_and_base_overflow_are_not_rescued",
+          "status": "ok"
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::relic_amount::relic_rebind_exact_numeric_slot_preserves_incoming_authority_and_cold_provenance",
+          "status": "ok"
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::relic_amount::relic_released_literal_and_expr_delivery_keep_contributions_after_source_withdrawal",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::admission_cases::u10_h_join_final_receipt_and_wedge_commit_preserve_prior_prefix_on_refusal",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_same_copy_rule_visit_survives_rebinding_to_another_employee",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_e_no_fragment_dead_owner_death_subscriber_uses_actual_killer_once",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_e_taken_delayed_child_preserves_public_original_source_and_actual_killer_after_log_eviction",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_invulnerable_first_strike_does_not_consume_wedge_count",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_other_relic_child_damage_does_not_advance_original_cast_wedge",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_same_strike_segments_share_candidate_but_same_time_strikes_do_not",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_spatial_deliveries_within_one_cast_count_each_actual_target_separately",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_structural_guards_and_rounding_precede_numeric_and_wedge_composition",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_two_copy_percent_contributions_add_before_damage_composition",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_wedge_first_strike_counts_and_new_cast_resets",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_wedge_percent_adds_to_existing_numeric_class_after_flat",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_wedge_zero_full_and_partial_absorption_use_actual_positive_loss",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_withdrawal_cancels_unreleased_steps_but_released_projectiles_keep_wedge",
+          "status": "FAILED"
+        }
+      ]
+    },
+    "ancestry_base": {
+      "id": "ancestry_base",
+      "status": "named_pass_rows_available_currentness_review_required",
+      "scope": "Actual committed HP loss, absorption/zero/heal/cost/overkill distinction; finite same-copy revisit and derived delay; same-effect selectors.",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_tests001.json",
+        "bytes": 204497,
+        "sha256": "c16f8e418ca741bdd1d3544817f346309ef7b34ad31ebe2fc3d9e249f93cb90a"
+      },
+      "command_index": null,
+      "enclosing_exit_code": 101,
+      "enclosing_failure_preserved": true,
+      "source": {
+        "embedded_in_receipt": true,
+        "sha256": "c1582da196265713af327b8089ad23509f1bf3f3e69c25b982f361437ab7b5a7",
+        "canonical_row_sha256": "3fb88b49292edbffa4e7fcf5e9ac22bce36b1a454ef65c305db10591bba11e7d"
+      },
+      "source_unchanged": true,
+      "stdout": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_tests001.log",
+        "bytes": 20824,
+        "sha256": "d59ed2f0cf75ca7bdbf1eebdda4431dd03c9822ab15ae4ecc39706a4767bd791"
+      },
+      "stderr": null,
+      "selected_count": 7,
+      "selected_tests": [
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_derived_delayed_damage_keeps_the_visited_identity",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_fact_selector_and_same_effect_conditions_cannot_mix_segment_witnesses",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_same_copy_effect_revisit_stops_but_next_independent_cast_runs",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_e_each_positive_damage_fact_can_subscribe_even_within_one_strike",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_e_full_absorption_and_zero_damage_do_not_emit_hp_loss_subscriptions",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_e_healing_and_health_cost_are_not_damage_hp_loss_events",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_e_overkill_commits_one_actual_death_and_keeps_damage_and_kill_facts_distinct",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        }
+      ],
+      "unselected_rows": [
+        {
+          "selector": "authoring::trial::tests::u10_causal::u10_p_external_causal_join_periodic_wedge_and_fresh_continue",
+          "status": "FAILED"
+        },
+        {
+          "selector": "authoring::trial::tests::u10_causal::u10_p_invalid_causal_external_candidates_preserve_the_held_generation",
+          "status": "ok"
+        },
+        {
+          "selector": "game::battle::core::relic_causal_tests::u10_f_dead_owner_damage_creates_new_victim_death_and_preserves_equipment_eligibility",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::admission_cases::u10_h_actual_fact_subscriber_admission_has_exact_limits_and_atomic_retry",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::admission_cases::u10_h_join_final_receipt_and_wedge_commit_preserve_prior_prefix_on_refusal",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_basic_attack_subscription_without_fragment_is_active_and_queries_are_pure",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_equal_definition_copies_and_distinct_rule_ids_are_independent_visits",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_recompiled_owner_and_plan_do_not_reset_same_copy_rule_visits",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_same_copy_rule_survives_form_and_fingerprint_replacement",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_same_copy_rule_visit_survives_rebinding_to_another_employee",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_static_dormancy_and_event_conditions_preserve_no_fragment_active_consumers",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_e_no_fragment_dead_owner_death_subscriber_uses_actual_killer_once",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_e_taken_delayed_child_preserves_public_original_source_and_actual_killer_after_log_eviction",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_authored_then_branch_and_join_continuation_have_distinct_program_and_amount_identity",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_cancelled_incomplete_participant_never_commits_joined_payload",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_join_excludes_same_clock_nonparticipant_and_clones_waiting_state",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_real_fork_siblings_inherit_a_but_each_may_visit_b_once",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_real_join_waits_for_descendants_then_uses_participant_union",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_c_derived_dot_ticks_keep_ancestry_and_do_not_refresh_their_own_source",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_c_periodic_occurrences_are_independent_roots_without_active_fragment",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_d_released_subscriber_projectile_keeps_ancestry_after_action_end",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_d_trace_modes_do_not_change_delayed_causal_damage_or_clone_progress",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::resonance_cases::u10_e_queued_and_periodic_positive_resonance_use_the_existing_gate_without_banking",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_invulnerable_first_strike_does_not_consume_wedge_count",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_other_relic_child_damage_does_not_advance_original_cast_wedge",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_retargeting_within_one_cast_counts_each_actual_target_separately",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_same_strike_segments_share_candidate_but_same_time_strikes_do_not",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_structural_guards_and_rounding_precede_numeric_and_wedge_composition",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_two_copy_percent_contributions_add_before_damage_composition",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_wedge_first_strike_counts_and_new_cast_resets",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_wedge_percent_adds_to_existing_numeric_class_after_flat",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_wedge_zero_full_and_partial_absorption_use_actual_positive_loss",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_withdrawal_cancels_unreleased_steps_but_released_projectiles_keep_wedge",
+          "status": "FAILED"
+        }
+      ]
+    },
+    "ancestry_identity": {
+      "id": "ancestry_identity",
+      "status": "named_pass_rows_available_currentness_review_required",
+      "scope": "Copy/effect/form/plan/employee identity; actual dead-owner killer and delayed original-source provenance after log eviction.",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_tests005.json",
+        "bytes": 202418,
+        "sha256": "230fb3dedf4abc059d7e6ad82117fb941d4d96c0e556b39db6885460f8c6eb23"
+      },
+      "command_index": null,
+      "enclosing_exit_code": 101,
+      "enclosing_failure_preserved": true,
+      "source": {
+        "embedded_in_receipt": true,
+        "sha256": "b76521f0948c4937b132e877f9d951442f00c4f3b5156582a02666fea258ef49",
+        "canonical_row_sha256": "2069fe60f334fbe8d4ef7ea0b4747d5f82bbfc27fadb018069fae3833f0b0e0e"
+      },
+      "source_unchanged": true,
+      "stdout": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_tests005.log",
+        "bytes": 9232,
+        "sha256": "87b655378bca7741470e84c341f25c6c6ab848083e1b53f316d7c9a7030a61c6"
+      },
+      "stderr": null,
+      "selected_count": 6,
+      "selected_tests": [
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_equal_definition_copies_and_distinct_rule_ids_are_independent_visits",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_recompiled_owner_and_plan_do_not_reset_same_copy_rule_visits",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_same_copy_rule_survives_form_and_fingerprint_replacement",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_same_copy_rule_visit_survives_rebinding_to_another_employee",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_e_no_fragment_dead_owner_death_subscriber_uses_actual_killer_once",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_e_taken_delayed_child_preserves_public_original_source_and_actual_killer_after_log_eviction",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        }
+      ],
+      "unselected_rows": [
+        {
+          "selector": "authoring::trial::tests::u10_causal::u10_p_external_causal_join_periodic_wedge_and_fresh_continue",
+          "status": "FAILED"
+        },
+        {
+          "selector": "authoring::trial::tests::u10_causal::u10_p_invalid_causal_external_candidates_preserve_the_held_generation",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::admission_cases::u10_h_actual_fact_subscriber_admission_has_exact_limits_and_atomic_retry",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::admission_cases::u10_h_join_final_receipt_and_wedge_commit_preserve_prior_prefix_on_refusal",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_authored_then_branch_and_join_continuation_have_distinct_program_and_amount_identity",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_cancelled_incomplete_participant_never_commits_joined_payload",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_join_excludes_same_clock_nonparticipant_and_clones_waiting_state",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_local_bucket_descendants_hold_join_until_their_actual_visits_complete",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_real_fork_siblings_inherit_a_but_each_may_visit_b_once",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_real_join_waits_for_descendants_then_uses_participant_union",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_c_derived_dot_ticks_keep_ancestry_and_do_not_refresh_their_own_source",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_c_detached_periodic_keeps_accepted_child_program_and_numeric_owner_only",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_c_periodic_occurrences_are_independent_roots_without_active_fragment",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_d_released_subscriber_projectile_keeps_ancestry_after_action_end",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_d_trace_modes_do_not_change_delayed_causal_damage_or_clone_progress",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::resonance_cases::u10_e_queued_and_periodic_positive_resonance_use_the_existing_gate_without_banking",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_other_relic_child_damage_does_not_advance_original_cast_wedge",
+          "status": "ok"
+        }
+      ]
+    },
+    "join": {
+      "id": "join",
+      "status": "named_pass_rows_available_currentness_review_required",
+      "scope": "Real fork/participant union; only participating descendants including same-bucket tails; duplicate/cancel/clone semantics and continuation amount identity.",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_tests005.json",
+        "bytes": 202418,
+        "sha256": "230fb3dedf4abc059d7e6ad82117fb941d4d96c0e556b39db6885460f8c6eb23"
+      },
+      "command_index": null,
+      "enclosing_exit_code": 101,
+      "enclosing_failure_preserved": true,
+      "source": {
+        "embedded_in_receipt": true,
+        "sha256": "b76521f0948c4937b132e877f9d951442f00c4f3b5156582a02666fea258ef49",
+        "canonical_row_sha256": "2069fe60f334fbe8d4ef7ea0b4747d5f82bbfc27fadb018069fae3833f0b0e0e"
+      },
+      "source_unchanged": true,
+      "stdout": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_tests005.log",
+        "bytes": 9232,
+        "sha256": "87b655378bca7741470e84c341f25c6c6ab848083e1b53f316d7c9a7030a61c6"
+      },
+      "stderr": null,
+      "selected_count": 6,
+      "selected_tests": [
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_authored_then_branch_and_join_continuation_have_distinct_program_and_amount_identity",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_cancelled_incomplete_participant_never_commits_joined_payload",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_join_excludes_same_clock_nonparticipant_and_clones_waiting_state",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_local_bucket_descendants_hold_join_until_their_actual_visits_complete",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_real_fork_siblings_inherit_a_but_each_may_visit_b_once",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_real_join_waits_for_descendants_then_uses_participant_union",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        }
+      ],
+      "unselected_rows": [
+        {
+          "selector": "authoring::trial::tests::u10_causal::u10_p_external_causal_join_periodic_wedge_and_fresh_continue",
+          "status": "FAILED"
+        },
+        {
+          "selector": "authoring::trial::tests::u10_causal::u10_p_invalid_causal_external_candidates_preserve_the_held_generation",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::admission_cases::u10_h_actual_fact_subscriber_admission_has_exact_limits_and_atomic_retry",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::admission_cases::u10_h_join_final_receipt_and_wedge_commit_preserve_prior_prefix_on_refusal",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_equal_definition_copies_and_distinct_rule_ids_are_independent_visits",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_recompiled_owner_and_plan_do_not_reset_same_copy_rule_visits",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_same_copy_rule_survives_form_and_fingerprint_replacement",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_same_copy_rule_visit_survives_rebinding_to_another_employee",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_e_no_fragment_dead_owner_death_subscriber_uses_actual_killer_once",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_e_taken_delayed_child_preserves_public_original_source_and_actual_killer_after_log_eviction",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_c_derived_dot_ticks_keep_ancestry_and_do_not_refresh_their_own_source",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_c_detached_periodic_keeps_accepted_child_program_and_numeric_owner_only",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_c_periodic_occurrences_are_independent_roots_without_active_fragment",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_d_released_subscriber_projectile_keeps_ancestry_after_action_end",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_d_trace_modes_do_not_change_delayed_causal_damage_or_clone_progress",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::resonance_cases::u10_e_queued_and_periodic_positive_resonance_use_the_existing_gate_without_banking",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_other_relic_child_damage_does_not_advance_original_cast_wedge",
+          "status": "ok"
+        }
+      ]
+    },
+    "periodic": {
+      "id": "periodic",
+      "status": "named_pass_rows_available_currentness_review_required",
+      "scope": "Independent normal RON ticks vs derived DOT/projectile; accepted detached program; trace/off/eviction and clone separation.",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_tests005.json",
+        "bytes": 202418,
+        "sha256": "230fb3dedf4abc059d7e6ad82117fb941d4d96c0e556b39db6885460f8c6eb23"
+      },
+      "command_index": null,
+      "enclosing_exit_code": 101,
+      "enclosing_failure_preserved": true,
+      "source": {
+        "embedded_in_receipt": true,
+        "sha256": "b76521f0948c4937b132e877f9d951442f00c4f3b5156582a02666fea258ef49",
+        "canonical_row_sha256": "2069fe60f334fbe8d4ef7ea0b4747d5f82bbfc27fadb018069fae3833f0b0e0e"
+      },
+      "source_unchanged": true,
+      "stdout": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_tests005.log",
+        "bytes": 9232,
+        "sha256": "87b655378bca7741470e84c341f25c6c6ab848083e1b53f316d7c9a7030a61c6"
+      },
+      "stderr": null,
+      "selected_count": 5,
+      "selected_tests": [
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_c_derived_dot_ticks_keep_ancestry_and_do_not_refresh_their_own_source",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_c_detached_periodic_keeps_accepted_child_program_and_numeric_owner_only",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_c_periodic_occurrences_are_independent_roots_without_active_fragment",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_d_released_subscriber_projectile_keeps_ancestry_after_action_end",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_d_trace_modes_do_not_change_delayed_causal_damage_or_clone_progress",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        }
+      ],
+      "unselected_rows": [
+        {
+          "selector": "authoring::trial::tests::u10_causal::u10_p_external_causal_join_periodic_wedge_and_fresh_continue",
+          "status": "FAILED"
+        },
+        {
+          "selector": "authoring::trial::tests::u10_causal::u10_p_invalid_causal_external_candidates_preserve_the_held_generation",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::admission_cases::u10_h_actual_fact_subscriber_admission_has_exact_limits_and_atomic_retry",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::admission_cases::u10_h_join_final_receipt_and_wedge_commit_preserve_prior_prefix_on_refusal",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_equal_definition_copies_and_distinct_rule_ids_are_independent_visits",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_recompiled_owner_and_plan_do_not_reset_same_copy_rule_visits",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_same_copy_rule_survives_form_and_fingerprint_replacement",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_same_copy_rule_visit_survives_rebinding_to_another_employee",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_e_no_fragment_dead_owner_death_subscriber_uses_actual_killer_once",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_e_taken_delayed_child_preserves_public_original_source_and_actual_killer_after_log_eviction",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_authored_then_branch_and_join_continuation_have_distinct_program_and_amount_identity",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_cancelled_incomplete_participant_never_commits_joined_payload",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_join_excludes_same_clock_nonparticipant_and_clones_waiting_state",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_local_bucket_descendants_hold_join_until_their_actual_visits_complete",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_real_fork_siblings_inherit_a_but_each_may_visit_b_once",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_real_join_waits_for_descendants_then_uses_participant_union",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::resonance_cases::u10_e_queued_and_periodic_positive_resonance_use_the_existing_gate_without_banking",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_other_relic_child_damage_does_not_advance_original_cast_wedge",
+          "status": "ok"
+        }
+      ]
+    },
+    "wedge_arithmetic": {
+      "id": "wedge_arithmetic",
+      "status": "named_pass_rows_available_currentness_review_required",
+      "scope": "Independent illustrative 110/120/260; actual-positive shields/invulnerability; target/copy/cast and common flat/percent ordering.",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_tests003.json",
+        "bytes": 202743,
+        "sha256": "4b1c0ef45e1a49cd40d168ded39e14a45db1fcc02698b7c91b3f6da1cf5f6363"
+      },
+      "command_index": null,
+      "enclosing_exit_code": 101,
+      "enclosing_failure_preserved": true,
+      "source": {
+        "embedded_in_receipt": true,
+        "sha256": "fcda7606076e746f4e08aa0cb54d4b9283b210b08fc0717f028275166ccf5fa4",
+        "canonical_row_sha256": "1136ef7377d1210ec41359c69d42a908d9665a9b2383980376d1dfc1a2ecb85c"
+      },
+      "source_unchanged": true,
+      "stdout": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_tests003.log",
+        "bytes": 5644,
+        "sha256": "fa3c9f608fd8c94c25a64f29a6474f12632e8b65723ec9f348e977c602d22d9b"
+      },
+      "stderr": null,
+      "selected_count": 7,
+      "selected_tests": [
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_invulnerable_first_strike_does_not_consume_wedge_count",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_spatial_deliveries_within_one_cast_count_each_actual_target_separately",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_structural_guards_and_rounding_precede_numeric_and_wedge_composition",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_two_copy_percent_contributions_add_before_damage_composition",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_wedge_first_strike_counts_and_new_cast_resets",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_wedge_percent_adds_to_existing_numeric_class_after_flat",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_wedge_zero_full_and_partial_absorption_use_actual_positive_loss",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        }
+      ],
+      "unselected_rows": [
+        {
+          "selector": "authoring::trial::tests::u10_causal::u10_p_external_causal_join_periodic_wedge_and_fresh_continue",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::battle::core::commands::tests::death_item_occurrences_execute_dead_caster_and_sorted_ally_plans",
+          "status": "ok"
+        },
+        {
+          "selector": "game::battle::core::commands::tests::typed_item_occurrence_plan_preserves_attack_hit_and_death_context_rules",
+          "status": "ok"
+        },
+        {
+          "selector": "game::battle::core::relic_causal_tests::u10_f_dead_owner_damage_creates_new_victim_death_and_preserves_equipment_eligibility",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::battle::core::tests::cast_usefulness_uses_actual_area_targets_for_automatic_and_manual_selection",
+          "status": "ok"
+        },
+        {
+          "selector": "game::battle::core::tests::hostile_skill_targeting_excludes_zero_damage_without_hostile_effect",
+          "status": "ok"
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::relic_amount::relic_literal_off_expr_snapshot_live_same_skill_two_employees_and_replay",
+          "status": "ok"
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::relic_amount::relic_original_catalog_ptr_guard_and_base_overflow_are_not_rescued",
+          "status": "ok"
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::relic_amount::relic_rebind_exact_numeric_slot_preserves_incoming_authority_and_cold_provenance",
+          "status": "ok"
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::relic_amount::relic_released_literal_and_expr_delivery_keep_contributions_after_source_withdrawal",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::admission_cases::u10_h_join_final_receipt_and_wedge_commit_preserve_prior_prefix_on_refusal",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_basic_attack_subscription_without_fragment_is_active_and_queries_are_pure",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_same_copy_rule_visit_survives_rebinding_to_another_employee",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_static_dormancy_and_event_conditions_preserve_no_fragment_active_consumers",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_e_no_fragment_dead_owner_death_subscriber_uses_actual_killer_once",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_e_taken_delayed_child_preserves_public_original_source_and_actual_killer_after_log_eviction",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_other_relic_child_damage_does_not_advance_original_cast_wedge",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_same_strike_segments_share_candidate_but_same_time_strikes_do_not",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_withdrawal_cancels_unreleased_steps_but_released_projectiles_keep_wedge",
+          "status": "FAILED"
+        }
+      ]
+    },
+    "wedge_child": {
+      "id": "wedge_child",
+      "status": "named_pass_rows_available_currentness_review_required",
+      "scope": "Other relic child does not consume original direct cast Wedge count.",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_tests005.json",
+        "bytes": 202418,
+        "sha256": "230fb3dedf4abc059d7e6ad82117fb941d4d96c0e556b39db6885460f8c6eb23"
+      },
+      "command_index": null,
+      "enclosing_exit_code": 101,
+      "enclosing_failure_preserved": true,
+      "source": {
+        "embedded_in_receipt": true,
+        "sha256": "b76521f0948c4937b132e877f9d951442f00c4f3b5156582a02666fea258ef49",
+        "canonical_row_sha256": "2069fe60f334fbe8d4ef7ea0b4747d5f82bbfc27fadb018069fae3833f0b0e0e"
+      },
+      "source_unchanged": true,
+      "stdout": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_tests005.log",
+        "bytes": 9232,
+        "sha256": "87b655378bca7741470e84c341f25c6c6ab848083e1b53f316d7c9a7030a61c6"
+      },
+      "stderr": null,
+      "selected_count": 1,
+      "selected_tests": [
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_other_relic_child_damage_does_not_advance_original_cast_wedge",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        }
+      ],
+      "unselected_rows": [
+        {
+          "selector": "authoring::trial::tests::u10_causal::u10_p_external_causal_join_periodic_wedge_and_fresh_continue",
+          "status": "FAILED"
+        },
+        {
+          "selector": "authoring::trial::tests::u10_causal::u10_p_invalid_causal_external_candidates_preserve_the_held_generation",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::admission_cases::u10_h_actual_fact_subscriber_admission_has_exact_limits_and_atomic_retry",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::admission_cases::u10_h_join_final_receipt_and_wedge_commit_preserve_prior_prefix_on_refusal",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_equal_definition_copies_and_distinct_rule_ids_are_independent_visits",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_recompiled_owner_and_plan_do_not_reset_same_copy_rule_visits",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_same_copy_rule_survives_form_and_fingerprint_replacement",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_same_copy_rule_visit_survives_rebinding_to_another_employee",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_e_no_fragment_dead_owner_death_subscriber_uses_actual_killer_once",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_e_taken_delayed_child_preserves_public_original_source_and_actual_killer_after_log_eviction",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_authored_then_branch_and_join_continuation_have_distinct_program_and_amount_identity",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_cancelled_incomplete_participant_never_commits_joined_payload",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_join_excludes_same_clock_nonparticipant_and_clones_waiting_state",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_local_bucket_descendants_hold_join_until_their_actual_visits_complete",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_real_fork_siblings_inherit_a_but_each_may_visit_b_once",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_real_join_waits_for_descendants_then_uses_participant_union",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_c_derived_dot_ticks_keep_ancestry_and_do_not_refresh_their_own_source",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_c_detached_periodic_keeps_accepted_child_program_and_numeric_owner_only",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_c_periodic_occurrences_are_independent_roots_without_active_fragment",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_d_released_subscriber_projectile_keeps_ancestry_after_action_end",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_d_trace_modes_do_not_change_delayed_causal_damage_or_clone_progress",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::resonance_cases::u10_e_queued_and_periodic_positive_resonance_use_the_existing_gate_without_banking",
+          "status": "ok"
+        }
+      ]
+    },
+    "wedge_lifetime": {
+      "id": "wedge_lifetime",
+      "status": "named_pass_rows_available_currentness_review_required",
+      "scope": "Same-strike segments/same-time distinct strikes; unreleased cancellation and released withdrawal. Actual source71bfb includes PRODUCT006; sim/relic_causal exact after hashes verified. Not a pre006 reuse claim.",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_tests004.json",
+        "bytes": 201308,
+        "sha256": "8e4c41a6439f9aea5b961eef9499b912e073c6f164435044513c2a1c12767f82"
+      },
+      "command_index": null,
+      "enclosing_exit_code": 101,
+      "enclosing_failure_preserved": true,
+      "source": {
+        "embedded_in_receipt": true,
+        "sha256": "71bfb55575ff066f1c2f035b10658682ce5442590512b9c4cb75c7be08d508c8",
+        "canonical_row_sha256": "9512a884a1d6988532356236d41798fa509740e879208fbe6a84012a4051e640"
+      },
+      "source_unchanged": true,
+      "stdout": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_tests004.log",
+        "bytes": 4510,
+        "sha256": "8afb559c08b957a7a2a3b3b03eb71b591a7e03695f5e9a3f3983da18739f84bf"
+      },
+      "stderr": null,
+      "selected_count": 2,
+      "selected_tests": [
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_same_strike_segments_share_candidate_but_same_time_strikes_do_not",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_withdrawal_cancels_unreleased_steps_but_released_projectiles_keep_wedge",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        }
+      ],
+      "unselected_rows": [
+        {
+          "selector": "authoring::trial::tests::u10_causal::u10_p_external_causal_join_periodic_wedge_and_fresh_continue",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::battle::core::relic_causal_tests::u10_f_dead_owner_damage_creates_new_victim_death_and_preserves_equipment_eligibility",
+          "status": "ok"
+        },
+        {
+          "selector": "game::battle::core::tests::native_action_failed_timestamp_keeps_prior_successful_prefix_and_retries_recover",
+          "status": "ok"
+        },
+        {
+          "selector": "game::battle::core::tests::same_timestamp_attack_resolve_is_drained_before_battle_end",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::admission_cases::u10_h_actual_fact_subscriber_admission_has_exact_limits_and_atomic_retry",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::admission_cases::u10_h_join_final_receipt_and_wedge_commit_preserve_prior_prefix_on_refusal",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_authored_then_branch_and_join_continuation_have_distinct_program_and_amount_identity",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_cancelled_incomplete_participant_never_commits_joined_payload",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_join_excludes_same_clock_nonparticipant_and_clones_waiting_state",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_local_bucket_descendants_hold_join_until_their_actual_visits_complete",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_real_fork_siblings_inherit_a_but_each_may_visit_b_once",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_real_join_waits_for_descendants_then_uses_participant_union",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_other_relic_child_damage_does_not_advance_original_cast_wedge",
+          "status": "ok"
+        }
+      ]
+    },
+    "death_chain": {
+      "id": "death_chain",
+      "status": "named_pass_rows_available_currentness_review_required",
+      "scope": "Actual dead-owner damage kills next victim; once-per-death and equipment eligibility. Actual source71bfb is after PRODUCT005 and006; both006 after hashes verified.",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_tests004.json",
+        "bytes": 201308,
+        "sha256": "8e4c41a6439f9aea5b961eef9499b912e073c6f164435044513c2a1c12767f82"
+      },
+      "command_index": null,
+      "enclosing_exit_code": 101,
+      "enclosing_failure_preserved": true,
+      "source": {
+        "embedded_in_receipt": true,
+        "sha256": "71bfb55575ff066f1c2f035b10658682ce5442590512b9c4cb75c7be08d508c8",
+        "canonical_row_sha256": "9512a884a1d6988532356236d41798fa509740e879208fbe6a84012a4051e640"
+      },
+      "source_unchanged": true,
+      "stdout": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_tests004.log",
+        "bytes": 4510,
+        "sha256": "8afb559c08b957a7a2a3b3b03eb71b591a7e03695f5e9a3f3983da18739f84bf"
+      },
+      "stderr": null,
+      "selected_count": 1,
+      "selected_tests": [
+        {
+          "selector": "game::battle::core::relic_causal_tests::u10_f_dead_owner_damage_creates_new_victim_death_and_preserves_equipment_eligibility",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        }
+      ],
+      "unselected_rows": [
+        {
+          "selector": "authoring::trial::tests::u10_causal::u10_p_external_causal_join_periodic_wedge_and_fresh_continue",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::battle::core::tests::native_action_failed_timestamp_keeps_prior_successful_prefix_and_retries_recover",
+          "status": "ok"
+        },
+        {
+          "selector": "game::battle::core::tests::same_timestamp_attack_resolve_is_drained_before_battle_end",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::admission_cases::u10_h_actual_fact_subscriber_admission_has_exact_limits_and_atomic_retry",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::admission_cases::u10_h_join_final_receipt_and_wedge_commit_preserve_prior_prefix_on_refusal",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_authored_then_branch_and_join_continuation_have_distinct_program_and_amount_identity",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_cancelled_incomplete_participant_never_commits_joined_payload",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_join_excludes_same_clock_nonparticipant_and_clones_waiting_state",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_local_bucket_descendants_hold_join_until_their_actual_visits_complete",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_real_fork_siblings_inherit_a_but_each_may_visit_b_once",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_real_join_waits_for_descendants_then_uses_participant_union",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_other_relic_child_damage_does_not_advance_original_cast_wedge",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_same_strike_segments_share_candidate_but_same_time_strikes_do_not",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_withdrawal_cancels_unreleased_steps_but_released_projectiles_keep_wedge",
+          "status": "ok"
+        }
+      ]
+    },
+    "resonance": {
+      "id": "resonance",
+      "status": "named_pass_rows_available_currentness_review_required",
+      "scope": "Direct/queued/periodic/derived positive lock, no banking; negative and eligible/cap behavior.",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_tests005.json",
+        "bytes": 202418,
+        "sha256": "230fb3dedf4abc059d7e6ad82117fb941d4d96c0e556b39db6885460f8c6eb23"
+      },
+      "command_index": null,
+      "enclosing_exit_code": 101,
+      "enclosing_failure_preserved": true,
+      "source": {
+        "embedded_in_receipt": true,
+        "sha256": "b76521f0948c4937b132e877f9d951442f00c4f3b5156582a02666fea258ef49",
+        "canonical_row_sha256": "2069fe60f334fbe8d4ef7ea0b4747d5f82bbfc27fadb018069fae3833f0b0e0e"
+      },
+      "source_unchanged": true,
+      "stdout": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_tests005.log",
+        "bytes": 9232,
+        "sha256": "87b655378bca7741470e84c341f25c6c6ab848083e1b53f316d7c9a7030a61c6"
+      },
+      "stderr": null,
+      "selected_count": 1,
+      "selected_tests": [
+        {
+          "selector": "game::world::tests::u10_causal::resonance_cases::u10_e_queued_and_periodic_positive_resonance_use_the_existing_gate_without_banking",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        }
+      ],
+      "unselected_rows": [
+        {
+          "selector": "authoring::trial::tests::u10_causal::u10_p_external_causal_join_periodic_wedge_and_fresh_continue",
+          "status": "FAILED"
+        },
+        {
+          "selector": "authoring::trial::tests::u10_causal::u10_p_invalid_causal_external_candidates_preserve_the_held_generation",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::admission_cases::u10_h_actual_fact_subscriber_admission_has_exact_limits_and_atomic_retry",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::admission_cases::u10_h_join_final_receipt_and_wedge_commit_preserve_prior_prefix_on_refusal",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_equal_definition_copies_and_distinct_rule_ids_are_independent_visits",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_recompiled_owner_and_plan_do_not_reset_same_copy_rule_visits",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_same_copy_rule_survives_form_and_fingerprint_replacement",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_same_copy_rule_visit_survives_rebinding_to_another_employee",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_e_no_fragment_dead_owner_death_subscriber_uses_actual_killer_once",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_e_taken_delayed_child_preserves_public_original_source_and_actual_killer_after_log_eviction",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_authored_then_branch_and_join_continuation_have_distinct_program_and_amount_identity",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_cancelled_incomplete_participant_never_commits_joined_payload",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_join_excludes_same_clock_nonparticipant_and_clones_waiting_state",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_local_bucket_descendants_hold_join_until_their_actual_visits_complete",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_real_fork_siblings_inherit_a_but_each_may_visit_b_once",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_real_join_waits_for_descendants_then_uses_participant_union",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_c_derived_dot_ticks_keep_ancestry_and_do_not_refresh_their_own_source",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_c_detached_periodic_keeps_accepted_child_program_and_numeric_owner_only",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_c_periodic_occurrences_are_independent_roots_without_active_fragment",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_d_released_subscriber_projectile_keeps_ancestry_after_action_end",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::periodic_lifetime_cases::u10_d_trace_modes_do_not_change_delayed_causal_damage_or_clone_progress",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_other_relic_child_damage_does_not_advance_original_cast_wedge",
+          "status": "ok"
+        }
+      ]
+    },
+    "numeric_controls": {
+      "id": "numeric_controls",
+      "status": "named_pass_rows_available_currentness_review_required",
+      "scope": "Passed after PRODUCT003 common numeric composition. PRODUCT004 preserves the existing relic_numeric disjunction and later005-008 additions are causal-specific for these no-causal cases; whole003 remains23PASS3FAIL.",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_tests003.json",
+        "bytes": 202743,
+        "sha256": "4b1c0ef45e1a49cd40d168ded39e14a45db1fcc02698b7c91b3f6da1cf5f6363"
+      },
+      "command_index": null,
+      "enclosing_exit_code": 101,
+      "enclosing_failure_preserved": true,
+      "source": {
+        "embedded_in_receipt": true,
+        "sha256": "fcda7606076e746f4e08aa0cb54d4b9283b210b08fc0717f028275166ccf5fa4",
+        "canonical_row_sha256": "1136ef7377d1210ec41359c69d42a908d9665a9b2383980376d1dfc1a2ecb85c"
+      },
+      "source_unchanged": true,
+      "stdout": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_tests003.log",
+        "bytes": 5644,
+        "sha256": "fa3c9f608fd8c94c25a64f29a6474f12632e8b65723ec9f348e977c602d22d9b"
+      },
+      "stderr": null,
+      "selected_count": 4,
+      "selected_tests": [
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::relic_amount::relic_literal_off_expr_snapshot_live_same_skill_two_employees_and_replay",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::relic_amount::relic_original_catalog_ptr_guard_and_base_overflow_are_not_rescued",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::relic_amount::relic_rebind_exact_numeric_slot_preserves_incoming_authority_and_cold_provenance",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::core::value_expr_runtime::tests::relic_amount::relic_released_literal_and_expr_delivery_keep_contributions_after_source_withdrawal",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        }
+      ],
+      "unselected_rows": [
+        {
+          "selector": "authoring::trial::tests::u10_causal::u10_p_external_causal_join_periodic_wedge_and_fresh_continue",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::battle::core::commands::tests::death_item_occurrences_execute_dead_caster_and_sorted_ally_plans",
+          "status": "ok"
+        },
+        {
+          "selector": "game::battle::core::commands::tests::typed_item_occurrence_plan_preserves_attack_hit_and_death_context_rules",
+          "status": "ok"
+        },
+        {
+          "selector": "game::battle::core::relic_causal_tests::u10_f_dead_owner_damage_creates_new_victim_death_and_preserves_equipment_eligibility",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::battle::core::tests::cast_usefulness_uses_actual_area_targets_for_automatic_and_manual_selection",
+          "status": "ok"
+        },
+        {
+          "selector": "game::battle::core::tests::hostile_skill_targeting_excludes_zero_damage_without_hostile_effect",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::admission_cases::u10_h_join_final_receipt_and_wedge_commit_preserve_prior_prefix_on_refusal",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_basic_attack_subscription_without_fragment_is_active_and_queries_are_pure",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_same_copy_rule_visit_survives_rebinding_to_another_employee",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_static_dormancy_and_event_conditions_preserve_no_fragment_active_consumers",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_e_no_fragment_dead_owner_death_subscriber_uses_actual_killer_once",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_e_taken_delayed_child_preserves_public_original_source_and_actual_killer_after_log_eviction",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_invulnerable_first_strike_does_not_consume_wedge_count",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_other_relic_child_damage_does_not_advance_original_cast_wedge",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_same_strike_segments_share_candidate_but_same_time_strikes_do_not",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_spatial_deliveries_within_one_cast_count_each_actual_target_separately",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_structural_guards_and_rounding_precede_numeric_and_wedge_composition",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_two_copy_percent_contributions_add_before_damage_composition",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_wedge_first_strike_counts_and_new_cast_resets",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_wedge_percent_adds_to_existing_numeric_class_after_flat",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_wedge_zero_full_and_partial_absorption_use_actual_positive_loss",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_withdrawal_cancels_unreleased_steps_but_released_projectiles_keep_wedge",
+          "status": "FAILED"
+        }
+      ]
+    },
+    "timestamp_controls": {
+      "id": "timestamp_controls",
+      "status": "named_pass_rows_available_currentness_review_required",
+      "scope": "Both actual PASS at source71bfb after PRODUCT006 as verified against both PRODUCT_FILES_006 after hashes. Later007/008 selected-program binding is absent from these no-causal controls;009 changes only cap constants. Whole004 remains12PASS3FAIL.",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_tests004.json",
+        "bytes": 201308,
+        "sha256": "8e4c41a6439f9aea5b961eef9499b912e073c6f164435044513c2a1c12767f82"
+      },
+      "command_index": null,
+      "enclosing_exit_code": 101,
+      "enclosing_failure_preserved": true,
+      "source": {
+        "embedded_in_receipt": true,
+        "sha256": "71bfb55575ff066f1c2f035b10658682ce5442590512b9c4cb75c7be08d508c8",
+        "canonical_row_sha256": "9512a884a1d6988532356236d41798fa509740e879208fbe6a84012a4051e640"
+      },
+      "source_unchanged": true,
+      "stdout": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_tests004.log",
+        "bytes": 4510,
+        "sha256": "8afb559c08b957a7a2a3b3b03eb71b591a7e03695f5e9a3f3983da18739f84bf"
+      },
+      "stderr": null,
+      "selected_count": 2,
+      "selected_tests": [
+        {
+          "selector": "game::battle::core::tests::native_action_failed_timestamp_keeps_prior_successful_prefix_and_retries_recover",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::core::tests::same_timestamp_attack_resolve_is_drained_before_battle_end",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        }
+      ],
+      "unselected_rows": [
+        {
+          "selector": "authoring::trial::tests::u10_causal::u10_p_external_causal_join_periodic_wedge_and_fresh_continue",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::battle::core::relic_causal_tests::u10_f_dead_owner_damage_creates_new_victim_death_and_preserves_equipment_eligibility",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::admission_cases::u10_h_actual_fact_subscriber_admission_has_exact_limits_and_atomic_retry",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::admission_cases::u10_h_join_final_receipt_and_wedge_commit_preserve_prior_prefix_on_refusal",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_authored_then_branch_and_join_continuation_have_distinct_program_and_amount_identity",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_cancelled_incomplete_participant_never_commits_joined_payload",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_join_excludes_same_clock_nonparticipant_and_clones_waiting_state",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_local_bucket_descendants_hold_join_until_their_actual_visits_complete",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_real_fork_siblings_inherit_a_but_each_may_visit_b_once",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::join_cases::u10_b_real_join_waits_for_descendants_then_uses_participant_union",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_other_relic_child_damage_does_not_advance_original_cast_wedge",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_same_strike_segments_share_candidate_but_same_time_strikes_do_not",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::wedge_cases::u10_g_withdrawal_cancels_unreleased_steps_but_released_projectiles_keep_wedge",
+          "status": "ok"
+        }
+      ]
+    },
+    "selected825_reuse": {
+      "id": "selected825_reuse",
+      "status": "named_pass_rows_available_currentness_review_required",
+      "scope": "Prior U09 exact selected825 retained accepted owner only; explicit U10 nonimpact review required, not fresh execution.",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/../../../core_relic_structural_activation/execution/single_goal/test_parts/runtime_validation001/performance001/evidence/f01_post036_tests.json",
+        "bytes": 195541,
+        "sha256": "e3c3d5a095bd474e5f7dad48d12ad3e57efa0329effbe4dafc824de827fdd384"
+      },
+      "command_index": null,
+      "enclosing_exit_code": 0,
+      "enclosing_failure_preserved": false,
+      "source": {
+        "embedded_in_receipt": true,
+        "sha256": "2fdaa433e7ba457531508fd2ab05547cd05373c77cfb2f6820108ccf651754f6",
+        "canonical_row_sha256": "1b2d50e6baf6aeae81ba054f657585d15949a013366783215537b0132d9ce75e"
+      },
+      "source_unchanged": true,
+      "stdout": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/../../../core_relic_structural_activation/execution/single_goal/test_parts/runtime_validation001/performance001/evidence/f01_post036_tests.log",
+        "bytes": 5083,
+        "sha256": "e6bb9c6da650d0b9acf4faafc8d2b66c61ee313e94e4254a142c18808b9b9698"
+      },
+      "stderr": null,
+      "selected_count": 1,
+      "selected_tests": [
+        {
+          "selector": "game::world::tests::u09_structural::flow_cases::selected_cases::rv002_pending_selected_personal_uses_retained_plan_after_current_owner_removal",
+          "status": "ok",
+          "raw_block": "RV002 pending_selected currentSelf_retainedPlayerUnit=true released_one825_selected_ally=true\nok",
+          "raw_block_sha256": "af0240e38edda0623dfb8380783027ebed7dd58036d074f4d1047c0affae2131"
+        }
+      ],
+      "unselected_rows": [
+        {
+          "selector": "game::battle::core::resonance_runtime::tests::u05_direct_target_withdrawal_cancels_pending_use_immediately_without_refund",
+          "status": "ok"
+        },
+        {
+          "selector": "game::battle::core::tests::control_status_hard_cc_cancels_unreleased_delayed_skill_step_without_refund",
+          "status": "ok"
+        },
+        {
+          "selector": "game::battle::core::tests::manual_player_unit_invalidation_noops_without_retarget_or_refund",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u09_structural::flow_cases::footprint_cases::rv005_effect_gate_empty_invulnerable_and_lethal_footprints_use_actual_hp_loss",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u09_structural::flow_cases::support_cases::f01_equal_generated_reach_keeps_world_selection_and_fixed_connection_geometry",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u09_structural::flow_cases::support_cases::f01_publication_refusal_preserves_live_catalog_loadout_resources_and_owner",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u09_structural::world_state_cases::rv006_same_skill_two_structural_owners_keep_paused_immediate_and_delayed_results_independent",
+          "status": "ok"
+        }
+      ]
+    },
+    "final46": {
+      "id": "final46",
+      "status": "named_pass_rows_available_currentness_review_required",
+      "scope": "Actual final25 + CMRP17/default2/original external1/smallhost1, uninstrumented runtime-observation feature libtest;46PASS0FAIL0ignored; source20a79 unchanged. Original external nominal16 fourmode HP100 and periodic24; no extra measurement profile.",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_final_tests001.json",
+        "bytes": 219026,
+        "sha256": "1978f25b842727adeba3a66cfa6e6150dde18fa2afa1fb2af43aca5beb487aa9"
+      },
+      "command_index": null,
+      "enclosing_exit_code": 0,
+      "enclosing_failure_preserved": false,
+      "source": {
+        "embedded_in_receipt": true,
+        "sha256": "20a79e5b4601f9cdb46a2de75b2b5edbefa98d4a26432291c43a429e1c526e83",
+        "canonical_row_sha256": "1e7682cfef5dc9b3b7167547f2ca391daf3d510817fc100bbdf4bdb364ac5256"
+      },
+      "source_unchanged": true,
+      "stdout": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_final_tests001.log",
+        "bytes": 9188,
+        "sha256": "0ccdf4b4642aaf281bfc0cd6797b8f2fdf0a013191ddb8dc25a1eb0011476c97"
+      },
+      "stderr": null,
+      "selected_count": 46,
+      "selected_tests": [
+        {
+          "selector": "application::runtime_observation_tests::cmrp_accounting_actual_warning_and_emergency_exact_then_one_over",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "application::runtime_observation_tests::cmrp_accounting_checked_overflow_keeps_raw_fault_and_first_site",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "application::runtime_observation_tests::cmrp_accounting_failed_seed_remains_attempted_and_small_owner_is_not_soft",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "application::runtime_observation_tests::cmrp_accounting_growth_refused_by_work_is_requested_but_not_accepted",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "application::runtime_observation_tests::cmrp_accounting_unscoped_capture_is_missing_and_candidate_extent_is_not_commit",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "application::runtime_observation_tests::cmrp_identity_generation_discard_commit_private_fork_and_persistence_rollback_follow_owner",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "authoring::trial::tests::u10_causal::u10_p_external_causal_join_periodic_wedge_and_fresh_continue",
+          "status": "ok",
+          "raw_block": "U10_PUBLIC_EXPORT {\"default_observed_saturated_equal\":true,\"literal_oracle\":{\"echo_total\":21,\"hp_delta\":100,\"join_total\":30,\"original_strikes\":[11,12,26],\"periodic_health_payments\":8,\"periodic_health_spent\":24},\"root\":\"/mnt/f/work/simulator/core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_final_external001\"}\nok",
+          "raw_block_sha256": "22d1ea524244064f01cc63fd4f4015ef9f0440cf0dc8d490e765f0b266c89b09"
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r10_public_flow_faults_restore_timestamp_and_retry_exactly",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r10_public_wait_parallel_join_and_released_delivery_cancellation",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_at_zero_charge_reduces_reflects_once_per_strike_and_keeps_copy",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_passive_guard_reflection_failure_rolls_back_damage_and_exact_replay",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_same_timestamp_area_shield_consumption_is_stable_under_spawn_order",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::core::boss_runtime::tests::r12_shield_zero_actual_hp_result_expression_cannot_reuse_absorbed_damage",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::core::commands::tests::committed_damage_uses_actual_overkill_delta_and_finalizes_one_causal_death",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::core::commands::tests::death_item_occurrences_execute_dead_caster_and_sorted_ally_plans",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::core::commands::tests::typed_item_occurrence_plan_preserves_attack_hit_and_death_context_rules",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::core::corrosion::tests::r09_corrosion_faults_capture_cost_death_presentation_roll_back_and_retry",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::core::corrosion::tests::r09_public_equipment_death_reactions_are_suppressed_only_for_corrosion",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::core::object_creation::tests::u07_official_small_hits_one_stable_target_big_hits_area_and_ignores_air",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::core::resonance_runtime::tests::u05_direct_target_withdrawal_cancels_pending_use_immediately_without_refund",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::core::runtime_facts::tests::cmrp_actual_snapshot_uses_trusted_owner_outside_and_cumulative_budget_inside",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::core::runtime_facts::tests::cmrp_public_override_keeps_small_cap_and_rejects_raw_development_cap",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::core::runtime_facts::tests::cmrp_raw_outer_nested_default_core_keeps_unknown_warning",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::core::runtime_facts::tests::runtime_actions_cancelled_control_waits_for_actual_finite_delivery_once",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::core::runtime_facts::tests::runtime_actions_clone_relative_validity_and_aborted_ordinal_reuse",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::core::targeting::tests::basic_heal_tests::basic_heal_queue_clone_releases_pure_actual_hp_and_closes_source",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::core::targeting::tests::basic_heal_tests::u06_ally_skill_selector_uses_allies_and_latest_heal_usefulness",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::core::tests::cast_usefulness_uses_actual_area_targets_for_automatic_and_manual_selection",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::core::tests::control_status_hard_cc_cancels_unreleased_delayed_skill_step_without_refund",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::core::tests::manual_player_unit_invalidation_noops_without_retarget_or_refund",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::runtime_control::tests::cmrp_local_projection_owner_cap_applies_only_without_active_budget",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::runtime_control::tests::cmrp_native_actual_cap_seed_growth_exact_and_one_over",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::runtime_control::tests::cmrp_other_limits_and_overflow_keep_typed_failures",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::runtime_control::tests::cmrp_small_owner_override_and_nested_deferred_do_not_raise_or_refund",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::combat::resource_lifetimes::cmrp_external_world_active_terminal_and_pending_keep_effective_owner_limits",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::combat::resource_lifetimes::runtime_safety_checkpoint_restore_uses_current_host_profile_and_preserves_original",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u08_carriers::live_source_stat_projectile_is_positive_alive_and_missing_context_after_withdraw_is_atomic",
+          "status": "ok",
+          "raw_block": "U08_LIVE_SOURCE_REFUSAL withdrawn=1001 alive_expected=78 fault=ValueExprFault { code: MissingContext, site: EffectSite { action: ActionSite { definition_id: SkillId(\"u08_carrier_live\"), action_id: \"hit\" }, effect_id: \"damage\" }, node_index: 0, expected_unit: None, actual_unit: None, phase: Evaluate, cause: \"Source unit is missing or inactive at the evaluation moment\" }\nok",
+          "raw_block_sha256": "f0ec246c73b8b3d4c9a64d12cec93e1428e09e4d74c9d9e6556476cb00cadbbe"
+        },
+        {
+          "selector": "game::world::tests::u08_carriers::released_ground_fixed_snapshot_area_keeps_binding_for_ticks_after_withdraw",
+          "status": "ok",
+          "raw_block": "U08_FIXED_AREA withdrawn=1001 later_ticks=3 binding={\"action_ordinal\":2,\"actor\":\"c3deb92e-6613-44f8-b785-74ce3d49a7f3\",\"contributions\":[{\"copy_uuid\":\"9d3ac2ba-193b-42f7-ab02-906c776fb795\",\"definition_id\":\"u08_probe\",\"effect_id\":\"damage\",\"flat\":40,\"percent\":50,\"variant\":\"Corrupt\"}],\"damage_type\":\"True\",\"employee_uuid\":\"5d917429-55a0-454c-9cdc-0ee129dbd4f3\",\"equipment\":null,\"fragment\":{\"copy_uuid\":\"f68d35b7-411a-4ff6-ad2c-202e35c032f3\",\"definition_id\":\"u08_carrier_fixed_fragment\",\"form_id\":\"base\",\"skill_id\":\"u08_carrier_fixed\"},\"generation\":{\"contract\":{\"authoring\":1,\"catalog_schema\":5,\"execution\":2,\"fingerprint\":1,\"pack_format\":1},\"semantic_sha256\":\"90600090ce15b1af9a10c288e3e5fe90a26c8c9c252f4104a81166d72e9e560e\"},\"target\":{\"kind\":\"skill_damage\",\"site\":{\"action\":{\"action_id\":\"hit\",\"definition_id\":\"u08_carrier_fixed\"},\"effect_id\":\"damage\"}}}\nok",
+          "raw_block_sha256": "476ca4340f74921e5b109c2149bbe27cf078ffbb1560ea8adef584f6fb29d740"
+        },
+        {
+          "selector": "game::world::tests::u09_structural::flow_cases::cancellation_cases::rv001_staged_withdrawal_late_cancellation_restores_owned_flow_and_retries",
+          "status": "ok",
+          "raw_block": "RV001 staged_withdraw site=flow_side_cancel failed_prestate=true owned_flow_restored=true retry_exact=true released_final_loss=1059\nRV001 staged_withdraw site=flow_cancelled_child_settlement failed_prestate=true owned_flow_restored=true retry_exact=true released_final_loss=1059\nRV001 staged_withdraw site=flow_withdraw_cleanup failed_prestate=true owned_flow_restored=true retry_exact=true released_final_loss=1059\nok",
+          "raw_block_sha256": "e117192efcde4fd84e0fcde31f5e320ac3e0698980bfd0309aa8f955e1c177ce"
+        },
+        {
+          "selector": "game::world::tests::u09_structural::flow_cases::resource_cases::tc001_child_actions_have_distinct_delivery_resources_and_cancelled_clone_releases_chain",
+          "status": "ok",
+          "raw_block": "TC001 resources anchor=10 reservation=9 first=11 second=12 heals=7,7 normal_cleanup=true clone_cancel_cleanup=true retained_plan_not_authority=true\nok",
+          "raw_block_sha256": "32485b7c3bd5c49dc4629e08dfa551931f27d47290aa7797e98cfdf1f6552aa4"
+        },
+        {
+          "selector": "game::world::tests::u09_structural::flow_cases::support_cases::f01_equal_generated_reach_keeps_world_selection_and_fixed_connection_geometry",
+          "status": "ok",
+          "raw_block": "RV002 fixed_support self_carrier=true selected_only=true original_reach2 caster_excluded=true regular40_speed20 triggered0 out_return_same_activation=true recipient_withdraw_terminal_no_retarget_source_channel_alive=true\nF01 WORLD finite=false equal2m selected_personal200 self_channel=true out_back_same_connection=true terminal_no_retarget=true finite_child_uses_separate_instant_anchor=false current_owner_removed=false\nRV002 fixed_support self_carrier=true selected_only=true original_reach2 caster_excluded=true regular40_speed20 triggered0 out_return_same_activation=true recipient_withdraw_terminal_no_retarget_source_channel_alive=true\nF01 WORLD finite=true equal2m selected_personal200 self_channel=true out_back_same_connection=true terminal_no_retarget=true finite_child_uses_separate_instant_anchor=true current_owner_removed=false\nRV002 fixed_support self_carrier=true selected_only=true original_reach2 caster_excluded=true regular40_speed20 triggered0 out_return_same_activation=true recipient_withdraw_terminal_no_retarget_source_channel_alive=true\nF01 WORLD finite=true equal2m selected_personal200 self_channel=true out_back_same_connection=true terminal_no_retarget=true finite_child_uses_separate_instant_anchor=true current_owner_removed=true\nok",
+          "raw_block_sha256": "c513cabb068f7ef61d2726d24a3d74a32eca176aea03793ddfc7870579fe898c"
+        },
+        {
+          "selector": "runtime_safety::tests::cmrp_default_and_legacy_eight_mib_canonical_identities_are_distinct",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "runtime_safety::tests::cmrp_profile_rejects_revision_unknown_duplicate_negative_overflow_and_cap",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "runtime_safety::tests::cmrp_trusted_profile_selects_actual_sixteen_and_thirty_two_mib",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "runtime_safety::tests::original_defaults_and_no_file_profile_have_one_effective_identity",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "runtime_safety::tests::settings_reject_schema_unknown_duplicate_negative_overflow_zero_and_ceilings",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        }
+      ],
+      "unselected_rows": []
+    },
+    "audit_existing_controls": {
+      "id": "audit_existing_controls",
+      "status": "named_pass_rows_available_currentness_review_required",
+      "scope": "Actual five unchanged controls PASS within preserved first failed9 batch. New4 stopped during setup; do not reclassify whole batch. Only new sibling prepare_joint changed afterwards, old helpers and controls byte-identical.",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_audit_joint_tests001.json",
+        "bytes": 215795,
+        "sha256": "57803f4768245c1b02223a82d1a73b85d011537660739f1add6af5722a4aa66a"
+      },
+      "command_index": null,
+      "enclosing_exit_code": 101,
+      "enclosing_failure_preserved": true,
+      "source": {
+        "embedded_in_receipt": true,
+        "sha256": "da0901bc44665d5f2ff90ee4b3f662db170df95d707c92980313d89f51b63de1",
+        "canonical_row_sha256": "17920335eb8e828782b47d41faa70ad58e132302efcae4a8b13ef9cdaf52561c"
+      },
+      "source_unchanged": true,
+      "stdout": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_audit_joint_tests001.log",
+        "bytes": 4163,
+        "sha256": "3d10656208293784c471ec46a80e8e69e7e9edaf13485c80cdedce5478a648ea"
+      },
+      "stderr": null,
+      "selected_count": 5,
+      "selected_tests": [
+        {
+          "selector": "game::battle::core::commands::tests::item_on_hit_counterpart_bonus_damage_retaliates_once_without_reflection_recursion",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::core::commands::tests::on_hit_retaliation_plan_skips_dead_or_missing_attacker_without_amplification",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::battle::core::corrosion::tests::r09_public_equipment_death_reactions_are_suppressed_only_for_corrosion",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_a_basic_attack_subscription_without_fragment_is_active_and_queries_are_pure",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::ancestry_cases::u10_e_no_fragment_dead_owner_death_subscriber_uses_actual_killer_once",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        }
+      ],
+      "unselected_rows": [
+        {
+          "selector": "game::world::tests::u10_causal::audit_joint_cases::u10_audit_f01_real_basic_counter_and_published_subscriber_share_one_battle",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::audit_joint_cases::u10_audit_f01_released_basic_skips_counter_for_dead_or_missing_attacker_with_causal_owner",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::audit_joint_cases::u10_audit_f02_prepared_opponent_death_and_allydeath_share_actual_corrosion_suppression",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::audit_joint_cases::u10_audit_f02_public_corrosion_suppresses_active_kill_and_preserves_released_effect_and_wave",
+          "status": "FAILED"
+        }
+      ]
+    },
+    "join_cost": {
+      "id": "join_cost",
+      "status": "bounded_commands_available_currentness_review_required",
+      "scope": "Actual27 closed processes: native graph, plain latency and SystemLayout; selected-program/pending-bucket successor combined delta, not isolated attribution.",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_join_measure002.json",
+        "bytes": 200525,
+        "sha256": "fb53ba64eb3f7c6c56d5af64653b0b2056d3132922e3a2706d9a200c00d27362"
+      },
+      "combined_log": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_join_measure002.log",
+        "bytes": 23600,
+        "sha256": "2f6b5f0c27a3de59f0e5dcd3c32ec649265c8d52078cfe7e157c7d71377b132c"
+      },
+      "exit_code": 0,
+      "command": [
+        "/usr/bin/python3",
+        "-B",
+        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/measurement002/execute.py",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_join002_measurement/descriptor.json",
+        "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/game_core-7a9a636d9fa30a69"
+      ],
+      "source_sha256": "b76521f0948c4937b132e877f9d951442f00c4f3b5156582a02666fea258ef49",
+      "source_unchanged": true,
+      "observed_fields": {
+        "completed": true
+      },
+      "result_artifact": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_join002_measurement/runs/RUN.json",
+        "bytes": 30535,
+        "sha256": "02af1956cfe399d60de679c5529264c95965178121a8bdc0e13ffb91ecca867e"
+      },
+      "supporting_artifacts": []
+    },
+    "external_development_cost": {
+      "id": "external_development_cost",
+      "status": "bounded_commands_available_currentness_review_required",
+      "scope": "Historical default8 retained101 preserved; development16 retained1/plain3/allocator3 all4modes success; same immutable input. Not nominal-default16 proof or new current performance execution.",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_external_measure002.json",
+        "bytes": 209738,
+        "sha256": "fa01742523c69c002831126d243dbdd4cab391ef2dbff255b0651f1415b04228"
+      },
+      "combined_log": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_external_measure002.log",
+        "bytes": 6963,
+        "sha256": "d84831c3287d98ccc7c3be5abef314d55f76edf898de2c45c8adc75b49a25ecf"
+      },
+      "exit_code": 0,
+      "command": [
+        "python3",
+        "-B",
+        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/external_measurement001/execute.py",
+        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_external002_measurement/descriptor.json",
+        "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/game_core-7a9a636d9fa30a69"
+      ],
+      "source_sha256": "503baac6e88f674bf38f74b7addece611aad526be742578b5b267e3e0e00cda2",
+      "source_unchanged": true,
+      "observed_fields": {
+        "completed": true
+      },
+      "result_artifact": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_external002_measurement/runs/RUN.json",
+        "bytes": 10032,
+        "sha256": "5ae6a16b0f381615cbd90331b7c67aa600aeb002f0c58f1c1a01c47b08d4d53d"
+      },
+      "supporting_artifacts": []
+    },
+    "external_current_pair": {
+      "id": "external_current_pair",
+      "status": "bounded_commands_available_currentness_review_required",
+      "scope": "Actual two retained parents closed: explicit legacy8 no-development original libtest101 actor_witness8611169>8388608 with identical rollback; current nominal/effective16 no-development original full4mode succeeds and outcomes equal historical002development16. Parent prepare/build/measure0 source20a79 unchanged. RUN9a43fa3e24cfdf2be290689964a822e6e47ab5640a06067744e445d279578685. No fresh plain/allocator samples; reuse002 only.",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_external_measure003.json",
+        "bytes": 214636,
+        "sha256": "9566a043a4b40a329b072b3688edde35108c53ca6d29306e844fc26af50f22c9"
+      },
+      "combined_log": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_external_measure003.log",
+        "bytes": 1742,
+        "sha256": "c0a435355905503ca2c6bc5186bf88db729ff71816b959a3be64f79af8390d8e"
+      },
+      "exit_code": 0,
+      "command": [
+        "python3",
+        "-B",
+        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/external_measurement003/execute.py",
+        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_external003_measurement/descriptor.json",
+        "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/game_core-7a9a636d9fa30a69"
+      ],
+      "source_sha256": "20a79e5b4601f9cdb46a2de75b2b5edbefa98d4a26432291c43a429e1c526e83",
+      "source_unchanged": true,
+      "observed_fields": {
+        "completed": true,
+        "expected_parent_processes": 2,
+        "completed_parent_processes": 2,
+        "rows.0.exit_code": 101,
+        "rows.0.reaped": true,
+        "rows.0.timed_out": false,
+        "rows.1.exit_code": 0,
+        "rows.1.reaped": true,
+        "rows.1.timed_out": false,
+        "legacy8_observation.rollback_equal": true
+      },
+      "result_artifact": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_external003_measurement/runs/RUN.json",
+        "bytes": 3947,
+        "sha256": "9a43fa3e24cfdf2be290689964a822e6e47ab5640a06067744e445d279578685"
+      },
+      "supporting_artifacts": [
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_external003_measurement/runs/cap8388608_retained_sample1/observation.json",
+          "bytes": 668789,
+          "sha256": "726cd9c60b48f5a95b3b3d85c53b1a3e0f313530f2965057ad7487a3de33c916"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_external003_measurement/runs/cap16777216_retained_sample1/observation.json",
+          "bytes": 2813916,
+          "sha256": "995984304c7116483e44cbbd213d36a06730d26266b602f9baa6fe1c649f1b5d"
+        }
+      ]
+    },
+    "pc_current": {
+      "id": "pc_current",
+      "status": "bounded_commands_available_currentness_review_required",
+      "scope": "Actual fresh PC002 576 rows/36 conditions/31 success/5 original typed refusals at pinned historical8. Original strict002 cost comparator remains FAIL exit1. Root accepted causal-empty fixed inline8 plus work2/clone1 per actual candidate clone: public chunk100/1000 uses2/20 timestamp clones, burst1, adapter0, kernel no native owner. Explicit successor removes only this declared delta then satisfies unchanged U06+200/source136 and whole immediateU07M non-time exactness. Existing17 plus additional26 negative controls reject. Runtime raw source12a973 is retained; comparison source02e185 only adds successor tool. No fresh runtime, latency or allocator sampling by successor; no zero-overhead or universal exact-cap claim.",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/performance001/evidence/compat_pc_causal_empty_001.json",
+        "bytes": 214579,
+        "sha256": "6792683555b397ccf991d966e7d513fb7606469d59d4902e3918a2e6982dcdfd"
+      },
+      "combined_log": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/performance001/evidence/compat_pc_causal_empty_001.log",
+        "bytes": 671,
+        "sha256": "6660a97e775730fab2c577267b6627e556077710316e7b897aca250150912254"
+      },
+      "exit_code": 0,
+      "command": [
+        "python3",
+        "-B",
+        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/performance001/compare_pc_causal_empty.py",
+        "--label",
+        "001"
+      ],
+      "source_sha256": "02e185fad4820f3366c465af9904284fc33394d5f6d59ec65e0dc33710d329ac",
+      "source_unchanged": true,
+      "observed_fields": {
+        "passed": true,
+        "historical_u06_after_declared_causal_delta.passed": true,
+        "historical_u06_after_declared_causal_delta.rows": 576,
+        "historical_u06_after_declared_causal_delta.distinct_conditions": 36,
+        "historical_u06_after_declared_causal_delta.successful_conditions": 31,
+        "historical_u06_after_declared_causal_delta.typed_refusal_conditions": 5,
+        "original_strict_failure.exit_code": 1,
+        "original_strict_failure.preserved": true,
+        "original_strict_failure.reclassified_as_pass": false,
+        "execution_reuse.changed_existing": [],
+        "execution_reuse.removed": [],
+        "controls.0.passed": true,
+        "controls.1.rejected": true,
+        "controls.2.rejected": true,
+        "controls.3.rejected": true,
+        "controls.4.rejected": true,
+        "controls.5.rejected": true,
+        "controls.6.rejected": true,
+        "controls.7.rejected": true,
+        "controls.8.rejected": true,
+        "controls.9.rejected": true,
+        "controls.10.rejected": true,
+        "controls.11.rejected": true,
+        "controls.12.rejected": true,
+        "controls.13.rejected": true,
+        "controls.14.rejected": true,
+        "controls.15.rejected": true,
+        "controls.16.rejected": true,
+        "controls.17.rejected": true,
+        "causal_empty_controls.0.rejected": true,
+        "causal_empty_controls.1.rejected": true,
+        "causal_empty_controls.2.rejected": true,
+        "causal_empty_controls.3.rejected": true,
+        "causal_empty_controls.4.rejected": true,
+        "causal_empty_controls.5.rejected": true,
+        "causal_empty_controls.6.rejected": true,
+        "causal_empty_controls.7.rejected": true,
+        "causal_empty_controls.8.rejected": true,
+        "causal_empty_controls.9.rejected": true,
+        "causal_empty_controls.10.rejected": true,
+        "causal_empty_controls.11.rejected": true,
+        "causal_empty_controls.12.rejected": true,
+        "causal_empty_controls.13.rejected": true,
+        "causal_empty_controls.14.rejected": true,
+        "causal_empty_controls.15.rejected": true,
+        "causal_empty_controls.16.rejected": true,
+        "causal_empty_controls.17.rejected": true,
+        "causal_empty_controls.18.rejected": true,
+        "causal_empty_controls.19.rejected": true,
+        "causal_empty_controls.20.rejected": true,
+        "causal_empty_controls.21.rejected": true,
+        "causal_empty_controls.22.rejected": true,
+        "causal_empty_controls.23.rejected": true,
+        "causal_empty_controls.24.rejected": true,
+        "causal_empty_controls.25.rejected": true
+      },
+      "result_artifact": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/performance001/evidence/PC_CAUSAL_EMPTY_ACCOUNTED_001.json",
+        "bytes": 584476,
+        "sha256": "b0b45940172b1667a1ece694de127fb90af54c075c5b9f9fa58299ac5e25ee61"
+      },
+      "supporting_artifacts": [
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/performance001/evidence/compat_pc_002.json",
+          "bytes": 214281,
+          "sha256": "9dea19321c04954554aad0975819417d983d52097f54f767ccf51f5b7eca62ad"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/performance001/evidence/compat_pc_002.log",
+          "bytes": 5140,
+          "sha256": "51bc5dd0cd9d0b426f164ffd116034d07402d6280dec981fb29c86fa84050af6"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/performance001/evidence/pc_raw_current_002.json",
+          "bytes": 1417011,
+          "sha256": "298aba4e1879d86dcef0352cf3291b72fb4d0521f6e75187ed783dd1a701fe26"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/performance001/evidence/compat_pc_gameplay_002.json",
+          "bytes": 214611,
+          "sha256": "03d838f9ded8b74c557f961eb77ffbb3585c58aa5f790e2566d9761830a22272"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/performance001/evidence/compat_pc_gameplay_002.log",
+          "bytes": 1004,
+          "sha256": "465c6d57f099cffbcd36edd8a3c7d1992ca3b5262759f0168c3492ff1f982e9a"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/performance001/evidence/compat_pc_cost_002.json",
+          "bytes": 214002,
+          "sha256": "f22c359f18b8be1ab41bf03e0e75c87e4cd67d3d15ed567dcc9599e35d4c544e"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/performance001/evidence/compat_pc_cost_002.log",
+          "bytes": 1267,
+          "sha256": "ef6283dfc5139fe95cd176dfc8c56b15273e0551669ad2e99d30b93c9c1787be"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/performance001/evidence/pc_isolate_002.json",
+          "bytes": 276446,
+          "sha256": "b10e794bb88e303fe918803112d769258ccfc88e8c60a986b35f864946864f30"
+        }
+      ]
+    },
+    "r05_current": {
+      "id": "r05_current",
+      "status": "bounded_commands_available_currentness_review_required",
+      "scope": "Fresh original R05 event-heavy and64session, each21 latency and5 allocator samples, current source02e185 unchanged. Original runtime exit101 is preserved; original concurrent peak guard remains false at max9703429 versus unchanged9030188. Original summary exits0 only with inherited warning_concurrent_peak_only and no other hard guard failures. Both families parity/repeatability true; event ops44206/retained266102/peak271927 and concurrent ops370928/retained4196928 equal U09. Latency p95 16.732216ms/9.300247ms is observation only: latency_gate_applicable=false. No whole-original-PASS or uninstrumented latency claim.",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/performance001/evidence/compat_r05_summary_001.json",
+        "bytes": 214559,
+        "sha256": "70a165add4ac3f4c3b9ff7134851b7d3ee3a31bff5064497038961c95371502d"
+      },
+      "combined_log": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/performance001/evidence/compat_r05_summary_001.log",
+        "bytes": 2456,
+        "sha256": "c26a11c0a65540d73f8bc88fca5761df65a1278e5c1df241aab81c199614115d"
+      },
+      "exit_code": 0,
+      "command": [
+        "python3",
+        "-B",
+        "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/performance001/summarize_r05_current.py",
+        "001"
+      ],
+      "source_sha256": "02e185fad4820f3366c465af9904284fc33394d5f6d59ec65e0dc33710d329ac",
+      "source_unchanged": true,
+      "observed_fields": {
+        "raw_exit_code": 101,
+        "classification": "warning_concurrent_peak_only",
+        "other_hard_guard_failures": [],
+        "harness_proof.workload_input_exact_prior": true,
+        "harness_proof.guards_oracles_caps_unchanged": true,
+        "event_heavy.original_allocation_guard_pass": true,
+        "event_heavy.repeatable": true,
+        "event_heavy.parity": true,
+        "event_heavy.latency_gate_applicable": false,
+        "concurrent_sessions.original_allocation_guard_pass": false,
+        "concurrent_sessions.repeatable": true,
+        "concurrent_sessions.parity": true,
+        "concurrent_sessions.latency_gate_applicable": false,
+        "concurrent_sessions.caps.peak": 9030188
+      },
+      "result_artifact": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/performance001/evidence/R05_SUMMARY_CURRENT_001.json",
+        "bytes": 2456,
+        "sha256": "c26a11c0a65540d73f8bc88fca5761df65a1278e5c1df241aab81c199614115d"
+      },
+      "supporting_artifacts": [
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/performance001/evidence/compat_r05_001.json",
+          "bytes": 215351,
+          "sha256": "5aaf924f623804b1435cd65e49721cf2de6bba6e35002b454e482cdc51e18441"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/performance001/evidence/compat_r05_001.log",
+          "bytes": 44468,
+          "sha256": "1adda894aafbdf8afc2ee4614d26a2e5766f4ae06fb2fbff69bd8ed78700cefe"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/performance001/evidence/r05_raw_current_001.json",
+          "bytes": 36494,
+          "sha256": "813d65fb3015836bc98b5576b194c95bc86c56484f9c4c2df8bacb653352efc6"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/performance001/evidence/r05_harness_001/PROOF.json",
+          "bytes": 3998,
+          "sha256": "05350232c624e6b881eb523e5bed03ee1791edd2b0b3f6759f3dd20c31180cb5"
+        }
+      ]
+    },
+    "predecessor_impact": {
+      "id": "predecessor_impact",
+      "status": "pending",
+      "artifact": "PREDECESSOR_IMPACT.json",
+      "counts": {
+        "inherited_latest_u09_rows": 254,
+        "u09_sentences": 34,
+        "union": 288
+      }
+    },
+    "frozen_restore": {
+      "id": "frozen_restore",
+      "scope": "Exact isolated forward/reverse membership and bytes.",
+      "status": "pending",
+      "recorded_pending_stage": "pending_actual_execution_or_review"
+    },
+    "independent_completion": {
+      "id": "independent_completion",
+      "scope": "Nonparticipant whole Goal audit; never implied by author, collection or restore.",
+      "status": "pending",
+      "recorded_pending_stage": "pending_actual_execution_or_review"
+    },
+    "audit_joint_basic": {
+      "id": "audit_joint_basic",
+      "members": [
+        "audit_basic_counter",
+        "audit_basic_guard"
+      ],
+      "scope": "F01 actual positive basic/counter/child from tests002 one PASS plus current guard from tests004 one PASS. Separate exact source identities and failed tests002 parent retained; only guard body changed between these executions.",
+      "status": "composite_available_currentness_review_required"
+    },
+    "audit_joint_corrosion": {
+      "id": "audit_joint_corrosion",
+      "status": "named_pass_rows_available_currentness_review_required",
+      "scope": "Both actual PASS at source730710e294ea2c26716af442f9f89da109cbda32a9e18aa23e8253b0da1708f0. Public World Kill11 versus actual Corrosion causalSome/cost100/special source suppress=true/optional0, already released live ally DOT19 twice with suppress=false and required futurewave. Separate explicitly prepared Opponent-side normal Death7/Kill11/AllyDeath13+equipment2+3+5 pays actual source/copy/killer, while actual Corrosion optional queue/cast/heal stays0 after finite original-envelope drain. Native side/drain scope is not public opponent configuration or whole scheduler/budget evidence. Original failed4 remains101; C003 changes only unrelated released-projectile guard body, these cases and fixture helpers byte-identical.",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_audit_joint_tests002.json",
+        "bytes": 215172,
+        "sha256": "a4dab8ddac50d306f0985944294d11203e06101839e75114e6fc6e45e1e29f34"
+      },
+      "command_index": null,
+      "enclosing_exit_code": 101,
+      "enclosing_failure_preserved": true,
+      "source": {
+        "embedded_in_receipt": true,
+        "sha256": "730710e294ea2c26716af442f9f89da109cbda32a9e18aa23e8253b0da1708f0",
+        "canonical_row_sha256": "a877383032aa8597914481f491f55ba021504d1fbfd59a9412998660bb667b56"
+      },
+      "source_unchanged": true,
+      "stdout": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_audit_joint_tests002.log",
+        "bytes": 1319,
+        "sha256": "efb9af59e6aa083f6ad8e4f01c371787dd519cabd68fa86656e20d1f6cbe3dbd"
+      },
+      "stderr": null,
+      "selected_count": 2,
+      "selected_tests": [
+        {
+          "selector": "game::world::tests::u10_causal::audit_joint_cases::u10_audit_f02_prepared_opponent_death_and_allydeath_share_actual_corrosion_suppression",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::audit_joint_cases::u10_audit_f02_public_corrosion_suppresses_active_kill_and_preserves_released_effect_and_wave",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        }
+      ],
+      "unselected_rows": [
+        {
+          "selector": "game::world::tests::u10_causal::audit_joint_cases::u10_audit_f01_real_basic_counter_and_published_subscriber_share_one_battle",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::audit_joint_cases::u10_audit_f01_released_basic_skips_counter_for_dead_or_missing_attacker_with_causal_owner",
+          "status": "FAILED"
+        }
+      ]
+    },
+    "audit_basic_guard": {
+      "id": "audit_basic_guard",
+      "status": "named_pass_rows_available_currentness_review_required",
+      "scope": "Actual current source76aba953/533 unmodified: one test PASS0ignored; raw completed missing=false World and missing=true native_timestamp each after real launch0/expected10 and actual hit<=10. Original damage10,100ms bound, one defender hit marker and no counter/echo/amplification with causal owner Some. Missing is explicit native unit removal, consumed by original BattleExecutionState native timestamp scheduler, not an invalid World host success. No dead-prefix PASS was inferred from failed003.",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_audit_joint_tests004.json",
+        "bytes": 214741,
+        "sha256": "8f5a052fbfa28836ecc2a71d781240736c514a12bb91f5c7e8edd5ed296419fa"
+      },
+      "command_index": null,
+      "enclosing_exit_code": 0,
+      "enclosing_failure_preserved": false,
+      "source": {
+        "embedded_in_receipt": true,
+        "sha256": "76aba953d84c644d3659b553e50f99f342c5826c709952c1fe808984ebfc340d",
+        "canonical_row_sha256": "279f8a35248eb4649ec4d52302ab9092b1b5a9bd345aadbf4314aed1b41c1917"
+      },
+      "source_unchanged": true,
+      "stdout": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_audit_joint_tests004.log",
+        "bytes": 500,
+        "sha256": "c5d83561522478ad9f588f4d26dac7ed7450ba5514879dd6fa8da1c37f0adb08"
+      },
+      "stderr": null,
+      "selected_count": 1,
+      "selected_tests": [
+        {
+          "selector": "game::world::tests::u10_causal::audit_joint_cases::u10_audit_f01_released_basic_skips_counter_for_dead_or_missing_attacker_with_causal_owner",
+          "status": "ok",
+          "raw_block": "u10_joint_guard_completed missing=false boundary=World original_loss=10 additional_damage_rows=0 hit_markers=1\nu10_joint_guard_completed missing=true boundary=native_timestamp original_loss=10 additional_damage_rows=0 hit_markers=1\nok",
+          "raw_block_sha256": "4a6a80fe74927d4eefc9d295f33deac6b512d384ff6b814aaddda0b8156b9877"
+        }
+      ],
+      "unselected_rows": []
+    },
+    "audit_basic_counter": {
+      "id": "audit_basic_counter",
+      "status": "named_pass_rows_available_currentness_review_required",
+      "scope": "Actual normally published basic10/counter8+5/child7 with source/copy/targets, exact4 HP rows/total30, attack+hit marker2 and no further reflection. This positive case PASS within preserved failed4. Only the other projectile guard body changes in C003/C004; prepare_joint, this body and native helpers unchanged. The combined F01 group is now bound to the actual tests004 guard PASS; the historical tests002 whole failure remains preserved.",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_audit_joint_tests002.json",
+        "bytes": 215172,
+        "sha256": "a4dab8ddac50d306f0985944294d11203e06101839e75114e6fc6e45e1e29f34"
+      },
+      "command_index": null,
+      "enclosing_exit_code": 101,
+      "enclosing_failure_preserved": true,
+      "source": {
+        "embedded_in_receipt": true,
+        "sha256": "730710e294ea2c26716af442f9f89da109cbda32a9e18aa23e8253b0da1708f0",
+        "canonical_row_sha256": "a877383032aa8597914481f491f55ba021504d1fbfd59a9412998660bb667b56"
+      },
+      "source_unchanged": true,
+      "stdout": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_audit_joint_tests002.log",
+        "bytes": 1319,
+        "sha256": "efb9af59e6aa083f6ad8e4f01c371787dd519cabd68fa86656e20d1f6cbe3dbd"
+      },
+      "stderr": null,
+      "selected_count": 1,
+      "selected_tests": [
+        {
+          "selector": "game::world::tests::u10_causal::audit_joint_cases::u10_audit_f01_real_basic_counter_and_published_subscriber_share_one_battle",
+          "status": "ok",
+          "raw_block": "ok",
+          "raw_block_sha256": "dc51b8c96c2d745df3bd5590d990230a482fd247123599548e0632fdbf97fc22"
+        }
+      ],
+      "unselected_rows": [
+        {
+          "selector": "game::world::tests::u10_causal::audit_joint_cases::u10_audit_f01_released_basic_skips_counter_for_dead_or_missing_attacker_with_causal_owner",
+          "status": "FAILED"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::audit_joint_cases::u10_audit_f02_prepared_opponent_death_and_allydeath_share_actual_corrosion_suppression",
+          "status": "ok"
+        },
+        {
+          "selector": "game::world::tests::u10_causal::audit_joint_cases::u10_audit_f02_public_corrosion_suppresses_active_kill_and_preserves_released_effect_and_wave",
+          "status": "ok"
+        }
+      ]
+    },
+    "audit_joint_provenance": {
+      "id": "audit_joint_provenance",
+      "status": "bounded_commands_available_currentness_review_required",
+      "scope": "Actual composite provenance: tests0015 PASS rows + tests0023 PASS rows + tests0041 PASS row, unique9. All original failed001/002/003 parents/raw/archives and correction bundle before/after bindings retained. Root source diff and exact530 unchanged+cfgtest2+new1 justify scoped reuse; no product/config/limits/performance change or independent closure claimed.",
+      "receipt": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_audit_joint_tests004.json",
+        "bytes": 214741,
+        "sha256": "8f5a052fbfa28836ecc2a71d781240736c514a12bb91f5c7e8edd5ed296419fa"
+      },
+      "combined_log": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_audit_joint_tests004.log",
+        "bytes": 500,
+        "sha256": "c5d83561522478ad9f588f4d26dac7ed7450ba5514879dd6fa8da1c37f0adb08"
+      },
+      "exit_code": 0,
+      "command": [
+        "/mnt/f/work/simulator/.cache/d07-runtime-amount-product-target/release/deps/game_core-7a9a636d9fa30a69",
+        "--exact",
+        "game::world::tests::u10_causal::audit_joint_cases::u10_audit_f01_released_basic_skips_counter_for_dead_or_missing_attacker_with_causal_owner",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "source_sha256": "76aba953d84c644d3659b553e50f99f342c5826c709952c1fe808984ebfc340d",
+      "source_unchanged": true,
+      "observed_fields": {
+        "counts.selected": 1,
+        "counts.passed": 1,
+        "counts.failed": 0,
+        "counts.ignored": 0,
+        "build_exit": 0,
+        "list_exit": 0,
+        "test_exit": 0,
+        "source_sha256": "76aba953d84c644d3659b553e50f99f342c5826c709952c1fe808984ebfc340d",
+        "source_members": 533,
+        "source_unchanged": true,
+        "actual_completed_branches": [
+          "u10_joint_guard_completed missing=false boundary=World original_loss=10 additional_damage_rows=0 hit_markers=1",
+          "u10_joint_guard_completed missing=true boundary=native_timestamp original_loss=10 additional_damage_rows=0 hit_markers=1"
+        ],
+        "effective_selected_coverage.unique_named_tests": 9,
+        "effective_selected_coverage.new_joint_tests": 4,
+        "effective_selected_coverage.existing_controls": 5,
+        "effective_selected_coverage.fresh_tests004": 1,
+        "effective_selected_coverage.reused_tests002_actual_pass": 3,
+        "effective_selected_coverage.reused_tests001_actual_pass": 5,
+        "effective_selected_coverage.not_a_fresh_nine_test_pass": true
+      },
+      "result_artifact": {
+        "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_RESULT_004.json",
+        "bytes": 12329,
+        "sha256": "e53098ea78c975d66f1482d09d3f41dae41c508994914b4c5e0ea59556f3e6da"
+      },
+      "supporting_artifacts": [
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_RESULT_001.json",
+          "bytes": 3306,
+          "sha256": "4cf4ab4527904eebb619b4dbdd1c2390dbbbaf42e089af00f926943c2a1f54d1"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_BINARY_001.json",
+          "bytes": 2078,
+          "sha256": "a95806533963a5cd981cbfc7aa9bc0471aa32eef87dd7b8f5ddb6bba3d9f9587"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_SELECTORS_001.json",
+          "bytes": 3791,
+          "sha256": "5a92da46f5c0bd2e54270dccfb2e1bb253a83dabdada04047669eafda7203b7a"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_INPUT_001_BEFORE.json",
+          "bytes": 4449,
+          "sha256": "de76b8a9de2f6f919a0dda4cd15b404a7c041f0c1e5b680900a4d10e8ca457bf"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_INPUT_001_AFTER.json",
+          "bytes": 5358,
+          "sha256": "34ba63409712aa4ba9bfb763b3d063a7b705764e58e7eb87d32ad64cd7dfe6e6"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/audit_correction001/HANDOFF.json",
+          "bytes": 1596,
+          "sha256": "23027acdb7c3f0a11a1266549e3124ed80066e9df9a5b24aeff8ac3b55343a22"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/audit_correction001/SOURCE_PROOF.json",
+          "bytes": 2170,
+          "sha256": "3fa86ed51e9d6da40bbe3f3faf1121edde7cb46464f34a12bbc89e188479a0ea"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_RESULT_002.json",
+          "bytes": 3395,
+          "sha256": "8906cfc2103c0a5b6a815d67ee01e287160ccc79d0a808e439311809aa29062a"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_BINARY_002.json",
+          "bytes": 2573,
+          "sha256": "269147a36042ae6c68719f561fc7bc0c74c370a764ab761a070aab40cda3636e"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_SELECTORS_002.json",
+          "bytes": 3014,
+          "sha256": "a1776f268f337f181d58f3de682b98f491f33d1ba99c1d132d59e32bde1ab61c"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_INPUT_002_BEFORE.json",
+          "bytes": 3193,
+          "sha256": "7eefe9ca00ce251f9bab92a2cc1ea506631167d4db3fcc18e77699578819ac68"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_INPUT_002_AFTER.json",
+          "bytes": 2751,
+          "sha256": "45eacc5a9e6e253c3e5fd4c1019c81d3329cec64764764254350cbcccd2cfcde"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/audit_correction002/HANDOFF.json",
+          "bytes": 1593,
+          "sha256": "65f4d120800cb0e2fbb58a9a15cdc548a7698364ff0c251c71dc40779c77d994"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/audit_correction002/SOURCE_PROOF.json",
+          "bytes": 3008,
+          "sha256": "4f4bb5e2edd6bc8f9b55bb4bf069f210bba415b510617893ee3e3d6579fc2fe2"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_RESULT_003.json",
+          "bytes": 3433,
+          "sha256": "89c965a090c981e5264175782ca70e3ca7a815e3260cdcc0383d6887fc02047c"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_BINARY_003.json",
+          "bytes": 2573,
+          "sha256": "082956d91ac297217aa58b30eb9ba0d9b7516e91b6f5d349faa2e9af0c81afd3"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_SELECTORS_003.json",
+          "bytes": 2157,
+          "sha256": "f9ab4ccd031bbe242371876eb5927b6f2948f6e1751cb67cdacbe9815a343798"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_INPUT_003_BEFORE.json",
+          "bytes": 3499,
+          "sha256": "1581d7fb8527beeb58d5e12cbf03a9d1f6646ed8ef34694e5d8ec129f7eddca8"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_INPUT_003_AFTER.json",
+          "bytes": 2750,
+          "sha256": "09406d406d122f267b9fd2c25ba73fa54236aefcf03565c24879fdf4a2f62800"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/audit_correction003/HANDOFF.json",
+          "bytes": 1606,
+          "sha256": "2406bbfdd69039483b81755f5ddef71d5df52dc165cba204834841afc348b25e"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/audit_correction003/SOURCE_PROOF.json",
+          "bytes": 3625,
+          "sha256": "0cd9870ae05d2db8c0772785a07ba1c871fb30dc55745218e0ddbd04bc403ce2"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_RESULT_004.json",
+          "bytes": 12329,
+          "sha256": "e53098ea78c975d66f1482d09d3f41dae41c508994914b4c5e0ea59556f3e6da"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_BINARY_004.json",
+          "bytes": 2573,
+          "sha256": "143d73c7e4c6398dc420d58ce276c6eb8253185e77aaab50ddd8c9f8d0490818"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_SELECTORS_004.json",
+          "bytes": 2152,
+          "sha256": "e982373bb9fa8dd84deb04f83651981098997b958281c8b8f4008a017f1770d5"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_INPUT_004_BEFORE.json",
+          "bytes": 3761,
+          "sha256": "5cc005103a56f330914621dbd6c3bd9ff8a2e3596085fa761e3ce5fa702706ac"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/AUDIT_JOINT_INPUT_004_AFTER.json",
+          "bytes": 2750,
+          "sha256": "11a5442d799ffc81a7916b632d74983c9d6c5abfe432bb7da9aa45fc13a33e9a"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/audit_correction004/HANDOFF.json",
+          "bytes": 1627,
+          "sha256": "9b84d343a5c37cc20d161912dccf1399ad661a506f578ff4e3618eec09c4680b"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/audit_correction004/SOURCE_PROOF.json",
+          "bytes": 3804,
+          "sha256": "845a16439cfb6240c11796e82272846c715a1b5c1933dafad3d182bf99add51d"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization002/SOURCE_NONIMPACT_001.json",
+          "bytes": 3153,
+          "sha256": "1e67d5b25c1467b73a034a46c493eda90f2f40a7d5d17faea360ebe7acb88789"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_001_pass001/AUDIT_CLOSURE.json",
+          "bytes": 6445,
+          "sha256": "54982e7f52243c64fd230e20acd5816cf6b1b3af99eedda47cd4f957b00de33f"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_001_pass001/FINDINGS.json",
+          "bytes": 8031,
+          "sha256": "bfeba679448eac5551cb5c049a861f39b0af57d4b2764446353f7b6588469f84"
+        }
+      ]
+    }
+  },
+  "historical_failures_to_preserve": [
+    "u10_tests001 19PASS21FAIL",
+    "u10_tests002 25PASS15FAIL; nested raw parsing not selected",
+    "u10_tests003 23PASS3FAIL",
+    "u10_tests004 12PASS3FAIL",
+    "u10_tests005 22PASS1FAIL",
+    "join001 historical cap8 failure",
+    "external001 2of8 closed; development16 wrong checkpoint baseline assertion",
+    "external002 legacy default8 refusal101;7 development16 successes",
+    "all raw failed builds/prepare/measurement receipts and source archives remain immutable",
+    "PC001 compile-only E0753 remains101; appended helper mechanical fix for PC002",
+    "PC002 unchanged strict cost comparator remains FAIL1; Root-reviewed causal-empty successor001 separately PASS with declared exact fixed-cost delta",
+    "R05 current original exit101 concurrent peak guard false; inherited peak-only summary0 does not reclassify original asPASS",
+    "audit_joint_tests001 whole9 exit101: five controls PASS, all four new cases failed preparation; original raw/source/bundle preserved.",
+    "u10_current_001_pass001 independent audit: Not Complete/High/open2; new evidence never retroactively changes original audit."
+  ]
+}

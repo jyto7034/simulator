@@ -51,13 +51,24 @@ pub(in crate::game::battle::core) struct WaveRuntimeState {
     triggers: BTreeMap<String, WaveTriggerRecord>,
     death_epochs: BTreeMap<UnitInstanceId, u64>,
     next_death_epoch: u64,
+    stress: Option<StressRounds>,
 }
+
+#[derive(Debug, Clone)]
+struct StressRounds {
+    rounds: Vec<Vec<String>>,
+    current: usize,
+    completed: usize,
+    waiting: bool,
+}
+crate::authoring::clone_shape::struct_shape!(StressRounds { rounds, current, completed, waiting });
 
 crate::authoring::clone_shape::copy_shape!(BoundActor, WaveActivationCause);
 crate::authoring::clone_shape::struct_shape!(WaveRuntimeState {
     triggers,
     death_epochs,
-    next_death_epoch
+    next_death_epoch,
+    stress
 });
 crate::authoring::clone_shape::struct_shape!(WaveTriggerRecord {
     group_id,
@@ -79,6 +90,35 @@ impl WaveRuntimeState {
 }
 
 impl BattleCore {
+    pub(super) fn stress_protected_target(&self, id: UnitInstanceId) -> bool {
+        self.scenario_runtime.wave_runtime.stress.is_some()
+            && self.units.get(&id).is_some_and(|u| u.role == crate::game::battle::types::BattleUnitRole::DefenseObject)
+    }
+    pub(super) fn stress_allied_effect_allowed(&self, source: Option<UnitInstanceId>, target: UnitInstanceId) -> bool {
+        !self.stress_protected_target(target) || source.and_then(|id| self.units.get(&id))
+            .zip(self.units.get(&target)).is_some_and(|(a,b)| a.owner != b.owner)
+    }
+    pub(crate) fn configure_stress_rounds(&mut self, rounds: Vec<Vec<String>>) {
+        self.scenario_runtime.wave_runtime.stress = Some(StressRounds { rounds, current: 0, completed: 0, waiting: false });
+    }
+    pub(crate) fn stress_round_status(&self) -> Option<(usize, usize, bool)> {
+        self.scenario_runtime.wave_runtime.stress.as_ref().map(|s| (s.current, s.completed, s.waiting))
+    }
+    pub(crate) fn continue_stress_round(&mut self) -> Result<(), GameError> {
+        let s = self.scenario_runtime.wave_runtime.stress.as_mut().ok_or(GameError::InvalidAction)?;
+        if !s.waiting || s.completed >= s.rounds.len() { return Err(GameError::InvalidAction); }
+        s.current += 1;
+        s.waiting = false;
+        Ok(())
+    }
+    pub(super) fn settle_stress_round(&mut self) {
+        let Some(s) = self.scenario_runtime.wave_runtime.stress.as_ref() else { return; };
+        if !s.waiting && s.rounds[s.current].iter().all(|id| self.scenario_group_is_clear(&ScenarioGroupId::new(id))) {
+            let s = self.scenario_runtime.wave_runtime.stress.as_mut().unwrap();
+            s.completed = s.current + 1;
+            s.waiting = s.completed < s.rounds.len();
+        }
+    }
     pub(in crate::game::battle::core) fn register_wave_trigger(
         &mut self,
         group_id: ScenarioGroupId,
@@ -157,10 +197,10 @@ impl BattleCore {
             .insert(unit_id, epoch);
     }
 
-    /// Evaluates every pending Wave only after the current timestamp bucket has
-    /// committed. Ready triggers are settled as one deterministic priority/ID
-    /// sequence; newly bound already-true triggers are included before terminal
-    /// outcome evaluation.
+    /// Settles pending Waves inside the current timestamp candidate, before its
+    /// enclosing transaction commits. Ready triggers use a deterministic
+    /// priority/ID sequence; newly bound already-true triggers are included
+    /// before terminal outcome evaluation.
     pub(in crate::game::battle::core) fn settle_wave_triggers(
         &mut self,
         now_ms: u64,
@@ -268,6 +308,10 @@ impl BattleCore {
         record: &WaveTriggerRecord,
         now_ms: u64,
     ) -> Option<WaveActivationCause> {
+        if self.scenario_runtime.wave_runtime.stress.as_ref().is_some_and(|s|
+            !s.rounds[..=s.current].iter().any(|r| r.contains(&record.group_id.0))) {
+            return None;
+        }
         if self.wave_primary_is_true(record, now_ms) {
             return Some(WaveActivationCause::Primary);
         }
@@ -708,6 +752,7 @@ mod tests {
         events.extend(wave_events);
         BattleScenario {
             battlefield: BattleFieldSpec {
+            walkable_paths: Vec::new(),
                 object_placement: None,
                 width: 10,
                 height: 6,

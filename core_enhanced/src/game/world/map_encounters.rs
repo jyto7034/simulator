@@ -21,6 +21,17 @@ pub(super) fn assign_map_encounters(
     encounter_progression: &mut EncounterProgressionState,
     run_policy: &RunPolicyData,
 ) {
+    assign_map_encounters_excluding(pve_data,map,run_progression,encounter_progression,run_policy,&HashSet::new());
+}
+
+pub(super) fn assign_map_encounters_excluding(
+    pve_data: &PveEncounterDatabase,
+    map: &mut RunMap,
+    run_progression: &RunProgression,
+    encounter_progression: &mut EncounterProgressionState,
+    run_policy: &RunPolicyData,
+    excluded: &HashSet<crate::game::map::MapNodeId>,
+) {
     if pve_data.encounters.is_empty() {
         return;
     }
@@ -30,6 +41,7 @@ pub(super) fn assign_map_encounters(
     let mut assigned_normal_boss_source_ids = HashSet::new();
 
     for node in &mut map.nodes {
+        if excluded.contains(&node.id) { continue; }
         if !matches!(
             node.category,
             MapNodeCategory::Combat | MapNodeCategory::Boss
@@ -40,7 +52,7 @@ pub(super) fn assign_map_encounters(
             continue;
         }
 
-        let selected = if run_progression.game_mode == GameMode::Endless
+        let selected = if run_progression.game_mode == GameMode::Expedition
             && node.category == MapNodeCategory::Combat
             && node.kind_id.as_str().contains("elite")
         {
@@ -52,7 +64,7 @@ pub(super) fn assign_map_encounters(
                 &mut assigned_elite_source_ids,
                 &mut assigned_natural_elite_abnormality_ids,
             )
-        } else if run_progression.game_mode == GameMode::Endless
+        } else if run_progression.game_mode == GameMode::Expedition
             && node.category == MapNodeCategory::Boss
         {
             select_endless_normal_boss(
@@ -74,7 +86,7 @@ pub(super) fn assign_map_encounters(
                 convert_elite_difficulty_to_authored_ordinary(node, run_policy);
                 select_static_class_encounter(pve_data, node, run_progression).unwrap_or_else(|| {
                     panic!(
-                        "authored Elite slot has no distinct unmastered/mastered candidate and no ordinary fallback encounter"
+                        "authored Elite slot has no distinct authored Elite candidate and no ordinary fallback encounter"
                     )
                 })
             }
@@ -96,57 +108,23 @@ fn select_endless_elite<'a>(
     pve_data: &'a PveEncounterDatabase,
     node: &MapNode,
     run_progression: &RunProgression,
-    progression: &mut EncounterProgressionState,
+    _progression: &mut EncounterProgressionState,
     assigned_source_ids: &mut HashSet<String>,
     assigned_natural_abnormality_ids: &mut HashSet<String>,
 ) -> Option<&'a PveEncounter> {
-    let mut unmastered = pve_data
-        .reward_sources
-        .iter()
-        .filter_map(|source| {
-            let encounter = pve_data.get_by_id(&source.encounter_id)?;
-            (encounter.encounter_class == PveEncounterClass::Elite).then_some((source, encounter))
-        })
-        .filter(|(_, encounter)| {
-            let abnormality_id = encounter
-                .primary_abnormality_id()
-                .expect("validated Elite reward source must have a primary abnormality");
-            !assigned_natural_abnormality_ids.contains(abnormality_id)
-                && !progression
-                    .monolith
-                    .progress(abnormality_id)
-                    .is_some_and(|progress| {
-                        progress.natural_outcome
-                            == crate::game::monolith::NaturalEliteOutcome::Victory
-                    })
-        })
-        .collect::<Vec<_>>();
-    unmastered.sort_by(|left, right| left.0.reward_source_id.cmp(&right.0.reward_source_id));
-    if !unmastered.is_empty() {
-        let index = encounter_selection_seed(run_progression, node) as usize % unmastered.len();
-        let (source, encounter) = unmastered[index];
-        assigned_source_ids.insert(source.reward_source_id.clone());
-        assigned_natural_abnormality_ids.insert(
-            encounter
-                .primary_abnormality_id()
-                .expect("validated Elite primary abnormality")
-                .to_string(),
-        );
-        return Some(encounter);
-    }
-
-    let source_id = progression.reserve_mastered_elite(
-        pve_data,
-        run_progression.run_seed,
-        assigned_source_ids,
-    )?;
-    assigned_source_ids.insert(source_id.clone());
-    let source = pve_data
-        .reward_sources
-        .iter()
-        .find(|source| source.reward_source_id == source_id)
-        .expect("validated mastered Elite cycle source must remain authored");
-    pve_data.get_by_id(&source.encounter_id)
+    let mut candidates = pve_data.reward_sources.iter().filter_map(|source| {
+        let encounter = pve_data.get_by_id(&source.encounter_id)?;
+        let kind = encounter.primary_abnormality_id()?;
+        (encounter.encounter_class == PveEncounterClass::Elite
+            && !assigned_source_ids.contains(&source.reward_source_id)
+            && !assigned_natural_abnormality_ids.contains(kind)).then_some((source, encounter, kind))
+    }).collect::<Vec<_>>();
+    candidates.sort_by(|a, b| a.0.reward_source_id.cmp(&b.0.reward_source_id));
+    if candidates.is_empty() { return None; }
+    let (source, encounter, kind) = candidates[encounter_selection_seed(run_progression, node) as usize % candidates.len()];
+    assigned_source_ids.insert(source.reward_source_id.clone());
+    assigned_natural_abnormality_ids.insert(kind.to_owned());
+    Some(encounter)
 }
 
 fn select_endless_normal_boss<'a>(
@@ -250,14 +228,13 @@ fn encounter_class_for_map_node(
 mod tests {
     use super::*;
     use crate::game::map::test_facility_map;
-    use crate::game::monolith::{MonolithProgress, NaturalEliteOutcome};
     use uuid::Uuid;
 
     #[test]
-    fn endless_elite_slots_use_unmastered_then_distinct_mastered_then_ordinary_fallback() {
+    fn u17_natural_elite_slots_ignore_completion_and_preserve_assignments() {
         let data = crate::game::data::ValidatedGameData::load_live_embedded()
             .expect("embedded game data should load");
-        let progression = RunProgression::new(77, GameMode::Endless, 3);
+        let progression = RunProgression::new(77, GameMode::Expedition, 3);
         let elite_sources = data
             .pve_data
             .reward_sources
@@ -273,17 +250,7 @@ mod tests {
         assert!(elite_sources.len() >= 3);
 
         let mut ledger = EncounterProgressionState::default();
-        for (index, (_, abnormality_id)) in elite_sources.iter().enumerate().skip(1) {
-            ledger.monolith.progress_by_abnormality.insert(
-                abnormality_id.clone(),
-                MonolithProgress {
-                    natural_outcome: NaturalEliteOutcome::Victory,
-                    victories: if index <= 2 { 3 } else { 1 },
-                    ..MonolithProgress::default()
-                },
-            );
-        }
-
+        ledger.completed_reward_source_ids.extend(elite_sources.iter().map(|(s, _)| s.reward_source_id.clone()));
         let mut map = test_facility_map(77);
         let template = map.nodes[0].clone();
         map.nodes = (0..4_u128)
@@ -323,25 +290,22 @@ mod tests {
             .filter(|(kind_id, _)| *kind_id == "combat_elite")
             .map(|(_, encounter_id)| *encounter_id)
             .collect::<HashSet<_>>();
-        assert_eq!(assigned_elites.len(), 3);
-        assert!(assigned_elites.contains(elite_sources[0].0.encounter_id.as_str()));
-        assert!(assigned_elites.contains(elite_sources[1].0.encounter_id.as_str()));
-        assert!(assigned_elites.contains(elite_sources[2].0.encounter_id.as_str()));
-        assert_eq!(
-            assigned_encounters
-                .iter()
-                .filter(|(kind_id, _)| *kind_id == "combat_normal")
-                .count(),
-            1
-        );
-        assert_eq!(ledger.mastered_elite_cycle.assigned_source_ids.len(), 2);
+        assert_eq!(assigned_elites.len(), 4);
+        assert!(assigned_encounters.iter().all(|(kind, _)| *kind == "combat_elite"));
+        assert!(ledger.revival.eggs.is_empty());
+        // Existing assignments stay fixed when progression changes.
+        let before = serde_json::to_value(&map).unwrap();
+        ledger.completed_reward_source_ids.clear();
+        assign_map_encounters(&data.pve_data, &mut map, &progression, &mut ledger, &data.run_policy);
+        assert_eq!(serde_json::to_value(&map).unwrap(), before);
+
     }
 
     #[test]
     fn endless_normal_boss_cycle_excludes_unpublished_moonlit_wail() {
         let data = crate::game::data::ValidatedGameData::load_live_embedded()
             .expect("embedded game data should load");
-        let progression = RunProgression::new(42, GameMode::Endless, 3);
+        let progression = RunProgression::new(42, GameMode::Expedition, 3);
         let mut ledger = EncounterProgressionState::default();
         let mut map = test_facility_map(42);
         let mut boss = map.nodes[0].clone();

@@ -1,0 +1,14 @@
+{
+  "ref": {
+    "Artifact Type": "Goal Set",
+    "Artifact ID": "GS-CMVA-001",
+    "Content Digest": "sha256:64dd01bc79319c7ec61472f21b2d6dd65542b0e905f29c7c77bcb066de3eb6da"
+  },
+  "canonical_digest_method": "SHA256 UTF8 LF Markdown excluding the entire - Goal Set Ref: envelope line, preserving remaining newlines",
+  "source": {
+    "path": "core_enhanced/docs/goals/core_mod_validation_apply/P2G_50_GOAL_SET.ko.md",
+    "bytes": 29800,
+    "sha256": "3ce14561482839acc66963084b51334cfc5987cca7825d6fc5a97905aa612ad2"
+  },
+  "status": "current"
+}

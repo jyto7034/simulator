@@ -1,0 +1,13 @@
+{
+  "command": [
+    ".cache/d07-static-explain-product-target/debug/deps/game_core-705cc9514d94a1fe",
+    "u13_allocation_roles",
+    "u13_fixed_encounter",
+    "--test-threads=2",
+    "--nocapture"
+  ],
+  "exit_code": 101,
+  "seconds": 7.1394146230013575,
+  "stdout": "focused001.stdout.log",
+  "stderr": "focused001.stderr.log"
+}

@@ -1,0 +1,216 @@
+{
+  "command": {
+    "node_id": "da33531e-de9b-4974-b6ff-6a6e348c6420",
+    "type": "select_map_node"
+  },
+  "result": {
+    "disposition": "accepted",
+    "kind": "node_preview",
+    "meaning": "NodePreview",
+    "payload": {
+      "category": "SavePoint",
+      "combat_preview": null,
+      "kind_id": "save_point",
+      "map": {
+        "facility_template_version": 1,
+        "map_template_id": "facility_9C",
+        "nodes": [
+          {
+            "category": "Combat",
+            "difficulty_band": "Easy",
+            "id": "da33531e-de9b-4974-8160-aaa1697ed202",
+            "kind_id": "combat_monster",
+            "payload": {
+              "Encounter": {
+                "encounter_id": "normal_breach_response"
+              }
+            },
+            "relative_threat": "Equal",
+            "slot_id": "1",
+            "state": "Unavailable",
+            "visibility": "Revealed"
+          },
+          {
+            "category": "SavePoint",
+            "id": "da33531e-de9b-4974-b6ff-6a6e348c6420",
+            "kind_id": "save_point",
+            "payload": "SavePoint",
+            "slot_id": "2",
+            "state": "Available",
+            "visibility": "Revealed"
+          },
+          {
+            "category": "Reward",
+            "id": "da33531e-de9b-4974-8f8b-c51262ea7bab",
+            "kind_id": "reward_treasure",
+            "payload": {
+              "Reward": {
+                "reward_pool_id": "default_treasures"
+              }
+            },
+            "slot_id": "3",
+            "state": "Unavailable",
+            "visibility": "Revealed"
+          },
+          {
+            "category": "Combat",
+            "difficulty_band": "Standard",
+            "id": "da33531e-de9b-4974-9b48-876f7f96ae0f",
+            "kind_id": "combat_monster",
+            "payload": {
+              "Encounter": {
+                "encounter_id": "normal_corroded_patrol"
+              }
+            },
+            "relative_threat": "Equal",
+            "slot_id": "4",
+            "state": "Unavailable",
+            "visibility": "Revealed"
+          },
+          {
+            "category": "Maintenance",
+            "id": "da33531e-de9b-4974-a97e-62057bf9c963",
+            "kind_id": "maintenance",
+            "payload": "Maintenance",
+            "slot_id": "5",
+            "state": "Unavailable",
+            "visibility": "Revealed"
+          },
+          {
+            "category": "Combat",
+            "difficulty_band": "Standard",
+            "id": "da33531e-de9b-4974-92cf-07e7f04668e2",
+            "kind_id": "combat_monster",
+            "payload": {
+              "Encounter": {
+                "encounter_id": "normal_breach_response"
+              }
+            },
+            "relative_threat": "Equal",
+            "slot_id": "6",
+            "state": "Unavailable",
+            "visibility": "Revealed"
+          },
+          {
+            "category": "Combat",
+            "difficulty_band": "Hard",
+            "id": "da33531e-de9b-4974-8e5e-172955802968",
+            "kind_id": "combat_monster",
+            "payload": {
+              "Encounter": {
+                "encounter_id": "normal_breach_response"
+              }
+            },
+            "relative_threat": "High",
+            "slot_id": "7",
+            "state": "Unavailable",
+            "visibility": "Revealed"
+          },
+          {
+            "category": "Shop",
+            "id": "da33531e-de9b-4974-bb94-50239017385b",
+            "kind_id": "shop_general",
+            "payload": {
+              "Shop": {
+                "shop_id": null,
+                "shop_pool_id": "default_shops"
+              }
+            },
+            "slot_id": "8",
+            "state": "Unavailable",
+            "visibility": "Revealed"
+          },
+          {
+            "category": "Event",
+            "id": "da33531e-de9b-4974-b1e6-3ad772a8777b",
+            "kind_id": "event_sealed_archive",
+            "payload": {
+              "Event": {
+                "event_id": "sealed_archive_recovery_01"
+              }
+            },
+            "slot_id": "9",
+            "state": "Unavailable",
+            "visibility": "Revealed"
+          },
+          {
+            "category": "Gate",
+            "id": "da33531e-de9b-4974-891e-eef66401421b",
+            "kind_id": "gate_stairs",
+            "payload": "None",
+            "slot_id": "G",
+            "state": "Unavailable",
+            "visibility": "Revealed"
+          },
+          {
+            "category": "Start",
+            "id": "da33531e-de9b-4974-9a1d-fc8fda0fadab",
+            "kind_id": "start",
+            "payload": "None",
+            "slot_id": "S",
+            "state": "Completed",
+            "visibility": "Revealed"
+          }
+        ]
+      },
+      "node_id": "da33531e-de9b-4974-b6ff-6a6e348c6420",
+      "payload": "SavePoint",
+      "session": {
+        "category": "SavePoint",
+        "kind_id": "save_point",
+        "node_id": "da33531e-de9b-4974-b6ff-6a6e348c6420",
+        "payload": "SavePoint"
+      },
+      "trauma_recovery_preview": {
+        "employees": [
+          {
+            "eligibility": {
+              "disabled_reason": "NoTrauma",
+              "eligible": false
+            },
+            "employee_name": "강민재",
+            "employee_uuid": "080c3acd-ec35-4a00-8aa7-413fe6c7abfb",
+            "mental_state_after": "Stable",
+            "mental_state_before": "Stable",
+            "physical_damage": 0,
+            "trauma_after": 0,
+            "trauma_before": 0
+          },
+          {
+            "eligibility": {
+              "disabled_reason": "NoTrauma",
+              "eligible": false
+            },
+            "employee_name": "이서연",
+            "employee_uuid": "b6600648-9f01-434a-9cde-2638a86ffeab",
+            "mental_state_after": "Stable",
+            "mental_state_before": "Stable",
+            "physical_damage": 0,
+            "trauma_after": 0,
+            "trauma_before": 0
+          },
+          {
+            "eligibility": {
+              "disabled_reason": "NoTrauma",
+              "eligible": false
+            },
+            "employee_name": "한유진",
+            "employee_uuid": "d5ed14a6-322c-4860-b9de-01b528293402",
+            "mental_state_after": "Stable",
+            "mental_state_before": "Stable",
+            "physical_damage": 0,
+            "trauma_after": 0,
+            "trauma_before": 0
+          }
+        ],
+        "physical_damage_unchanged": true,
+        "recovery": {
+          "CurrentPercent": {
+            "percent": 15
+          }
+        },
+        "replaces_run_checkpoint": true
+      }
+    }
+  }
+}

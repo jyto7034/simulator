@@ -1,0 +1,60 @@
+--- a/core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md
++++ b/core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md
+@@ -1,6 +1,8 @@
+ # Core 우선 게임 로직·공개 콘텐츠 제작·모드 지원 통합 개발 로드맵
+ 
+-**2026-10-05 U07 독립 완료 / 다음 U07-M:** [전체 독립 재감사](../../goals/core_independent_objects/post_audit/u07_20261005_002/COMPLETION_AUDIT.md)가 **Complete / High / 열린 finding0**으로 종료됐다. U07-F01 저지·벽 접촉 보존 교정을 닫았고 `target/u07_002`는 감사 종료까지 current/unchanged다. [완료 인수·최종 검증·남은 경고](execution/u07_closure_20261005_001/RESULT.ko.md)가 현재 완료를 소유한다. 원래 PC 8MiB 기준과 31성공/5거절을 유지했으며 R05 기존 peak 경고(+639,853bytes)는 보존했다. U07-M은 P2G-00→60/quality2를 완료하고 [새 실행 PLAN](../../goals/core_runtime_measurement_profiles/execution/single_goal/PLAN.md)에 따라 지정 Sol/xHigh 구현·검증에 착수했다. 비참여 Astra/High 독립 완료 뒤 U08로 진행한다. 아래 재개·중지·첫 감사 안내는 각 당시 이력이다.
++**2026-10-06 U07-M 독립 완료 / 다음 U08:** [전체 독립 감사](../../goals/core_runtime_measurement_profiles/post_audit/u07m_20261006_001/COMPLETION_AUDIT.md)가 **Complete / High / 열린 finding0**으로 종료됐다. 기본8MiB를 유지한 trusted 개발16/32MiB 프로파일과 bounded 실제 Core/host 측정·재현을 완료했다. [완료 인수·검증·남은 경고](execution/u07m_closure_20261006_001/RESULT.ko.md)가 현재 완료를 소유한다. 최종 배포 수치는 U30-C/U30-P에 남기며, 기존 연속 권한으로 U08의 현재성 인수·P2G를 진행한다. 아래 U07-M 착수 안내는 당시 이력이다.
++
++**2026-10-05 U07 완료·U07-M 착수 당시 안내(이력):** [전체 독립 재감사](../../goals/core_independent_objects/post_audit/u07_20261005_002/COMPLETION_AUDIT.md)가 **Complete / High / 열린 finding0**으로 종료됐다. U07-F01 저지·벽 접촉 보존 교정을 닫았고 `target/u07_002`는 감사 종료까지 current/unchanged다. [완료 인수·최종 검증·남은 경고](execution/u07_closure_20261005_001/RESULT.ko.md)가 현재 완료를 소유한다. 원래 PC 8MiB 기준과 31성공/5거절을 유지했으며 R05 기존 peak 경고(+639,853bytes)는 보존했다. U07-M은 P2G-00→60/quality2를 완료하고 [새 실행 PLAN](../../goals/core_runtime_measurement_profiles/execution/single_goal/PLAN.md)에 따라 지정 Sol/xHigh 구현·검증에 착수했다. 비참여 Astra/High 독립 완료 뒤 U08로 진행한다. 아래 재개·중지·첫 감사 안내는 각 당시 이력이다.
+ 
+ **2026-10-05 후속 작업 예약 당시 안내(이력) — U07-M:** 진행 중인 U07의 구현·교정·감사는 기존 계약으로 계속한다. U07 독립 완료 뒤 U08 전에 [실측 기반 실행 예산 조정 준비](<execution/u07_memory_budget_followup_20261005_001/FOLLOWUP.ko.md>)를 수행한다. 이번 문서 등록은 U07의 8MiB 기준 변경·실패 면제·측정 모드 구현 완료가 아니다. U07-M은 측정·설정 경로를 먼저 닫고, 최종 수치 산정은 U30-C와 실제 Unity 플레이 U30-P가 이어받는다. 변경 인수는 [발행 기록](execution/u07_memory_budget_followup_20261005_001/RECORD.ko.md)을 따른다.
+ 
+@@ -17,7 +19,7 @@
+ 
+ **개정일: 2026-10-04 · 정책 대조: 현재 작업공간의 차기 룰북·후속 합의 · 상속한 코드 분석 기준: 2026-10-03 패키징 작업 트리**
+ 
+-**현재 상태: U00–U07 독립 Complete / High. U07-F01 Closed·열린 finding0. U07-M P2G 완료, GEX 실행 인수·구현 착수.**
++**현재 상태: U00–U07 및 U07-M 독립 Complete / High·열린 finding0. 다음 U08의 현재성 인수·P2G.**
+ 
+ [중지 당시 인수인계](execution/HANDOFF_20261005.ko.md)에 당시 변경16파일, 검증 결과와 미수정 항목을 보존했다.
+ U06의 동결 [PLAN](../../goals/core_battle_starter_tactics/execution/single_goal/PLAN.md)은 감사 전 이력이며, 현재 완료는 [최종 독립 감사](../../goals/core_battle_starter_tactics/post_audit/u06_20261005_002/COMPLETION_AUDIT.md)와 [완료 인수](execution/u06_closure_20261005_001/RESULT.ko.md)가 소유한다.
+@@ -34,7 +36,7 @@
+ 외부 CF-D09 문서 이동의 현재성 finding을 새 대상 인수로 닫았으며 실제 비용 증가와 기존 R05 경고는 명시적으로 보존했다.
+ U06은 순수 기본 치유·6세트·전술/작업/저지·시간/조회와 V11 implicit Damage 저장 호환을 완료했다.
+ 회복량0 자격/조회 F01은 교정·fresh 독립 재감사로 닫았고 첫 감사와 실패 원본은 보존한다.
+-U07/B13·C01은 전체20조건·10차원·161선행+31R06·6실행 노드의 독립 완료를 인수했다. [동결 실행 PLAN](../../goals/core_independent_objects/execution/single_goal/PLAN.md)은 GEX-10 종료 당시 기록이며 현재 완료는 위 재감사가 소유한다. 현재 위치는 [U07-M 실행 PLAN](../../goals/core_runtime_measurement_profiles/execution/single_goal/PLAN.md)의 GEX 실행 인수·구현이다. 개발 측정 profile·bounded 집계 준비를 닫은 뒤 U08을 진행하며 최종 배포값은 U30-C/U30-P의 실측에 남긴다.
++U07/B13·C01은 전체20조건·10차원·161선행+31R06·6실행 노드의 독립 완료를 인수했다. [동결 실행 PLAN](../../goals/core_independent_objects/execution/single_goal/PLAN.md)은 GEX-10 종료 당시 기록이며 현재 완료는 위 재감사가 소유한다. U07-M은 [독립 감사](../../goals/core_runtime_measurement_profiles/post_audit/u07m_20261006_001/COMPLETION_AUDIT.md)와 [완료 인수](execution/u07m_closure_20261006_001/RESULT.ko.md)로 전체 Complete / High다. 동결 실행 PLAN은 자체검증 종료 당시 기록으로 보존한다. 현재 다음 작업은 U08의 현재성 인수·P2G이며 최종 배포값은 U30-C/U30-P의 실측에 남긴다.
+ 
+ 이 문서는 기존 `INTEGRATED_GAME_AND_AUTHORING_ROADMAP_FINAL_PROPOSAL.ko.md`의 개정본이다. 변경 사항만 나열한 부록이 아니라, 이 문서 하나에서 현재 범위·요구·권장 순서·작업별 책임·검증·제외 범위를 확인하도록 본문 전체를 재구성했다. 기존 R 기록과 옛 U 대응은 보존하되, **§5의 실행 순서가 번호 오름차순보다 우선**한다.
+ 
+--- a/core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md
++++ b/core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md
+@@ -1,6 +1,8 @@
+ # Simulator 개발 현황 — 단일 진입점
+ 
+-**2026-10-05 U07 독립 완료 / 다음 U07-M:** [전체 독립 재감사](../../goals/core_independent_objects/post_audit/u07_20261005_002/COMPLETION_AUDIT.md)가 **Complete / High / 열린 finding0**으로 종료됐다. 객체 진화·제거의 저지·벽 접촉 보존 F01을 닫았고 `target/u07_002`가 출구까지 유지됐다. [완료 인수·검증·남은 경고](../core_first/execution/u07_closure_20261005_001/RESULT.ko.md)를 따른다. U07-M은 P2G-00→60/quality2를 완료하고 [새 실행 PLAN](../../goals/core_runtime_measurement_profiles/execution/single_goal/PLAN.md)에 따라 GEX 실행 인수·구현에 착수했다. root 계획·조정, Sol/xHigh 구현·검증, 비참여 Astra/High 독립 감사 역할을 유지하고 U08은 U07-M 완료 뒤 진행한다. 아래 중지·재개 안내는 당시 이력이다.
++**2026-10-06 U07-M 독립 완료 / 다음 U08:** [전체 독립 감사](../../goals/core_runtime_measurement_profiles/post_audit/u07m_20261006_001/COMPLETION_AUDIT.md)가 **Complete / High / 열린 finding0**으로 종료됐다. 기본8MiB를 유지한 trusted 개발16/32MiB 프로파일과 bounded 실제 Core/host 측정·재현을 완료했다. [완료 인수·검증·남은 경고](../core_first/execution/u07m_closure_20261006_001/RESULT.ko.md)가 현재 완료를 소유한다. 최종 배포 수치는 U30-C/U30-P에 남기며, 기존 연속 권한으로 U08의 현재성 인수·P2G를 진행한다. 아래 U07-M 착수 안내는 당시 이력이다.
++
++**2026-10-05 U07 완료·U07-M 착수 당시 안내(이력):** [전체 독립 재감사](../../goals/core_independent_objects/post_audit/u07_20261005_002/COMPLETION_AUDIT.md)가 **Complete / High / 열린 finding0**으로 종료됐다. 객체 진화·제거의 저지·벽 접촉 보존 F01을 닫았고 `target/u07_002`가 출구까지 유지됐다. [완료 인수·검증·남은 경고](../core_first/execution/u07_closure_20261005_001/RESULT.ko.md)를 따른다. U07-M은 P2G-00→60/quality2를 완료하고 [새 실행 PLAN](../../goals/core_runtime_measurement_profiles/execution/single_goal/PLAN.md)에 따라 GEX 실행 인수·구현에 착수했다. root 계획·조정, Sol/xHigh 구현·검증, 비참여 Astra/High 독립 감사 역할을 유지하고 U08은 U07-M 완료 뒤 진행한다. 아래 중지·재개 안내는 당시 이력이다.
+ 
+ **2026-10-05 후속 작업 예약 당시 안내(이력) — U07-M:** U07의 진행 중 구현·검증은 현재 PLAN이 소유한다. U07 독립 완료 뒤 U08 전에 [실측 기반 실행 예산 조정 준비](../core_first/execution/u07_memory_budget_followup_20261005_001/FOLLOWUP.ko.md)를 수행하도록 등록했다. 현재 U07 기준과 8MiB 실패 판정은 유지한다. 측정/설정 준비는 U07-M, Core 대표 최대 부하·수치 후보는 U30-C, 실제 Unity 플레이·배포값 재검토는 U30-P가 소유한다. 준비 완료를 전체 플레이 집계나 최종 값 확정으로 표시하지 않는다. 다음 안전한 pass 경계에서 [발행 기록](../core_first/execution/u07_memory_budget_followup_20261005_001/RECORD.ko.md)을 인수한다.
+ 
+@@ -22,7 +24,7 @@
+ [이름 변경·동결 기록 경로 대응표](../core_first/execution/rulebook_path_migration_20261004_001/RECORD.ko.md)를 함께 인수한다.
+ 제품 소스·기존 감사 원본은 변경하지 않았으며 아래 완료·진행 이력을 소급 변경하지 않는다.
+ 
+-2026-10-05 · v1.150 · 현재 개발 주작업: **U07-M P2G 완료 후 GEX 실행 인수·구현**.
++2026-10-06 · v1.151 · 현재 개발 주작업: **U07-M 독립 완료 인수 후 U08 현재성 인수·P2G**.
+ [재개 인수](../core_first/execution/u06_resume_20261005_001/INTAKE.ko.md)에서 [중지 당시 인수인계](../core_first/execution/HANDOFF_20261005.ko.md)를 이어받았으며 현재 위치는 아래 실행 PLAN이 소유한다.
+ [활성 로드맵](../core_first/ROADMAP.ko.md), [연속 실행 위임](../core_first/execution/CONTINUOUS_REQUEST_20261004.ko.md),
+ [U01 완료 인수](../core_first/execution/u01_closure_20261004_001/RESULT.ko.md),
+@@ -45,7 +47,7 @@
+ 공개8사례·strict작성11·원래감사재현을 포함한15개 새 실행과30개 명시적 재사용을 구분했다.
+ [완료 인수·검증·남은 경고](../core_first/execution/u06_closure_20261005_001/RESULT.ko.md)를 따른다.
+ R05는 기존 peak 단독 경고(+605,609bytes)를 유지한다. public_guards의 정확한 재사용 근거는 최종 감사 정정을 따른다.
+-**U07/B13·C01은 독립 Complete / High로 종료했다.** 20수락 조건·10차원·161선행+31R06·6실행 노드가 현재 최종 증거에 결속됐다. [완료 인수](../core_first/execution/u07_closure_20261005_001/RESULT.ko.md)와 [최종 감사](../../goals/core_independent_objects/post_audit/u07_20261005_002/COMPLETION_AUDIT.md)가 현재 상태를 소유하고 동결 PLAN·첫 감사·모든 실패 원본은 보존한다. [U07-M 상세 범위](../core_first/execution/u07_memory_budget_followup_20261005_001/FOLLOWUP.ko.md)의 P2G-00→60과 quality2를 완료했다. [실행 PLAN](../../goals/core_runtime_measurement_profiles/execution/single_goal/PLAN.md)의10수락조건/5노드/1phase 구현·검증·독립감사를 진행한다. 개발용 측정 준비 완료 전 U08에 진입하지 않는다.
++**U07/B13·C01은 독립 Complete / High로 종료했다.** 20수락 조건·10차원·161선행+31R06·6실행 노드가 현재 최종 증거에 결속됐다. [완료 인수](../core_first/execution/u07_closure_20261005_001/RESULT.ko.md)와 [최종 감사](../../goals/core_independent_objects/post_audit/u07_20261005_002/COMPLETION_AUDIT.md)가 현재 상태를 소유하고 동결 PLAN·첫 감사·모든 실패 원본은 보존한다. U07-M도 [전체 독립 감사](../../goals/core_runtime_measurement_profiles/post_audit/u07m_20261006_001/COMPLETION_AUDIT.md)에서 Complete / High·열린 finding0으로 종료했다. 10수락조건·10차원·181선행+31R06·5노드/1phase를 닫았으며 [완료 인수](../core_first/execution/u07m_closure_20261006_001/RESULT.ko.md)가 현재 완료를 소유한다. 동결 [실행 PLAN](../../goals/core_runtime_measurement_profiles/execution/single_goal/PLAN.md)은 당시 자체검증 기록으로 보존한다. 다음은 U08의 현재성 인수·P2G이며 별도 Master GEX-30은 없다.
+ 
+ ### U06 재개·교정 이력
+ 

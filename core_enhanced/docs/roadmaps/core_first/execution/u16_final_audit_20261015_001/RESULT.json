@@ -1,0 +1,50 @@
+{
+  "recorded_at_utc": "2026-10-15T13:23:47.693350+00:00",
+  "verdict": "Not Complete",
+  "confidence": "High",
+  "audit_completed": true,
+  "u16_complete": false,
+  "product_or_existing_test_changes": 0,
+  "independent_nonparticipant": true,
+  "subagents": 0,
+  "open_findings": [
+    "F-U16-FINAL-001"
+  ],
+  "new_focused": {
+    "passed": 45,
+    "failed": 0,
+    "ignored": 0,
+    "exit_code": 0,
+    "wall_seconds": 121.0,
+    "test_seconds": 32.08
+  },
+  "new_public_probe": {
+    "variants": 3,
+    "operations_each": 52,
+    "total_operations": 156,
+    "exit_codes": [
+      0,
+      0,
+      0
+    ],
+    "purpose": "reproduction of unmetered XP numeric loop; not safety PASS",
+    "independent_xp_arithmetic": true,
+    "exact_requested_heap_recovered": true
+  },
+  "reused": {
+    "historical_raw_validators_passed": 4,
+    "default_core_passes": 2228,
+    "default_core_ignored": 6,
+    "default_server_unique_passes": 96,
+    "default_server_ignored": 22,
+    "final_measurement_impact_passes": 96,
+    "final_measurement_impact_ignored": 1,
+    "full_suite_rerun": false
+  },
+  "target": "AUDIT_TARGET_RECORD.json",
+  "findings": "FINDINGS.json",
+  "conditions": "CONDITION_REVIEW.json",
+  "return_owner": "GOAL-CSCB-01 GEX-10 shared XP-cost correction and impact validation; separate independent re-audit; U16 aggregate update",
+  "u17_started": false,
+  "all_owned_sessions_ended": true
+}

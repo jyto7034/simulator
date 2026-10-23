@@ -1,0 +1,10 @@
+{
+  "argv": [
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/artifacts/public_consumer004/u14_deterrence_consumer",
+    "measure",
+    "official",
+    "/tmp/u14-measurements001/official_2.json"
+  ],
+  "exit_code": 0,
+  "seconds": 1.185864794999361
+}

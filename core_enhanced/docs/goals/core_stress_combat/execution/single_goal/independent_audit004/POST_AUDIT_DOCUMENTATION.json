@@ -1,0 +1,13 @@
+{
+  "recorded_utc": "2026-10-15T11:12:52.606287+00:00",
+  "after_audit_exit": true,
+  "only_mutated_existing_files": [
+    "core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_LATEST.ko.md",
+    "core_enhanced/docs/roadmaps/core_first/execution/EXECUTION_HISTORY.ko.md",
+    "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md"
+  ],
+  "archived_handoff": "core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_20261015_055.ko.md",
+  "archived_handoff_sha256": "fed9fa346aa486986c993485be7465a9cd5591648aaf9dc39cdca5ba51f67972",
+  "target_included_files_changed": [],
+  "currentness": "unchanged: all changed summary paths are explicit target exclusions; frozen PLAN/EXPERIMENTS/COVERAGE/target preserved"
+}

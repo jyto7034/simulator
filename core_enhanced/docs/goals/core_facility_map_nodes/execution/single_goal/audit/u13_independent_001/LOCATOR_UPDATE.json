@@ -1,0 +1,10 @@
+{
+  "time": "2026-10-14T05:08:48.296939+00:00",
+  "preserved_handoff": "core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_20261014_022.ko.md",
+  "changed_excluded_locators": [
+    "core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_LATEST.ko.md",
+    "core_enhanced/docs/roadmaps/core_first/execution/EXECUTION_HISTORY.ko.md",
+    "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md"
+  ],
+  "target_implementation_writes": 0
+}

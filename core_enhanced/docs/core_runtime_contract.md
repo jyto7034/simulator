@@ -17,6 +17,106 @@ event log, snapshot, Unity-facing DTO로 구현할 때의 금지/허용 경계�
 문서에 맞게 수정한다. 새 material 의미나 durable 문서 충돌이 발견될 때만 사용자에게
 정책 결정을 요청한다.
 
+## Tutorial and Expedition lifecycle
+
+현재 공개 mode는 `Tutorial`과 `Expedition`이다. `Standard`/`Endless` 입력과 제거된 튜토리얼 완료 flag는
+호환 alias로 받지 않는다. 빈 profile에서도 Expedition을 시작할 수 있다. `StartNewGame`은 title 또는
+확정 terminal에서만 시작하며 `replace_active_run: false`를 사용한다. 진행 중 원정은 명시 `AbandonRun`으로
+종료한다. Tutorial은 authored preset의 독립3층이며 briefing의 `SkipTutorial`, 완료, 실패와 복원 모두
+영구 profile을 변경하지 않는다. 이 장은 현재 구현 계약이며 U12 기능 검증/완료 판정을 뜻하지 않는다.
+
+Expedition 선발은 role별2/총6 후보에서 중복 없는3명과 필수 `loan_copy_ids` 배열(0–2 사본)을 한 prepared
+departure로 처리한다. authored 시작 예산500과 기본 loadout은 성공 출발에 한 번만 지급한다. scenario seed는
+지도/채용 난수를 소유하고 player+checked sequence의 expedition instance는 직원/장비/파편 UUID를 소유한다.
+대여는 permanent vault→active 사본 이동이며 기록 기반 재발급이 아니다. dormant 사본도 보존하고 현재 정의가
+없으면 대여만 거절한다. vault/active 및 장비/파편 합집합의 중복 UUID와 key/embedded ID 불일치를 거절한다.
+
+HQ의 공개 result/query, 채용 명령과 회복 후보는 현재 가격/잔액, 깊이, session 잔여 횟수, roster 정원과
+실제 기본 무기의 deployability를 함께 소비한다. 현재 authored 가격100, session 최대2회, 지원 깊이1–4,
+roster10/deployment8이다. 무효 정의 또는 무기 없는 offer를 합법 채용 후보로 노출하지 않는다.
+
+일반 노드 첫 진입은 instance-local receipt를 저장하고 authored 억제력 비용을 한 번 소비한다. 현재 개발
+초깃값12/기본비용1이며 activity 또는 node definition의 `first_entry_cost`가 우선한다(0 허용). Start/Gate/방 이동은 소모하지 않는다. 규정비용 전체를 Breakdown 유예4에서 차감하고 실제 억제력 잔량은 saturating 차감한다. 입장 사망과 자산회수는 치료·활동보다 먼저 확정한다. 양수→0에서는 활동 실행 전에 continuation 선택을
+저장한다. 깊이1–2는 Continue/Abandon, 깊이3 이상은 Continue/Return을 소비한다. 깊이3 이상의 실제 Gate는
+Return/Continue를 제공한다. pending 선택은 NodeConfirm, selectable node, 정확 session/kind/category/payload,
+깊이와 cause에 결속되며 Gate payload는 `None`이다. 선택 복원이나 재입장으로 비용/활동을 중복 실행하지 않는다.
+
+성공 귀환은 실제 휴대 사본을 vault로 이동하고 일반 무기 강화0/장착 해제를 적용하며 직원·run 자원을 종료한다.
+실패/포기는 active 자산만 폐기한다. 모든 terminal은 active marker와 Continue를 같은 draft에서 종료하고,
+첫 성공 귀환의 `Never→Pending→Consumed` story는 `AcknowledgeFirstReturnStory`로 한 번 소비한다.
+same-instance SavePoint 복원은 최신 영구 knowledge/story를 되감지 않는다. durable 출발/대여/귀환/실패/story ack는
+exact profile+active paired intent를 사용하며 profile-only host에서는 lifecycle 변경을 Core commit 전에 거절한다.
+
+## U16-1 지원 노드 활동
+
+상점의 작성 상품은 기존 장비/소비품에 유물·부활 촉매·침식 촉매를 추가한다.
+유물 구매는 정상 사본 하나를 기존 공통 지급 경계에서 생성하며 `PurchaseItem`은
+`relic_diffs`와 변경된 `crafting_resources`도 반환한다. 부활 재료와 침식 자원은 별도
+소유자에 지급한다. 상품 표시에는 유물 정의/정상 variant 또는 촉매 용도를 제공한다.
+일반 유물 매각과 가루·파츠의 직접 구매/판매 권한은 추가하지 않는다.
+
+`base_price`는 정가 정의가 없는 새 상품에만 필수이며 기존 장비/소비품 정가를 덮어쓰지
+않는다. `guaranteed` 상품을 먼저 배치하고 남은 자리를 기존 가중 추첨으로 채운다.
+구매된 비반복 상품은 갱신 후보에서 제외된다. 일반 상인의 기본 부활 촉매는 이 경로로
+제공하며 가격은 작성 데이터의 초기 조절값이다. 구매·갱신은 비용/소진/자산/UUID를
+함께 확정하고 실패 시 전부 유지한다. 보유 표시 기준 50/60은 Core 구매 한도가 아니다.
+
+HQ 조회의 `recruitment_terms`는 기존 채용 가격100, 기본 무기/파편 포함 여부와 남은
+채용/자격을 공개한다. 기존 채용 queue와 대여 원장은 계속 각 소유자가 관리한다.
+일반 소비품의 즉시 부상 치료도 이전 활성 효과를 제거하고 수량 하나를 사용한다.
+전투 결과의 기간 차감, 후퇴 복원과 무료 침식 Event의 권한은 기존 계약을 유지한다.
+
+새 상품은 현재 저장 codec으로 왕복하며 미완료 노드는 Continue에서 입장 전 상태로,
+완료 노드는 확정 결과로 복원한다. 실제 paired-store 게시 실패는 메모리와 두 파일의
+부분 확정을 남기지 않는다. 유물 소유자가 있는 Continue의 JSON Value 예약은 객체마다
+루트 노드 하나와 전체 필드 다섯 개마다 추가 B-tree 노드를 예약한다. 현재 기본
+`serde_json::Map`/Rust B-tree의 점유 불변식에 의존하며 toolchain/backend 변경 시 재검증한다.
+typed decode의 보수적 예약과 독립 producer들의 누적 계산·16MiB 기본 한도는 유지한다.
+근거와 실제 할당 관측은 U16-1 실행의 `RESTORE_MEMORY_REVIEW.md`에 기록한다.
+
+## U15 사본 투자와 재료 창고
+
+U15 도입 당시 저장 writer는 Core Continue/독립 checkpoint16, 서버 profile6, paired application journal4였다.
+현재 형식·reader 지원 범위는 [Durable active-run host boundary](#durable-active-run-host-boundary)를 따른다.
+아래 U04–U14 절의 이전 버전 번호·묵시 읽기 설명은 당시 계약이다. U15는 투자 원장 없는 개발 저장을
+자동 변환하지 않으며 지원하지 않는 버전은 원본을 보존하고 거절한다. 기존 명시 V7/V8 변환 API도
+U15 투자 누락을 임의 추정하는 변환 경로로 사용하지 않는다.
+
+무기만 정비 강화할 수 있으며 재료별 실제 결제는 `OwnedEquipment.investment.materials`에 기록한다.
+파편의 `OwnedFragment.investment`와 귀환 `VaultFragment.investment`도 같은 재료별
+`{carried, warehouse}` 누적 원장을 갖는다. 무료 지급은 빈 원장이다. 분쇄 추가 환급은 각 재료의
+두 출처 합계에 대해 `floor(total/2)`이며 현재 recipe 가격이나 강화 단계로 투자액을 추정하지 않는다.
+기본 분쇄 보상과 환급을 재료별 합산하고 모두 소지분으로 지급한다. 투자 엔케팔린은 환급하지 않는다.
+장착 파편·장비의 분쇄는 명시 확인이 필요하며 실패 시 사본/장착/통화/재료/UUID 상태를 보존한다.
+
+예약 id `equipment_dust`의 유일한 잔액 owner는 `RunCraftingResources.equipment_dust`다.
+전투·유물 분쇄·typed 가루 보상과 같은 id의 일반 재료 보상, 무기 강화·분쇄 환급은 이 잔액을 쓴다.
+정비·Inventory의 재료 목록은 이를 투영한다. inventory stack에 복제 잔액을 저장하지 않는다.
+가루는 귀환 회수/창고 대상이 아니며 원정 종료 시 사라진다.
+
+`PlayerBehavior::AwakenSkillFragmentWithMaterials`와 wire `awaken_skill_fragment_with_materials`는
+`copy_uuid`, `form_id`, `materials: [{material_id, carried, warehouse}]`를 받는다. 각 재료는
+recipe 합계와 정확히 일치해야 하며 중복/부족/미지 항목을 거절하고 다른 출처로 자동 대체하지 않는다.
+기존 `AwakenSkillFragment`는 소지분 전용이다. 읽기 전용 `PreviewSkillFragmentBloom`
+(`preview_skill_fragment_bloom`)은 같은 입력을 받고 `maintenance_options.selected_bloom_payment`에
+요구량·선택량·실제 출처 예상 원장·실행가능/거절이유를 반환한다. 조회는 자원/사본/Continue를 바꾸지 않는다.
+`DismantleEquipmentConfirmed` (`dismantle_equipment_confirmed`)의 필드는 `item_uuid`, `confirmed`다.
+기존 `DismantleEquipment`에는 장착품 확인 권한이 없다.
+
+`ReturnFromExpedition` (`return_from_expedition`)은 `materials: [{material_id, amount}]`를 받는다.
+허용된 귀환 지점에서 소지 환상체 파츠 종류 합계2와 부활 촉매1까지 명시 회수한다. 빈 선택은 가능하며
+선택하지 않은 소지 재료는 종료된다. 자동 종류선택·가루보관·엔케팔린보관은 없다. 귀환 무기는 강화와
+투자 원장을 초기화하고, 파편은 개화와 실제 투자 원장을 유지하여 다음 대여/분쇄에 사용한다.
+
+창고 현재 잔액과 해당 원정 누적 출처 소비는 `profile.lifecycle.vault.materials`와
+`profile.lifecycle.warehouse_debits`가 소유한다. checkpoint의 목표 소비는 `RunProgression.warehouse_debits`다.
+SavePoint와 미완료 노드 Continue는 현재 소비와 목표 소비의 차이만 창고에 반영하며 소지 잔액·사본 투자·
+통화도 같은 snapshot으로 복원한다. 창고 전체 snapshot으로 다른 변동을 덮지 않는다. 완료 후 Continue와
+실패/포기는 확정 소비를 환불하지 않는다. 저장에 수락되지 않은 한 명령의 rollback token은 별도 lifecycle
+자산 복제본을 복원하고 현재 단조 지식은 보존한다. 이 token은 gameplay SavePoint와 수명이 다르다.
+
+부활 촉매는 `HatchEncounter`에서 동일한 명시 출처 결제 helper를 사용한다. 성공한 부화는 출처별 `MaterialInvestment` 영수증과 함께 원정에 저장된다.
+
 ## Runtime Foundations
 
 이 장은 다른 runtime 계약이 전제로 삼는 결정론과 검증된 data의 진입 경계를 소유한다.
@@ -34,6 +134,28 @@ event log, snapshot, Unity-facing DTO로 구현할 때의 금지/허용 경계�
 battle history window를 각각 기존 소유 ledger에서 적용한다. Nested operation·실패·rollback은 이미 사용한
 allowance와 첫 fault를 초기화하지 않는다. Retained bytes는 admission/extent 회계이며 process RSS가 아니다.
 
+작업량·메모리 예산의 기본값은 실측으로 재검토할 수 있다. 내부 work는 CPU 명령 수나 실행 시간이 아니므로
+정상 콘텐츠·예상 확장·비정상 입력의 실제 시간과 메모리 peak/회수를 함께 검토한다. 오프라인 검증·실시간 전투·
+trusted 개발 측정의 목적을 구분하고, 유한 상한과 host 권한·기존 실패 기록을 보존한다.
+측정·조정 절차는 [Core-first 로드맵 §6.4](roadmaps/core_first/ROADMAP.ko.md#64-예산안전성과-증거-재사용)를 따른다.
+값의 변경은 아래 profile 식별·캐시 분리·기존 session 불변성 계약을 유지한다.
+
+오프라인 authoring 개발은 trusted host가
+[`config/runtime_safety_authoring_dev.ron`](../../config/runtime_safety_authoring_dev.ron)을 명시적으로 선택할 수 있다.
+예: `author_content validate <content-root> <selection.json> --runtime-safety config/runtime_safety_authoring_dev.ron`.
+이 preset은 U09 당시 기본 설정에서 authoring 실행의 `max_work`만 유한 상한 1,073,741,824로 늘린 저장 profile이다.
+그 native retained 한도는 8MiB이고 `development_measurement`가 없으므로 8MiB가 hard 한도다. 현재 embedded 기본값과
+`ENGINE_MAX`의 16MiB와 구별하며, host가 명시적으로 고른 이 낮은 profile을 기본값으로 자동 보정하지 않는다.
+자동 재시도·fallback이나 콘텐츠가 선택하는 한도 완화는 없다. 정상 유물 1개와 대표 확장 유물 7개의
+실측을 근거로 한 개발 편의 설정이며, 임의 콘텐츠 규모의 완주·처리시간 보장을 뜻하지 않는다.
+
+CMVA 개발 검증은 별도의 [`config/runtime_safety_cmva_authoring_dev_v2.ron`](../../config/runtime_safety_cmva_authoring_dev_v2.ron)을
+명시적으로 선택할 수 있다. 실제 profile bytes는 `fbd5a60a12dc3bc36080880f96d31e3817abe7a0247f45e45eb4fab197ef9de3`이며,
+authoring work100,000,000과 clone slots1,000,000만 해당 CMVA 개발 설정으로 인수한다. Embedded/default·native
+work10,000,000/retained16MiB·expression 및 나머지 설정은 바꾸지 않는다. 실제16/500/1000 roster,
+1/8/8 deployed,60×1초 입력과 release heap/RSS/work를 검토한 development scope이며 universal scale 보장이 아니다.
+Versioned 측정 criterion은 이 runtime profile과 별개이고 native operation cap을 올리지 않는다.
+
 `raw_sha256`는 입력 bytes, `effective_sha256`는 검증된 숫자 설정의 canonical JSON hash다. Comment·공백은
 effective identity를 바꾸지 않는다. 콘텐츠 semantic identity 및 expression semantic fingerprint와 별개이며,
 replay 소비자는 기록된 `runtime_safety_sha256`를 `verify_effective_sha256`로 비교할 수 있다.
@@ -41,8 +163,10 @@ replay 소비자는 기록된 `runtime_safety_sha256`를 `verify_effective_sha25
 
 Checkpoint는 현재 host profile로 resource/state를 검증한 뒤 commit한다. 작은 한도로 거절되어도 기존
 application과 원 save bytes를 보존하며 save의 숫자로 host 한도를 올리지 않는다.
-현재 저장 형식은 Core continuation V11, host active-run envelope V5, player profile V3다.
-Core V10/host V4와 이전 형식은 자동 변환하지 않으며 host는 원본을 보존하고 거부한다.
+현재 저장 형식과 각 reader의 지원 범위는
+[Durable active-run host boundary](#durable-active-run-host-boundary)가 소유한다. Low-level host 봉투의 opaque
+payload 운반은 Core의 게임 재개 허용과 다르다. 지원하지 않는 형식/구 mode/제거된 심리 입력 및 V7/V8
+converter는 silent alias/drop/fallback 없이 원본을 보호하고 명시 거절한다.
 `capture_persistence_rollback` / `restore_persistence_rollback`은 이전 non-battle 호환 capability다.
 동일 application의 다음 한 mutation에만 유효하며 premature/foreign/stale/중복 복원은 거절한다.
 Active battle에서는 발급/복원하지 않고 monotonic player profile을 유지한다.
@@ -88,6 +212,34 @@ Wall duration/수집 시간과 battle simulation time을 구분하며 retained e
 ### Data Authoring And Loading
 
 Live RON authoring strictness, external pack loader ownership, fixture 경계, validation gate의 canonical 계약은 [data_loading_contract.md](data_loading_contract.md)를 따른다. 이 문서는 검증된 data가 runtime에 들어온 이후의 동작 계약만 소유한다.
+
+## Approved mod generations and normal host ownership (U11)
+
+콘텐츠 publication token과 normal runtime approval은 별개다. 일반 launcher/server bootstrap은
+`AdmissionSession`의 private issuer-approved `ApprovedHost`를 사용하며 public DTO·static validation·raw
+`ValidatedGameData`로 normal actor를 만들거나 승인을 우회하지 않는다.
+[Data Loading Contract](data_loading_contract.md#mod-grouping-and-approved-host-admission-u11)는 grouping,
+individual/final validation, source/identity와 Lab/cache 경계를 소유하고 [사용 가이드](tools/cmva_workflow.ko.md)는
+실제 CLI/server 절차를 설명한다. 2026-10-12 [실제 literal entry 검증](goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/evidence/reviewed_adoption_functional002/24__public_entry__literal_smoke.json)은
+launcher starter run/Continue와 server WebSocket 재시작 Continue·exact checkpoint 보존·invalid content의 persistence 이전 거절을 확인했다.
+
+- Host의 initial installation과 Apply는 issuer의 현재 approval 확인 및 설치를 같은 authority boundary로
+  수행한다. 승인 capability는 exact candidate/build/profile/suite/environment/criterion/selection 문맥을 pin한다.
+  Stale uninstalled capability는 implicit Apply가 될 수 없다. DTO 재직렬화·cache 파일 편집은 authority가 아니다.
+- 설치한 future B는 이후 승인 없는 C 검증 중에도 사용할 수 있다. 이미 시작한 A run/actor, prepared draft와
+  immutable runtime source는 A를 소유하고 B Apply 때문에 교체되지 않는다. 새 run/actor만 설치된 B를 사용한다.
+  `StartNewGame` 준비에서만 future generation과 future required configuration을 전달하며 다른 명령은
+  기존 application generation/required configuration을 유지한다.
+- Durable acceptance는 installed/active configuration을 다시 확인하고 successful accepted A→B 이후 persistence
+  pin을 B로 전진시킨다. 미래 C 설치가 active B의 autosave/Continue 권한을 폐기하지 않는다.
+  무제한 과거 generation 목록을 새 admission 권한으로 사용하지 않는다.
+- Generation은 필요한 host/run/actor/trial/approval/source의 strong reference 동안 유지하고 마지막 pin 해제 시
+  회수된다. Retained immutable entry snapshot은 Arc handle을 공유하며 mutable roster/checkpoint와 alias하지 않는다.
+  Unique restore는 owned state를 move하고 shared restore는 full resource/relic/UUID preflight와 bounded deep copy를
+  live write 전에 마친다. 거절 시 기존 live owner와 accepted state를 보존한다.
+- `WorldLabPreparation`의 duplicated bulk roster는 ephemeral Lab simulation 경계다. Actual normal preparation,
+  command/clock/effect와 in-memory Retreat/reentry를 사용하지만 checkpoint hash/export가 ordinary Continue 호환을
+  보장하지 않는다. 정상 Continue의 exact recruitment/roster ownership 검증은 그대로 유지한다.
 
 ## Active Battle Lifecycle
 
@@ -396,9 +548,10 @@ cooldown deadline와 Rest scheduler bookkeeping뿐이다. `DefenseFocus`/`Rest`�
   unreleased basic windup 또는 pending skill cast, employee-local cooldown을 mutation 전에 검사한다. Silence,
   block, stance cooldown은 이 gate에 포함하지 않는다. World가 같은 preflight 뒤 global tactical resource
   cost `5`와 revision capacity를 검사한다.
-- Commit은 serialized command 안에서 같은 `RuntimeUnit`의 body position/previous position을 destination
-  center로, velocity를 zero, movement mode/action state를 Idle로 설정하고 goal/active segment를 제거한다.
-  Facing/tactical anchor를 갱신하며 HP, buff map, resonance와 같은 unit identity를 보존한다.
+- Commit은 serialized command 안에서 같은 `RuntimeUnit`의 `body.position`과 `tactical_anchor`를
+  destination center로 설정하고 facing을 갱신한다. `action_state`를 Idle로 설정하고 `move_epoch`를
+  한 번 증가시키며 current target과 active movement segment를 제거한다.
+  HP, buff map, resonance와 runtime unit identity를 보존한다.
   작업 칸이면 즉시 FieldWorking, 그 외에는 Defense와 `ForcedDefenseEnd(time_ms + 1500, epoch)`를 설정한다.
   정확한 epoch/deadline에서 Attack으로 자동 복귀한다. Hard CC가 남아도 태세는 복귀하되 행동 gate는 유지한다.
   강제 구간에는 수동 태세를 거절하며 자동 복귀가 추가 cooldown을 만들지 않는다. Relocation cooldown은 10초다.
@@ -574,16 +727,30 @@ Capability를 unit/save state에 별도 저장하거나 expiry를 복제하지 �
 
 ### Durable active-run host boundary
 
-- Core Continue export는 최신 확정 상태를 strict V11 document로 직렬화한다. Root는 `version`,
+현재 형식과 지원 범위의 단일 설명은 다음 표다. 다른 절의 도입 당시 버전이나 과거 묵시 읽기 규칙을
+현재 migration 지원으로 해석하지 않는다. 버전 숫자가 같아도 서로 다른 root·owner의 문서는 교환할 수 없다.
+
+| 경계 | 현재 형식·생산자 | 읽기·복원 범위 |
+| --- | --- | --- |
+| Core Continue | `active_run/continuation.rs::VERSION` V17; `seal_document`, 확정 cache export | `restore_continue_document`와 readonly `inspect_requirements`는 V17 Continue 문서만 수용. Checksum·content 및 각 경계의 검증을 수행 |
+| 독립 checkpoint 표현 | `active_run.rs::ACTIVE_RUN_CORE_PAYLOAD_VERSION` V17; private `encode_active_run_checkpoint` | 정상 Continue export/import 형식이 아님. 명시적 SavePoint load는 보유한 `RunCheckpointPayload`를 복원하며 독립 checkpoint bytes를 Continue로 읽지 않음 |
+| Host active-run 봉투 | `ActiveRunStore` V7; opaque Core bytes·loads/peak·revision·required configuration | Low-level store는 Core payload header 12/14/15/16/17을 운반할 수 있음. Approved host는 추가로 Core의 현재 requirements inspection과 승인 configuration을 검사하므로 이전 payload의 게임 재개 허용을 뜻하지 않음 |
+| Permanent profile | `PlayerProfileEnvelope` V6 | 현재 reader는 V6만 수용. 다른 version을 빈 신규 지식으로 읽거나 union migration하지 않음 |
+| Paired application journal | `ApplicationIntent` / `IntentEnvelope` V4 | 현재 reader는 V4만 수용. 다른 version은 `ProtectedOriginal`로 거절하며 자동 replay·변환하지 않음 |
+
+- Core Continue export는 최신 확정 상태를 strict V17 document로 직렬화한다. Root는 `version`,
   `continuation`, `continuation_sha256`만 허용한다. Continuation은 current run-local graph/content identity/
   power/resource/record/RNG 상태, 독립적인 optional SavePoint, phase, recovery restriction, compact result,
   pending reward와 원 grant context/return phase, VN runtime/trigger 상태를 소유한다. Nullable 필드도
-  반드시 존재해야 한다. Permanent profile, transport player identity, live battle/event log는 넣지 않는다.
+  반드시 존재해야 한다. Permanent profile 전체와 transport session/root player 객체, live battle/event log는 넣지 않는다.
+  다만 run progression의 `ExpeditionInstance`는 소유자 player ID·sequence·UUID를 저장한다. Continue는 이 player ID를
+  호출자와 대조하고 원정 instance가 authoritative profile의 active marker·vault ownership과 일치하는지 검증한다.
+  Root player는 복원 호출의 identity로 초기화되며, 저장 graph의 원정 소유자 binding을 대체하거나 생략하지 않는다.
   SavePoint는 current와 정확히 같으면 `{current:{}}`, 다르면 `{snapshot:{checkpoint:...}}`로 인코딩한다.
   Import는 reference를 독립 SavePoint로 materialize하고 이후 current mutation과 명시적 rewind를 분리한다.
-  독립 checkpoint Core payload encoder는 V12이며 root가 `version`, `checkpoint`,
-  `checkpoint_sha256`이다. 이는 외부 Continue document V11과 별도 형식이다.
-  명시적 legacy converter의 V12 출력은 normal Continue decoder가 받아들이는 외부 V11 문서가 아니다.
+  독립 checkpoint Core payload encoder는 V17이며 root가 `version`, `checkpoint`,
+  `checkpoint_sha256`이다. 이는 외부 Continue document V17과 별도 형식이다.
+  V7/V8 legacy converter는 현재 미지원으로 명시 거절하며 새 저장 bytes를 만들지 않는다.
 - Checksum은 모든 object의 lexical key order와 `serde_json` scalar spelling을 사용한다. Array 순서는
   유지하되 checkpoint의 set인 VN consumed keys와 purchased merchandise는 canonical 정렬한다.
   Import는 checksum/content identity, required/unknown fields와 version, graph/seed/economy/resource,
@@ -597,22 +764,35 @@ Capability를 unit/save state에 별도 저장하거나 expiry를 복제하지 �
   한 번 확정한다. `CompleteCombatResult`는 저장된 결과를 확인하고 다음 phase를 투영하는 단계다.
   비어 있지 않은 ChooseOne은 확정한 후보·context를 보존하고 선택/수령/나가기를 끝내기 전 우회할 수 없다.
   후보 0개는 선택 없이 종료한다. Terminal 결과도 pending choice가 남으면 Continue를 유지한다.
-- `game_server`의 local-install `ActiveRunStore`는 strict V5 envelope, checksum, opaque generation UUID와
-  loads/peak monotonic metadata를 소유한다. Tombstone도 generation을 유지한다. Actor가 획득한 expected
+- `game_server`의 approved local-install `ActiveRunStore`는 strict V7 envelope, exact required mod/content
+  configuration, checksum, opaque generation UUID와 loads/peak monotonic metadata를 소유한다. Tombstone도 generation을 유지한다. Actor가 획득한 expected
   generation과의 CAS가 stale claim과 terminal/new-run ABA를 거절한다. Profile→active 순서의 lock,
   process-lifetime exclusive lock, temp/rename/directory fsync를 사용한다.
-- 모든 durable application 변경은 `application_commit.pending.json`에 successor profile와 active
-  document/tombstone을 함께 기록한다. Intent rename 전 실패는 준비 root를 폐기한다. Rename 이후의
-  fsync/publication/cleanup 실패는 이미 수락된 결과를 `recovery-pending`으로 보존한다. Retry/restart는
-  같은 intent를 멱등 재적용하며 다른 generation을 덮어쓰지 않는다. Pending 동안 일반 mutation을 차단한다.
-  Legacy Standard-only journal은 새 writer가 없으며 발견 시 원본 보호 대상으로 처리한다.
+- 새 intent가 필요한 approved durable application 변경은 `application_commit.pending.json` journal V4에 exact old/new
+  active record와 required configuration, successor profile 및 active document/tombstone을 함께 기록한다.
+  `old_active.revision`은 expected revision과 같아야 하며 새 required configuration이 있으면 old configuration도
+  결속한다. `corrupt_active_originals`는 nullable이지만 생략할 수 없는 필드다. 일반 변경은 null이고, 명시적인
+  supported corrupt-active reset은 원본 파일별 길이·SHA-256 식별값을 이 필드에 기록해 수락 전·설치 시 검증한다.
+  Intent rename 전 실패는 준비 root를 폐기한다. Rename 이후 fsync/publication/cleanup 실패는 이미 수락된
+  결과를 `recovery-pending`으로 보존한다. Retry/restart는 같은 accepted intent를 멱등 재적용하며 다른
+  generation을 덮어쓰지 않는다. Pending 동안 일반 mutation을 차단한다.
+- `ApprovedPersistence::open_roots`는 명시적 active/profile root를 각각 인수하고 같은 root도 허용한다.
+  Readonly preflight는 두 root의 current/backup/legacy/journal 원본을 directory·lock 생성, profile load와
+  backup repair보다 먼저 검사한다. Valid-incompatible 또는 unsupported 원본은 보호하고 missing required mod를
+  빈 저장으로 바꾸지 않는다. Corrupt current와 exact-compatible backup의 정상 복구는 유지한다.
+- Accepted V4 A→B의 B-only restart는 현재 approved B, bound exact old/new record 및 모든 원본 copy의 일치를
+  함께 확인한 경우만 허용한다. 같은 revision의 다른 payload와 제3 generation은 거절한다. Valid authoritative
+  intent의 complete profile은 위 readonly active/config 검사 뒤에만 corrupt/missing profile 복구를 허용한다.
+  Intent가 없거나 unsupported profile 원본이면 복구 authority를 추정하지 않는다.
+- 이전 active envelope V5/V6와 application journal V1–V3는 현재 미지원이다. Current/backup/pending의
+  unsupported 원본을 readonly preflight에서 보호하며 자동 replay/변환이나 guessed required mods를 만들지 않는다.
 - 완료된 publication의 current와 backup은 같은 최신 확정 generation을 담는다. Valid backup의 복구는
   비차단 상태로 알리며 loads/peak는 감소시키지 않는다. 모든 current/backup/legacy/journal의 unsupported
   version은 자동 복구·reset·새 run publication에 앞서 보호하며 빈 상태로 대체하거나 삭제하지 않는다.
   일반 손상과 버전 비호환을 구분하며, 손상 reset도 보호 대상 원본을 덮어쓰지 않는다.
 - Pending choice 없는 `RunComplete`, 확정된 `RunFailed`, `AbandonRun`은 terminal disposition으로
-  tombstone을 같은 application intent에 포함한다. 새 run replacement는 명시적 `replace_active_run: true`가
-  필요하다. 평범한 live tick은 불변 continuation cache가 같으면 durable IO를 수행하지 않는다.
+  tombstone을 같은 application intent에 포함한다. 새 run은 확정 terminal 이후
+  `replace_active_run: false`로 시작하며 진행 중 교체와 `true`는 거절한다. 평범한 live tick은 불변 continuation cache가 같으면 durable IO를 수행하지 않는다.
 - result stats aggregate는 diagnostic entry retention과 독립해 runtime instance event 의미를 직원 UUID별
   한 행으로 집계한다. 마지막 배치 instance가 terminal HP/생존을 대표하고, 전투불능 여부와 누적 metric은
   같은 직원의 모든 instance에서 합성한다.
@@ -643,10 +823,10 @@ Capability를 unit/save state에 별도 저장하거나 expiry를 복제하지 �
   변경하지 않는다.
 - Fragment minimum과 certified power의 block 입력은 authored base `weapon_profile.block_capacity`다.
   Ground/Platform effective effect를 미리 합성하지 않는다.
-- Active-run V11 continuation의 current/SavePoint payload는 required embedded equipment metadata와
+- Active-run V12 continuation의 current/SavePoint payload는 required embedded equipment metadata와
   encounter progression graph를 포함한다. Checksum과 retained `content_identity`의 contract version/
   semantic fingerprint를 검증하며 구형/unknown version, missing/unknown field와 불일치를 거절한다.
-  R02의 V6 및 후속 V7/V8/V9 cutover 기록은 당시 증거이며 현재 reader/writer는 위 V11 경계를 따른다.
+  R02의 V6 및 후속 V7/V8/V9 cutover 기록은 당시 증거이며 현재 reader/writer는 위 V12 경계를 따른다.
 
 ## Run State And Atomic Commit
 
@@ -660,14 +840,15 @@ reward와 직원 성장을 검증하고 한 번만 commit하는 runtime 경계�
   battle advance/server tick/disconnect, admin, active-run continue/rollback, profile 변경은 exhaustive
   `ApplicationRoute -> ApplicationOwner` registry에 각각 한 번 등록된다. Behavior dispatch도 이 owner를
   소비하며 별도의 root variant router가 같은 authority를 재분류하지 않는다.
-- Executor 순서는 `validate current lifecycle -> clone complete authority draft -> run domain validation and
-  mutation -> prepare every fallible result projection -> validate staged lifecycle -> typed commit token -> one
-  infallible root replacement -> infallible publish`다. `GameCoreState`, active battle, event/revision,
+- GameCore executor 순서는 `validate current lifecycle -> clone complete authority draft -> run domain validation
+  and mutation -> prepare domain result -> validate staged lifecycle -> typed commit token -> one infallible
+  root replacement -> return prepared domain result`다. `GameCoreState`, active battle, event/revision,
   checkpoint/durable intent, `run_seed`, retained `ValidatedGameData` generation은 draft에 함께 속한다.
 - `CoreApplication::execute_with_generation`은 typed `StartNewGame`에만 candidate를 받는다. 기존 lifecycle/
   blocking VN/NotStarted gate를 먼저 통과한 draft에만 candidate를 설치하고, 그 세대의 RunStart briefing과
-  starter 준비를 수행한다. 준비와 result projection이 성공한 뒤 state/seed/generation/output을 함께 commit한다.
-  실패·허용되지 않은 Start·다른 command에는 기존 세대/상태/profile/난수와 출력 authority를 보존한다.
+  starter 준비를 수행한다. 도메인 처리와 domain result 준비가 성공한 뒤 state/seed/generation/output을 함께 commit한다.
+  도메인 준비 실패·허용되지 않은 Start·다른 command에는 기존 세대/상태/profile/난수와 출력 authority를 보존한다.
+  직접 경로의 commit 후 공개 결과 변환은 아래 별도 경계를 따른다.
 - Host가 B를 게시해도 A의 active run/briefing/battle은 A의 strong generation을 유지한다. A/B content를
   런 중에 섞거나 failed B를 A 성공으로 대체하지 않는다. 성공한 eligible 새 런은 briefing부터 B에 결속된다.
 - Checkpoint capture는 retained identity를 포함한다. Continue, explicit load와 cached export는 identity를
@@ -675,11 +856,26 @@ reward와 직원 성장을 검증하고 한 번만 commit하는 runtime 경계�
   소비하지 않으며 explicit load는 현재 run seed와도 일치해야 하고 최대 세 번이다. Profile/peak와 보존 대상
   VN session counter의 단조성은 유지한다. Test transaction rollback도 state/seed와 strong generation을 함께
   복원하고 새로운 profile/peak는 병합한다.
-- 어떤 validator, gameplay handler, cursor/result projection이 `Err`를 반환해도 draft는 폐기되고 live
-  authority는 exact-equal하게 유지된다. 같은 입력의 retry는 같은 authority basis에서 다시 시작한다.
-  Commit 뒤 diagnostic delivery 문제가 생기면 결과는 `accepted/recovery-pending`으로 typed되며 이미
-  accepted된 authority를 `Err`로 되돌리지 않는다. 현재 Core의 player-facing projection은 모두 commit 전에
-  준비되므로 ordinary success publication은 infallible하다.
+- GameCore draft 안에서 validator, gameplay handler, cursor/domain result 준비가 `Err`를 반환하면 draft는
+  폐기되고 committed gameplay authority는 유지된다. 같은 입력의 retry는 같은 gameplay authority basis에서
+  시작하지만, 이미 게시된 전투의 fatal 오류는 아래 application fault guard로 후속 실행을 차단한다.
+- `CoreApplication::prepare_command`/`prepare_command_with_generation`과 `prepare_active_battle_for_host_tick`은
+  GameCore token을 commit하기 전에 공개 `ApplicationResult`와 checkpoint/profile 자료를 준비한다.
+  준비 오류 또는 `PreparedApplication` 폐기는 gameplay draft를 게시하지 않는다. Host는 새 durable intent가 필요한
+  경우 그 수락 뒤 준비 객체를 소비한다. 저장 내용이 같아 IO를 생략하는 경로도 기존 저장·revision 검증 후
+  준비 객체를 소비한다. `commit`은 배타적으로 빌린 준비 객체를 한 번 소비하며 gameplay·공개 결과 변환을 재실행하지 않는다.
+- 직접 `CoreApplication::execute`/`execute_with_generation`, battle advance/tick/event-bucket 및 Continue 경로는
+  GameCore commit **뒤에** 공개 결과를 변환한다. Ordinary projection 실패는 `AcceptedRecoveryPending` 결과로
+  표현한다. Private execution control의 취소·한도 interruption은 이 변환에서도 오류로 전파될 수 있으므로,
+  직접 호출의 `Err`가 항상 해당 application의 commit 부재를 뜻하지는 않는다. 이 interruption을 battle fatal로
+  기록하지 않는다. 상세한 projection/control 의미는 아래 authoring 절을 따른다.
+- 실제 제작 소비자인 `TrialState::prepare_step`은 별도 application fork에서 직접 실행·필수 receipt를 준비한다.
+  `advance`는 control scope가 성공한 뒤에만 candidate aggregate를 채택한다. 내부 application이 이미 commit했어도
+  뒤의 projection·receipt·control 실패는 바깥 candidate를 폐기하여 마지막 accepted session을 유지한다.
+- `CoreApplication`의 시도용 transaction revision과 최초 battle fault capsule은 gameplay draft 밖에 있다.
+  실패·준비 폐기로 gameplay가 유지돼도 시도 revision은 증가할 수 있고, fatal capsule은 남는다.
+  따라서 위 보존 조건은 전체 application 객체의 불변을 뜻하지 않는다. Fault 수명·허용 조회는
+  [Faulted Published Battle](#faulted-published-battle), rollback token은 단회 owner/revision 검증을 따른다.
 - Private `LifecycleContext`가 closed `GameState` phase를 소유하고 `GameState`는 snapshot으로만 노출된다.
   Run/node/content/battle optional context는 draft 조립 재료일 뿐 독립 phase writer가 아니다. Commit gate는
   NotStarted/pre-run/map/node/shop/reward/battle/result phase가 요구하는 context와 node/battle/session identity를
@@ -695,15 +891,15 @@ reward와 직원 성장을 검증하고 한 번만 commit하는 runtime 경계�
   소유하며 inner borrow, dereference, raw-state conversion을 제공하지 않는다. Host 저장용 capability는
   위 borrowed preparation/단일 commit 계약을 따른다.
   `game::world`, `PlayerBehavior`, `BehaviorResult`와 legacy command-result contract family는 crate-private이다.
-- `ApplicationCommandKind`는 현재 58개 Core player action과 exact bijection이다. `ApplicationCommand`는 immutable
+- `ApplicationCommandKind::ALL`은 `ActionKind::ALL`의 Core player action과 exact bijection이다. `ApplicationCommand`는 immutable
   `ApplicationDocument`를 private domain command로 decode하고 kind/payload 일치를 authority access 전에 검증한다.
   Unknown/malformed/mismatched input은 typed `ApplicationError`며 live authority를 읽거나 변경하지 않는다.
-- `ApplicationResultKind`는 49개 player result meaning과 admin operation을 각각 별도 identity로 표현한다.
+- `ApplicationResultKind::PLAYER_RESULTS`와 별도 `AdminOperation`은 player result meaning과 admin operation의 identity를 표현한다.
   현재 domain result의 exhaustive match가 kind/meaning/payload를 생성하며 battle command도 공유 update
   content와 별개로 command 의미를 유지한다. `Accepted`, `ReadOnly`,
-  `AcceptedRecoveryPending` disposition이 commit/result delivery 상태를 구분하고, commit 후 projection
-  문제를 `Err`로 뒤집지 않는다.
-- `ApplicationErrorKind`는 input/projection error 4개와 현재 domain error meaning 28개를 stable code/detail에
+  `AcceptedRecoveryPending` disposition이 commit/result delivery 상태를 구분한다. Ordinary commit 후 projection
+  문제는 recovery-pending으로 표현하며, private control interruption과 Trial의 외부 acceptance는 위 절을 따른다.
+- `ApplicationErrorKind`는 input/projection error와 domain error meaning을 stable code/detail에
   exhaustive mapping한다. Domain error enum serialization은 public contract가 아니며 wildcard/unknown semantic
   fallback은 없다.
 - `ApplicationSnapshotKind`는 run, inventory, employee roster, selected event, action capabilities, player
@@ -711,8 +907,9 @@ reward와 직원 성장을 검증하고 한 번만 commit하는 runtime 경계�
   `null`이고, collection order, battle revision/cursor, P05 bounded-history/resync 의미는 private producer가 만든
   projection과 동일하다.
 - Battle advance/tick/event-bucket/disconnect, typed Core admin, profile merge/reset, checkpoint export/continue도
-  `CoreApplication`의 scoped port다. `ApplicationCheckpoint`는 현재 checksum-protected V11 continuation bytes/load count/peak
-  power를 그대로 운반하며 별도 host envelope나 wire version을 정의하지 않는다.
+  `CoreApplication`의 scoped port다. `ApplicationCheckpoint`는 checksum-protected continuation bytes/load count/peak
+  power를 그대로 운반하며 별도 host envelope나 wire version을 정의하지 않는다. 현재 payload 버전과 지원 범위는
+  [Durable active-run host boundary](#durable-active-run-host-boundary)가 소유한다.
 - 이 hard cutover의 compatibility boundary는 Core 내부에만 있다. External transport schema, server/Unity
   mapper, fixture, consumer migration, rollout과 compatibility PASS는 검사하거나 주장하지 않는다.
 
@@ -738,7 +935,7 @@ reward와 직원 성장을 검증하고 한 번만 commit하는 runtime 경계�
 - P08 당시 `CoreApplication` live-run guard는 Run snapshot+serialization p95 `226.508 µs`, `48,493 bytes`,
   V5 checkpoint export p95 `8.344 µs`, `17,956 bytes`였다. 이는 이전 대상의 역사적 측정이며 R02 V6의
   현재 측정으로 재사용하지 않는다. `<500 µs / <64 KiB`, `<100 µs / <32 KiB` Core engineering cap은 유지한다.
-  현재 continuation cache는 확정 상태 변경 시 직렬화한 exact V11 bytes를 불변 Arc로 보존한다.
+  현재 continuation cache는 확정 상태 변경 시 직렬화한 exact V12 bytes를 불변 Arc로 보존한다.
   Export는 이 Arc를 공유하며 미완료 live tick마다 다시 직렬화하지 않는다. 현재 성능은 U04 검증
   receipt로 별도 판단하며 위 역사적 V5/V6 수치를 V10 측정으로 재사용하지 않는다.
 - U04 compact V10 수정본의 [plain guard 원자료](goals/core_result_persistence/evidence/public_guards003_raw.json)는
@@ -831,23 +1028,25 @@ reward와 직원 성장을 검증하고 한 번만 commit하는 runtime 경계�
 - Certified power는 현재 전투 진입 가능한 roster(`alive && physical_damage <= 4 && trauma < 100`)만
   합산한다. 경계 안의 현재 HP 및 physical damage/trauma 크기는 계수가 아니며 Critical, Breakdown,
   Dead는 제외한다. eligible power가 0인 roster의 relative threat는 `VeryHigh`다.
-- Facility creation은 certified run peak에서 Floor anchor를 먼저 확정한 뒤 assignment profile의 required
+- Facility creation은 authored floor minimum에서 Floor anchor를 먼저 확정한 뒤 assignment profile의 required
   difficulty profile로 ordinary quota/role, fixed target power와 reward/wave/stat contract를 category/content와
   같은 transaction에서 저장한다. Manifested Combat/Boss에 difficulty authority가 없거나 live model/profile과
   다르면 preview와 실행은 실패하며 Floor 번호나 current roster로 fallback하지 않는다.
 - `MapViewDto`는 `difficulty_band`, `relative_threat`, `readiness_warnings`만 투영한다. Internal node의
-  model/profile/anchor/target과 exact multiplier는 wire에 포함하지 않는다. Relative threat/readiness는
+  model/profile/anchor/target은 wire에 포함하지 않는다. U14 `entry_preview.combat_deterrence`는 적용할 HP/ATK 배율과 수량배율을 공개한다. Relative threat/readiness는
   현재 roster에서 다시 계산할 수 있지만 저장된 node difficulty는 수정하지 않는다.
 
 ### Encounter Source Reward Commit Boundary
 
 Encounter source의 첫 보상과 repeat 보상은 combat result 완료 transaction이 직접 소유한다.
 
-- Live source row는 stable `reward_source_id`, exact `encounter_id`/`fragment_id`와 explicit
-  `repeat_reward`를 가진다. Core는 source-completion ledger를 먼저 읽어 first 또는 repeat branch 하나만
-  계획한다.
-- First branch는 authored fragment 한 개와 source ledger completion을, repeat branch는 authored effect를
-  node/attempt/cycle progression과 같은 staged world에 적용한다. 일부 적용에 실패하면 전부 rollback한다.
+- Live source row는 stable `reward_source_id`, exact `encounter_id`/`fragment_id`,
+  `first_equipment_ids`, `repeat_rewards`, optional `revival`을 가진다. 원장은 완료 source의 primary
+  abnormality identity를 비교해 같은 종류의 첫 격파를 원정당 한 번만 허용한다. 보유 파편 수나 분쇄는
+  이 원장을 초기화하지 않으며 새 원정에서만 초기화한다.
+- 첫 branch는 작성 파편과 최초 장비, 반복 branch는 작성 반복 효과만 지급한다. 일반보스 첫 승리는
+  원정 전용2단계 알도 만들며 엘리트/최종보스에는 알이 없다. 마탄은 일반 보상·파편·알·생존XP를
+  지급하지 않는다. node/attempt/cycle과 같은 staged world에 적용하고 실패하면 전부 rollback한다.
 - Defeat, retryable defeat와 `RetreatBattle`은 source reward를 commit하지 않는다. Reconnect/snapshot은
   committed state를 투영할 뿐 새 지급 authority가 아니다.
 - 폐기된 research progress, `pending_research_deliveries`, safe-zone 수령 hook과 관련 DTO/result field는
@@ -860,81 +1059,45 @@ Encounter source의 첫 보상과 repeat 보상은 combat result 완료 transact
   `ceil(trauma * percent / 100)`을 saturating 차감하며 Critical/Breakdown을 포함한 생존 직원만
   대상으로 한다. Dead와 physical damage는 바꾸지 않는다.
 
-### Mastered Elite Sweep Transaction
+### Manual Elite Repeats And Retired Commands
 
-숙달 Elite 소탕은 battle lifecycle이 아니라 현재 Endless `NodeConfirm`을 해결하는 별도 두 단계
-transaction이다.
-
-- 하나의 Core evaluator가 현재 available Combat node/session, Elite encounter, primary abnormality의
-  Monolith 승리 3회, 완료된 reward source, 현재 mastered-cycle assignment와 최소 한 명의
-  `is_battle_deployable()` 직원을 함께 확인한다. `NodeConfirm.mastered_elite_resolution`의 direct battle과
-  sweep capability 및 command preflight가 이 authority를 공유한다.
-- `SweepMasteredElite {}`는 현재 authored combat reward와 reward multiplier, source-complete/owned-count
-  exclusive branch, `post_battle_survival_xp`, active-consumable duration, encounter assignment와 node
-  completion을 복제한 root에 계산한다. 살아 있는 각 직원의 XP는 `SelectedEmployee` grant를 직원별로
-  실행해 나누지 않은 전액을 지급하도록 계획하고 Dead는 제외한다.
-- 성공한 첫 command는 live gameplay root를 `NodeConfirm` 시점 그대로 복원한 뒤
-  `MasteredEliteSweepResult { sweep_uuid }`와 immutable commit plan만 actor-transient state에 보관한다.
-  Snapshot/reconnect는 같은 `MasteredEliteSweepResultDto`를 다시 투영하며 reward나 UUID를 재계산하지 않는다.
-- `CompleteMasteredEliteSweep {}`는 UUID, exact node/session/encounter, available 상태, mastery/source/current
-  assignment와 deployable roster를 다시 검증한 뒤 저장된 plan을 한 번 소비한다. Base reward, fragment
-  reacquire 또는 repeat effect, living-roster XP, duration decrement, assignment/cycle, node/session/navigation은
-  하나의 common world transaction에서 함께 commit하거나 모두 rollback한다.
-- Source가 complete이고 같은 fragment count가 0이면 동일 fragment 한 개만 재획득하고 count가 1 이상이면
-  authored repeat effect만 적용한다. Source ledger, mastery와 fragment progress map은 유지되므로 마지막
-  사본 분쇄 후 upgrade/awakening progress를 보존한 반복 재획득이 가능하다.
-- 이 경로는 `ActiveBattle`, combat setup/update/simulation, condition/trauma, bonus objective, compendium,
-  BossOmen, monolith, result stats, event log, battle record와 combat trace를 생성하거나 변경하지 않는다.
-  PlayerProfile도 exact 보존한다.
-- Staged result/plan은 Active Run payload나 checkpoint에 넣지 않는다. Confirm된 효과는 기존 run-local
-  checkpoint roots와 최신 V11 continuation을 사용하며 명시적 checkpoint load로 정상 rollback된다.
-  미완료 sweep은 다른 미완료 node와 같이 Continue에서 진입 전 상태를 복원한다.
+엘리트 자연 반복은 수동 전투다. 현재 원정의 격파/숙달 횟수로 후보를 닫거나 자동 강화하지 않고,
+같은 지도 중복과 기존 배정/예약을 보존한다. 첫 파편·장비 이후에는 `repeat_rewards`만 지급한다.
+`SweepMasteredElite`, `CompleteMasteredEliteSweep`, `ConvertMapNodeWithMonolith`는 옛 클라이언트
+명령을 decode한 뒤 `ActionUnavailable`/`RetiredFeature`로 거절한다. 활성 capability, query와 상점은
+소탕·모노리스 구매/교환을 제안하지 않는다. 옛 state를 새 부화 진행으로 자동 해석하지 않는다.
 
 ### Permanent Player Profile
 
-영구 조우 지식, Standard 완료와 개인 기록은 run-local progression과 분리된 하나의 local-install
-`PlayerProfileState`다.
+영구 조우 지식과 기록, exact expedition lifecycle은 run-local progression과 분리된 하나의
+local-install `PlayerProfileState`다.
 
-- `PlayerProfileState`는 nested `EncounterCompendiumProfileState`, `standard_tutorial_completed`,
-  `highest_floor_reached`, `longest_deathless_floor_streak`, `all_live_final_bosses_defeated`를 소유한다.
-  Compendium은 canonical `registered_ids` set 하나만 저장한다. 이름·위험 등급과 authored 순서는 현재 strict
-  catalog에서 snapshot 투영 시 해결한다.
-- 수집 source는 shared successful opponent spawn path가 attempt-local Kernel ledger에 순서대로 기록한
-  `Abnormality`/`CorrodedEmployee` identity다. Death/despawn과 같은-process reconnect에도 유지되지만 preview,
-  authored Wave 참조, catalog preload, player/facility/defense/test/summoned unit은 후보가 아니다.
-- Committed final Victory의 result transaction만 전체 candidate set을 permanent registration으로 merge한다.
-  Primary/death/개별 credit과 무관하며 Defeat, Retreat, retry exhaustion과 process death는 permanent writer를
-  호출하지 않고 attempt ledger를 폐기한다.
-- Profile merge는 compendium set union, boolean OR와 numeric max만 사용해 idempotent하고 어떤 필드도
-  줄이지 않는다. 새 compendium result commit은 current catalog membership을 검증하지만 persisted
-  profile import는 ID format/subset만 검증해 dormant ID를 보존한다. replacement load를 제공하지 않는다.
-- Standard F3 `NormalBoss` completion만 tutorial flag를 설정한다. Endless start는 flag가 false이면 typed
-  `TutorialCompletionRequired`로 거부한다. 최고 Floor와 무사망 연속 Floor는 Endless에서만 기록하며,
-  all-live-FinalBoss는 같은 Endless run의 `BossOmenRunState.completed_chain_ids`가 그 시점의 non-empty
-  live chain ID 집합을 모두 포함할 때 true가 된다. 이후 live chain 추가는 이미 true인 기록을 취소하지 않는다.
-- 이 상태는 `RunState`, `RunCheckpointPayload`, `BattleEntrySnapshot`에 포함되지 않는다. checkpoint load,
-  이전 run state load, 새 run, RunFailed, retreat와 ordinary non-battle rollback은 이미 커밋된 profile을
-  교체하거나 줄이지 않는다. Common transaction restore는 rollback snapshot의 profile을 authority로
-  사용하지 않고 restore 직전 live profile을 monotonic merge한다. Run-local `record_progress`만
-  checkpoint와 함께 되감기며 이미 commit된 profile 최고 기록은 되감기지 않는다.
-- active-run transaction rollback snapshot도 PlayerProfile copy를 소유하지 않으며 restore는 같은 방식으로
-  현재 monotonic profile을 보존한다. 파일 representation은 각각 소유하되 host publication은
-  위 공통 application intent로 active continuation/tombstone과 successor profile을 함께 수락한다.
-  Standard tutorial flag와 모든 결과 profile 변경도 같은 restart recovery 경계를 사용한다.
-- root `encounter_compendium` snapshot은 current catalog 전체를 authored 순서로 투영하고 같은 root profile
-  projection이 tutorial/record 값을 전달한다. 각 row는 canonical ID와 `registered` 하나를 가지며 미등록
-  row는 이름/위험 metadata를 생략한다. Dormant ID는 profile에 남지만 current projection에는 나타나지 않는다.
-  game_server는 typed Core 값을 전달하고 consumer는 local registration이나 record를 재계산하지 않는다.
-- Host는 OS application persistent-data 아래 local-install singleton PlayerProfile envelope V3를
-  checksum/current/backup/temp/exclusive lock으로 관리한다. Current reader/writer는 V3만 허용한다.
-  Retired V1/V2/four-set 파일, unsupported current/backup, legacy journal은 원본 보호 대상이다.
-  Ordinary load/reset/new publication으로 무시하거나 제거하지 않으며 protected 상태는 Retry만 투영한다.
-  Valid backup 복구는 최신 profile을 보존하고 한 번 알린다. Accepted intent 뒤 IO 실패는 최신 Core
-  root/profile을 유지해 명시 retry 또는 restart가 동일 publication을 끝낸다. `AttachSession`은 readable
-  profile을 merge한 뒤 snapshot을 만든다. Fatal/protected/pending 상태는 ordinary gameplay를 차단한다.
-  Dual corruption을 빈 profile로 자동 대체하지 않으며 confirmed full reset도 protected/pending 상태에서는
-  거부한다. 개별 field/도감만 reset하는 command는 없다.
-- developer `combat_traces`는 compendium을 읽거나 수정하지 않는다.
+- Profile은 `encounter_compendium.registered_ids`, 최고 깊이/무사망 기록/최종보스 기록과
+  `lifecycle { expedition_sequence, active_expedition, vault, first_return_story }`를 소유한다.
+  `standard_tutorial_completed`는 제거됐다. 이름·위험·authored 순서는 현재 catalog에서 투영한다.
+- shared successful opponent spawn path의 attempt-local ledger는 Abnormality/CorrodedEmployee identity를
+  기록한다. Expedition final Victory만 후보 지식을 permanent profile로 합친다. Tutorial 전후는 profile 전체가
+  불변이고 Defeat/Retreat/preview/preload/test/summoned unit은 permanent registration writer가 아니다.
+- `merge_knowledge`만 set union/boolean OR/numeric max를 사용한다. 전체 profile `merge`는 lifecycle이 다르면
+  거절한다. vault/sequence/marker/story는 union이나 max 대상이 아니며 authoritative installation 또는
+  CAS를 통과한 accepted paired publication이 정확 다음 값을 채택한다. persisted dormant ID/사본은 보존한다.
+- SavePoint와 rollback snapshot은 영구 profile authority가 아니다. 같은 instance 복원은 최신 knowledge/story를
+  보존하고 다른 instance/종료된 binding의 Continue를 거절한다. run-local record_progress만 checkpoint로 복원한다.
+- root profile projection은 knowledge/record와 lifecycle을 함께 전달한다. Compendium은 current catalog의
+  canonical ID/registered를 투영하고 미등록 metadata를 생략한다. Dormant ID는 저장에 남는다.
+- Host profile envelope의 현재 버전·reader 지원 범위는 [Durable active-run host boundary](#durable-active-run-host-boundary)를 따른다.
+  Checksum/current/backup/temp/exclusive lock을 사용한다. Supported profile의 최대
+  encoded16MiB, active/journal은 각각96MiB이며 encode 이후 intent 수락 전에 검사한다. 이는 형식 admission
+  상한이고 gameplay vault 사본 수 제한이 아니다. 이전 envelope/unknown fields는 원본 보호 대상이다.
+- 정상 host는 profile→active lock/CAS와 위 현재 journal 형식으로 exact successor profile와 active/tombstone을 함께
+  수락한다. Preaccept 실패는 준비된 Core와 successor profile/active 확정값을 게시하지 않는다.
+  이 보장은 준비 중 temp 파일 쓰기나 기존 backup 복구까지 금지한다는 뜻이 아니다.
+  Accepted 이후 IO 실패는 정확 다음 Core 상태와 recovery_pending이다.
+  Retry/restart는 같은 intent를 끝내며 pending reset이나 unsupported original 덮어쓰기는 거절한다.
+- 이미 정상 승인/open된 actor의 이후 supported active current/backup 손상은 title의 명시 reset 경로에서
+  원본을 acceptance 전까지 보존하고 paired tombstone/active marker 종료로 처리한다. startup admission을
+  우회해 손상/구성 불명확 원본을 여는 기능은 아니다. 개별 도감/field reset 명령은 없다.
+- developer combat_traces는 compendium을 읽거나 수정하지 않는다.
 
 ### Ordinary Inventory And Quantity Boundary
 
@@ -990,41 +1153,36 @@ transaction이다.
   sale candidates/quotes를 투영한다. Context capability는 실행 가능한 payload 존재 여부를 나타내고
   commit은 payload projection과 같은 evaluator를 다시 실행한다.
 
-### Monolith Run State And Conversion Boundary
+### Boss Egg And Hatch Boundary (U17)
 
-- `MonolithRunState`는 inventory와 분리된 abnormality-keyed run ledger다. 자연 Elite outcome, victories,
-  purchase/uses, active converted node, residual sequence, exchange state, one-shot Shop guarantee와 dormant
-  corrupted key를 소유한다.
-- 이 state는 `RunState`, `RunCheckpointPayload`, active-run payload와 `BattleEntrySnapshot`에 포함된다.
-  Checkpoint load는 함께 되감지만 `loads_used`와 permanent PlayerProfile은 되감지 않는다.
-- Endless natural Elite assignment는 해결된 identity와 같은-Floor duplicate를 hard-exclude한다. 전체
-  후보 소진 시 soft constraint를 reset하지 않고 authored Normal encounter와 ordinary Standard
-  difficulty로 node content를 강등한다.
-- Floor 4+ pooled Shop resolution만 RunPolicy가 지정한 wandering merchant로 교체한다. Standard의 Shop
-  pool은 별도 shop ID를 사용한다. First page는 typed `ShopMerchandise::Monolith`를 최대 둘 포함하고,
-  refresh는 item-only다. Monolith purchase는 inventory grant 없이 currency/offer/ledger를 clone-stage한다.
-- `game_state_context.monolith_conversion`은 NodeConfirm의 canonical payload projection이다.
-  Option의 `enabled`와 선택적 `disabled_reason`도 Core authority이며, 진행 중인 identity는 다른 사용 가능
-  option과 함께 투영될 때 `진행 중: <slot>` 사유를 가진다.
-  `ConvertMapNodeWithMonolith { node_id, abnormality_id }`는 같은 projection을 재검증하고 Available Normal
-  Combat의 topology를 보존한 채 encounter/difficulty와 one-use consumption을 transaction으로 commit한다.
-- 변환된 NodeConfirm의 `game_state_context.monolith_remanifestation`은 identity/name/risk/stage/max attempts와
-  qualitative `reward_tier`(`enhanced|final_enhanced`)를 명시한다. Exact multiplier는 public DTO가 아니며
-  Unity는 combat preview나 local catalog로 이를 역산하지 않는다.
-- 변환은 difficulty에 required typed `monolith_stage`를 기록하고 ledger stage와 cross-validation한다.
-  P04 `MonolithRemanifestation` role과 RunPolicy stage multiplier는 단일 resolver에서 target, 적 최대
-  HP/공격/방어, reward에 먼저 합성한다. 합성값은 한 번 적용·반올림하며 generated wave budget과
-  extra waves는 stage로 바꾸지 않는다. Missing/legacy stage, role-stage 불일치, ledger 불일치는
-  checkpoint/continue와 live preview/reward에서 fail closed한다.
-- Remanifestation victory/failure resolution, unique fragment grant, residual creation과 exchange는 모두
-  cloned state 또는 world transaction을 먼저 검증한다. Invalid/stale payload는 active mapping, currency,
-  uses, reward와 residual을 부분 변경하지 않는다.
-- Residual threshold의 next-Floor guarantee는 facility generation requirement다. Shop-tag slot을 정확히
-  하나 고정하고 새 Floor commit 시 소비하며 같은 run에서 다시 발행하지 않는다. Floor를 떠날 때
-  unresolved node-local mapping은 제거하지만 commit된 use는 환불하지 않는다. Exchange VN은 merchant Shop session보다 앞선 blocking
-  overlay이며 accept는 oldest four를 원자 소비하고 decline은 terminal state다.
-- Corrupted key에는 현재 consumer가 없다. FinalBoss classification, Endless completion, hidden capstone과
-  hidden-boss content는 이 runtime 계약의 현재 구현 범위가 아니다.
+- `EncounterProgressionState`의 최초 원장과 `RevivalRunState`는 별도 책임이다. 후자는 source별 다음
+  알(`Stage2|Stage3`)과 현재 층의 부화 node별 source/단계/해결 여부/출처 지불 영수증을 소유한다.
+  알은 거래 가능한 material이 아니며 같은 층 방 재방문은 부화를 유지한다. 하강은 부화 node를
+  지우되 미사용 알을 유지하고, 소비한 알·촉매를 환불하지 않는다.
+- `HatchEncounter { node_id, reward_source_id, stage, payment }`는 Expedition `NodeConfirm`의
+  선택 가능한 일반 Combat encounter만 대체한다. 예약/전조/봉인/해결/다른 부화 node는 대상이 아니다.
+  Gate 유일 경로도 허용하며 topology와 다른 node 배정을 바꾸거나 우회로를 만들지 않는다.
+- `payment`는 `MaterialPayment { material_id, carried, warehouse }` 목록이다. 촉매 recipe의 정확한
+  수량과 출처 잔고를 검증하고 알 소비, 소지/창고 debit, encounter/difficulty/session 교체를 원자
+  확정한다. 실패는 UUID와 모든 비용·진행을 보존한다. 부화 자체는 전투나 입장비/후퇴를 실행하지 않는다.
+- `run.revival` 조회는 알, 부화 기록과 선택 node의 가능한 source/단계·작성 배율·보상·장비 후보·다음 알,
+  촉매 필요량과 소지/창고 잔고를 제공한다. 부화 후에도 영수증과 같은 단계 정보가 남는다.
+- `RevivalNodeTuning`의 작성 배율은 해당 difficulty profile/role의 target power와 적 HP/공격/방어에
+  합성한다. generated wave budget은 단계로 추가 확대하지 않는다. 무억제 HP/공격 강화는 여기에
+  곱하고 수량형 승리 보상은2배, 장비 물품과 선택 횟수는1회다. 단계 보상 자체에는 구 모노리스의
+  별도 보상 배율을 다시 곱하지 않는다. 공식140/180%는 데이터 조정값이지 엔진 상수가 아니다.
+- 2단계 승리는 작성 파츠 등 고정 보상·장비 선택권·3단계 알,3단계 승리는 고정 보상·선택권만 만든다.
+  장비 후보는 단계 policy에서 결과 요약과 선택 세션으로 함께 확정하며 Continue reader도 같은
+  생성자를 사용한다. 후보0개는 `no_reward_candidates`와 빈 목록을 표시하고 선택 단계를 생략한다.
+  `SelectReward`는 후보 선택, `ClaimReward`는1회 지급, `ExitReward`는 지급 후 복귀다.
+- 부화 보류와 수동 후퇴는 단계/지불/입장 receipt를 유지한다. 후퇴2회 뒤 마지막 도전이 남고,
+  실제 패배는 즉시 node를 소비하며 성공 보상·다음 알·환급을 만들지 않는다. 부활 보스는 황금가지나
+  억제력 보충을 주지 않으며 유물을 자동 추가하지 않는다.
+- Active Run/Continue 형식은17이다. 입장 전에 확정한 부화는 fresh Continue에 남고, 미완료 node
+  내부의 부화는 기존 pre-entry snapshot으로 원래 조우/알/소지·창고 출처와 함께 되돌아간다.
+  같은 프로세스 reconnect는 현재 battle을 유지한다. SavePoint는 당시 원장/부화/비용을 복원하며
+  창고 전체 대신 기존 U15 원정 debit 대조를 사용한다. 결과/선택 대기/수령 상태도 즉시 저장한다.
+  구 개발 저장은 typed version 오류로 거절하고 원본을 보존한다. 자동 migration은 제공하지 않는다.
 
 ### Reward And Employee Growth Boundary
 
@@ -1032,7 +1190,7 @@ Reward definition은 typed `RewardEffect` 목록이고 실제 지급은 `GrantEx
 
 - Reward session과 combat result는 inventory, skill fragment, roster, UUID manager, Enkephalin을 clone/stage한 뒤 모든 effect가 성공한 경우에만 한 번 교체한다. 중간 effect 실패는 앞선 XP/재화/item mutation을 commit하지 않는다.
 - Live combat encounter는 명시적 `ClaimAll` 또는 `ChooseOne`을 허용한다. ChooseOne은 실제 후보와 원 grant context를 확정 결과에 묶고 일반 RewardSession에서 선택·수령한다. 후보 효과를 결과 시점에 먼저 지급하거나 consumer가 재추첨하지 않는다. 비어 있는 후보는 명시 no-reward로 진행한다.
-- Map Reward node는 authored pool에서 `Experience` grant kind를 제외하고 node seed로 definition 하나를 고른 뒤 `ClaimAll` session으로 고정한다. `GrantEquipmentFromPool`도 stage/reward/effect identity에서 파생한 deterministic seed를 사용한다.
+- 시설 유물 활동이 아닌 Map Reward node는 authored pool에서 `Experience` grant kind를 제외하고 node seed로 definition 하나를 고른 뒤 `ClaimAll` session으로 고정한다. `GrantEquipmentFromPool`도 stage/reward/effect identity에서 파생한 deterministic seed를 사용한다.
 - `GrantExperience.amount`는 total pool이 아니라 대상 직원 한 명당 지급량이다.
   대상 UUID를 dedupe하고 roster membership을 검증한 뒤 각 대상에게 명시된 전액을 지급하며 quotient와
   remainder 분배는 만들지 않는다. `amount: 20`이고 대상 직원이 셋이면 각자 20, 총 60 XP다.
@@ -1044,7 +1202,7 @@ Reward definition은 typed `RewardEffect` 목록이고 실제 지급은 `GrantEx
 - `EmployeeExperienceDiffDto`는 authored reward effect의 exact per-employee amount와 level/experience before/after다. 성공/일반 Reward result는 이 diff를 transport하고, game_server는 의미를 재해석하지 않는다. 현재 Unity에는 전용 XP diff reader가 없으며 root roster snapshot이 최종 상태 source다.
 - 커밋된 전투 결과의 survival XP는 `result_stats.employees`의 employee-level `survived`와 staged roster의 `Alive`를 함께 검사하고 각 직원에게 `post_battle_survival_xp`를 `SelectedEmployee` effect로 한 번 적용한다. 승패 모두 같은 post-battle stage를 사용하고 `RetreatBattle`은 entry snapshot 복원으로 이 mutation을 폐기한다.
 - Survival XP는 authored combat reward의 `employee_experience_diffs`에 합쳐지지 않는다. `NodeOutcomeEmployeeChange.experience_before/after`와 후속 roster snapshot이 그 최종 변화를 표현한다.
-- `Employee.experience`는 current level 안의 잔여 XP다. `add_experience_with_policy`는 saturating add 후 `xp_required_for_next_level(level)`을 반복 차감하므로 한 grant가 여러 level을 넘을 수 있다. authored curve를 넘으면 마지막 requirement를 반복한다.
+- `Employee.experience`는 current level 안의 잔여 XP다. `add_experience_with_policy`는 기존 잔여와 지급량을 u64 임시 합계에 정확히 더한 뒤 `xp_required_for_next_level(level)`을 반복 차감한다. 잔여가 검증된 양수 u32 레벨 비용보다 작아진 뒤 기존 u32 필드에 저장하므로, 합계가 u32 최댓값을 넘더라도 레벨업 전에 XP를 잘라내지 않는다. 한 grant가 여러 level을 넘을 수 있고 authored curve를 넘으면 마지막 requirement를 반복한다. 기존 level 최댓값의 saturating 증가 의미와 저장 형식은 유지한다.
 - `Employee.level`이 persistent 성장 source이고 `battle_tier_by_level`은 level에서 파생한다. 현재 `BattleUnitDraft.level`/snapshot `battle_tier`는 분류 projection이며 stat pipeline의 HP/attack/defense multiplier가 아니다.
 - `GrowthStack`은 level/XP와 별도 내부 draft state다. 현재 `KillStack`만 final stat pipeline에서 flat attack으로 적용되고, production gameplay에는 stack producer가 없다. Level-up은 GrowthStack을 변경하지 않는다.
 
@@ -1088,16 +1246,14 @@ Visual Novel runtime은 route나 run 내부 상태가 아니라 core 최상위 r
   `employee_definition_ids`를 사용한다. candidate DTO와 roster DTO는 같은 authored Profile을
   투영하며 UUID나 trust state에서 personality를 재생성하지 않는다. reward option instance identity는
   `rewards[*].uuid`, 전투 결과의 대표 환상체 identity는 `primary_abnormality_id`다.
-- authored personality는 Profile에만 있다. run-local `EmployeePsychology`는 -100~100 trust score,
-  derived band, semantic memory와 bounded recent event receipt를 소유한다. Psychology event는 typed
-  authoritative source identity로 직원별 idempotent하게 적용하고, 같은 kind/subject 기억은 occurrence와
-  first/last source를 병합한다. checkpoint와 battle-entry rollback은 roster clone으로 이 aggregate를
-  정확히 보존하며 사망 recovery도 roster record를 제거하지 않는다.
-- 현재 production Psychology mutation은 없다. SavePoint/Gate recovery는 Psychology event를
-  생산하지 않는다. dormant high-risk refusal, dialogue cue, combat/trauma modifier policy는
-  runtime/public DTO 계약이 아니다.
+- authored personality는 Employee Profile에 보존한다. `EmployeePsychology`, trust/memory와 전용 event,
+  기본값/advance/query/capability는 제거됐다. 현재와 nested SavePoint의 strict codec은 제거 필드를 null/빈객체로
+  보내도 거절한다. condition/성장/개인 진행은 같은 원정 복원에 유지하고 새 원정은 새 직원 identity/초기값이다.
 - `RecruitmentState`는 run-seeded ordered queue와 현재 HQ active session의 definition IDs를 유일하게 소유한다. 시작 미선택 starter와 non-starter definitions를 queue에 포함하고, roster와 합쳐 unified catalog의 각 definition을 정확히 한 번 소유해야 한다.
-- HQ snapshot은 active session ID를 unified catalog에 투영한다. 채용은 선택하지 않은 IDs를 session order로 queue tail에 반환하고 선택 ID만 roster로 이동한다. 응급지원과 HQ shop은 session 전체를 tail에 반환한다. checkpoint와 Floor carry-forward는 aggregate 순서를 그대로 보존한다.
+- HQ result/snapshot은 현재 paid availability와 정의별 deployability를 통과한 active offers만 투영한다.
+  선택 ID만 roster로 이동하고 session은 최대2회 채용 동안 남은 offers/횟수를 보존한다. 모두 채용했거나 한도에
+  도달하면 미선택 IDs를 session 순서로 queue tail에 반환한다. 응급지원/HQ shop은 전체 session을 반환한다.
+  checkpoint/Floor carry-forward는 queue/offer/횟수 소유와 순서를 그대로 보존한다.
 - `UseConsumableItem` request의 직원 key는 `target_employee_uuid`이며 active modifier의 표시
   이름은 snapshot의 `active_consumable_modifier.name`이다.
 - Physical Treatment는 살아 있는 직원이면 physical damage 0에서도 structurally eligible하며 성공한
@@ -1282,8 +1438,11 @@ truth다. 배치 전에는 `DeploymentRangePreview.payload.facings.*`, 배치 �
 - node confirm에서 생성한 preview와 checkpoint의 `combat_previews`는 presentation cache로만 유지한다. 선택 취소,
   SavePoint, export/Continue 뒤 실제 전투를 시작할 때는 cached `CombatPreview`를 setup input으로 사용하지
   않고 현재 run node identity, manifested difficulty, encounter, live data와 deterministic node seed로
-  preview-derived setup input을 다시 생성한다. 이 규칙은 ordinary/Boss/Event-started/Monolith 전투에
+  preview-derived setup input을 다시 생성한다. 이 규칙은 ordinary/Boss/Event-started/Revival 전투에
   동일하게 적용된다.
+- 노드를 소비 완료하면 해당 `combat_previews` 항목을 해제한다. 완료된 노드는 재진입 대상이 아니며,
+  결과·장비 선택권은 각 durable owner가 보존한다. 미해결 노드의 미리보기는 유지하되 완료 전투의
+  geometry를 이후 Continue와 SavePoint마다 중복 보관하지 않는다.
 - Unity 위험도 표시는 raw scale 값을 노출하지 않고 명시적인 표시용 DTO 계약을 사용해야 한다.
 
 Unity-facing DTO shape, command result, battle update cadence, resync 세부 계약은 외부 canonical `/mnt/f/unity projects/ark/docs/core_unity_battle_transport_contract.md`와 `/mnt/f/unity projects/ark/docs/unity_core_contract.md`를 따른다.
@@ -1384,15 +1543,10 @@ the local list immediately on interruption; ordinary calls keep the existing nat
 An absent runtime is distinct from a failed projection. This does not bound every upstream task
 constructor or the caller's later trigger/key copies.
 
-Monolith's public raw map keeps its existing type and native Clone/serde behavior. A private fixed
-provenance value belongs to the complete authoring candidate, separate from gameplay and fuel.
-General scopes retain unknown history; only a fresh opaque application family establishes zero.
-Actual Monolith insertions and validated fresh V6 imports record conservative allocation credit.
-Native copies and internal rollback/drain never reduce it, and every independently owned Monolith
-table contributes the full bound to its clone meter. Unknown/overflow bounds reject before copying.
-This value is not serialized into V6 and does not change content/checkpoint fingerprints. The future
-public trial owner must commit app, provenance and mandatory outputs together; returning a candidate
-ledger from the control scope, including a domain error value, is not a successful session commit.
+U17의 활성 부화 원장은 `BTreeMap`이며 `CloneShape`가 알·node·출처별 지불을 측정한다.
+부화 후보 policy/progression/map/economy/vault/debit 복제는 기존 controlled clone 경계를 사용한다.
+이 활성 경로는 옛 Monolith HashMap capacity provenance를 요구하지 않는다. 과거 형식/진단용
+helper가 남아 있어도 현재 runtime 부화 원장이나 저장에 그 상태를 넣지 않는다.
 
 Controlled application/tactical/boss candidates and summon/spawn rollback owners prepare their
 battle log for writing after cloning. Shared retained entries are admitted before COW by entry,
@@ -1792,8 +1946,11 @@ observation after internal mutable records retire.
 Accepted, Released, control terminal and EffectsSettled are distinct. Control terminal is Finished,
 Cancelled with the existing cause, or Failed with the actual invocation reason. Finite delivery and
 queued-application tickets close once; independent buff lifetime does not keep the action alive.
-Withdrawal removes the existing pending/cast/Follow owners; released projectile/GroundFixed effects
-continue. HardCC and InterruptCast cancel employee pending and future unreleased use control; applied
+Withdrawal cancels pending and unreleased cast control and removes source-bound Follow areas;
+released projectile/GroundFixed effects continue. Structural side casts retain the started deliveries'
+result scopes and source context until finite settlement; other active casts are removed. Retained
+settlement context does not restore cancelled control. HardCC and InterruptCast cancel employee
+pending and future unreleased use control; applied
 finite beneficial effects keep their actual leases except channels terminated by the interruption.
 Autonomous sources retain their existing cancellation and cast-end cost/recovery rules. Employee death
 does not consume resonance a second time; matching old CastEnd events cannot revive the cancelled use.
@@ -1901,7 +2058,10 @@ The additive Certified input fingerprint includes content identity and persisten
 
 실제 profile에서 생성한 FragmentSourceSnapshot(copy/definition/form/skill)은 runtime actor, cast/delivery, amount preview/explain 및 trace로 전달된다. FragmentCopy/SourceFragment는 기존 R05 Run/Attempt/Deployment/Activation/Delivery/Chain 수명과 같은 lease 검증을 사용한다. 장비 identity로 대체하지 않는다. 기존 delivery의 immutable source는 이후 inventory 선택에 의해 바뀌지 않는다. 새 사본·형태·owner 상태는 다음 Certified input fingerprint에 반영된다.
 
-Live data schema는5이며, R07 도입 당시 active-run 저장은 V8이었다. 현재 정상 reader/writer는 위 U04의 strict V11 continuation이다. 기존 명시 `CoreApplication::convert_active_run_v7(original, expected_original_identity)`는 원본 canonical checksum과 명시 원래 identity를 먼저 확인하고 정렬된 definition/count 및 employee UUID 순서로 사본을 배정한다. 기존 awakened는 해당 사본의 awakened 해금·선택으로 옮긴다. 제거된 rank/progress 및 0보유 history와 dust는 호환 출처/보존 자산이며 gameplay 성장 truth가 아니다. 이 역사적 변환 API와 `convert_active_run_v8`은 현재 소스에서 참조·checkpoint graph를 검증한 V12 bytes를 반환하며, 원본을 쓰거나 정상 V11 이어하기를 수행하지 않는다. V12 결과 역시 현재 Continue에서 거부된다. V11로의 자동·암묵 변환이나 fallback은 없고, 이전 V7/V8/V9 원자료와 동결 target은 당시 변환·보존 계약의 증거로 남긴다.
+R07 도입 당시 live data schema5/active-run V8와 명시 사본 변환은 역사적 계약이다. 현재는 catalog schema6,
+Core Continue15/독립 SavePoint13을 사용한다. Continue12는 U14 이전의 개발 형식이다. `CoreApplication::convert_active_run_v7`/`convert_active_run_v8`은
+현재 미지원으로 명시 거절하며 원본을 쓰거나 새 bytes를 반환하지 않는다. 이전 V7/V8/V9 원자료와 동결 target은
+당시 변환/보존 증거로 남기며 현재 수용이나 자동 fallback의 근거가 아니다.
 
 
 ## U05 직원 공명 수명 계약
@@ -1935,10 +2095,9 @@ readiness의 `resonance_use`는 action ordinal, skill, consumed와 Accepted/Cast
 private controlled clone은 이 상태를 보존한다. durable Continue는 계속 기존 pre-entry/confirmed
 경계를 사용하며 live battle 디스크 codec을 추가하지 않는다.
 
-현재 continuation은 V11, 명시 V7/V8 변환 결과는 별도 checkpoint shape V12다. 변환은 원본 checksum과
-expected identity 확인 뒤 역사적 직원 기본값0/100/1000만 제거하여 새 기본 정책으로 전환한다.
-다른 과거 공명값이나 알 수 없는 field는 거절한다. V12는 Continue 입력이 아니며 원본은 쓰지 않는다.
-Host는 CoreV10 원본이 current/backup 어느 쪽에 있어도 publish/invalidate로 덮어쓰지 않는다.
+현재 continuation은 V12, 독립 SavePoint payload는 V13이다. V7/V8 명시 변환과 구 직원 공명/심리
+입력은 현재 미지원이며 원본을 보호하고 거절한다. Host는 이전 continuation 원본이 current/backup
+어느 쪽에 있어도 publish/invalidate/reset으로 덮어쓰지 않는다.
 
 ## U06 기본 행동·초기 세트·공통 interaction
 
@@ -1994,13 +2153,18 @@ pre-entry 경계를 따른다. live 객체의 새 디스크 codec은 없다. 정
 
 ## U07-M trusted measurement profile and metric boundary
 
-The default `RuntimeFactLimits`11-field layout, original8MiB public validation,
-strict `with_runtime_fact_limits`, embedded RON and effective profile hash remain.
-`RuntimeSafetySettings` alone owns optional `development_measurement` revision1.
-Its original native DTO is first validated against the strict8MiB ceiling; a
-separately validated emergency retained ceiling must exceed nominal and be at most
-32MiB. `native_runtime()` exposes the selected effective owner values; private
-profile entry respects every owner value, including a smaller explicit override.
+The `RuntimeFactLimits` 11-field layout and strict `with_runtime_fact_limits`
+validation remain. The current embedded default and `ENGINE_MAX` native retained
+ceiling are 16MiB; historical 8MiB inputs and refusals remain separate evidence.
+An explicitly selected smaller host profile remains smaller. `RuntimeSafetySettings`
+alone owns optional `development_measurement` revision1. Its nominal native DTO is
+first validated against the current strict 16MiB ceiling; a separately validated
+emergency retained ceiling must exceed nominal and be at most 32MiB. A legacy
+8MiB nominal profile with a 16MiB measurement override has an 8MiB warning and
+16MiB hard limit. This differs from the explicit authoring preset above, whose
+8MiB limit has no measurement override. `native_runtime()` exposes the selected
+effective owner values; private profile entry respects every owner value,
+including a smaller explicit override.
 Nested/deferred operations reuse the outer budget and policy. Outside-scope fact
 snapshot admission uses its already trusted owner cap; an active budget wins.
 Content/save/public commands do not acquire profile authority.
@@ -2028,11 +2192,22 @@ Same-owner reconnect/live controlled clone and existing fresh-host checkpoint
 Continue preserve their original authority and lifecycle; there is no new live
 battle disk codec or profile gate imposed on ordinary saving.
 
-[The measurement guide](goals/core_runtime_measurement_profiles/README.md) records
-actual limits, replay commands, default/development comparison and missing/scope
-semantics.16/32MiB are finite engineering windows rather than deployment adequacy
-evidence. Future changes require a new profile/revision, original before/after
-raw values and reason/impact/independent intake. U08 owns subsequent state work,
+[The measurement guide](goals/core_runtime_measurement_profiles/README.md) preserves
+the historical U07-M 16/32MiB engineering windows, replay commands and metric scopes.
+U10's current 16MiB default follows the [measured normal external workload](goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/MEASUREMENT_EXTERNAL_002.ko.md)
+and [Root's recorded decision](goals/core_relic_causal_chains/execution/single_goal/PLAN.md), implemented as
+[two retained-limit values](goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/PRODUCT_009.ko.md).
+The [final selected 46 tests](goals/core_relic_causal_chains/execution/single_goal/product_parts/runtime001/FINAL_RESULT_BINDING_001.json)
+passed, including nominal-default public loading and smaller-host restore boundaries;
+the [separate retained replay](goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_external003_measurement/runs/RUN.json)
+also completed all four modes at the current nominal
+16MiB without a development override. These observations do not guarantee capacity
+for every content combination or complete the Goal audit. Optional measurement
+ceilings still exceed nominal and remain at most 32MiB. Schema version1 and
+measurement revision1 retain their formats; changing numeric values changes the
+raw/effective profile fingerprints rather than requiring a format revision.
+Future numeric changes preserve original before/after values, their reason and
+impact review, and independent intake. U08 owns subsequent state work,
 U11 content identity, U30-C Core/device sampling, U30-P Unity play, and U31 final
 integration. Local Linux samples do not establish all-content or Unity maxima.
 
@@ -2087,8 +2262,166 @@ owned, its historical selection requires the irreversible Corrupt variant.
 [`continuation`](../src/game/world/active_run/continuation.rs) persist copies, three-slot placements,
 typed materials, the Relic UUID stream and Event history in current and independent SavePoint graphs.
 Import checks ownership, references, variants, placement and history against the bound generation;
-normal Continue remains outer document V11, while standalone checkpoint payload is V12. There is no
+normal Continue remains outer document V12, while standalone checkpoint payload is V13. There is no
 live battle disk codec. Strong immutable owners retain content/captures/bindings until their last
 owner is released; completion, rollback/discard and carrier retirement follow existing ownership.
 Test-only Weak handles can observe that a particular owner is released. A successful Weak lifetime
 check does not establish process RSS, all-content memory limits or deployment capacity.
+
+
+### Causal relic runtime ownership
+
+[The U10 authoring port](skills/skill_authoring_model.ko.md#u10-원인-연쇄-작성-포트) describes the closed Subscribe,
+Periodic, finite Program/Fork/Join and Wedge schema. Prospective plan queries expose causal_rules,
+wedge_rules and causal_capabilities, and distinguish static Dormant conditions from Pending actual-event
+predicates. These owned explanations do not carry action, delivery, resource or completion authority.
+
+A native independent action or Periodic occurrence introduces a root. Derived actions and released carriers
+retain immutable copy UUID plus authored rule-ID visits. Fork siblings inherit their parent and extend
+independent paths. A real named Join waits for successful participants and their finite descendants, unions
+only those visits and dispatches its admitted continuation once; cancellation is not successful settlement.
+Only live owners and finite carrier membership are observed. Monotonic occurrence counters remain with the
+battle without retaining completed visit/receipt history. Event-log eviction and optional trace do not
+control these decisions.
+
+A generated child has its own action/site and captured structural and numeric owners. A separate immutable
+causal_cause observation keeps the original root and immediate triggering actor/provider/site, actual killer,
+target and relic copy/rule. It contains no execution binding or lease and cannot restore source capabilities
+removed at an observation or independent-origin boundary. New victims use existing native Death/OnKill/
+OnAllyDeath ordering and eligibility; basic-only procs and Corrosion suppression keep their existing gates.
+
+Wedge counts positive original direct strikes by captured copy/rule/cast/target. Structural signed typed
+composition and guards run first. The capture preserves the original base and normalized NumericProgram,
+including existing legacy flat and percentage contributions. Candidate Wedge percentages add to that
+program's Scale term; Replace, Add and Scale keep their existing order and single division. The original
+typed and range checks remain mandatory, so Wedge cannot rescue an invalid original composition or apply
+legacy numeric contributions a second time.
+The candidate advances once only after positive committed HP loss; segments share its actual strike.
+It does not redefine the amount observation stage or actual post-mitigation damage results.
+
+Cold source owners, mutable Join/progress tables, queued finite continuations and owned observations use
+existing work, clone and retained admission. Failure propagates to the native transaction; accepted prefixes
+and retry follow existing rollback. RuntimeFactSource keeps its inline layout, while its extended allocation
+and RuntimeFactState ownership have additional storage and clone work. This is not a zero-cost assertion.
+Live causal execution stays transient in candidate clones; disk Continue rebuilds derived plans from the
+persisted copies/loadouts and the matching content identity. No live-battle chain codec or profile ceiling
+change is introduced. Actual validation and independent audit status remain in
+[the U10 execution record](goals/core_relic_causal_chains/execution/single_goal/EXPERIMENTS.md).
+
+
+### U13 authored facility rooms
+
+Expedition은 publication의 단일 `expedition_default` layout을 사용한다. layout이 없는 기존 지원 pack은
+기존 pool/schedule을 사용한다. Tutorial의 고정 세 층 계약은 유지한다. 현재 공식 layout은 입구 포함89방,
+Start/Gate 제외846활동을 저작한 초기 콘텐츠이며 엔진 상수가 아니다.
+
+Run snapshot의 `facility`는 전체 방/실제 연결/현재방/공개 내부지도/활동 지원상태를 제공한다. 일반방 위치와
+방향은 처음부터 공개하고 이름·컨셉은 인접/방문/영구 탐사 조건으로 공개한다. 숨은 최종방과 연결은 지식이
+없으면 배열 자체에서 제외한다. `current_expedition_map`/`activities`는 이번 원정에서 방문한 방만,
+`interior`/`known_reservations`는 각각 공개된 구조와 확정된 고정 활동 지식만 전달한다. 이전 원정의 추첨,
+상품·보상·해결 상태를 영구 지식에서 재구성하지 않는다. 표시 좌표·asset ID는 연결이나 전장 좌표가 아니다.
+
+완료 노드로 도달 가능한 Gate에서 `{"type":"move_to_facility_room","room_id":"B1-02"}`를 보낸다.
+실제 authored edge와 목적방 지원/조건을 검사하며 동층 양방향·하강만 허용한다. 도착방을 처음 방문하면 한 번
+배정하고, 재방문이면 저장된 map/progression을 선택한다. 현재 map은 `RunState.map`이 단독 소유하며
+`facility_run_state.rooms.visited_rooms`는 나머지 방문방을 소유한다. node UUID 기반 entry receipt와
+session/attempt 상태를 방 이동으로 비우지 않는다. 이동 자체는 억제력을 차감하지 않는다.
+
+Gate 확인은 자동 다음층 생성 대신 Gate를 완료하고 ViewingMap에 머문다. 깊이3 이상의 U12 Continue/Return
+선택은 유지한다. 방 완료 지식은 실제 방 떠남 또는 Gate 정상 귀환에서 확정한다. Gate 조회/취소, 억제력
+소진 조기 귀환과 실패는 새 완료를 만들지 않는다. 하강 목적방만 현재 생존 직원 트라우마10% 올림 회복을
+적용하고 동층 이동/귀환은 적용하지 않는다. `descent_recovery`는 해당 하강의 미리보기이며 직원UUID 순이다.
+
+활동 조회는 `reward_activity`, `condition`, `support`, `first_entry_cost`, `exhausts_deterrence`,
+`deterrence_already_exhausted`를 제공한다. 미지원 고유 조우/최종방과 U16의 미구현 보상 유형은 실행 전에
+거절하며 보상·클리어·자동귀환을 합성하지 않는다. U16-2의 SimpleChoice·ResourceInvestment·RelicGacha와, dealer policy가 작성된 U16-3 Gambling, stress_combat policy가 작성된 U16-4 StressCombat을 지원한다. 공식 유물 공급이 비어 있으면 SimpleChoice는 빈 후보와 사유를 표시하고 미이용 종료할 수 있다. 일반 보상 풀로 대체하지 않는다. 대표 유물 효과를 작성한 지원 pack으로 실제 지급·비용·저장을 검증한다. 정적 전조 호환 자리의 일반전을 U20 전조로 자동 치환하지
+않는다. 기존 실제 전장 브리핑과 전투 입장 검증을 재사용한다.
+
+Continue V17과 SavePoint는 모든 방문방의 배정/유형/해결/입장 기록을 포함한다. U17에서는 구형
+Continue/checkpoint를 원본 보존과 함께 명시 거절한다. 과거 V12 호환 규칙은 현재 import에 적용하지
+않으며, V17 독립 checkpoint를 Continue로 읽는 것도 지원하지 않는다.
+영구 `facility_knowledge`의 현재 저장·읽기는 [Durable active-run host boundary](#durable-active-run-host-boundary)의 profile 형식을 따른다.
+시설 지식 도입 당시의 profile V5/V4 묵시 읽기는 현재 reader의 지원 규칙이 아니다. Profile 지식은
+monotonic merge이며 run-local 저장/실패/SavePoint가 되감지 않는다. 지원되지 않는 버전과 다른 content
+configuration의 원본 보호는 기존 approved persistence 경계를 따른다.
+
+
+## U14 입장·무억제·봉인·성과와 복원
+
+`MapNodeDto.entry_preview`와 `FacilityActivityViewDto.entry_preview`는 규정/최초 청구 비용, 예상 억제력,
+직원 UUID 순서의 Breakdown 유예/입장 사망, 무억제 및 전투 배율을 조회한다. 조회는 receipt를 쓰지 않는다.
+전체 시설 조회는 방문방 각각의 room/slot과 원래 node로 봉인을 판정한다. 현재 방과 다른 방의 같은 slot은
+서로 대체하지 않으며 회수된 가지와 부활 노드는 봉인 대상에서 제외한다. 두 공개 preview는 같은 판정을 사용한다.
+receipt가 있는 재입장·정비 반복과 완료는 유예를 소비하지 않는다. trauma100 진입 유예는4이며99로 치료한
+뒤 다시100이면 새4다. 사망은 전투 피해가 아니므로 전투 사망방지로 취소하지 않는다.
+
+`BattleDeterrenceSnapshot`은 최초 비용 반영 뒤 전투 진입에서 고정한다. HP/ATK만 조우 작성 배율을 적용하고
+방어·이동·사거리·저지·패턴은 그대로다. exact stat override와 지연 spawn에도 적용한다. 부활 배율과 곱하며
+1.5×1.5=2.25다. 무억제는 봉인 추가 스탯과 중복하지 않는다. Victory에만 재화·장비가루·장비재료·XP 수량을
+2배로 하며 기존 XP 대상 규칙과 선택횟수는 유지한다. 촉매제·파편가루·사본·알·유물·가지·억제력 보충은 제외다.
+패배 생존XP10, 후퇴0; 실제 참가 생존 직원별 기본XP는 unique UUID로 한 번이다. U16은 이 전투 전체 자격
+snapshot을 소비할 수 있으며 U14에 스트레스 활동 전체가 구현되었다는 의미는 아니다.
+
+성과는 작성된 주환상체의 실제HP 손실 단일 타격 비율과 실제 전투 종료시간으로 판정한다. DOT·여러타격의
+합산을 제외하고 objective별 Victory에서 한 번만 지급한다. 보너스XP는 살아있는 roster 각자 전액이다.
+실전 누적 상태는 주대상 UUID와 최고 단일 비율의 고정 크기 값이며 이벤트 로그 전체를 보관하지 않는다.
+
+황금가지 계획은 원정 최초 facility 생성에서 seed/가중치로 한 번 선택하고 상태에 저장한다. 공개 지도는
+미탐사 위치·회수·현재 경로 도달가능성만 추가하며 숨긴 방/보스 이름을 공개하지 않는다. 원래 배정 노드의
+봉인 해제 진입만으로 지급하지 않고 Victory에서 회수와 억제력 보충을 한 번 확정한다. 패배·부활에는 없다.
+후퇴는 비용/유예/입장사망/후퇴횟수를 유지한 입장후 snapshot으로 돌아간다. 미확정 노드 Continue는 입장전
+snapshot으로 복원하되 사용한 후퇴횟수를 보존한다. 결과 확정뒤 Continue/재확인은 중복 지급하지 않는다.
+SavePoint는 비용과 상태를 함께 복원한다. 현재 Core active/continuation writer는15이며 이전 개발 writer는
+현재 Core resume에서 명시 거절한다. Host envelope의 이전 opaque payload 보관은 Core 호환 지원이 아니다.
+
+U14 교정: 황금가지 보충은 초기 억제력을 넘을 수 있다. Continue와 SavePoint 검증은 각 snapshot의
+초기 공급량과 이미 회수한 가지의 보충량을 함께 반영하며, 초기값으로 잔량을 자르거나 정상 저장을 거절하지 않는다.
+
+
+## U16-2 기본 유물 보상 활동
+
+시설의 `reward_activity`가 SimpleChoice·ResourceInvestment·RelicGacha이면 기존 Reward session에
+`relic_activity`를 둔다. 일반/전투 Reward는 기존 흐름을 유지한다. 입장 전 시설 조회의
+`relic_reward`는 종류·가루 임계치·서로 다른 미장착 사본 두 개 필요 여부를 표시한다.
+현재 Reward 조회는 실제 후보의 유물 정의/효과, 지불 가루, 다음 등급/추가 비용/불가 사유,
+합성 입력별 자격과 선택 조합의 확률/확정 자격을 제공한다. 아직 결제하지 않은 후보는 공개하지 않는다.
+
+`select_reward`/`claim_reward`는 선택형과 투자형에서 최종 한 사본을 지급하고 노드를 함께 완료한다.
+후보는 최대 세 종류이며 부족하면 실제 개수만 표시한다. 선택형의 후보0은 사유를 표시하고
+`exit_reward`로 종료한다. `invest_relic_reward`는 다음 누적 임계치까지 차액 전액을 결제하여
+해당 등급 후보로 교체한다. 후보가 없거나 가루가 부족하면 기존 비용·후보·선택권을 보존한다.
+교체 전 후보는 선택할 수 없고, 최고 등급에서 추가 결제할 수 없다. 투자 후 미이용 종료는 환불하지 않는다.
+
+`select_relic_fusion_inputs`의 `copies`는 두 UUID 또는 null이다. 두 사본은 서로 달라야 하고
+장착 중이면 선택할 수 없다. 같은 종류의 두 사본과 Corrupt 사본은 허용한다. 조회는
+Common/Rare/Special 순서의 고정 확률표를 표시한다. `confirm_relic_fusion`은 양수 확률의
+모든 등급에 투입 종류를 제외한 후보가 있는지 먼저 확인하고, 두 사본 소비·Normal 출력 한 사본·
+노드 완료를 함께 확정한다. 다른 보유 종류는 후보에서 제외하지 않는다. 입력 순서를 정규화하고
+기존 node seed를 사용하므로 같은 입력의 재시도 결과는 같다.
+
+성공 `RewardGranted.relic_activity`는 노드/종류·지급 사본 diff·소비 사본·누적 지불/잔여 가루를
+반환한다. 미완료 Continue는 기존 입장 전 복원을 따라 비용·후보·선택을 함께 되돌린다.
+완료 Continue는 결과와 소비된 노드를 보존하며 추가 지급하지 않는다. SavePoint는 당시 자산과
+노드 상태를 함께 복원한다. 실제 paired persistence 실패는 Core 상태와 두 원본 파일을 보존한다.
+
+## U16-3 딜러와 미니게임
+
+`dealer` policy가 있는 시설의 Gambling은 RewardSession의 optional boxed dealer owner로 진입한다. 원정 설명 이력은 RunProgression의 dealer_introduced이며 새 원정에서 초기화된다. 첫/반복 제안과 첫 게임 뒤 갬빗은 정상 authored VN 선택을 사용한다. 첫 수락/거절과 갬빗 선택은 Core가 처리하며 UI가 포인트를 지급하지 않는다. 현재 dealer 조회는 단계·revision·잔액·기본규칙/손익·배율·상품 정의/Normal상태·가격/재고·원금·담보/회수 선택/포기와 다음 자격을 제공한다. 블랙잭 hole/미래덱/RNG는 공개하지 않는다.
+
+정상 명령 `dealer_act`는 `{revision, action}`을 갖고 action의 type으로 choose_game/start_round/play/forfeit/continue/open_collateral/select_collateral/cancel_collateral/confirm_collateral/settle/select_redemption/confirm_redemption/purchase/leave를 구분한다. choose_game의 game은 Blackjack/DicePoker/Flip7이며 wager는 앞의두게임에서 양수 부호정수 판돈, Flip7에서는0(공개된고정손실사용)이다. gambit은 첫게임 선택 뒤VN에서 확정하며변경하지않는다. Ready에서는cancel_game이무차감이고 Playing에서는forfeit이현재판손실1회다. play.action은 hit/stand/double/roll(held5개)/target(seat0..2)이며해당게임·턴·대상에맞지않으면무변경오류다. revision이오래된중복명령은거절된다.
+
+잔액은음수를보존하며양수에서만새판을시작한다. 갬빗은게임순손익에만적용하고기본지급·담보원금·상환·가격에는적용하지않는다. maximum_loss와double_maximum_loss는현재가능한손실이며잔액전체를배율로곱하지않는다. 정상블랙잭/dice/Flip7의판본·타이브레이크·NPC·스코어순서는 [채택 규칙](goals/core_dealer_minigames/RULES.ko.md)을따른다. 판수게임상한이나판이력누적을추가하지않으며현재판·마지막결과만유지한다.
+
+미장착사본은loan확정에서session escrow로이동하여다른사용에서제외한다. 회수는원래UUID/variant를그대로반환하고포기는그사본만제거한다. 정산→담보회수/포기→상점→나가기순서를고정한다. purchase는현잔액/재고/공통grant를동일transaction에서반영한다. 잔액0/음수여도상점을보고나갈수있으며leave/제안거절에서만조우완료와노드소비를확정한다. 기존ClaimReward/ExitReward/CompleteNode로정산을우회하지않는다.
+
+같은process 조회는현재게임/담보/구매를유지한다. 미완료 fresh Continue는게임난수·설명이력·포인트·담보·중간구매를함께입장전으로복원한다. 완료Continue는원금회수/포기/구매/노드소비를보존하고SavePoint는당시전체상태로복원한다. paired publish 실패는메모리와active/profile 원본을보존한다. 현재 공식 유물공급 공백은빈상품목록이며대표외부pack의효과/상품검증과공식콘텐츠채택을구분한다.
+
+## U16-4 스트레스 연속 방어전
+
+시설의 `stress_combat` 정책이 있는 StressCombat은 Reward 배정에서 기존 live Defense 전투로 진입한다. 전용 PVE class `StressCombat`은 일반 지도 조우 추첨에서 제외된다. `entry_preview.stress_combat`은5라운드·첫 보상·실제 수량 배율을 입장 전에 공개하고 combat_deterrence는 전 라운드에 고정할 적 강화 자격을 제공한다.
+
+`game_state_context.stress_combat`은 battle_uuid/current_round/completed_rounds/awaiting_choice/quantity_multiplier/pending_rewards/next_rewards를 제공한다. 배율은 안내에 반영된 값이며 서버가 안내값을 다시 곱해 정산하지 않는다. `stress_combat_act` 명령은 `{battle_uuid, completed_rounds, extract}`와 공통 battle authority를 요구한다. 선택 구간에서 extract=false는 같은 BattleCore로 다음 라운드, true는 누적분을 받고 성공 종료한다. 오래된 UUID/라운드·선택 밖 호출은 거절한다. 선택 구간은 조회·재접속과 이 선택만 허용하며 전투 시간과 주기 자원/쿨다운이 진행하지 않는다.
+
+개별 라운드에는 노드 소비·실제 보상·기본 XP를 처리하지 않는다. 성공 철수 또는5라운드 완료는 고정 누적분을 ClaimAll과 기존 grant로 정산한다. 패배는 미수령 전부 상실하며 직원 손실과 기본 생존 XP는 공통 결과에서 전체1회 적용한다. 성공 무억제는 해당 수량/기본 XP2배·유물 수량 유지, 패배 기본 XP는 기존량이다.
+
+전투중 RetreatBattle은 기존 snapshot으로 전투 변화/소비를 복원한 뒤 노드를 소비한다. 최초 비용/입장 receipt 유지·XP 미지급·재도전 불가이며 일반 후퇴2회 안내를 이 활동에 적용하지 않는다. 미완료 fresh Continue는 입장전으로, 완료된 성공/패배/후퇴는 결과와 노드 소비를 함께 복원한다. 같은 프로세스 재접속은 현재 라운드 선택을 유지한다. SavePoint와 paired publication은 기존 owner를 사용한다.

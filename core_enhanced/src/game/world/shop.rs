@@ -10,7 +10,7 @@ use crate::game::{
     data::shop_data::{ShopMerchandise, ShopMerchandiseEntry, ShopMetadata},
     determinism,
     enums::{ShopAction, ShopEventOption, ShopOfferOption, ShopRefreshOption},
-    map::{GameMode, MapNodeId},
+    map::MapNodeId,
     resources::{
         ConsumableItemDto, InventoryDiffDto, InventoryItemDto, ShopOfferState, ShopSessionState,
     },
@@ -69,85 +69,8 @@ impl GameCore {
             offers: Vec::new(),
             purchased_merchandise: HashSet::new(),
         };
-        if self.is_wandering_monolith_shop(shop) {
-            let policy = &self.run_policy().monolith;
-            session.offer_count = policy.first_page_offer_count;
-            session.refresh_policy = shop.refresh_policy.map(|mut refresh| {
-                refresh.max_uses = u32::from(policy.paid_refresh_uses);
-                refresh
-            });
-            session.offers = self.generate_wandering_first_page(&session, shop)?;
-        } else {
-            session.offers = self.generate_shop_page(&session, shop, 0)?;
-        }
+        session.offers = self.generate_shop_page(&session, shop, 0)?;
         Ok(session)
-    }
-
-    fn is_wandering_monolith_shop(&self, shop: &ShopMetadata) -> bool {
-        self.state.run.as_ref().is_some_and(|run| {
-            run.run_progression.game_mode == GameMode::Endless
-                && run.run_progression.floor_index().saturating_add(1)
-                    >= self.run_policy().monolith.wandering_merchant_min_floor
-                && shop.id == self.run_policy().monolith.wandering_merchant_shop_id
-        })
-    }
-
-    fn generate_wandering_first_page(
-        &self,
-        session: &ShopSessionState,
-        shop: &ShopMetadata,
-    ) -> Result<Vec<ShopOfferState>, GameError> {
-        let run = self.state.run.as_ref().ok_or(GameError::InvalidAction)?;
-        let mut eligible = run
-            .monolith
-            .progress_by_abnormality
-            .iter()
-            .filter(|(_, progress)| progress.is_offer_eligible())
-            .filter_map(|(abnormality_id, _)| {
-                self.game_data
-                    .abnormality_data
-                    .get_by_id(abnormality_id)
-                    .map(|metadata| (abnormality_id.clone(), metadata))
-            })
-            .collect::<Vec<_>>();
-        eligible.sort_by(|left, right| left.0.cmp(&right.0));
-        let monolith_count = eligible.len().min(2);
-        let item_count = session.offer_count.saturating_sub(monolith_count);
-        let mut offers = self.generate_shop_page_with_count(session, shop, 0, item_count)?;
-
-        let page_seed = determinism::seed_with_uuid(
-            self.node_seed(session.node_id, SHOP_PAGE_SEED_NAMESPACE),
-            0,
-            shop.uuid,
-        );
-        let mut rng = rand::rngs::StdRng::seed_from_u64(determinism::seed_with_namespace(
-            page_seed,
-            0x4d4f_4e4f_4c49_5448,
-        ));
-        for slot in item_count..session.offer_count {
-            let total_weight = eligible
-                .len()
-                .checked_mul(self.run_policy().monolith.monolith_offer_weight as usize)
-                .ok_or(GameError::InvalidAction)?;
-            if total_weight == 0 {
-                return Err(GameError::InvalidAction);
-            }
-            let selected_index = rng.gen_range(0..total_weight)
-                / self.run_policy().monolith.monolith_offer_weight as usize;
-            let (abnormality_id, metadata) = eligible.remove(selected_index);
-            offers.push(ShopOfferState {
-                offer_id: shop_offer_id(page_seed, slot)?,
-                merchandise: ShopMerchandise::Monolith {
-                    abnormality_id: abnormality_id.clone(),
-                },
-                item_uuid: metadata.uuid,
-                quantity: u32::from(self.run_policy().monolith.initial_uses),
-                total_price: self.run_policy().monolith.monolith_price,
-                repeatable: false,
-                tags: vec!["monolith".to_string()],
-            });
-        }
-        Ok(offers)
     }
 
     fn generate_shop_page(
@@ -191,7 +114,15 @@ impl GameCore {
         );
         let mut rng = rand::rngs::StdRng::seed_from_u64(seed);
         let mut offers = Vec::with_capacity(offer_count);
-        for slot in 0..offer_count {
+        let (basic, random): (Vec<_>, Vec<_>) = candidates.into_iter().partition(|entry| entry.guaranteed);
+        if basic.len() > offer_count {
+            return Err(GameError::InvalidStaticData(format!("shop '{}' has too many guaranteed goods", shop.id)));
+        }
+        for entry in basic {
+            offers.push(self.offer_from_entry(shop, &entry, seed, offers.len())?);
+        }
+        let mut candidates = random;
+        for slot in offers.len()..offer_count {
             let total_weight = candidates.iter().try_fold(0_u64, |total, entry| {
                 total.checked_add(u64::from(entry.weight))
             });
@@ -237,18 +168,19 @@ impl GameCore {
         page_seed: u64,
         slot: usize,
     ) -> Result<ShopOfferState, GameError> {
-        let item = self
-            .game_data
-            .shop_merchandise_item(&entry.merchandise)
-            .ok_or_else(|| {
-                GameError::InvalidStaticData(format!(
-                    "shop '{}' references missing merchandise '{}'",
-                    shop.id,
-                    entry.merchandise.identity_key()
-                ))
-            })?;
+        let (item_uuid, base_price) = match &entry.merchandise {
+            ShopMerchandise::Relic { relic_id } => self.game_data.relic_data.get_by_id(relic_id)
+                .and_then(|item| entry.base_price.map(|price| (item.uuid, price))),
+            ShopMerchandise::RevivalCatalyst { material_id } => self.game_data.equipment_data.get_material_by_id(material_id)
+                .filter(|item| item.material_type == crate::game::data::equipment_data::EquipmentMaterialType::RevivalCatalyst)
+                .and_then(|item| entry.base_price.map(|price| (item.uuid, price))),
+            ShopMerchandise::RelicCorruptionCatalyst => entry.base_price
+                .map(|price| (crate::game::data::shop_data::RELIC_CORRUPTION_CATALYST_UUID, price)),
+            _ => self.game_data.shop_merchandise_item(&entry.merchandise).map(|item| (item.uuid(), item.price())),
+        }.ok_or_else(|| GameError::InvalidStaticData(format!(
+            "shop '{}' references missing or unpriced merchandise '{}'", shop.id, entry.merchandise.identity_key())))?;
         let buy_percent = entry.buy_percent.unwrap_or(shop.default_buy_percent);
-        let unit_price = checked_ceil_percent(item.price(), buy_percent).ok_or_else(|| {
+        let unit_price = checked_ceil_percent(base_price, buy_percent).ok_or_else(|| {
             GameError::InvalidStaticData(format!(
                 "shop '{}' has invalid buy quote for '{}'",
                 shop.id,
@@ -272,7 +204,7 @@ impl GameCore {
         Ok(ShopOfferState {
             offer_id: shop_offer_id(page_seed, slot)?,
             merchandise: entry.merchandise.clone(),
-            item_uuid: item.uuid(),
+            item_uuid,
             quantity: entry.quantity,
             total_price,
             repeatable: entry.repeatable,
@@ -311,19 +243,18 @@ impl GameCore {
         &self,
         offer: &ShopOfferState,
     ) -> crate::game::behavior::ShopPayloadEligibilityDto {
-        if let ShopMerchandise::Monolith { abnormality_id } = &offer.merchandise {
-            let eligible = self.state.run.as_ref().is_some_and(|run| {
-                run.run_progression.game_mode == GameMode::Endless
-                    && run
-                        .monolith
-                        .progress(abnormality_id)
-                        .is_some_and(|progress| progress.is_offer_eligible())
-            });
-            if !eligible {
-                return crate::game::behavior::ShopPayloadEligibilityDto::disabled(
-                    ActionDisabledReasonCode::OfferUnavailable,
-                );
-            }
+        if matches!(offer.merchandise, ShopMerchandise::Monolith { .. }) {
+            return crate::game::behavior::ShopPayloadEligibilityDto::disabled(ActionDisabledReasonCode::RetiredFeature);
+        }
+        let quantity_fits = match &offer.merchandise {
+            ShopMerchandise::RevivalCatalyst { material_id } => self.state.inventory.equipment_materials
+                .amount(material_id).checked_add(offer.quantity).is_some(),
+            ShopMerchandise::RelicCorruptionCatalyst => self.state.crafting_resources.relic_corruption_catalysts
+                .checked_add(offer.quantity).is_some(),
+            _ => true,
+        };
+        if !quantity_fits {
+            return crate::game::behavior::ShopPayloadEligibilityDto::disabled(ActionDisabledReasonCode::InvalidQuantity);
         }
         if self.state.enkephalin.amount < offer.total_price {
             crate::game::behavior::ShopPayloadEligibilityDto::disabled(
@@ -548,34 +479,6 @@ impl GameCore {
             return Err(shop_unavailable(ActionKind::PurchaseItem, reason));
         }
 
-        if let ShopMerchandise::Monolith { abnormality_id } = &offer.merchandise {
-            let mut next_monolith = self.run_state()?.monolith.clone();
-            next_monolith
-                .purchase(abnormality_id, self.run_policy().monolith.initial_uses)
-                .map_err(|_| GameError::InvalidAction)?;
-            let next_currency = self
-                .state
-                .enkephalin
-                .amount
-                .checked_sub(offer.total_price)
-                .ok_or(GameError::InsufficientResources)?;
-            let mut next_session = session.clone();
-            let removed = next_session.remove_offer(offer_id)?;
-            next_session
-                .purchased_merchandise
-                .insert(removed.merchandise);
-            self.run_state_mut()?.monolith = next_monolith;
-            self.state.enkephalin.amount = next_currency;
-            self.commit_shop_session(
-                next_session,
-                ShopSessionCommitMode::AllowActiveOnlyWithoutRun,
-            )?;
-            return Ok(BehaviorResult::PurchaseItem {
-                enkephalin: next_currency,
-                inventory_diff: InventoryDiffDto::default(),
-            });
-        }
-
         let effect = match &offer.merchandise {
             ShopMerchandise::Equipment { equipment_id } => RewardEffect::GrantEquipment {
                 equipment_id: equipment_id.clone(),
@@ -584,6 +487,11 @@ impl GameCore {
                 consumable_id: consumable_id.clone(),
                 quantity: offer.quantity,
             },
+            ShopMerchandise::Relic { relic_id } => RewardEffect::GrantRelic { relic_id: relic_id.clone() },
+            ShopMerchandise::RevivalCatalyst { material_id } => RewardEffect::GrantEquipmentMaterial {
+                material_id: material_id.clone(), amount: offer.quantity,
+            },
+            ShopMerchandise::RelicCorruptionCatalyst => RewardEffect::GrantRelicCorruptionCatalyst { amount: offer.quantity },
             ShopMerchandise::Monolith { .. } => return Err(GameError::InvalidAction),
         };
         let mut grant_state = EconomyGrantState::capture(&self.state)?;
@@ -614,6 +522,8 @@ impl GameCore {
         Ok(BehaviorResult::PurchaseItem {
             enkephalin: self.state.enkephalin.amount,
             inventory_diff: granted.inventory_diff,
+            relic_diffs: granted.relic_diffs,
+            crafting_resources: granted.crafting_resources,
         })
     }
 
@@ -657,7 +567,8 @@ impl GameCore {
                     ));
                 }
             }
-            ShopMerchandise::Monolith { .. } => return Err(GameError::InvalidAction),
+            ShopMerchandise::Monolith { .. } | ShopMerchandise::Relic { .. }
+            | ShopMerchandise::RevivalCatalyst { .. } | ShopMerchandise::RelicCorruptionCatalyst => return Err(GameError::InvalidAction),
         }
         let next_currency = self.state.enkephalin.amount + total_quote;
         self.state.inventory = next_inventory;
@@ -800,6 +711,7 @@ mod tests {
 
     fn equipment(id: &str, uuid: u128, price: u32) -> EquipmentMetadata {
         EquipmentMetadata {
+            content_family: None,
             id: id.to_string(),
             uuid: Uuid::from_u128(uuid),
             name: id.to_string(),
@@ -840,6 +752,8 @@ mod tests {
     ) -> ShopMerchandiseEntry {
         ShopMerchandiseEntry {
             merchandise,
+            base_price: None,
+            guaranteed: false,
             quantity,
             weight: 1,
             repeatable,

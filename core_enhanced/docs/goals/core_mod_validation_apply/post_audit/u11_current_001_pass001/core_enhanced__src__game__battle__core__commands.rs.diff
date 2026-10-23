@@ -1,0 +1,36 @@
+--- core_enhanced/src/game/battle/core/commands.rs BEFORE
+
++++ core_enhanced/src/game/battle/core/commands.rs CURRENT
+
+@@ -821,6 +821,30 @@
+
+                 } => {
+                     if self.channel_active(caster_id) {
+                         continue;
++                    }
++                    // A proc counterpart is an event hint, never an accepted
++                    // player selection. Inspect this exact equipped provider
++                    // before consuming its roll, cooldown or one-shot token.
++                    let selection_source = crate::game::battle::runtime_facts::RuntimeFactSource {
++                        actor: Some(caster_id),
++                        equipment: equipment_source,
++                        ..Default::default()
++                    };
++                    let requires_selection = match self.current_skill_view(
++                        &skill_id, caster_id, &selection_source,
++                    ) {
++                        Some(skill) => self.requires_explicit_structural_selection(
++                            skill, caster_id, &selection_source,
++                        ),
++                        None => Ok(false),
++                    };
++                    if control::poll("trigger_structural_selection").is_err() {
++                        break;
++                    }
++                    match requires_selection {
++                        Ok(true) => continue,
++                        Ok(false) => {}
++                        Err(_) => break,
+                     }
+                     if !self.should_fire_triggered_ability(
+                         super::sim::TriggeredAbilityProcContext {

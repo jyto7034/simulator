@@ -1,0 +1,20 @@
+(relics:[(
+ id:"u11_recipe_relic",uuid:"c0de1100-0000-0000-0000-000000006102",
+ name:"Independent finite structural recipes",description:"Original41+7=48; generated53+11=64; distinct finite lifetimes",
+ rarity:"probe",allow_duplicates:false,effects:[],dismantle_equipment_dust:1,
+ rules:[
+  (id:"original_single",selector:(effect:(all_tags:["u11_recipe_original"])),apply:Recipe(PersonalShieldSingle(
+   initial_amount:(moment:Snapshot,root:Const((value:41,unit:Magnitude)))))),
+  (id:"original_add",selector:(effect:(all_tags:["u11_recipe_original"])),apply:Edit(property:PersonalShieldInitialAmount,operation:Add(Hp(7)))),
+  (id:"finite_child",selector:(effect:(all_tags:["u11_recipe_anchor"])),apply:Grant(FiniteFlow(
+   anchor_action_id:"anchor",steps:[(id:"child_shield",target:SelfUnit,delivery:Instant,effects:[
+    (id:"child",tags:["u11_recipe_generated"],op:PersonalShieldGrant(definition:(
+     amount:(moment:Snapshot,root:Const((value:19,unit:Magnitude))),duration_ms:350,priority:2,
+     recipients:PlayerEmployeesAtRelease(radius_units:2000000))))])],
+   flow:Sequence(id:"finite_sequence",children:[Wait(id:"child_delay",duration_ms:10),
+    Action(id:"child_once",step_id:"child_shield",wait:EffectsSettled)])))),
+  (id:"generated_single",selector:(effect:(all_tags:["u11_recipe_generated"])),apply:Recipe(PersonalShieldSingle(
+   initial_amount:(moment:Snapshot,root:Const((value:53,unit:Magnitude)))))),
+  (id:"generated_add",selector:(effect:(all_tags:["u11_recipe_generated"])),apply:Edit(property:PersonalShieldInitialAmount,operation:Add(Hp(11)))),
+ ]
+)])

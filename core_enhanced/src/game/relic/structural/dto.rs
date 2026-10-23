@@ -11,7 +11,12 @@ use uuid::Uuid;
 #[derive(Debug, Clone, Serialize)]
 pub enum RelicRuleState {
     Active,
+    Pending { reason: RelicPendingReason },
     Dormant { reason: RelicDormantReason },
+}
+#[derive(Debug, Clone, Serialize)]
+pub enum RelicPendingReason {
+    ActualEventPredicate,
 }
 #[derive(Debug, Clone, Serialize)]
 pub enum RelicDormantReason {
@@ -55,8 +60,37 @@ pub struct RelicEffectivePlanDto {
     pub providers: Vec<ProspectiveProvider>,
     pub rules: Vec<RelicRuleStateDto>,
     pub effects: Vec<EffectiveEffectDto>,
+    /// Action/delivery changes include valid sites with no per-recipient effects.
+    pub action_modifiers: Vec<ActionModifierDto>,
+    pub causal_rules: Vec<CausalRuleDto>,
+    pub wedge_rules: Vec<WedgeRuleDto>,
     pub capabilities: Vec<RelicCapabilityDescriptor>,
+    pub causal_capabilities: Vec<super::capabilities::RelicCausalCapabilityDescriptor>,
     pub compile_usage: CompileUsage,
+}
+#[derive(Debug, Clone, Serialize)]
+pub struct ActionModifierDto {
+    pub provider_index: usize,
+    pub contribution: PlanContribution,
+    pub change: crate::game::ability::action::ActionChange,
+}
+#[derive(Debug, Clone, Serialize)]
+pub struct CausalRuleDto {
+    pub contribution: PlanContribution,
+    pub selector: super::authoring::StructuralSelectorDef,
+    pub condition: super::authoring::RelicConditionDef,
+    pub event: Option<super::authoring::CausalEventDef>,
+    pub source: crate::game::data::relic_data::RelicDamageSelector,
+    pub interval_ms: Option<u64>,
+    pub payload: super::authoring::CausalPayloadDef,
+}
+#[derive(Debug, Clone, Serialize)]
+pub struct WedgeRuleDto {
+    pub contribution: PlanContribution,
+    pub selector: super::authoring::StructuralSelectorDef,
+    pub condition: super::authoring::RelicConditionDef,
+    pub increment_percent: u32,
+    pub effect_sites: Vec<crate::game::ability::authoring::EffectSite>,
 }
 pub(crate) fn explain(
     plan: &EmployeeEffectivePlan,
@@ -90,9 +124,46 @@ pub(crate) fn explain(
         providers: plan.providers.clone(),
         rules: plan.rules.clone(),
         effects: Vec::new(),
+        action_modifiers: Vec::new(),
+        causal_rules: Vec::new(),
+        wedge_rules: Vec::new(),
         capabilities: structural_capabilities().to_vec(),
+        causal_capabilities: super::capabilities::causal_capabilities().to_vec(),
         compile_usage: plan.usage.clone(),
     };
+    for modifier in &plan.action_modifiers {
+        super::compiler::admit_serialized_copy(modifier, &mut work)?;
+        work.reserve(Some(std::mem::size_of::<ActionModifierDto>()), "action_modifier_dto")?;
+        dto.action_modifiers.push(ActionModifierDto {provider_index:modifier.provider, contribution:modifier.contribution.clone(), change:modifier.change.clone()});
+    }
+    for rule in &plan.causal_rules {
+        super::compiler::admit_serialized_copy(rule, &mut work)?;
+        work.reserve(
+            Some(std::mem::size_of::<CausalRuleDto>()),
+            "causal_dto_entry",
+        )?;
+        let entry = CausalRuleDto {
+            contribution: rule.contribution.clone(),
+            selector: rule.selector.clone(),
+            condition: rule.condition.clone(),
+            event: rule.event,
+            source: rule.source.clone(),
+            interval_ms: rule.interval_ms,
+            payload: rule.payload.clone(),
+        };
+        dto.causal_rules.push(entry);
+    }
+    for rule in &plan.wedge_rules {
+        super::compiler::admit_serialized_copy(rule, &mut work)?;
+        work.reserve(Some(std::mem::size_of::<WedgeRuleDto>()), "wedge_dto_entry")?;
+        dto.wedge_rules.push(WedgeRuleDto {
+            contribution: rule.contribution.clone(),
+            selector: rule.selector.clone(),
+            condition: rule.condition.clone(),
+            increment_percent: rule.increment_percent,
+            effect_sites: rule.effect_sites.clone(),
+        });
+    }
     work.reserve(
         plan.effects
             .len()

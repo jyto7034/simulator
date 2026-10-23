@@ -1,0 +1,28 @@
+{
+  "time": "2026-10-14T09:46:38.010925+00:00",
+  "target": "u14_current_002",
+  "record_checks": {
+    "SOURCE.tar.gz": true,
+    "SOURCE_MANIFEST.json": true,
+    "EVIDENCE_MANIFEST.json": true,
+    "RESTORE.json": true,
+    "predecessor_evidence_manifest": true,
+    "HEAD": true
+  },
+  "manifests": {
+    "target/u14_current_002/SOURCE_MANIFEST.json": {
+      "members": 713,
+      "mismatches": []
+    },
+    "target/u14_current_002/EVIDENCE_MANIFEST.json": {
+      "members": 600,
+      "mismatches": []
+    },
+    "target/u14_current_001/EVIDENCE_MANIFEST.json": {
+      "members": 980,
+      "mismatches": []
+    }
+  },
+  "unlisted_production_files": [],
+  "passed": true
+}

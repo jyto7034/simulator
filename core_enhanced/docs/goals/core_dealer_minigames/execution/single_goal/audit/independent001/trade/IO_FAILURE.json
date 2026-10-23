@@ -1,0 +1,13 @@
+{
+  "command": {
+    "action": {
+      "type": "leave"
+    },
+    "revision": 14,
+    "type": "dealer_act"
+  },
+  "error": "player profile filesystem error: Is a directory (os error 21)",
+  "index": 16,
+  "memory_and_disk_unchanged": true,
+  "passed": true
+}

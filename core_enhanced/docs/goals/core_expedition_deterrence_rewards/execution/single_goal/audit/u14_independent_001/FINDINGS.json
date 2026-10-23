@@ -1,0 +1,53 @@
+[
+  {
+    "id": "F-U14-001",
+    "priority": "P2",
+    "status": "open",
+    "scope_classification": "범위 안 — 지원 경로",
+    "title": "다른 방문 방의 미회수 봉인 보스를 봉인 없음/HP·ATK100%로 공개한다",
+    "target": "u14_current_001",
+    "owner": "GOAL-CEDR-01 / GEX-10 / public facility preview",
+    "acceptance": [
+      "A13"
+    ],
+    "related_acceptance": [
+      "A02",
+      "A18",
+      "A20",
+      "A21"
+    ],
+    "source": [
+      {
+        "path": "core_enhanced/src/game/world/facility_rooms.rs",
+        "line": 182
+      },
+      {
+        "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+        "line": 197
+      },
+      {
+        "path": "core_enhanced/src/game/world/facility_rooms.rs",
+        "line": 6
+      }
+    ],
+    "cause": "facility_view iterates current and visited room maps, but node_entry_preview calls sealed_golden_bough, which searches only run.map and state.current_room_id. A visited-room node therefore resolves None and exposes an unsealed100% snapshot.",
+    "reproduction": [
+      "Supported authored catalog: B1-01 optional normal-boss slots1/3, both weighted plans contain slot1; two same-depth rooms connected bidirectionally; existing SavePoint2/maintenance5/shop8 route.",
+      "Normal package_official and content_pack::load succeed; public starter selection begins at deterrence12.",
+      "Observe slot1 sealed=true,HP/ATK150%; complete2/5/8/G and move toB1-02 without entering or defeating either boss.",
+      "At balance9 the facility overview still marks the B1-01 bough uncollected/reachable, but both activity and map-node entry_preview report sealed=false,HP/ATK100%.",
+      "Complete B1-02 route and return at balance6. Same node/plan/collection state again reports sealed=true,HP/ATK150%. All observed balances remain restrained; no battle/collection took place."
+    ],
+    "expected": "A prospective public preview of a visited room resolves that room/node original sealed bough and authored multiplier. Room movement alone cannot remove a seal or reduce the advertised stats.",
+    "evidence": [
+      "visited_probe001/RESULT.json",
+      "visited_probe001/PACKAGE.json",
+      "PROBE_RECEIPT_001.json",
+      "probe001.stdout.log",
+      "probe/src/main.rs"
+    ],
+    "impact": "Player/consumer planning from the whole-facility map underestimates the reachable sealed encounter. The probe does not establish a combat-settlement, reward-duplication, or persistence defect.",
+    "correction_boundary": "Correct room/node context in U14 public projection; preserve the current-battle settlement owner, receipt/cost semantics, hidden-encounter policy and revival exclusion. Add/reexecute affected public query and room-roundtrip regression, freeze successor as required, then separate independent re-audit.",
+    "product_edits_in_audit": 0
+  }
+]

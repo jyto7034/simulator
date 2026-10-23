@@ -1,0 +1,81 @@
+{
+  "record_ref": "PVR-CRAR-C2-P06-GEX10-001",
+  "captured_date": "2026-08-23",
+  "handoff_ref": "HA-CRAR-P2G60-002",
+  "goal_set_ref": "GS-CRAR-P2G50-002",
+  "goal_id": "GOAL-CRAR-C2-P06-CHECKPOINT-MIGRATION",
+  "phase_id": "PHASE-CRAR-C2-06-CHECKPOINT-MIGRATION",
+  "work_package": "WP-CRAR-C2-07",
+  "policy_ref": "PER-CRAR-010-R3-CODE-REVIEWED",
+  "decision_ref": "DR-CRAR-009-R1",
+  "realization_decision_ref": "TD-CRAR-020",
+  "invariant_ref": "IVA-C2-07",
+  "result": "GEX-10 exit criteria met",
+  "implemented_contract": {
+    "production_write_version": 5,
+    "production_v4_writer_count": 0,
+    "production_dual_writer_count": 0,
+    "v5_root_fields": ["version", "checkpoint", "checkpoint_sha256"],
+    "v5_checksum": "lowercase 64-character SHA-256 over recursive lexical-object-key canonical JSON of checkpoint",
+    "supported_read_versions": [4, 5],
+    "v4_reader": "strict deserialize-only import_v4_checkpoint adapter",
+    "schema_alias_or_best_effort_count": 0,
+    "reader_removal_certified": false,
+    "reader_removal_gate": "rejects until separate migration certification",
+    "canonical_v4_checkpoint_sha256": "64f78ce035c38e523c95b14456296750aa2a04a1b43f3f0f00b5c101d608bcc2",
+    "diagnostic_history_fields": 0
+  },
+  "boundary_matrix": {
+    "canonical_v4_import_to_v5_recapture": "pass; exact checkpoint meaning",
+    "v4_v5_state_and_next_decision_differential": "pass; exact semantic equality",
+    "v5_reordered_object_members": "pass; checksum and continuation stable",
+    "malformed_missing_extra_unknown_checksum": "strict pre-mutation rejection",
+    "checksum_valid_graph_corruption": "strict pre-mutation rejection",
+    "first_retry_authority_equality": "pass for complete continuation snapshot",
+    "empty_checkpoint_export": "None",
+    "inventory_reservation_exact": 50,
+    "inventory_reservation_plus_one": "explicit inventory graph rejection",
+    "max_loads_exact": 3,
+    "max_loads_plus_one": "InvalidAction before mutation",
+    "active_lifecycle_contention": "InvalidAction before mutation"
+  },
+  "validation": [
+    {"command":"cargo fmt --all -- --check","result":"exit 0"},
+    {"command":"target-scoped git diff --check","result":"exit 0"},
+    {"command":"cargo check -p game_core --release --lib","result":"exit 0; warnings 0"},
+    {"command":"focused checkpoint_validation selector","result":"15 passed; 0 failed; 0 ignored"},
+    {"command":"three actual checkpoint caller selectors","result":"facility, monolith and combat cache continuation passed"},
+    {"command":"cargo test -p game_core","result":"1150 passed; 0 failed; 0 ignored (1099 library + 51 integrations)"},
+    {"command":"P01 feature manifest verifier","result":"57 features; 42 contents; composite 3ec400cf300247eaab0555e842663ebc5c7908a7edbe8f189df007560c1690d0; errors 0"},
+    {"command":"P02 valid and invalid release probes","result":"valid exit 0; invalid expected exit 101 E0432/E0603/E0277/E0599"},
+    {"command":"P03 valid and invalid release probes","result":"valid exit 0; invalid expected exit 101 E0603/E0599/E0616"},
+    {"command":"P04 valid and invalid release probes","result":"valid exit 0; invalid expected exit 101 E0603"},
+    {"command":"P05 valid and invalid release probes","result":"valid exit 0; invalid expected exit 101 E0432/E0599"}
+  ],
+  "predecessor_currentness": [
+    "ATR-CRAR-C2-P01-GEX20-006: Complete / High",
+    "ATR-CRAR-C2-P02-GEX20-005: Complete / High",
+    "ATR-CRAR-C2-P03-GEX20-004: Complete / High",
+    "ATR-CRAR-C2-P04-GEX20-003: Complete / High",
+    "ATR-CRAR-C2-P05-GEX20-002: Complete / High"
+  ],
+  "validation_dimensions": {
+    "success": "canonical V4 and current V5 continue through actual Core and recapture V5",
+    "invalid_input": "malformed, unknown, missing, extra, checksum and graph-invalid matrix",
+    "failure_rollback": "codec and graph failures preserve complete destination authority before publication",
+    "retry_idempotency": "repeated failures return equal error and state; repeated writer bytes on same basis equal",
+    "ordering_concurrency": "single P03 application writer and active-lifecycle contention pre-rejection",
+    "boundary_empty_max": "empty export, exact 50-slot reservation/overflow and max load count/overflow",
+    "disconnect_restart_persistence": "bytes from one Core continue in fresh Core with equal state and next decision",
+    "live_data": "completed SavePoint graph restores only inside current validated-data context",
+    "producer_consumer": "actual SavePoint writer to bytes to fresh Core reader and runtime map result",
+    "legacy_fallback_absence": "V4 production writer, dual write, schema alias and best-effort fallback count zero; explicit reader retained"
+  },
+  "known_limitations": [
+    "released/deployed save population and external store envelope remain evidence-backed N/A and uninspected",
+    "P07 owns transport-neutral public projection architecture",
+    "P08 owns checkpoint serialization timing, allocation, memory, optimization and performance PASS",
+    "whole-library Clippy retains a pre-existing denied never_loop outside P06"
+  ],
+  "external_scope": "game_server, Unity, sibling resources and external consumers uninspected and unclaimed"
+}

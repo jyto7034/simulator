@@ -1,0 +1,41 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Handoff Artifact",
+        "Artifact ID": "HA-CSCB-001",
+        "Content Digest": "sha256:45cf6c050391f73e28fcd0a55b31c99403dcbb8b13fa41205073527eb1cb6b52"
+      },
+      "payload": {
+        "Result Composite Basis": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CSCB-003",
+            "Content Digest": "sha256:657835a0d2bfdc62fd7146345d6cce63bcdc4d3f35f233818c1845829044752e"
+          },
+          "Final Policy Freeze Ref": {
+            "Artifact Type": "Final Policy Freeze",
+            "Artifact ID": "FPF-CSCB-001",
+            "Content Digest": "sha256:532e0f0b70dfcd3fe302182a3f8d1fb9d19c328cd9d7894c8d5cb3034717c47d"
+          },
+          "Phase Plan Ref": {
+            "Artifact Type": "Phase Plan",
+            "Artifact ID": "PP-CSCB-001",
+            "Content Digest": "sha256:05552c05c1d8349a02ee760f5e440283ea1ad134e170b29b0fd25469ce4f2a63"
+          },
+          "Goal Set Ref": {
+            "Artifact Type": "Goal Set",
+            "Artifact ID": "GS-CSCB-001",
+            "Content Digest": "sha256:85687748eb82b656d9b4a4de8bd5fe04a64bd2be11e508e10607c7d115e3675c"
+          },
+          "Post-Freeze Change Record Ref Set": []
+        },
+        "Scope/Authorization Boundary": "P2G authors only; current direct user separately authorizes U16-4 implementation and independent subagent audit; overrides no-subagent and stop-at-audit-request. No U17/U21",
+        "Remaining Gap/Blocker/Limitation Summary": [
+          "Runtime, authoring, host persistence and costs await GEX10. Representative defense/reward content is not U21 completion. Numerical tuning is provisional."
+        ],
+        "Lifecycle Disposition": "current"
+      }
+    }
+  ]
+}

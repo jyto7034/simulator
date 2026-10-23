@@ -120,6 +120,9 @@ pub fn content() -> &'static PublicContent {
             &serde_json::to_vec_pretty(&selection).unwrap(),
         );
         let data = content_pack::load(&root, &selection, &InputLimits::default()).unwrap();
+        // Shared external-registration assertions formerly in the smoke test.
+        assert!(root.join("u08_public/relics.ron").is_file());
+        assert_eq!(selection.packs.len(), 2);
         println!(
             "U08_PUBLIC_CONTENT root={} generation={}",
             root.display(),
@@ -183,7 +186,7 @@ pub fn app() -> (CoreApplication, Vec<Uuid>) {
     let mut app = CoreApplication::new(content().data.clone(), 0xa508);
     command(
         &mut app,
-        json!({"type":"start_new_game", "game_mode":"Standard", "replace_active_run":false}),
+        json!({"type":"start_new_game", "game_mode":"Expedition", "replace_active_run":false}),
     );
     for _ in 0..128 {
         let run: RunSnapshotDto =
@@ -209,7 +212,7 @@ pub fn app() -> (CoreApplication, Vec<Uuid>) {
                 .collect();
             command(
                 &mut app,
-                json!({"type":"select_starter_employees", "employee_definition_ids":ids}),
+                json!({"type":"select_starter_employees", "employee_definition_ids":ids, "loan_copy_ids":[]}),
             );
             continue;
         }

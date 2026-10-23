@@ -1,0 +1,172 @@
+[
+  {
+    "original_test": "every_live_starter_and_recruit_has_its_active_training_set",
+    "purpose": "실제 RON의 12명 훈련 장비·액티브 파편·보상풀 분리 검사",
+    "disposition": "retained_and_corrected",
+    "current_test": "every_live_starter_and_recruit_has_its_active_training_set",
+    "passed": true,
+    "evidence": "correction002.stdout.log",
+    "preserved_assertions": "12명 정확한 장비/파편 ID, baseline 파편 없음, 일반 보상풀에서 훈련 무기 제외",
+    "preparation_changes": "containment_trainee shield/last_line: 현재 데이터·validator와 구 룰북 간 정합화. hq_containment_aide greatsword/breakthrough 유지."
+  },
+  {
+    "original_test": "prospective::u08_public_external_fixture_registers_new_definitions_before_app_setup",
+    "purpose": "외부 pack 등록 뒤 유물 1개 지급/장착 검사",
+    "disposition": "merged_into_transfer_and_content",
+    "current_test": "lifecycle::u08_public_successful_transfer_moves_exact_copy_and_only_its_employee_contributions",
+    "passed": true,
+    "evidence": "correction002.stdout.log",
+    "preserved_assertions": "root/u08_public/relics.ron 존재, selection.packs=2, 최초 단일 사본의 owner/slot0",
+    "preparation_changes": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화"
+  },
+  {
+    "original_test": "prospective::u08_public_plan_two_employees_same_skill_and_queries_preserve_all_public_roots",
+    "purpose": "동일 스킬을 가진 직원 둘의 유물 기여와 조회 순수성 검사",
+    "disposition": "retained_and_corrected",
+    "current_test": "prospective::u08_public_plan_two_employees_same_skill_and_queries_preserve_all_public_roots",
+    "passed": true,
+    "evidence": "correction002.stdout.log",
+    "preserved_assertions": "100→180/100 직원별 분리, copy 식별, prospective scope/generation, 반복 결과, public roots 불변, runtime ID/ordinal/epoch 미노출",
+    "preparation_changes": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화"
+  },
+  {
+    "original_test": "prospective::u08_public_plan_uses_real_fragment_form_and_weapon_provider_without_cross_borrowing",
+    "purpose": "실제 장착 파편·폼·무기별 효과 적용과 휴면 사유 검사",
+    "disposition": "retained_and_corrected",
+    "current_test": "prospective::u08_public_plan_uses_real_fragment_form_and_weapon_provider_without_cross_borrowing",
+    "passed": true,
+    "evidence": "correction002.stdout.log",
+    "preserved_assertions": "최종 절삭133, 기본공격+9, 다른 공급자 차용 금지, 폼/파편 교체 시100과 정확한 dormant reason",
+    "preparation_changes": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화"
+  },
+  {
+    "original_test": "prospective::u08_public_plan_split_tags_unresolved_target_and_heal_basic_are_distinct",
+    "purpose": "태그 교집합 및 런타임 대상 필요/치유 기본공격의 조회 표현 검사",
+    "disposition": "retained_and_corrected",
+    "current_test": "prospective::u08_public_plan_split_tags_unresolved_target_and_heal_basic_are_distinct",
+    "passed": true,
+    "evidence": "correction002.stdout.log",
+    "preserved_assertions": "분리 태그3/3·교집합34, dormant tags, runtime_context_required, 치유 무기에는 basic_attack_damage 없음",
+    "preparation_changes": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화"
+  },
+  {
+    "original_test": "prospective::u08_public_plan_corrupt_penalty_matches_roster_and_preserves_certified_power",
+    "purpose": "타락 후 기본/유효 능력치 및 roster·인증 전투력 일치 검사",
+    "disposition": "retained_and_corrected",
+    "current_test": "prospective::u08_public_plan_corrupt_penalty_matches_roster_and_preserves_certified_power",
+    "passed": true,
+    "evidence": "correction002.stdout.log",
+    "preserved_assertions": "기본값 불변, 방어-15/마저-10, roster 유효값 일치, peak 불변, 피해210, 반복 query roots 불변",
+    "preparation_changes": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화"
+  },
+  {
+    "original_test": "prospective::u08_public_plan_canonical_copy_order_survives_slot_permutation_and_rejects_final_overflow",
+    "purpose": "장착 슬롯 순서와 무관한 공개 plan 및 최종 overflow 표현 검사",
+    "disposition": "retained_and_corrected",
+    "current_test": "prospective::u08_public_plan_canonical_copy_order_survives_slot_permutation_and_rejects_final_overflow",
+    "passed": true,
+    "evidence": "correction002.stdout.log",
+    "preserved_assertions": "중복 Normal 합산280, 슬롯 재배치 후 plan 전체 동일, final overflow, roots 불변, 해제 후 u32::MAX 복구",
+    "preparation_changes": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화"
+  },
+  {
+    "original_test": "prospective::u08_public_plan_missing_weapon_has_no_fabricated_stats_or_damage_provider",
+    "purpose": "무기 해제 시 유물 보존과 능력치/피해 공급자 부재 검사",
+    "disposition": "retained_and_corrected",
+    "current_test": "prospective::u08_public_plan_missing_weapon_has_no_fabricated_stats_or_damage_provider",
+    "passed": true,
+    "evidence": "correction002.stdout.log",
+    "preserved_assertions": "Normal/Corrupt 양쪽에서 copy/slot/variant/material 보존, roster effective_stats 없음, 공개 plan의 없는 무기 처리와 읽기 불변",
+    "preparation_changes": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화"
+  },
+  {
+    "original_test": "event::u08_public_event_normal_reward_grants_feed_multiple_free_exact_copy_selections",
+    "purpose": "정상 보상 유물들의 무료 타락 후보·선택·재시도 검사",
+    "disposition": "retained_and_corrected",
+    "current_test": "event::u08_public_event_normal_reward_grants_feed_multiple_free_exact_copy_selections",
+    "passed": true,
+    "evidence": "correction002.stdout.log",
+    "preserved_assertions": "촉매0 무료 선택, 이미타락/미지원 제외, 후보 정렬·수치·페널티, 장착 유지, 두 이력, 재시도 멱등성, 다른copy/비활성 이벤트 거절",
+    "preparation_changes": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화"
+  },
+  {
+    "original_test": "event::u08_public_event_empty_candidates_still_allow_decline_and_exact_historical_retry",
+    "purpose": "후보 없는 두 장면에서 거절과 과거 재시도 검사",
+    "disposition": "retained_and_corrected",
+    "current_test": "event::u08_public_event_empty_candidates_still_allow_decline_and_exact_historical_retry",
+    "passed": true,
+    "evidence": "correction002.stdout.log",
+    "preserved_assertions": "빈 후보에서도 can_decline, null 선택 이력 두 개, 정확 재시도, 잘못된 UUID 거절·roots 보존, 자원0",
+    "preparation_changes": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화"
+  },
+  {
+    "original_test": "event::u08_public_event_rejects_wrong_authority_and_follows_the_committed_employee_check_branch",
+    "purpose": "EmployeeCheck 확정 분기와 정상 명령 경계의 잘못된 식별자 거절 검사",
+    "disposition": "retained_and_corrected",
+    "current_test": "event::u08_public_event_rejects_wrong_authority_and_follows_the_committed_employee_check_branch",
+    "passed": true,
+    "evidence": "correction002.stdout.log",
+    "preserved_assertions": "Check 장면 타락 금지, committed outcome과 분기 일치, 네 잘못된 식별자 각각 mutation 없음, 유효 선택의 source_scene 기록",
+    "preparation_changes": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화"
+  },
+  {
+    "original_test": "sell::u08_public_shop_rejects_all_relic_variants_and_loadouts_with_a_specific_reason",
+    "purpose": "유물 판매 금지와 구체 오류 및 상태 불변 검사",
+    "disposition": "retained_and_corrected",
+    "current_test": "sell::u08_public_shop_rejects_all_relic_variants_and_loadouts_with_a_specific_reason",
+    "passed": true,
+    "evidence": "correction002.stdout.log",
+    "preserved_assertions": "Normal/Corrupt×장착/미장착 4조합, unsellable UUID 정렬, quantity0 우선, 미지 UUID offer_unavailable, 전체 roots 보존",
+    "preparation_changes": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화"
+  },
+  {
+    "original_test": "sell::u08_public_relic_does_not_bypass_the_existing_disabled_shop_sale_policy",
+    "purpose": "유물 판매에서도 상점 밖/판매 비활성 정책을 우선 적용",
+    "disposition": "retained_and_corrected",
+    "current_test": "sell::u08_public_relic_does_not_bypass_the_existing_disabled_shop_sale_policy",
+    "passed": true,
+    "evidence": "correction002.stdout.log",
+    "preserved_assertions": "상점 밖 not_in_shop_state, 비활성 selling_unavailable, 두 실패 모두 roots 불변",
+    "preparation_changes": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화"
+  },
+  {
+    "original_test": "sell::u08_public_empty_relic_state_omits_the_derived_unsellable_list",
+    "purpose": "유물이 없을 때 파생 판매불가 목록의 JSON 필드 생략",
+    "disposition": "retained_and_corrected",
+    "current_test": "sell::u08_public_empty_relic_state_omits_the_derived_unsellable_list",
+    "passed": true,
+    "evidence": "correction002.stdout.log",
+    "preserved_assertions": "request_relic_state 결과에서 not_sellable_copy_uuids 키 자체가 없음",
+    "preparation_changes": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화"
+  },
+  {
+    "original_test": "lifecycle::u08_public_successful_transfer_moves_exact_copy_and_only_its_employee_contributions",
+    "purpose": "공개 EquipRelic로 정확한 사본을 다른 직원에게 이전",
+    "disposition": "retained_and_corrected",
+    "current_test": "lifecycle::u08_public_successful_transfer_moves_exact_copy_and_only_its_employee_contributions",
+    "passed": true,
+    "evidence": "correction002.stdout.log",
+    "preserved_assertions": "두 variant의 copy/resources 보존, 유일 slot 소유, 이전 직원100/새 직원180 또는210, penalty 귀속, copy만으로 역조회 unequip",
+    "preparation_changes": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화"
+  },
+  {
+    "original_test": "lifecycle::u08_public_abandon_then_new_run_resets_copies_slots_catalysts_and_equipment_dust",
+    "purpose": "포기 후 새 런에서 유물·슬롯·촉매·분진 초기화와 정상 Continue 검사",
+    "disposition": "retained_and_corrected",
+    "current_test": "lifecycle::u08_public_abandon_then_new_run_resets_copies_slots_catalysts_and_equipment_dust",
+    "passed": true,
+    "evidence": "correction002.stdout.log",
+    "preserved_assertions": "비어있지 않은 유물/두 슬롯/촉매4/분진23→새런0, 이전 UUID 거절, checkpoint roundtrip",
+    "preparation_changes": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화; 성공 재시작 replace_active_run=false, 활성 런 거절은 false로도 별도 확인하여 금지 true 때문에만 통과하지 않게 함; 실제 PlayerProfile 설치 후 Continue"
+  },
+  {
+    "original_test": "lifecycle::u08_public_unfinished_event_continue_rewinds_variants_and_history_but_keeps_pre_entry_paid_cost",
+    "purpose": "이벤트 전 유료 타락 비용은 유지하며 미완료 무료 타락/이력만 되감고 재진입·완료·복원",
+    "disposition": "retained_and_corrected",
+    "current_test": "lifecycle::u08_public_unfinished_event_continue_rewinds_variants_and_history_but_keeps_pre_entry_paid_cost",
+    "passed": true,
+    "evidence": "correction002.stdout.log",
+    "preserved_assertions": "진입전 checkpoint 바이트 동일, 선택 유물180 복원·기지급 타락210 유지, 촉매2/분진11 유지, 원앱 불변, 재진입 이력 초기화, 완료의 두 이력 보존",
+    "preparation_changes": "공통 support의 Standard→Expedition 및 select_starter_employees.loan_copy_ids=[] 정합화; 현재 Expedition layout/실제 Event 진입 가능한 authored fixture; fresh/after_completion에 해당 PlayerProfile 설치"
+  }
+]

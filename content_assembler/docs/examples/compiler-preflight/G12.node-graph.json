@@ -1,0 +1,48 @@
+{
+  "format": "node-graph",
+  "version": 1,
+  "id": "G12",
+  "name": "설명 문자열 동작",
+  "nodes": [
+    {
+      "id": "request",
+      "kind": "skill-request",
+      "title": "스킬 입력 사건",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "values": {},
+      "note": "컴파일 계약 검토용. 공식 콘텐츠·밸런스가 아님.",
+      "frame": null
+    },
+    {
+      "id": "action",
+      "kind": "action",
+      "title": "동작",
+      "position": {
+        "x": 320,
+        "y": 0
+      },
+      "values": {
+        "text": "대상에게 피해 10을 준다"
+      },
+      "note": "컴파일 계약 검토용. 공식 콘텐츠·밸런스가 아님.",
+      "frame": null
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "source": {
+        "node": "request",
+        "port": "out"
+      },
+      "target": {
+        "node": "action",
+        "port": "in"
+      }
+    }
+  ],
+  "frames": []
+}

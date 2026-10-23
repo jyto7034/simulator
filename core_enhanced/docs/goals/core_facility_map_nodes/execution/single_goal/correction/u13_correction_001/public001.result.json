@@ -1,0 +1,10 @@
+{
+  "command": [
+    ".cache/u12-vault-cost-target/release/u13_correction_probe",
+    "/tmp/u13-correction-public-001"
+  ],
+  "exit_code": 0,
+  "seconds": 2.3242822649990558,
+  "stdout": "public001.stdout.log",
+  "stderr": "public001.stderr.log"
+}

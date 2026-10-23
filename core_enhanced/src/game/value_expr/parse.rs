@@ -20,6 +20,22 @@ use super::{
     ResolvedTargetPredicate, ValueExpr,
 };
 
+// RON 0.5's deserialize_any parses signed magnitudes through i64, so its
+// exact round-trip range excludes i64::MIN and unsigned values above i64::MAX.
+// Wider formats retain their i128 path; RON rejects these instead of emitting
+// an artifact that its loader cannot read.
+pub(super) fn serialize_integer<S: serde::Serializer>(
+    value: &i128,
+    serializer: S,
+) -> Result<S::Ok, S::Error> {
+    let max = i128::from(i64::MAX);
+    if (-max..=max).contains(value) {
+        serializer.serialize_i64(*value as i64)
+    } else {
+        serializer.serialize_i128(*value)
+    }
+}
+
 struct AuthoredI128(i128);
 
 impl<'de> Deserialize<'de> for AuthoredI128 {
@@ -1016,5 +1032,22 @@ mod tests {
         let error = parse(&damage_expr(member_typo, 0), ExprParseLimits::default()).unwrap_err();
         assert_eq!(error.code, "ron_parse");
         assert!(error.cause.contains("unknown field"));
+    }
+}
+
+#[cfg(test)]
+mod integer_transport_tests {
+    use super::super::{TypedInteger, ValueUnit};
+    #[test]
+    fn typed_integer_ron_transport_preserves_its_exact_range_and_rejects_wider_values() {
+        for value in [0, 3, -i128::from(i64::MAX), i128::from(i64::MAX)] {
+            let original = TypedInteger::new(value, ValueUnit::Scalar);
+            let text = ron::ser::to_string(&original).unwrap();
+            let restored: TypedInteger = ron::de::from_str(&text).unwrap();
+            assert_eq!(original, restored);
+        }
+        for value in [i128::from(i64::MIN), i128::from(u64::MAX), i128::MAX] {
+            assert!(ron::ser::to_string(&TypedInteger::new(value, ValueUnit::Scalar)).is_err());
+        }
     }
 }

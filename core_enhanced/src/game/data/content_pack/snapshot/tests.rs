@@ -220,7 +220,7 @@ mod unix {
     }
 
     #[test]
-    fn invalid_utf8_directories_and_socket_inputs_return_errors() {
+    fn invalid_utf8_and_directory_inputs_return_errors() {
         let f = Fixture::new();
         f.manifest(&["data.ron"]);
         f.write("base/data.ron", [0xff]);
@@ -228,6 +228,11 @@ mod unix {
         f.manifest(&["directory"]);
         fs::create_dir(f.0.join("base/directory")).unwrap();
         assert!(f.load().err().unwrap().cause.contains("regular file"));
+    }
+
+    #[test]
+    fn socket_inputs_return_errors() {
+        let f = Fixture::new();
         f.manifest(&["socket"]);
         let _socket = UnixListener::bind(f.0.join("base/socket")).unwrap();
         assert!(f.load().is_err());

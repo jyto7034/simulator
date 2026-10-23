@@ -1,0 +1,138 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Review Scope/Source Requirement Plan",
+        "Artifact ID": "RSP-CSNA-001",
+        "Content Digest": "sha256:b5339a72b2b16b8459dbee13e12984040cf85e70ca1816f41964a0526e0bc355"
+      },
+      "payload": {
+        "Evaluated Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CSNA-003",
+          "Content Digest": "sha256:288d0861f1393c39b3120f551074bace26e4a2ab7e5660c612e98209de811a7e"
+        },
+        "Requirements": [
+          {
+            "Requirement ID": "SHOP",
+            "Required claim": "typed shop lacks relic/catalyst; fixed offers and atomic purchase/refresh exist; extend same owner",
+            "Affected Element IDs": [
+              "PE-CSNA-G23",
+              "PE-CSNA-AUTHOR"
+            ],
+            "Source locators": [
+              "core_enhanced/src/game/data/shop_data.rs",
+              "core_enhanced/src/game/data/validation.rs",
+              "core_enhanced/src/game/data/mod.rs",
+              "core_enhanced/src/game/world/shop.rs",
+              "game_resources/data/events/shops/base.ron"
+            ],
+            "Method": "bounded read-only source/symbol inspection"
+          },
+          {
+            "Requirement ID": "GRANT",
+            "Required claim": "normal relic/material/catalyst grants and seven-root candidate exist; session/query must expose new goods",
+            "Affected Element IDs": [
+              "PE-CSNA-G23",
+              "PE-CSNA-STORE",
+              "PE-CSNA-AUTHOR"
+            ],
+            "Source locators": [
+              "core_enhanced/src/game/reward.rs",
+              "core_enhanced/src/game/world/grant_state.rs",
+              "core_enhanced/src/game/data/relic_data.rs",
+              "core_enhanced/src/game/resources/selection.rs",
+              "game_resources/data/equipments/base.ron"
+            ],
+            "Method": "bounded read-only source/symbol inspection"
+          },
+          {
+            "Requirement ID": "HQ",
+            "Required claim": "paid100/max2 with default loadout/queue exists; add visible terms and actual consumer verification",
+            "Affected Element IDs": [
+              "PE-CSNA-G23",
+              "PE-CSNA-STORE"
+            ],
+            "Source locators": [
+              "core_enhanced/src/game/world/headquarters.rs",
+              "core_enhanced/src/game/world/map_content.rs",
+              "core_enhanced/src/game/world/tests/u12_lifecycle/recruitment.rs",
+              "game_resources/data/run/policy.ron"
+            ],
+            "Method": "bounded read-only source/symbol inspection"
+          },
+          {
+            "Requirement ID": "EVENT",
+            "Required claim": "seeded d20, committed check and free corruption owner exist; verify actual branches and restart",
+            "Affected Element IDs": [
+              "PE-CSNA-G24",
+              "PE-CSNA-STORE",
+              "PE-CSNA-AUTHOR"
+            ],
+            "Source locators": [
+              "core_enhanced/src/game/world/event_node.rs",
+              "core_enhanced/src/game/data/event_data.rs",
+              "core_enhanced/src/game/world/tests/u08_event_owner.rs"
+            ],
+            "Method": "bounded read-only source/symbol inspection"
+          },
+          {
+            "Requirement ID": "CONSUMABLE",
+            "Required claim": "immediate injury healing currently retains old modifier; explicit replace rule requires correction; final combat decrement exists",
+            "Affected Element IDs": [
+              "PE-CSNA-G25",
+              "PE-CSNA-STORE"
+            ],
+            "Source locators": [
+              "core_enhanced/src/game/world/maintenance.rs",
+              "core_enhanced/src/game/employee.rs",
+              "core_enhanced/src/game/world/combat.rs",
+              "core_enhanced/src/game/world/tests/equipment.rs",
+              "core_enhanced/src/game/data/consumable_data.rs"
+            ],
+            "Method": "bounded read-only source/symbol inspection"
+          },
+          {
+            "Requirement ID": "STORE",
+            "Required claim": "checkpoint and unfinished-node Continue/paired publish owners exist; new product variants need exact read/write verification",
+            "Affected Element IDs": [
+              "PE-CSNA-G23",
+              "PE-CSNA-G24",
+              "PE-CSNA-G25",
+              "PE-CSNA-STORE",
+              "PE-CSNA-AUTHOR"
+            ],
+            "Source locators": [
+              "core_enhanced/src/game/world/state.rs",
+              "core_enhanced/src/game/world/node_flow.rs",
+              "core_enhanced/src/game/world/active_run.rs",
+              "core_enhanced/src/game/world/active_run/continuation.rs",
+              "core_enhanced/src/application.rs",
+              "game_server/src/persistence/player_profile_store/application_intent.rs"
+            ],
+            "Method": "bounded read-only source/symbol inspection"
+          },
+          {
+            "Requirement ID": "PUBLIC",
+            "Required claim": "normal command/query/host exist; item display/grant diff and HQ terms require extension; reuse runner not old approval",
+            "Affected Element IDs": [
+              "PE-CSNA-G23",
+              "PE-CSNA-G24",
+              "PE-CSNA-G25",
+              "PE-CSNA-STORE",
+              "PE-CSNA-AUTHOR"
+            ],
+            "Source locators": [
+              "core_enhanced/src/game/behavior.rs",
+              "core_enhanced/src/game/world/snapshot.rs",
+              "core_enhanced/src/game/world/application.rs",
+              "core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/test_parts/run_normal_host.py"
+            ],
+            "Method": "bounded read-only source/symbol inspection"
+          }
+        ],
+        "Excluded sources": "Unity/XF and U17 full incubation excluded; no deploy claims"
+      }
+    }
+  ]
+}

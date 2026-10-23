@@ -1,0 +1,15 @@
+{
+  "checked_at": "2026-10-15T03:56:50.887815+00:00",
+  "reviewer": "new user-requested implementation-nonparticipating session; no delegation",
+  "target": "u16_2_current_001",
+  "manifests": {
+    "SOURCE_MANIFEST.json": {
+      "members": 953,
+      "mismatches": []
+    },
+    "EVIDENCE_MANIFEST.json": {
+      "members": 774,
+      "mismatches": []
+    }
+  }
+}

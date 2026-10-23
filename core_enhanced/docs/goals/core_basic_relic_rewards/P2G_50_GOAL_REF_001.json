@@ -1,0 +1,28 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Goal Set",
+        "Artifact ID": "GS-CBRR-001",
+        "Content Digest": "sha256:d96367177c43980573dbe3b8bffaa73dfd73f77cd3a9db6a6a465f407b77761f"
+      },
+      "payload": {
+        "Goal Set Document": "P2G_50_GOAL_SET.ko.md",
+        "Goal Set Document SHA256": "84bbc13ae4c4cee44b20060407bb6035c79687f9ac206718e72fa47a2719d022",
+        "Complete Goal Member Set": [
+          "GOAL-CBRR-01"
+        ],
+        "Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CBRR-001",
+          "Content Digest": "sha256:08495a1c4745d09d4c6aef52125aa114eb0730b2ce795c2878fac57e615a0743"
+        },
+        "Phase Plan Ref": {
+          "Artifact Type": "Phase Plan",
+          "Artifact ID": "PP-CBRR-002",
+          "Content Digest": "sha256:881cb24d02c4979b1080261d91dd722df5f4aa102392c560602fb6e98eebbf93"
+        }
+      }
+    }
+  ]
+}

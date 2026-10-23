@@ -1,5 +1,9 @@
 # Docs Index
 
+**[React 통합 게임 위키 실행·빌드](../../wiki_site/README.md)** · [오프라인 HTML](wiki/index.html) — 콘텐츠 도감·게임 규칙·장면별 플레이어 행동을 함께 검색하고 읽는다.
+
+환상체·스킬 파편·장비·유물의 콘텐츠 설계는 [콘텐츠 설계 위키](content/README.md)에서 찾아본다.
+
 **개발을 재개하려면 [로드맵 개발 현황](roadmaps/content_authoring/ROADMAP_STATUS.md)에서 시작한다.**
 현재 작업·다음 작업·전체 진행표는 그 문서 하나에서 안내한다.
 활성 개발 범위는 [Core 우선 통합 로드맵](roadmaps/core_first/ROADMAP.ko.md)이며,
@@ -48,17 +52,25 @@ gameplay/runtime/data 계약을 대신하지 않는다.
 | 정책→Goal 파이프라인 | [policy_to_goal_pipeline_revised_v2.md](policy_to_goal_pipeline_revised_v2.md) | 정책 요소 검토, code-informed review, Final Freeze, Phase Plan, Goal Set과 P2G-60 Handoff | 정책을 검토하고 구현 Goal로 변환할 때 |
 | Goal 실행 파이프라인 | [Goal Execution Pipeline](goal_execution_pipeline%281%29.md) | Handoff 인수, Single/Phase Goal 구현·검증, Phase 완료 감사와 Master 최종 통합 감사 | P2G-60 이후 Goal을 실행하거나 감사할 때 |
 | 게임 소개 | [game_design_overview.ko.md](game_design_overview.ko.md) | 외부 기획 검토를 위한 게임 정체성, 핵심 재미, 플레이 흐름과 차별점 소개 | 세부 구현보다 게임 전체의 방향을 먼저 이해할 때 |
+| 모드 검증·일반 실행 가이드 | [CMVA 사용 가이드](tools/cmva_workflow.ko.md) | matched build·private 승인·로컬 launcher·server admission·이어하기 준비 | 모드 구성을 검증하고 정상 local/server 소비자로 실행할 때 |
 | Gameplay canonical | [game_rulebook.md](game_rulebook.md)·연결된 `game_rules/` | 최신 게임 정책, 상세 조건·수치·예외와 미정. 이후 명시적 사용자 합의가 우선하며 구현 완료와는 구분 | gameplay 의미나 흐름을 검토·변경할 때 |
 | 과거 룰북 | [과거 게임 룰북](archive/game_rulebook_legacy_2026-10-04.md) | 역사적 비교와 최신 정책이 명시적으로 계승한 공통 규칙. 새 정책·구현 결과의 동기화 대상 아님 | 과거 정책과 변경 배경을 확인할 때 |
 | 전장 이미지 제작 가이드 | [전장 컨셉아트 이미지 생성 가이드](ui-layout/battlefield-image-generation-guide.ko.md) | 1타일 규격, 폐허 분위기, 경로 오버레이 제외와 이미지 저장 위치 | 전장 배경 컨셉아트를 생성할 때 |
 | 전장 설계 참고 | [명일방주 전장 구조와 난이도 설계 참고](battlefields/arknights_difficulty_design_reference.ko.md) | 실제 스테이지 사례·출처, 난도 발생 원리의 해석과 일반 침식체 전장 적용 후보 | 전장 풀의 동선·배치 영역·지원 범위와 난도 차이를 설계할 때 |
 | 시설 노드 구성 검토 | [공용 구간 방별 노드 구성 검토안](ui-layout/md/facility-upper-node-composition-v1.ko.md) | 지도 시안 1~3층의 방별 예약·배정 후보·일반전 수요 계산. 새 수치는 검토안이며 gameplay canonical을 대체하지 않음 | 전장 풀 수량을 산정하기 전에 공용 구간의 활동 구성을 검토할 때 |
 | 시설 심층 구성 검토 | [심층과 최종방 노드 구성 검토안](ui-layout/md/facility-lower-node-composition-v1.ko.md) | 4~7층 51개 탐사 방·최종방 4개, 예약·전조·일반전 기대량과 격파 후 탐사 | 심층 활동 구성과 전체 전장 수요를 검토할 때 |
+| 방 크기별 활동 배정 | [활동 배정 기준 검토안](ui-layout/md/facility-room-activity-allocation-v1.ko.md) | 6·9·12·15·18개 방의 개수 가중치와 예약 조건별 배정량. 기존 초기값·검토안·새 제안 구분 | 실제 방의 크기와 동선을 배정하기 전에 활동 구성을 비교할 때 |
+| 공용 구간 방별 배정 | [방 크기와 내부 동선 배정안](ui-layout/md/facility-upper-room-assignment-v1.ko.md) | 1~3층 33개 방의 새 크기·동선·예약 좌표, 빠른 통과와 전체 탐사, 정비·저장 접근 거리 | 상층의 실제 방별 배정 초안을 검토할 때. 이전 구성표 수량과 구분 |
+| 시설 전체 방별 배정 | [시설 전체 방 크기와 내부 동선 배정안](ui-layout/md/facility-room-assignment-v1.ko.md) | 상층 배정을 유지한 4~7층 51개 방·최종방 4개 추가, 전체 88개 방 클릭 지도와 노드 상세, 최종방 격파 전후 동선 | 심층과 최종방을 포함한 최신 배정 초안을 검토할 때 |
 | Combat-domain canonical | [skill_target_contract.md](skill_target_contract.md) | 스킬/평타 타겟팅, 타일 범위, 자동 적대 타겟, cast/step/projectile/TileArea 의미 | 스킬·범위·자동 시전·면역 대상 판정을 바꿀 때 |
 | Runtime canonical | [core_runtime_contract.md](core_runtime_contract.md) | 결정론/RNG, runtime state, event log/checkpoint, battle record/result, VN runtime, actor identity | core runtime 불변식이나 projection ownership을 바꿀 때 |
 | Data canonical | [data_loading_contract.md](data_loading_contract.md) | live RON authoring, embedded loader ownership, fixture, validation, live file 색인 | RON schema/content, loader, validation 경계를 바꿀 때 |
 | Evidence canonical | [audit/live_skill_catalog_evidence_contract.md](audit/live_skill_catalog_evidence_contract.md) | live skill manifest가 증명하는 membership/delivery/reference 범위와 update/review lifecycle | live skill/reference/fragment catalog나 coverage 근거를 바꿀 때 |
 | 작업 가이드 | [engineering_workflow.md](engineering_workflow.md) | 일반 code/document sync, refactor 분류, test와 Git/file safety | 코드나 문서를 변경할 때 |
+| 리팩토링 출발점 | [Core 리팩토링 목적과 진행 현황](refactoring/README.md) | 이번 리팩토링의 목적·범위·전체 완료 조건, 현재 위치·다음 행동·기록 연결 | 리팩토링 작업을 시작하거나 재개할 때 |
+| 리팩토링 기준 | [리팩토링 판단과 실행 기준](refactoring_criteria.ko.md) | 후보 선정, 작업 유형·우선순위·변경 범위, 동작 보존·구조 개선 검증과 완료 조건 | 리팩토링 필요성을 판단하거나 승인된 구조 개선을 수행할 때 |
+| 시스템별 리팩토링 지침 | [시스템별 리팩토링 실행 지침](system_refactoring_execution_guide.ko.md) | 전체 경계 지도, 시스템별 조사·작업 분할, 구현·완료 검토·연결 검증과 재개 | 큰 코드베이스를 시스템별로 나누어 조사·개선할 때 |
+| 테스트 분류·실행 묶음 | [분류 유지 절차](testing/parallel_preflight/MAINTENANCE.ko.md) · [분류 기준표·등록표](testing/parallel_preflight/CLASSIFICATION.ko.md) | 신규·변경 테스트의 자원·격리·측정 조건 등록, 누락 검사와 실행 묶음 적용 | 테스트를 추가·변경하거나 병렬 실행 범위를 정할 때 |
 | 실행 색인 | [probe_registry.md](probe_registry.md) | 외부 Unity WebSocket/admin probe의 실제 경로, 실행 gate, 인접 계약 | live server/probe 검증이 필요할 때 |
 
 정책 검토와 Goal 작성은 P2G Reader Contract, Goal 실행과 완료 감사는 GEX Reader Contract에서 현재 요청의
@@ -122,8 +134,8 @@ F:\unity projects\ark\docs
 | 문서 | 역할 |
 | --- | --- |
 | `docs/skills/lobotomy_content_catalog.md` | 확정 환상체/도구 로스터와 콘텐츠 분류·설계 정책 |
-| [Run 유물 콘텐츠 설계 노트](skills/run_relic_content_design_notes.ko.md) | 유물의 재미, 강화·전문화·연결·전환 분류와 설계 순서. 미래 콘텐츠 방향이며 개별 효과·수치는 후속 설계 |
-| `docs/skills/abnormality_skill_design_notes.ko.md` | 환상체별 조우 기믹, counterplay, 보상·파편 설계 노트 |
+| [유물 목록](content/relics/README.md) · [태그 사전](content/tags/README.md) | 범용·전용 유물의 설계와 적용 태그. 합의·제안·미정을 구분 |
+| [환상체 목록](content/abnormalities/README.md) · [파편 목록](content/skills/README.md) · [장비 목록](content/equipment/README.md) | 환상체별 조우·대응·보상과 직원용 파편·장비 설계 |
 | `docs/skills/skill_fragment_system.md` | 스킬 파편의 상위 게임 정책과 특수 파편 체인 |
 | `docs/skills/live_content_index.md` | 현재 live placeholder E.G.O 장비와 스킬 파편의 통합 파생 색인 |
 

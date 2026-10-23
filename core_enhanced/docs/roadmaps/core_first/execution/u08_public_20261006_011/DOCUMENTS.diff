@@ -1,0 +1,38 @@
+--- core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/PLAN.md.before
++++ core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/PLAN.md
+@@ -6,9 +6,9 @@
+ E007의 clamp92→0 성공과 E008의4초 무대상 실패는 보존한다. E009는 외부 fixture의 대상maxHP170→500, 준비8초이며 공식 콘텐츠/제품/cap은 그대로다. 최종 public_trial_cli009의35개 산출물 해시를 확인했고 실제 release CLI 실행은 후속 Sol 범위다.
+ Continue owner2·allocation2·durable2/UUID1/Eventowner4·행동소유75 검사1 PASS를 회수했다. 새 codec fixture의 두 nonempty set/current·SavePoint canonical 동일성과 누적4,518,759 exact/6단계 one-short 거부·gameplay roots 불변을 검증했다. 이는 실제 heap 계측을 대신하지 않는다.
+ E2 literal002는 관측 off 실제 두 직원144/210의 1/1 PASS다. 이어 stage2001은 literal 1 PASS / 실제 carrier 4 FAIL이었다. delivery 재결속에서 private relic_numeric이 누락되는 제품 원인을 확인했다.
+-현재 Sol이 core/value_expr_runtime.rs와 battle/runtime_facts.rs 두 제품 파일·scoped fmt를 교정하며 Astra writer/runner는 0이다. 제품 handoff 후 Astra가 두 private 합성/한도 시험, 기존 실제5개와 관련 회귀를 먼저 검증하고 basic-stage를 이어간다.
+-상세 결정은 [E2 carrier 교정 계약](../../../../roadmaps/core_first/execution/u08_public_20261006_010/RECORD.ko.md)을 따른다. 승인 테스트 묶음의 포맷·집중 실행·일반 교정은 Astra가 자율 반복한다. root는 제품·시험 코드를 대신 작성하지 않는다.
+-전체 U08 완료가 아니다. actual carriers/basic, 공개 release CLI, 최종 기능·성능 및 evidence→impact→adaptation→coverage→자체검증→동결/복원→독립 감사가 남았다. 아래 source와 과거 receipt는 각 검증 경계이며 열린 live source의 성공을 뜻하지 않는다.
++Sol의 두 파일 교정 후 Astra private004 2/2, 동일 입력 world stage2002 5/5, 관련 relic_amount12/12, 기존 resource projectile002와 fixed001 각1/1 PASS다. source438/939a61e13b381c034c5ecf1efcb80a79091038592e46df090107aa60ddbf47a4의 검증 경계이며 이후 live 편집 성공을 뜻하지 않는다.
++제품/통합 runner는 HOLD이며 Astra가 승인 basic-stage를 이어간다. Sol은 EXPERIMENTS/STATE 문서만 최신화한다. 상세 [교정 계약](../../../../roadmaps/core_first/execution/u08_public_20261006_010/RECORD.ko.md)과 [검증 회수](../../../../roadmaps/core_first/execution/u08_public_20261006_011/RECORD.ko.md)를 따른다. root는 제품·시험 코드를 대신 작성하지 않는다.
++전체 U08 완료가 아니다. actual basic, 공개 release CLI, 최종 기능·성능 및 evidence→impact→adaptation→coverage→자체검증→동결/복원→독립 감사가 남았다. native exact-cap 검사는 admission enforcement 증거이며 독립 heap 상계를 대신하지 않는다.
+ Core StartNewGame은 NotStarted만 허용하고 replace_active_run은 host 확인과 구분한다. 실제 사망 정산은 terminal이고 CompleteCombatResult는 acknowledgement다.
+ 이전 numeric on33/off31·behavior11·초기 PC는 과거 경계의 유효 범위에서 보존하며 현재 변경 영향에 따라 결속한다.
+ 상세 계약은 [공개 API](../../../../roadmaps/core_first/execution/u08_public_20261006_001/RECORD.ko.md),
+--- core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/EXPERIMENT_NOTES.md.before
++++ core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/EXPERIMENT_NOTES.md
+@@ -152,3 +152,20 @@
+ 마지막으로 공개 release CLI와 통합·성능 검증 도구는 Astra가 현재 U08 입력으로 준비하고 Sol이 실행한다. U07-M 도구의 과거 label/path/cache를 그대로 재실행하지 않는다. fresh release build는 모든 공개 소비보다 앞서야 한다. R05 준비3파일과 dependency binder 및 current U08 통합 도구의 누락을 실제 확인했다. 기능 실행과 성능 측정은 겹치지 않는다.
+ 
+ 아래 receipt/source는 각 과거 실행 경계이며 열린 제품 교정 이후 live source를 대신하지 않는다. U08은 GEX10 partial이다. 전체 검증 및 evidence→impact→adaptation→coverage→자체검증→정확 동결/복원→비참여 Astra 전체 독립 감사가 남아 있다. HANDOFF와 과거 실패·완료 증거를 소급 수정하지 않는다.
++
++
++## Carrier 교정 검증 회수 — 2026-10-06/011
++
++Sol의 두 제품 파일 교정과 scoped fmt를 root가 전체438입력의 실제 digest로 확인했다. stage2001에서 바뀐 파일은 battle/runtime_facts.rs 및 core/value_expr_runtime.rs뿐이고 membership 변경과 시험/fixture 변경은0이다. 제품 경계 source bc2f0de2e470a64826fb02fbe8a28aab91eeae0086b65016a48c4cd59dda9fa4, fmt001 exit0/2.153883초/byte delta0이다. 제품 계약·계량 상계는 evidence/product_carrier_numeric_rebind_fix001/RECORD.ko.md에 보존했다.
++
++Astra가 relic_amount.rs에 private 시험2개를 추가한 뒤 source438/939a61e13b381c034c5ecf1efcb80a79091038592e46df090107aa60ddbf47a4에서 private004 2/2 PASS, 실제 world carrier stage2002 5/5 PASS, relic_amount 관련12/12 PASS, 기존 resource projectile002 1/1 및 fixed001 1/1 PASS를 회수했다. source 전체를 대조해 Sol handoff 이후 변경은 그 시험 파일뿐이고 실제 world5 입력과 기대값은 실패 때 그대로임을 확인했다. 실제5의 성공은 Snapshot projectile 철수 이후210, GroundFixed 후속tick210와 동일 결속, Follow 후속tick/미발사step 취소, Live Source.Attack 생존78 및 철수 후 MissingContext·실패bucket gameplay roots 원자성을 포함한다. 관측은 off다.
++
++private 합성은 capture Some/None와 incoming numeric Some/None를 조합하여 incoming의 모든 실행/provider/resource 필드, 별도 independent/reinput Arc와 새delivery를 보존하고 원 capture의 authored/numeric을 정확히 복원하는지 확인한다. 원 carrier/plan/generation/frame은 불변이다. 이 private fixture는 provider를 의도적으로 바꾸므로 유효한 소비 권한을 주장하지 않는다. 기존 validate_skill 검사는 그대로이고 actual world5는 정상 권한의 소비 증거다.
++
++native 실제 rebind 누적 admission은 incoming None 13,058(outer12,970+wrapper88), Some14,614(outer14,438+88+88)이다. 정확 한도 성공과 모든 outer/wrapper 경계의 one-short typed code/site/limit/requested, 성공 prefix 및 입력 불변/반환carrier 없음이 검증됐다. 이는 enforcement 증거이며 독립 heap allocation 상계 증명을 대신하지 않는다. 합성 extent cache와 원본 불변도 검사했다.
++
++private001/002는 action 수락 후 출처변경 및 resource owner 없는 fixture 준비 오류로 각각2FAIL, private003은 Box 누락 compile 오류로0시험이다. Astra가 같은 기대값 아래 승인 범위의 일반 교정으로 고쳤으며 원 실패를 보존했다. resource projectile001은 정확 selector의 combat 모듈 누락으로0시험이고 기능PASS가 아니다. 실제 exact 경로를 바로잡은 projectile002가1/1 PASS다.
++
++현재 제품 writer와 Sol runner는0/HOLD이며 Astra가 관련 시험 회수를 마치고 승인된 기본공격 작은 묶음을 이어간다. Sol은 별도 EXPERIMENTS/STATE 문서 최신화만 담당한다. root는 PLAN/NOTES와 수용 계약을 담당하고 코드·시험을 작성/실행하지 않는다. 이 기록의 해시는 검증 경계이며 이후 기본공격 시험/fixture 편집의 live source를 대신하지 않는다.
++
++U08은 여전히 GEX10 partial이다. basic 실제 melee/ranged·auto/triggered·windup 취소, 현재 release CLI, 최종 기능·성능 실행과 evidence→impact→adaptation→coverage→자체검증→정확동결/복원→전체 독립감사가 남았다. 과거 증거 및 HANDOFF는 소급 수정하지 않는다.

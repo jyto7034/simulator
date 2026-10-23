@@ -28,13 +28,14 @@ impl GameCore {
             .as_ref()
             .ok_or(GameError::InvalidAction)?;
         let finished = active.execution.is_finished();
+        let stress_choice = active.battle.stress_round_status().is_some_and(|(_,_,w)| w);
         let blocking_visual_novel = visual_novel.is_some_and(|session| session.blocking);
         let deployment = (!finished && !blocking_visual_novel)
             .then(|| active.live_deployment_dto(active.employee_roster()))
             .flatten();
 
         let ordinary = |evaluation| {
-            if finished || blocking_visual_novel {
+            if finished || blocking_visual_novel || stress_choice {
                 BattleActionEvaluation::Irrelevant(ActionDisabledReasonCode::ContextIrrelevant)
             } else {
                 evaluation
@@ -73,7 +74,7 @@ impl GameCore {
                         return false;
                     }
                     match unit.skill_readiness.selection {
-                        Some(SkillCastSelection::PlayerUnit | SkillCastSelection::PlayerTile) => {
+                        Some(SkillCastSelection::PlayerUnit | SkillCastSelection::PlayerTile | SkillCastSelection::PlayerTilePair | SkillCastSelection::PlayerDirection) => {
                             active.tactical_focus.as_ref().is_some_and(|focus| {
                                 focus.caster_unit_instance_id == unit.unit_instance_id
                                     && unit.skill_readiness.skill_id.as_ref()
@@ -97,7 +98,7 @@ impl GameCore {
                             && matches!(
                                 unit.skill_readiness.selection,
                                 Some(
-                                    SkillCastSelection::PlayerUnit | SkillCastSelection::PlayerTile
+                                    SkillCastSelection::PlayerUnit | SkillCastSelection::PlayerTile | SkillCastSelection::PlayerTilePair | SkillCastSelection::PlayerDirection
                                 )
                             )
                     })
@@ -177,6 +178,7 @@ impl GameCore {
         };
 
         let mut evaluations = vec![
+            (ActionKind::StressCombatAct, if stress_choice && !blocking_visual_novel { BattleActionEvaluation::Enabled } else { BattleActionEvaluation::Irrelevant(ActionDisabledReasonCode::ContextIrrelevant) }),
             (
                 ActionKind::RequestBattleState,
                 if finished {

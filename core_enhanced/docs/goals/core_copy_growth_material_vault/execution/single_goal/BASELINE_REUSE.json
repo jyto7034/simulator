@@ -1,0 +1,30 @@
+{
+  "initial": "U14 independent002 and pre-U15 full verification2169 passed/6 ignored, prerequisite only; not substituted for U15 execution",
+  "current_full_run": {
+    "raw": "runs/core002.log",
+    "exit_code": 101,
+    "library_passed": 2097,
+    "library_failed": 6,
+    "ignored": 6,
+    "filtered": 5,
+    "integration_passed": 72
+  },
+  "closed_failures": [
+    "application::tests::command_kind_is_exactly_bijective_with_all_domain_actions",
+    "game::behavior::tests::every_action_kind_has_one_characterized_route_scope_and_authority_contract",
+    "game::world::application::tests::every_behavior_kind_has_exactly_one_application_owner",
+    "game::world::tests::checkpoint_validation::current_v12_checkpoint_document_has_exact_envelope_and_checksum",
+    "game::world::tests::checkpoint_validation::current_v12_checkpoint_document_has_exact_flat_semantic_field_set_and_values",
+    "game::world::tests::u14_deterrence::u14_seal_retreat_continue_then_actual_victory_refill_and_bonus_once"
+  ],
+  "closure": "runs/focused005.log:37 passed, including all6 failed names, U14/U15 and defaultG11; socket002 adds1; nativeG11 adds4 under separate feature",
+  "current_unique_default_core_pass_coverage": 2180,
+  "calculation": "2097 +72 integration +6 corrected +4 G11 default +1 socket; focused overlaps are not added twice",
+  "full_green_single_invocation_claimed": false,
+  "known_current_failures": 0,
+  "existing_ignored": 6,
+  "reuse_basis": "After core002, only three command-count expectations, two checkpoint fixture/projection expectations, one U14 dust aggregation expectation, G11 current manifest constants, and reserved equipment_dust metadata-purpose validation changed. Focused005 reran all affected names, U14/U15 and defaultG11; authoring001 exercised valid catalog and reserved-purpose rejection. Existing passing runtime, economy, clone, persistence and integration paths otherwise unchanged. No full rerun for records alone.",
+  "final_product_currentness": "No product Rust/data/config changes after focused005. All normal host/worker, nativeG11, public consumer and cost executions use that product. Consumer/probe preparation corrections are separately retained.",
+  "predecessor_audit_continuity": "U14 independent002 remains the historical predecessor verdict for its target. U15 changes shared copy/schema/lifecycle/storage contracts; this pass supplies affected regressions, not a new independent verdict. U15 GEX20 must review these deltas and continuity before U16.",
+  "external_tamper": "No new arbitrary save/checksum mutation defense requirement; authoring mistakes, supported command misuse and actual IO faults remain in scope."
+}

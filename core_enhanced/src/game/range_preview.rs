@@ -234,9 +234,10 @@ fn active_skill_preview(
             position,
             facing,
         ),
-        SkillCastSelection::PlayerTile => manual_target_skill_preview(
+        SkillCastSelection::PlayerDirection => manual_target_skill_preview(skill, LiveBattleActiveSkillTargetingKind::ManualDirection, range_policy, target_range, battlefield, position, facing),
+        SkillCastSelection::PlayerTile | SkillCastSelection::PlayerTilePair => manual_target_skill_preview(
             skill,
-            LiveBattleActiveSkillTargetingKind::ManualTile,
+            if skill.cast_selection() == SkillCastSelection::PlayerTilePair { LiveBattleActiveSkillTargetingKind::ManualTilePair } else { LiveBattleActiveSkillTargetingKind::ManualTile },
             range_policy,
             target_range,
             battlefield,
@@ -322,7 +323,8 @@ fn self_target_effect_preview_cells(
             {
                 caster_position
             }
-            SkillAreaAnchorSource::CastTarget
+            SkillAreaAnchorSource::AcceptedCastTarget
+            | SkillAreaAnchorSource::CastTarget
             | SkillAreaAnchorSource::CastTargetStart
             | SkillAreaAnchorSource::ImpactContext
             | SkillAreaAnchorSource::ImpactContextStart => {
@@ -684,6 +686,8 @@ mod tests {
             rows: vec!["X@X".to_string()],
         };
         let skill = SkillDef {
+            action_policy: None,
+            resonance_admission: None,
             use_lifetime: crate::game::ability::SkillUseLifetime::Action,
             flow: None,
             id: skill_id.clone(),
@@ -736,6 +740,8 @@ mod tests {
 
     fn self_target_skill_with_steps(id: &str, steps: Vec<SkillStepDef>) -> SkillDef {
         SkillDef {
+            action_policy: None,
+            resonance_admission: None,
             use_lifetime: crate::game::ability::SkillUseLifetime::Action,
             flow: None,
             id: SkillId::from(id),
@@ -1135,6 +1141,8 @@ mod tests {
     fn auto_unit_active_skill_preview_is_separate_and_requires_runtime_target() {
         let skill_id = SkillId::from("auto_unit_skill");
         let skill = SkillDef {
+            action_policy: None,
+            resonance_admission: None,
             use_lifetime: crate::game::ability::SkillUseLifetime::Action,
             flow: None,
             id: skill_id.clone(),

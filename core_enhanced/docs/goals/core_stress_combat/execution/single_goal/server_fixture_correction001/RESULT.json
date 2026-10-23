@@ -1,0 +1,42 @@
+{
+  "recorded_utc": "2026-10-15T11:17:56.301054+00:00",
+  "scope": "user-authorized node-flow transport fixture correction; separate from completed independent audit004",
+  "status": "corrected_and_validated",
+  "changed_member": "game_server/src/game/player_game_actor/messages.rs",
+  "before_sha256": "fd245a30188a1c5dca0faa963d7c94bc6308a416399d6e8f743f574b1720b6b9",
+  "after_sha256": "78b96db7af1af005d4d480f028130a1c8eb5f5cacd50e4d0ecad8e2cdc68428a",
+  "only_changed_function": "cfg(test)::tests::deserializes_snake_case_node_flow_requests",
+  "production_prefix_identical": true,
+  "all_other_functions_identical": true,
+  "basis": "core_runtime_contract.md:28 and PlayerBehavior::SelectStarterEmployees require loan_copy_ids; transport assertions preserve the entire command document",
+  "checks": [
+    "explicit empty loan list accepted and preserved",
+    "two exact loan UUIDs accepted and preserved",
+    "missing loan list rejected",
+    "other current/removed node-flow commands still checked"
+  ],
+  "command": "env PATH=/home/blast/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin CARGO_HOME=/tmp/wp02-cargo-home CARGO_TARGET_DIR=/mnt/f/work/simulator/.cache/u164-review-dev-target CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo test -p game_server --lib --offline --locked game::player_game_actor::messages::tests",
+  "exit_code": 0,
+  "passed": 9,
+  "failed": 0,
+  "ignored": 0,
+  "filtered_out": 111,
+  "build_seconds": 84,
+  "test_seconds": 0.03,
+  "raw_log_sha256": "67e2be0289a8d4ce7a17f27cc98bf0c829f4ce991d4917ddf8411e5139fe278a",
+  "prior_failure_log": "../runs/review-server001.log",
+  "prior_failure_log_sha256": "40c5a9558aa5124b47f48709a4091cac5d26531d86bf92a49dc7aa75641725e0",
+  "patch_sha256": "b57389502bf039a38155c1144043d37545caf9f77da45ba62dbb58bd71796179",
+  "target_currentness": {
+    "predecessor": "../target/u164_current_001/AUDIT_TARGET_RECORD.json",
+    "audit": "../independent_audit004/COMPLETION_AUDIT.md",
+    "state": "current / proven non-impacting delta",
+    "reason": "Only this transport test function changed. No production/core/data/settings/runtime/contract change; original gameplay/host/cost evidence remains valid. Existing target and verdict stay immutable. This pass is not a new independent audit.",
+    "not_unchanged": true
+  },
+  "limitations": [
+    "message module only, not a whole-server run",
+    "separate legacy playback enter_combat still uses removed Standard mode and omits loan_copy_ids; not exercised here"
+  ],
+  "all_owned_sessions_ended": true
+}

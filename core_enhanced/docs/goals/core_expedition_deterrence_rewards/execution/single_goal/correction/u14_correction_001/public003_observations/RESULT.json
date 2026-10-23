@@ -1,0 +1,17 @@
+{
+  "cases": [
+    {
+      "case": "restrained",
+      "passed": true
+    },
+    {
+      "case": "unrestrained",
+      "passed": true
+    },
+    {
+      "case": "collected",
+      "passed": true
+    }
+  ],
+  "passed": true
+}

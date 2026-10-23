@@ -1,0 +1,13 @@
+{
+  "command": [
+    ".cache/d07-static-explain-product-target/debug/deps/game_core-705cc9514d94a1fe",
+    "u13_recovery_gate",
+    "u13_room_move_budget",
+    "--test-threads=2",
+    "--nocapture"
+  ],
+  "exit_code": 101,
+  "seconds": 4.929362266004318,
+  "stdout": "test011.stdout.log",
+  "stderr": "test011.stderr.log"
+}

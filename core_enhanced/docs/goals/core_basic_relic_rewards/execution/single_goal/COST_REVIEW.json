@@ -1,0 +1,475 @@
+{
+  "passed": true,
+  "activity": {
+    "normal": {
+      "stages": {
+        "observations": 78,
+        "max_seconds": 0.013252891,
+        "max_peak_requested_bytes": 17281309,
+        "max_peak_above_baseline_bytes": 508352,
+        "max_native_work": 448756,
+        "max_native_admitted_bytes": 1203103,
+        "max_native_cumulative_requested_bytes": 1203103
+      },
+      "snapshot_stages": {
+        "observations": 78,
+        "max_seconds": 0.004658619,
+        "max_peak_requested_bytes": 17927270,
+        "max_peak_above_baseline_bytes": 701199,
+        "max_native_work": 21764,
+        "max_native_admitted_bytes": 219042,
+        "max_native_cumulative_requested_bytes": 219042
+      },
+      "rss_lifetime_peak_bytes": 64913408,
+      "exact_release_all": true,
+      "profile": "unchanged default16MiB; public Core diagnostic, not CMVA admission"
+    },
+    "expanded": {
+      "stages": {
+        "observations": 78,
+        "max_seconds": 0.017238609,
+        "max_peak_requested_bytes": 18245451,
+        "max_peak_above_baseline_bytes": 680174,
+        "max_native_work": 715362,
+        "max_native_admitted_bytes": 2343939,
+        "max_native_cumulative_requested_bytes": 2343939
+      },
+      "snapshot_stages": {
+        "observations": 78,
+        "max_seconds": 0.004330975,
+        "max_peak_requested_bytes": 18905779,
+        "max_peak_above_baseline_bytes": 816889,
+        "max_native_work": 104418,
+        "max_native_admitted_bytes": 761994,
+        "max_native_cumulative_requested_bytes": 761994
+      },
+      "rss_lifetime_peak_bytes": 66400256,
+      "exact_release_all": true,
+      "profile": "unchanged default16MiB; public Core diagnostic, not CMVA admission"
+    }
+  },
+  "activity_scope": "6measured fresh processes,26commands+26fullRunqueries each=312windows;6prefix pilots separate. devopt0/debug0 allocator requested bytes exclude fragmentation; RSS includes content/traces/process and is not per-command ownership. Exact release means same process allocator live requested bytes after app+trace values dropped.",
+  "shared_before_after": {
+    "normal": {
+      "active_checkpoint_export": {
+        "wall_seconds": {
+          "before_median": 4.67e-07,
+          "after_median": 5.41e-07
+        },
+        "peak_above_baseline_bytes": {
+          "before_median": 0,
+          "after_median": 0
+        },
+        "native_work": {
+          "before_median": null,
+          "after_median": null
+        }
+      },
+      "command_commit": {
+        "wall_seconds": {
+          "before_median": 6.8066e-05,
+          "after_median": 5.2349e-05
+        },
+        "peak_above_baseline_bytes": {
+          "before_median": 0,
+          "after_median": 0
+        },
+        "native_work": {
+          "before_median": null,
+          "after_median": null
+        }
+      },
+      "command_discard": {
+        "wall_seconds": {
+          "before_median": 2.5974e-05,
+          "after_median": 2.2392e-05
+        },
+        "peak_above_baseline_bytes": {
+          "before_median": 0,
+          "after_median": 0
+        },
+        "native_work": {
+          "before_median": null,
+          "after_median": null
+        }
+      },
+      "command_prepare": {
+        "wall_seconds": {
+          "before_median": 0.000391785,
+          "after_median": 0.00024718
+        },
+        "peak_above_baseline_bytes": {
+          "before_median": 32414,
+          "after_median": 32414
+        },
+        "native_work": {
+          "before_median": null,
+          "after_median": null
+        }
+      },
+      "command_prepare_for_commit": {
+        "wall_seconds": {
+          "before_median": 0.000444015,
+          "after_median": 0.000224347
+        },
+        "peak_above_baseline_bytes": {
+          "before_median": 32414,
+          "after_median": 32414
+        },
+        "native_work": {
+          "before_median": null,
+          "after_median": null
+        }
+      },
+      "continue_import": {
+        "wall_seconds": {
+          "before_median": 0.005789368,
+          "after_median": 0.004305346
+        },
+        "peak_above_baseline_bytes": {
+          "before_median": 252746,
+          "after_median": 252786
+        },
+        "native_work": {
+          "before_median": null,
+          "after_median": null
+        }
+      },
+      "final_owner_drop": {
+        "wall_seconds": {
+          "before_median": 0.000303466,
+          "after_median": 0.000172528
+        },
+        "peak_above_baseline_bytes": {
+          "before_median": 0,
+          "after_median": 0
+        },
+        "native_work": {
+          "before_median": null,
+          "after_median": null
+        }
+      },
+      "player_profile_json_projection": {
+        "wall_seconds": {
+          "before_median": 0.000144434,
+          "after_median": 9.3338e-05
+        },
+        "peak_above_baseline_bytes": {
+          "before_median": 50323,
+          "after_median": 50323
+        },
+        "native_work": {
+          "before_median": null,
+          "after_median": null
+        }
+      },
+      "profile_install_commit": {
+        "wall_seconds": {
+          "before_median": 3.2464e-05,
+          "after_median": 1.7253e-05
+        },
+        "peak_above_baseline_bytes": {
+          "before_median": 0,
+          "after_median": 0
+        },
+        "native_work": {
+          "before_median": null,
+          "after_median": null
+        }
+      },
+      "profile_install_discard": {
+        "wall_seconds": {
+          "before_median": 4.4104e-05,
+          "after_median": 2.8143e-05
+        },
+        "peak_above_baseline_bytes": {
+          "before_median": 0,
+          "after_median": 0
+        },
+        "native_work": {
+          "before_median": null,
+          "after_median": null
+        }
+      },
+      "profile_install_prepare": {
+        "wall_seconds": {
+          "before_median": 0.00041562,
+          "after_median": 0.000259654
+        },
+        "peak_above_baseline_bytes": {
+          "before_median": 0,
+          "after_median": 0
+        },
+        "native_work": {
+          "before_median": null,
+          "after_median": null
+        }
+      },
+      "profile_install_prepare_for_commit": {
+        "wall_seconds": {
+          "before_median": 0.000368948,
+          "after_median": 0.000187306
+        },
+        "peak_above_baseline_bytes": {
+          "before_median": 0,
+          "after_median": 0
+        },
+        "native_work": {
+          "before_median": null,
+          "after_median": null
+        }
+      }
+    },
+    "expanded": {
+      "active_checkpoint_export": {
+        "wall_seconds": {
+          "before_median": 5.21e-06,
+          "after_median": 2.976e-06
+        },
+        "peak_above_baseline_bytes": {
+          "before_median": 0,
+          "after_median": 0
+        },
+        "native_work": {
+          "before_median": null,
+          "after_median": null
+        }
+      },
+      "command_commit": {
+        "wall_seconds": {
+          "before_median": 0.001344265,
+          "after_median": 0.001000853
+        },
+        "peak_above_baseline_bytes": {
+          "before_median": 0,
+          "after_median": 0
+        },
+        "native_work": {
+          "before_median": null,
+          "after_median": null
+        }
+      },
+      "command_discard": {
+        "wall_seconds": {
+          "before_median": 0.001324218,
+          "after_median": 0.000911173
+        },
+        "peak_above_baseline_bytes": {
+          "before_median": 0,
+          "after_median": 0
+        },
+        "native_work": {
+          "before_median": null,
+          "after_median": null
+        }
+      },
+      "command_prepare": {
+        "wall_seconds": {
+          "before_median": 0.007670949,
+          "after_median": 0.005664882
+        },
+        "peak_above_baseline_bytes": {
+          "before_median": 1128082,
+          "after_median": 1128082
+        },
+        "native_work": {
+          "before_median": null,
+          "after_median": null
+        }
+      },
+      "command_prepare_for_commit": {
+        "wall_seconds": {
+          "before_median": 0.007589924,
+          "after_median": 0.005889699
+        },
+        "peak_above_baseline_bytes": {
+          "before_median": 1128082,
+          "after_median": 1128082
+        },
+        "native_work": {
+          "before_median": null,
+          "after_median": null
+        }
+      },
+      "continue_import": {
+        "wall_seconds": {
+          "before_median": 0.009843665,
+          "after_median": 0.006825889
+        },
+        "peak_above_baseline_bytes": {
+          "before_median": 800580,
+          "after_median": 800620
+        },
+        "native_work": {
+          "before_median": null,
+          "after_median": null
+        }
+      },
+      "final_owner_drop": {
+        "wall_seconds": {
+          "before_median": 0.006231831,
+          "after_median": 0.004966353
+        },
+        "peak_above_baseline_bytes": {
+          "before_median": 0,
+          "after_median": 0
+        },
+        "native_work": {
+          "before_median": null,
+          "after_median": null
+        }
+      },
+      "player_profile_json_projection": {
+        "wall_seconds": {
+          "before_median": 0.006239794,
+          "after_median": 0.004558508
+        },
+        "peak_above_baseline_bytes": {
+          "before_median": 2586673,
+          "after_median": 2586673
+        },
+        "native_work": {
+          "before_median": null,
+          "after_median": null
+        }
+      },
+      "profile_install_commit": {
+        "wall_seconds": {
+          "before_median": 0.000635771,
+          "after_median": 0.00046834
+        },
+        "peak_above_baseline_bytes": {
+          "before_median": 0,
+          "after_median": 0
+        },
+        "native_work": {
+          "before_median": null,
+          "after_median": null
+        }
+      },
+      "profile_install_discard": {
+        "wall_seconds": {
+          "before_median": 0.001456518,
+          "after_median": 0.000988429
+        },
+        "peak_above_baseline_bytes": {
+          "before_median": 0,
+          "after_median": 0
+        },
+        "native_work": {
+          "before_median": null,
+          "after_median": null
+        }
+      },
+      "profile_install_prepare": {
+        "wall_seconds": {
+          "before_median": 0.01029414,
+          "after_median": 0.007390894
+        },
+        "peak_above_baseline_bytes": {
+          "before_median": 0,
+          "after_median": 0
+        },
+        "native_work": {
+          "before_median": null,
+          "after_median": null
+        }
+      },
+      "profile_install_prepare_for_commit": {
+        "wall_seconds": {
+          "before_median": 0.010859271,
+          "after_median": 0.007307816
+        },
+        "peak_above_baseline_bytes": {
+          "before_median": 0,
+          "after_median": 0
+        },
+        "native_work": {
+          "before_median": null,
+          "after_median": null
+        }
+      }
+    }
+  },
+  "shared_scope": "unchanged12+12/768+768 paid vault profiles and12operations,6fresh processes; before U16-1 runs/cost003. Native_work null in generic summaries remains null (no active relic runtime owner); raw native_observation retained. No optimization or wall-time speedup claim.",
+  "normal_host_limits": {
+    "passed": true,
+    "source": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/runs/normal_calibration007.stdout.log",
+    "sha256": "91067f3c39e7ad899dc21ac19b100345c5d00963637ce07fb838a12aed9e464c",
+    "limits": {
+      "max_elapsed_ns": 6000000000,
+      "max_native_work": 233000000,
+      "max_requested_heap_bytes": 1342177280,
+      "max_rss_bytes": 1610612736
+    },
+    "limits_changed": false,
+    "summary": {
+      "plain": {
+        "samples": 12,
+        "max_elapsed_ns": 694408265,
+        "max_native_work": null,
+        "max_requested_heap_bytes": null,
+        "max_rss_bytes": null
+      },
+      "instrumented": {
+        "samples": 12,
+        "max_elapsed_ns": 784802741,
+        "max_native_work": 12614863,
+        "max_requested_heap_bytes": 51889930,
+        "max_rss_bytes": 83767296
+      }
+    },
+    "scope": "finite diagnostic scenario; plain missing counters remain null; no final gameplay SLO claim"
+  },
+  "expanded_measurement_host_limits": {
+    "passed": true,
+    "source": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/runs/expanded_calibration002.stdout.log",
+    "sha256": "12a4278fb24d2930dd954d3ff7d3ffb85766b008d848a0310111493d07c5f26a",
+    "limits": {
+      "max_elapsed_ns": 6000000000,
+      "max_native_work": 233000000,
+      "max_requested_heap_bytes": 1342177280,
+      "max_rss_bytes": 1610612736
+    },
+    "limits_changed": false,
+    "summary": {
+      "plain": {
+        "samples": 12,
+        "max_elapsed_ns": 740439753,
+        "max_native_work": null,
+        "max_requested_heap_bytes": null,
+        "max_rss_bytes": null
+      },
+      "instrumented": {
+        "samples": 12,
+        "max_elapsed_ns": 839979870,
+        "max_native_work": 19709844,
+        "max_requested_heap_bytes": 61126328,
+        "max_rss_bytes": 95256576
+      }
+    },
+    "scope": "finite diagnostic scenario; plain missing counters remain null; no final gameplay SLO claim"
+  },
+  "default_authoring_boundary": {
+    "accepted": false,
+    "workload": "unchanged300candidates+64additionalcopies",
+    "raw": "runs/expanded_calibration001.stderr.log",
+    "phase": "GeneratedSetup",
+    "site": "queued_fact_source",
+    "requested": 10000014,
+    "limit": 10000000,
+    "disposition": "bounded admission rejection; not treated as normal-profile acceptance"
+  },
+  "expanded_measurement_profile": {
+    "path": "test_parts/expanded_inputs002/measurement_safety.ron",
+    "authoring_work": 64000000,
+    "native_retained_bytes": 16777216,
+    "native_work": 10000000,
+    "automatic_increase": false,
+    "scope": "trusted finite measurement setting selected before execution to observe complete unchanged stress input; production config untouched"
+  },
+  "decision": "Keep deployment native16MiB and authoring10M defaults. Representative12candidate input and all activity execution/restore fit.300candidate authoring stress exceeds current default GeneratedSetup budget; complete300candidate runtime costs measured under unchanged native limit and approved host under explicit64M authoring measurement setting. Do not claim default admission for this stress pack or deployment SLO.",
+  "all_owners_released_exactly": true,
+  "production_limits_changed": false,
+  "reference": "runs/activity_cost001/RESULT.json; runs/shared_cost001/RESULT.json; actual host process time -v receipts"
+}

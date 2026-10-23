@@ -648,7 +648,7 @@ mod tests {
             "battle_uuid":"00000000-0000-0000-0000-000000000008", "battle_state_revision":19}, "seq":23});
         let original_source = source.clone();
         let document = input(
-            json!({"type":"select_starter_employees", "employee_definition_ids":[null,null,null]}),
+            json!({"type":"select_starter_employees", "loan_copy_ids":[], "employee_definition_ids":[null,null,null]}),
             json!({"expected_battle_authority":null, "battle_event_after_seq":null}),
             json!([
                 string_binding("/a~1b/~0key/0", "/command/employee_definition_ids/0"),
@@ -784,14 +784,14 @@ mod tests {
     #[test]
     fn public_command_rejection_is_preserved_instead_of_a_successful_noop() {
         let document = input(
-            json!({"type":"select_starter_employees", "employee_definition_ids":[null]}),
+            json!({"type":"select_starter_employees", "loan_copy_ids":[], "employee_definition_ids":[null]}),
             json!({}),
             json!([{"from":{"step":0,"pointer":""},"to":"/command/employee_definition_ids/0","value_type":"number"}]),
         );
         let scenario = parse(&document, &ScenarioLimits::default());
         let error = resolved(&scenario, Some(&json!(7)), 0).unwrap_err();
         let expected = ApplicationCommand::from_document(ApplicationDocument::new(
-            json!({"type":"select_starter_employees", "employee_definition_ids":[7]}),
+            json!({"type":"select_starter_employees", "loan_copy_ids":[], "employee_definition_ids":[7]}),
         ))
         .unwrap_err();
         match error {
@@ -945,13 +945,13 @@ mod tests {
     #[test]
     fn whole_resolved_node_count_includes_template_and_all_inserted_values() {
         let document = input(
-            json!({"type":"select_starter_employees", "employee_definition_ids":null}),
+            json!({"type":"select_starter_employees", "loan_copy_ids":[], "employee_definition_ids":null}),
             json!({}),
             json!([{"from":{"step":0,"pointer":""},"to":"/command/employee_definition_ids","value_type":"array"}]),
         );
         let source = json!(vec!["employee"; 46]);
         let exact = ScenarioLimits {
-            max_nodes: 51,
+            max_nodes: 52,
             ..Default::default()
         };
         let scenario = parse(&document, &exact);
@@ -959,7 +959,7 @@ mod tests {
         let scenario = parse(
             &document,
             &ScenarioLimits {
-                max_nodes: 50,
+                max_nodes: 51,
                 ..exact
             },
         );

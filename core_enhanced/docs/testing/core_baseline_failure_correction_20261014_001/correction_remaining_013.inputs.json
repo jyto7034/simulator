@@ -1,0 +1,172 @@
+[
+  {
+    "path": "core_enhanced/src/application/fault_tests.rs",
+    "before": "af5dc77078f8215d1d590114ae298f275d974324d41b958636647aad7f2bfb63",
+    "after": "8fbf8738d7e3bf8cb092f9e631246d9dd9bb6eaebf8212a908a77b37c1ebccce"
+  },
+  {
+    "path": "core_enhanced/src/application.rs",
+    "before": "aed66b1c43e302e5ba8efcfbcf55ad7c2b576d2a6ce306103394631075f484a2",
+    "after": "cfda936f86767bb79219c8108e86c09d7f85b573d956210564965feb8b591b95"
+  },
+  {
+    "path": "core_enhanced/src/authoring/resolve.rs",
+    "before": "cb5665565b5680d5f7e509c0630f315633e91596e77b6973a2f9c91ca1c01ef3",
+    "after": "51e1528ca1dd82fdb3951701f2a3e8f27608669ae4d954584b1d7afa63a5f743"
+  },
+  {
+    "path": "core_enhanced/src/authoring/tests.rs",
+    "before": "c2c333b65bc60a6c344528c927fd0299bc08cb4f06f86d63c9304c3ef029a635",
+    "after": "f8db6dbb8cba6a5fde46023a5acd753412444815caa54eddb01543333b1e920b"
+  },
+  {
+    "path": "core_enhanced/src/authoring/trial/tests/amount_completion.rs",
+    "before": "dfafb8b3e3300c4c47001d716858f09a8bfd4eb1fc278b70529abb1a93b08f4f",
+    "after": "32f6443a7a33c9efb6ed22bb1fb12185b17886726be0583d6e21e42d46ebd03b"
+  },
+  {
+    "path": "core_enhanced/src/authoring/trial/tests/r07_copies.rs",
+    "before": "a86d9472aa321dba6fea3795b379d8d427591c845419647b8aa4cdd56314062f",
+    "after": "9e50b23c23ade30bb8aa2df772875ab7b9bc2a83c32406eb053be6c75db4be95"
+  },
+  {
+    "path": "core_enhanced/src/authoring/trial/tests/u07_objects.rs",
+    "before": "d2ecb24fda17c3ed68663abfe95a6accf7470aad2fd245c4aca62f69456f552a",
+    "after": "1520cd0ba134c24913aa81f5380f377024793598ad2bfa917fe9dde9127b6fdf"
+  },
+  {
+    "path": "core_enhanced/src/authoring/trial/tests/u08_relics.rs",
+    "before": "9eb21e761be9414a2b9cfe5ebfc0fbf426d557fe67976acce9f2267b8d14122d",
+    "after": "93167aa0525515c6a5c660e4606b07ef31689fa5c0ece6e95975562bd67ddba2"
+  },
+  {
+    "path": "core_enhanced/src/authoring/trial/tests/u09_structural/families.rs",
+    "before": "fe4eafda459fe9a6893051d54427fe714a4ffd918f742025178597756ad29c95",
+    "after": "e3ee663eb54a30f98831dcf35ec335e0e86cac79971e0a1f143eae28c73ba81f"
+  },
+  {
+    "path": "core_enhanced/src/authoring/trial/tests/u09_structural.rs",
+    "before": "22a2da0c769ab2e324bf44a5d2e1b40d57a49740292099696a2c7f30fcc93a65",
+    "after": "33fcd8dfb0c02f553664ef50313761a4814f34dbd49fa3339c203c32da3d33cb"
+  },
+  {
+    "path": "core_enhanced/src/authoring/trial/tests/u10_causal.rs",
+    "before": "faaf45578edbeb92a7e6a4fbee48fa63732b112e4c44346a400df6667fa3689c",
+    "after": "cb8fff6450d8073306d91c8ddbee84ab3dd1c7c7b15be6f217ff1102dd4757de"
+  },
+  {
+    "path": "core_enhanced/src/authoring/trial/tests/u11_lab_continuation.rs",
+    "before": "d069f0937b69c5034e3999491eb7f50aef38940627e54dc84b0507ceeb5c12dc",
+    "after": "813de65d25940ff39d8ca3bc2a5c26ef3d5dd49c0bb562f4dc81e6388ac8a5a4"
+  },
+  {
+    "path": "core_enhanced/src/authoring/trial.rs",
+    "before": "22d2bb941c1900350cf9e071a37f738aee80ee4be54f718ecfa85eb0df99ce64",
+    "after": "d24c6c9a96e67d67f291b027463d90a3b2f036ee49821d69c8bad63ce3702ed5"
+  },
+  {
+    "path": "core_enhanced/src/game/battle/core/commands.rs",
+    "before": "3d9e645389686f84a7d238b7c2af836873aac7d8232dc227b6da3632da5d0d3f",
+    "after": "43c8077725f14f5b7d23f91e7372d23c5fc8c7ace5bb3e1655f294de7efd1711"
+  },
+  {
+    "path": "core_enhanced/src/game/behavior.rs",
+    "before": "3f294bfcaf54910becee40f33d18ddee1437b823d8f801a64819c96677d4c9f0",
+    "after": "c87d17b84c3c6f1e66b84b3b71dc05fbd3ffd71fc84393ad37d880931fb21f37"
+  },
+  {
+    "path": "core_enhanced/src/game/data/content_pack/snapshot/tests.rs",
+    "before": "c16e174f0abcbc3346e92b731352feaeebe0cf308ae964b4b6deaf1af8fe862c",
+    "after": "501dc9be882b2283fd710606f9bf29fea4ba715816cdf38e28b4ffd26cc2a5cb"
+  },
+  {
+    "path": "core_enhanced/src/game/data/content_pack/tests.rs",
+    "before": "93b5cd510239498981e1d7ac5a5f57acce7da70ec9fac2bbf7afa9389cdd6861",
+    "after": "57bea09371704524bb6f8b8e4dd10d83b523ee9eb92ce615b90b50757353462e"
+  },
+  {
+    "path": "core_enhanced/src/game/data/live_ron.rs",
+    "before": "d658e5379797ed28fa7d873b48df6eac02e0742631d9f86417da987603705292",
+    "after": "8f35dc88366a40feff4a2980b63fde978c1cbc93c70945533381192a04273363"
+  },
+  {
+    "path": "core_enhanced/src/game/data/run_policy_data.rs",
+    "before": "e68de46c51393d78e72f0a1ea7c54ff9de1f2d8d58f055af921809368b40303f",
+    "after": "ba6c21925aeb6fe3435c5d63b85a71c6d1d30ec0953e85a2d755f4dc1f256bd3"
+  },
+  {
+    "path": "core_enhanced/src/game/recruitment.rs",
+    "before": "03ce0271c0f9687a84649ac57731de36c723dd24af0e5bb01ca97d07c1d1842a",
+    "after": "a30cab7d5831a4ce5dbc27cfd8682511565f44f30b6170793c6a25ead26072f4"
+  },
+  {
+    "path": "core_enhanced/src/game/world/admin/tests.rs",
+    "before": "359cdd0221595f5540bdc5db5706d9ee8b51e19c81d8c1ca0b856d6c92737f8a",
+    "after": "fc79fe09e4a90ebe360bc7190845f6e925a322a448efbccf75f42decc648b709"
+  },
+  {
+    "path": "core_enhanced/src/game/world/application.rs",
+    "before": "0c8e41003847c491efc389d47b69a1dd393315439ee0317b756fde2cb9e1edf2",
+    "after": "3f8b3a1e2400f807538486532c54a16e93e69758663ada2c9838f3541af1e894"
+  },
+  {
+    "path": "core_enhanced/src/game/world/tests/checkpoint_validation.rs",
+    "before": "2f2d658498ba820482f2ffc1daab0b32b43420af0c886f837611038c6dfe8e17",
+    "after": "4e071f2eecdcb47f048227f16948337c009e6c16beb5aedd39e23e09a664b2a6"
+  },
+  {
+    "path": "core_enhanced/src/game/world/tests/combat.rs",
+    "before": "b0bcb03029ef5f2872fe192a4706da86c275e5942bd930c6f3782bf20680cccd",
+    "after": "8aae601a256a8450298defc2700abe437da285332af9a03d08354ba4985276ad"
+  },
+  {
+    "path": "core_enhanced/src/game/world/tests/content_generation.rs",
+    "before": "5052f45cb1cc3cb1cc959a39b0cf228c8127ffcd05c6a8ac37d65be8e0db790e",
+    "after": "a5e7d46a92cde444db5ce967de4b93649b3ea95eb52a8240f87704a0775ff212"
+  },
+  {
+    "path": "core_enhanced/src/game/world/tests/facility.rs",
+    "before": "c6836dc8a35c26a8f0b7666f72809191649b245e22bbe5dc0bc79bc7ee1c94b5",
+    "after": "639cd39f27b73e0998147646b1eca4fc1b090da4ee74deb10153b6edb5ff35d0"
+  },
+  {
+    "path": "core_enhanced/src/game/world/tests/map_flow.rs",
+    "before": "c2d385e7459d0c4ad3b53f2d1319ee097cec7a5a8a756d8443a07e5bd20b44d7",
+    "after": "3345daaf7cccd388ca1fb0bc6c533cd7d24e00c9faf878d2ef9e6036c4c57eb6"
+  },
+  {
+    "path": "core_enhanced/src/game/world/tests/mod.rs",
+    "before": "083d4d38cf7fe3aca94e645e289d174423f41d50f039d925303343de0f9660e3",
+    "after": "e27ae233044088714e7fa03f68f8772338e4447edfca8b5c407f4b1c723c93f6"
+  },
+  {
+    "path": "core_enhanced/src/game/world/tests/node_sessions.rs",
+    "before": "be7878f584496892a66c855d69f7833fd1e1ab63fe00dd356f650d68b50dc862",
+    "after": "746221d88fe13fc22c6b5e486fb43fcfb97b729372f5e871d5a8e46be4ec95e2"
+  },
+  {
+    "path": "core_enhanced/src/game/world/tests/r09_combat.inc.rs",
+    "before": "c876a2a1ed4d2812b171523d08701f4a449a56765f3df4b9e834071280ce2579",
+    "after": "a9d0ed9286a0cef5b9778d769e64b8fcee57c97fe4be0b703c5367a924779d27"
+  },
+  {
+    "path": "core_enhanced/src/game/world/tests/resource_lifetimes.rs",
+    "before": "52ef0edab1ba23926f0f32705904aa78a8189bae0ceab9f0b57ab6f0e19ca21e",
+    "after": "4b61b4e54e32436de6a4012035b7d3685d1a94dbb8c88ab750c15498175791be"
+  },
+  {
+    "path": "core_enhanced/src/game/world/tests/snapshots_and_start.rs",
+    "before": "b2ffca435184804a723cb4a1ec2ffe8dfa7beee886c87c354e3c3615caff4a5b",
+    "after": "96141568456a2bc7c73dd75606dcd137bad56869d15c1bd2955ed7878c8adc77"
+  },
+  {
+    "path": "core_enhanced/src/game/world/tests/u06_starter.rs",
+    "before": "65bf64a8792a7fde4a5153e270dae351ea0b3d4f7a8b84487ee4ecb0f4c5be6d",
+    "after": "6dc22c0ed4ad1ec3dea3488af6d7313ba9eab18eeec93973b47366e7d2ecda9d"
+  },
+  {
+    "path": "core_enhanced/src/game/world/tests/u08_relics.rs",
+    "before": "4a6dff26ef275de88884d87fb725d4381f65583b204c1a77bd9a3e8ebde90ca7",
+    "after": "de965e311487bbdac94bafe301e5fba17d0034f5fafb565faa918098c99b1ef0"
+  }
+]

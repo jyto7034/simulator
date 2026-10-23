@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/home/blast/.cargo/bin/cargo",
+    "build",
+    "--release",
+    "--offline",
+    "--locked",
+    "--target",
+    "x86_64-unknown-linux-gnu",
+    "--target-dir",
+    ".cache/u11-mod-validation-target",
+    "--manifest-path",
+    "core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/correction/u14_correction_001/probe/Cargo.toml"
+  ],
+  "exit_code": 0,
+  "seconds": 80.02113517500402,
+  "stdout": "public_build003.stdout.log",
+  "stderr": "public_build003.stderr.log"
+}

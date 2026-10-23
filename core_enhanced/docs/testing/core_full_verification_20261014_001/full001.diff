@@ -1,0 +1,11 @@
+--- a/core_enhanced/src/game/world/tests/u12_lifecycle/cost.rs
++++ b/core_enhanced/src/game/world/tests/u12_lifecycle/cost.rs
+@@ -17,7 +17,7 @@
+ use std::path::{Path, PathBuf};
+ use std::sync::OnceLock;
+ 
+-const DEFAULT_INPUTS: &str = "docs/goals/core_expedition_lifecycle/execution/single_goal/test_parts/vault_cost001/inputs/manifest.json";
++const DEFAULT_INPUTS: &str = "docs/goals/core_expedition_deterrence_rewards/execution/single_goal/test_parts/g11_inputs001/manifest.json";
+ const RESULT_SHA: &str = "fea92c4bc849ef19f534a593cf755faa553393deb9f8e579ff202d54b0ac47a9";
+ 
+ struct Case {

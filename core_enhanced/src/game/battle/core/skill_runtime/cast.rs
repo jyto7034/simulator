@@ -33,7 +33,16 @@ pub(in crate::game::battle::core) enum SkillTargetUsefulness<'a> {
         time_ms: u64,
         skill: &'a SkillDef,
     },
+    AllowedDeadCasterCast {
+        time_ms: u64,
+        skill: &'a SkillDef,
+    },
     DeliveryStep {
+        time_ms: u64,
+        step_index: usize,
+        step: &'a SkillStepDef,
+    },
+    AllowedDeadCasterDeliveryStep {
         time_ms: u64,
         step_index: usize,
         step: &'a SkillStepDef,
@@ -437,7 +446,7 @@ impl BattleCore {
     ) -> bool {
         self.units
             .get(&id)
-            .is_some_and(|unit| unit.owner == owner && unit.is_active())
+            .is_some_and(|unit| unit.owner == owner && unit.is_active() && !self.stress_protected_target(id))
     }
 
     pub(in crate::game::battle::core) fn choose_ally_skill_target(
@@ -460,16 +469,22 @@ impl BattleCore {
                     return false;
                 }
                 match usefulness {
-                    SkillTargetUsefulness::Cast { time_ms, skill } => self
-                        .skill_has_useful_automatic_cast_target(
+                    SkillTargetUsefulness::Cast { time_ms, skill }
+                    | SkillTargetUsefulness::AllowedDeadCasterCast { time_ms, skill } => self
+                        .skill_has_useful_automatic_cast_target_for_origin(
                             time_ms,
                             skill,
                             caster,
                             Some(SkillCastTarget::Unit {
                                 unit_instance_id: unit.instance_id,
                             }),
+                            matches!(
+                                usefulness,
+                                SkillTargetUsefulness::AllowedDeadCasterCast { .. }
+                            ),
                         ),
-                    SkillTargetUsefulness::DeliveryStep { step, .. } => {
+                    SkillTargetUsefulness::DeliveryStep { step, .. }
+                    | SkillTargetUsefulness::AllowedDeadCasterDeliveryStep { step, .. } => {
                         self.is_skill_step_useful_ally_target(caster, step, unit.instance_id)
                     }
                 }
@@ -507,7 +522,15 @@ impl BattleCore {
         if control::charge(self.units.len() as u64 + 1, "skill_target_candidates").is_err() {
             return None;
         }
+        let hostile = if self.approach_taunt(caster_instance_id).is_some() { match usefulness {
+            SkillTargetUsefulness::Cast { skill, .. } | SkillTargetUsefulness::AllowedDeadCasterCast { skill, .. } => Self::hostile_attack_skill(skill),
+            SkillTargetUsefulness::DeliveryStep { step, .. } | SkillTargetUsefulness::AllowedDeadCasterDeliveryStep { step, .. } => {
+                control::charge(step.effects.len() as u64, "taunt_step_effects").ok()?;
+                step.effects.iter().any(|effect| matches!(effect.op, crate::game::ability::SkillEffectDef::Damage { .. } | crate::game::ability::SkillEffectDef::DamageExpr { .. }))
+            }
+        } } else { false };
         let in_range = |unit_id: UnitInstanceId| {
+            if hostile && !self.approach_taunt_attack_allowed(caster_instance_id, unit_id) { return false; }
             if !self.single_target_can_target_unit(unit_id, air_capable) {
                 return false;
             }
@@ -523,28 +546,62 @@ impl BattleCore {
                 unit_instance_id: unit_id,
             });
             match usefulness {
-                SkillTargetUsefulness::Cast { time_ms, skill } => self
-                    .skill_has_useful_automatic_cast_target(
+                SkillTargetUsefulness::Cast { time_ms, skill }
+                | SkillTargetUsefulness::AllowedDeadCasterCast { time_ms, skill } => self
+                    .skill_has_useful_automatic_cast_target_for_origin(
                         time_ms,
                         skill,
                         caster_instance_id,
                         target,
+                        matches!(
+                            usefulness,
+                            SkillTargetUsefulness::AllowedDeadCasterCast { .. }
+                        ),
                     ),
                 SkillTargetUsefulness::DeliveryStep {
                     time_ms,
                     step_index,
                     step,
-                } => self.skill_step_has_useful_actual_delivery_target(
+                }
+                | SkillTargetUsefulness::AllowedDeadCasterDeliveryStep {
+                    time_ms,
+                    step_index,
+                    step,
+                } => self.skill_step_has_useful_actual_delivery_target_for_origin(
                     time_ms,
                     step_index,
                     caster_instance_id,
                     step,
                     target,
+                    matches!(
+                        usefulness,
+                        SkillTargetUsefulness::AllowedDeadCasterDeliveryStep { .. }
+                    ),
                 ),
             }
         };
 
         match rule {
+            UnitTargetRule::RouteProgress => {
+                let mut best: Option<(f32, u64, UnitInstanceId)> = None;
+                for unit in self.authoring_target_candidates().ok()? {
+                    control::poll("skill_route_target_candidate").ok()?;
+                    let id = unit.instance_id;
+                    if !unit.is_active() || unit.owner == caster_owner || !in_range(id) || !is_useful(id) { continue; }
+                    let plan = unit.enemy_movement_plan.as_ref().unwrap_or(&self.scenario.tactical_plan.enemy_plan);
+                    let crate::game::battle::scenario::EnemyMovementPlan::PathAlongCells { cells } = plan;
+                    control::charge(cells.len() as u64 * 2 + 1, "skill_route_projection").ok()?;
+                    crate::game::battle::runtime_control::admit_retained_growth(0,
+                        cells.len().checked_mul(std::mem::size_of::<WorldVec2>()), "skill_route_projection").ok()?;
+                    let progress = self.enemy_route_progress(id);
+                    if best.is_none_or(|(old_progress, old_spawn, old_id)| progress.total_cmp(&old_progress).reverse()
+                        .then_with(|| unit.spawn_order.cmp(&old_spawn))
+                        .then_with(|| id.as_bytes().cmp(old_id.as_bytes())).is_lt()) {
+                        best = Some((progress, unit.spawn_order, id));
+                    }
+                }
+                best.map(|(_, _, id)| id)
+            }
             UnitTargetRule::CurrentTarget => self
                 .units
                 .get(&caster_instance_id)

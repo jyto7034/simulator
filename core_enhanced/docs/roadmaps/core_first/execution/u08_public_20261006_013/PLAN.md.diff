@@ -1,0 +1,19 @@
+--- before/PLAN.md
++++ core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/PLAN.md
+@@ -1,6 +1,6 @@
+ # U08 실행 PLAN — GOAL-CRNV-01
+ 
+-2026-10-06 · 기존 공개/owner/실제 전투 집중25의 유효 범위를 보존하고 E1을 진행 중이다.
++2026-10-06 · E1 공개 정상 경로와 E2 carrier/basic 집중 검증을 회수하고 현재 기능 통합 실행으로 진행한다.
+ 현재 마지막 E1 성공 source435 / `984f8e93da698a55baa2f4c41f53fd9934dc9f3a884e4e522669c552f1bbf53b`에서 E009 전체1/1 PASS다.
+ 정상 보상·장착·SavePoint/Event/Load·fresh OS Continue 이후 실제 Snapshot Const100 스킬 피해210이 HP422→212로 소비됐다. Original/정상grant fragmentcopy/employee/generation/segment raw·calculated210을 명시 검사하고 trace on/off의 full DamageFact·query를 대조했다.
+ E007의 clamp92→0 성공과 E008의4초 무대상 실패는 보존한다. E009는 외부 fixture의 대상maxHP170→500, 준비8초이며 공식 콘텐츠/제품/cap은 그대로다. 최종 public_trial_cli009의35개 산출물 해시를 확인했고 실제 release CLI 실행은 후속 Sol 범위다.
+@@ -8,7 +8,7 @@
+ E2 literal002는 관측 off 실제 두 직원144/210의 1/1 PASS다. 이어 stage2001은 literal 1 PASS / 실제 carrier 4 FAIL이었다. delivery 재결속에서 private relic_numeric이 누락되는 제품 원인을 확인했다.
+ Sol의 두 파일 교정 후 Astra private004 2/2, 동일 입력 world stage2002 5/5, 관련 relic_amount12/12, 기존 resource projectile002와 fixed001 각1/1 PASS다. source438/939a61e13b381c034c5ecf1efcb80a79091038592e46df090107aa60ddbf47a4의 검증 경계이며 이후 live 편집 성공을 뜻하지 않는다.
+ basic001 parameterized1/1은 근접/투사체 × Normal/Corrupt의 Auto·ExtraAttack과 base12→38/78 once를 검증했다. epoch0051/1 및 carrier complete0017/7은 source438/0df25480ef7cb5c787f37488f85c9c5d6069b156637132a19c703343d6d15d25에서 통과했다. 정상 channel 만료1601ms 뒤 원 Auto2500ms는 취소되고 복제 대조군은38피해를 냈다. epoch001–004 fixture 실패 원본은 보존한다.
+-제품/통합 runner와 Rust/RON writer는 HOLD다. Astra는 승인된 현재 통합/public/release/R05 도구와 CLI009 comparator를 준비하고 Sol은 이후 전체 실행을 맡는다. 상세 [carrier 교정 회수](../../../../roadmaps/core_first/execution/u08_public_20261006_011/RECORD.ko.md)와 [basic·epoch 회수/다음 범위](../../../../roadmaps/core_first/execution/u08_public_20261006_012/RECORD.ko.md)를 따른다. root는 제품·시험 코드를 대신 작성하지 않는다.
++Astra의45개 검증 도구·의존 입력 인수를 마치고 모든 입력 writer는 HOLD다. Sol이 유일 실행자로 integrated_matrix002→verify_remaining002 기능 묶음을 수행한다. fresh release와 debug measurement의 source/binary 결속을 선행하며 실제 playback26/lifecycle10/host4×2도 포함한다. [도구 인수·실행 계약](../../../../roadmaps/core_first/execution/u08_public_20261006_013/RECORD.ko.md)을 따른다. 상세 [carrier 교정 회수](../../../../roadmaps/core_first/execution/u08_public_20261006_011/RECORD.ko.md)와 [basic·epoch 회수/다음 범위](../../../../roadmaps/core_first/execution/u08_public_20261006_012/RECORD.ko.md)를 따른다. root는 제품·시험 코드를 대신 작성하지 않는다.
+ 전체 U08 완료가 아니다. 공개 release CLI, 최종 기능·성능 및 evidence→impact→adaptation→coverage→자체검증→동결/복원→독립 감사가 남았다. native exact-cap 검사는 admission enforcement 증거이며 독립 heap 상계를 대신하지 않는다.
+ Core StartNewGame은 NotStarted만 허용하고 replace_active_run은 host 확인과 구분한다. 실제 사망 정산은 terminal이고 CompleteCombatResult는 acknowledgement다.
+ 이전 numeric on33/off31·behavior11·초기 PC는 과거 경계의 유효 범위에서 보존하며 현재 변경 영향에 따라 결속한다.

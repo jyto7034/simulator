@@ -9,7 +9,7 @@ fn fixture(moment: &str) -> (ExternalFixture, ValidatedGameData, Value) {
             "forms:{\"base\":(skill_id:\"fragment_freischutz_black_round\", resonance_max: 25),\"awakened\":(skill_id:\"r07_awakened\",resonance_max:25,bloom_recipe:Some((enkephalin:3,materials:[(material_id:\"r07_abnormality_part\",amount:1),(material_id:\"r07_abnormality_part\",amount:2)])))},dismantle_recipe:Some((enkephalin:2,materials:[(material_id:\"r07_abnormality_part\",amount:1)]))",1);
         f.write(fragments, text);
         let equipment = "official/data/equipments/base.ron";
-        f.write(equipment,f.read(equipment).replacen("materials: [",r#"materials: [EquipmentMaterialMetadata(id:"r07_abnormality_part",uuid:"e1000000-0000-0000-0000-000000000707",name:"Freischutz part",description:"Synthetic abnormality part for R07 acceptance",material_type:Fragment,rarity:WAW,equipment_type:None),"#,1));
+        f.write(equipment,f.read(equipment).replacen("materials: [",r#"materials: [EquipmentMaterialMetadata(id:"r07_abnormality_part",uuid:"e1000000-0000-0000-0000-000000000707",name:"Freischutz part",description:"Synthetic abnormality part for R07 acceptance",material_type:AbnormalityPart,rarity:WAW,equipment_type:None),"#,1));
         let rewards = "official/data/events/rewards/base.ron";
         f.write(rewards,f.read(rewards).replacen("GrantSkillFragment(fragment_id: \"authoring_preview_fragment\"),","GrantSkillFragment(fragment_id: \"authoring_preview_fragment\"), GrantEquipmentMaterial(material_id:\"r07_abnormality_part\",amount:3),",1));
         let skill_path = "official/data/skills/base.ron";
@@ -68,11 +68,20 @@ fn fixture(moment: &str) -> (ExternalFixture, ValidatedGameData, Value) {
                 .replacen("skills: [", &format!("skills: [{raw},"), 1),
         );
         let map = "official/data/map/facility_templates.ron";
-        let text=f.read(map).replacen("(id: \"floor_gate\", role: Terminal(FloorGate), allowed_categories: [Gate]),",r#"(id:"r07_maintenance",role:Ordinary,allowed_categories:[Maintenance]),(id:"r07_savepoint",role:Ordinary,allowed_categories:[SavePoint],tags:["save_point_candidate"]),(id: "floor_gate", role: Terminal(FloorGate), allowed_categories: [Gate]),"#,1)
-            .replacen("connections: [",r#"connections: [(from_slot_id:"intake_corridor",to_slot_id:"r07_maintenance",direction:Bidirectional),(from_slot_id:"r07_maintenance",to_slot_id:"r07_savepoint",direction:Bidirectional),(from_slot_id:"r07_savepoint",to_slot_id:"supply_annex",direction:Bidirectional),"#,1);
-        f.write(map, text);
+        let mut catalog: crate::game::map::FacilityTemplateDatabase = ron::de::from_str(&f.read(map)).unwrap();
+        let intro = catalog.templates.iter_mut().find(|t|t.id.as_str()=="standard_intro_a").unwrap();
+        intro.slots.push(ron::de::from_str(r#"(id:"r07_maintenance",role:Ordinary,allowed_categories:[Maintenance])"#).unwrap());
+        intro.slots.push(ron::de::from_str(r#"(id:"r07_savepoint",role:Ordinary,allowed_categories:[SavePoint],tags:["save_point_candidate"])"#).unwrap());
+        for (from,to) in [("intake_corridor","r07_maintenance"),("r07_maintenance","r07_savepoint"),("r07_savepoint","supply_annex")] {
+            intro.connections.push(ron::de::from_str(&format!(r#"(from_slot_id:"{from}",to_slot_id:"{to}",direction:Bidirectional)"#)).unwrap());
+        }
+        f.write(map,ron::ser::to_string(&catalog).unwrap());
         let assignments = "official/data/map/node_assignment_profiles.ron";
-        f.write(assignments,f.read(assignments).replacen("fixed_slot_assignments: [",r#"fixed_slot_assignments: [(slot_id:"r07_maintenance",kind_id:"maintenance",payload:Maintenance),(slot_id:"r07_savepoint",kind_id:"save_point",payload:SavePoint),"#,1));
+        let mut profiles: crate::game::map::NodeAssignmentProfileDatabase = ron::de::from_str(&f.read(assignments)).unwrap();
+        let intro = profiles.profiles.iter_mut().find(|p|p.id=="standard_floor_1").unwrap();
+        intro.fixed_slot_assignments.push(ron::de::from_str(r#"(slot_id:"r07_maintenance",kind_id:"maintenance",payload:Maintenance)"#).unwrap());
+        intro.fixed_slot_assignments.push(ron::de::from_str(r#"(slot_id:"r07_savepoint",kind_id:"save_point",payload:SavePoint)"#).unwrap());
+        f.write(assignments,ron::ser::to_string(&profiles).unwrap());
     })
 }
 fn rewrite_indices(value: &mut Value) {
@@ -121,6 +130,7 @@ fn r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process()
         )
         .unwrap();
         let mut app = CoreApplication::new(token, 900);
+        app.install_authoritative_player_profile(value["profile"].clone().into()).unwrap();
         let checkpoint = ApplicationCheckpoint::new(
             serde_json::to_vec(&value["checkpoint"]).unwrap(),
             0,
@@ -276,7 +286,7 @@ fn r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process()
                     let dir =
                         std::env::temp_dir().join(format!("r07-save-{}", uuid::Uuid::new_v4()));
                     copy_tree(fixture.root(), &dir.join("content"));
-                    let save = json!({"selection":fixture.selection(),"checkpoint":serde_json::from_slice::<Value>(export.core_payload_json()).unwrap(),"peak":export.run_peak_certified_power(),"inventory":session.state.application.snapshot(ApplicationSnapshotKind::Inventory).unwrap(),"fingerprint":session.state.application.certified_input_fingerprint().unwrap()});
+                    let save = json!({"profile":session.state.application.snapshot(ApplicationSnapshotKind::PlayerProfile).unwrap().read_model().clone(),"selection":fixture.selection(),"checkpoint":serde_json::from_slice::<Value>(export.core_payload_json()).unwrap(),"peak":export.run_peak_certified_power(),"inventory":session.state.application.snapshot(ApplicationSnapshotKind::Inventory).unwrap(),"fingerprint":session.state.application.certified_input_fingerprint().unwrap()});
                     std::fs::write(dir.join("save.json"), serde_json::to_vec(&save).unwrap())
                         .unwrap();
                     let output=std::process::Command::new(std::env::current_exe().unwrap()).args(["--exact","authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process","--nocapture"]).env(CHILD,&dir).output().unwrap();
@@ -395,7 +405,7 @@ fn r07_f04_f12_public_ron_invalid_forms_recipes_and_removed_commands_reject() {
         r#"forms: {"base":(skill_id:"fragment_freischutz_black_round", resonance_max: 100,unknown:true)}"#,
         r#"forms: {"base":(skill_id:"fragment_freischutz_black_round", resonance_max: 100),"base":(skill_id:"freischutz_magic_bullet", resonance_max: 100)}"#,
     ] {
-        let fixture = ExternalFixture::official_with_legacy_starters();
+        let fixture = ExternalFixture::official_with_trial_route();
         let path = "official/data/skill_fragments/base.ron";
         let text = fixture.read(path);
         assert!(text.contains(original));

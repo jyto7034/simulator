@@ -1,0 +1,492 @@
+{
+  "recorded_at_utc": "2026-10-15T12:58:09.314051+00:00",
+  "status": "requested_correction_complete",
+  "scope": "29 prior failures and shared test/optional measurement-driver impact; no new roadmap implementation",
+  "environment": {
+    "PATH": "/home/blast/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+    "CARGO_HOME": "/tmp/wp02-cargo-home",
+    "CARGO_TARGET_DIR": "/mnt/f/work/simulator/.cache/u164-review-dev-target",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0"
+  },
+  "cwd": "/mnt/f/work/simulator",
+  "original_failures": 29,
+  "corrected_and_passed": 26,
+  "removed_out_of_scope_or_duplicate": 3,
+  "dispositions": "dispositions.json",
+  "changes": "changes.json",
+  "task_only_patch": "changes.patch",
+  "runs": [
+    {
+      "name": "preflight001",
+      "command": "/home/blast/.cargo/bin/cargo test -p game_server --lib --offline --locked -- prepared_battle_entry_drop application_preintent_write_failure accepted_application_profile_write_failure local_active_run_requires_continue",
+      "exit_code": 101,
+      "execution_sandbox": "sandbox",
+      "log": "preflight001.log",
+      "timing": {
+        "real": 42.35,
+        "user": 11.68,
+        "sys": 5.42
+      },
+      "counts": {
+        "passed": 0,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered_out": 0
+      },
+      "targets": []
+    },
+    {
+      "name": "preflight002",
+      "command": "/home/blast/.cargo/bin/cargo test -p game_server --lib --offline --locked -- prepared_battle_entry_drop application_preintent_write_failure accepted_application_profile_write_failure local_active_run_requires_continue",
+      "exit_code": 101,
+      "execution_sandbox": "sandbox",
+      "log": "preflight002.log",
+      "timing": {
+        "real": 59.89,
+        "user": 33.62,
+        "sys": 7.32
+      },
+      "counts": {
+        "passed": 2,
+        "failed": 2,
+        "ignored": 0,
+        "measured": 0,
+        "filtered_out": 114
+      },
+      "targets": [
+        {
+          "target": "Running unittests src/lib.rs (.cache/u164-review-dev-target/debug/deps/game_server-fff3e07e8ecfc449)",
+          "status": "FAILED",
+          "passed": 2,
+          "failed": 2,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 114,
+          "test_seconds": 11.22
+        }
+      ]
+    },
+    {
+      "name": "server001",
+      "command": "/home/blast/.cargo/bin/cargo test -p game_server --lib --offline --locked",
+      "exit_code": 101,
+      "execution_sandbox": "unsandboxed",
+      "log": "server001.log",
+      "timing": {
+        "real": 64.15,
+        "user": 300.51,
+        "sys": 23.24
+      },
+      "counts": {
+        "passed": 90,
+        "failed": 6,
+        "ignored": 22,
+        "measured": 0,
+        "filtered_out": 0
+      },
+      "targets": [
+        {
+          "target": "Running unittests src/lib.rs (.cache/u164-review-dev-target/debug/deps/game_server-fff3e07e8ecfc449)",
+          "status": "FAILED",
+          "passed": 90,
+          "failed": 6,
+          "ignored": 22,
+          "measured": 0,
+          "filtered_out": 0,
+          "test_seconds": 20.91
+        }
+      ]
+    },
+    {
+      "name": "focused003",
+      "command": "/home/blast/.cargo/bin/cargo test -p game_server --lib --offline --locked -- first_public_battle_entry fault_is_per_actor real_tick_fault u04_admin_prepared u04_real_terminal u04_two_restored",
+      "exit_code": 101,
+      "execution_sandbox": "sandbox",
+      "log": "focused003.log",
+      "timing": {
+        "real": 67.39,
+        "user": 86.14,
+        "sys": 8.76
+      },
+      "counts": {
+        "passed": 4,
+        "failed": 2,
+        "ignored": 0,
+        "measured": 0,
+        "filtered_out": 112
+      },
+      "targets": [
+        {
+          "target": "Running unittests src/lib.rs (.cache/u164-review-dev-target/debug/deps/game_server-fff3e07e8ecfc449)",
+          "status": "FAILED",
+          "passed": 4,
+          "failed": 2,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 112,
+          "test_seconds": 17.6
+        }
+      ]
+    },
+    {
+      "name": "focused004",
+      "command": "/home/blast/.cargo/bin/cargo test -p game_server --lib --offline --locked -- fault_is_per_actor u04_newer_profile",
+      "exit_code": 0,
+      "execution_sandbox": "sandbox",
+      "log": "focused004.log",
+      "timing": {
+        "real": 61.69,
+        "user": 41.88,
+        "sys": 7.28
+      },
+      "counts": {
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered_out": 116
+      },
+      "targets": [
+        {
+          "target": "Running unittests src/lib.rs (.cache/u164-review-dev-target/debug/deps/game_server-fff3e07e8ecfc449)",
+          "status": "ok",
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 116,
+          "test_seconds": 17.06
+        }
+      ]
+    },
+    {
+      "name": "feature_preflight001",
+      "command": "/home/blast/.cargo/bin/cargo test -p game_core -p game_server --lib --features game_server/runtime-measurement --offline --locked --no-fail-fast -- terminal_observation_keeps_failure_work cmrp_playback_normal_external_combat",
+      "exit_code": 0,
+      "execution_sandbox": "sandbox",
+      "log": "feature_preflight001.log",
+      "timing": {
+        "real": 89.45,
+        "user": 78.31,
+        "sys": 15.03
+      },
+      "counts": {
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered_out": 2327
+      },
+      "targets": [
+        {
+          "target": "Running unittests src/lib.rs (.cache/u164-review-dev-target/debug/deps/game_core-f61a1801d0ca5bf5)",
+          "status": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 2180,
+          "test_seconds": 4.74
+        },
+        {
+          "target": "Running unittests src/lib.rs (.cache/u164-review-dev-target/debug/deps/game_server-e9ccba41209e3e88)",
+          "status": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 147,
+          "test_seconds": 34.78
+        }
+      ]
+    },
+    {
+      "name": "feature_final001",
+      "command": "/home/blast/.cargo/bin/cargo test -p game_core -p game_server --all-targets --features game_server/runtime-measurement --offline --locked --no-fail-fast -- game::player_game_actor::handlers::tests:: runtime_measurement:: application::fault_tests:: application::runtime_observation_tests:: runtime_observation:: observability::",
+      "exit_code": 0,
+      "execution_sandbox": "sandbox",
+      "log": "feature_final001.log",
+      "timing": {
+        "real": 416.58,
+        "user": 6150.34,
+        "sys": 49.48
+      },
+      "counts": {
+        "passed": 96,
+        "failed": 0,
+        "ignored": 1,
+        "measured": 0,
+        "filtered_out": 2304
+      },
+      "targets": [
+        {
+          "target": "Running unittests src/lib.rs (.cache/u164-review-dev-target/debug/deps/game_core-f61a1801d0ca5bf5)",
+          "status": "ok",
+          "passed": 32,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 2149,
+          "test_seconds": 10.25
+        },
+        {
+          "target": "Running unittests src/bin/author_content.rs (.cache/u164-review-dev-target/debug/deps/author_content-c05d326f7d3e3755)",
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0,
+          "test_seconds": 0.0
+        },
+        {
+          "target": "Running unittests src/bin/consume_content_pack.rs (.cache/u164-review-dev-target/debug/deps/consume_content_pack-b13d4bce4b4d73f3)",
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0,
+          "test_seconds": 0.0
+        },
+        {
+          "target": "Running unittests src/bin/package_official_content.rs (.cache/u164-review-dev-target/debug/deps/package_official_content-2232eb87d8b4ebb4)",
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0,
+          "test_seconds": 0.0
+        },
+        {
+          "target": "Running tests/author_content_cli_arguments.rs (.cache/u164-review-dev-target/debug/deps/author_content_cli_arguments-aa8b33af25b68457)",
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 4,
+          "test_seconds": 0.0
+        },
+        {
+          "target": "Running tests/battle_showcase.rs (.cache/u164-review-dev-target/debug/deps/battle_showcase-6b49878703e2c026)",
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 1,
+          "test_seconds": 0.0
+        },
+        {
+          "target": "Running tests/live_item_skill_activation.rs (.cache/u164-review-dev-target/debug/deps/live_item_skill_activation-7a385d623984852c)",
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 4,
+          "test_seconds": 0.0
+        },
+        {
+          "target": "Running tests/live_skill_catalog_audit.rs (.cache/u164-review-dev-target/debug/deps/live_skill_catalog_audit-4a11e16883ff1b38)",
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 4,
+          "test_seconds": 0.0
+        },
+        {
+          "target": "Running tests/ron_loading.rs (.cache/u164-review-dev-target/debug/deps/ron_loading-c7363ca3f2f6ce69)",
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 25,
+          "test_seconds": 0.0
+        },
+        {
+          "target": "Running tests/skill_runtime_contract.rs (.cache/u164-review-dev-target/debug/deps/skill_runtime_contract-c20c2687dc6eb737)",
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 15,
+          "test_seconds": 0.0
+        },
+        {
+          "target": "Running tests/skill_test_suite.rs (.cache/u164-review-dev-target/debug/deps/skill_test_suite-462b55ec50e1e3d9)",
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 4,
+          "test_seconds": 0.0
+        },
+        {
+          "target": "Running tests/u08_relic_public.rs (.cache/u164-review-dev-target/debug/deps/u08_relic_public-1ecf1e0a604a912f)",
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 15,
+          "test_seconds": 0.0
+        },
+        {
+          "target": "Running unittests src/lib.rs (.cache/u164-review-dev-target/debug/deps/game_server-e9ccba41209e3e88)",
+          "status": "ok",
+          "passed": 64,
+          "failed": 0,
+          "ignored": 1,
+          "measured": 0,
+          "filtered_out": 83,
+          "test_seconds": 356.25
+        },
+        {
+          "target": "Running unittests src/main.rs (.cache/u164-review-dev-target/debug/deps/game_server-220f9ffa951c1729)",
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0,
+          "test_seconds": 0.0
+        },
+        {
+          "target": "Running unittests src/bin/measure_runtime.rs (.cache/u164-review-dev-target/debug/deps/measure_runtime-acf1bdf969768538)",
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0,
+          "test_seconds": 0.0
+        },
+        {
+          "target": "Running unittests src/bin/mod_launcher.rs (.cache/u164-review-dev-target/debug/deps/mod_launcher-118189f75f731531)",
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0,
+          "test_seconds": 0.0
+        },
+        {
+          "target": "Running unittests examples/fault_runtime.rs (.cache/u164-review-dev-target/debug/examples/fault_runtime-8f7d1ac926a85d75)",
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0,
+          "test_seconds": 0.0
+        },
+        {
+          "target": "Running unittests examples/generate_action_capability_fixture.rs (.cache/u164-review-dev-target/debug/examples/generate_action_capability_fixture-94be60ddeb429fa7)",
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0,
+          "test_seconds": 0.0
+        },
+        {
+          "target": "Running unittests examples/generate_battle_revision_fixture.rs (.cache/u164-review-dev-target/debug/examples/generate_battle_revision_fixture-1701c2d86de63d52)",
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0,
+          "test_seconds": 0.0
+        },
+        {
+          "target": "Running unittests examples/generate_employee_profile_contract_fixture.rs (.cache/u164-review-dev-target/debug/examples/generate_employee_profile_contract_fixture-065a6d02cd384a2e)",
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0,
+          "test_seconds": 0.0
+        },
+        {
+          "target": "Running unittests examples/measurement_support.rs (.cache/u164-review-dev-target/debug/examples/measurement_support-c30e30d4f2a9ef6c)",
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0,
+          "test_seconds": 0.0
+        },
+        {
+          "target": "Running unittests examples/observe_runtime.rs (.cache/u164-review-dev-target/debug/examples/observe_runtime-1b6edd780bc5a473)",
+          "status": "ok",
+          "passed": 0,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0,
+          "test_seconds": 0.0
+        }
+      ]
+    }
+  ],
+  "current_default_server_evidence": {
+    "unique_passed": 96,
+    "ignored": 22,
+    "basis": "server001 90 + focused003 4 + focused004 2; targeted changes do not affect earlier passing cases; not a single final full-suite run"
+  },
+  "reused": [
+    {
+      "source": "../full_tests_20261015_001/default.log",
+      "scope": "game_core default unit/integration",
+      "passed": 2228,
+      "ignored": 6,
+      "reason": "Core product/default tests unchanged; only feature-gated fault observation test edited"
+    },
+    {
+      "source": "../full_tests_20261015_001/default.log",
+      "scope": "independent probe tests",
+      "passed": 11,
+      "reason": "Probe inputs and engine/server production paths unchanged; optional playback driver is not called"
+    },
+    {
+      "source": "../full_tests_20261015_001/exporter_heap.log",
+      "scope": "isolated exporter heap",
+      "passed": 1,
+      "reason": "Exporter, allocator, observability inputs unchanged; edited playback/helper paths not called"
+    },
+    {
+      "source": "server001.log",
+      "scope": "default server passing tests",
+      "passed": 90,
+      "reason": "Post-run changes confined to the six failures and their dedicated preparations; all affected actor tests also rerun under measurement feature"
+    }
+  ],
+  "limits": [
+    "No repeated full-workspace run after correction; current default evidence combines valid unaffected results and targeted reruns.",
+    "Default 28 ignored specialized/calibration/child-helper cases remain separate, as recorded in prior ignored.json.",
+    "Feature final selects related tests after all-targets compilation; not a full feature-suite claim.",
+    "Historical U16-4 audit004 remains immutable; this optional measurement-driver/test delta is a separately verified follow-up, not a new independent audit."
+  ],
+  "checks": {
+    "task_preimages_match_recorded_sha256": true,
+    "changed_source_files": 6,
+    "all_26_retained_failures_pass_in_feature_final": true,
+    "git_diff_check_affected_paths_exit_code": 0,
+    "owned_test_processes_running": false
+  }
+}

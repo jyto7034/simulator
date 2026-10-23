@@ -796,3 +796,49 @@ fn u05_selected_finite_projectile_preserves_obligation_from_launch_through_lease
         .unwrap();
     assert_eq!(core.units[&actor].resonance_current, at_expiry + 8);
 }
+
+#[test]
+fn graph_ir_roundtrip_native_admission_matches_full_and_payable_costs() {
+    use crate::authoring::node_graph::{compile, PortableGraph};
+    for (case, initial, spent, remaining) in [("G01", 100, 100, 0), ("G02", 40, 25, 15)] {
+        let source = std::fs::read_to_string(std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join(format!("../content_assembler/docs/examples/compiler-preflight/{case}.node-graph.json"))).unwrap();
+        let artifact = compile(&source, "r08_strike".into()).unwrap();
+        let ron = artifact.to_ron().unwrap();
+        let db = PortableGraph::from_ron(&ron).unwrap().load_native().unwrap();
+        let (mut core, mut state, actor, target, _) = native_action_fixture(db.get_by_id("r08_strike").unwrap().clone(), Default::default());
+        let unit = core.units.get_mut(&actor).unwrap();
+        unit.source_identity = BattleUnitSourceIdentity::Employee {employee_uuid: actor.as_uuid(), base_uuid: unit.base_uuid};
+        unit.resonance_current = initial;
+        let action = core.request_skill_action(0, actor, "r08_strike".into(), None).unwrap();
+        assert_eq!(core.units[&actor].resonance_current, remaining);
+        assert_eq!(core.query_action(&action).unwrap().facts.resource_spent, spent);
+        let before_duplicate = core.transaction_debug_snapshot();
+        assert!(core.request_skill_action(0, actor, "r08_strike".into(), None).is_err());
+        assert_eq!(core.transaction_debug_snapshot(), before_duplicate);
+        core.step_battle_execution_until(&mut state, 1).unwrap();
+        assert_eq!(core.units[&target].stats.current_health, 100);
+        assert!(core.live_skill_readiness(1, actor).unwrap().resonance_use.is_none());
+        assert_eq!(core.query_action(&action).unwrap().effects_settled_at_ms, Some(1));
+        assert_eq!(core.query_action(&action).unwrap().facts.cost_mutations, 1);
+        assert_eq!(core.units[&actor].resonance_current, remaining);
+        core.add_resonance(actor, 7, 1, false);
+        assert_eq!(core.units[&actor].resonance_current, remaining + 7);
+    }
+}
+
+#[test]
+fn graph_admission_rejects_insufficient_funds_and_capacity_mismatch_atomically() {
+    use crate::game::ability::resonance::*;
+    for (initial, capacity) in [(24, 100), (100, 101)] {
+        let mut skill = parse(&base());
+        skill.resonance_admission = Some(ResonanceAdmission { capacity, requirement: ResonanceRequirement::Payable, cost: ResonanceCost::Fixed(25) });
+        let (mut core, _, actor, _, _) = native_action_fixture(skill, Default::default());
+        let unit = core.units.get_mut(&actor).unwrap();
+        unit.source_identity = BattleUnitSourceIdentity::Employee {employee_uuid: actor.as_uuid(), base_uuid: unit.base_uuid};
+        unit.resonance_current = initial;
+        let before = core.transaction_debug_snapshot();
+        assert!(core.request_skill_action(0, actor, "r08_strike".into(), None).is_err());
+        assert_eq!(core.transaction_debug_snapshot(), before);
+    }
+}

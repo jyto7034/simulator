@@ -1,0 +1,663 @@
+--- a/core_enhanced/docs/game_rules/equipment-and-fragments.md
++++ b/core_enhanced/docs/game_rules/equipment-and-fragments.md
+@@ -103,9 +103,14 @@
+ | 딜러 1 | 총 | 아드레날린: 공격력·공격 속도 증가 |
+ | 딜러 2 | 검 | 버서커: 공격력·공격 속도 증가와 생명력 흡수 |
+ | 탱커 1 | 방패 | 최후의 전선: 받는 피해 감소 |
+-| 탱커 2 | 대검 또는 도끼 | 돌파: 전방 범위 타격과 짧은 자기 보호막 |
++| 탱커 2 | 방패 | 최후의 전선: 받는 피해 감소 |
+ | 힐러 1 | 단일 치유 지팡이 | 강한 단일 아군 회복 |
+ | 힐러 2 | 범위 치유 지팡이 | 선택 영역의 아군들을 약하게 회복 |
++
++현재 시작 후보 `containment_trainee`는 탱커로 방패·최후의 전선을 지급받는다.
++영입 후보 `hq_containment_aide`는 딜러로 대검·돌파 세트를 유지한다. 위 표는 시작 후보의
++구성이며 영입 후보 전원의 세트가 동일하다는 뜻은 아니다. 시작 탱커의 방패 지급 조건은
++전투 밖에서 일반 장착 조건에 따라 장비를 이전하는 규칙과 구별한다.
+ 
+ 지팡이의 기본 행동은 순수 치유다. 공격이나 보호막으로 대신하지 않는다. 단일·범위 치유의 정확한
+ 수치·주기·사거리와 후보 파편 계수는 콘텐츠 작성·플레이 검증 대상이다.
+--- a/core_enhanced/tests/fixtures/u08/lifecycle001/facility_templates.ron
++++ /dev/null
+@@ -1,212 +0,0 @@
+-(
+-    tag_catalog: [
+-        "standard",
+-        "endless",
+-        "puzzle",
+-        "capstone",
+-        "terminal_guard",
+-        "shop",
+-        "save_point_candidate",
+-        "control_room",
+-        "bonus_manifest",
+-        "boss_room",
+-        "exit_gate",
+-    ],
+-    templates: [
+-        (
+-            id: "standard_intro_a",
+-            version: 1,
+-            kind: Exploration,
+-            tags: ["standard"],
+-            slots: [
+-                (id: "entry", role: Start, allowed_categories: [Start]),
+-                (id: "intake_corridor", role: Ordinary, allowed_categories: [Combat]),
+-                (id: "records_annex", role: Ordinary, allowed_categories: [Event]),
+-                (id: "supply_annex", role: Ordinary, allowed_categories: [Reward]),
+-                (id: "containment_guard", role: Ordinary, allowed_categories: [Combat], tags: ["terminal_guard"]),
+-                (id: "floor_gate", role: Terminal(FloorGate), allowed_categories: [Gate]),
+-            ],
+-            connections: [
+-                (from_slot_id: "entry", to_slot_id: "intake_corridor", direction: Bidirectional),
+-                (from_slot_id: "entry", to_slot_id: "records_annex", direction: Bidirectional),
+-                (from_slot_id: "intake_corridor", to_slot_id: "records_annex", direction: Bidirectional),
+-                (from_slot_id: "intake_corridor", to_slot_id: "supply_annex", direction: Bidirectional),
+-                (from_slot_id: "records_annex", to_slot_id: "containment_guard", direction: Bidirectional),
+-                (from_slot_id: "supply_annex", to_slot_id: "containment_guard", direction: Bidirectional),
+-                (from_slot_id: "containment_guard", to_slot_id: "floor_gate", direction: Bidirectional),
+-            ],
+-        ),
+-        (
+-            id: "standard_branching_a",
+-            version: 1,
+-            kind: Exploration,
+-            tags: ["standard"],
+-            slots: [
+-                (id: "entry", role: Start, allowed_categories: [Start]),
+-                (id: "dispatch_hall", role: Ordinary, allowed_categories: [Combat]),
+-                (id: "save_archive", role: Ordinary, allowed_categories: [SavePoint], tags: ["save_point_candidate"]),
+-                (id: "maintenance_bay", role: Ordinary, allowed_categories: [Maintenance]),
+-                (id: "hq_terminal", role: Ordinary, allowed_categories: [HeadquartersContact]),
+-                (id: "supply_depot", role: Ordinary, allowed_categories: [Shop], tags: ["shop"]),
+-                (id: "crossroads_archive", role: Ordinary, allowed_categories: [Event]),
+-                (id: "containment_guard", role: Ordinary, allowed_categories: [Combat], tags: ["terminal_guard"]),
+-                (id: "floor_gate", role: Terminal(FloorGate), allowed_categories: [Gate]),
+-            ],
+-            connections: [
+-                (from_slot_id: "entry", to_slot_id: "dispatch_hall", direction: ForwardOnly),
+-                (from_slot_id: "dispatch_hall", to_slot_id: "save_archive", direction: Bidirectional),
+-                (from_slot_id: "dispatch_hall", to_slot_id: "maintenance_bay", direction: Bidirectional),
+-                (from_slot_id: "save_archive", to_slot_id: "hq_terminal", direction: Bidirectional),
+-                (from_slot_id: "maintenance_bay", to_slot_id: "supply_depot", direction: Bidirectional),
+-                (from_slot_id: "hq_terminal", to_slot_id: "crossroads_archive", direction: Bidirectional),
+-                (from_slot_id: "supply_depot", to_slot_id: "crossroads_archive", direction: Bidirectional),
+-                (from_slot_id: "crossroads_archive", to_slot_id: "containment_guard", direction: Bidirectional),
+-                (from_slot_id: "containment_guard", to_slot_id: "floor_gate", direction: Bidirectional),
+-            ],
+-        ),
+-        (
+-            id: "standard_final_a",
+-            version: 1,
+-            kind: Exploration,
+-            tags: ["standard"],
+-            slots: [
+-                (id: "entry", role: Start, allowed_categories: [Start]),
+-                (id: "west_containment", role: Ordinary, allowed_categories: [Combat, Event]),
+-                (id: "east_containment", role: Ordinary, allowed_categories: [Combat, Reward]),
+-                (id: "records_core", role: Ordinary, allowed_categories: [Event, Reward]),
+-                (id: "maintenance_core", role: Ordinary, allowed_categories: [Maintenance, HeadquartersContact]),
+-                (id: "supply_core", role: Ordinary, allowed_categories: [Shop, Reward]),
+-                (id: "lower_containment", role: Ordinary, allowed_categories: [Combat, Event]),
+-                (id: "upper_containment", role: Ordinary, allowed_categories: [Combat, HeadquartersContact]),
+-                (id: "final_approach", role: Ordinary, allowed_categories: [Combat, Maintenance, Reward]),
+-                (id: "final_chamber", role: Terminal(StandardCompletion), allowed_categories: [Boss], tags: ["boss_room"]),
+-            ],
+-            connections: [
+-                (from_slot_id: "entry", to_slot_id: "west_containment", direction: Bidirectional),
+-                (from_slot_id: "entry", to_slot_id: "east_containment", direction: Bidirectional),
+-                (from_slot_id: "west_containment", to_slot_id: "records_core", direction: ForwardOnly),
+-                (from_slot_id: "east_containment", to_slot_id: "maintenance_core", direction: Bidirectional),
+-                (from_slot_id: "records_core", to_slot_id: "supply_core", direction: Bidirectional),
+-                (from_slot_id: "maintenance_core", to_slot_id: "supply_core", direction: ForwardOnly),
+-                (from_slot_id: "supply_core", to_slot_id: "lower_containment", direction: Bidirectional),
+-                (from_slot_id: "supply_core", to_slot_id: "upper_containment", direction: Bidirectional),
+-                (from_slot_id: "lower_containment", to_slot_id: "final_approach", direction: Bidirectional),
+-                (from_slot_id: "upper_containment", to_slot_id: "final_approach", direction: Bidirectional),
+-                (from_slot_id: "final_approach", to_slot_id: "final_chamber", direction: ForwardOnly),
+-            ],
+-        ),
+-        (
+-            id: "endless_loop_a",
+-            version: 1,
+-            kind: Exploration,
+-            tags: ["endless"],
+-            slots: [
+-                (id: "entry", role: Start, allowed_categories: [Start]),
+-                (id: "west_wing", role: Ordinary, allowed_categories: [Combat, Event, Reward]),
+-                (id: "east_wing", role: Ordinary, allowed_categories: [Combat, Event, Reward]),
+-                (id: "service_wing", role: Ordinary, allowed_categories: [SavePoint, Maintenance, HeadquartersContact]),
+-                (id: "storage_wing", role: Ordinary, allowed_categories: [Reward, Shop, Event], tags: ["shop"]),
+-                (id: "central_hall", role: Ordinary, allowed_categories: [Combat, Event]),
+-                (id: "containment_a", role: Ordinary, allowed_categories: [Combat, Reward]),
+-                (id: "containment_b", role: Ordinary, allowed_categories: [Combat, Maintenance]),
+-                (id: "floor_gate", role: Terminal(FloorGate), allowed_categories: [Gate]),
+-            ],
+-            connections: [
+-                (from_slot_id: "entry", to_slot_id: "west_wing", direction: Bidirectional),
+-                (from_slot_id: "entry", to_slot_id: "east_wing", direction: Bidirectional),
+-                (from_slot_id: "west_wing", to_slot_id: "service_wing", direction: Bidirectional),
+-                (from_slot_id: "east_wing", to_slot_id: "storage_wing", direction: Bidirectional),
+-                (from_slot_id: "service_wing", to_slot_id: "central_hall", direction: Bidirectional),
+-                (from_slot_id: "storage_wing", to_slot_id: "central_hall", direction: Bidirectional),
+-                (from_slot_id: "central_hall", to_slot_id: "containment_a", direction: Bidirectional),
+-                (from_slot_id: "central_hall", to_slot_id: "containment_b", direction: Bidirectional),
+-                (from_slot_id: "containment_a", to_slot_id: "floor_gate", direction: Bidirectional),
+-                (from_slot_id: "containment_b", to_slot_id: "floor_gate", direction: Bidirectional),
+-            ],
+-        ),
+-        (
+-            id: "endless_loop_b",
+-            version: 1,
+-            kind: Exploration,
+-            tags: ["endless"],
+-            slots: [
+-                (id: "entry", role: Start, allowed_categories: [Start]),
+-                (id: "intake", role: Ordinary, allowed_categories: [Combat, Event]),
+-                (id: "west_archive", role: Ordinary, allowed_categories: [Event, Reward]),
+-                (id: "east_archive", role: Ordinary, allowed_categories: [Combat, Reward]),
+-                (id: "service_hub", role: Ordinary, allowed_categories: [SavePoint, Maintenance, HeadquartersContact]),
+-                (id: "trade_hub", role: Ordinary, allowed_categories: [Shop, Reward, Event], tags: ["shop"]),
+-                (id: "containment_a", role: Ordinary, allowed_categories: [Combat, Event]),
+-                (id: "containment_b", role: Ordinary, allowed_categories: [Combat, Maintenance]),
+-                (id: "containment_c", role: Ordinary, allowed_categories: [Combat, Reward]),
+-                (id: "floor_gate", role: Terminal(FloorGate), allowed_categories: [Gate]),
+-            ],
+-            connections: [
+-                (from_slot_id: "entry", to_slot_id: "intake", direction: Bidirectional),
+-                (from_slot_id: "intake", to_slot_id: "west_archive", direction: Bidirectional),
+-                (from_slot_id: "intake", to_slot_id: "east_archive", direction: Bidirectional),
+-                (from_slot_id: "west_archive", to_slot_id: "service_hub", direction: Bidirectional),
+-                (from_slot_id: "east_archive", to_slot_id: "trade_hub", direction: ForwardOnly),
+-                (from_slot_id: "service_hub", to_slot_id: "containment_a", direction: Bidirectional),
+-                (from_slot_id: "trade_hub", to_slot_id: "containment_b", direction: Bidirectional),
+-                (from_slot_id: "service_hub", to_slot_id: "containment_c", direction: Bidirectional),
+-                (from_slot_id: "containment_a", to_slot_id: "floor_gate", direction: Bidirectional),
+-                (from_slot_id: "containment_b", to_slot_id: "floor_gate", direction: Bidirectional),
+-                (from_slot_id: "containment_c", to_slot_id: "floor_gate", direction: Bidirectional),
+-            ],
+-        ),
+-        (
+-            id: "endless_puzzle_controls",
+-            version: 1,
+-            kind: Puzzle,
+-            tags: ["endless", "puzzle"],
+-            slots: [
+-                (id: "entry", role: Start, allowed_categories: [Start]),
+-                (id: "junction", role: Ordinary, allowed_categories: [Combat]),
+-                (id: "control_west", role: Ordinary, allowed_categories: [Event], tags: ["control_room"]),
+-                (id: "control_east", role: Ordinary, allowed_categories: [Event], tags: ["control_room"]),
+-                (id: "service_hub", role: Ordinary, allowed_categories: [SavePoint, Maintenance, HeadquartersContact]),
+-                (id: "trade_hub", role: Ordinary, allowed_categories: [Shop, Reward], tags: ["shop"]),
+-                (id: "containment", role: Ordinary, allowed_categories: [Combat, Reward]),
+-                (id: "sealed_bonus", role: ManifestedBonus, allowed_categories: [Reward, Event, Combat], tags: ["bonus_manifest"]),
+-                (id: "floor_gate", role: Terminal(FloorGate), allowed_categories: [Gate]),
+-            ],
+-            connections: [
+-                (from_slot_id: "entry", to_slot_id: "junction", direction: Bidirectional),
+-                (from_slot_id: "junction", to_slot_id: "control_west", direction: Bidirectional),
+-                (from_slot_id: "junction", to_slot_id: "control_east", direction: Bidirectional),
+-                (from_slot_id: "control_west", to_slot_id: "service_hub", direction: Bidirectional),
+-                (from_slot_id: "control_east", to_slot_id: "trade_hub", direction: Bidirectional),
+-                (from_slot_id: "service_hub", to_slot_id: "containment", direction: Bidirectional),
+-                (from_slot_id: "trade_hub", to_slot_id: "containment", direction: Bidirectional),
+-                (from_slot_id: "containment", to_slot_id: "floor_gate", direction: Bidirectional),
+-                (from_slot_id: "control_west", to_slot_id: "sealed_bonus", direction: Bidirectional, reveal_with_slot_id: Some("sealed_bonus")),
+-                (from_slot_id: "sealed_bonus", to_slot_id: "containment", direction: Bidirectional, reveal_with_slot_id: Some("sealed_bonus")),
+-            ],
+-            manifestation_rules: [
+-                (id: "dual_control_bonus", prerequisite_slot_ids: ["control_west", "control_east"], manifest_slot_id: "sealed_bonus"),
+-            ],
+-        ),
+-        (
+-            id: "boss_omen_capstone",
+-            version: 1,
+-            kind: Capstone,
+-            tags: ["capstone"],
+-            slots: [
+-                (id: "boss_chamber", role: Entry, allowed_categories: [Boss], tags: ["boss_room"]),
+-                (id: "exit_gate", role: Terminal(BossOmenExitGate), allowed_categories: [Gate], tags: ["exit_gate"]),
+-            ],
+-            connections: [
+-                (from_slot_id: "boss_chamber", to_slot_id: "exit_gate", direction: ForwardOnly, reveal_with_slot_id: Some("exit_gate")),
+-            ],
+-        ),
+-    ],
+-    pools: [
+-        (id: "standard_intro", template_ids: ["standard_intro_a"]),
+-        (id: "standard_branching", template_ids: ["standard_branching_a"]),
+-        (id: "standard_final", template_ids: ["standard_final_a"]),
+-        (id: "endless_initial", template_ids: ["endless_loop_a", "endless_loop_b"]),
+-        (id: "endless_advanced", template_ids: ["endless_loop_a", "endless_loop_b", "endless_puzzle_controls"]),
+-        (id: "boss_omen_capstone", template_ids: ["boss_omen_capstone"]),
+-    ],
+-)
+--- a/core_enhanced/tests/fixtures/u08/lifecycle001/node_assignment_profiles.ron
++++ /dev/null
+@@ -1,153 +0,0 @@
+-(
+-    profiles: [
+-        (
+-            id: "standard_floor_1",
+-            difficulty_profile_id: "tutorial_fixed_v1",
+-            category_constraints: [],
+-            remaining_category_weights: [],
+-            fixed_slot_assignments: [
+-                (slot_id: "intake_corridor", kind_id: "combat_monster", payload: Encounter(encounter_id: Some("normal_corroded_patrol")), authored_combat: Some((outcome_policies: [(outcome_id: "victory", reward_ids: ["enkephalin_reward", "field_equipment_salvage_reward"], grant_node_bonus: true, advance_encounter_progression: true), (outcome_id: "defeat_all_players", reward_ids: [], grant_node_bonus: false, advance_encounter_progression: false)]))),
+-                (slot_id: "records_annex", kind_id: "event_sealed_archive", payload: Event(event_id: Some("u08_public_double_corruption"))),
+-                (slot_id: "supply_annex", kind_id: "reward_treasure", payload: Reward(reward_pool_id: Some("tutorial_f1_training_budget"))),
+-                (slot_id: "containment_guard", kind_id: "combat_monster", payload: Encounter(encounter_id: Some("normal_breach_response")), authored_combat: Some((outcome_policies: [(outcome_id: "victory", reward_ids: ["enkephalin_reward", "field_equipment_salvage_reward"], grant_node_bonus: true, advance_encounter_progression: true), (outcome_id: "defeat_all_players", reward_ids: [], grant_node_bonus: false, advance_encounter_progression: false)]))),
+-                (slot_id: "floor_gate", kind_id: "gate_stairs", payload: None),
+-            ],
+-        ),
+-        (
+-            id: "standard_floor_2",
+-            difficulty_profile_id: "tutorial_fixed_v1",
+-            category_constraints: [],
+-            remaining_category_weights: [],
+-            fixed_slot_assignments: [
+-                (slot_id: "dispatch_hall", kind_id: "combat_monster", payload: Encounter(encounter_id: Some("normal_black_box_pressure")), authored_combat: Some((outcome_policies: [(outcome_id: "victory", reward_ids: ["enkephalin_reward", "field_equipment_salvage_reward"], grant_node_bonus: true, advance_encounter_progression: true), (outcome_id: "defeat_all_players", reward_ids: [], grant_node_bonus: false, advance_encounter_progression: false)]))),
+-                (slot_id: "save_archive", kind_id: "save_point", payload: SavePoint),
+-                (slot_id: "maintenance_bay", kind_id: "maintenance", payload: Maintenance),
+-                (slot_id: "hq_terminal", kind_id: "headquarters_contact", payload: HeadquartersContact(shop_pool_id: Some("headquarters_basic_supplies"), candidate_count: 3)),
+-                (slot_id: "supply_depot", kind_id: "shop_general", payload: Shop(shop_id: Some("unknown_exploration_shop"), shop_pool_id: None)),
+-                (slot_id: "crossroads_archive", kind_id: "event_sealed_archive", payload: Event(event_id: Some("sealed_archive_recovery_01"))),
+-                (slot_id: "containment_guard", kind_id: "combat_elite", payload: Encounter(encounter_id: Some("suppress_porcubbus")), authored_combat: Some((outcome_policies: [(outcome_id: "victory", reward_ids: ["enkephalin_reward", "field_equipment_salvage_reward"], grant_node_bonus: true, advance_encounter_progression: true), (outcome_id: "defeat_all_players", reward_ids: [], grant_node_bonus: false, advance_encounter_progression: false)]))),
+-                (slot_id: "floor_gate", kind_id: "gate_stairs", payload: None),
+-            ],
+-        ),
+-        (
+-            id: "standard_floor_3",
+-            difficulty_profile_id: "tutorial_fixed_v1",
+-            category_constraints: [],
+-            remaining_category_weights: [],
+-            fixed_slot_assignments: [
+-                (slot_id: "west_containment", kind_id: "combat_monster", payload: Encounter(encounter_id: Some("normal_breach_response")), authored_combat: Some((outcome_policies: [(outcome_id: "victory", reward_ids: ["enkephalin_reward", "field_equipment_salvage_reward"], grant_node_bonus: true, advance_encounter_progression: true), (outcome_id: "defeat_all_players", reward_ids: [], grant_node_bonus: false, advance_encounter_progression: false)]))),
+-                (slot_id: "east_containment", kind_id: "reward_treasure", payload: Reward(reward_pool_id: Some("tutorial_f3_salvage"))),
+-                (slot_id: "records_core", kind_id: "event_sealed_archive", payload: Event(event_id: Some("sealed_archive_recovery_01"))),
+-                (slot_id: "maintenance_core", kind_id: "maintenance", payload: Maintenance),
+-                (slot_id: "supply_core", kind_id: "shop_general", payload: Shop(shop_id: Some("unknown_exploration_shop"), shop_pool_id: None)),
+-                (slot_id: "lower_containment", kind_id: "combat_monster", payload: Encounter(encounter_id: Some("normal_black_box_pressure")), authored_combat: Some((outcome_policies: [(outcome_id: "victory", reward_ids: ["enkephalin_reward", "field_equipment_salvage_reward"], grant_node_bonus: true, advance_encounter_progression: true), (outcome_id: "defeat_all_players", reward_ids: [], grant_node_bonus: false, advance_encounter_progression: false)]))),
+-                (slot_id: "upper_containment", kind_id: "headquarters_contact", payload: HeadquartersContact(shop_pool_id: Some("headquarters_basic_supplies"), candidate_count: 3)),
+-                (slot_id: "final_approach", kind_id: "reward_treasure", payload: Reward(reward_pool_id: Some("tutorial_f3_budget"))),
+-                (
+-                    slot_id: "final_chamber",
+-                    kind_id: "boss_abnormality",
+-                    payload: Encounter(encounter_id: Some("suppress_nothing_there")),
+-                    authored_combat: Some((
+-                        outcome_policies: [(outcome_id: "victory", reward_ids: ["enkephalin_reward", "field_equipment_salvage_reward"], grant_node_bonus: true, advance_encounter_progression: true), (outcome_id: "defeat_all_players", reward_ids: [], grant_node_bonus: false, advance_encounter_progression: false)],
+-                        actor_stat_overrides: [(
+-                            abnormality_id: "o-06-20_nothing_there",
+-                            max_health: 720,
+-                            attack: 53,
+-                            defense: 36,
+-                            magic_resistance: 33,
+-                        )],
+-                    )),
+-                ),
+-            ],
+-        ),
+-        (
+-            id: "endless_odd_early",
+-            difficulty_profile_id: "default_facility",
+-            category_constraints: [
+-                (category: Combat, min: 2, max: Some(5)),
+-                (category: Event, min: 1, max: Some(3)),
+-                (category: SavePoint, exact: Some(0)),
+-            ],
+-            remaining_category_weights: [
+-                (category: Combat, weight: 55),
+-                (category: Event, weight: 20),
+-                (category: Reward, weight: 15),
+-                (category: Maintenance, weight: 6),
+-                (category: HeadquartersContact, weight: 4),
+-            ],
+-        ),
+-        (
+-            id: "endless_even_early",
+-            difficulty_profile_id: "default_facility",
+-            category_constraints: [
+-                (category: Combat, min: 2, max: Some(5)),
+-                (category: Event, min: 1, max: Some(3)),
+-                (category: SavePoint, exact: Some(1)),
+-            ],
+-            remaining_category_weights: [
+-                (category: Combat, weight: 50),
+-                (category: Event, weight: 18),
+-                (category: Reward, weight: 15),
+-                (category: Maintenance, weight: 8),
+-                (category: HeadquartersContact, weight: 5),
+-            ],
+-        ),
+-        (
+-            id: "endless_odd_open",
+-            difficulty_profile_id: "default_facility",
+-            category_constraints: [
+-                (category: Combat, min: 2, max: Some(6)),
+-                (category: Event, min: 1, max: Some(3)),
+-                (category: SavePoint, exact: Some(0)),
+-            ],
+-            remaining_category_weights: [
+-                (category: Combat, weight: 45),
+-                (category: Event, weight: 18),
+-                (category: Reward, weight: 15),
+-                (category: Maintenance, weight: 8),
+-                (category: HeadquartersContact, weight: 6),
+-                (category: Shop, weight: 8),
+-            ],
+-        ),
+-        (
+-            id: "endless_even_open",
+-            difficulty_profile_id: "default_facility",
+-            category_constraints: [
+-                (category: Combat, min: 2, max: Some(6)),
+-                (category: Event, min: 1, max: Some(3)),
+-                (category: SavePoint, exact: Some(1)),
+-            ],
+-            remaining_category_weights: [
+-                (category: Combat, weight: 42),
+-                (category: Event, weight: 17),
+-                (category: Reward, weight: 15),
+-                (category: Maintenance, weight: 8),
+-                (category: HeadquartersContact, weight: 6),
+-                (category: Shop, weight: 12),
+-            ],
+-        ),
+-    ],
+-    standard_schedule: [
+-        (floor: 1, pool_id: "standard_intro", profile_id: "standard_floor_1"),
+-        (floor: 2, pool_id: "standard_branching", profile_id: "standard_floor_2"),
+-        (floor: 3, pool_id: "standard_final", profile_id: "standard_floor_3"),
+-    ],
+-    endless_stages: [
+-        (
+-            min_floor: 1,
+-            max_floor: Some(3),
+-            cycle: [
+-                (pool_id: "endless_initial", profile_id: "endless_odd_early"),
+-                (pool_id: "endless_initial", profile_id: "endless_even_early"),
+-            ],
+-        ),
+-        (
+-            min_floor: 4,
+-            max_floor: None,
+-            cycle: [
+-                (pool_id: "endless_advanced", profile_id: "endless_even_open"),
+-                (pool_id: "endless_advanced", profile_id: "endless_odd_open"),
+-            ],
+-        ),
+-    ],
+-)
+--- a/core_enhanced/tests/ron_loading.rs
++++ b/core_enhanced/tests/ron_loading.rs
+@@ -446,7 +446,7 @@
+         ("breach_guard", "shield", "last_line"),
+         ("records_clerk", "sword", "berserker"),
+         ("scout_runner", "gun", "adrenaline"),
+-        ("containment_trainee", "greatsword", "breakthrough"),
++        ("containment_trainee", "shield", "last_line"),
+         ("maintenance_tech", "area_healing_staff", "area_heal"),
+         ("hq_field_medic", "healing_staff", "single_heal"),
+         ("hq_security_guard", "shield", "last_line"),
+--- a/core_enhanced/tests/u08_relic_public/lifecycle.rs
++++ b/core_enhanced/tests/u08_relic_public/lifecycle.rs
+@@ -10,7 +10,7 @@
+     },
+ };
+ use serde_json::{json, Value};
+-use std::{fs, io::Write, path::Path, sync::OnceLock};
++use std::{collections::BTreeMap, fs, io::Write, path::Path, sync::OnceLock};
+ use uuid::Uuid;
+ 
+ fn slots(state: &RelicStateDto, employee: Uuid) -> [Option<Uuid>; 3] {
+@@ -71,7 +71,7 @@
+                 .collect();
+             command(
+                 app,
+-                json!({"type":"select_starter_employees", "employee_definition_ids":ids}),
++                json!({"type":"select_starter_employees", "employee_definition_ids":ids, "loan_copy_ids":[]}),
+             );
+             continue;
+         }
+@@ -92,6 +92,13 @@
+             equip_weapon(&mut app, employee, "u08_public_weapon");
+         }
+         let copy = grant_relic(&mut app, "u08_public_blend");
++        // Keep the former registration smoke's exact first-grant/slot oracle.
++        equip_relic(&mut app, copy, first, 0);
++        let initial = relic_state(&mut app);
++        assert_eq!(initial.copies.len(), 1);
++        assert_eq!(initial.copies[0].copy_uuid, copy);
++        assert_eq!(initial.loadouts[0].employee_uuid, first);
++        assert_eq!(initial.loadouts[0].slots, [Some(copy), None, None]);
+         equip_relic(&mut app, copy, first, 2);
+         if corrupt {
+             admin(
+@@ -187,12 +194,12 @@
+     assert_eq!(initial.resources.relic_corruption_catalysts, 4);
+     assert_eq!(initial.resources.equipment_dust, 23);
+ 
+-    // The flag confirms host durable replacement; it does not bypass the core
+-    // active-run gate. Abandon is the normal public transition to NotStarted.
++    // Use an otherwise valid start request so this rejection proves the
++    // active-run gate. Abandon is the public transition to NotStarted.
+     let before_rejected_start = public_roots(&app);
+     assert!(execute(
+         &mut app,
+-        json!({"type":"start_new_game", "game_mode":"Standard", "replace_active_run":true})
++        json!({"type":"start_new_game", "game_mode":"Expedition", "replace_active_run":false})
+     )
+     .is_err());
+     assert_eq!(public_roots(&app), before_rejected_start);
+@@ -201,7 +208,7 @@
+     assert!(app.export_active_run_checkpoint().unwrap().is_none());
+     command(
+         &mut app,
+-        json!({"type":"start_new_game", "game_mode":"Standard", "replace_active_run":true}),
++        json!({"type":"start_new_game", "game_mode":"Expedition", "replace_active_run":false}),
+     );
+     let new_employees = finish_start(&mut app);
+     let reset = relic_state(&mut app);
+@@ -224,10 +231,84 @@
+     let bytes = saved.core_payload_json().to_vec();
+     let mut restored = CoreApplication::new(content().data.clone(), 0xa508d);
+     restored
++        .install_authoritative_player_profile(
++            snapshot(&app, ApplicationSnapshotKind::PlayerProfile).into(),
++        )
++        .unwrap();
++    restored
+         .continue_from_active_run_checkpoint(PLAYER, &saved)
+         .unwrap();
+     assert_eq!(saved.core_payload_json(), bytes);
+     assert_eq!(json!(relic_state(&mut restored)), json!(reset));
++}
++
++fn authored_lifecycle_templates(original: &[u8]) -> Vec<u8> {
++    use game_core::game::data::event_data::EventId;
++    use game_core::game::map::{
++        FacilityActivityDefinition, FacilityContentSupport, FacilityReservation,
++        FacilityRoomConnection, FacilitySizeAllocation, FacilityTemplateDatabase, MapEdgeDirection,
++        MapNodeKindId, MapNodePayload, MapSlotId, MapTemplateId,
++    };
++
++    let mut catalog: FacilityTemplateDatabase = ron::de::from_bytes(original).unwrap();
++    let mut layout = catalog
++        .layouts
++        .iter()
++        .find(|layout| layout.expedition_default)
++        .unwrap()
++        .clone();
++    let entrance = layout.room(&layout.entrance_room_id).unwrap().clone();
++    let mut room = layout.room(&layout.initial_room_id).unwrap().clone();
++    room.id = "u08_event_room".into();
++    room.template_id = Some(MapTemplateId::new("facility_6A"));
++    room.name = "Relic continuation fixture".into();
++    room.reservations = vec![FacilityReservation {
++        slot_id: MapSlotId::new("1"),
++        activity_id: "u08_double_corruption".into(),
++    }];
++    room.omen_slot = None;
++    room.elite_slots.clear();
++    room.safe_access_slots = vec![MapSlotId::new("1")];
++    room.slot_display.clear();
++
++    layout.id = "u08_relic_continuation_v1".into();
++    layout.initial_room_id = room.id.clone();
++    layout.connections = vec![FacilityRoomConnection {
++        from: entrance.id.clone(),
++        to: room.id.clone(),
++        direction: MapEdgeDirection::ForwardOnly,
++        condition: None,
++    }];
++    layout.rooms = vec![entrance, room];
++    layout.golden_bough_plans.clear();
++    for activity in &mut layout.activities {
++        activity.golden_bough_candidate = false;
++    }
++    layout.activities.push(FacilityActivityDefinition {
++        id: "u08_double_corruption".into(),
++        label: "Two free corruption choices".into(),
++        kind_id: MapNodeKindId::new("event_sealed_archive"),
++        payload: MapNodePayload::Event {
++            event_id: Some(EventId::new("u08_public_double_corruption")),
++        },
++        support: FacilityContentSupport::Supported,
++        condition: None,
++        reward_activity: None,
++        first_entry_cost: Some(0),
++        golden_bough_candidate: false,
++    });
++    // Slot 1 is adjacent to S in the official 6A template. Other slots retain
++    // normal allocation and the current facility difficulty contract.
++    layout.allocation.support_counts = BTreeMap::from([(0, 100)]);
++    layout.allocation.one_reserved_support_counts = BTreeMap::from([(1, 100)]);
++    layout.allocation.sizes = vec![FacilitySizeAllocation {
++        size: 6,
++        event_counts: BTreeMap::from([(0, 100)]),
++        reward_counts: BTreeMap::from([(0, 100)]),
++        elite_percent_by_depth: BTreeMap::from([(1, 0)]),
++    }];
++    catalog.layouts = vec![layout];
++    ron::ser::to_string(&catalog).unwrap().into_bytes()
+ }
+ 
+ fn copy_lifecycle_content(source: &Path, destination: &Path, relative: &Path) {
+@@ -240,18 +321,14 @@
+             copy_lifecycle_content(source, destination, &child);
+             continue;
+         }
++        let original = fs::read(entry.path()).unwrap();
+         let replacement = match child.to_str().unwrap() {
+-            "official/data/map/facility_templates.ron" => Some(
+-                include_bytes!("../fixtures/u08/lifecycle001/facility_templates.ron").as_slice(),
+-            ),
+-            "official/data/map/node_assignment_profiles.ron" => Some(
+-                include_bytes!("../fixtures/u08/lifecycle001/node_assignment_profiles.ron")
+-                    .as_slice(),
+-            ),
++            "official/data/map/facility_templates.ron" => {
++                Some(authored_lifecycle_templates(&original))
++            }
+             _ => None,
+         };
+-        let original = fs::read(entry.path()).unwrap();
+-        let bytes = replacement.unwrap_or(&original);
++        let bytes = replacement.as_deref().unwrap_or(&original);
+         fs::OpenOptions::new()
+             .write(true)
+             .create_new(true)
+@@ -302,7 +379,7 @@
+         .as_array()
+         .unwrap()
+         .iter()
+-        .find(|node| node["slot_id"] == "records_annex")
++        .find(|node| node["slot_id"] == "1")
+         .unwrap()
+         .clone();
+     assert_eq!(node["category"], "Event");
+@@ -317,7 +394,7 @@
+     let mut app = CoreApplication::new(fixture.data.clone(), 0xa508d1);
+     command(
+         &mut app,
+-        json!({"type":"start_new_game", "game_mode":"Standard", "replace_active_run":false}),
++        json!({"type":"start_new_game", "game_mode":"Expedition", "replace_active_run":false}),
+     );
+     let employees = finish_start(&mut app);
+     for employee in &employees[..2] {
+@@ -382,6 +459,11 @@
+         pre_entry.run_peak_certified_power()
+     );
+     let mut fresh = CoreApplication::new(fixture.data.clone(), 0xa508d2);
++    fresh
++        .install_authoritative_player_profile(
++            snapshot(&app, ApplicationSnapshotKind::PlayerProfile).into(),
++        )
++        .unwrap();
+     fresh
+         .continue_from_active_run_checkpoint(PLAYER, &unfinished)
+         .unwrap();
+@@ -436,6 +518,11 @@
+     assert_eq!(committed["resources"], before_state["resources"]);
+     let mut after_completion = CoreApplication::new(fixture.data.clone(), 0xa508d3);
+     after_completion
++        .install_authoritative_player_profile(
++            snapshot(&fresh, ApplicationSnapshotKind::PlayerProfile).into(),
++        )
++        .unwrap();
++    after_completion
+         .continue_from_active_run_checkpoint(PLAYER, &complete)
+         .unwrap();
+     assert_eq!(json!(relic_state(&mut after_completion)), committed);
+--- a/core_enhanced/tests/u08_relic_public/prospective.rs
++++ b/core_enhanced/tests/u08_relic_public/prospective.rs
+@@ -39,20 +39,6 @@
+         target["evaluation"],
+         json!({"status":"available", "base_amount":base, "effective_amount":effective})
+     );
+-}
+-
+-#[test]
+-fn u08_public_external_fixture_registers_new_definitions_before_app_setup() {
+-    let fixture = content();
+-    assert!(fixture.root.join("u08_public/relics.ron").is_file());
+-    assert_eq!(fixture.selection.packs.len(), 2);
+-    let (mut app, employees) = app();
+-    let copy = grant_relic(&mut app, "u08_public_blend");
+-    equip_relic(&mut app, copy, employees[0], 0);
+-    let state = relic_state(&mut app);
+-    assert_eq!(state.copies.len(), 1);
+-    assert_eq!(state.loadouts[0].employee_uuid, employees[0]);
+-    assert_eq!(state.loadouts[0].slots, [Some(copy), None, None]);
+ }
+ 
+ #[test]
+--- a/core_enhanced/tests/u08_relic_public/support.rs
++++ b/core_enhanced/tests/u08_relic_public/support.rs
+@@ -120,6 +120,9 @@
+             &serde_json::to_vec_pretty(&selection).unwrap(),
+         );
+         let data = content_pack::load(&root, &selection, &InputLimits::default()).unwrap();
++        // Shared external-registration assertions formerly in the smoke test.
++        assert!(root.join("u08_public/relics.ron").is_file());
++        assert_eq!(selection.packs.len(), 2);
+         println!(
+             "U08_PUBLIC_CONTENT root={} generation={}",
+             root.display(),
+@@ -183,7 +186,7 @@
+     let mut app = CoreApplication::new(content().data.clone(), 0xa508);
+     command(
+         &mut app,
+-        json!({"type":"start_new_game", "game_mode":"Standard", "replace_active_run":false}),
++        json!({"type":"start_new_game", "game_mode":"Expedition", "replace_active_run":false}),
+     );
+     for _ in 0..128 {
+         let run: RunSnapshotDto =
+@@ -209,7 +212,7 @@
+                 .collect();
+             command(
+                 &mut app,
+-                json!({"type":"select_starter_employees", "employee_definition_ids":ids}),
++                json!({"type":"select_starter_employees", "employee_definition_ids":ids, "loan_copy_ids":[]}),
+             );
+             continue;
+         }

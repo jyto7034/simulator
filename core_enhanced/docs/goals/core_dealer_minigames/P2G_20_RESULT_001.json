@@ -1,0 +1,11 @@
+{
+  "stage": "P2G-20",
+  "status": "complete",
+  "runtime_tests": 0,
+  "source_members": 21,
+  "result_working_revision_ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CDMG-003",
+    "Content Digest": "sha256:d879b75b443363a747a95c82c73b0c093f73c90ba7d728818e7391e563b28533"
+  }
+}

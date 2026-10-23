@@ -1,0 +1,313 @@
+{
+  "kind": "document-change-checks-not-goal-audit",
+  "checked_at": "2026-09-13T03:42:27.871Z",
+  "passed": true,
+  "checks": [
+    {
+      "name": "changed: core_enhanced/docs/README.md",
+      "passed": true
+    },
+    {
+      "name": "no trailing whitespace: core_enhanced/docs/README.md",
+      "passed": true
+    },
+    {
+      "name": "new link: core_enhanced/docs/README.md -> policy_to_goal_pipeline_revised_v2.md",
+      "passed": true
+    },
+    {
+      "name": "new link: core_enhanced/docs/README.md -> goal_execution_pipeline%281%29.md",
+      "passed": true
+    },
+    {
+      "name": "new link: core_enhanced/docs/README.md -> goal_execution_pipeline%281%29.md#기본-구현-인계와-선택적-단계검토",
+      "passed": true
+    },
+    {
+      "name": "new anchor: core_enhanced/docs/README.md -> goal_execution_pipeline%281%29.md#기본-구현-인계와-선택적-단계검토",
+      "passed": true
+    },
+    {
+      "name": "changed: core_enhanced/docs/goal_execution_pipeline(1).md",
+      "passed": true
+    },
+    {
+      "name": "no trailing whitespace: core_enhanced/docs/goal_execution_pipeline(1).md",
+      "passed": true
+    },
+    {
+      "name": "new link: core_enhanced/docs/goal_execution_pipeline(1).md -> ./policy_to_goal_pipeline_revised_v2.md",
+      "passed": true
+    },
+    {
+      "name": "changed: core_enhanced/docs/policy_to_goal_pipeline_revised_v2.md",
+      "passed": true
+    },
+    {
+      "name": "no trailing whitespace: core_enhanced/docs/policy_to_goal_pipeline_revised_v2.md",
+      "passed": true
+    },
+    {
+      "name": "changed: core_enhanced/docs/policy_to_goal_pipeline_roadmap_usage_v2.ko.md",
+      "passed": true
+    },
+    {
+      "name": "no trailing whitespace: core_enhanced/docs/policy_to_goal_pipeline_roadmap_usage_v2.ko.md",
+      "passed": true
+    },
+    {
+      "name": "new link: core_enhanced/docs/policy_to_goal_pipeline_roadmap_usage_v2.ko.md -> roadmaps/content_authoring/guides/policy_to_goal_pipeline_roadmap_usage_v2_1.ko.md",
+      "passed": true
+    },
+    {
+      "name": "new link: core_enhanced/docs/policy_to_goal_pipeline_roadmap_usage_v2.ko.md -> goal_execution_pipeline%281%29.md#기본-구현-인계와-선택적-단계검토",
+      "passed": true
+    },
+    {
+      "name": "new anchor: core_enhanced/docs/policy_to_goal_pipeline_roadmap_usage_v2.ko.md -> goal_execution_pipeline%281%29.md#기본-구현-인계와-선택적-단계검토",
+      "passed": true
+    },
+    {
+      "name": "changed: core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+      "passed": true
+    },
+    {
+      "name": "no trailing whitespace: core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+      "passed": true
+    },
+    {
+      "name": "new link: core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md -> ../../goal_execution_pipeline%281%29.md#기본-구현-인계와-선택적-단계검토",
+      "passed": true
+    },
+    {
+      "name": "new anchor: core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md -> ../../goal_execution_pipeline%281%29.md#기본-구현-인계와-선택적-단계검토",
+      "passed": true
+    },
+    {
+      "name": "new link: core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md -> ../../policy_to_goal_pipeline_revised_v2.md#명시적-단계검토-요청의-인계",
+      "passed": true
+    },
+    {
+      "name": "new anchor: core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md -> ../../policy_to_goal_pipeline_revised_v2.md#명시적-단계검토-요청의-인계",
+      "passed": true
+    },
+    {
+      "name": "new link: core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md -> ../../goal_execution_pipeline%281%29.md#명시적으로-요청한-단계검토",
+      "passed": true
+    },
+    {
+      "name": "new anchor: core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md -> ../../goal_execution_pipeline%281%29.md#명시적으로-요청한-단계검토",
+      "passed": true
+    },
+    {
+      "name": "changed: core_enhanced/docs/roadmaps/content_authoring/OPERATING_RULES.md",
+      "passed": true
+    },
+    {
+      "name": "no trailing whitespace: core_enhanced/docs/roadmaps/content_authoring/OPERATING_RULES.md",
+      "passed": true
+    },
+    {
+      "name": "new link: core_enhanced/docs/roadmaps/content_authoring/OPERATING_RULES.md -> ../../goal_execution_pipeline%281%29.md#기본-구현-인계와-선택적-단계검토",
+      "passed": true
+    },
+    {
+      "name": "new anchor: core_enhanced/docs/roadmaps/content_authoring/OPERATING_RULES.md -> ../../goal_execution_pipeline%281%29.md#기본-구현-인계와-선택적-단계검토",
+      "passed": true
+    },
+    {
+      "name": "new link: core_enhanced/docs/roadmaps/content_authoring/OPERATING_RULES.md -> ../../goal_execution_pipeline%281%29.md#명시적으로-요청한-단계검토",
+      "passed": true
+    },
+    {
+      "name": "new anchor: core_enhanced/docs/roadmaps/content_authoring/OPERATING_RULES.md -> ../../goal_execution_pipeline%281%29.md#명시적으로-요청한-단계검토",
+      "passed": true
+    },
+    {
+      "name": "new link: core_enhanced/docs/roadmaps/content_authoring/OPERATING_RULES.md -> ../../policy_to_goal_pipeline_revised_v2.md#명시적-단계검토-요청의-인계",
+      "passed": true
+    },
+    {
+      "name": "new anchor: core_enhanced/docs/roadmaps/content_authoring/OPERATING_RULES.md -> ../../policy_to_goal_pipeline_revised_v2.md#명시적-단계검토-요청의-인계",
+      "passed": true
+    },
+    {
+      "name": "new link: core_enhanced/docs/roadmaps/content_authoring/OPERATING_RULES.md -> records/optional_stage_review_20260913/README.ko.md",
+      "passed": true
+    },
+    {
+      "name": "changed: core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "passed": true
+    },
+    {
+      "name": "no trailing whitespace: core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "passed": true
+    },
+    {
+      "name": "new link: core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md -> records/optional_stage_review_20260913/README.ko.md",
+      "passed": true
+    },
+    {
+      "name": "new link: core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md -> OPERATING_RULES.md#명시적으로-요청할-때만-중간-단계검토",
+      "passed": true
+    },
+    {
+      "name": "new anchor: core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md -> OPERATING_RULES.md#명시적으로-요청할-때만-중간-단계검토",
+      "passed": true
+    },
+    {
+      "name": "changed: core_enhanced/docs/roadmaps/content_authoring/guides/policy_to_goal_pipeline_revised_v2.md",
+      "passed": true
+    },
+    {
+      "name": "no trailing whitespace: core_enhanced/docs/roadmaps/content_authoring/guides/policy_to_goal_pipeline_revised_v2.md",
+      "passed": true
+    },
+    {
+      "name": "changed: core_enhanced/docs/roadmaps/content_authoring/guides/policy_to_goal_pipeline_roadmap_usage_v2_1.ko.md",
+      "passed": true
+    },
+    {
+      "name": "no trailing whitespace: core_enhanced/docs/roadmaps/content_authoring/guides/policy_to_goal_pipeline_roadmap_usage_v2_1.ko.md",
+      "passed": true
+    },
+    {
+      "name": "new link: core_enhanced/docs/roadmaps/content_authoring/guides/policy_to_goal_pipeline_roadmap_usage_v2_1.ko.md -> ../../../goal_execution_pipeline%281%29.md#기본-구현-인계와-선택적-단계검토",
+      "passed": true
+    },
+    {
+      "name": "new anchor: core_enhanced/docs/roadmaps/content_authoring/guides/policy_to_goal_pipeline_roadmap_usage_v2_1.ko.md -> ../../../goal_execution_pipeline%281%29.md#기본-구현-인계와-선택적-단계검토",
+      "passed": true
+    },
+    {
+      "name": "new link: core_enhanced/docs/roadmaps/content_authoring/guides/policy_to_goal_pipeline_roadmap_usage_v2_1.ko.md -> ../../../goal_execution_pipeline%281%29.md#명시적으로-요청한-단계검토",
+      "passed": true
+    },
+    {
+      "name": "new anchor: core_enhanced/docs/roadmaps/content_authoring/guides/policy_to_goal_pipeline_roadmap_usage_v2_1.ko.md -> ../../../goal_execution_pipeline%281%29.md#명시적으로-요청한-단계검토",
+      "passed": true
+    },
+    {
+      "name": "new link: core_enhanced/docs/roadmaps/content_authoring/guides/policy_to_goal_pipeline_roadmap_usage_v2_1.ko.md -> ../records/optional_stage_review_20260913/README.ko.md",
+      "passed": true
+    },
+    {
+      "name": "nine edited documents have original snapshots",
+      "passed": true
+    },
+    {
+      "name": "P2G main and distribution copy identical",
+      "passed": true
+    },
+    {
+      "name": "existing roadmap history unchanged",
+      "passed": true
+    },
+    {
+      "name": "obsolete active .bak removed",
+      "passed": true
+    },
+    {
+      "name": "retired original remains recoverable",
+      "passed": true
+    },
+    {
+      "name": "GEX contract marker: 2026-09-13-gex-r6",
+      "passed": true
+    },
+    {
+      "name": "GEX contract marker: ### 기본 구현 인계와 선택적 단계검토",
+      "passed": true
+    },
+    {
+      "name": "GEX contract marker: #### 명시적으로 요청한 단계검토",
+      "passed": true
+    },
+    {
+      "name": "GEX contract marker: #### 구현 전후 고정",
+      "passed": true
+    },
+    {
+      "name": "GEX contract marker: 모델 변경·자동 재개·시간 경과·검토 PASS는 진행 승인이 아니다.",
+      "passed": true
+    },
+    {
+      "name": "GEX contract marker: 부분 구현·검증 종료 / 단계검토 요청 대기",
+      "passed": true
+    },
+    {
+      "name": "GEX contract marker: 해시는 내용 복원 수단이 아니다.",
+      "passed": true
+    },
+    {
+      "name": "GEX contract marker: 새 감사 요청 전에는 GEX-20/30을 시작하지 않는다.",
+      "passed": true
+    }
+  ],
+  "documents": [
+    {
+      "path": "core_enhanced/docs/README.md",
+      "before_path": "core_enhanced/docs/roadmaps/content_authoring/records/optional_stage_review_20260913/before/core_enhanced/docs/README.md",
+      "before_sha256": "c1792b0fbc1ca2738e47d6c07598d94cc5bf4bb6f1184650281a0f1ea6c5ff4e",
+      "after_sha256": "519e6adfcef5243d39ce54bafe9d58f53d4c2d33b93a4205cfac704bfa14ac44"
+    },
+    {
+      "path": "core_enhanced/docs/goal_execution_pipeline(1).md",
+      "before_path": "core_enhanced/docs/roadmaps/content_authoring/records/optional_stage_review_20260913/before/core_enhanced/docs/goal_execution_pipeline(1).md",
+      "before_sha256": "7b8bbcb9b57ea2d0cb4ed847bb69158fcad164764cfdb738417611392195702a",
+      "after_sha256": "cb3dc0130c6cfa540764df025a3424b7f7c431b23a253d429c24f88ce4a123de"
+    },
+    {
+      "path": "core_enhanced/docs/policy_to_goal_pipeline_revised_v2.md",
+      "before_path": "core_enhanced/docs/roadmaps/content_authoring/records/optional_stage_review_20260913/before/core_enhanced/docs/policy_to_goal_pipeline_revised_v2.md",
+      "before_sha256": "a1ec714c7bc300f1566352908ee4aaecf56f6ba36f6c95ac94c10a634dcfe735",
+      "after_sha256": "9550b47242fd9fbae497eda0530981de4db7c8141ac5123f3a158569310f8269"
+    },
+    {
+      "path": "core_enhanced/docs/policy_to_goal_pipeline_roadmap_usage_v2.ko.md",
+      "before_path": "core_enhanced/docs/roadmaps/content_authoring/records/optional_stage_review_20260913/before/core_enhanced/docs/policy_to_goal_pipeline_roadmap_usage_v2.ko.md",
+      "before_sha256": "042002a10a4ffcd20f4e4b7fb2f96ec0038a253dc6f508771afa1437208a589e",
+      "after_sha256": "cf935f29b40964d0b40c1e4c70df5a7267ec64fb5e7a35e8969af29726b92159"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+      "before_path": "core_enhanced/docs/roadmaps/content_authoring/records/optional_stage_review_20260913/before/core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md",
+      "before_sha256": "51cada5fba4426af479ef271e7fbd4c0456f49157c3543b343c51c2b74112efd",
+      "after_sha256": "e7f604fec76fe50e8c27ee44de6e7f870448a0ab0a63ce83c5311a2cb5e6540c"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/OPERATING_RULES.md",
+      "before_path": "core_enhanced/docs/roadmaps/content_authoring/records/optional_stage_review_20260913/before/core_enhanced/docs/roadmaps/content_authoring/OPERATING_RULES.md",
+      "before_sha256": "d11364c0fef9ad49a8868be217e883534e266cd2e07d584ec8b13a38537a38a4",
+      "after_sha256": "a9a3d3b831a0261a5e9b98248a5783ce6b1368d336f7d41622e946931fdfbd7b"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "before_path": "core_enhanced/docs/roadmaps/content_authoring/records/optional_stage_review_20260913/before/core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "before_sha256": "9658f65cdd41e80a8e9d2af2e22c4f840272c5aa59f9462070f6ae54e142ec7a",
+      "after_sha256": "f68b8730326d1dba3c1454cf8488c59af44e9b0d54eac16b34d4c5314c0952f1"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/guides/policy_to_goal_pipeline_revised_v2.md",
+      "before_path": "core_enhanced/docs/roadmaps/content_authoring/records/optional_stage_review_20260913/before/core_enhanced/docs/roadmaps/content_authoring/guides/policy_to_goal_pipeline_revised_v2.md",
+      "before_sha256": "a1ec714c7bc300f1566352908ee4aaecf56f6ba36f6c95ac94c10a634dcfe735",
+      "after_sha256": "9550b47242fd9fbae497eda0530981de4db7c8141ac5123f3a158569310f8269"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/guides/policy_to_goal_pipeline_roadmap_usage_v2_1.ko.md",
+      "before_path": "core_enhanced/docs/roadmaps/content_authoring/records/optional_stage_review_20260913/before/core_enhanced/docs/roadmaps/content_authoring/guides/policy_to_goal_pipeline_roadmap_usage_v2_1.ko.md",
+      "before_sha256": "8bd5643dc4c632e62118c4d90adc7ad76f1336fad12fa2cc61a5087292f1f9b1",
+      "after_sha256": "9b5a14649ceaf8b6765c162c6e6a282810ec0bb1bbc2db0664373632cee3ada9"
+    }
+  ],
+  "retired": {
+    "original_path": "core_enhanced/docs/roadmaps/content_authoring/AUTORUN_REQUEST.ko.md.bak",
+    "preserved_path": "core_enhanced/docs/roadmaps/content_authoring/records/optional_stage_review_20260913/retired/AUTORUN_REQUEST.ko.md.bak",
+    "sha256": "3e05b131d445cd10ecf478ef959b80f55ce718c41c8a1820e5a5b7d969f9a252"
+  },
+  "limitations": [
+    "Checks changed documents only, not all repository links.",
+    "Marker presence does not prove natural-language semantics or runner/model behavior.",
+    "No game compilation, runtime test, Goal activation, or GEX audit performed."
+  ]
+}

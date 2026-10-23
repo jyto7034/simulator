@@ -1,0 +1,173 @@
+{
+  "kind": "CA00 investigation evidence; not a P2G/GEX receipt or independent audit",
+  "work_label": "NEXT-0002",
+  "request_start_card": "ROADMAP_STATUS v1.2 / record 0003 / NEXT-0002",
+  "workspace": "/mnt/f/work/simulator",
+  "branch": "cleanup/simulator-dirty-worktree-20260803",
+  "head": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+  "observed_at_utc": "2026-09-09T04:34:19.577808+00:00",
+  "baseline": {
+    "git_status_command": "git status --porcelain=v1 -uall -z",
+    "entry_count": 16485,
+    "counts": {
+      " M": 167,
+      " D": 24,
+      "??": 16294
+    },
+    "status_sorted_sha256": "b303c7329e15515767358c54b7027c4705b6dc143fcd8c02a7b561b8fc9e58a5",
+    "preservation_text_path_count": 1665,
+    "scope": "selected core src/tests/docs, game_resources/data, Cargo config text paths including missing tracked files; ignored/assets/private saves/server not fully hashed"
+  },
+  "inherited_selected_input_count": 38,
+  "changes_since_prior_selected_inputs": [],
+  "inherited_evidence": "CA00_NEXT-0001_EVIDENCE.json",
+  "guidelines": {
+    "p2g_revision": "2026-09-09-r2",
+    "p2g_root_and_package_identical": true,
+    "p2g_sha256": "e439da72c0b2c792064f6f003940da0dda5fcd87f0b30c0e8ad835457244079b",
+    "historical_p2g_sha256": "874742806deb79a39b13972d80ea08e5f6340f3b6fe24a9b7b42d2ffb8544c1c",
+    "gex_sha256": "5c19b62ae16943ef58ea2d02446f2fa188fa7bf8c18ad42d8ee79d0b18676c72",
+    "missing_historical_link": "core_enhanced/docs/policy_to_goal_pipeline.md",
+    "agents_found": [],
+    "runner_revision_binding": "not verified; no new formal execution"
+  },
+  "not_performed": [
+    "production code/RON/store edits",
+    "Rust build/test/probe/benchmark",
+    "P2G stages/validators/Freeze/Phase/Goal/Handoff",
+    "GEX/DG/independent audit",
+    "whole repository dependency verification",
+    "server/Unity integration"
+  ],
+  "source_reading_method": "All 9168 lines of the three content docs and 644 lines of the two policy docs read as chunks; truncated excerpts were read again. IDs/heading indexing are documentation checks, not semantic or runtime proofs.",
+  "source_checks": {
+    "R": {
+      "path": "core_enhanced/docs/skills/run_relic_content_design_notes.ko.md",
+      "sha256": "78aeb97ac30545d2763176cc32ec5c1ae9ecb14015e5a76ba322f96c91d8e1c4",
+      "lines": 1402,
+      "documented_read_lines": 1402,
+      "read_interval_complete": true
+    },
+    "F": {
+      "path": "core_enhanced/docs/skills/abnormality_skill_fragments_design_notes.md",
+      "sha256": "a0a0a0c12e67b4241caddd8606c2874249bdbf89cc34ab485ea6636f6cc5424b",
+      "lines": 4500,
+      "documented_read_lines": 4500,
+      "read_interval_complete": true
+    },
+    "B": {
+      "path": "core_enhanced/docs/skills/abnormality_design_notes.ko.md",
+      "sha256": "9c5f0b709cf5c41225316d7d275404c4091098881cb308ba6f6da8e5fb90d7ea",
+      "lines": 3266,
+      "documented_read_lines": 3266,
+      "read_interval_complete": true
+    },
+    "P": {
+      "path": "core_enhanced/docs/tmp/run_relic_system_design_notes_2026-08-21.ko.md",
+      "sha256": "da5665e75101c84d336735342c5521b2510931f137baf0191316ed4461f9c12b",
+      "lines": 467,
+      "documented_read_lines": 467,
+      "read_interval_complete": true
+    },
+    "E": {
+      "path": "core_enhanced/docs/tmp/ego_corrosion_system_design_notes_2026-08-19.ko.md",
+      "sha256": "76ffa7d2be4b98ab9d2463c31a051f0746d68d8570ee0c5e18063e7a03482626",
+      "lines": 177,
+      "documented_read_lines": 177,
+      "read_interval_complete": true
+    }
+  },
+  "documentation_checks": {
+    "checked_at_utc": "2026-09-09T05:28:24.461629+00:00",
+    "cov_count": 354,
+    "content_cov_count": 332,
+    "common_policy_cov_count": 22,
+    "by_source": {
+      "R": 62,
+      "F": 147,
+      "B": 123,
+      "P": 16,
+      "E": 6
+    },
+    "boss_subrow_count": 127,
+    "section_count": 334,
+    "axis_count": 15,
+    "test_recipe_pairs": 19,
+    "actual_game_tests_run": 0,
+    "formal_audits_run": 0,
+    "errors": [],
+    "command": "python3 /tmp/ca00_check.py preliminary; python3 /tmp/ca00_check.py final",
+    "diagnostic_script_sha256": "b75a908ccec00987b63917b89550c8e88f3b590edd6d78487d2dc7fff3d7a068",
+    "local_links_checked": 58,
+    "status": "pass"
+  },
+  "external_workspace_changes": {
+    "attribution": "Observed during this request; no Codex mutation tool changed/moved these files. Existing baseline GEX body found byte-identical in archive; new named document read only.",
+    "removed_path": "core_enhanced/docs/goal_execution_pipeline.md",
+    "archive_path": "core_enhanced/docs/archive/goal_execution_pipeline.md",
+    "archive_sha256": "5c19b62ae16943ef58ea2d02446f2fa188fa7bf8c18ad42d8ee79d0b18676c72",
+    "new_path": "core_enhanced/docs/goal_execution_pipeline(1).md",
+    "new_revision": "2026-09-09-gex-r1",
+    "new_sha256": "0ec53e9f68a82790c33a61c3b87d326d0af545c8fdbb47a6e97986c65b6a75c6",
+    "new_excerpt_read": [
+      1,
+      165
+    ],
+    "effect": "No GEX execution in current scope. Historical audits remain bound to historical basis; runner/future execution revision binding unverified."
+  },
+  "final_checks": {
+    "checked_at_utc": "2026-09-09T05:28:35.331450+00:00",
+    "status": "pass",
+    "errors": [],
+    "head_unchanged": true,
+    "preservation": {
+      "paths_compared": 1665,
+      "unchanged": 1663,
+      "changes": [
+        {
+          "path": "core_enhanced/docs/goal_execution_pipeline.md",
+          "before": "5c19b62ae16943ef58ea2d02446f2fa188fa7bf8c18ad42d8ee79d0b18676c72",
+          "after": null
+        },
+        {
+          "path": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+          "before": "b356d3f15713dcf25ada170691795708e334d9f3024b92279e486e1e367b9e90",
+          "after": "2d82cb35cfe5a1de57b1d8ee1a58a38cd7a5b80793c51f3ee58ac8bb762735bc"
+        }
+      ],
+      "baseline_all_unchanged": false,
+      "interpretation": "The only existing-path deltas are the requested status edit and separately observed external GEX relocation. This is not a claim that the whole workspace stayed unchanged.",
+      "new_git_entries": [
+        "?? core_enhanced/docs/archive/goal_execution_pipeline.md",
+        "?? core_enhanced/docs/goal_execution_pipeline(1).md",
+        "?? core_enhanced/docs/roadmaps/content_authoring/records/CA00_NEXT-0002_COVERAGE.json",
+        "?? core_enhanced/docs/roadmaps/content_authoring/records/CA00_NEXT-0002_EVIDENCE.json",
+        "?? core_enhanced/docs/roadmaps/content_authoring/records/CA00_NEXT-0002_REQUIREMENTS.ko.md"
+      ],
+      "removed_git_entries": [
+        "?? core_enhanced/docs/goal_execution_pipeline.md"
+      ],
+      "final_git_entry_count": 16489,
+      "final_git_counts": {
+        " M": 167,
+        " D": 24,
+        "??": 16298
+      }
+    },
+    "p2g_root_package_identical": true,
+    "gex_observed_sha256": "0ec53e9f68a82790c33a61c3b87d326d0af545c8fdbb47a6e97986c65b6a75c6",
+    "output_sha256": {
+      "core_enhanced/docs/roadmaps/content_authoring/records/CA00_NEXT-0002_REQUIREMENTS.ko.md": "d94bd946d55e65864e824b90519ef0db057a888b5f8a3c7f837affb7d4296441",
+      "core_enhanced/docs/roadmaps/content_authoring/records/CA00_NEXT-0002_COVERAGE.json": "2593448ccf8f1270aa356e7013c49b4b4453c046be920b3fbb7d46012018f141",
+      "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md": "2d82cb35cfe5a1de57b1d8ee1a58a38cd7a5b80793c51f3ee58ac8bb762735bc"
+    },
+    "next_work": "NEXT-0003 recorded only; not executed",
+    "limitations": [
+      "not a new audit of prior GEX target",
+      "source interval/heading checks do not prove runtime support",
+      "text preservation scope excludes ignored/private assets and all unrelated files",
+      "external GEX file change observed and preserved; no runner binding verification",
+      "no T00/T01 executable validation receipt"
+    ]
+  }
+}

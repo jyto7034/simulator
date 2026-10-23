@@ -55,6 +55,8 @@ impl GameCore {
             rewards,
             selected_reward_uuid: None,
             can_skip,
+            relic_activity: None,
+            dealer: None,
         }
     }
 
@@ -152,6 +154,13 @@ impl GameCore {
             target_unit,
             plan.projected_target(),
         )?;
+        if self.has_combat_recovery_restriction()
+            && (inventory.equipments.get_item(&item_uuid)
+                .is_none_or(|copy| copy.meta.equipment_type != crate::game::data::equipment_data::EquipmentType::Weapon)
+                || roster.get(&target_unit).is_none_or(|employee| !self.recovery_weapon_payload_is_useful(employee)))
+        {
+            return Err(GameError::InvalidAction);
+        }
         Ok(plan)
     }
 
@@ -161,6 +170,9 @@ impl GameCore {
         target_unit: Uuid,
     ) -> Result<(), GameError> {
         if !self.is_loadout_action_context() {
+            return Err(GameError::InvalidAction);
+        }
+        if self.has_combat_recovery_restriction() {
             return Err(GameError::InvalidAction);
         }
         EquipmentLoadoutTransition::validate_unequip(
@@ -188,6 +200,14 @@ impl GameCore {
             .roster()?
             .get(&target_employee_uuid)
             .ok_or(GameError::UnitNotFound)?;
+        if self.has_combat_recovery_restriction() {
+            let crate::game::data::consumable_data::ConsumableEffect::ReducePhysicalDamage { amount } = consumable.meta.effect else {
+                return Err(GameError::InvalidAction);
+            };
+            if consumable.quantity == 0 || !self.recovery_treatment_payload_is_useful(employee, amount) {
+                return Err(GameError::InvalidAction);
+            }
+        }
         let activity = if matches!(
             consumable.meta.effect,
             crate::game::data::consumable_data::ConsumableEffect::ReducePhysicalDamage { .. }
@@ -209,6 +229,9 @@ impl GameCore {
         copy_uuid: Uuid,
     ) -> Result<(), GameError> {
         if !self.is_loadout_action_context() {
+            return Err(GameError::InvalidAction);
+        }
+        if self.has_combat_recovery_restriction() {
             return Err(GameError::InvalidAction);
         }
         self.state
@@ -343,6 +366,9 @@ impl GameCore {
         {
             return Err(GameError::InvalidAction);
         }
+        if self.has_combat_recovery_restriction() && !self.recovery_fragment_removal_payload_is_useful(employee) {
+            return Err(GameError::InvalidAction);
+        }
         Ok(())
     }
 
@@ -427,8 +453,10 @@ impl GameCore {
             if self.state.enkephalin.amount < recipe.enkephalin {
                 return Err("insufficient_enkephalin");
             }
+            copy.investment.validate_additional(&costs).map_err(|_| "fragment_investment_overflow")?;
             for (id, amount) in costs {
-                if self.state.inventory.equipment_materials.amount(&id) < amount {
+                let warehouse = if self.run_state().is_ok_and(|run| run.run_progression.game_mode == crate::game::map::GameMode::Expedition) { self.state.player_profile.lifecycle.vault.materials.get(&id).copied().unwrap_or(0) } else { 0 };
+                if u64::from(crate::game::material_economy::carried_amount(&self.state.inventory, &self.state.crafting_resources, &id)) + u64::from(warehouse) < u64::from(amount) {
                     return Err("insufficient_fragment_material");
                 }
             }
@@ -441,8 +469,9 @@ impl GameCore {
         (matches!(
             self.state.lifecycle.phase(),
             GameState::ViewingMap | GameState::NodeConfirm { .. }
-        ) && !self.has_combat_recovery_restriction())
+        ))
             || self.is_in_maintenance_node()
+            || self.facility_gate_reached()
     }
 
     pub(super) fn is_consumable_use_context(&self) -> bool {
@@ -469,26 +498,8 @@ impl GameCore {
             return Err(GameError::InvalidAction);
         }
 
-        let recipe = self
-            .game_data
-            .equipment_data
-            .get_dismantle_recipe_by_equipment_id(&equipment.meta.id)
-            .ok_or_else(|| {
-                GameError::InvalidStaticData(format!(
-                    "missing equipment dismantle recipe for '{}'",
-                    equipment.meta.id
-                ))
-            })?;
-
-        let grant_effects = recipe
-            .yields
-            .iter()
-            .map(|material| RewardEffect::GrantEquipmentMaterial {
-                material_id: material.material_id.clone(),
-                amount: material.amount,
-            })
-            .collect::<Vec<_>>();
-        self.preview_grant_effects(&grant_effects).map(|_| ())
+        let effects = self.equipment_dismantle_effects(item_uuid)?;
+        self.preview_grant_effects(&effects).map(|_| ())
     }
 
     pub(super) fn validate_enhance_equipment_payload(
@@ -504,7 +515,7 @@ impl GameCore {
             .equipments
             .get_item(&item_uuid)
             .ok_or(GameError::InventoryItemNotFound)?;
-        if equipment.meta.bound {
+        if equipment.meta.bound || equipment.meta.equipment_type != crate::game::data::equipment_data::EquipmentType::Weapon {
             return Err(GameError::InvalidAction);
         }
         let recipe = self
@@ -527,8 +538,10 @@ impl GameCore {
                 recipe.equipment_id
             ))
         })?;
+        equipment.investment.validate_additional(&aggregated_costs.iter()
+            .map(|cost| (cost.material_id.clone(), cost.amount)).collect())?;
         for cost in &aggregated_costs {
-            if inventory.equipment_materials.amount(&cost.material_id) < cost.amount {
+            if crate::game::material_economy::carried_amount(inventory, &self.state.crafting_resources, &cost.material_id) < cost.amount {
                 return Err(GameError::InvalidAction);
             }
         }
@@ -753,6 +766,9 @@ impl GameCore {
                 employee_uuid,
                 false,
             )?;
+        }
+        for (_,definition) in candidate_plans {
+            self.record_lab_definition("Employee",definition.employee_definition_id.as_str(),"employee_profile")?;
         }
         Ok(())
     }

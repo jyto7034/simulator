@@ -1,0 +1,10 @@
+{
+  "argv": [
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/artifacts/probe008/u13_facility_consumer",
+    "measure",
+    "expanded",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_facility_map_nodes/execution/single_goal/measurements002/expanded_1.json"
+  ],
+  "exit_code": 0,
+  "seconds": 1.2644956320000347
+}

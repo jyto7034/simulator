@@ -402,6 +402,16 @@ impl BattleCore {
         }
     }
 
+    #[cfg(test)]
+    pub(in crate::game::battle::core) fn run_test_movement_tick(
+        &mut self,
+        now_ms: u64,
+        dt_ms: u64,
+        goals: &HashMap<UnitInstanceId, MovementGoal>,
+    ) {
+        self.run_continuous_movement_tick(now_ms, dt_ms, goals);
+    }
+
     pub(super) fn run_continuous_movement_tick(
         &mut self,
         now_ms: u64,
@@ -799,6 +809,7 @@ mod tests {
     fn battle_core_movement_input_projects_non_rectangular_void_tiles_as_static_obstacles() {
         let scenario = BattleScenario {
             battlefield: crate::game::battle::scenario::BattleFieldSpec {
+            walkable_paths: Vec::new(),
                 object_placement: None,
                 width: 3,
                 height: 3,

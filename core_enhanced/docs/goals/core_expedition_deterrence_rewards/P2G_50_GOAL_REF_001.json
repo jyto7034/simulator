@@ -1,0 +1,28 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Goal Set",
+        "Artifact ID": "GS-CEDR-001",
+        "Content Digest": "sha256:cbdd3baf55758258224586d6a3fd422c66c5aba002d596d410172222651ace8e"
+      },
+      "payload": {
+        "Goal Set Document": "P2G_50_GOAL_SET.ko.md",
+        "Goal Set Document SHA256": "4cd3afbd83ecbdc6fc3aec9c7870cecdfbee42efa9e735c90bc9ed9de0c19b12",
+        "Complete Goal Member Set": [
+          "GOAL-CEDR-01"
+        ],
+        "Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CEDR-001",
+          "Content Digest": "sha256:452294e14c278fa9b25942bc7f87477a0f7270254976715d96c4518c7468f31e"
+        },
+        "Phase Plan Ref": {
+          "Artifact Type": "Phase Plan",
+          "Artifact ID": "PP-CEDR-001",
+          "Content Digest": "sha256:bf45bd5ccd88b1bfafb6fafe7785b6888cd6562b9d08bb47188fc699ca046ed2"
+        }
+      }
+    }
+  ]
+}

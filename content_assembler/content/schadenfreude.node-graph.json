@@ -1,0 +1,522 @@
+{
+  "format": "node-graph",
+  "version": 1,
+  "id": "0b2e2f66-7ee6-4e49-a9e8-2cd2d1895e2b",
+  "name": "샤덴프로이데 · 멈추지 않는 분쇄",
+  "nodes": [
+    {
+      "id": "01dc5822-0189-4b47-883d-cc0d56273dc8",
+      "kind": "skill-resonance-qualify",
+      "title": "대상·공명·자원 자격 검사",
+      "position": {
+        "x": 1800,
+        "y": 1772
+      },
+      "values": {},
+      "note": "",
+      "frame": "16ca1ade-9d17-4177-8460-c416022ff306"
+    },
+    {
+      "id": "2ef53ab0-20b1-4e7a-a6f3-74824f2915b5",
+      "kind": "skill-resonance-admit",
+      "title": "원자적 접수·비용 확정",
+      "position": {
+        "x": 2240,
+        "y": 1688.5
+      },
+      "values": {},
+      "note": "",
+      "frame": "16ca1ade-9d17-4177-8460-c416022ff306"
+    },
+    {
+      "id": "3239a679-36aa-4a4b-a316-df9140a60c43",
+      "kind": "skill-hp-floor-effect",
+      "title": "전투 피해의 HP 1 하한",
+      "position": {
+        "x": 40,
+        "y": 374
+      },
+      "values": {
+        "minimum": 1
+      },
+      "note": "",
+      "frame": "02f13d49-d48b-49ba-8a9e-c4e91b83e2b0"
+    },
+    {
+      "id": "33531607-6d92-4298-b80e-a22f17a7e6d1",
+      "kind": "skill-target-selection",
+      "title": "입력 대상 선택",
+      "position": {
+        "x": 40,
+        "y": 2482.2
+      },
+      "values": {
+        "mode": "self"
+      },
+      "note": "",
+      "frame": "16ca1ade-9d17-4177-8460-c416022ff306"
+    },
+    {
+      "id": "4d4542f9-add5-484a-ae00-aa5e4af10e93",
+      "kind": "skill-recipient-buff-plan",
+      "title": "방출 시 대상 확정 · 독립 상태 부여",
+      "position": {
+        "x": 920,
+        "y": 610
+      },
+      "values": {
+        "recipient": "self"
+      },
+      "note": "",
+      "frame": "02f13d49-d48b-49ba-8a9e-c4e91b83e2b0"
+    },
+    {
+      "id": "582a3cd8-a36a-4d3a-96f5-e32bd5a595b3",
+      "kind": "skill-resonance-requirement",
+      "title": "수동 · 공명 만충",
+      "position": {
+        "x": 1360,
+        "y": 2407.2
+      },
+      "values": {
+        "mode": "full"
+      },
+      "note": "",
+      "frame": "16ca1ade-9d17-4177-8460-c416022ff306"
+    },
+    {
+      "id": "64884960-72b0-46f2-bd19-54a968e811e6",
+      "kind": "skill-attribute-effect",
+      "title": "공격 속도 포인트 증가",
+      "position": {
+        "x": 40,
+        "y": 80
+      },
+      "values": {
+        "amount": "",
+        "attribute": "attack-speed",
+        "operation": "points"
+      },
+      "note": "",
+      "frame": "02f13d49-d48b-49ba-8a9e-c4e91b83e2b0"
+    },
+    {
+      "id": "77ce4574-64b7-440f-997c-628d1d8b7dd8",
+      "kind": "skill-action-entry",
+      "title": "접수할 행동 정의",
+      "position": {
+        "x": 1360,
+        "y": 2105.2
+      },
+      "values": {
+        "interruption": "standard",
+        "start": "immediate"
+      },
+      "note": "",
+      "frame": "16ca1ade-9d17-4177-8460-c416022ff306"
+    },
+    {
+      "id": "7c37201c-d141-4c22-8af5-52b41689a40b",
+      "kind": "skill-resonance-amount",
+      "title": "최대 공명 · 미정",
+      "position": {
+        "x": 40,
+        "y": 1918.9380952380952
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "16ca1ade-9d17-4177-8460-c416022ff306"
+    },
+    {
+      "id": "8a8008b9-6470-462b-a73b-b2d37d00abb2",
+      "kind": "skill-target-state",
+      "title": "같은 수명의 효과 묶음",
+      "position": {
+        "x": 480,
+        "y": 645
+      },
+      "values": {
+        "sourceExit": "end"
+      },
+      "note": "",
+      "frame": "02f13d49-d48b-49ba-8a9e-c4e91b83e2b0"
+    },
+    {
+      "id": "95c3f853-1582-47c6-aaa0-fdac8fcb7dc5",
+      "kind": "skill-run-action",
+      "title": "접수한 행동 실행·종료",
+      "position": {
+        "x": 2680,
+        "y": 1510
+      },
+      "values": {},
+      "note": "",
+      "frame": "16ca1ade-9d17-4177-8460-c416022ff306"
+    },
+    {
+      "id": "b1bc397a-4113-47e6-8406-68f916d95a50",
+      "kind": "skill-attribute-effect",
+      "title": "공격력 증가",
+      "position": {
+        "x": 40,
+        "y": 890
+      },
+      "values": {
+        "amount": "",
+        "attribute": "attack",
+        "operation": "percent"
+      },
+      "note": "",
+      "frame": "02f13d49-d48b-49ba-8a9e-c4e91b83e2b0"
+    },
+    {
+      "id": "b2e89925-7add-4c8c-9ad3-3145cb4281de",
+      "kind": "skill-resonance-read",
+      "title": "이번 요청의 공명 조회",
+      "position": {
+        "x": 920,
+        "y": 1929.2714285714287
+      },
+      "values": {},
+      "note": "",
+      "frame": "16ca1ade-9d17-4177-8460-c416022ff306"
+    },
+    {
+      "id": "bab4891c-d492-48f0-9aca-2dcb0da349df",
+      "kind": "skill-seconds",
+      "title": "상태 지속 시간 · 미정",
+      "position": {
+        "x": 40,
+        "y": 1184
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "02f13d49-d48b-49ba-8a9e-c4e91b83e2b0"
+    },
+    {
+      "id": "c0c57546-35f3-4243-94c1-73c17f807f78",
+      "kind": "skill-attribute-effect",
+      "title": "방어력 증가",
+      "position": {
+        "x": 40,
+        "y": 596
+      },
+      "values": {
+        "amount": "",
+        "attribute": "defense",
+        "operation": "percent"
+      },
+      "note": "",
+      "frame": "02f13d49-d48b-49ba-8a9e-c4e91b83e2b0"
+    },
+    {
+      "id": "d0abfdfc-484a-423d-834a-b2925cc9d46f",
+      "kind": "skill-resonance-settings",
+      "title": "사본 공명 저장 설정",
+      "position": {
+        "x": 480,
+        "y": 1936.9380952380952
+      },
+      "values": {},
+      "note": "",
+      "frame": "16ca1ade-9d17-4177-8460-c416022ff306"
+    },
+    {
+      "id": "f7adbf58-ea2f-43c4-9479-fe3c77961bc2",
+      "kind": "skill-resonance-cost",
+      "title": "수동 · 공명 전량 소비",
+      "position": {
+        "x": 1360,
+        "y": 1591.2
+      },
+      "values": {
+        "minimumCost": "",
+        "mode": "all",
+        "percent": ""
+      },
+      "note": "",
+      "frame": "16ca1ade-9d17-4177-8460-c416022ff306"
+    },
+    {
+      "id": "f7de9697-f397-4fa0-ba3f-fc17a1eadb0b",
+      "kind": "skill-request",
+      "title": "파편 시전 입력",
+      "position": {
+        "x": 480,
+        "y": 2478.2
+      },
+      "values": {},
+      "note": "",
+      "frame": "16ca1ade-9d17-4177-8460-c416022ff306"
+    }
+  ],
+  "edges": [
+    {
+      "id": "0d23a8cb-7c98-41de-ab8b-c207434c600b",
+      "source": {
+        "node": "8a8008b9-6470-462b-a73b-b2d37d00abb2",
+        "port": "state"
+      },
+      "target": {
+        "node": "4d4542f9-add5-484a-ae00-aa5e4af10e93",
+        "port": "state"
+      }
+    },
+    {
+      "id": "153edb5e-ebd6-4f04-afd5-488f6c1af816",
+      "source": {
+        "node": "d0abfdfc-484a-423d-834a-b2925cc9d46f",
+        "port": "settings"
+      },
+      "target": {
+        "node": "b2e89925-7add-4c8c-9ad3-3145cb4281de",
+        "port": "settings"
+      }
+    },
+    {
+      "id": "28aee972-cae3-41fc-9213-805c901c6134",
+      "source": {
+        "node": "2ef53ab0-20b1-4e7a-a6f3-74824f2915b5",
+        "port": "out"
+      },
+      "target": {
+        "node": "95c3f853-1582-47c6-aaa0-fdac8fcb7dc5",
+        "port": "in"
+      }
+    },
+    {
+      "id": "2b83b1ec-8bbc-4236-a5f2-85c5d9dba3cb",
+      "source": {
+        "node": "64884960-72b0-46f2-bd19-54a968e811e6",
+        "port": "effect"
+      },
+      "target": {
+        "node": "8a8008b9-6470-462b-a73b-b2d37d00abb2",
+        "port": "effects"
+      }
+    },
+    {
+      "id": "2c608d62-e7cd-4fdb-be40-e8d838c46755",
+      "source": {
+        "node": "4d4542f9-add5-484a-ae00-aa5e4af10e93",
+        "port": "plan"
+      },
+      "target": {
+        "node": "77ce4574-64b7-440f-997c-628d1d8b7dd8",
+        "port": "plan"
+      }
+    },
+    {
+      "id": "3587011d-bb78-498f-8efc-3619bf8b31b4",
+      "source": {
+        "node": "f7de9697-f397-4fa0-ba3f-fc17a1eadb0b",
+        "port": "request"
+      },
+      "target": {
+        "node": "01dc5822-0189-4b47-883d-cc0d56273dc8",
+        "port": "request"
+      }
+    },
+    {
+      "id": "568a4049-f67c-4b19-9a66-4aa1e0270551",
+      "source": {
+        "node": "f7de9697-f397-4fa0-ba3f-fc17a1eadb0b",
+        "port": "out"
+      },
+      "target": {
+        "node": "01dc5822-0189-4b47-883d-cc0d56273dc8",
+        "port": "in"
+      }
+    },
+    {
+      "id": "5a3c39c0-cdfb-44b9-bd6a-cb3c673527da",
+      "source": {
+        "node": "582a3cd8-a36a-4d3a-96f5-e32bd5a595b3",
+        "port": "requirement"
+      },
+      "target": {
+        "node": "01dc5822-0189-4b47-883d-cc0d56273dc8",
+        "port": "requirement"
+      }
+    },
+    {
+      "id": "5d851945-9904-44b7-ac2b-a01cd0bb3c79",
+      "source": {
+        "node": "b1bc397a-4113-47e6-8406-68f916d95a50",
+        "port": "effect"
+      },
+      "target": {
+        "node": "8a8008b9-6470-462b-a73b-b2d37d00abb2",
+        "port": "effects"
+      }
+    },
+    {
+      "id": "631095a5-31e8-4d21-a094-8451bf58d8d1",
+      "source": {
+        "node": "c0c57546-35f3-4243-94c1-73c17f807f78",
+        "port": "effect"
+      },
+      "target": {
+        "node": "8a8008b9-6470-462b-a73b-b2d37d00abb2",
+        "port": "effects"
+      }
+    },
+    {
+      "id": "679a480d-fb3b-4d37-9fee-662c8546ea6d",
+      "source": {
+        "node": "2ef53ab0-20b1-4e7a-a6f3-74824f2915b5",
+        "port": "use"
+      },
+      "target": {
+        "node": "95c3f853-1582-47c6-aaa0-fdac8fcb7dc5",
+        "port": "use"
+      }
+    },
+    {
+      "id": "6fea03dd-fa4b-4d39-9da6-88893ea16158",
+      "source": {
+        "node": "3239a679-36aa-4a4b-a316-df9140a60c43",
+        "port": "effect"
+      },
+      "target": {
+        "node": "8a8008b9-6470-462b-a73b-b2d37d00abb2",
+        "port": "effects"
+      }
+    },
+    {
+      "id": "7ee00271-9ac3-43ae-afb6-814435b2e9b0",
+      "source": {
+        "node": "bab4891c-d492-48f0-9aca-2dcb0da349df",
+        "port": "value"
+      },
+      "target": {
+        "node": "8a8008b9-6470-462b-a73b-b2d37d00abb2",
+        "port": "duration"
+      }
+    },
+    {
+      "id": "8a384e2f-0d80-4fa1-8e9b-226b5e87eec8",
+      "source": {
+        "node": "f7adbf58-ea2f-43c4-9479-fe3c77961bc2",
+        "port": "cost"
+      },
+      "target": {
+        "node": "01dc5822-0189-4b47-883d-cc0d56273dc8",
+        "port": "cost"
+      }
+    },
+    {
+      "id": "8b3655ee-2793-47e4-991b-de05ad680e48",
+      "source": {
+        "node": "f7de9697-f397-4fa0-ba3f-fc17a1eadb0b",
+        "port": "request"
+      },
+      "target": {
+        "node": "b2e89925-7add-4c8c-9ad3-3145cb4281de",
+        "port": "request"
+      }
+    },
+    {
+      "id": "92312a1b-5c55-49e0-8ac7-c2441f846b4d",
+      "source": {
+        "node": "b2e89925-7add-4c8c-9ad3-3145cb4281de",
+        "port": "snapshot"
+      },
+      "target": {
+        "node": "01dc5822-0189-4b47-883d-cc0d56273dc8",
+        "port": "snapshot"
+      }
+    },
+    {
+      "id": "94e6918f-235d-495f-9ddb-9c341ce02ca0",
+      "source": {
+        "node": "33531607-6d92-4298-b80e-a22f17a7e6d1",
+        "port": "selection"
+      },
+      "target": {
+        "node": "f7de9697-f397-4fa0-ba3f-fc17a1eadb0b",
+        "port": "selection"
+      }
+    },
+    {
+      "id": "a6a67133-547d-4f68-bf7f-8eeb434ae2a4",
+      "source": {
+        "node": "77ce4574-64b7-440f-997c-628d1d8b7dd8",
+        "port": "program"
+      },
+      "target": {
+        "node": "95c3f853-1582-47c6-aaa0-fdac8fcb7dc5",
+        "port": "program"
+      }
+    },
+    {
+      "id": "b7b54d7c-8170-4182-8485-5b8bb53a4955",
+      "source": {
+        "node": "01dc5822-0189-4b47-883d-cc0d56273dc8",
+        "port": "permit"
+      },
+      "target": {
+        "node": "2ef53ab0-20b1-4e7a-a6f3-74824f2915b5",
+        "port": "permit"
+      }
+    },
+    {
+      "id": "ba5d0460-7e5d-4d2b-accf-2917ff3c99e7",
+      "source": {
+        "node": "b2e89925-7add-4c8c-9ad3-3145cb4281de",
+        "port": "snapshot"
+      },
+      "target": {
+        "node": "f7adbf58-ea2f-43c4-9479-fe3c77961bc2",
+        "port": "snapshot"
+      }
+    },
+    {
+      "id": "c0b1e5f0-5da9-4172-b833-d69860294165",
+      "source": {
+        "node": "01dc5822-0189-4b47-883d-cc0d56273dc8",
+        "port": "out"
+      },
+      "target": {
+        "node": "2ef53ab0-20b1-4e7a-a6f3-74824f2915b5",
+        "port": "in"
+      }
+    },
+    {
+      "id": "dc5fe26a-a084-4ee6-bf22-a7fc6e4e001d",
+      "source": {
+        "node": "77ce4574-64b7-440f-997c-628d1d8b7dd8",
+        "port": "program"
+      },
+      "target": {
+        "node": "01dc5822-0189-4b47-883d-cc0d56273dc8",
+        "port": "program"
+      }
+    },
+    {
+      "id": "eb5cb1f5-94a2-4eb7-ba2b-5b0d292e97ed",
+      "source": {
+        "node": "7c37201c-d141-4c22-8af5-52b41689a40b",
+        "port": "value"
+      },
+      "target": {
+        "node": "d0abfdfc-484a-423d-834a-b2925cc9d46f",
+        "port": "capacity"
+      }
+    }
+  ],
+  "frames": [
+    {
+      "id": "02f13d49-d48b-49ba-8a9e-c4e91b83e2b0",
+      "title": "자기 강화 · 피해의 HP 1 하한 · 종료 시 기여분만 제거"
+    },
+    {
+      "id": "16ca1ade-9d17-4177-8460-c416022ff306",
+      "title": "시작 → 대상·공명 자격 → 비용 확정 → 행동 → 종료"
+    }
+  ]
+}

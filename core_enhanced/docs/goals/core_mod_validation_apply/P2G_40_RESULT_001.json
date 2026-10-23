@@ -1,0 +1,45 @@
+{
+  "stage": "P2G-40",
+  "status": "complete",
+  "Phase Plan Ref": {
+    "Artifact Type": "Phase Plan",
+    "Artifact ID": "PP-CMVA-001",
+    "Content Digest": "sha256:bb6ff74ca67c2312c583c3fefbdfeb0688a3920fa5e772a1c3b8c67ea055da45"
+  },
+  "Final Policy Freeze Ref": {
+    "Artifact Type": "Final Policy Freeze",
+    "Artifact ID": "FPF-CMVA-001",
+    "Content Digest": "sha256:e4009fb88d9916523324a97434900a9efcd7e81f4ffc5378831153e9400c2aa6"
+  },
+  "Phase Plan Validation Receipt Ref": {
+    "Artifact Type": "Phase Plan Validation Receipt",
+    "Artifact ID": "PVR-CMVA-001",
+    "Content Digest": "sha256:a89b03699827e37ec09dc32482015a9b34f82d6cd9daf0d2bfbf3bc7c58c19d5"
+  },
+  "P2G-40 Resolution Record Ref Set": [],
+  "Applicable Obligation Supersession Record Ref Set": [],
+  "current_phase_plan": {
+    "Artifact Type": "Phase Plan",
+    "Artifact ID": "PP-CMVA-001",
+    "Content Digest": "sha256:bb6ff74ca67c2312c583c3fefbdfeb0688a3920fa5e772a1c3b8c67ea055da45"
+  },
+  "validation": {
+    "validator": "p2g40-receipt-validator/1.2.0",
+    "result": "passed",
+    "counts": {
+      "freeze_members": 15,
+      "work_packages": 7,
+      "dependency_edges": 20,
+      "cyclic_sccs": 1,
+      "atomic_groups": 1,
+      "final_execution_nodes": 3,
+      "phases": 1,
+      "audit_rows": 1,
+      "integration_rows": 20
+    },
+    "failures": []
+  },
+  "semantic_review": "Root actual CANDIDATE/LAB/ISSUER/HOST/SAVE authority and transaction boundary review against CODE_REVIEW T01–T07; one atomic admission group, PUBLIC/VERIFY downstream, no supported incomplete admission. All 20 integration seams assigned. Numeric criterion remains mandatory measured GEX work, not current PASS.",
+  "execution_evidence": "validation/p2g40_001/EXECUTION_RECEIPT.json",
+  "next": "P2G-50"
+}

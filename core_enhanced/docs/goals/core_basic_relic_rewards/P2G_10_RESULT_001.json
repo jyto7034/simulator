@@ -1,0 +1,51 @@
+{
+  "stage": "P2G-10",
+  "status": "complete",
+  "result_working_revision_ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CBRR-003",
+    "Content Digest": "sha256:cfcd9c0c8029193c55e4225405bac3ed03726757f68c0230e983e6800a692672"
+  },
+  "intake_snapshot_ref": {
+    "Artifact Type": "Policy Intake Snapshot",
+    "Artifact ID": "PIS-CBRR-001",
+    "Content Digest": "sha256:0eaae93d36c26f38f78ab956ff410c3ad94a296c0b446efa7ef6fc125cc7b33d"
+  },
+  "candidate_dispositions": [
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CPED-CBRR-CHOICE-001",
+      "Content Digest": "sha256:1c99f9bedb1d6cf63851bcc1aaeb4b5344b31878c73d977346222a143203bf8a"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CPED-CBRR-DUST-001",
+      "Content Digest": "sha256:7c467cffc2964f48a536422156f59742b4c4cb352f2f70a3285a7f48e2501a35"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CPED-CBRR-FUSION-001",
+      "Content Digest": "sha256:6a536fbf32d84c5c296c8fa24077620da5e38267b08f17596d2f8416fdb103f5"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CPED-CBRR-STORE-001",
+      "Content Digest": "sha256:283883f1444fa69e8fd777cd8f9c0e19ab11af7cac9bcb9738d10c0003176723"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CPED-CBRR-AUTHOR-001",
+      "Content Digest": "sha256:aa5bf0951aa41b6936a06c5508cd2e6fbe1524714fc192b1c2ee51bacdec6307"
+    }
+  ],
+  "elements": 5,
+  "acceptance": 17,
+  "open_questions": 0,
+  "checks": {
+    "scope_coverage": "G26 CHOICE/DUST/FUSION and shared restoration/authoring",
+    "all_decisions_approved": true,
+    "all_acceptance_nonempty": true,
+    "no_product_implementation_claim": true
+  },
+  "next": "P2G-20 exact current source review"
+}

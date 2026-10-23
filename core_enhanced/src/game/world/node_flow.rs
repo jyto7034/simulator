@@ -2,8 +2,8 @@ use super::facility::StagedRecoveryEffect;
 use super::state::{RunCheckpointPayload, RUN_CHECKPOINT_MAX_LOADS};
 use super::{map_encounters, GameCore, RunState};
 use crate::game::behavior::{
-    BehaviorResult, GameError, MonolithConversionOptionDto, MonolithConversionSnapshotDto,
-    MonolithRemanifestationSnapshotDto, MonolithRewardTierDto,
+    BehaviorResult, GameError, MonolithConversionSnapshotDto,
+    RevivalSnapshotDto,
 };
 use crate::game::boss_omen::{
     apply_boss_omen_to_map, complete_forced_boss_with_exit_gate, force_boss_node_if_ready,
@@ -15,7 +15,7 @@ use crate::game::map::{
     FacilityGenerationRequirements, FacilityMapGenerator, FacilityRunState,
     FacilityTerminalResolution, MapNodeCategory, MapNodeCombatDifficultyClass, MapNodeExecutor,
     MapNodeId, MapNodePayload, MapNodeState, MapProgression, MapViewDto,
-    MonolithRemanifestationStage, RunMap, RunProgression,
+    RevivalStage, RunMap, RunProgression,
 };
 use crate::game::resources::{ActiveNodeContent, GameState};
 
@@ -26,28 +26,23 @@ fn percent_of_anchor_ceil(anchor: u64, percent: u32) -> u64 {
     u64::try_from(value).unwrap_or(u64::MAX)
 }
 
-fn validate_monolith_difficulty_authority(
+fn validate_revival_difficulty_authority(
     node_id: MapNodeId,
     difficulty: Option<&crate::game::map::MapNodeCombatDifficulty>,
-    monolith: &crate::game::monolith::MonolithRunState,
+    revival: &crate::game::revival::RevivalRunState,
+    data: &crate::game::data::pve_data::PveEncounterDatabase,
 ) -> Result<(), GameError> {
-    let ledger = monolith.remanifestation(node_id);
-    let is_monolith_role = difficulty.is_some_and(|difficulty| {
-        matches!(
-            difficulty.class,
-            MapNodeCombatDifficultyClass::Role(
-                crate::game::data::run_policy_data::CombatNodeDifficultyRole::MonolithRemanifestation
-            )
-        )
-    });
-    let typed_stage = difficulty.and_then(|difficulty| difficulty.monolith_stage);
-    match (is_monolith_role, typed_stage, ledger) {
+    let ledger = revival.nodes.get(&node_id);
+    let role = difficulty.is_some_and(|d| matches!(d.class, MapNodeCombatDifficultyClass::Role(crate::game::data::run_policy_data::CombatNodeDifficultyRole::Revival)));
+    match (role, difficulty.and_then(|d| d.revival), ledger) {
         (false, None, None) => Ok(()),
-        (true, Some(stage), Some(ledger)) if stage.as_u8() == ledger.stage => Ok(()),
-        _ => Err(GameError::InvalidStaticData(format!(
-            "monolith difficulty authority for node '{}' does not match its ledger",
-            node_id.0
-        ))),
+        (true, Some(tuning), Some(ledger)) => {
+            let authored = data.reward_sources.iter().find(|s| s.reward_source_id == ledger.reward_source_id)
+                .and_then(|s| s.revival.as_ref()).map(|p| p.stage(ledger.stage));
+            if tuning.stage == ledger.stage && authored.is_some_and(|p| p.stat_multiplier_percent == tuning.stat_multiplier_percent) { Ok(()) }
+            else { Err(GameError::InvalidStaticData("revival node tuning differs from its source".into())) }
+        }
+        _ => Err(GameError::InvalidStaticData(format!("revival difficulty for node '{}' does not match its ledger", node_id.0))),
     }
 }
 
@@ -180,6 +175,15 @@ impl GameCore {
         &self,
         map: &RunMap,
     ) -> Result<crate::game::map::FacilityTemplate, GameError> {
+        self.facility_template_for_map_ref(map).cloned()
+    }
+
+    /// Borrow the publication's template after the same lookup/version checks
+    /// used by callers that need an owned copy across state transitions.
+    pub(super) fn facility_template_for_map_ref(
+        &self,
+        map: &RunMap,
+    ) -> Result<&crate::game::map::FacilityTemplate, GameError> {
         let template = self
             .game_data
             .map_catalogs
@@ -199,13 +203,14 @@ impl GameCore {
                 template.version
             )));
         }
-        Ok(template.clone())
+        Ok(template)
     }
 
     pub(super) fn current_map_view(&self) -> Result<MapViewDto, GameError> {
         let run = self.run_state()?;
-        let template = self.facility_template_for_map(&run.map)?;
-        let mut view = run.map_progression.view(&run.map, &template);
+        let template = self.facility_template_for_map_ref(&run.map)?;
+        let mut view = run.map_progression.view(&run.map, template);
+        self.conceal_current_facility_encounters(&mut view);
         let certified = crate::game::combat_power::certified_combat_power_for_roster(
             &self.state.roster,
             &self.state.inventory,
@@ -239,6 +244,9 @@ impl GameCore {
                 .push(crate::game::map::CombatReadinessWarningDto::CriticalPhysicalDamage);
         }
         for node in &mut view.nodes {
+            if let Some(source) = run.map.node(node.id) {
+                node.entry_preview = Some(self.node_entry_preview(source)?);
+            }
             let Some(target_power) = run
                 .map
                 .node(node.id)
@@ -314,21 +322,27 @@ impl GameCore {
             self.run_policy(),
             self.state.run_power_authority.current_floor_power_anchor,
             FacilityGenerationRequirements {
-                guarantee_reachable_shop: encounter_progression
-                    .monolith
-                    .next_floor_shop_guarantee_pending,
+                guarantee_reachable_shop: false,
             },
         )
         .expect("validated live facility data must generate the current Floor");
         let mut run_map = generated.map;
-        map_encounters::assign_map_encounters(
+        let excluded = generated.facility_run_state.rooms.as_ref().map(|state| {
+            let layout = self.game_data.map_catalogs.facility_templates.layouts.iter().find(|l|l.id == state.layout_id).expect("validated layout");
+            state.activity_metadata.iter().filter(|(_,m)|layout.activity(&m.activity_id).is_some_and(|a| !a.support.is_supported())).map(|(id,_)|*id).collect()
+        }).unwrap_or_default();
+        map_encounters::assign_map_encounters_excluding(
             &self.game_data.pve_data,
             &mut run_map,
             run_progression,
             encounter_progression,
             self.run_policy(),
+            &excluded,
         );
         let mut progression = MapProgression::from_map(&run_map);
+        if generated.facility_run_state.rooms.is_some() {
+            return (run_map,progression,generated.facility_run_state);
+        }
         force_boss_node_if_ready(
             &mut run_map,
             &mut progression,
@@ -364,12 +378,14 @@ impl GameCore {
         node_id: MapNodeId,
     ) -> Result<BehaviorResult, GameError> {
         self.validate_select_map_node(node_id)?;
+        self.validate_facility_node_entry(node_id)?;
         let run = self.run_state()?;
         let node = run.map.node(node_id).ok_or(GameError::InvalidAction)?;
-        let enter_result = MapNodeExecutor::enter(node);
+        let mut enter_result = MapNodeExecutor::enter(node);
         let combat_preview = self.combat_preview_for_node(node_id)?;
-        let trauma_recovery_preview =
-            self.trauma_recovery_preview_for_category(enter_result.category)?;
+        let trauma_recovery_preview = if enter_result.category == MapNodeCategory::Gate && self.facility_layout().is_some() { None } else {
+            self.trauma_recovery_preview_for_category(enter_result.category)?
+        };
         self.state.node_session = Some(enter_result.session.clone());
         self.transition_to(GameState::NodeConfirm {
             node_id,
@@ -377,6 +393,8 @@ impl GameCore {
             category: enter_result.category,
         })?;
 
+        enter_result.session = self.facility_session_view(enter_result.session);
+        enter_result.payload = enter_result.session.payload.clone();
         Ok(BehaviorResult::NodePreview {
             node_id: enter_result.node_id,
             kind_id: enter_result.kind_id,
@@ -395,208 +413,10 @@ impl GameCore {
         self.handle_request_map_data()
     }
 
-    pub(super) fn monolith_conversion_snapshot(&self) -> Option<MonolithConversionSnapshotDto> {
-        let GameState::NodeConfirm { node_id, .. } = self.state.lifecycle.phase() else {
-            return None;
-        };
-        let node_id = *node_id;
-        let run = self.state.run.as_ref()?;
-        if run.run_progression.game_mode != crate::game::map::GameMode::Endless {
-            return None;
-        }
-        let node = run.map.node(node_id)?;
-        if node.state != MapNodeState::Available
-            || node.category != MapNodeCategory::Combat
-            || node.kind_id.as_str().contains("elite")
-            || node.omen.is_some()
-            || run.monolith.remanifestation(node_id).is_some()
-        {
-            return None;
-        }
-        let MapNodePayload::Encounter {
-            encounter_id: Some(encounter_id),
-        } = &node.payload
-        else {
-            return None;
-        };
-        if self
-            .game_data
-            .pve_data
-            .encounters
-            .iter()
-            .find(|encounter| encounter.id == *encounter_id)
-            .is_none_or(|encounter| {
-                encounter.encounter_class != crate::game::data::pve_data::PveEncounterClass::Normal
-            })
-        {
-            return None;
-        }
-
-        let policy = &self.run_policy().monolith;
-        let mut options = run
-            .monolith
-            .progress_by_abnormality
-            .iter()
-            .filter(|(_, progress)| progress.next_stage().is_some() && progress.uses_remaining > 0)
-            .filter_map(|(abnormality_id, progress)| {
-                let metadata = self.game_data.abnormality_data.get_by_id(abnormality_id)?;
-                self.monolith_elite_encounter_id(abnormality_id)?;
-                let next_stage = progress.next_stage()?;
-                let disabled_reason = progress.active_node_id.and_then(|active_node_id| {
-                    run.map
-                        .node(active_node_id)
-                        .map(|active_node| format!("진행 중: {}", active_node.slot_id.as_str()))
-                });
-                Some(MonolithConversionOptionDto {
-                    abnormality_id: abnormality_id.clone(),
-                    abnormality_uuid: metadata.uuid,
-                    display_name: metadata.name.clone(),
-                    risk_level: metadata.risk_level,
-                    enabled: progress.is_usable(),
-                    disabled_reason,
-                    next_stage,
-                    uses_before: progress.uses_remaining,
-                    uses_after: progress.uses_remaining.saturating_sub(1),
-                    max_attempts: policy.remanifestation_max_attempts,
-                    reward_tier: match next_stage {
-                        2 => MonolithRewardTierDto::Enhanced,
-                        3 => MonolithRewardTierDto::FinalEnhanced,
-                        _ => return None,
-                    },
-                })
-            })
-            .collect::<Vec<_>>();
-        options.sort_by(|left, right| {
-            right
-                .next_stage
-                .cmp(&left.next_stage)
-                .then_with(|| left.display_name.cmp(&right.display_name))
-                .then_with(|| left.abnormality_id.cmp(&right.abnormality_id))
-        });
-        let enabled_count = options.iter().filter(|option| option.enabled).count();
-        (enabled_count > 0).then(|| MonolithConversionSnapshotDto {
-            action_label: format!("모노리스 사용 ({enabled_count})"),
-            node_id,
-            options,
-        })
-    }
-
-    pub(super) fn monolith_remanifestation_snapshot(
-        &self,
-    ) -> Option<MonolithRemanifestationSnapshotDto> {
-        let GameState::NodeConfirm { node_id, .. } = self.state.lifecycle.phase() else {
-            return None;
-        };
-        let node_id = *node_id;
-        let run = self.state.run.as_ref()?;
-        let remanifestation = run.monolith.remanifestation(node_id)?;
-        let metadata = self
-            .game_data
-            .abnormality_data
-            .get_by_id(&remanifestation.abnormality_id)?;
-        let policy = &self.run_policy().monolith;
-        let stage = MonolithRemanifestationStage::try_from(remanifestation.stage).ok()?;
-        Some(MonolithRemanifestationSnapshotDto {
-            abnormality_id: remanifestation.abnormality_id.clone(),
-            abnormality_uuid: metadata.uuid,
-            display_name: metadata.name.clone(),
-            risk_level: metadata.risk_level,
-            stage: remanifestation.stage,
-            max_attempts: policy.remanifestation_max_attempts,
-            reward_tier: match stage {
-                MonolithRemanifestationStage::Stage2 => MonolithRewardTierDto::Enhanced,
-                MonolithRemanifestationStage::Stage3 => MonolithRewardTierDto::FinalEnhanced,
-            },
-        })
-    }
-
-    fn monolith_elite_encounter_id(&self, abnormality_id: &str) -> Option<String> {
-        self.game_data
-            .pve_data
-            .encounters
-            .iter()
-            .filter(|encounter| {
-                encounter.encounter_class == crate::game::data::pve_data::PveEncounterClass::Elite
-                    && encounter.primary_abnormality_id() == Some(abnormality_id)
-            })
-            .map(|encounter| encounter.id.clone())
-            .min()
-    }
-
-    pub(super) fn handle_convert_map_node_with_monolith(
-        &mut self,
-        node_id: MapNodeId,
-        abnormality_id: &str,
-    ) -> Result<BehaviorResult, GameError> {
-        self.with_state_transaction(|core| {
-            let projection = core
-                .monolith_conversion_snapshot()
-                .ok_or(GameError::InvalidAction)?;
-            if projection.node_id != node_id
-                || !projection
-                    .options
-                    .iter()
-                    .any(|option| option.enabled && option.abnormality_id == abnormality_id)
-            {
-                return Err(GameError::InvalidAction);
-            }
-            let encounter_id = core
-                .monolith_elite_encounter_id(abnormality_id)
-                .ok_or(GameError::InvalidAction)?;
-            let mut map = core.run_state()?.map.clone();
-            let mut monolith = core.run_state()?.monolith.clone();
-            let remanifestation = monolith
-                .begin_remanifestation(node_id, abnormality_id, &encounter_id)
-                .map_err(|_| GameError::InvalidAction)?;
-            let node = map.node_mut(node_id).ok_or(GameError::InvalidAction)?;
-            node.payload = MapNodePayload::Encounter {
-                encounter_id: Some(encounter_id),
-            };
-            let difficulty = node
-                .combat_difficulty
-                .as_mut()
-                .ok_or(GameError::InvalidAction)?;
-            difficulty.class = MapNodeCombatDifficultyClass::Role(
-                crate::game::data::run_policy_data::CombatNodeDifficultyRole::MonolithRemanifestation,
-            );
-            difficulty.monolith_stage = Some(
-                MonolithRemanifestationStage::try_from(remanifestation.stage)
-                    .map_err(|_| GameError::InvalidAction)?,
-            );
-            let tuning = core
-                .run_policy()
-                .resolved_tuning_for_manifested_node(difficulty)
-                .ok_or(GameError::InvalidAction)?;
-            difficulty.target_power = percent_of_anchor_ceil(
-                difficulty.floor_power_anchor,
-                tuning.target_power_percent,
-            );
-            let enter_result = MapNodeExecutor::enter(node);
-            {
-                let run = core.run_state_mut()?;
-                run.map = map;
-                run.monolith = monolith;
-                run.combat_previews.remove(&node_id);
-                run.abnormality_attempts.remove(&node_id);
-            }
-            core.state.node_session = Some(enter_result.session.clone());
-            core.transition_to(GameState::NodeConfirm {
-                node_id,
-                kind_id: enter_result.kind_id.clone(),
-                category: enter_result.category,
-            })?;
-            let combat_preview = core.combat_preview_for_node(node_id)?;
-            Ok(BehaviorResult::NodePreview {
-                node_id,
-                kind_id: enter_result.kind_id,
-                category: enter_result.category,
-                payload: enter_result.payload,
-                session: enter_result.session,
-                map: core.current_map_view()?,
-                combat_preview,
-                trauma_recovery_preview: None,
-            })
-        })
+    pub(super) fn monolith_conversion_snapshot(&self) -> Option<MonolithConversionSnapshotDto> { None }
+    pub(super) fn monolith_remanifestation_snapshot(&self) -> Option<RevivalSnapshotDto> { None }
+    pub(super) fn handle_convert_map_node_with_monolith(&mut self, _node_id: MapNodeId, _abnormality_id: &str) -> Result<BehaviorResult, GameError> {
+        Err(Self::retired_encounter_action(crate::game::behavior::ActionKind::ConvertMapNodeWithMonolith))
     }
 
     pub(super) fn handle_confirm_enter_node(&mut self) -> Result<BehaviorResult, GameError> {
@@ -604,10 +424,15 @@ impl GameCore {
     }
 
     fn handle_confirm_enter_node_inner(&mut self) -> Result<BehaviorResult, GameError> {
+        self.handle_confirm_enter_node_resuming(false)
+    }
+
+    pub(super) fn handle_confirm_enter_node_resuming(&mut self, resumed: bool) -> Result<BehaviorResult, GameError> {
         let node_id = match self.get_state() {
             GameState::NodeConfirm { node_id, .. } => node_id,
             _ => return Err(GameError::InvalidAction),
         };
+        self.validate_facility_node_entry(node_id)?;
         let mut map = self.run_state()?.map.clone();
         let mut progression = self.run_state()?.map_progression.clone();
         let node = map.node(node_id).ok_or(GameError::InvalidAction)?;
@@ -618,6 +443,19 @@ impl GameCore {
             if let Some(result) = self.block_or_fail_undeployable_combat_selection()? {
                 return Ok(result);
             }
+        }
+        // Preserve the pre-entry continuation before cost/death or exhaustion choice.
+        self.capture_expedition_entry_for_continue(node_id)?;
+        let living_before_entry = self.state.roster.iter().filter(|employee| employee.is_alive()).count();
+        let pending_choice = !resumed && self.prepare_expedition_node_entry(node_id)?;
+        if self.state.roster.iter().filter(|employee| employee.is_alive()).count() < living_before_entry {
+            if let Some(reason) = self.reassess_combat_recovery()? {
+                self.run_state_mut()?.run_progression.pending_continuation = None;
+                return self.fail_run(reason);
+            }
+        }
+        if pending_choice {
+            return self.handle_request_map_data();
         }
         let battle_entry_snapshot = matches!(
             node.category,
@@ -647,7 +485,7 @@ impl GameCore {
         let entered_category = enter_result.category;
         let entered_payload = enter_result.payload.clone();
         if entered_category == MapNodeCategory::Gate {
-            return self.handle_confirmed_gate_transition(node_id);
+            return self.handle_confirmed_gate_transition(node_id, resumed);
         }
         self.transition_to(GameState::InNode {
             node_id,
@@ -706,7 +544,9 @@ impl GameCore {
     fn handle_confirmed_gate_transition(
         &mut self,
         node_id: MapNodeId,
+        resumed: bool,
     ) -> Result<BehaviorResult, GameError> {
+        let recovery_restricted = self.has_combat_recovery_restriction();
         let mut map = self.run_state()?.map.clone();
         let mut progression = self.run_state()?.map_progression.clone();
         if progression.current_node_id != Some(node_id) {
@@ -721,6 +561,15 @@ impl GameCore {
             .complete_current_node(&mut map, &template)
             .map_err(|_| GameError::InvalidAction)?;
 
+        if self.run_state()?.facility_run_state.rooms.is_some() {
+            let run = self.run_state_mut()?;
+            run.map = map;
+            run.map_progression = progression;
+            self.state.node_session = None;
+            self.state.active_node_content = None;
+            self.transition_to(GameState::ViewingMap)?;
+            return self.handle_request_map_data();
+        }
         let mut run_progression = self.run_state()?.run_progression.clone();
         if !run_progression.advance_floor() {
             return Err(GameError::InvalidAction);
@@ -735,10 +584,8 @@ impl GameCore {
         );
         let next_template = self.facility_template_for_map(&next_map)?;
         let view = next_progression.view(&next_map, &next_template);
-        self.advance_employee_psychology_node()?;
         self.apply_staged_recovery_effect(StagedRecoveryEffect::GateTransition)?;
-        self.complete_employee_breakdown_node()?;
-        if run_progression.game_mode == crate::game::map::GameMode::Endless {
+        if run_progression.game_mode == crate::game::map::GameMode::Expedition {
             let completed_streak = self.run_state_mut()?.record_progress.complete_floor();
             self.state
                 .player_profile
@@ -747,7 +594,7 @@ impl GameCore {
                 .player_profile
                 .record_floor_reached(run_progression.floor_index().saturating_add(1));
         }
-        let mut next_run = {
+        let next_run = {
             let previous_run = self.run_state()?;
             RunState::for_next_floor_from(
                 previous_run,
@@ -758,17 +605,23 @@ impl GameCore {
             )?
             .with_facility_run_state(facility_run_state)
         };
-        next_run.monolith.consume_next_floor_shop_guarantee();
         self.state.run = Some(next_run);
         self.state.node_session = None;
         self.state.active_node_content = None;
         self.transition_to(GameState::ViewingMap)?;
 
-        Ok(BehaviorResult::FloorAdvanced {
+        let result = BehaviorResult::FloorAdvanced {
             game_mode: run_progression.game_mode,
             floor_index: run_progression.floor_index(),
             map: view,
-        })
+        };
+        if recovery_restricted {
+            if let Some(reason) = self.reassess_combat_recovery()? {
+                if resumed { return Err(GameError::InvalidAction); }
+                return self.fail_run(reason);
+            }
+        }
+        Ok(result)
     }
 
     pub(super) fn handle_complete_node(&mut self) -> Result<BehaviorResult, GameError> {
@@ -1026,7 +879,30 @@ impl GameCore {
                 run_progression,
                 view,
                 recovery_effect,
+                false,
             ),
+        }
+    }
+
+    pub(super) fn commit_live_combat_result_node_completion(
+        &mut self,
+        completion: CombatResultNodeCompletion,
+    ) -> Result<BehaviorResult, GameError> {
+        match completion {
+            CombatResultNodeCompletion::RunComplete {
+                map,
+                progression,
+                run_progression,
+                view,
+            } => self.commit_run_complete_with_recovery(
+                map,
+                progression,
+                run_progression,
+                view,
+                StagedRecoveryEffect::None,
+                true,
+            ),
+            completion => self.commit_combat_result_node_completion(completion),
         }
     }
 
@@ -1107,21 +983,10 @@ impl GameCore {
                     .template(&run.map.map_template_id)
                     .expect("committed run map template must remain live");
                 view = run.map_progression.view(&run.map, template);
-                run.clear_abnormality_attempt(node_id);
-                // A relic selection receipt belongs to this floor's authored
-                // Event even after completion. Keep it for durable restoration
-                // and later legal dismantling; the existing next-floor and
-                // terminal constructors still retire floor-local sessions.
-                if !run
-                    .event_sessions
-                    .get(&node_id)
-                    .is_some_and(|session| session.has_relic_history())
-                {
-                    run.event_sessions.remove(&node_id);
-                }
+                run.retire_completed_node_setup(node_id);
             }
             run.boss_omen = boss_omen;
-            if run.run_progression.game_mode == crate::game::map::GameMode::Endless {
+            if run.run_progression.game_mode == crate::game::map::GameMode::Expedition {
                 completed_all_live_final_bosses = Some(run.boss_omen.clone());
             }
         }
@@ -1130,12 +995,11 @@ impl GameCore {
                 .player_profile
                 .refresh_all_live_final_bosses_defeated(game_data.as_ref(), boss_omen);
         }
-        self.advance_employee_psychology_node()?;
         self.apply_staged_recovery_effect(recovery_effect)?;
-        self.complete_employee_breakdown_node()?;
         self.state.node_session = None;
         self.state.active_node_content = None;
         self.transition_to(GameState::ViewingMap)?;
+        view = self.current_map_view()?;
         let completion = BehaviorResult::NodeCompleted {
             map: view,
             outcome: None,
@@ -1158,7 +1022,7 @@ impl GameCore {
         view: MapViewDto,
         recovery_effect: StagedRecoveryEffect,
     ) -> Result<BehaviorResult, GameError> {
-        if run_progression.game_mode == crate::game::map::GameMode::Endless {
+        if run_progression.game_mode == crate::game::map::GameMode::Expedition {
             let completed_streak = self.run_state_mut()?.record_progress.complete_floor();
             self.state
                 .player_profile
@@ -1179,9 +1043,7 @@ impl GameCore {
             .with_facility_run_state(facility_run_state)
         };
         self.state.run = Some(next_run);
-        self.advance_employee_psychology_node()?;
         self.apply_staged_recovery_effect(recovery_effect)?;
-        self.complete_employee_breakdown_node()?;
         self.state.node_session = None;
         self.state.active_node_content = None;
         self.transition_to(GameState::ViewingMap)?;
@@ -1206,6 +1068,7 @@ impl GameCore {
             run_progression,
             view,
             StagedRecoveryEffect::None,
+            false,
         )
     }
 
@@ -1216,22 +1079,20 @@ impl GameCore {
         run_progression: RunProgression,
         view: MapViewDto,
         recovery_effect: StagedRecoveryEffect,
+        defer_terminal_settlement: bool,
     ) -> Result<BehaviorResult, GameError> {
-        if run_progression.game_mode == crate::game::map::GameMode::Standard {
-            self.state.player_profile.standard_tutorial_completed = true;
-        }
         let completed_run = {
             let previous_run = self.run_state()?;
             RunState::for_run_complete_from(previous_run, map, progression, run_progression)?
         };
         self.state.run = Some(completed_run);
-        self.advance_employee_psychology_node()?;
         self.apply_staged_recovery_effect(recovery_effect)?;
-        self.complete_employee_breakdown_node()?;
         self.state.node_session = None;
         self.state.active_node_content = None;
+        if !defer_terminal_settlement {
+            self.settle_expedition_terminal(false)?;
+        }
         self.transition_to(GameState::RunComplete)?;
-        self.save_completion_checkpoint_if_needed(recovery_effect)?;
         Ok(BehaviorResult::RunComplete { map: view })
     }
 
@@ -1246,7 +1107,7 @@ impl GameCore {
     }
 
     pub(super) fn reconcile_employee_breakdown(&mut self) {
-        let limit = self.run_policy().corrosion.breakdown_collapse_node_limit;
+        let limit = self.run_policy().corrosion.breakdown_collapse_cost_limit;
         let node = self
             .state
             .node_session
@@ -1256,8 +1117,8 @@ impl GameCore {
             employee.reconcile_breakdown(limit, node);
         }
     }
-    fn complete_employee_breakdown_node(&mut self) -> Result<(), GameError> {
-        let limit = self.run_policy().corrosion.breakdown_collapse_node_limit;
+    pub(super) fn consume_employee_breakdown_entry_cost(&mut self, cost: u32) -> Result<(), GameError> {
+        let limit = self.run_policy().corrosion.breakdown_collapse_cost_limit;
         let node = self
             .state
             .node_session
@@ -1268,19 +1129,13 @@ impl GameCore {
         let mut fragments =
             crate::authoring::clone_shape::controlled_clone(&self.state.skill_fragments)?;
         for employee in roster.iter_mut() {
-            employee.complete_breakdown_node(limit, node);
+            employee.consume_breakdown_entry_cost(limit, cost, node);
         }
         self.recover_assets_for_new_deaths(&mut roster, &mut inventory, &mut fragments)?;
         self.state.roster = roster;
         self.state.inventory = inventory;
         self.state.skill_fragments = fragments;
-        Ok(())
-    }
-
-    fn advance_employee_psychology_node(&mut self) -> Result<(), GameError> {
-        for employee in self.roster_mut()?.iter_mut() {
-            employee.psychology.advance_node();
-        }
+        self.reconcile_relic_loadouts()?;
         Ok(())
     }
 
@@ -1313,12 +1168,7 @@ impl GameCore {
             .payload
             .as_ref()
             .ok_or(GameError::InvalidAction)?;
-        crate::game::resource::store::preflight_resource_clone(&payload.typed_resources)
-            .map_err(crate::game::resource::store::ResourceError::into_game_error)?;
-        payload.relics.preflight_clone()?;
-        payload.uuid_manager.preflight_relic_stream_clone()?;
-        payload.preflight_relic_history_clone()?;
-        let payload = crate::authoring::clone_shape::controlled_clone(payload)?;
+        let payload = payload.copy_owned()?;
         self.validate_run_checkpoint_payload(&payload)?;
         if self.state.run_checkpoint.loads_used >= RUN_CHECKPOINT_MAX_LOADS {
             return Err(GameError::InvalidAction);
@@ -1333,7 +1183,7 @@ impl GameCore {
         &mut self,
         payload: RunCheckpointPayload,
     ) -> Result<(), GameError> {
-        payload.restore_into_state(&mut self.state);
+        payload.restore_into_state(&mut self.state)?;
         self.transition_to(GameState::ViewingMap)?;
         Ok(())
     }
@@ -1352,6 +1202,7 @@ impl GameCore {
         &self,
         payload: &RunCheckpointPayload,
     ) -> Result<(), GameError> {
+        if payload.run_progression.pending_continuation.is_some() { return Err(GameError::InvalidAction); }
         self.validate_run_checkpoint_payload_with_seed(payload, Some(self.run_seed))
     }
 
@@ -1373,13 +1224,39 @@ impl GameCore {
                     .to_string(),
             ));
         }
-        if payload.run_progression.run_seed != payload.uuid_manager.run_seed()
+        if payload.run_progression.instance_namespace != payload.uuid_manager.instance_namespace()
+            || payload.run_progression.run_seed != payload.uuid_manager.run_seed()
             || expected_run_seed
                 .is_some_and(|run_seed| run_seed != payload.run_progression.run_seed)
         {
             return Err(GameError::InvalidStaticData(
                 "run checkpoint seed authority is inconsistent".to_string(),
             ));
+        }
+        if expected_run_seed.is_some() && self.state.run.as_ref().is_some_and(|run|
+            run.run_progression.instance_namespace != payload.run_progression.instance_namespace) {
+            return Err(GameError::InvalidAction);
+        }
+        if payload.run_progression.game_mode == crate::game::map::GameMode::Expedition {
+            if self.state.player_profile.lifecycle.active_expedition != payload.run_progression.expedition_instance {
+                return Err(GameError::InvalidAction);
+            }
+            self.state.player_profile.lifecycle.vault.validate_active_ownership(&payload.inventory, &payload.skill_fragments)
+                .map_err(GameError::InvalidStaticData)?;
+        }
+        // Victory refills can legitimately exceed the initial supply. Apply the
+        // same bound to current and SavePoint snapshots using their own ledger.
+        let collected_refill = payload.facility_run_state.rooms.as_ref()
+            .and_then(|rooms| rooms.golden_boughs.as_ref())
+            .map_or(0, |gold| (gold.collected.len() as u64)
+                .saturating_mul(u64::from(gold.deterrence_refill)));
+        let supplied_deterrence = u64::from(self.run_policy().expedition_deterrence_initial)
+            .saturating_add(collected_refill);
+        if u64::from(payload.run_progression.deterrence) > supplied_deterrence
+            || payload.run_progression.entry_receipts.iter().any(|id| payload.facility_run_state.node(&payload.map, *id).is_none_or(|node|
+                matches!(node.category, MapNodeCategory::Start | MapNodeCategory::Gate)
+                    || node.state == MapNodeState::Locked)) {
+            return Err(GameError::InvalidAction);
         }
         if !payload
             .run_progression
@@ -1398,10 +1275,11 @@ impl GameCore {
         }
         if payload.map.nodes.iter().any(|node| {
             let Some(difficulty) = node.combat_difficulty.as_ref() else {
-                return validate_monolith_difficulty_authority(
+                return validate_revival_difficulty_authority(
                     node.id,
                     None,
-                    &payload.encounter_progression.monolith,
+                    &payload.encounter_progression.revival,
+                    &self.game_data.pve_data,
                 )
                 .is_err();
             };
@@ -1419,7 +1297,6 @@ impl GameCore {
                 || if authored_fixed {
                     difficulty.floor_power_anchor != payload.current_floor_power_anchor
                         || difficulty.target_power != 0
-                        || difficulty.monolith_stage.is_some()
                 } else {
                     difficulty.floor_power_anchor != payload.current_floor_power_anchor
                         || difficulty.target_power
@@ -1428,10 +1305,11 @@ impl GameCore {
                                 tuning.target_power_percent,
                             )
                 }
-                || validate_monolith_difficulty_authority(
+                || validate_revival_difficulty_authority(
                     node.id,
                     Some(difficulty),
-                    &payload.encounter_progression.monolith,
+                    &payload.encounter_progression.revival,
+                    &self.game_data.pve_data,
                 )
                 .is_err()
         }) {
@@ -1439,6 +1317,7 @@ impl GameCore {
                 "run checkpoint map difficulty does not match its power authority".to_string(),
             ));
         }
+        self.validate_facility_checkpoint(payload)?;
         let template = self.facility_template_for_map(&payload.map)?;
         payload
             .map
@@ -1459,7 +1338,7 @@ impl GameCore {
         self.validate_run_checkpoint_economy_graph(payload)?;
         for (node_id, session) in &payload.event_sessions {
             if session.has_relic_history() {
-                let node = payload.map.node(*node_id).ok_or_else(|| {
+                let node = payload.facility_run_state.node(&payload.map, *node_id).ok_or_else(|| {
                     GameError::InvalidStaticData("relic Event session node is missing".into())
                 })?;
                 if session.node_id != *node_id
@@ -1474,7 +1353,7 @@ impl GameCore {
             }
         }
         if payload.abnormality_attempts.iter().any(|(node, attempt)| {
-            payload.map.node(*node).is_none()
+            payload.facility_run_state.node(&payload.map, *node).is_none()
                 || attempt.retreats_used > 2
                 || attempt.max_attempts != 3
                 || attempt.attempts_started > 3
@@ -1520,35 +1399,14 @@ impl GameCore {
             .encounter_progression
             .boss_omen
             .validate_checkpoint_state(self.game_data.as_ref(), |node_id| {
-                payload.map.node(node_id).is_some()
+                payload.facility_run_state.node(&payload.map, node_id).is_some()
             })
             .map_err(GameError::InvalidStaticData)?;
-        payload
-            .encounter_progression
-            .monolith
-            .validate_checkpoint_state(
-                self.run_policy().monolith.initial_uses,
-                self.run_policy().monolith.residual_exchange_threshold,
-                |node_id| payload.map.node(node_id).is_some(),
-                |abnormality_id| {
-                    self.game_data.pve_data.encounters.iter().any(|encounter| {
-                        encounter.encounter_class
-                            == crate::game::data::pve_data::PveEncounterClass::Elite
-                            && encounter.primary_abnormality_id() == Some(abnormality_id)
-                    })
-                },
-                |encounter_id, abnormality_id| {
-                    self.game_data
-                        .pve_data
-                        .get_by_id(encounter_id)
-                        .is_some_and(|encounter| {
-                            encounter.encounter_class
-                                == crate::game::data::pve_data::PveEncounterClass::Elite
-                                && encounter.primary_abnormality_id() == Some(abnormality_id)
-                        })
-                },
-            )
-            .map_err(GameError::InvalidStaticData)?;
+        for node_id in payload.encounter_progression.revival.nodes.keys() {
+            if payload.facility_run_state.node(&payload.map, *node_id).is_none() {
+                return Err(GameError::InvalidStaticData("hatched node is missing from its floor".into()));
+            }
+        }
         Ok(())
     }
 
@@ -1557,6 +1415,7 @@ impl GameCore {
         payload: &RunCheckpointPayload,
     ) -> Result<(), GameError> {
         let invalid = |message: &'static str| GameError::InvalidStaticData(message.to_string());
+        payload.credit_ledgers.validate(&payload.skill_fragments)?;
         let resource_owners = super::resource_runtime::resource_owners(
             &self.game_data.resource_data,
             &payload.roster,
@@ -1625,13 +1484,13 @@ impl GameCore {
                     !employee.is_alive() || !employee.condition.is_breakdown()
                 }
                 crate::game::employee::BreakdownCounter::Active {
-                    remaining_nodes, ..
+                    remaining_cost, ..
                 } => {
                     employee.is_alive()
                         && employee.condition.is_breakdown()
-                        && remaining_nodes > 0
-                        && remaining_nodes
-                            <= self.run_policy().corrosion.breakdown_collapse_node_limit
+                        && remaining_cost > 0
+                        && remaining_cost
+                            <= self.run_policy().corrosion.breakdown_collapse_cost_limit
                 }
             };
             if !coherent
@@ -1650,14 +1509,31 @@ impl GameCore {
             )
             .map_err(|_| invalid("run checkpoint equipment or fragment graph is inconsistent"))?;
             if let Some(id) = employee.skill_fragments.active_copy_uuid() {
+                use crate::game::data::skill_fragment_data::SkillFragmentCompatibilityFailureCode;
+
                 let (copy, metadata, _) = payload
                     .skill_fragments
                     .resolve(&id, &self.game_data.skill_fragment_data)
                     .map_err(|_| invalid("run checkpoint fragment copy invalid"))?;
-                if !metadata
+                let report = metadata
                     .form_compatibility_report(&copy.selected_form, &profile)
-                    .is_some_and(|r| r.is_compatible)
-                {
+                    .ok_or_else(|| invalid("run checkpoint fragment form is incompatible"))?;
+                // Public weapon removal preserves the active fragment. Its
+                // missing weapon (including base block capacity) is a durable
+                // loadout intermediate, while every other failure stays invalid.
+                let weaponless_intermediate = !employee.has_equipped_weapon()
+                    && profile.weapon_profile.is_none()
+                    && report
+                        .failure_codes
+                        .contains(&SkillFragmentCompatibilityFailureCode::WeaponRequired)
+                    && report.failure_codes.iter().all(|failure| {
+                        matches!(
+                            failure,
+                            SkillFragmentCompatibilityFailureCode::WeaponRequired
+                                | SkillFragmentCompatibilityFailureCode::BlockCapacityTooLow
+                        )
+                    });
+                if !report.is_compatible && !weaponless_intermediate {
                     return Err(invalid("run checkpoint fragment form is incompatible"));
                 }
             }
@@ -1665,61 +1541,39 @@ impl GameCore {
         Ok(())
     }
 
-    pub(super) fn validate_live_monolith_difficulty_authority(
+    pub(super) fn validate_live_revival_difficulty_authority(
         &self,
         node_id: MapNodeId,
         difficulty: Option<&crate::game::map::MapNodeCombatDifficulty>,
     ) -> Result<(), GameError> {
-        validate_monolith_difficulty_authority(node_id, difficulty, &self.run_state()?.monolith)
+        validate_revival_difficulty_authority(node_id, difficulty, &self.run_state()?.revival, &self.game_data.pve_data)
     }
 }
 
 #[cfg(test)]
-mod monolith_difficulty_authority_tests {
+mod revival_difficulty_authority_tests {
     use super::*;
-    use crate::game::monolith::{MonolithRemanifestationNode, MonolithRunState};
-
-    fn difficulty(
-        stage: Option<MonolithRemanifestationStage>,
-    ) -> crate::game::map::MapNodeCombatDifficulty {
-        crate::game::map::MapNodeCombatDifficulty {
-            power_model_version: 2,
-            difficulty_profile_id: "default_facility".to_string(),
-            class: MapNodeCombatDifficultyClass::Role(
-                crate::game::data::run_policy_data::CombatNodeDifficultyRole::MonolithRemanifestation,
-            ),
-            monolith_stage: stage,
-            floor_power_anchor: 100,
-            target_power: 220,
-        }
-    }
-
     #[test]
-    fn typed_monolith_stage_must_match_ledger_stage() {
+    fn u17_each_authored_stage_round_trips_with_its_node_identity() {
+        let data = crate::game::data::ValidatedGameData::load_live_embedded().unwrap();
+        let source = data.pve_data.reward_sources.iter().find(|s| s.revival.is_some()).unwrap();
+        let policy = source.revival.as_ref().unwrap();
         let node_id = MapNodeId::new(uuid::Uuid::from_u128(7));
-        let mut monolith = MonolithRunState::default();
-        monolith.remanifestation_nodes.insert(
-            node_id,
-            MonolithRemanifestationNode {
-                abnormality_id: "abno".to_string(),
-                encounter_id: "elite_abno".to_string(),
-                stage: 2,
-            },
-        );
-
-        assert!(validate_monolith_difficulty_authority(
-            node_id,
-            Some(&difficulty(Some(MonolithRemanifestationStage::Stage2))),
-            &monolith,
-        )
-        .is_ok());
-        assert!(validate_monolith_difficulty_authority(
-            node_id,
-            Some(&difficulty(Some(MonolithRemanifestationStage::Stage3))),
-            &monolith,
-        )
-        .is_err());
-        assert!(validate_monolith_difficulty_authority(node_id, None, &monolith).is_err());
+        for stage in [RevivalStage::Stage2, RevivalStage::Stage3] {
+            let mut revival = crate::game::revival::RevivalRunState::default();
+            revival.eggs.insert(source.reward_source_id.clone(), stage);
+            revival.hatch(node_id, &source.reward_source_id, stage, Default::default()).unwrap();
+            let difficulty = crate::game::map::MapNodeCombatDifficulty {
+                power_model_version: data.run_policy.combat_difficulty.power_model_version,
+                difficulty_profile_id: "default_facility".into(),
+                class: MapNodeCombatDifficultyClass::Role(crate::game::data::run_policy_data::CombatNodeDifficultyRole::Revival),
+                revival: Some(crate::game::revival::RevivalNodeTuning { stage, stat_multiplier_percent: policy.stage(stage).stat_multiplier_percent }),
+                floor_power_anchor: 100, target_power: 0,
+            };
+            let encoded = serde_json::to_vec(&revival).unwrap();
+            let restored = serde_json::from_slice(&encoded).unwrap();
+            assert!(validate_revival_difficulty_authority(node_id, Some(&difficulty), &restored, &data.pve_data).is_ok());
+        }
     }
 }
 

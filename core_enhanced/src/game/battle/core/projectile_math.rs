@@ -235,3 +235,39 @@ mod tests {
         assert_eq!(result.next_reevaluation_ms, 21);
     }
 }
+
+pub(in crate::game::battle::core) fn rect_entry(a: WorldVec2, b: WorldVec2, min: WorldVec2, max: WorldVec2) -> Option<f32> {
+    let mut enter = 0.0f32;
+    let mut leave = 1.0f32;
+    for (start, delta, lo, hi) in [
+        (a.x, b.x - a.x, min.x, max.x),
+        (a.y, b.y - a.y, min.y, max.y),
+    ] {
+        if delta.abs() < 1e-9 {
+            if start < lo || start > hi {
+                return None;
+            }
+        } else {
+            let x = (lo - start) / delta;
+            let y = (hi - start) / delta;
+            enter = enter.max(x.min(y));
+            leave = leave.min(x.max(y));
+            if enter > leave {
+                return None;
+            }
+        }
+    }
+    Some(enter)
+}
+
+impl super::BattleCore {
+    pub(super) fn projectile_tile_valid(&self, tile: crate::game::resources::Position) -> bool {
+        let f = &self.scenario.battlefield;
+        tile.x >= 0
+            && tile.y >= 0
+            && tile.x < i32::from(f.width)
+            && tile.y < i32::from(f.height)
+            && (f.valid_tiles.is_empty() || f.valid_tiles.contains(&tile))
+            && !f.obstacles.contains(&tile)
+    }
+}

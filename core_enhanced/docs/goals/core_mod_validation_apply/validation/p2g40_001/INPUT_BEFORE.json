@@ -1,0 +1,32 @@
+{
+  "fixed_inputs": [
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/P2G_40_PHASE_PLAN_001.json",
+      "exists": true,
+      "bytes": 41544,
+      "sha256": "efd9d2192e69313bf16ef3378a895a0f6c95e407aceb7f1c47b5506c66d2323c"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_mod_validation_apply/P2G_30_FREEZE_001.json",
+      "exists": true,
+      "bytes": 25824,
+      "sha256": "aa39fe2c2779940f0640f7cd785cc9456b753818c944eae013b85b7b90e38e2b"
+    },
+    {
+      "path": "core_enhanced/docs/tools/validate_p2g40_receipt.mjs",
+      "exists": true,
+      "bytes": 18772,
+      "sha256": "7e7d8b1526a4bd0afb03f43cabd437fee16eb4944c67c380d157baaf22b114e9"
+    },
+    {
+      "path": "core_enhanced/docs/tools/p2g_inputs.mjs",
+      "exists": true,
+      "bytes": 13196,
+      "sha256": "39078cdc1b147b705b896f0a4379f25f80c7ef1e39a60b6345d9f4e99c01c62f"
+    }
+  ],
+  "receipt": {
+    "path": "core_enhanced/docs/goals/core_mod_validation_apply/P2G_40_VALIDATION_RECEIPT_001.json",
+    "exists": false
+  }
+}

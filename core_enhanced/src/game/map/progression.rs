@@ -23,22 +23,36 @@ pub struct MapProgression {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct RunProgression {
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub dealer_introduced: bool,
+    pub warehouse_debits: std::collections::BTreeMap<String, u32>,
     pub run_seed: u64,
+    pub instance_namespace: uuid::Uuid,
+    pub expedition_instance: Option<crate::game::expedition_lifecycle::ExpeditionInstance>,
     pub game_mode: GameMode,
+    pub deterrence: u32,
+    pub entry_receipts: std::collections::BTreeSet<MapNodeId>,
+    pub pending_continuation: Option<crate::game::expedition_lifecycle::PendingExpeditionContinuation>,
     pub mode_state: RunProgressionModeState,
 }
 
+crate::authoring::clone_shape::struct_shape!(RunProgression {
+    dealer_introduced, warehouse_debits, run_seed, instance_namespace, expedition_instance, game_mode,
+    deterrence, entry_receipts, pending_continuation, mode_state
+});
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum RunProgressionModeState {
-    Standard { floor_index: u8, max_floors: u8 },
-    Endless { floor_index: u32 },
+    Tutorial { floor_index: u8, max_floors: u8 },
+    Expedition { floor_index: u32 },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum GameMode {
-    Standard,
-    Endless,
+    Tutorial,
+    Expedition,
 }
 
 impl RunProgression {
@@ -48,30 +62,54 @@ impl RunProgression {
             "standard run must have at least one floor"
         );
         let mode_state = match game_mode {
-            GameMode::Standard => RunProgressionModeState::Standard {
+            GameMode::Tutorial => RunProgressionModeState::Tutorial {
                 floor_index: 0,
                 max_floors: standard_floor_count,
             },
-            GameMode::Endless => RunProgressionModeState::Endless { floor_index: 0 },
+            GameMode::Expedition => RunProgressionModeState::Expedition { floor_index: 0 },
         };
         Self {
+            dealer_introduced: false,
             run_seed,
+            instance_namespace: uuid::Uuid::nil(),
+            expedition_instance: None,
             game_mode,
+            deterrence: 0,
+            entry_receipts: Default::default(),
+            warehouse_debits: Default::default(),
+            pending_continuation: None,
             mode_state,
         }
     }
 
+    pub fn with_expedition_instance(
+        mut self,
+        instance: crate::game::expedition_lifecycle::ExpeditionInstance,
+    ) -> Self {
+        self.instance_namespace = instance.uuid;
+        self.expedition_instance = Some(instance);
+        self
+    }
+
+    pub fn with_tutorial_identity(mut self, player: uuid::Uuid) -> Self {
+        self.instance_namespace = determinism::uuid_v4_from_seed(
+            self.run_seed, 0x5455_544f_5249_414c,
+            u64::from_le_bytes(player.as_bytes()[..8].try_into().expect("UUID prefix")),
+        );
+        self
+    }
+
     pub fn floor_index(&self) -> u32 {
         match self.mode_state {
-            RunProgressionModeState::Standard { floor_index, .. } => u32::from(floor_index),
-            RunProgressionModeState::Endless { floor_index } => floor_index,
+            RunProgressionModeState::Tutorial { floor_index, .. } => u32::from(floor_index),
+            RunProgressionModeState::Expedition { floor_index } => floor_index,
         }
     }
 
     pub fn max_floors(&self) -> Option<u8> {
         match self.mode_state {
-            RunProgressionModeState::Standard { max_floors, .. } => Some(max_floors),
-            RunProgressionModeState::Endless { .. } => None,
+            RunProgressionModeState::Tutorial { max_floors, .. } => Some(max_floors),
+            RunProgressionModeState::Expedition { .. } => None,
         }
     }
 
@@ -86,7 +124,7 @@ impl RunProgression {
     pub fn is_final_standard_floor(&self) -> bool {
         matches!(
             self.mode_state,
-            RunProgressionModeState::Standard {
+            RunProgressionModeState::Tutorial {
                 floor_index,
                 max_floors
             } if floor_index + 1 >= max_floors
@@ -95,21 +133,23 @@ impl RunProgression {
 
     pub fn terminal_node_category(&self) -> MapNodeCategory {
         match self.game_mode {
-            GameMode::Standard if self.is_final_standard_floor() => MapNodeCategory::Boss,
-            GameMode::Standard | GameMode::Endless => MapNodeCategory::Gate,
+            GameMode::Tutorial if self.is_final_standard_floor() => MapNodeCategory::Boss,
+            GameMode::Tutorial | GameMode::Expedition => MapNodeCategory::Gate,
         }
     }
 
     pub fn standard_gate_pre_terminal_kind_id(&self) -> Option<&'static str> {
         match self.game_mode {
-            GameMode::Standard if !self.is_final_standard_floor() => Some("combat_elite"),
-            GameMode::Standard | GameMode::Endless => None,
+            GameMode::Tutorial if !self.is_final_standard_floor() => Some("combat_elite"),
+            GameMode::Tutorial | GameMode::Expedition => None,
         }
     }
 
     pub fn advance_floor(&mut self) -> bool {
+        self.entry_receipts.clear();
+        self.pending_continuation = None;
         match &mut self.mode_state {
-            RunProgressionModeState::Standard {
+            RunProgressionModeState::Tutorial {
                 floor_index,
                 max_floors,
             } => {
@@ -119,7 +159,7 @@ impl RunProgression {
                 *floor_index += 1;
                 true
             }
-            RunProgressionModeState::Endless { floor_index } => {
+            RunProgressionModeState::Expedition { floor_index } => {
                 *floor_index = floor_index
                     .checked_add(1)
                     .expect("endless floor_index overflowed u32");
@@ -129,10 +169,19 @@ impl RunProgression {
     }
 
     pub(crate) fn validate_checkpoint_state(&self, standard_floor_count: u8) -> bool {
+        if self.instance_namespace.is_nil() { return false; }
+        match self.game_mode {
+            GameMode::Tutorial if self.expedition_instance.is_some() || self.deterrence != 0 || !self.entry_receipts.is_empty() || self.pending_continuation.is_some() => return false,
+            GameMode::Expedition => {
+                let Some(instance) = self.expedition_instance else { return false; };
+                if instance.validate().is_err() || instance.uuid != self.instance_namespace { return false; }
+            }
+            _ => {},
+        }
         match (self.game_mode, &self.mode_state) {
             (
-                GameMode::Standard,
-                RunProgressionModeState::Standard {
+                GameMode::Tutorial,
+                RunProgressionModeState::Tutorial {
                     floor_index,
                     max_floors,
                 },
@@ -141,7 +190,7 @@ impl RunProgression {
                     && *max_floors == standard_floor_count
                     && *floor_index < *max_floors
             }
-            (GameMode::Endless, RunProgressionModeState::Endless { .. }) => true,
+            (GameMode::Expedition, RunProgressionModeState::Expedition { .. }) => true,
             _ => false,
         }
     }
@@ -161,6 +210,13 @@ impl MapProgression {
             available_node_ids: map.start_node_ids.clone(),
             completed_node_ids: current_node_id.into_iter().collect(),
         }
+    }
+
+    pub(crate) fn reenter_room(&mut self, map: &mut RunMap, template: &FacilityTemplate) -> Result<(),MapProgressionError> {
+        let start = map.nodes.iter().find(|n|n.category == MapNodeCategory::Start).ok_or(MapProgressionError::MissingNode)?.id;
+        self.current_node_id = Some(start);
+        self.complete_current_node(map,template)?;
+        Ok(())
     }
 
     pub fn is_node_selectable(

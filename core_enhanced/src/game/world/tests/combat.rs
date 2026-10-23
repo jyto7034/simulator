@@ -1,3 +1,19 @@
+fn projection_after_test_first_entry(core: &GameCore, node_id: MapNodeId) -> Value {
+    let progression = &core.state.run.as_ref().unwrap().run_progression;
+    assert_eq!(progression.game_mode, GameMode::Expedition);
+    assert!(!progression.entry_receipts.contains(&node_id));
+    assert_eq!(core.run_policy().expedition_first_entry_cost, 1);
+    assert!(core.state.roster.iter().all(|employee|!employee.condition.is_breakdown()));
+    // Independently establish the paid-entry state for the whole-root retreat
+    // oracle, including forecasts of all other nodes at the new balance.
+    // Literal preview arithmetic is separately checked by the U14 cost oracle.
+    let mut expected=crate::authoring::clone_shape::controlled_clone(core).unwrap();
+    let run=expected.state.run.as_mut().unwrap();
+    run.run_progression.deterrence=progression.deterrence-1;
+    run.run_progression.entry_receipts.insert(node_id);
+    expected.get_run_snapshot_json().unwrap()
+}
+
 fn projection_after_test_retreat(mut before: Value, retreats: u8) -> Value {
     let attempt = &mut before["game_state_context"]["abnormality_attempt"];
     assert!(
@@ -171,7 +187,9 @@ fn install_encounter_compendium_combat_result(
 ) {
     let event_log = encounter_compendium_spawn_log();
     let battle = CombatBattleState {
-        typed_resource_result: None,
+        bonus_reward_effects: Vec::new(),
+        deterrence: Default::default(),
+        credit_settlements: Default::default(), typed_resource_result: None,
         runtime_facts: None,
         primary_abnormality_id: Some("defense_risk_abno".to_string()),
         encounter_id: "defense_encounter".to_string(),
@@ -202,7 +220,9 @@ fn install_victorious_source_combat_result(
 ) -> Result<(), GameError> {
     let event_log = BattleEventLog::default();
     let battle = CombatBattleState {
-        typed_resource_result: None,
+        bonus_reward_effects: Vec::new(),
+        deterrence: Default::default(),
+        credit_settlements: Default::default(), typed_resource_result: None,
         runtime_facts: None,
         primary_abnormality_id: Some(abnormality_id.to_string()),
         encounter_id: encounter_id.to_string(),
@@ -500,7 +520,9 @@ fn combat_result_without_node_session_is_rejected() {
     })
     .unwrap();
     core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(CombatBattleState {
-        typed_resource_result: None,
+        bonus_reward_effects: Vec::new(),
+        deterrence: Default::default(),
+        credit_settlements: Default::default(), typed_resource_result: None,
         runtime_facts: None,
         primary_abnormality_id: Some("abno".to_string()),
         encounter_id: "encounter".to_string(),
@@ -575,7 +597,9 @@ fn combat_trace_export_failure_does_not_block_result_transition() {
     std::fs::File::create(trace_run_dir).expect("create trace directory blocker");
 
     let battle = CombatBattleState {
-        typed_resource_result: None,
+        bonus_reward_effects: Vec::new(),
+        deterrence: Default::default(),
+        credit_settlements: Default::default(), typed_resource_result: None,
         runtime_facts: None,
         primary_abnormality_id: Some("trace_failure_abno".to_string()),
         encounter_id: "trace_failure_encounter".to_string(),
@@ -842,7 +866,7 @@ fn run_power_authority_initializes_at_floor_manifestation_and_peaks_on_actual_co
             .power_model_version
     );
     assert!(initial_peak > 0);
-    assert!(initial_anchor >= initial_peak);
+    assert_eq!(initial_anchor, core.run_policy().floor_power_anchor_policy(GameMode::Expedition,0).unwrap().authored_minimum_power);
 
     let employee_id = core.roster().unwrap().iter().next().unwrap().uuid;
     core.roster_mut()
@@ -911,231 +935,87 @@ fn run_power_authority_initializes_at_floor_manifestation_and_peaks_on_actual_co
 
 #[test]
 fn durable_continue_recomputes_battle_setup_instead_of_trusting_serialized_preview_cache() {
-    let game_data = game_data_with_pve_encounters();
-    let player_id = Uuid::from_u128(1);
-    let mut source = GameCore::new(game_data.clone(), 0xC011_CAC4);
-    start_new_game_with_default_starters(&mut source, player_id);
-
-    let save_point_id = force_first_available_node(
-        &mut source,
-        MapNodeCategory::SavePoint,
-        "save_point",
-        MapNodePayload::SavePoint,
-    );
-    let (dispatch_id, headquarters_id, crossroads_id, combat_id) = {
-        let run = source.state.run.as_ref().unwrap();
-        let node_id_for_slot = |slot_id: &str| {
-            run.map
-                .nodes
-                .iter()
-                .find(|node| node.slot_id.as_str() == slot_id)
-                .expect("standard branching fixture slot")
-                .id
-        };
-        (
-            node_id_for_slot("dispatch_hall"),
-            node_id_for_slot("hq_terminal"),
-            node_id_for_slot("crossroads_archive"),
-            node_id_for_slot("containment_guard"),
-        )
-    };
-
-    let power_model_version = source.run_policy().combat_difficulty.power_model_version;
-    let floor_power_anchor = source.state.run_power_authority.current_floor_power_anchor;
-    let mut hard_difficulty = crate::game::map::MapNodeCombatDifficulty {
-        power_model_version,
-        difficulty_profile_id: "default_facility".to_string(),
-        class: crate::game::map::MapNodeCombatDifficultyClass::Ordinary(
-            crate::game::data::run_policy_data::OrdinaryCombatDifficultyBand::Hard,
-        ),
-        monolith_stage: None,
-        floor_power_anchor,
-        target_power: 0,
-    };
-    let hard_tuning = source
-        .run_policy()
-        .resolved_tuning_for_manifested_node(&hard_difficulty)
-        .expect("hard ordinary difficulty must resolve from live policy");
-    hard_difficulty.target_power = floor_power_anchor
-        .saturating_mul(u64::from(hard_tuning.target_power_percent))
-        .saturating_add(99)
-        / 100;
-
-    {
-        let run = source.state.run.as_mut().unwrap();
-        let target = run.map.node_mut(combat_id).unwrap();
-        target.kind_id = MapNodeKindId::new("combat_defense");
-        target.category = MapNodeCategory::Combat;
-        target.payload = MapNodePayload::Encounter {
-            encounter_id: Some("defense_encounter".to_string()),
-        };
-        target.combat_difficulty = Some(hard_difficulty);
-        target.state = MapNodeState::Available;
-
-        for completed_id in [headquarters_id, crossroads_id] {
-            run.map.node_mut(completed_id).unwrap().state = MapNodeState::Completed;
-            run.map_progression.completed_node_ids.push(completed_id);
+    let mut game_data = game_data_with_pve_encounters();
+    // Author a non-default setup scale before constructing the run. If Continue
+    // reuses the deserialized presentation cache, the exact 110 oracle fails.
+    let policy = Arc::make_mut(&mut Arc::get_mut(&mut game_data).unwrap().run_policy);
+    for profile in &mut policy.combat_difficulty.profiles {
+        for band in &mut profile.ordinary_bands {
+            band.tuning.max_health_multiplier_percent = 110;
+            band.tuning.attack_multiplier_percent = 110;
+            band.tuning.defense_multiplier_percent = 110;
         }
-        run.map_progression
-            .completed_node_ids
-            .sort_by_key(|id| id.0.as_u128());
-        run.map_progression.completed_node_ids.dedup();
-        run.map_progression.current_node_id = Some(crossroads_id);
-        run.map_progression.available_node_ids = vec![combat_id];
     }
-
-    let preview_result = source
+    let player_id = Uuid::from_u128(1);
+    let mut source = GameCore::new(game_data, 0xC011_CAC4);
+    start_new_game_with_default_starters(&mut source, player_id);
+    let combat_id = force_map_combat_node(
+        &mut source,
+        MapNodeCategory::Combat,
+        "combat_defense",
+        "defense_encounter",
+    );
+    let preview = source
         .execute(
             player_id,
             PlayerBehavior::SelectMapNode { node_id: combat_id },
         )
-        .expect("target combat preview must be selectable");
+        .unwrap();
     let BehaviorResult::NodePreview {
-        combat_preview: Some(authoritative_preview),
+        combat_preview: Some(authoritative),
         ..
-    } = preview_result
+    } = preview
     else {
-        panic!("target combat must publish a preview");
+        panic!("authored combat preview");
     };
-    assert_eq!(
-        authoritative_preview.enemy_stat_scale.max_health_percent,
-        110
-    );
-    assert_eq!(authoritative_preview.enemy_stat_scale.attack_percent, 110);
-    assert_eq!(authoritative_preview.enemy_stat_scale.defense_percent, 110);
+    assert_eq!(authoritative.enemy_stat_scale.max_health_percent, 110);
+    assert_eq!(authoritative.enemy_stat_scale.attack_percent, 110);
+    assert_eq!(authoritative.enemy_stat_scale.defense_percent, 110);
     source
         .execute(player_id, PlayerBehavior::CancelSelectedNode)
-        .expect("preview cancellation must return to planning");
-
-    // Restore the real SavePoint path while retaining only the presentation cache
-    // created above. Completing the SavePoint makes the cached target reachable.
-    {
-        let run = source.state.run.as_mut().unwrap();
-        run.map.node_mut(combat_id).unwrap().state = MapNodeState::Unavailable;
-        run.map.node_mut(save_point_id).unwrap().state = MapNodeState::Available;
-        run.map_progression.current_node_id = Some(dispatch_id);
-        run.map_progression.available_node_ids = vec![save_point_id];
-    }
-    source
-        .execute(
-            player_id,
-            PlayerBehavior::SelectMapNode {
-                node_id: save_point_id,
-            },
-        )
-        .expect("SavePoint preview must be selectable");
-    source
-        .execute(player_id, PlayerBehavior::ConfirmEnterNode)
-        .expect("SavePoint entry must succeed");
-    source
-        .execute(player_id, PlayerBehavior::CompleteNode)
-        .expect("SavePoint completion must publish a durable checkpoint");
-    assert!(
-        source
-            .state
-            .run
-            .as_ref()
-            .unwrap()
-            .map_progression
-            .available_node_ids
-            .contains(&combat_id),
-        "SavePoint completion must make the cached combat target reachable"
-    );
-
-    let exported = source
-        .export_active_run_checkpoint()
-        .unwrap()
-        .expect("completed SavePoint must be exportable");
-    let control_payload = exported.core_payload_json.clone();
-    let mut mutated_document: serde_json::Value =
-        serde_json::from_slice(&exported.core_payload_json).unwrap();
-    let combat_key = combat_id.0.to_string();
-    let persisted_preview =
-        &mut mutated_document["continuation"]["current"]["combat_previews"][&combat_key];
-    assert!(persisted_preview.get("enemy_stat_scale").is_none());
-    persisted_preview["spawn_waves"][0]["enemy_entries"][0]["abnormality_id"] =
-        json!("low_risk_abno");
-    refresh_active_run_checksum(&mut mutated_document);
-    let mutated_payload = serde_json::to_vec(&mutated_document).unwrap();
-
-    let mut control = GameCore::new(game_data.clone(), 0xBAD_C011);
-    control
+        .unwrap();
+    let saved = source.export_active_run_checkpoint().unwrap().unwrap();
+    let document: Value = serde_json::from_slice(&saved.core_payload_json).unwrap();
+    let persisted =
+        &document["continuation"]["current"]["combat_previews"][combat_id.0.to_string()];
+    assert!(persisted.is_object());
+    assert!(persisted.get("enemy_stat_scale").is_none());
+    let mut restored = core_with_profile_for_continue(&source, 0xBAD_C011);
+    restored
         .continue_from_active_run_checkpoint(
             player_id,
-            &control_payload,
-            exported.loads_used,
-            exported.run_peak_certified_power,
+            &saved.core_payload_json,
+            saved.loads_used,
+            saved.run_peak_certified_power,
         )
-        .expect("unmodified V7 checkpoint must Continue");
+        .unwrap();
     assert_eq!(
-        control.state.run.as_ref().unwrap().combat_previews[&combat_id].enemy_stat_scale,
-        Default::default(),
-        "serialized presentation cache intentionally omits the internal setup scale"
+        restored.state.run.as_ref().unwrap().combat_previews[&combat_id].enemy_stat_scale,
+        Default::default()
     );
-    control
+    restored
         .execute(
             player_id,
             PlayerBehavior::SelectMapNode { node_id: combat_id },
         )
         .unwrap();
-    control
+    restored
         .execute(player_id, PlayerBehavior::ConfirmEnterNode)
-        .expect("control combat start must succeed");
-    let control_active = control.state.active_battle.as_ref().unwrap();
-    let control_enemy = control_active
+        .unwrap();
+    let active = restored.state.active_battle.as_ref().unwrap();
+    assert_eq!(active.combat_preview, authoritative);
+    let enemy = active
         .battle
         .units
         .values()
-        .find(|unit| unit.owner == Side::Opponent)
-        .expect("time-zero control enemy must spawn");
-    assert_eq!(control_active.combat_preview, authoritative_preview);
+        .find(|u| u.owner == Side::Opponent)
+        .expect("time-zero authored enemy");
     assert_eq!(
-        control_enemy.source_identity,
+        enemy.source_identity,
         crate::game::battle::types::BattleUnitSourceIdentity::Abnormality {
-            abnormality_id: "defense_risk_abno".to_string(),
             base_uuid: Uuid::from_u128(20_005),
+            abnormality_id: "defense_risk_abno".to_string()
         }
-    );
-    let control_enemy_stats = control_enemy.stats;
-
-    let mut mutated = GameCore::new(game_data, 0xBAD_CAC4);
-    mutated
-        .continue_from_active_run_checkpoint(
-            player_id,
-            &mutated_payload,
-            exported.loads_used,
-            exported.run_peak_certified_power,
-        )
-        .expect("structurally valid cache mutation must Continue");
-    let continued_cache = &mutated.state.run.as_ref().unwrap().combat_previews[&combat_id];
-    assert_eq!(continued_cache.enemy_stat_scale, Default::default());
-    assert_eq!(
-        continued_cache.spawn_waves[0].enemy_entries[0].abnormality_id,
-        "low_risk_abno"
-    );
-    mutated
-        .execute(
-            player_id,
-            PlayerBehavior::SelectMapNode { node_id: combat_id },
-        )
-        .unwrap();
-    mutated
-        .execute(player_id, PlayerBehavior::ConfirmEnterNode)
-        .expect("mutated-cache combat start must still succeed");
-    let mutated_active = mutated.state.active_battle.as_ref().unwrap();
-    let mutated_enemy = mutated_active
-        .battle
-        .units
-        .values()
-        .find(|unit| unit.owner == Side::Opponent)
-        .expect("time-zero mutated-case enemy must spawn");
-
-    assert_eq!(mutated_active.combat_preview, authoritative_preview);
-    assert_eq!(mutated_active.combat_preview, control_active.combat_preview);
-    assert_eq!(mutated_enemy.source_identity, control_enemy.source_identity);
-    assert_eq!(
-        serde_json::to_value(mutated_enemy.stats).unwrap(),
-        serde_json::to_value(control_enemy_stats).unwrap()
     );
 }
 
@@ -1199,6 +1079,7 @@ fn native_runtime_facts_preserve_actual_same_definition_inventory_copies_through
     let group_id = start.spawn_group.id.clone();
     let scenario = BattleScenario {
         battlefield: BattleFieldSpec {
+            walkable_paths: Vec::new(),
             object_placement: None,
             width: 5,
             height: 5,
@@ -1328,7 +1209,7 @@ fn certified_power_tracks_level_equipment_enhancement_and_fragment_loadout() {
         .clone();
     let equipped_instance_id = original_item_slot
         .iter()
-        .find(|equipped| equipped.equipment_type == EquipmentType::Armor)
+        .find(|equipped| equipped.equipment_type == EquipmentType::Weapon)
         .unwrap()
         .instance_uuid;
     core.state
@@ -1453,7 +1334,7 @@ fn consuming_victory_commits_all_attempt_candidates_across_checkpoint_and_new_ru
     core.execute(
         player_id,
         PlayerBehavior::StartNewGame {
-            game_mode: GameMode::Standard,
+            game_mode: GameMode::Expedition,
             replace_active_run: false,
         },
     )
@@ -1566,7 +1447,9 @@ fn combat_result_snapshot_exposes_typed_result_stats() {
     let result_stats = test_result_stats(BattleWinner::Player, &event_log, &participant_results);
 
     core.state.active_node_content = Some(ActiveNodeContent::CombatBattle(CombatBattleState {
-        typed_resource_result: None,
+        bonus_reward_effects: Vec::new(),
+        deterrence: Default::default(),
+        credit_settlements: Default::default(), typed_resource_result: None,
         runtime_facts: None,
         primary_abnormality_id: Some("abno".to_string()),
         encounter_id: "encounter".to_string(),
@@ -1661,7 +1544,9 @@ fn combat_terminal_settlement_failure_does_not_partially_apply_rewards_on_retry(
     }];
     let event_log = BattleEventLog::default();
     let battle = CombatBattleState {
-        typed_resource_result: None,
+        bonus_reward_effects: Vec::new(),
+        deterrence: Default::default(),
+        credit_settlements: Default::default(), typed_resource_result: None,
         runtime_facts: None,
         primary_abnormality_id: Some("low_risk_abno".to_string()),
         encounter_id: "low_risk_encounter".to_string(),
@@ -1739,7 +1624,7 @@ fn normal_boss_direct_victory_uses_exclusive_first_and_repeat_source_branches() 
         crate::game::data::skill_fragment_data::SkillFragmentId::from("fragment_boss_risk_abno");
 
     let mut first = GameCore::new(game_data_with_pve_encounters(), 0xB055_0001);
-    start_new_game_with_mode_and_default_starters(&mut first, player_id, GameMode::Endless);
+    start_new_game_with_mode_and_default_starters(&mut first, player_id, GameMode::Expedition);
     let first_node = force_map_combat_node(
         &mut first,
         MapNodeCategory::Boss,
@@ -1784,7 +1669,7 @@ fn normal_boss_direct_victory_uses_exclusive_first_and_repeat_source_branches() 
     assert!(first_run.normal_boss_cycle.assigned_source_ids.is_empty());
 
     let mut repeat = GameCore::new(game_data_with_pve_encounters(), 0xB055_0002);
-    start_new_game_with_mode_and_default_starters(&mut repeat, player_id, GameMode::Endless);
+    start_new_game_with_mode_and_default_starters(&mut repeat, player_id, GameMode::Expedition);
     let repeat_node = force_map_combat_node(
         &mut repeat,
         MapNodeCategory::Boss,
@@ -1822,7 +1707,8 @@ fn normal_boss_direct_victory_uses_exclusive_first_and_repeat_source_branches() 
         .unwrap();
     let repeat_run = repeat.state.run.as_ref().unwrap();
     assert_eq!(repeat.state.skill_fragments.count(&fragment_id), 0);
-    assert_eq!(repeat.state.skill_fragments.fragment_dust(), 10);
+    assert_eq!(repeat.state.skill_fragments.fragment_dust(), 0);
+    assert_eq!(repeat.state.crafting_resources.equipment_dust, 10);
     assert!(repeat_run
         .completed_reward_source_ids
         .contains("source_boss_risk"));
@@ -1833,7 +1719,7 @@ fn normal_boss_direct_victory_uses_exclusive_first_and_repeat_source_branches() 
 fn normal_boss_repeat_reward_failure_rolls_back_cycle_ledger_and_result_state() {
     let mut core = GameCore::new(game_data_with_pve_encounters(), 0xB055_0003);
     let player_id = Uuid::from_u128(1);
-    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Endless);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
     let node_id = force_map_combat_node(
         &mut core,
         MapNodeCategory::Boss,
@@ -1848,10 +1734,7 @@ fn normal_boss_repeat_reward_failure_rolls_back_cycle_ledger_and_result_state() 
             .assigned_source_ids
             .push("source_boss_risk".to_string());
     }
-    core.state
-        .skill_fragments
-        .add_fragment_dust(u32::MAX)
-        .unwrap();
+    core.apply_grant_effects(&[RewardEffect::GrantEquipmentDust { amount: u32::MAX }]).unwrap();
     core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
         .unwrap();
     core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
@@ -1866,7 +1749,7 @@ fn normal_boss_repeat_reward_failure_rolls_back_cycle_ledger_and_result_state() 
     .unwrap_err();
     assert!(matches!(error, GameError::InvalidAction));
     assert_eq!(core.get_run_snapshot_json().unwrap(), state_before);
-    assert_eq!(core.state.skill_fragments.fragment_dust(), u32::MAX);
+    assert_eq!(core.state.crafting_resources.equipment_dust, u32::MAX);
     assert!(matches!(core.get_state(), GameState::InBattle { .. }));
     let run = core.state.run.as_ref().unwrap();
     assert!(run.completed_reward_source_ids.contains("source_boss_risk"));
@@ -1950,7 +1833,9 @@ fn combat_result_commits_attempt_conditions_and_survival_xp_once_per_employee() 
     assert!(result_stats.employees[0].survived);
     assert!(result_stats.employees[0].became_incapacitated);
     let battle = CombatBattleState {
-        typed_resource_result: None,
+        bonus_reward_effects: Vec::new(),
+        deterrence: Default::default(),
+        credit_settlements: Default::default(), typed_resource_result: None,
         runtime_facts: None,
         primary_abnormality_id: Some("low_risk_abno".to_string()),
         encounter_id: "low_risk_encounter".to_string(),
@@ -2067,7 +1952,9 @@ fn combat_defeat_commits_attempt_incapacitation_without_reapplying_it() {
     }];
     let result_stats = test_result_stats(BattleWinner::Opponent, &event_log, &participant_results);
     let battle = CombatBattleState {
-        typed_resource_result: None,
+        bonus_reward_effects: Vec::new(),
+        deterrence: Default::default(),
+        credit_settlements: Default::default(), typed_resource_result: None,
         runtime_facts: None,
         primary_abnormality_id: Some("low_risk_abno".to_string()),
         encounter_id: "low_risk_encounter".to_string(),
@@ -2146,11 +2033,19 @@ fn combat_map_node_fails_run_when_no_employee_can_be_deployed() {
         core.get_action_capabilities(),
         vec![
             crate::game::behavior::ActionCapabilityDto::enabled(
+                ActionKind::StartNewGame,
+                crate::game::behavior::ActionScope::Gameplay
+            ),
+            crate::game::behavior::ActionCapabilityDto::enabled(
                 ActionKind::RequestRelicState,
                 crate::game::behavior::ActionScope::Query
             ),
             crate::game::behavior::ActionCapabilityDto::enabled(
                 ActionKind::RequestRelicNumericPlan,
+                crate::game::behavior::ActionScope::Query
+            ),
+            crate::game::behavior::ActionCapabilityDto::enabled(
+                ActionKind::RequestRelicEffectivePlan,
                 crate::game::behavior::ActionScope::Query
             ),
         ]
@@ -2301,9 +2196,9 @@ fn checkpoint_availability_defers_no_deployable_failure_for_explicit_decision() 
 
 #[test]
 fn defense_combat_node_smoke_writes_debug_event_log_export() {
-    let mut core = GameCore::new(legacy_sword_live_game_data_from_ron(), 0xD3F3_0101);
+    let mut core = GameCore::new(live_game_data_from_ron(), 0xD3F3_0101);
     let player_id = Uuid::from_u128(0xD3F3_0101);
-    start_new_game_with_default_starters(&mut core, player_id);
+    start_new_game_with_legacy_sword_fixture(&mut core, player_id);
     let node_id = force_map_combat_node(
         &mut core,
         MapNodeCategory::Combat,
@@ -2449,6 +2344,17 @@ fn defense_combat_node_smoke_writes_debug_event_log_export() {
         "live deploy checkpoint should not include delayed opponent wave units before 5s"
     );
 
+    // The diagnostic log has a finite history window. Prove initialization
+    // events while they are current, then independently collect each actual
+    // bucket's new entries so the terminal export can be checked as a suffix.
+    let history_limits = core.game_data.runtime_safety().battle_history();
+    let mut observed_entries = core.state.active_battle.as_ref().unwrap()
+        .battle.event_log.entries.iter().cloned().collect::<Vec<_>>();
+    assert!(observed_entries.iter().any(|entry|
+        matches!(entry.event, BattleLogEvent::BattleStart { .. })));
+    assert!(observed_entries.iter().any(|entry|
+        matches!(entry.event, BattleLogEvent::UnitSpawned { .. })));
+
     let spawn_result = core
         .advance_active_battle_for_server_tick(5_000)
         .unwrap()
@@ -2490,6 +2396,9 @@ fn defense_combat_node_smoke_writes_debug_event_log_export() {
 
     let mut finished = false;
     for _ in 0..10_000 {
+        let after_seq = observed_entries.last().map_or(0, |entry| entry.seq);
+        observed_entries.extend(core.state.active_battle.as_ref().unwrap()
+            .battle.event_log.entries.iter().filter(|entry| entry.seq > after_seq).cloned());
         let result = core.advance_active_battle_to_next_event_bucket().unwrap();
         if let BehaviorResult::BattleAdvanced { finished: true, .. } = result {
             finished = true;
@@ -2515,17 +2424,33 @@ fn defense_combat_node_smoke_writes_debug_event_log_export() {
         event_log.version,
         crate::game::battle::event_log::BATTLE_EVENT_LOG_VERSION
     );
-    for predicate in [
-        (|event: &BattleLogEvent| matches!(event, BattleLogEvent::BattleStart { .. }))
-            as fn(&BattleLogEvent) -> bool,
-        |event| matches!(event, BattleLogEvent::UnitSpawned { .. }),
-        |event| matches!(event, BattleLogEvent::BattleEnd { .. }),
-    ] {
-        assert!(event_log
-            .entries
-            .iter()
-            .any(|entry| predicate(&entry.event)));
+    assert!(matches!(event_log.entries.last().unwrap().event, BattleLogEvent::BattleEnd { .. }));
+    let after_seq = observed_entries.last().map_or(0, |entry| entry.seq);
+    // The final bucket has already transferred out of active_battle. Its newly
+    // committed tail is read from the export; every preceding bucket is the
+    // independently collected runtime witness above.
+    observed_entries.extend(event_log.entries.iter().filter(|entry| entry.seq > after_seq).cloned());
+    assert!(observed_entries.windows(2).all(|pair| pair[1].seq == pair[0].seq + 1),
+        "sampling each actual bucket must not skip an event");
+    assert!(observed_entries.iter().any(|entry| matches!(entry.event, BattleLogEvent::BattleStart { .. })));
+    assert!(observed_entries.iter().any(|entry| matches!(entry.event, BattleLogEvent::UnitSpawned { .. })));
+    assert!(matches!(observed_entries.last().unwrap().event, BattleLogEvent::BattleEnd { .. }));
+    let mut first_kept = 0;
+    loop {
+        let suffix = &observed_entries[first_kept..];
+        let first_ms = suffix.iter().map(|entry| entry.time_ms).min().unwrap();
+        let last_ms = suffix.iter().map(|entry| entry.time_ms).max().unwrap();
+        if suffix.len() <= history_limits.max_events
+            && serde_json::to_vec(suffix).unwrap().len() <= history_limits.max_encoded_entry_array_bytes
+            && last_ms - first_ms <= history_limits.max_span_ms {
+            break;
+        }
+        first_kept += 1;
+        assert!(first_kept < observed_entries.len(), "one terminal event fits the official history policy");
     }
+    assert_eq!(serde_json::to_value(&event_log.entries).unwrap(),
+        serde_json::to_value(&observed_entries[first_kept..]).unwrap(),
+        "debug export must be exactly the retained suffix under all three current limits");
     let path = write_world_debug_event_log_export("defense_combat_node_smoke", &event_log);
     assert!(path.exists());
     assert!(core.state.active_node_content.is_none());
@@ -2538,9 +2463,9 @@ fn defense_combat_node_smoke_writes_debug_event_log_export() {
 
 #[test]
 fn live_ron_defense_route_playable_path_runs_to_combat_result() {
-    let mut core = GameCore::new(legacy_sword_live_game_data_from_ron(), 0xD3F3_0001);
+    let mut core = GameCore::new(live_game_data_from_ron(), 0xD3F3_0001);
     let player_id = Uuid::from_u128(0xD3F3);
-    start_new_game_with_default_starters(&mut core, player_id);
+    start_new_game_with_legacy_sword_fixture(&mut core, player_id);
     let node_id = force_map_combat_node(
         &mut core,
         MapNodeCategory::Combat,
@@ -2612,6 +2537,11 @@ fn live_ron_defense_route_playable_path_runs_to_combat_result() {
         }
     ));
     assert!(matches!(core.get_state(), GameState::InBattle { .. }));
+    let mut saw_spawn = match &result {
+        BehaviorResult::BattleAdvanced { battle_update, .. } => battle_update.events_delta.events.iter()
+            .any(|entry| matches!(entry.event, LiveBattlePresentationEventKindDto::UnitSpawned { .. })),
+        _ => false,
+    };
     deploy_positions.retain(|position| {
         core.state.active_battle.as_ref().is_some_and(|active| {
             active
@@ -2664,6 +2594,8 @@ fn live_ron_defense_route_playable_path_runs_to_combat_result() {
         else {
             panic!("expected live battle tick result");
         };
+        saw_spawn |= battle_update.events_delta.events.iter()
+            .any(|entry| matches!(entry.event, LiveBattlePresentationEventKindDto::UnitSpawned { .. }));
         if !battle_finished {
             if let (Some(employee_uuid), Some(position), Some(deployment)) = (
                 third_employee,
@@ -2715,10 +2647,7 @@ fn live_ron_defense_route_playable_path_runs_to_combat_result() {
         .entries
         .iter()
         .any(|entry| matches!(entry.event, BattleLogEvent::BattleEnd { .. })));
-    assert!(event_log
-        .entries
-        .iter()
-        .any(|entry| matches!(entry.event, BattleLogEvent::UnitSpawned { .. })));
+    assert!(saw_spawn, "the actual public stream must contain a spawned unit");
     let combat_node_uuid: Uuid = serde_json::from_value(trace["combat_node_uuid"].clone()).unwrap();
     let event_log_entry_count = event_log.entries.len();
     let trace_path =
@@ -2849,6 +2778,10 @@ fn battle_setup_snapshot_live_defense_state_request_returns_battle_update_withou
             ),
             crate::game::behavior::ActionCapabilityDto::enabled(
                 ActionKind::RequestRelicNumericPlan,
+                crate::game::behavior::ActionScope::Query
+            ),
+            crate::game::behavior::ActionCapabilityDto::enabled(
+                ActionKind::RequestRelicEffectivePlan,
                 crate::game::behavior::ActionScope::Query
             ),
         ]
@@ -4020,7 +3953,9 @@ fn track_and_rejoin_raw_live_bundle_reaches_typed_world_setup_identity() {
         .execute(player_id, PlayerBehavior::SelectMapNode { node_id })
         .expect("raw TrackAndRejoin source fixture preview should resolve");
     let deploy_position = first_ground_deployment_cell(&preview);
-    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
+    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids().into_iter()
+        .find(|id| core.roster().unwrap().get(id).unwrap().employee_definition_id == "records_clerk")
+        .expect("the selected sword dealer deploys on Ground");
     let started = core
         .execute(player_id, PlayerBehavior::ConfirmEnterNode)
         .expect("raw TrackAndRejoin source fixture should enter live battle");
@@ -4833,6 +4768,7 @@ fn enter_live_little_red_reference(
     game_data: Arc<GameDataBase>,
     seed: u64,
     deploy_employee: bool,
+    legacy_sword_fixture: bool,
 ) -> (
     GameCore,
     Uuid,
@@ -4842,6 +4778,7 @@ fn enter_live_little_red_reference(
     let mut core = GameCore::new(game_data, seed);
     let player_id = Uuid::from_u128(seed as u128);
     start_new_game_with_default_starters(&mut core, player_id);
+    if legacy_sword_fixture { apply_legacy_sword_numerical_fixture(&mut core, player_id); }
     let node_id = force_map_combat_node(
         &mut core,
         MapNodeCategory::Boss,
@@ -4923,7 +4860,7 @@ fn isolate_live_little_red_target(
 #[test]
 fn live_little_red_runs_finite_pursuit_pause_reconnect_route_combat_and_terminal_flow() {
     let (mut core, player_id, _, player_unit_id) =
-        enter_live_little_red_reference(live_game_data_from_ron(), 0xB055_0501, true);
+        enter_live_little_red_reference(live_game_data_from_ron(), 0xB055_0501, true, false);
     let player_unit_id = player_unit_id.unwrap();
     isolate_live_little_red_target(&mut core, player_unit_id);
 
@@ -5289,7 +5226,7 @@ fn live_cwbs_reference_connects_conditional_wave_summon_signal_outcome_and_victo
 #[test]
 fn live_little_red_no_target_and_locked_target_failure_paths_rejoin_authored_route() {
     let (mut no_target, _, _, _) =
-        enter_live_little_red_reference(legacy_sword_live_game_data_from_ron(), 0xB055_0502, false);
+        enter_live_little_red_reference(live_game_data_from_ron(), 0xB055_0502, false, true);
     for unit in no_target
         .state
         .active_battle
@@ -5319,7 +5256,7 @@ fn live_little_red_no_target_and_locked_target_failure_paths_rejoin_authored_rou
 
     for (seed, failure) in [(0xB055_0503, "invalidation"), (0xB055_0504, "path")] {
         let (mut core, player_id, employee_uuid, player_unit_id) =
-            enter_live_little_red_reference(legacy_sword_live_game_data_from_ron(), seed, true);
+            enter_live_little_red_reference(live_game_data_from_ron(), seed, true, true);
         let player_unit_id = player_unit_id.unwrap();
         isolate_live_little_red_target(&mut core, player_unit_id);
         core.advance_active_battle_by(5_000).unwrap();
@@ -5396,7 +5333,7 @@ fn live_little_red_timeout_uses_battle_time_and_has_an_exhaustive_rejoin_exit() 
         .movement
         .speed_units_per_ms = 0;
     let (mut core, _, _, player_unit_id) =
-        enter_live_little_red_reference(game_data, 0xB055_0505, true);
+        enter_live_little_red_reference(game_data, 0xB055_0505, true, false);
     let player_unit_id = player_unit_id.unwrap();
     isolate_live_little_red_target(&mut core, player_unit_id);
     core.advance_active_battle_by(5_000).unwrap();
@@ -6047,9 +5984,9 @@ fn expired_live_history_rejects_strict_cursor_and_recovery_returns_stable_resync
 
 #[test]
 fn live_freischutz_field_work_setup_progress_and_recovery_are_authoritative() {
-    let mut core = GameCore::new(legacy_sword_live_game_data_from_ron(), 0xF43_5101);
+    let mut core = GameCore::new(live_game_data_from_ron(), 0xF43_5101);
     let player_id = Uuid::from_u128(0xF43_5101);
-    start_new_game_with_default_starters(&mut core, player_id);
+    start_new_game_with_legacy_sword_fixture(&mut core, player_id);
     let node_id = force_map_combat_node(
         &mut core,
         MapNodeCategory::Boss,
@@ -6324,9 +6261,9 @@ fn disconnect_auto_pause_is_idempotent_and_requires_explicit_resume() {
 
 #[test]
 fn live_defense_playback_pause_freezes_server_tick_and_resume_advances() {
-    let mut core = GameCore::new(legacy_sword_live_game_data_from_ron(), 0xD3F3_0101);
+    let mut core = GameCore::new(live_game_data_from_ron(), 0xD3F3_0101);
     let player_id = Uuid::from_u128(0xD3F3_0101);
-    start_new_game_with_default_starters(&mut core, player_id);
+    start_new_game_with_legacy_sword_fixture(&mut core, player_id);
     let node_id = force_map_combat_node(
         &mut core,
         MapNodeCategory::Combat,
@@ -6540,7 +6477,9 @@ fn paused_live_battle_commits_deploy_and_withdraw_without_advancing_time() {
         .execute(player_id, PlayerBehavior::SelectMapNode { node_id })
         .unwrap();
     let deploy_position = first_ground_deployment_cell(&preview);
-    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
+    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids().into_iter()
+        .find(|id| core.roster().unwrap().get(id).unwrap().employee_definition_id == "records_clerk")
+        .expect("the selected sword dealer deploys on Ground");
     core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
         .unwrap();
 
@@ -6805,9 +6744,9 @@ fn visual_novel_session_for_battle(
 fn start_live_defense_battle_for_vn_test(
     seed: u64,
 ) -> (GameCore, Uuid, Uuid, crate::game::map::MapNodeId) {
-    let mut core = GameCore::new(legacy_sword_live_game_data_from_ron(), seed);
+    let mut core = GameCore::new(live_game_data_from_ron(), seed);
     let player_id = Uuid::from_u128(seed as u128);
-    start_new_game_with_default_starters(&mut core, player_id);
+    start_new_game_with_legacy_sword_fixture(&mut core, player_id);
     let node_id = force_map_combat_node(
         &mut core,
         MapNodeCategory::Combat,
@@ -7032,6 +6971,10 @@ fn blocking_visual_novel_pauses_live_battle_tick_and_uses_battle_update_transpor
                 ActionKind::RequestRelicNumericPlan,
                 crate::game::behavior::ActionScope::Query
             ),
+            crate::game::behavior::ActionCapabilityDto::enabled(
+                ActionKind::RequestRelicEffectivePlan,
+                crate::game::behavior::ActionScope::Query
+            ),
         ]
     );
     let reconnect = core.active_battle_reconnect_projection(0).unwrap();
@@ -7225,9 +7168,9 @@ fn blocking_visual_novel_execution_preflight_rejects_every_omitted_battle_action
 
 #[test]
 fn live_defense_playback_speed_scales_server_tick_delta() {
-    let mut core = GameCore::new(legacy_sword_live_game_data_from_ron(), 0xD3F3_0102);
+    let mut core = GameCore::new(live_game_data_from_ron(), 0xD3F3_0102);
     let player_id = Uuid::from_u128(0xD3F3_0102);
-    start_new_game_with_default_starters(&mut core, player_id);
+    start_new_game_with_legacy_sword_fixture(&mut core, player_id);
     let node_id = force_map_combat_node(
         &mut core,
         MapNodeCategory::Combat,
@@ -9675,6 +9618,8 @@ fn activate_skill_uses_equipped_manual_fragment_in_live_defense() {
     let skill_id = SkillId::from("manual_fragment_guard");
     let fragment = active_skill_fragment("manual_fragment", 0xD3F3_2001, skill_id.as_str());
     let skill = SkillDef {
+        action_policy: None,
+        resonance_admission: None,
         use_lifetime: crate::game::ability::SkillUseLifetime::Action,
         flow: None,
         id: skill_id.clone(),
@@ -9701,6 +9646,8 @@ fn activate_skill_uses_equipped_manual_fragment_in_live_defense() {
         }],
     };
     let area_skill = SkillDef {
+        action_policy: None,
+        resonance_admission: None,
         use_lifetime: crate::game::ability::SkillUseLifetime::Action,
         flow: None,
         id: SkillId::from("catalog_target_area"),
@@ -9980,6 +9927,8 @@ fn automatic_unit_manual_fragment_readiness_disables_when_no_target_exists() {
         rows: vec![".@X".to_string()],
     };
     let skill = SkillDef {
+        action_policy: None,
+        resonance_admission: None,
         use_lifetime: crate::game::ability::SkillUseLifetime::Action,
         flow: None,
         id: skill_id.clone(),
@@ -10129,6 +10078,8 @@ fn player_unit_skill_focus_fixture() -> (
     let skill_id = SkillId::from("manual_fragment_player_unit");
     let fragment = active_skill_fragment("player_unit_fragment", 0xD3F3_2006, skill_id.as_str());
     let skill = SkillDef {
+        action_policy: None,
+        resonance_admission: None,
         use_lifetime: crate::game::ability::SkillUseLifetime::Action,
         flow: None,
         id: skill_id.clone(),
@@ -10649,6 +10600,8 @@ fn manual_fragment_can_restore_tactical_resource_and_enable_extra_deployment() {
     let fragment =
         active_skill_fragment("tactical_resource_fragment", 0xD3F3_2002, skill_id.as_str());
     let skill = SkillDef {
+        action_policy: None,
+        resonance_admission: None,
         use_lifetime: crate::game::ability::SkillUseLifetime::Action,
         flow: None,
         id: skill_id.clone(),
@@ -10881,6 +10834,8 @@ fn authored_skill_negative_tactical_resource_delta_clamps_at_zero() {
         skill_id.as_str(),
     );
     let skill = SkillDef {
+        action_policy: None,
+        resonance_admission: None,
         use_lifetime: crate::game::ability::SkillUseLifetime::Action,
         flow: None,
         id: skill_id.clone(),
@@ -11012,7 +10967,7 @@ fn retreat_battle_restores_exact_pre_entry_snapshot_and_rng_continuation() {
     );
     core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
         .unwrap();
-    let exact_pre_entry = core.get_run_snapshot_json().unwrap();
+    let exact_pre_entry = projection_after_test_first_entry(&core, node_id);
 
     let entered = core
         .execute(player_id, PlayerBehavior::ConfirmEnterNode)
@@ -11106,7 +11061,9 @@ fn committed_fatal_defeat_preempts_retry_while_attempts_remain() {
     }
     let event_log = BattleEventLog::default();
     let battle = CombatBattleState {
-        typed_resource_result: None,
+        bonus_reward_effects: Vec::new(),
+        deterrence: Default::default(),
+        credit_settlements: Default::default(), typed_resource_result: None,
         runtime_facts: None,
         primary_abnormality_id: Some("defense_risk_abno".to_string()),
         encounter_id: "defense_encounter".to_string(),
@@ -11187,7 +11144,7 @@ fn install_combat_recovery_test_map(
                         crate::game::data::run_policy_data::OrdinaryCombatDifficultyBand::Standard,
                     )
                 },
-                monolith_stage: None,
+                revival: None,
                 floor_power_anchor,
                 target_power: floor_power_anchor,
             }),
@@ -11316,7 +11273,9 @@ fn install_no_deployable_combat_result(
     }
     let event_log = BattleEventLog::default();
     let battle = CombatBattleState {
-        typed_resource_result: None,
+        bonus_reward_effects: Vec::new(),
+        deterrence: Default::default(),
+        credit_settlements: Default::default(), typed_resource_result: None,
         runtime_facts: None,
         primary_abnormality_id: Some("defense_risk_abno".to_string()),
         encounter_id: "defense_encounter".to_string(),
@@ -11339,11 +11298,43 @@ fn install_no_deployable_combat_result(
     settle_test_combat_result(core, node_id.0, battle).unwrap();
 }
 
+fn game_data_with_weaponless_nonstarter_recruits() -> Arc<GameDataBase> {
+    let base = GameCore::new(game_data_with_pve_encounters(), 129);
+    let mut definitions = base.game_data.employee_definition_data.definitions.clone();
+    for definition in &mut definitions {
+        if !definition.starter_eligible {
+            // Valid nonstarter definitions may have no normal weapon. Keep all
+            // six role-compatible starters unchanged for the real departure.
+            definition.initial_loadout = EmployeeInitialLoadout::default();
+        }
+    }
+    GameDataBuilder::from_validated(&base.game_data)
+        .with_employee_definitions(EmployeeDefinitionDatabase::new(definitions)).build_arc()
+}
+
+fn prepare_weaponless_nonstarter_queue(core: &mut GameCore) {
+    let run = core.state.run.as_ref().unwrap();
+    let mut queue = run.recruitment.queue_definition_ids().map(str::to_owned).collect::<Vec<_>>();
+    // I: place real nonstarter candidates in this node's first two offers.
+    // Unchosen armed starter definitions remain in the exact queue afterwards.
+    queue.sort_by_key(|id| (core.game_data.employee_definition_data.get_by_id(id).unwrap().starter_eligible, id.clone()));
+    for id in queue.iter().take(2) {
+        let definition = core.game_data.employee_definition_data.get_by_id(id).unwrap();
+        assert!(!definition.starter_eligible);
+        assert!(definition.initial_loadout.equipment_ids.is_empty());
+    }
+    let recruitment: crate::game::recruitment::RecruitmentState =
+        serde_json::from_value(json!({"queue":queue, "active_session":null})).unwrap();
+    recruitment.validate_exact_ownership(&core.game_data.employee_definition_data.definitions, &core.state.roster).unwrap();
+    core.state.run.as_mut().unwrap().recruitment = recruitment;
+}
+
 #[test]
 fn weaponless_recruitment_is_not_a_no_deployable_recovery_path() {
-    let mut core = GameCore::new(game_data_with_pve_encounters(), 129);
+    let mut core = GameCore::new(game_data_with_weaponless_nonstarter_recruits(), 129);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
+    prepare_weaponless_nonstarter_queue(&mut core);
     core.save_run_checkpoint_for_test().unwrap();
     assert!(core.state.run_checkpoint.can_load());
     let (combat_id, _recruitment_id, _save_point_id) =
@@ -11379,9 +11370,10 @@ fn weaponless_recruitment_is_not_a_no_deployable_recovery_path() {
 
 #[test]
 fn weaponless_victory_commits_rewards_then_fails_the_run() {
-    let mut core = GameCore::new(game_data_with_pve_encounters(), 131);
+    let mut core = GameCore::new(game_data_with_weaponless_nonstarter_recruits(), 131);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
+    prepare_weaponless_nonstarter_queue(&mut core);
     let (combat_id, _recruitment_id, _save_point_id) =
         install_combat_recovery_test_map(&mut core, true);
     core.execute(
@@ -11416,9 +11408,10 @@ fn weaponless_victory_commits_rewards_then_fails_the_run() {
 
 #[test]
 fn weaponless_headquarters_does_not_defer_failure() {
-    let mut core = GameCore::new(game_data_with_pve_encounters(), 132);
+    let mut core = GameCore::new(game_data_with_weaponless_nonstarter_recruits(), 132);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
+    prepare_weaponless_nonstarter_queue(&mut core);
     let (combat_id, _recruitment_id, _) = install_combat_recovery_test_map(&mut core, true);
     core.execute(
         player_id,
@@ -11531,7 +11524,7 @@ fn two_retreats_consume_only_retreat_budget_and_third_entry_cannot_retreat() {
 
     core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
         .unwrap();
-    let pre_entry = core.get_run_snapshot_json().unwrap();
+    let pre_entry = projection_after_test_first_entry(&core, node_id);
     let mut first_battle_uuid = None;
 
     for retreat in 1..=2 {
@@ -11595,7 +11588,9 @@ fn failed_live_defense_battle_consumes_node_on_first_defeat() {
     core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
         .unwrap();
     let battle = CombatBattleState {
-        typed_resource_result: None,
+        bonus_reward_effects: Vec::new(),
+        deterrence: Default::default(),
+        credit_settlements: Default::default(), typed_resource_result: None,
         runtime_facts: None,
         primary_abnormality_id: Some("defense_risk_abno".to_string()),
         encounter_id: "defense_encounter".to_string(),
@@ -11642,7 +11637,7 @@ fn final_boss_retreat_changes_only_its_budget() {
     start_new_game_with_default_starters(&mut core, player_id);
     {
         let run = core.state.run.as_mut().expect("run state");
-        run.run_progression.mode_state = crate::game::map::RunProgressionModeState::Standard {
+        run.run_progression.mode_state = crate::game::map::RunProgressionModeState::Tutorial {
             floor_index: run_policy().setup.standard_floor_count - 1,
             max_floors: run_policy().setup.standard_floor_count,
         };
@@ -11659,7 +11654,7 @@ fn final_boss_retreat_changes_only_its_budget() {
     }];
     core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
         .unwrap();
-    let pre_entry = core.get_run_snapshot_json().unwrap();
+    let pre_entry = projection_after_test_first_entry(&core, node_id);
     core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
         .unwrap();
     let result =
@@ -11670,7 +11665,7 @@ fn final_boss_retreat_changes_only_its_budget() {
         core.get_run_snapshot_json().unwrap(),
         projection_after_test_retreat(pre_entry, 1)
     );
-    assert!(!core.state.player_profile.standard_tutorial_completed);
+    assert!(serde_json::to_value(&core.state.player_profile).unwrap().get("standard_tutorial_completed").is_none());
 }
 
 #[test]
@@ -11681,7 +11676,7 @@ fn final_boss_defeat_with_valid_checkpoint_requires_explicit_decision() {
     core.save_run_checkpoint_for_test().unwrap();
     {
         let run = core.state.run.as_mut().expect("run state");
-        run.run_progression.mode_state = crate::game::map::RunProgressionModeState::Standard {
+        run.run_progression.mode_state = crate::game::map::RunProgressionModeState::Tutorial {
             floor_index: run_policy().setup.standard_floor_count - 1,
             max_floors: run_policy().setup.standard_floor_count,
         };
@@ -11702,7 +11697,9 @@ fn final_boss_defeat_with_valid_checkpoint_requires_explicit_decision() {
         .unwrap();
     let event_log = encounter_compendium_spawn_log();
     let battle = CombatBattleState {
-        typed_resource_result: None,
+        bonus_reward_effects: Vec::new(),
+        deterrence: Default::default(),
+        credit_settlements: Default::default(), typed_resource_result: None,
         runtime_facts: None,
         primary_abnormality_id: Some("final_boss_risk_abno".to_string()),
         encounter_id: "final_boss_risk_encounter".to_string(),
@@ -11760,7 +11757,7 @@ fn final_boss_defeat_with_valid_checkpoint_requires_explicit_decision() {
 fn forced_boss_omen_defeat_immediately_fails_endless_run() {
     let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
     let player_id = Uuid::from_u128(1);
-    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Endless);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
     core.save_run_checkpoint_for_test().unwrap();
     core.state.run_checkpoint.loads_used = crate::game::world::state::RUN_CHECKPOINT_MAX_LOADS;
     let node_id = force_map_combat_node(
@@ -11781,7 +11778,9 @@ fn forced_boss_omen_defeat_immediately_fails_endless_run() {
     core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
         .unwrap();
     let battle = CombatBattleState {
-        typed_resource_result: None,
+        bonus_reward_effects: Vec::new(),
+        deterrence: Default::default(),
+        credit_settlements: Default::default(), typed_resource_result: None,
         runtime_facts: None,
         primary_abnormality_id: Some("final_boss_risk_abno".to_string()),
         encounter_id: "final_boss_risk_encounter".to_string(),
@@ -11818,11 +11817,19 @@ fn forced_boss_omen_defeat_immediately_fails_endless_run() {
         core.get_action_capabilities(),
         vec![
             crate::game::behavior::ActionCapabilityDto::enabled(
+                ActionKind::StartNewGame,
+                crate::game::behavior::ActionScope::Gameplay
+            ),
+            crate::game::behavior::ActionCapabilityDto::enabled(
                 ActionKind::RequestRelicState,
                 crate::game::behavior::ActionScope::Query
             ),
             crate::game::behavior::ActionCapabilityDto::enabled(
                 ActionKind::RequestRelicNumericPlan,
+                crate::game::behavior::ActionScope::Query
+            ),
+            crate::game::behavior::ActionCapabilityDto::enabled(
+                ActionKind::RequestRelicEffectivePlan,
                 crate::game::behavior::ActionScope::Query
             ),
         ]
@@ -11833,7 +11840,7 @@ fn forced_boss_omen_defeat_immediately_fails_endless_run() {
 fn forced_boss_omen_failure_requires_decision_and_executes_valid_checkpoint_load() {
     let mut core = GameCore::new(game_data_with_pve_encounters(), 134);
     let player_id = Uuid::from_u128(1);
-    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Endless);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
     core.save_run_checkpoint_for_test().unwrap();
     let checkpoint_map = core.current_map_view().unwrap();
     let node_id = force_map_combat_node(
@@ -11854,7 +11861,9 @@ fn forced_boss_omen_failure_requires_decision_and_executes_valid_checkpoint_load
     core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
         .unwrap();
     let battle = CombatBattleState {
-        typed_resource_result: None,
+        bonus_reward_effects: Vec::new(),
+        deterrence: Default::default(),
+        credit_settlements: Default::default(), typed_resource_result: None,
         runtime_facts: None,
         primary_abnormality_id: Some("final_boss_risk_abno".to_string()),
         encounter_id: "final_boss_risk_encounter".to_string(),
@@ -11924,7 +11933,7 @@ fn forced_boss_omen_failure_requires_decision_and_executes_valid_checkpoint_load
 fn forced_boss_omen_victory_opens_dedicated_gate_before_endless_floor_advance() {
     let mut core = GameCore::new(game_data_with_pve_encounters(), 123);
     let player_id = Uuid::from_u128(1);
-    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Endless);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
     let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
     core.roster_mut()
         .unwrap()
@@ -11974,7 +11983,9 @@ fn forced_boss_omen_victory_opens_dedicated_gate_before_endless_floor_advance() 
     core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
         .unwrap();
     let battle = CombatBattleState {
-        typed_resource_result: None,
+        bonus_reward_effects: Vec::new(),
+        deterrence: Default::default(),
+        credit_settlements: Default::default(), typed_resource_result: None,
         runtime_facts: None,
         primary_abnormality_id: Some("final_boss_risk_abno".to_string()),
         encounter_id: "final_boss_risk_encounter".to_string(),
@@ -12080,7 +12091,7 @@ fn forced_boss_omen_victory_opens_dedicated_gate_before_endless_floor_advance() 
     assert!(matches!(
         advanced,
         BehaviorResult::FloorAdvanced {
-            game_mode: GameMode::Endless,
+            game_mode: GameMode::Expedition,
             floor_index: 1,
             ..
         }
@@ -12129,7 +12140,9 @@ fn boss_kind_combat_defeat_consumes_node_on_first_defeat() {
     core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
         .unwrap();
     let battle = CombatBattleState {
-        typed_resource_result: None,
+        bonus_reward_effects: Vec::new(),
+        deterrence: Default::default(),
+        credit_settlements: Default::default(), typed_resource_result: None,
         runtime_facts: None,
         primary_abnormality_id: Some("boss_abno".to_string()),
         encounter_id: "boss_risk_encounter".to_string(),
@@ -12161,7 +12174,7 @@ fn boss_kind_combat_defeat_consumes_node_on_first_defeat() {
         core.run_state().unwrap().map.node(node_id).unwrap().state,
         MapNodeState::Completed
     );
-    assert!(!core.state.player_profile.standard_tutorial_completed);
+    assert!(serde_json::to_value(&core.state.player_profile).unwrap().get("standard_tutorial_completed").is_none());
 }
 
 #[test]
@@ -12171,7 +12184,7 @@ fn standard_completion_normal_boss_defeat_and_retreat_never_complete_tutorial() 
     start_new_game_with_default_starters(&mut core, player_id);
     {
         let run = core.state.run.as_mut().expect("run state");
-        run.run_progression.mode_state = crate::game::map::RunProgressionModeState::Standard {
+        run.run_progression.mode_state = crate::game::map::RunProgressionModeState::Tutorial {
             floor_index: run_policy().setup.standard_floor_count - 1,
             max_floors: run_policy().setup.standard_floor_count,
         };
@@ -12193,7 +12206,9 @@ fn standard_completion_normal_boss_defeat_and_retreat_never_complete_tutorial() 
         .unwrap();
     let event_log = BattleEventLog::default();
     let battle = CombatBattleState {
-        typed_resource_result: None,
+        bonus_reward_effects: Vec::new(),
+        deterrence: Default::default(),
+        credit_settlements: Default::default(), typed_resource_result: None,
         runtime_facts: None,
         primary_abnormality_id: Some("boss_risk_abno".to_string()),
         encounter_id: "boss_risk_encounter".to_string(),
@@ -12232,7 +12247,7 @@ fn standard_completion_normal_boss_defeat_and_retreat_never_complete_tutorial() 
             reason: RunFailureReason::BossDefeated
         }
     ));
-    assert!(!core.state.player_profile.standard_tutorial_completed);
+    assert!(serde_json::to_value(&core.state.player_profile).unwrap().get("standard_tutorial_completed").is_none());
     assert_eq!(
         core.run_state().unwrap().map.node(node_id).unwrap().state,
         MapNodeState::Completed
@@ -12245,12 +12260,7 @@ fn standard_completion_normal_boss_defeat_and_retreat_never_complete_tutorial() 
     )
     .unwrap();
     assert!(matches!(retreated, BehaviorResult::NodePreview { .. }));
-    assert!(
-        !retreat_core
-            .state
-            .player_profile
-            .standard_tutorial_completed
-    );
+    assert!(serde_json::to_value(&retreat_core.state.player_profile).unwrap().get("standard_tutorial_completed").is_none());
     assert_eq!(
         retreat_core
             .run_state()
@@ -12275,7 +12285,7 @@ fn event_started_combat_victory_consumes_event_node() {
     );
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
-    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Standard);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
     core.set_enkephalin(5);
     let event_node_id =
         force_single_event_node_run_for_combat_tests(&mut core, "event_started_victory");
@@ -12287,7 +12297,9 @@ fn event_started_combat_victory_consumes_event_node() {
         "fight",
     );
     let battle = CombatBattleState {
-        typed_resource_result: None,
+        bonus_reward_effects: Vec::new(),
+        deterrence: Default::default(),
+        credit_settlements: Default::default(), typed_resource_result: None,
         runtime_facts: None,
         primary_abnormality_id: Some("defense_risk_abno".to_string()),
         encounter_id: "defense_encounter".to_string(),
@@ -12350,7 +12362,7 @@ fn event_started_combat_defeat_consumes_node_and_clears_session() {
     );
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
-    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Standard);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
     let event_node_id =
         force_single_event_node_run_for_combat_tests(&mut core, "event_started_defeat");
     enter_event_combat_choice(
@@ -12361,7 +12373,9 @@ fn event_started_combat_defeat_consumes_node_and_clears_session() {
         "fight",
     );
     let battle = CombatBattleState {
-        typed_resource_result: None,
+        bonus_reward_effects: Vec::new(),
+        deterrence: Default::default(),
+        credit_settlements: Default::default(), typed_resource_result: None,
         runtime_facts: None,
         primary_abnormality_id: Some("defense_risk_abno".to_string()),
         encounter_id: "defense_encounter".to_string(),
@@ -12428,7 +12442,7 @@ fn event_started_combat_defeat_has_no_duplicate_event_reward_policy() {
     );
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
-    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Standard);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
     core.set_enkephalin(5);
     let event_node_id =
         force_single_event_node_run_for_combat_tests(&mut core, "event_started_defeat_reward");
@@ -12440,7 +12454,9 @@ fn event_started_combat_defeat_has_no_duplicate_event_reward_policy() {
         "fight",
     );
     let battle = CombatBattleState {
-        typed_resource_result: None,
+        bonus_reward_effects: Vec::new(),
+        deterrence: Default::default(),
+        credit_settlements: Default::default(), typed_resource_result: None,
         runtime_facts: None,
         primary_abnormality_id: Some("defense_risk_abno".to_string()),
         encounter_id: "defense_encounter".to_string(),
@@ -12614,7 +12630,9 @@ fn consumable_modifier_survives_abandonment_and_expires_on_committed_result() {
     core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
         .unwrap();
     let battle = CombatBattleState {
-        typed_resource_result: None,
+        bonus_reward_effects: Vec::new(),
+        deterrence: Default::default(),
+        credit_settlements: Default::default(), typed_resource_result: None,
         runtime_facts: None,
         primary_abnormality_id: Some("defense_risk_abno".to_string()),
         encounter_id: "defense_encounter".to_string(),
@@ -12665,7 +12683,7 @@ fn owned_clone_shape_complete_world_preserves_entry_checkpoint_and_retreat_conti
     let token = CancellationToken::default();
     let phase = ExecutionPhase::TrialPreparation;
     let player_id = Uuid::from_u128(1);
-    let (mut source, _, provenance) = control::run_with_provenance(
+    let ((mut source, entry_projection, entry_uuid), _, provenance) = control::run_with_provenance(
         &limits,
         &token,
         phase,
@@ -12694,6 +12712,8 @@ fn owned_clone_shape_complete_world_preserves_entry_checkpoint_and_retreat_conti
             );
             core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
                 .unwrap();
+            let entry_projection = projection_after_test_first_entry(&core, node_id);
+            let entry_uuid = serde_json::to_value(&core.state.uuid_manager).unwrap();
             core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
                 .unwrap();
             assert!(core
@@ -12704,7 +12724,7 @@ fn owned_clone_shape_complete_world_preserves_entry_checkpoint_and_retreat_conti
                 .entry_snapshot
                 .is_some());
             assert!(core.state.run_checkpoint.payload.is_some());
-            core
+            (core, entry_projection, entry_uuid)
         },
     )
     .unwrap();
@@ -12716,6 +12736,10 @@ fn owned_clone_shape_complete_world_preserves_entry_checkpoint_and_retreat_conti
         .unwrap();
     let mut candidate = candidate.unwrap();
     assert_eq!(candidate.get_run_snapshot_json().unwrap(), original);
+    assert!(Arc::ptr_eq(
+        source.state.active_battle.as_ref().unwrap().entry_snapshot.as_ref().unwrap(),
+        candidate.state.active_battle.as_ref().unwrap().entry_snapshot.as_ref().unwrap(),
+    ));
     assert!(std::ptr::eq(&*source.game_data, &*candidate.game_data));
     assert!(Arc::ptr_eq(
         source.state.continue_state.encoded.as_ref().unwrap(),
@@ -12754,20 +12778,172 @@ fn owned_clone_shape_complete_world_preserves_entry_checkpoint_and_retreat_conti
         );
         assert_eq!(source.get_run_snapshot_json().unwrap(), original);
     }
-    // Both independent native copies restore their retained entry + checkpoint
-    // and continue with the same UUID state after the actual retreat command.
-    execute_current_battle_mutation(&mut candidate, player_id, PlayerBehavior::RetreatBattle)
-        .unwrap();
+    // Live owners remain independent even though their immutable entry is shared.
+    for employee in candidate.state.roster.iter_mut() {
+        employee.condition.physical_damage = 3;
+    }
+    candidate.state.inventory.add_item_owned(
+        Uuid::from_u128(0xEC01),
+        Item::Equipment(Arc::new(equipment_meta(
+            0xEC02, "shared_entry_candidate", EquipmentType::Accessory,
+        ))),
+    ).unwrap();
+    assert_ne!(candidate.get_run_snapshot_json().unwrap(), original);
     assert_eq!(source.get_run_snapshot_json().unwrap(), original);
+    for employee in source.state.roster.iter_mut() {
+        employee.condition.physical_damage = 5;
+    }
+    source.state.inventory.add_item_owned(
+        Uuid::from_u128(0xEC03),
+        Item::Equipment(Arc::new(equipment_meta(
+            0xEC04, "shared_entry_source", EquipmentType::Accessory,
+        ))),
+    ).unwrap();
+    let source_live = source.get_run_snapshot_json().unwrap();
+    assert_ne!(source_live, candidate.get_run_snapshot_json().unwrap());
+    let entry = source.state.active_battle.as_ref().unwrap().entry_snapshot.as_ref().unwrap();
+    let weak_entry = Arc::downgrade(entry);
+
+    // Copy accounting follows the storage actually copied: an Arc handle is
+    // smaller than materializing the captured roster, inventory and checkpoint.
+    let (handle, handle_usage, _) = control::run_with_provenance(
+        &limits, &token, phase, provenance, || controlled_clone(entry),
+    ).unwrap();
+    drop(handle.unwrap());
+    let (owned, owned_usage, _) = control::run_with_provenance(
+        &limits, &token, phase, provenance, || controlled_clone(entry.as_ref()),
+    ).unwrap();
+    let owned = owned.unwrap();
+    assert!(owned_usage.work > handle_usage.work);
+    assert!(owned_usage.clone_slots_peak > handle_usage.clone_slots_peak);
+
+    // A sole owner moves under limits too small to copy its children. The weak
+    // observer also proves the consumed allocation has no retained strong owner.
+    let unique = Arc::new(owned);
+    let weak_unique = Arc::downgrade(&unique);
+    let mut unique_target = controlled_clone(&source).unwrap();
+    let move_limits = ExecutionLimits {
+        max_work: 1,
+        max_clone_slots: 1,
+        ..limits.clone()
+    };
+    let (restored, move_usage, _) = control::run_with_provenance(
+        &move_limits, &token, phase, provenance, || {
+            super::super::state::BattleEntrySnapshot::restore_shared(unique, &mut unique_target.state)
+        },
+    ).unwrap();
+    restored.unwrap();
+    assert_eq!(move_usage.work, 0);
+    assert_eq!(move_usage.clone_slots_peak, 0);
+    assert!(weak_unique.upgrade().is_none());
+    assert_eq!(unique_target.get_run_snapshot_json().unwrap(), entry_projection);
+    assert_eq!(serde_json::to_value(&unique_target.state.uuid_manager).unwrap(), entry_uuid);
+    drop(unique_target);
+
+    // Shared restoration admits the full owned copy before changing any target
+    // field. Exact and one-short limits are measured on the real restore API.
+    let mut restored_target = controlled_clone(&source).unwrap();
+    let (restored, restore_usage, _) = control::run_with_provenance(
+        &limits, &token, phase, provenance, || {
+            super::super::state::BattleEntrySnapshot::restore_shared(Arc::clone(entry), &mut restored_target.state)
+        },
+    ).unwrap();
+    restored.unwrap();
+    assert_eq!(restored_target.get_run_snapshot_json().unwrap(), entry_projection);
+    assert_eq!(serde_json::to_value(&restored_target.state.uuid_manager).unwrap(), entry_uuid);
+    assert!(restore_usage.work >= owned_usage.work);
+    assert_eq!(restore_usage.clone_slots_peak, owned_usage.clone_slots_peak);
+    drop(restored_target);
+    let exact_restore = ExecutionLimits {
+        max_work: restore_usage.work,
+        max_clone_slots: restore_usage.clone_slots_peak,
+        ..limits.clone()
+    };
+    for short in [None, Some(true), Some(false)] {
+        let mut target = controlled_clone(&source).unwrap();
+        let before_uuid = serde_json::to_value(&target.state.uuid_manager).unwrap();
+        let mut bound = exact_restore.clone();
+        if let Some(short_work) = short {
+            if short_work { bound.max_work -= 1; } else { bound.max_clone_slots -= 1; }
+        }
+        let result = control::run_with_provenance(&bound, &token, phase, provenance, || {
+            super::super::state::BattleEntrySnapshot::restore_shared(Arc::clone(entry), &mut target.state)
+        });
+        if let Some(short_work) = short {
+            let failure = result.err().unwrap();
+            assert_eq!(failure.code, if short_work { "authoring_work_limit" } else { "authoring_clone_limit" });
+            assert_eq!(target.get_run_snapshot_json().unwrap(), source_live);
+            assert_eq!(serde_json::to_value(&target.state.uuid_manager).unwrap(), before_uuid);
+            assert!(Arc::ptr_eq(entry, target.state.active_battle.as_ref().unwrap().entry_snapshot.as_ref().unwrap()));
+        } else {
+            let (restored, usage, _) = result.unwrap();
+            restored.unwrap();
+            assert_eq!(usage, restore_usage);
+            assert_eq!(target.get_run_snapshot_json().unwrap(), entry_projection);
+        }
+    }
+
+    // Native fuel is independent of authoring limits. Refusal in the shared
+    // preflight must leave the complete target available for an ordinary retry.
+    for clone_fault in [true, false] {
+        use crate::game::battle::runtime_control::{self, RuntimeFactLimits, RuntimeFaultCode};
+        let mut target = controlled_clone(&source).unwrap();
+        let before_uuid = serde_json::to_value(&target.state.uuid_manager).unwrap();
+        let native_limits = if clone_fault {
+            RuntimeFactLimits { max_clone_slots: 1, ..Default::default() }
+        } else {
+            RuntimeFactLimits { max_work: 1, ..Default::default() }
+        };
+        let error = runtime_control::run(native_limits, || {
+            super::super::state::BattleEntrySnapshot::restore_shared(Arc::clone(entry), &mut target.state)
+        }).unwrap_err();
+        assert!(matches!(error, GameError::BattleRuntimeFault(ref fault)
+            if fault.code == if clone_fault { RuntimeFaultCode::CloneLimit } else { RuntimeFaultCode::WorkLimit }), "{error:?}");
+        assert_eq!(target.get_run_snapshot_json().unwrap(), source_live);
+        assert_eq!(serde_json::to_value(&target.state.uuid_manager).unwrap(), before_uuid);
+        assert!(Arc::ptr_eq(entry, target.state.active_battle.as_ref().unwrap().entry_snapshot.as_ref().unwrap()));
+        super::super::state::BattleEntrySnapshot::restore_shared(Arc::clone(entry), &mut target.state).unwrap();
+        assert_eq!(target.get_run_snapshot_json().unwrap(), entry_projection);
+    }
+
+    // The public command creates an outer draft, so it must also preserve the
+    // original active battle, ledger and UUID when its bounded attempt fails.
+    let mut retreat_probe = controlled_clone(&source).unwrap();
+    let (retreated, retreat_usage, _) = control::run_with_provenance(
+        &limits, &token, phase, provenance, || {
+            execute_current_battle_mutation(&mut retreat_probe, player_id, PlayerBehavior::RetreatBattle)
+        },
+    ).unwrap();
+    retreated.unwrap();
+    assert_eq!(retreat_probe.get_run_snapshot_json().unwrap(), projection_after_test_retreat(entry_projection.clone(), 1));
+    drop(retreat_probe);
+    for short_work in [true, false] {
+        let mut target = controlled_clone(&source).unwrap();
+        let before_uuid = serde_json::to_value(&target.state.uuid_manager).unwrap();
+        let mut bound = ExecutionLimits {
+            max_work: retreat_usage.work,
+            max_clone_slots: retreat_usage.clone_slots_peak,
+            ..limits.clone()
+        };
+        if short_work { bound.max_work -= 1; } else { bound.max_clone_slots -= 1; }
+        let failure = control::run_with_provenance(&bound, &token, phase, provenance, || {
+            execute_current_battle_mutation(&mut target, player_id, PlayerBehavior::RetreatBattle)
+        }).err().unwrap();
+        assert_eq!(failure.code, if short_work { "authoring_work_limit" } else { "authoring_clone_limit" });
+        assert_eq!(target.get_run_snapshot_json().unwrap(), source_live);
+        assert_eq!(serde_json::to_value(&target.state.uuid_manager).unwrap(), before_uuid);
+        assert!(Arc::ptr_eq(entry, target.state.active_battle.as_ref().unwrap().entry_snapshot.as_ref().unwrap()));
+    }
+
+    execute_current_battle_mutation(&mut candidate, player_id, PlayerBehavior::RetreatBattle).unwrap();
+    assert_eq!(source.get_run_snapshot_json().unwrap(), source_live);
+    assert!(weak_entry.upgrade().is_some());
     execute_current_battle_mutation(&mut source, player_id, PlayerBehavior::RetreatBattle).unwrap();
-    assert_eq!(
-        candidate.get_run_snapshot_json().unwrap(),
-        source.get_run_snapshot_json().unwrap()
-    );
-    assert_eq!(
-        serde_json::to_value(&candidate.state.uuid_manager).unwrap(),
-        serde_json::to_value(&source.state.uuid_manager).unwrap()
-    );
+    assert!(weak_entry.upgrade().is_none());
+    assert_eq!(candidate.get_run_snapshot_json().unwrap(), projection_after_test_retreat(entry_projection.clone(), 1));
+    assert_eq!(source.get_run_snapshot_json().unwrap(), projection_after_test_retreat(entry_projection, 1));
+    assert_eq!(serde_json::to_value(&candidate.state.uuid_manager).unwrap(), entry_uuid);
+    assert_eq!(serde_json::to_value(&source.state.uuid_manager).unwrap(), entry_uuid);
 }
 
 #[test]
@@ -13506,3 +13682,13 @@ fn trusted_goodbye_failure_keeps_private_gamecore_retry_and_complete_root() {
 include!("u04_continuation.inc.rs");
 
 include!("u06_interaction.inc.rs");
+
+include!("input_plan.inc.rs");
+
+include!("prepared_volley.inc.rs");
+
+include!("paired_areas.inc.rs");
+
+include!("fusion_placement.inc.rs");
+
+include!("status_strike.inc.rs");

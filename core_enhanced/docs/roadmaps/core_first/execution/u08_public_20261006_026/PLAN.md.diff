@@ -1,0 +1,15 @@
+--- core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/PLAN.md:before
++++ core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/PLAN.md:after
+@@ -19,7 +19,11 @@
+ [E1·Continue 회수 및 E2 범위](../../../../roadmaps/core_first/execution/u08_public_20261006_009/RECORD.ko.md)를 따른다.
+ 과거 실패·원 작성 이력·감사·target·HANDOFF는 보존한다. 프로세스 가시성은 sandbox namespace에 한정된다.
+ 
+-## 현재 우선 작업 — 2026-10-06/025 · 실제 환경 장애 인계
++## 현재 우선 작업 — 2026-10-06/026 · 승인 실행으로 통합 재개
++
++사용자 권한 변경 후 root의 require_escalated 실행에서 AF_UNIX·AF_INET 생성/bind가 둘다 PASS했다. 기본 sandbox 제한은 유지되지만 승인된 외부 실행으로 필수 소켓 검증을 진행할 수 있다. [재개 인수026](../../../../roadmaps/core_first/execution/u08_public_20261006_026/RECORD.ko.md)을 따른다. source438/8734111c와 harness003 입력122개는 변경0이다. Sol이 실제 before/currentness·writer0·외부archive를 결속한 뒤 승인 요청 경로로 통합005→remaining005를 단독 실행한다. Astra 작성자둘은 HOLD이며 모든 입력writer0이다. 전체 기능·PC/R05·최종화·독립감사는 아직 남아 있다. 아래025는 권한 변경 전 실제 장애 이력이다.
++
++## 2026-10-06/025 · 권한 변경 전 환경 장애 인계 이력
+ 
+ 통합004의 Core default는 1,872 PASS / 12 FAIL로 종료했다. catalog·definition fixture 6건과 capability 기대 5건은 Astra가 7개 테스트 파일에서 교정했고 최종 source438/8734111ce349bc36de5534aff831f89ccf8c9034b7e802e120d87cee5d0e248b에서 11개 exact selector가 각각1/1 PASS다. Sol의 post_correction_fmt001도 PASS/입력 변경0이다. 남은 UnixListener bind 실패는 환경 진단에서 AF_UNIX bind EPERM·AF_INET socket EPERM으로 확인됐으며, 현재 approval never 환경에서 필수 소켓/host 검증을 완료할 수 없다.
+ [교정·장애·현재 source·도구 인수025](../../../../roadmaps/core_first/execution/u08_public_20261006_025/RECORD.ko.md)와 [최신 인수인계](../../../../roadmaps/core_first/execution/HANDOFF_LATEST.ko.md)를 따른다. fresh harness003의122입력·source438 및 외부 archive를 인수했으나 미래005 실행은0이다. G7 CLI·전체 기능/성능·최종화·동결/복원·독립감사는 미완료이며 U09는 미진입이다. 모든 제품/test/harness writer와 runner는0/HOLD다. 사용자 중지나 완료 판정이 아니라 실제 환경 장애 인계이며 기존 연속 권한은 유지된다. 합법적으로 소켓 검증이 가능한 환경이 확보된 뒤 현재성/가용성을 다시 확인하여 새label로 이어간다. 아래024 실행 예정 안내는 당시 이력이다.

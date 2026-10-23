@@ -1,0 +1,107 @@
+{
+  "format": "node-graph",
+  "version": 1,
+  "id": "b97ec82d-7a99-4759-a5cf-0632517de630",
+  "name": "값 연결 예제",
+  "nodes": [
+    {
+      "id": "3526d071-733d-4b77-91df-27253e7188bf",
+      "kind": "number",
+      "title": "",
+      "position": {
+        "x": 40.0,
+        "y": 60.0
+      },
+      "values": {
+        "value": 10
+      },
+      "note": "",
+      "frame": "04b93877-c345-48c8-bf3e-486cfcbcfb80"
+    },
+    {
+      "id": "82c6db71-6bed-4568-a3f4-0bb7aaa82abe",
+      "kind": "add",
+      "title": "",
+      "position": {
+        "x": 360.0,
+        "y": 60.0
+      },
+      "values": {
+        "a": 0,
+        "b": 0
+      },
+      "note": "",
+      "frame": "04b93877-c345-48c8-bf3e-486cfcbcfb80"
+    },
+    {
+      "id": "d08923e6-e259-4846-922c-eeadce31c16a",
+      "kind": "number",
+      "title": "",
+      "position": {
+        "x": 40.0,
+        "y": 260.0
+      },
+      "values": {
+        "value": 5
+      },
+      "note": "",
+      "frame": null
+    },
+    {
+      "id": "e90518f0-2421-466c-9e44-7fad3e8b46d3",
+      "kind": "multiply",
+      "title": "",
+      "position": {
+        "x": 680.0,
+        "y": 60.0
+      },
+      "values": {
+        "a": 1,
+        "b": 2
+      },
+      "note": "",
+      "frame": null
+    }
+  ],
+  "edges": [
+    {
+      "id": "33b100a0-0ab8-4970-89dc-89086db9e1f2",
+      "source": {
+        "node": "82c6db71-6bed-4568-a3f4-0bb7aaa82abe",
+        "port": "value"
+      },
+      "target": {
+        "node": "e90518f0-2421-466c-9e44-7fad3e8b46d3",
+        "port": "a"
+      }
+    },
+    {
+      "id": "d12b787a-4d9b-4b0c-b79a-b43711407191",
+      "source": {
+        "node": "d08923e6-e259-4846-922c-eeadce31c16a",
+        "port": "value"
+      },
+      "target": {
+        "node": "82c6db71-6bed-4568-a3f4-0bb7aaa82abe",
+        "port": "b"
+      }
+    },
+    {
+      "id": "f19bfdea-24c2-42f4-b475-72b96dd0b37c",
+      "source": {
+        "node": "3526d071-733d-4b77-91df-27253e7188bf",
+        "port": "value"
+      },
+      "target": {
+        "node": "82c6db71-6bed-4568-a3f4-0bb7aaa82abe",
+        "port": "a"
+      }
+    }
+  ],
+  "frames": [
+    {
+      "id": "04b93877-c345-48c8-bf3e-486cfcbcfb80",
+      "title": "기존 Rust 파일의 프레임"
+    }
+  ]
+}

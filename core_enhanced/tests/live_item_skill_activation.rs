@@ -67,6 +67,7 @@ fn unit_draft(owned_uuid: Uuid, base_uuid: Uuid, equipped_items: Vec<Uuid>) -> B
             .into_iter()
             .map(
                 |base_uuid| game_core::game::battle::types::BattleEquipmentBinding {
+                    weapon_stage: Default::default(),
                     base_uuid,
                     persistent_copy_uuid: None,
                     slot: None,
@@ -118,6 +119,7 @@ fn scenario_with_loadout(
     let enemy_group_id = "enemy_initial";
     BattleScenario {
         battlefield: BattleFieldSpec {
+            walkable_paths: Vec::new(),
             object_placement: None,
             width: common::BOARD_SIZE.0,
             height: common::BOARD_SIZE.1,
@@ -170,6 +172,7 @@ fn scenario_with_two_allies_and_loadout(equipped_item: Uuid) -> BattleScenario {
     let enemy_group_id = "enemy_initial";
     BattleScenario {
         battlefield: BattleFieldSpec {
+            walkable_paths: Vec::new(),
             object_placement: None,
             width: common::BOARD_SIZE.0,
             height: common::BOARD_SIZE.1,

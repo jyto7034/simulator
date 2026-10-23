@@ -1,0 +1,378 @@
+{
+  "schema": "U09_DOCUMENTATION_CURRENTNESS_HANDOFF_V1",
+  "recorded_at_utc": "2026-10-09T06:32:52.370442+00:00",
+  "source_sha256": "2fdaa433e7ba457531508fd2ab05547cd05373c77cfb2f6820108ccf651754f6",
+  "source_file_count": 492,
+  "source_manifest": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/finalization001/CURRENT_SOURCE_F01_036.json",
+    "bytes": 91650,
+    "sha256": "12d2fcf58bdb38eb1bb865000cf5b778dd910c40a1adeb213e74b986954a3e23"
+  },
+  "reviewer": "Root Astra actual product/raw/generated semantic and currentness reviewer; Sol mechanical handoff recorder and sole runner",
+  "semantic_currentness_review": "Root read and accepted product032 common original/Inline/Finite selected-reach merge, full033 publication60/preoverlay60/typed40/equal20 and existing6 controls. Root read full034 raw and confirmed the separate canonical Self lifecycle cancellation defect, accepted the minimal035 accepted action-bound skill selection plus effective-step accounting and unavailable-source fail-closed/no-obligation distinction, then read full0368PASS including World3 variants/staged4 legal retry/retained825/cancellation/sameSkill/native326255/326254 whole-root rollback. Root independently read actual PC TestFixture and R05 Abnormality factories versus unique Employee resonance-use admission and accepted fixed PC001/R05002 reuse without meter floor or performance rerun; general debit changes remain explicit. Root reviewed every successor input diff and generated004 actual0337/0362/0366 bindings, failed/unselected preservation, all34 acceptance texts/17seams/10dimensions/3nodes and254 predecessor category/literal/delta rows. Source_review binds fixed PLAN and predecessor.review binds F01_CURRENTNESS_REVIEW. Functional/performance/currentness quality is actually accepted now; generic collector pending wording remains unchanged, and only successor frozen_restore/independent_completion and their predecessor aggregate remain future gates. Sol latest E3/FEXEC records are closed and linked here. This is participant self-verification/currentness acceptance for a fresh freeze, not independent completion and not a retroactive change to audit029.",
+  "active_input_writers": 0,
+  "active_functional_runners": 0,
+  "active_performance_runners": 0,
+  "generated": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/finalization001/generated004/EVIDENCE_SELECTION.json",
+      "bytes": 276860,
+      "sha256": "9c8bd68f42fdfc19b7f59826ba3670c9693afd03ff2b1e03f6e578308d5693d5"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/finalization001/generated004/PREDECESSOR_IMPACT.json",
+      "bytes": 736213,
+      "sha256": "33f57642cf57ec0b4df5d412581fc6c1f50009bf70135c4cf68949057ed51fb9"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/finalization001/generated004/COVERAGE.json",
+      "bytes": 44266,
+      "sha256": "00559746a365b98246b1ced4ab85501b3ca911b0e64c1108b317098fd92dc7b4"
+    }
+  ],
+  "documents": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/PLAN.md",
+      "bytes": 99574,
+      "sha256": "85ceb1e35e72a42a986e2cf25717b08e011e4ff6f26efda39c0abed941bdd6f0"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/EXPERIMENTS.md",
+      "bytes": 19997,
+      "sha256": "d2e3777d49f5d9d048223d225f16da5ba081be7f38cb0964e3f0f7420481ba5d"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/EXPERIMENT_NOTES.md",
+      "bytes": 11913,
+      "sha256": "71ead3e27b701f6ee72be39154ea37ce5b04bd2a662d80892a59875877340949"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/STATE_INVENTORY.md",
+      "bytes": 4492,
+      "sha256": "d0241ebe140e327f72c8c9a1d8594d286e67774b58a10279453c4e7d49ba1c37"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_f001/EXECUTION.md",
+      "bytes": 34705,
+      "sha256": "ad1923568902b5addd3e3f2a3089dfa3dc005dbcbce9f9f4a5f66dd7408ba5d4"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/finalization001/F01_CURRENTNESS_REVIEW.ko.md",
+      "bytes": 9050,
+      "sha256": "c482766eadd8e026f6d0a081dbba9407c1244eff2112bbebdb999b28652f44c0"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_f001/u09_f01_product032/PRODUCT.md",
+      "bytes": 2157,
+      "sha256": "0ed05bf814f13f51921fb64ca1e0772d1913afb5db6d49f8cccf751a90f9ee0b"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_f001/u09_f01_runtime_product035/PRODUCT.md",
+      "bytes": 2589,
+      "sha256": "02932cc855b7949d7d5d47ef2f8d191bfefbf22b061d3fbad836db6dbccff3dc"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_f001/u09_f01_runtime_product035/READONLY_WORK_CURRENTNESS_NOTE.md",
+      "bytes": 4306,
+      "sha256": "3269744ac83ef661da421f4e18d8cfc950400f3306ef8d7787f7db1c8a4497c3"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_f001/u09_performance025/READONLY_COST_NOTE.md",
+      "bytes": 2855,
+      "sha256": "1c17b67c86cd5f3e8600651c241a94247cacda0bd56bd1c95a038e310e114ae2"
+    },
+    {
+      "path": "core_enhanced/docs/core_runtime_contract.md",
+      "bytes": 198171,
+      "sha256": "0f736c26b5b70763fb37efa81a4f1e282ac2e9a2b0c632a6323e06f9f08293f2"
+    },
+    {
+      "path": "core_enhanced/docs/skills/skill_authoring_model.ko.md",
+      "bytes": 77017,
+      "sha256": "6b138e757e6be657f2f8b3336516ada95c75cc208c53d11afa8db92d87bf93de"
+    },
+    {
+      "path": "core_enhanced/docs/game_rules/relics.md",
+      "bytes": 24767,
+      "sha256": "a766d1bc233df3095bf2e9a8721eba119f15a27565da9ed88cb49a1f2612af89"
+    }
+  ],
+  "preserved_limits": [
+    "Named evidence165 is a collected record count, not165 new/unique tests or whole-suite PASS. Successor0337+036World2+036runtime6 are disjoint15 records; compositeF01selected9 andGEX10selected8 overlap World2.",
+    "Original0306PASS3FAIL/0316PASS3FAIL/0337PASS2FAIL/0340PASS2FAIL and original input/source/tool archives remain failed; bounded successful selections do not rewrite parent failures. Independent Astra authors tests/oracles/fixtures/diagnostics.",
+    "Current native whole1ms tick minimum326255/one-short326254 application_deployed_context rollback/exact retry is not a single lookup cost. Prior024 minimum326456 remains historical, aggregate decrease201 has no per-site attribution. Live effective steps can increase debit, unavailable terminal/cancelled uses can lose old unscanned canonical-step debit; unit/cast scan cost remains. No global metering/cost-parity or zero-CPU-cost claim.",
+    "Existing PC001 immediateU07M non-time delta0/source136/object152/placement48 and oldU06 existing200 only are reused by actual workload nonreachability, not remeasured under035. Existing R05002 raw101/peak-only warning retained; summary0 is classification and other applicable hard failures[]. Concurrent p9510014462ns has observed10mscapfalse with unchanged latency_gate_applicable=false.",
+    "R05 event+12ops/+256retained/+512peak versus U08 remain within original caps; real SkillId/cold inline candidates do not prove exact attribution. Shared-host timing/RSS/native admitted extent/allocator retention are distinct; no deployment guarantee or new cap/oracle is approved.",
+    "Generic generated004 status remains pre-audit wording. Actual Root currentness/function/performance bindings are accepted; only fresh isolated restore and nonparticipant completion audit, plus dependent predecessor aggregate, remain pending.",
+    "Formal personal amount/balance/final range remains undecided; representative450/825/200 are not official policy. Explicit finite trusted offline DEV preset retains native/default/deployment ceilings.",
+    "Prior029 whole-Goal audit remains Not Complete/High/open1F01 with immutable target/closure/restore/archives. Root/Sol/Astra are participants; only a new nonparticipant whole-Goal audit of the immutable successor may award Complete/High/open0."
+  ],
+  "roles": {
+    "product_and_sole_runner": "Assigned GPT-6.1 Sol/xhigh",
+    "tests_fixtures_oracles_comparators_and_mechanical_tools": "Independent Astra test author; execution0",
+    "planning_semantic_review": "Root Astra",
+    "nonparticipant_auditor": "/root/u09_independent_audit029, confirmed gpt-6-astra/high; prior closed audit only, no Goal plan/product/test participation; reuse for successor whole-Goal re-audit"
+  },
+  "mechanical_collection": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_f001/u09_f01_finalization037/RECEIPT.json",
+    "bytes": 5410,
+    "sha256": "0e87330d6b766898e23173f75b0a11e1cf3534808e4c06b95f390b716f4a0d04"
+  },
+  "functional_collection": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_f001/u09_f01_post036/RECEIPT.json",
+    "bytes": 10303,
+    "sha256": "24c6f3a77d0eb6af267155a5e48d4881a42703a54a85b485bdb74628c216b787"
+  },
+  "publication_control_collection": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_f001/u09_f01_post033/RECEIPT.json",
+    "bytes": 9382,
+    "sha256": "0ea2d88a77803dc3d428f0c5c1b42cb05cfef04b2b845bb8917c9a68e42a5a90"
+  },
+  "performance_collection": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/product_parts/bundle_f001/u09_performance025/RECEIPT.json",
+    "bytes": 21804,
+    "sha256": "822015bd0af1690af2adc8de0de6a08b4b145905353b2e0271ba8671e48f46d6"
+  },
+  "currentness_review": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/finalization001/F01_CURRENTNESS_REVIEW.ko.md",
+    "bytes": 9050,
+    "sha256": "c482766eadd8e026f6d0a081dbba9407c1244eff2112bbebdb999b28652f44c0"
+  },
+  "prior_failed_attempt": {
+    "verdict": "Not Complete",
+    "confidence": "High",
+    "open_findings_count": 1,
+    "open_findings": [
+      "F01"
+    ],
+    "original_product_source_sha256": "1ca0fbe68a2ba80603470dde38a6c50e67c9d0ca3938391dbc4b211e875c492e",
+    "audit_artifacts": [
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_029_pass001/AUDIT_CLOSURE.json",
+        "bytes": 6498,
+        "sha256": "1a31fd030bf14a2d5664572cb32acb920701b5840d350154b723dcb83cd21bab"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_029_pass001/COMPLETION_AUDIT.md",
+        "bytes": 14917,
+        "sha256": "01fbd123e9f763b501feb4e5317aef4371e54a22d5f2ed93ac7badd54d70f7fe"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_029_pass001/CONDITION_REVIEW.json",
+        "bytes": 64679,
+        "sha256": "38ca08cef068f1e50020cbfc2f721fdf83995d81c60e91d3280374b62299e117"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_029_pass001/ENTRY_CURRENTNESS.json",
+        "bytes": 745,
+        "sha256": "f532dd7b419db14417a3e77adce9bef699880abde2d2a44ae66b7f003307221b"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_029_pass001/EVIDENCE_REVIEW.json",
+        "bytes": 273448,
+        "sha256": "a675c5e8acacfd98ecc2028046b769c5b9fc577b81e1f31749ba7dc737230a0f"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_029_pass001/EXIT_CURRENTNESS.json",
+        "bytes": 578,
+        "sha256": "35524e4744d4adadedc09e4d1dc77dd7a5155d064a0b05a498725f669baea1cc"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_029_pass001/FINDINGS.json",
+        "bytes": 3565,
+        "sha256": "7feb147d6c0f8a935a47299f8d142a41bd010b600f847a3aa03cc0e93e20dce2"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_029_pass001/PREDECESSOR_REVIEW.json",
+        "bytes": 854921,
+        "sha256": "030b76b468e596825adfaef0992e021e67d73618abb2c8b738dd8dfa2e526d61"
+      }
+    ],
+    "closure_expected_refs": [
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/target/u09_current_029/MANIFEST.json",
+        "bytes": 195330,
+        "sha256": "9ea2e2bc6b6687ba99649d1b9bc7d6d4f8922429ef7b0785fb2fadad0557a1f3"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_029_pass001/ENTRY_CURRENTNESS.json",
+        "bytes": 745,
+        "sha256": "f532dd7b419db14417a3e77adce9bef699880abde2d2a44ae66b7f003307221b"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_029_pass001/EXIT_CURRENTNESS.json",
+        "bytes": 578,
+        "sha256": "35524e4744d4adadedc09e4d1dc77dd7a5155d064a0b05a498725f669baea1cc"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/target/u09_current_029/RESTORE_VERIFICATION.json",
+        "bytes": 2562,
+        "sha256": "7666df5cd5064f90ee35cf1121765de0d8b2ef1e5e675713cf0cb10cad70016f"
+      },
+      {
+        "path": ".cache/u09_freeze029.execution.json",
+        "bytes": 2933,
+        "sha256": "c9b2ea5dc2f360d14058742daa1c8dc7ae4bee54176836305bbfdd73b72fbcbe"
+      },
+      {
+        "path": ".cache/u09_freeze029.log",
+        "bytes": 269,
+        "sha256": "2830d362d9c493764ec0fc426eb3176d6c8df4cfa7d5115fedd9611dbba0d29f"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_029_pass001/CONDITION_REVIEW.json",
+        "bytes": 64679,
+        "sha256": "38ca08cef068f1e50020cbfc2f721fdf83995d81c60e91d3280374b62299e117"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_029_pass001/PREDECESSOR_REVIEW.json",
+        "bytes": 854921,
+        "sha256": "030b76b468e596825adfaef0992e021e67d73618abb2c8b738dd8dfa2e526d61"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_029_pass001/EVIDENCE_REVIEW.json",
+        "bytes": 273448,
+        "sha256": "a675c5e8acacfd98ecc2028046b769c5b9fc577b81e1f31749ba7dc737230a0f"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_029_pass001/FINDINGS.json",
+        "bytes": 3565,
+        "sha256": "7feb147d6c0f8a935a47299f8d142a41bd010b600f847a3aa03cc0e93e20dce2"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_029_pass001/COMPLETION_AUDIT.md",
+        "bytes": 14917,
+        "sha256": "01fbd123e9f763b501feb4e5317aef4371e54a22d5f2ed93ac7badd54d70f7fe"
+      }
+    ],
+    "target_manifest": {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/target/u09_current_029/MANIFEST.json",
+      "bytes": 195330,
+      "sha256": "9ea2e2bc6b6687ba99649d1b9bc7d6d4f8922429ef7b0785fb2fadad0557a1f3"
+    },
+    "archives_and_patches": [
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/target/u09_current_029/EXTERNAL_ARCHIVES.json",
+        "sha256": "6534f9c11579a18212e3b6b2812b396aedfcd45579b210c382e8e35969f6e9fe",
+        "bytes": 44301
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/target/u09_current_029/FORWARD.patch",
+        "sha256": "62fe662fa828697f225b8a5b02d399757d65eba2780a3b683cf9f04b282481d5",
+        "bytes": 903300
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/target/u09_current_029/GIT_STATUS.txt",
+        "sha256": "1074f3ccd2ae746d667b276e7dde37d1b7fbba65dcd090be0798a6aab10c1a05",
+        "bytes": 12728041
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/target/u09_current_029/MEMBERSHIP.json",
+        "sha256": "3087e2cdb3efe7a5ca0ade910a249d6bae5ab564c881cabf6a85f7be205f9ccc",
+        "bytes": 847810
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/target/u09_current_029/RECORDS.json",
+        "sha256": "391edac9dae56bef6732bb8ff38d0c5519a4683f5fe335916494963dfe8350ed",
+        "bytes": 556291
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/target/u09_current_029/RECORDS.tar.gz",
+        "sha256": "ff073fa107e2408ece5413a807fbc8a6c055af1394394e4e09c585d009f1e034",
+        "bytes": 14631552
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/target/u09_current_029/REFERENCES.json",
+        "sha256": "e58eea60d76084f1cd8918c74cacd755dd969b9ed777e688260c1c87529a647c",
+        "bytes": 7795
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/target/u09_current_029/REFERENCES.tar.gz",
+        "sha256": "8e01278a5fbc11c66dc2f99bd9f796b8d16e99ba5bbfe7fcfd3a46480218ac27",
+        "bytes": 2473609
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/target/u09_current_029/RESTORE_FORWARD.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/target/u09_current_029/RESTORE_REVERSE.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/target/u09_current_029/RESTORE_VERIFICATION.json",
+        "sha256": "7666df5cd5064f90ee35cf1121765de0d8b2ef1e5e675713cf0cb10cad70016f",
+        "bytes": 2562
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/target/u09_current_029/REVERSE.patch",
+        "sha256": "d7404a10d0956af6396094ff8e6ba14eef400935e783f9731903790030de5e55",
+        "bytes": 903568
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/target/u09_current_029/SOURCE_AFTER.tar.gz",
+        "sha256": "74aa0eae056f5c540057606d1709c3d6e861a33747d5cb021e67fc286d58b4cd",
+        "bytes": 2185224
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/target/u09_current_029/SOURCE_BEFORE.tar.gz",
+        "sha256": "c19d9d0e90967178cc2f13be5b0431aefbe05a46abde8269f998adc44ad334f2",
+        "bytes": 2029851
+      }
+    ],
+    "original_handoff": {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/finalization001/HANDOFF_029.json",
+      "bytes": 7372,
+      "sha256": "4abb4d095fec6dacace0984250a9d6b15db77e65f5e1f3f64d07c99818ecf1e3"
+    },
+    "original_source_manifest": {
+      "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/finalization001/CURRENT_SOURCE.json",
+      "bytes": 91650,
+      "sha256": "34018590247da600cdc3b63a013ef4fbba72c511877c91659f93c7662959f0a0"
+    },
+    "original_generated": [
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/finalization001/generated003/EVIDENCE_SELECTION.json",
+        "bytes": 240956,
+        "sha256": "07fd57ecd6428397864a9633afe090278e3571312fb176b885c97a8fd3b08d6e"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/finalization001/generated003/PREDECESSOR_IMPACT.json",
+        "bytes": 655074,
+        "sha256": "c2c5ada1c5d903569f8d349b28a7d1d3070b11d77fb72d7c5ea6f4a6c80a0bb1"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/finalization001/generated003/COVERAGE.json",
+        "bytes": 41997,
+        "sha256": "c5587b102d53f31ca1f46825a72644fe4d09864a9e82e70751db4ded084d0187"
+      }
+    ],
+    "preservation_semantics": "Original closure expected byte references and14 manifest archives/patches are preserved explicitly. The manifest is a file ref only; its old source_files are not inlined into this handoff or compared to current corrected source. Four old tar archives are external byte-bound, and their historical isolated restore evidence is retained. No new archive-member verification is claimed for those prior tar files."
+  },
+  "freeze_adapter": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/finalization001/freeze_target.py",
+    "bytes": 21018,
+    "sha256": "4553433781d88fc3cb62ba7493c21f1a1ac76ce487c7efe6504a04c89186869a"
+  },
+  "freeze_runplan": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/finalization001/FREEZE_RUNPLAN.json",
+    "bytes": 6495,
+    "sha256": "63d4d5421b6d58d383c6f59dac37bbfd2dc1584975df44f66194e12a5778feef"
+  },
+  "freeze_command": [
+    "python3",
+    "-B",
+    "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/finalization001/freeze_target.py",
+    "--source-manifest",
+    "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/finalization001/CURRENT_SOURCE_F01_036.json",
+    "--generated",
+    "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/finalization001/generated004",
+    "--handoff",
+    "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/finalization001/HANDOFF_038.json",
+    "--target",
+    "core_enhanced/docs/goals/core_relic_structural_activation/execution/single_goal/target/u09_current_038"
+  ],
+  "freeze_mode": "Direct unwrapped command; stdout/stderr and actual execution receipt outside U09 goal tree; isolated forward/reverse only; fresh target; no workspace reverse. Root actual handoff review precedes execution."
+}

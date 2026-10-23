@@ -1,0 +1,28 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Goal Set",
+        "Artifact ID": "GS-CSCB-001",
+        "Content Digest": "sha256:85687748eb82b656d9b4a4de8bd5fe04a64bd2be11e508e10607c7d115e3675c"
+      },
+      "payload": {
+        "Goal Set Document": "P2G_50_GOAL_SET.ko.md",
+        "Goal Set Document SHA256": "0e5ae2ee53275402a5ca5d5d5b6ff0f5026fa4cf7d79fd9a5df4cc34cbc03d38",
+        "Complete Goal Member Set": [
+          "GOAL-CSCB-01"
+        ],
+        "Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CSCB-001",
+          "Content Digest": "sha256:532e0f0b70dfcd3fe302182a3f8d1fb9d19c328cd9d7894c8d5cb3034717c47d"
+        },
+        "Phase Plan Ref": {
+          "Artifact Type": "Phase Plan",
+          "Artifact ID": "PP-CSCB-001",
+          "Content Digest": "sha256:05552c05c1d8349a02ee760f5e440283ea1ad134e170b29b0fd25469ce4f2a63"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "argv": [
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/product_parts/release_compile014/artifacts/normal_host_lifecycle",
+    "continue",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/product_parts/normal_contexts005/standalone.json",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_expedition_lifecycle/post_audit/u12_current_002_pass001/original_protection_probe/positive/save",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_expedition_lifecycle/post_audit/u12_current_002_pass001/original_protection_probe/positive/save",
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_expedition_lifecycle/post_audit/u12_current_002_pass001/original_protection_probe/positive/continue"
+  ],
+  "exit_code": 0,
+  "duration_seconds": 2.674164618998475,
+  "child_reaped": true,
+  "current_files": [
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/post_audit/u12_current_002_pass001/original_protection_probe/positive/save/player_profile.json",
+      "bytes": 2597,
+      "sha256": "2d22a7613d4023624ddb500e2fb2828bfaf6503582cf82711af20da3f1e79359"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/post_audit/u12_current_002_pass001/original_protection_probe/positive/save/player_profile.backup.json",
+      "bytes": 2597,
+      "sha256": "2d22a7613d4023624ddb500e2fb2828bfaf6503582cf82711af20da3f1e79359"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/post_audit/u12_current_002_pass001/original_protection_probe/positive/save/active_run.json",
+      "bytes": 25899,
+      "sha256": "fa40e3ff04b5791011b3954e6386915060e05b039efb346918e3e70bd842947e"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/post_audit/u12_current_002_pass001/original_protection_probe/positive/save/active_run.backup.json",
+      "bytes": 25899,
+      "sha256": "fa40e3ff04b5791011b3954e6386915060e05b039efb346918e3e70bd842947e"
+    }
+  ]
+}

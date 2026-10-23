@@ -1,0 +1,404 @@
+{
+  "passed": true,
+  "measurements": [
+    {
+      "mode": "normal",
+      "forward": [
+        {
+          "operation_seconds": 1.260204248,
+          "snapshot_seconds": 0.743034793,
+          "max_single_window_growth_bytes": 1020026,
+          "baseline_requested_bytes": 419013261,
+          "process_requested_peak_bytes": 423182692,
+          "post_drop_delta_bytes": 0,
+          "native_work_sum": 15513482,
+          "native_work_max": 522524,
+          "native_cumulative_requested_max_bytes": 1403076,
+          "rss_before": {
+            "lifetime_peak_bytes": 542154752,
+            "resident_bytes": 534392832,
+            "status": "available"
+          },
+          "rss_after_operations": {
+            "lifetime_peak_bytes": 543850496,
+            "resident_bytes": 543850496,
+            "status": "available"
+          },
+          "rss_after_drop": {
+            "lifetime_peak_bytes": 543850496,
+            "resident_bytes": 543850496,
+            "status": "available"
+          }
+        },
+        {
+          "operation_seconds": 1.249255851,
+          "snapshot_seconds": 0.743522917,
+          "max_single_window_growth_bytes": 1020026,
+          "baseline_requested_bytes": 419013261,
+          "process_requested_peak_bytes": 423182692,
+          "post_drop_delta_bytes": 0,
+          "native_work_sum": 15513482,
+          "native_work_max": 522524,
+          "native_cumulative_requested_max_bytes": 1403076,
+          "rss_before": {
+            "lifetime_peak_bytes": 541847552,
+            "resident_bytes": 534659072,
+            "status": "available"
+          },
+          "rss_after_operations": {
+            "lifetime_peak_bytes": 543907840,
+            "resident_bytes": 543907840,
+            "status": "available"
+          },
+          "rss_after_drop": {
+            "lifetime_peak_bytes": 543907840,
+            "resident_bytes": 543907840,
+            "status": "available"
+          }
+        },
+        {
+          "operation_seconds": 1.269845533,
+          "snapshot_seconds": 0.739646863,
+          "max_single_window_growth_bytes": 1020026,
+          "baseline_requested_bytes": 419013261,
+          "process_requested_peak_bytes": 423182692,
+          "post_drop_delta_bytes": 0,
+          "native_work_sum": 15513482,
+          "native_work_max": 522524,
+          "native_cumulative_requested_max_bytes": 1403076,
+          "rss_before": {
+            "lifetime_peak_bytes": 541941760,
+            "resident_bytes": 534704128,
+            "status": "available"
+          },
+          "rss_after_operations": {
+            "lifetime_peak_bytes": 543842304,
+            "resident_bytes": 543842304,
+            "status": "available"
+          },
+          "rss_after_drop": {
+            "lifetime_peak_bytes": 543842304,
+            "resident_bytes": 543842304,
+            "status": "available"
+          }
+        }
+      ],
+      "public_continue": [
+        {
+          "seconds": 0.044023151,
+          "heap_window_growth_bytes": 804211,
+          "post_drop_delta_bytes": 0,
+          "loader_associated_post_drop_delta_bytes": 128,
+          "native_work": 677650,
+          "native_cumulative_requested_max_bytes": 2637412,
+          "rss_before": {
+            "lifetime_peak_bytes": 46944256,
+            "resident_bytes": 46944256,
+            "status": "available"
+          },
+          "rss_after_restore": {
+            "lifetime_peak_bytes": 52752384,
+            "resident_bytes": 52002816,
+            "status": "available"
+          },
+          "rss_after_drop": {
+            "lifetime_peak_bytes": 52752384,
+            "resident_bytes": 52674560,
+            "status": "available"
+          }
+        },
+        {
+          "seconds": 0.044440474,
+          "heap_window_growth_bytes": 804211,
+          "post_drop_delta_bytes": 0,
+          "loader_associated_post_drop_delta_bytes": 128,
+          "native_work": 677650,
+          "native_cumulative_requested_max_bytes": 2637412,
+          "rss_before": {
+            "lifetime_peak_bytes": 46956544,
+            "resident_bytes": 46956544,
+            "status": "available"
+          },
+          "rss_after_restore": {
+            "lifetime_peak_bytes": 52236288,
+            "resident_bytes": 52027392,
+            "status": "available"
+          },
+          "rss_after_drop": {
+            "lifetime_peak_bytes": 52703232,
+            "resident_bytes": 52703232,
+            "status": "available"
+          }
+        },
+        {
+          "seconds": 0.043144371,
+          "heap_window_growth_bytes": 804211,
+          "post_drop_delta_bytes": 0,
+          "loader_associated_post_drop_delta_bytes": 128,
+          "native_work": 677650,
+          "native_cumulative_requested_max_bytes": 2637412,
+          "rss_before": {
+            "lifetime_peak_bytes": 46936064,
+            "resident_bytes": 46936064,
+            "status": "available"
+          },
+          "rss_after_restore": {
+            "lifetime_peak_bytes": 51998720,
+            "resident_bytes": 51998720,
+            "status": "available"
+          },
+          "rss_after_drop": {
+            "lifetime_peak_bytes": 52670464,
+            "resident_bytes": 52670464,
+            "status": "available"
+          }
+        }
+      ]
+    },
+    {
+      "mode": "expanded",
+      "forward": [
+        {
+          "operation_seconds": 1.280171571,
+          "snapshot_seconds": 0.757232451,
+          "max_single_window_growth_bytes": 1069850,
+          "baseline_requested_bytes": 422281905,
+          "process_requested_peak_bytes": 426471854,
+          "post_drop_delta_bytes": 0,
+          "native_work_sum": 17125498,
+          "native_work_max": 806438,
+          "native_cumulative_requested_max_bytes": 1934971,
+          "rss_before": {
+            "lifetime_peak_bytes": 546750464,
+            "resident_bytes": 539770880,
+            "status": "available"
+          },
+          "rss_after_operations": {
+            "lifetime_peak_bytes": 548212736,
+            "resident_bytes": 548212736,
+            "status": "available"
+          },
+          "rss_after_drop": {
+            "lifetime_peak_bytes": 548212736,
+            "resident_bytes": 548212736,
+            "status": "available"
+          }
+        },
+        {
+          "operation_seconds": 1.259716471,
+          "snapshot_seconds": 0.7375992690000001,
+          "max_single_window_growth_bytes": 1069850,
+          "baseline_requested_bytes": 422281905,
+          "process_requested_peak_bytes": 426471854,
+          "post_drop_delta_bytes": 0,
+          "native_work_sum": 17125498,
+          "native_work_max": 806438,
+          "native_cumulative_requested_max_bytes": 1934971,
+          "rss_before": {
+            "lifetime_peak_bytes": 546562048,
+            "resident_bytes": 539721728,
+            "status": "available"
+          },
+          "rss_after_operations": {
+            "lifetime_peak_bytes": 548081664,
+            "resident_bytes": 548081664,
+            "status": "available"
+          },
+          "rss_after_drop": {
+            "lifetime_peak_bytes": 548081664,
+            "resident_bytes": 548081664,
+            "status": "available"
+          }
+        },
+        {
+          "operation_seconds": 1.5303077489999999,
+          "snapshot_seconds": 0.880302542,
+          "max_single_window_growth_bytes": 1069850,
+          "baseline_requested_bytes": 422281905,
+          "process_requested_peak_bytes": 426471854,
+          "post_drop_delta_bytes": 0,
+          "native_work_sum": 17125498,
+          "native_work_max": 806438,
+          "native_cumulative_requested_max_bytes": 1934971,
+          "rss_before": {
+            "lifetime_peak_bytes": 546557952,
+            "resident_bytes": 539713536,
+            "status": "available"
+          },
+          "rss_after_operations": {
+            "lifetime_peak_bytes": 548077568,
+            "resident_bytes": 548077568,
+            "status": "available"
+          },
+          "rss_after_drop": {
+            "lifetime_peak_bytes": 548077568,
+            "resident_bytes": 548077568,
+            "status": "available"
+          }
+        }
+      ],
+      "public_continue": [
+        {
+          "seconds": 0.046543252,
+          "heap_window_growth_bytes": 804211,
+          "post_drop_delta_bytes": 0,
+          "loader_associated_post_drop_delta_bytes": 128,
+          "native_work": 677650,
+          "native_cumulative_requested_max_bytes": 2637412,
+          "rss_before": {
+            "lifetime_peak_bytes": 48627712,
+            "resident_bytes": 48627712,
+            "status": "available"
+          },
+          "rss_after_restore": {
+            "lifetime_peak_bytes": 53616640,
+            "resident_bytes": 53616640,
+            "status": "available"
+          },
+          "rss_after_drop": {
+            "lifetime_peak_bytes": 54382592,
+            "resident_bytes": 54382592,
+            "status": "available"
+          }
+        },
+        {
+          "seconds": 0.046322944,
+          "heap_window_growth_bytes": 804211,
+          "post_drop_delta_bytes": 0,
+          "loader_associated_post_drop_delta_bytes": 128,
+          "native_work": 677650,
+          "native_cumulative_requested_max_bytes": 2637412,
+          "rss_before": {
+            "lifetime_peak_bytes": 48508928,
+            "resident_bytes": 48508928,
+            "status": "available"
+          },
+          "rss_after_restore": {
+            "lifetime_peak_bytes": 53637120,
+            "resident_bytes": 53637120,
+            "status": "available"
+          },
+          "rss_after_drop": {
+            "lifetime_peak_bytes": 54431744,
+            "resident_bytes": 54431744,
+            "status": "available"
+          }
+        },
+        {
+          "seconds": 0.048697428,
+          "heap_window_growth_bytes": 804211,
+          "post_drop_delta_bytes": 0,
+          "loader_associated_post_drop_delta_bytes": 128,
+          "native_work": 677650,
+          "native_cumulative_requested_max_bytes": 2637412,
+          "rss_before": {
+            "lifetime_peak_bytes": 48168960,
+            "resident_bytes": 48168960,
+            "status": "available"
+          },
+          "rss_after_restore": {
+            "lifetime_peak_bytes": 53485568,
+            "resident_bytes": 53485568,
+            "status": "available"
+          },
+          "rss_after_drop": {
+            "lifetime_peak_bytes": 54263808,
+            "resident_bytes": 54263808,
+            "status": "available"
+          }
+        }
+      ]
+    }
+  ],
+  "comparison": [
+    {
+      "mode": "normal",
+      "forward": {
+        "operation_seconds": {
+          "before_median": 1.324506763,
+          "after_median": 1.260204248
+        },
+        "max_single_window_growth_bytes": {
+          "before_median": 1020026,
+          "after_median": 1020026
+        },
+        "native_work_sum": {
+          "before_median": 18313089,
+          "after_median": 15513482
+        },
+        "native_cumulative_requested_max_bytes": {
+          "before_median": 1922450,
+          "after_median": 1403076
+        }
+      },
+      "public_continue": {
+        "seconds": {
+          "before_median": 0.060170773,
+          "after_median": 0.044023151
+        },
+        "heap_window_growth_bytes": {
+          "before_median": 904258,
+          "after_median": 804211
+        },
+        "native_work": {
+          "before_median": 1481111,
+          "after_median": 677650
+        },
+        "native_cumulative_requested_max_bytes": {
+          "before_median": 6287138,
+          "after_median": 2637412
+        }
+      }
+    },
+    {
+      "mode": "expanded",
+      "forward": {
+        "operation_seconds": {
+          "before_median": 1.304394827,
+          "after_median": 1.280171571
+        },
+        "max_single_window_growth_bytes": {
+          "before_median": 1175874,
+          "after_median": 1069850
+        },
+        "native_work_sum": {
+          "before_median": 20360360,
+          "after_median": 17125498
+        },
+        "native_cumulative_requested_max_bytes": {
+          "before_median": 2665096,
+          "after_median": 1934971
+        }
+      },
+      "public_continue": {
+        "seconds": {
+          "before_median": 0.059155853,
+          "after_median": 0.046543252
+        },
+        "heap_window_growth_bytes": {
+          "before_median": 904258,
+          "after_median": 804211
+        },
+        "native_work": {
+          "before_median": 1481111,
+          "after_median": 677650
+        },
+        "native_cumulative_requested_max_bytes": {
+          "before_median": 6287138,
+          "after_median": 2637412
+        }
+      }
+    }
+  ],
+  "baseline": "../single_goal/COST_REVIEW.json",
+  "raw": "runs/current001/cost",
+  "method": "Three fresh diagnostic dev opt0/debug0 processes for each of normal/expanded forward333 and public Continue; published payload bytes decoded without edits. IO/trace parsing excluded from timed windows.",
+  "budget_decision": "Keep default runtime work and 16MiB retained limits; no workload reduction or automatic increase.",
+  "accounting_scope": "Current counters include storage even without relics. Wider accounting is not an execution-cost regression by itself; time, allocator bytes and RSS reported separately.",
+  "limitations": [
+    "64 candidates is a finite representative expansion",
+    "timings are diagnostic, not release latency guarantees",
+    "RSS need not shrink after allocator frees",
+    "loader residual is separate from exact gameplay allocation recovery"
+  ]
+}

@@ -1,0 +1,18 @@
+[package]
+name = "u12_independent_lifecycle_probe"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+game_core = { path = "../../../../../../../.." }
+game_server = { path = "../../../../../../../../../game_server" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+ron = "0.5.1"
+sha2 = "0.10.9"
+uuid = { version = "1.14.0", features = ["serde", "v4"] }
+
+[[bin]]
+name = "u14_deterrence_host"
+path = "../../../../../../core_expedition_deterrence_rewards/execution/single_goal/test_parts/u14_host.rs"

@@ -12,6 +12,8 @@ pub struct Settings {
     pub content: ContentSettings,
     #[serde(default)]
     pub runtime_safety_path: Option<PathBuf>,
+    #[serde(default)]
+    pub mod_admission_path: Option<PathBuf>,
 }
 
 impl Settings {

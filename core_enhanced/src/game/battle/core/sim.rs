@@ -51,7 +51,6 @@ fn cast_start_seq_from_cause(cause: BattleEventCause) -> Option<u64> {
 }
 
 use super::{
-    movement::ActionState,
     skill_runtime::cast::{PreviousStepDamageGate, SkillTargetUsefulness},
     triggers::TriggerOccurrenceContext,
     types::{AbilityProcKey, PendingSkillCast, SkillStepResult},
@@ -184,6 +183,9 @@ pub enum BattleLiveCommand {
         target: Option<SkillCastTarget>,
         time_ms: u64,
     },
+    CommitInputPlan {unit_id:UnitInstanceId,input:crate::game::ability::input_plan::ShotCommitInput,time_ms:u64},
+    CancelInputPlan {unit_id:UnitInstanceId,preparation:u64,disconnected:bool,time_ms:u64},
+    SelectRelation { unit_id:UnitInstanceId, entry:String, target:UnitInstanceId, time_ms:u64 },
     ActivateSkill {
         unit_id: UnitInstanceId,
         skill_id: SkillId,
@@ -211,6 +213,10 @@ pub enum BattleLiveCommandOutcome {
         first_unit_id: UnitInstanceId,
         second_unit_id: UnitInstanceId,
     },
+    InputPlanPrepared {unit_id:UnitInstanceId,preparation:u64},
+    InputPlanCommitted {unit_id:UnitInstanceId,receipt:crate::game::ability::input_plan::ShotCommitReceipt},
+    InputPlanCancelled {unit_id:UnitInstanceId},
+    RelationChanged { unit_id:UnitInstanceId, target:Option<UnitInstanceId> },
     SkillActivated {
         unit_id: UnitInstanceId,
     },
@@ -298,7 +304,7 @@ struct SkillStepExecution<'a> {
 }
 
 impl BattleCore {
-    fn movement_tick_ms(&self) -> u64 {
+    pub(super) fn movement_tick_ms(&self) -> u64 {
         self.game_data
             .run_policy
             .battle_runtime
@@ -442,7 +448,7 @@ impl BattleCore {
             time_ms,
             caster_instance_id,
             skill_id,
-            (explicit_target, None),
+            (explicit_target, None, None),
             cause,
             allow_dead_caster,
             None,
@@ -454,12 +460,12 @@ impl BattleCore {
         time_ms: u64,
         caster_instance_id: UnitInstanceId,
         skill_id: &str,
-        target_snapshot: (Option<SkillCastTarget>, Option<Position>),
+        target_snapshot: (Option<SkillCastTarget>, Option<Position>, Option<crate::game::battle::tile_range::FacingDirection>),
         cause: BattleEventCause,
         allow_dead_caster: bool,
         accepted_action: Option<crate::game::battle::runtime_facts::ActionHandle>,
     ) {
-        let (explicit_target, accepted_target_tile) = target_snapshot;
+        let (explicit_target, accepted_target_tile, accepted_facing) = target_snapshot;
         let inherited_source = accepted_action
             .as_ref()
             .and_then(|action| self.runtime_facts.query(action).ok())
@@ -482,6 +488,12 @@ impl BattleCore {
             return;
         };
 
+        if skill.resonance_admission.is_some()
+            && !accepted_action.as_ref().is_some_and(|action|
+                self.has_resonance_use_credential(caster_instance_id, &skill.id, action)) {
+            return;
+        }
+
         if explicit_target.is_none() {
             match self.requires_explicit_structural_selection(
                 &skill,
@@ -501,13 +513,18 @@ impl BattleCore {
             }
         }
 
-        let flow_plan = match effective_source.relic_effective() {
-            Some(binding) => binding.execution().flow.clone(),
-            None => match self.game_data.skill_data.compiled_flow(skill_id) {
-                Ok(plan) => plan,
-                Err(_) => return,
-            },
-        };
+        let flow_plan =
+            if let Some(binding) = effective_source.causal().and_then(|c| c.program.as_ref()) {
+                binding.execution().flow.clone()
+            } else {
+                match effective_source.relic_effective() {
+                    Some(binding) => binding.execution().flow.clone(),
+                    None => match self.game_data.skill_data.compiled_flow(skill_id) {
+                        Ok(plan) => plan,
+                        Err(_) => return,
+                    },
+                }
+            };
         if time_ms
             .checked_add(flow_plan.authored_delay_bound_ms)
             .is_none()
@@ -555,12 +572,13 @@ impl BattleCore {
             return;
         };
         let cast_target = explicit_target.or_else(|| {
-            self.resolve_skill_cast_target_at(
+            self.resolve_skill_cast_target_for_origin(
                 time_ms,
                 &skill,
                 caster_instance_id,
                 caster_owner,
                 caster_pos,
+                allow_dead_caster,
             )
         });
 
@@ -577,7 +595,7 @@ impl BattleCore {
             Some(SkillCastTarget::Unit { unit_instance_id }) => {
                 self.live_unit_projected_tile(unit_instance_id)
             }
-            None => None,
+            None | Some(SkillCastTarget::TilePair { .. } | SkillCastTarget::Direction { .. }) => None,
         });
         let cast_target_anchor_world_position = accepted_target_tile
             .map(crate::game::battle::core::movement::types::WorldVec2::from_tile_center)
@@ -590,7 +608,7 @@ impl BattleCore {
                 Some(SkillCastTarget::Unit { unit_instance_id }) => {
                     self.unit_world_position_or_tile_center(unit_instance_id)
                 }
-                None => None,
+                None | Some(SkillCastTarget::TilePair { .. } | SkillCastTarget::Direction { .. }) => None,
             });
 
         if self
@@ -608,9 +626,17 @@ impl BattleCore {
                     actor: Some(caster_instance_id),
                     equipment: self.runtime_fact_source.equipment,
                     reaction: self.runtime_fact_source.reaction,
-                    fragment: if self.runtime_fact_source.reinput().is_some() || self.runtime_fact_source.reaction { self.runtime_fact_source.fragment.clone() } else { self.units.get(&caster_instance_id).and_then(|unit| unit.fragment_source.as_ref()).filter(|source| source.skill_id == skill.id && self.runtime_fact_source.equipment.is_none()).cloned() },
+                    fragment: if self.runtime_fact_source.reinput().is_some() || self.runtime_fact_source.reaction { self.runtime_fact_source.fragment.clone() } else { self.units.get(&caster_instance_id).and_then(|unit| unit.fragment_source.as_ref()).filter(|source| self.fragment_owns_skill(&source.skill_id, &skill.id) && self.runtime_fact_source.equipment.is_none()).cloned() },
                     resource_capabilities: match crate::game::battle::runtime_facts::RuntimeFactSource::resource_capabilities(parent_resource_context, None) { Ok(value) => value, Err(_) => return },
                     ..effective_source.clone()
+                };
+                let source = if effective_source.causal().is_some() {
+                    match source.with_causal(effective_source.causal().cloned()) {
+                        Ok(source) => source,
+                        Err(_) => return,
+                    }
+                } else {
+                    source
                 };
                 let source = match effective_source.relic_effective() {
                     Some(binding) => match source.with_relic_effective(binding.clone()) {
@@ -631,6 +657,12 @@ impl BattleCore {
                 }
             }
         };
+        if Self::tile_burst_skill(&skill) && !self.has_prepared_tile_burst(&action) {
+            if self.prepare_tile_burst(caster_instance_id, &skill, &action, time_ms).is_err() { return; }
+        }
+        if Self::presence_burst_skill(&skill) && !self.has_prepared_presence_burst(&action) {
+            if self.prepare_presence_burst(caster_instance_id, &skill, &action, time_ms).is_err() { return; }
+        }
         if self
             .runtime_facts
             .release(
@@ -711,7 +743,7 @@ impl BattleCore {
                         .get(&caster_instance_id)
                         .and_then(|unit| unit.fragment_source.as_ref())
                         .filter(|source| {
-                            source.skill_id == skill.id
+                            self.fragment_owns_skill(&source.skill_id, &skill.id)
                                 && self.runtime_fact_source.equipment.is_none()
                         })
                         .cloned()
@@ -740,6 +772,19 @@ impl BattleCore {
         } else {
             fact_source
         };
+        let accepted_causal = self
+            .runtime_facts
+            .accepted_source(&action)
+            .ok()
+            .and_then(|s| s.causal().cloned());
+        let fact_source = if accepted_causal.is_some() {
+            match fact_source.with_causal(accepted_causal) {
+                Ok(source) => source,
+                Err(_) => return,
+            }
+        } else {
+            fact_source
+        };
         if fact_source.admit_owner("active_cast_fact_source").is_err() {
             return;
         }
@@ -755,6 +800,7 @@ impl BattleCore {
                 skill_id: skill.id.clone(),
                 caster_owner,
                 anchor_position: caster_pos,
+                accepted_facing: accepted_facing.or_else(|| self.units.get(&caster_instance_id).and_then(|u| u.facing_direction)),
                 cast_target_anchor_position,
                 cast_target_anchor_world_position,
                 allow_dead_caster,
@@ -801,6 +847,8 @@ impl BattleCore {
         _caster_pos: Position,
         target: SkillCastTarget,
     ) -> bool {
+        if !self.approach_taunt_skill_allowed(caster_instance_id, skill, Some(target)) { return false; }
+        if self.validate_fusion_start(caster_instance_id, skill, Some(target), time_ms).is_err() { return false; }
         let Some((target_def, reach, target_range, air_capable)) = skill.cast_target_definition()
         else {
             return false;
@@ -809,13 +857,13 @@ impl BattleCore {
         if let Some(plan) =
             self.current_effective_skill(&skill.id, caster_instance_id, &self.runtime_fact_source)
         {
-            if let Some(reach) = plan.selected_recipient_reach {
+            if let Some(reach) = &plan.selected_recipient_reach {
                 let SkillCastTarget::Unit { unit_instance_id } = target else {
                     return false;
                 };
                 if (plan.selected_recipient_excludes_caster
                     && unit_instance_id == caster_instance_id)
-                    || !self.selected_player_employee_in_reach(
+                    || !self.selected_support_in_reach(
                         caster_instance_id,
                         unit_instance_id,
                         reach,
@@ -870,6 +918,11 @@ impl BattleCore {
                     Some(target),
                 )
             }
+            (SkillTarget::CastTarget, SkillCastTarget::Direction { .. }) => skill.cast_selection() == SkillCastSelection::PlayerDirection,
+            (SkillTarget::CastTarget, SkillCastTarget::TilePair { first, second }) => {
+                skill.cast_selection() == SkillCastSelection::PlayerTilePair
+                    && [first, second].into_iter().all(|position| self.is_tile_in_skill_reach(caster_instance_id, position, reach, target_range))
+            }
             (SkillTarget::CastTarget, SkillCastTarget::Tile { position }) => {
                 self.is_tile_in_skill_reach(caster_instance_id, position, reach, target_range)
                     && self
@@ -891,6 +944,7 @@ impl BattleCore {
         skill: &SkillDef,
         target: Option<SkillCastTarget>,
     ) -> bool {
+        if !self.approach_taunt_skill_allowed(caster, skill, target) { return false; }
         if skill.cast_selection() == SkillCastSelection::SelfUnit {
             return target
                 == Some(SkillCastTarget::Unit {
@@ -915,7 +969,7 @@ impl BattleCore {
             return true;
         }
         let Some(SkillCastTarget::Unit { unit_instance_id }) = target else {
-            return skill.cast_selection() == SkillCastSelection::PlayerTile;
+            return matches!(skill.cast_selection(), SkillCastSelection::PlayerTile | SkillCastSelection::PlayerTilePair | SkillCastSelection::PlayerDirection);
         };
         let Some(unit) = self.units.get(&caster) else {
             return false;
@@ -946,6 +1000,9 @@ impl BattleCore {
                 return Err(GameError::InvalidAction);
             }
             return self.stop_channel(caster_instance_id, time_ms);
+        }
+        if let Some(activation) = self.overlay_followup_on_input(caster_instance_id,&requested_skill_id)? {
+            return self.reinput_sustained_skill(caster_instance_id,&requested_skill_id,activation,explicit_target,time_ms);
         }
         self.start_manual_skill_cast_with_retention(
             time_ms,
@@ -1068,10 +1125,11 @@ impl BattleCore {
             .get_mut(&caster_instance_id)
             .unwrap()
             .facing_direction = Some(facing);
+        if let Some(pending) = self.units.get_mut(&caster_instance_id).and_then(|u| u.pending_skill_cast.as_mut()) { pending.accepted_facing = Some(facing); }
         Ok(action)
     }
 
-    fn start_admitted_skill_cast(
+    pub(super) fn start_admitted_skill_cast(
         &mut self,
         time_ms: u64,
         caster_instance_id: UnitInstanceId,
@@ -1080,7 +1138,11 @@ impl BattleCore {
         public_reserved: bool,
         reset_resonance: bool,
     ) -> Result<crate::game::battle::runtime_facts::ActionHandle, GameError> {
+        if Self::input_plan_skill(&skill) && !self.input_plan_commit_pending(caster_instance_id) {return Err(GameError::InvalidAction);}
         self.validate_sustained_start(caster_instance_id, &skill)?;
+        self.validate_prepared_volley_start(caster_instance_id,&skill)?;
+        self.validate_paired_area_start(caster_instance_id,&skill,time_ms)?;
+        self.validate_fusion_start(caster_instance_id, &skill, cast_target, time_ms)?;
         let accepted_source = crate::game::battle::runtime_facts::RuntimeFactSource {
             extended_observation:
                 crate::game::battle::runtime_facts::RuntimeFactSource::extended_observation(
@@ -1092,7 +1154,7 @@ impl BattleCore {
                 .units
                 .get(&caster_instance_id)
                 .and_then(|unit| unit.fragment_source.as_ref())
-                .filter(|source| source.skill_id == skill.id)
+                .filter(|source| self.fragment_owns_skill(&source.skill_id, &skill.id))
                 .cloned(),
             ..Default::default()
         };
@@ -1107,7 +1169,7 @@ impl BattleCore {
         )?;
 
         let cast_end_ms = time_ms
-            .checked_add(u64::from(skill.focus_time_ms).max(1))
+            .checked_add(if (Self::fusion_placement_skill(&skill) || Self::status_strike_declaration(&skill).is_some()) || Self::paired_area_skill(&skill) || Self::presence_burst_skill(&skill) || Self::tile_burst_skill(&skill) || Self::counter_channel_skill(&skill) || Self::relation_action_skill(&skill) || Self::input_plan_skill(&skill) || Self::prepared_volley_skill(&skill) { 0 } else { u64::from(skill.focus_time_ms).max(1) })
             .ok_or_else(|| {
                 crate::game::battle::runtime_control::reject(
                     crate::game::battle::runtime_control::BattleRuntimeFault {
@@ -1122,10 +1184,14 @@ impl BattleCore {
         let employee_use = reset_resonance
             && self.admit_employee_resonance_use(
                 caster_instance_id,
-                &skill.id,
+                &skill,
                 &action,
                 time_ms,
             )?;
+        self.prepare_counter_channel(caster_instance_id, &skill, &action, cast_target, time_ms)?;
+        self.prepare_relation_action(caster_instance_id, &skill, &action, cast_target, time_ms)?;
+        self.prepare_presence_burst(caster_instance_id, &skill, &action, time_ms)?;
+                self.prepare_tile_burst(caster_instance_id, &skill, &action, time_ms)?;
         if let Some(caster) = self.units.get_mut(&caster_instance_id) {
             caster.next_action_time = cast_end_ms;
             if !employee_use {
@@ -1136,19 +1202,6 @@ impl BattleCore {
             }
             if !skill.focus_permissions.allows_move {
                 caster.action_locks.lock_movement_until(cast_end_ms);
-            }
-        }
-
-        if !skill.focus_permissions.allows_move {
-            let interrupted = self.interrupt_movement(
-                time_ms,
-                caster_instance_id,
-                crate::game::battle::event_log::MovementStopReason::CastStarted,
-                Some(cast_end_ms),
-                ActionState::Idle,
-            );
-            if interrupted {
-                self.schedule_continuous_movement_tick(cast_end_ms);
             }
         }
 
@@ -1175,6 +1228,7 @@ impl BattleCore {
                 skill_id: skill.id,
                 cast_target,
                 accepted_target_tile,
+                accepted_facing: caster.facing_direction,
                 start_seq,
             });
         }
@@ -1234,7 +1288,7 @@ impl BattleCore {
         let selection = skill.cast_selection();
         if !matches!(
             selection,
-            SkillCastSelection::PlayerUnit | SkillCastSelection::PlayerTile
+            SkillCastSelection::PlayerUnit | SkillCastSelection::PlayerTile | SkillCastSelection::PlayerTilePair | SkillCastSelection::PlayerDirection
         ) {
             return Err(GameError::ActionUnavailable {
                 action: crate::game::behavior::ActionKind::BeginSkillTargeting,
@@ -1277,7 +1331,8 @@ impl BattleCore {
                         })
                         .is_some();
                 }
-                SkillCastSelection::PlayerTile => {
+                SkillCastSelection::PlayerDirection => { target_required = true; target_available = true; },
+                SkillCastSelection::PlayerTile | SkillCastSelection::PlayerTilePair => {
                     target_required = true;
                     target_available = skill
                         .cast_target_definition()
@@ -1303,7 +1358,7 @@ impl BattleCore {
                                     unit_id,
                                     unit.owner,
                                     unit.body.projected_tile(),
-                                    SkillCastTarget::Tile { position },
+                                    if skill.cast_selection() == SkillCastSelection::PlayerTilePair { SkillCastTarget::TilePair { first: position, second: position } } else { SkillCastTarget::Tile { position } },
                                 )
                             })
                         });
@@ -1314,7 +1369,7 @@ impl BattleCore {
         let eligibility = match skill_id.as_ref() {
             Some(skill_id) => {
                 let validation = match selection {
-                    Some(SkillCastSelection::PlayerUnit | SkillCastSelection::PlayerTile) => self
+                    Some(SkillCastSelection::PlayerUnit | SkillCastSelection::PlayerTile | SkillCastSelection::PlayerTilePair | SkillCastSelection::PlayerDirection) => self
                         .validate_manual_skill_targeting_focus(time_ms, unit_id, skill_id)
                         .map(|_| ()),
                     _ => self.validate_manual_skill_activation(time_ms, unit_id, skill_id, None),
@@ -1385,7 +1440,9 @@ impl BattleCore {
                 caster_pos,
             ),
             (SkillCastSelection::PlayerUnit, Some(target @ SkillCastTarget::Unit { .. }))
-            | (SkillCastSelection::PlayerTile, Some(target @ SkillCastTarget::Tile { .. })) => {
+            | (SkillCastSelection::PlayerTile, Some(target @ SkillCastTarget::Tile { .. }))
+            | (SkillCastSelection::PlayerTilePair, Some(target @ SkillCastTarget::TilePair { .. }))
+            | (SkillCastSelection::PlayerDirection, Some(target @ SkillCastTarget::Direction { .. })) => {
                 if self.explicit_skill_cast_target_is_valid(
                     time_ms,
                     &skill,
@@ -1399,7 +1456,7 @@ impl BattleCore {
                     return Err(unavailable(ActionDisabledReasonCode::NoValidTarget));
                 }
             }
-            (SkillCastSelection::PlayerUnit | SkillCastSelection::PlayerTile, None) => {
+            (SkillCastSelection::PlayerUnit | SkillCastSelection::PlayerTile | SkillCastSelection::PlayerTilePair | SkillCastSelection::PlayerDirection, None) => {
                 return Err(unavailable(ActionDisabledReasonCode::SkillTargetRequired))
             }
             _ => {
@@ -1411,7 +1468,7 @@ impl BattleCore {
         if cast_target.is_none() {
             return Err(unavailable(ActionDisabledReasonCode::NoValidTarget));
         }
-        if skill.cast_selection() != SkillCastSelection::PlayerTile
+        if !matches!(skill.cast_selection(), SkillCastSelection::PlayerTile | SkillCastSelection::PlayerTilePair | SkillCastSelection::PlayerDirection)
             && !self.skill_has_useful_automatic_cast_target(
                 time_ms,
                 &skill,
@@ -1422,6 +1479,7 @@ impl BattleCore {
             return Err(unavailable(ActionDisabledReasonCode::NoValidTarget));
         }
 
+        self.validate_fusion_start(caster_instance_id, &skill, cast_target, time_ms)?;
         Ok((skill, cast_target))
     }
 
@@ -1468,12 +1526,8 @@ impl BattleCore {
         let Some(unit_skill_id) = caster.skill_id.clone() else {
             return Err(unavailable(ActionDisabledReasonCode::SkillUnavailable));
         };
-        if &unit_skill_id != requested_skill_id {
+        if &unit_skill_id != requested_skill_id && !self.counter_manual_entry(&unit_skill_id, requested_skill_id) {
             return Err(unavailable(ActionDisabledReasonCode::SkillUnavailable));
-        }
-        let max = caster.resonance_max.max(1);
-        if caster.resonance_current < max {
-            return Err(unavailable(ActionDisabledReasonCode::ResonanceNotFull));
         }
         let caster_owner = caster.owner;
         let caster_pos = self
@@ -1493,7 +1547,16 @@ impl BattleCore {
                 ))
             })?;
 
+        if self.resonance_admission_payment(caster_instance_id, &skill).is_none() {
+            return Err(unavailable(if skill.resonance_admission.is_some() {
+                ActionDisabledReasonCode::InsufficientResources
+            } else {
+                ActionDisabledReasonCode::ResonanceNotFull
+            }));
+        }
         self.validate_sustained_start(caster_instance_id, &skill)?;
+        self.validate_prepared_volley_start(caster_instance_id,&skill)?;
+        self.validate_paired_area_start(caster_instance_id,&skill,time_ms)?;
         Ok((skill, caster_owner, caster_pos))
     }
 
@@ -1516,7 +1579,34 @@ impl BattleCore {
         caster_owner: Side,
         caster_pos: Position,
     ) -> Option<SkillCastTarget> {
+        self.resolve_skill_cast_target_for_origin(
+            time_ms,
+            skill,
+            caster_instance_id,
+            caster_owner,
+            caster_pos,
+            false,
+        )
+    }
+
+    fn resolve_skill_cast_target_for_origin(
+        &self,
+        time_ms: u64,
+        skill: &SkillDef,
+        caster_instance_id: UnitInstanceId,
+        caster_owner: Side,
+        caster_pos: Position,
+        allow_dead_caster: bool,
+    ) -> Option<SkillCastTarget> {
         let (target, reach, target_range, air_capable) = skill.cast_target_definition()?;
+        if !allow_dead_caster && matches!(target, SkillTarget::EnemySingle { .. }) {
+            if let Some((source, _)) = self.approach_taunt(caster_instance_id).filter(|_| Self::hostile_attack_skill(skill)) {
+                return (self.approach_taunt_attack_allowed(caster_instance_id, source)
+                    && self.single_target_can_target_unit(source, air_capable)
+                    && self.is_target_in_skill_reach(caster_instance_id, source, reach, target_range))
+                    .then_some(SkillCastTarget::Unit { unit_instance_id: source });
+            }
+        }
         self.resolve_skill_target_definition(
             caster_instance_id,
             caster_owner,
@@ -1525,7 +1615,11 @@ impl BattleCore {
             target_range,
             target,
             air_capable,
-            SkillTargetUsefulness::Cast { time_ms, skill },
+            if allow_dead_caster {
+                SkillTargetUsefulness::AllowedDeadCasterCast { time_ms, skill }
+            } else {
+                SkillTargetUsefulness::Cast { time_ms, skill }
+            },
         )
     }
 
@@ -1588,6 +1682,19 @@ impl BattleCore {
         step: &SkillStepDef,
         cast_target: Option<SkillCastTarget>,
     ) -> Option<SkillCastTarget> {
+        if let Some(binding) = self
+            .active_skill_casts
+            .get(&cast_seq)
+            .and_then(|c| c.fact_source.causal())
+            .and_then(|c| c.program.as_ref())
+        {
+            let target = binding.role(step_index)?;
+            return self.units.get(&target).filter(|u| u.is_active()).map(|_| {
+                SkillCastTarget::Unit {
+                    unit_instance_id: target,
+                }
+            });
+        }
         let (caster_owner, caster_pos) =
             self.resolve_cast_origin_context(Some(cast_seq), caster_instance_id, false)?;
         let cast_target_anchor_position = self
@@ -1639,6 +1746,7 @@ impl BattleCore {
                     _ => None,
                 },
                 SkillTarget::CastTarget => match cast_target {
+                    pair @ Some(SkillCastTarget::TilePair { .. } | SkillCastTarget::Direction { .. }) => pair,
                     Some(SkillCastTarget::Unit { unit_instance_id }) => {
                         Some(SkillCastTarget::Unit { unit_instance_id })
                     }
@@ -1854,7 +1962,7 @@ impl BattleCore {
         }
     }
 
-    fn compute_terminal_outcome(&self, current_time_ms: u64) -> Option<TerminalOutcome> {
+    pub(super) fn compute_terminal_outcome(&self, current_time_ms: u64) -> Option<TerminalOutcome> {
         self.scenario
             .terminal_outcomes
             .iter()
@@ -1876,8 +1984,17 @@ impl BattleCore {
             .cloned()
     }
 
+    pub(crate) fn finish_stress_extraction(&mut self, state: &mut BattleExecutionState) -> Result<BattleResult, GameError> {
+        if !self.stress_round_status().is_some_and(|(_, _, waiting)| waiting) || state.is_finished() {
+            return Err(GameError::InvalidAction);
+        }
+        let outcome = self.scenario.terminal_outcomes.iter().find(|o| o.verdict == BattleVerdict::Victory).cloned().ok_or(GameError::InvalidAction)?;
+        Self::finish_signal(state, state.last_event_time_ms, outcome);
+        self.finalize_battle_execution_in_candidate(state)
+    }
+
     fn all_required_enemy_groups_defeated(&self) -> bool {
-        self.scenario
+        !self.shot_cohort_alive() && self.scenario
             .groups
             .iter()
             .filter(|group| group.side == Side::Opponent && group.required_for_victory)
@@ -1906,6 +2023,7 @@ impl BattleCore {
         verdict: BattleVerdict,
     ) -> Result<BattleResult, GameError> {
         self.clear_sustained(time_ms)?;
+        self.clear_skill_areas(time_ms)?;
         self.clear_independent_objects(time_ms)?;
         let winner = verdict.winner();
         self.record_event_log(time_ms, BattleLogEvent::BattleEnd { winner });
@@ -2399,8 +2517,12 @@ impl BattleCore {
             | BattleLiveCommand::TacticalRelocateUnit { time_ms, .. }
             | BattleLiveCommand::TacticalSwapUnits { time_ms, .. }
             | BattleLiveCommand::ReinputSustainedSkill { time_ms, .. }
+            | BattleLiveCommand::CommitInputPlan {time_ms,..} | BattleLiveCommand::CancelInputPlan {time_ms,..}
+            | BattleLiveCommand::SelectRelation { time_ms, .. }
             | BattleLiveCommand::ActivateSkill { time_ms, .. } => *time_ms,
         };
+        if self.input_plan_paused() && !(matches!(&command,BattleLiveCommand::CommitInputPlan{..}|BattleLiveCommand::CancelInputPlan{..}) || (self.input_plan_reprepare_allowed() && matches!(&command,BattleLiveCommand::ActivateSkill{unit_id,skill_id,..} if self.current_skill_view(skill_id,*unit_id,&Default::default()).is_some_and(Self::input_plan_skill)))){return Err(GameError::InvalidAction);}
+        if matches!(&command,BattleLiveCommand::SelectRelation{..}|BattleLiveCommand::CommitInputPlan{..}|BattleLiveCommand::CancelInputPlan{..}|BattleLiveCommand::ActivateSkill{..}) && self.sustained_time_is_stale(command_time) {return Err(GameError::InvalidAction);}
         self.reconcile_sustained(command_time)?;
         let result = match command {
             BattleLiveCommand::DeployPlayerUnit {
@@ -2486,12 +2608,21 @@ impl BattleCore {
                 self.reinput_sustained_skill(unit_id, &skill_id, activation, target, time_ms)?;
                 Ok(BattleLiveCommandOutcome::SkillActivated { unit_id })
             }
+            BattleLiveCommand::CommitInputPlan {unit_id,input,time_ms} => {let receipt=self.commit_input_plan(unit_id,input,time_ms)?;Ok(BattleLiveCommandOutcome::InputPlanCommitted{unit_id,receipt})},
+            BattleLiveCommand::CancelInputPlan {unit_id,preparation,disconnected,time_ms:_} => {self.cancel_input_plan(unit_id,preparation,disconnected)?;Ok(BattleLiveCommandOutcome::InputPlanCancelled{unit_id})},
+            BattleLiveCommand::SelectRelation { unit_id, entry, target, time_ms } => {
+                self.select_relation_target(unit_id,&entry,target,time_ms)?;
+                Ok(BattleLiveCommandOutcome::RelationChanged{unit_id,target:self.selected_relation_target(unit_id)})
+            },
             BattleLiveCommand::ActivateSkill {
                 unit_id,
                 skill_id,
                 target,
                 time_ms,
             } => {
+                if self.current_skill_view(&skill_id,unit_id,&Default::default()).is_some_and(Self::input_plan_skill){
+                    if target.is_some(){return Err(GameError::InvalidAction);}let preparation=self.prepare_input_plan(unit_id,&skill_id,time_ms)?;return Ok(BattleLiveCommandOutcome::InputPlanPrepared{unit_id,preparation});
+                }
                 self.start_manual_skill_cast(time_ms, unit_id, skill_id, target)?;
                 Ok(BattleLiveCommandOutcome::SkillActivated { unit_id })
             }
@@ -2557,6 +2688,7 @@ impl BattleCore {
         self.scenario.validate()?;
 
         self.reset_runtime_state_for_battle();
+        self.start_causal_periodics(Some(0))?;
         self.prepare_runtime_resources()?;
 
         for obstacle in self.scenario.battlefield.obstacles.clone() {
@@ -2566,6 +2698,7 @@ impl BattleCore {
         setup(self);
         control::poll("startup_setup")?;
         self.build_runtime_field()?;
+        self.start_causal_periodics(Some(0))?;
 
         self.with_recording_root(BattleEventRootCause::Init, |core| {
             core.record_event_log(
@@ -2610,7 +2743,9 @@ impl BattleCore {
         PostSpawnSetup: FnOnce(&mut Self),
     {
         self.ensure_not_forced_paused()?;
+        if self.input_plan_paused(){return Ok(BattleStepOutcome::Running);}
         control::charge(1, "battle_bucket_entry")?;
+        if self.stress_round_status().is_some_and(|(_, _, waiting)| waiting) { return Ok(BattleStepOutcome::Running); }
         if state.is_finished() {
             return Err(GameError::InvalidAction);
         }
@@ -2674,8 +2809,12 @@ impl BattleCore {
             while let Some(event) = pending_events.next() {
                 boss_boundary_requested |=
                     self.battle_event_requests_boss_boundary(event.event.view().as_ref());
-                self.process_event(event, current_time_ms)?;
-                if self.corrosion_freeze.is_some() {
+                self.process_event_with_pending_bucket(
+                    event,
+                    current_time_ms,
+                    pending_events.as_slice(),
+                )?;
+                if self.forced_pause_remaining_ms().is_some() {
                     for pending in pending_events {
                         self.event_queue.requeue_existing(pending)?;
                     }
@@ -2714,6 +2853,7 @@ impl BattleCore {
             }
         }
 
+        self.settle_stress_round();
         self.runtime_facts.release_empty_action_storage();
         control::poll("battle_bucket_complete")?;
         if let Some(outcome) = self.compute_terminal_outcome(current_time_ms) {
@@ -2786,6 +2926,7 @@ impl BattleCore {
         PostSpawnSetup: FnOnce(&mut Self),
     {
         self.ensure_not_forced_paused()?;
+        if self.input_plan_paused(){return Ok(BattleStepOutcome::Running);}
         control::charge(1, "battle_clock_entry")?;
         if state.is_finished() {
             return Err(GameError::InvalidAction);
@@ -2802,7 +2943,7 @@ impl BattleCore {
             && !crate::authoring::control::is_active();
         let mut timestamp_units = None;
         loop {
-            if self.corrosion_freeze.is_some() {
+            if self.input_plan_paused() || self.forced_pause_remaining_ms().is_some() || self.stress_round_status().is_some_and(|(_, _, waiting)| waiting) {
                 return Ok(BattleStepOutcome::Running);
             }
             control::charge(1, "battle_clock_iteration")?;
@@ -2898,17 +3039,7 @@ impl BattleCore {
             None
         };
 
-        let step_damage_modifiers = step
-            .effects
-            .iter()
-            .filter_map(|effect| match &effect.op {
-                SkillEffectDef::ModifyDamage { modifiers } => Some(*modifiers),
-                _ => None,
-            })
-            .fold(
-                Default::default(),
-                crate::game::battle::damage::DamageModifiers::merge,
-            );
+        let step_damage_modifiers = super::skill_runtime::skill_step_damage_modifiers(step);
 
         for effect in &step.effects {
             control::charge(1, "skill_effect")?;
@@ -2928,9 +3059,9 @@ impl BattleCore {
                         "PersonalShieldGrant requires the ordered occurrence executor".into(),
                     ))
                 }
-                SkillEffectDef::CreateObject { .. } => {
+                SkillEffectDef::GuardCounter { .. } | SkillEffectDef::StatusStrike { .. } | SkillEffectDef::FusionPlacement { .. } | SkillEffectDef::PairedAreas { .. } | SkillEffectDef::PreparedVolley { .. } | SkillEffectDef::InputPlan { .. } | SkillEffectDef::RelationAction { .. } | SkillEffectDef::CounterChannel { .. } | SkillEffectDef::TileBurst { .. } | SkillEffectDef::PresenceBurst { .. } | SkillEffectDef::CreateObject { .. } => {
                     return Err(GameError::InvalidStaticData(
-                        "CreateObject requires the ordered occurrence executor".into(),
+                        "Owned mark burst and object creation require the ordered occurrence executor".into(),
                     ))
                 }
                 SkillEffectDef::Damage {
@@ -3178,9 +3309,9 @@ impl BattleCore {
                     "personal shield grant runtime binding is pending".into(),
                 ));
             }
-            SkillEffectDef::CreateObject { .. } => {
+            SkillEffectDef::GuardCounter { .. } | SkillEffectDef::StatusStrike { .. } | SkillEffectDef::FusionPlacement { .. } | SkillEffectDef::PairedAreas { .. } | SkillEffectDef::PreparedVolley { .. } | SkillEffectDef::InputPlan { .. } | SkillEffectDef::RelationAction { .. } | SkillEffectDef::CounterChannel { .. } | SkillEffectDef::TileBurst { .. } | SkillEffectDef::PresenceBurst { .. } | SkillEffectDef::CreateObject { .. } => {
                 return Err(GameError::InvalidStaticData(
-                    "CreateObject must execute once outside the target command loop".into(),
+                    "Owned mark burst and object creation must execute once outside the target command loop".into(),
                 ))
             }
             SkillEffectDef::Damage {
@@ -3502,17 +3633,7 @@ impl BattleCore {
             std::sync::Arc<crate::game::battle::skill_source::SkillCastExecutionSource>,
         >,
     ) -> Result<SkillStepResult, GameError> {
-        let step_damage_modifiers = step
-            .effects
-            .iter()
-            .filter_map(|effect| match &effect.op {
-                SkillEffectDef::ModifyDamage { modifiers } => Some(*modifiers),
-                _ => None,
-            })
-            .fold(
-                Default::default(),
-                crate::game::battle::damage::DamageModifiers::merge,
-            );
+        let step_damage_modifiers = super::skill_runtime::skill_step_damage_modifiers(step);
         let base_source = source_template
             .map(|template| template.fact_source.clone())
             .unwrap_or_else(|| self.runtime_fact_source.clone());
@@ -3672,9 +3793,12 @@ impl BattleCore {
                             )?;
                         }
                     }
+                    self.record_lab_site(&base_source,effect.source().map(|s|&s.site),crate::mod_validation::CoverageStage::Triggered)?;
+                    self.record_lab_site(&base_source,effect.source().map(|s|&s.site),if count>0{crate::mod_validation::CoverageStage::ConsumedOrEffect}else{crate::mod_validation::CoverageStage::LegalNoop})?;
                     aggregate.merge(&result);
                     continue;
                 }
+                let mut pre_numeric_amounts = Vec::new();
                 let (evaluated_amounts, amount_record_candidate) = if matches!(
                     effect.op,
                     SkillEffectDef::DamageExpr { .. }
@@ -3733,6 +3857,19 @@ impl BattleCore {
                                     members.as_ref(),
                                 )
                                 .map_err(GameError::ValueExpressionFault)?;
+                            if let Some(pre) = value.pre_numeric.clone() {
+                                crate::game::battle::runtime_control::admit_retained_growth(
+                                    0,
+                                    Some(
+                                        std::mem::size_of::<(
+                                            UnitInstanceId,
+                                            super::relic_wedge::PreNumericAmount,
+                                        )>() + 64,
+                                    ),
+                                    "wedge_evaluated_target",
+                                )?;
+                                pre_numeric_amounts.push((*target, pre));
+                            }
                             values.push(value.amount);
                             if let Some(mut candidate) =
                                 super::amount_observation::PendingAmountEvaluation::from_runtime(
@@ -3806,9 +3943,30 @@ impl BattleCore {
                         .as_ref()
                         .map(super::value_expr_runtime::EffectResultPrefix::resource_ids)
                 });
+                let direct_source = if matches!(&effect.op, SkillEffectDef::GuardCounter{..} | SkillEffectDef::StatusStrike{..} | SkillEffectDef::FusionPlacement{..} | SkillEffectDef::PairedAreas{..} | SkillEffectDef::PreparedVolley{..} | SkillEffectDef::InputPlan{..} | SkillEffectDef::RelationAction { .. } | SkillEffectDef::CounterChannel { .. } | SkillEffectDef::TileBurst { .. } | SkillEffectDef::PresenceBurst { .. }) {
+                    Some(crate::authoring::clone_shape::controlled_clone(&effect_source)?)
+                } else { None };
                 let prior_projection =
                     self.begin_effect_result_projection(effect_source, resource_ids)?;
                 let effect_operation = (|| -> Result<SkillStepResult, GameError> {
+                    if let Some(source) = direct_source {
+                        let prior = std::mem::replace(&mut self.runtime_fact_source, source);
+                        let result = match &effect.op {
+                            SkillEffectDef::GuardCounter { program } => self.execute_guard_counter(caster_instance_id, targets, program, consume_time_ms),
+                            SkillEffectDef::StatusStrike { program } => self.execute_status_strike(caster_instance_id,program,consume_time_ms),
+                            SkillEffectDef::FusionPlacement { program } => self.install_fusion(caster_instance_id,program,consume_time_ms),
+                            SkillEffectDef::PairedAreas { program } => self.install_paired_areas(caster_instance_id,program,consume_time_ms),
+                            SkillEffectDef::PreparedVolley { .. } => self.release_prepared_volley(caster_instance_id,consume_time_ms),
+                            SkillEffectDef::InputPlan { .. } => self.release_input_plan(caster_instance_id,consume_time_ms),
+                            SkillEffectDef::RelationAction { .. } => self.release_relation_action(caster_instance_id, consume_time_ms),
+                            SkillEffectDef::CounterChannel { .. } => self.release_counter_channel(caster_instance_id, consume_time_ms),
+                            SkillEffectDef::TileBurst { .. } => self.release_tile_burst(caster_instance_id, consume_time_ms),
+                            SkillEffectDef::PresenceBurst { program } => self.execute_presence_burst(caster_instance_id, program, consume_time_ms),
+                            _ => unreachable!("direct source belongs to a typed operation"),
+                        };
+                        self.runtime_fact_source = prior;
+                        return result;
+                    }
                     if let SkillEffectDef::CreateObject { definition } = &effect.op {
                         let cast = cast_origin.as_deref().ok_or_else(|| {
                             GameError::InvalidStaticData(
@@ -3857,6 +4015,21 @@ impl BattleCore {
                             }
                         }
                     }
+                    for (command, _) in &mut commands {
+                        if let BattleCommand::ApplyDamage {
+                            target_id,
+                            source_snapshot,
+                        } = command
+                        {
+                            if let Some((_, pre)) = pre_numeric_amounts
+                                .iter()
+                                .find(|(target, _)| target == target_id)
+                            {
+                                source_snapshot.fact_source = self
+                                    .bind_pre_numeric(&source_snapshot.fact_source, pre.clone())?;
+                            }
+                        }
+                    }
                     if !commands.is_empty() {
                         let summary = self.process_skill_commands_in_scope(
                             commands,
@@ -3870,6 +4043,7 @@ impl BattleCore {
                         result.actual_damage_target_count = result
                             .actual_damage_target_count
                             .saturating_add(summary.actual_damage_target_count);
+                        result.effective_hit_count = result.effective_hit_count.saturating_add(summary.effective_hit_count);
                         result.killed_target_count = result
                             .killed_target_count
                             .saturating_add(summary.killed_target_count);
@@ -3930,6 +4104,23 @@ impl BattleCore {
                         )?;
                     }
                 }
+                self.record_lab_site(&base_source,effect.source().map(|s|&s.site),crate::mod_validation::CoverageStage::Triggered)?;
+                // Damage and healing facts own their terminal witness, including
+                // expression amounts. A zero-damage command omitted by the
+                // producer has no fact, so record that actual legal branch here.
+                if !matches!(effect.op,
+                    SkillEffectDef::Damage { .. } | SkillEffectDef::DamageExpr { .. }
+                    | SkillEffectDef::Heal { .. } | SkillEffectDef::HealExpr { .. })
+                    && effect_result.applied_effect_count > 0
+                {
+                    self.record_lab_site(&base_source,effect.source().map(|s|&s.site),crate::mod_validation::CoverageStage::ConsumedOrEffect)?;
+                }else if matches!(effect.op, SkillEffectDef::Damage { .. } | SkillEffectDef::DamageExpr { .. })
+                    && effect_result.applied_effect_count == 0
+                    && effect_result.scheduled_attack_count == 0 && !targets.is_empty(){
+                    self.record_lab_site(&base_source,effect.source().map(|s|&s.site),crate::mod_validation::CoverageStage::LegalNoop)?;
+                }else if targets.is_empty(){
+                    self.record_lab_site(&base_source,effect.source().map(|s|&s.site),crate::mod_validation::CoverageStage::Ineligible)?;
+                }
                 self.commit_effect_target_history(selection)?;
                 aggregate.merge(&effect_result);
             }
@@ -3970,7 +4161,8 @@ impl BattleCore {
 
     fn execute_skill_step(&mut self, execution: SkillStepExecution<'_>) -> Result<(), GameError> {
         let owns_delivery = !self.is_side_occurrence(execution.cast_seq, execution.step_index)
-            && (execution
+            && (matches!(&execution.step.delivery, DeliveryDef::TileArea {area,..} if matches!(area.mode,crate::game::ability::SkillTileAreaMode::ChannelGround { .. }))
+                || execution
                 .skill
                 .use_lifetime
                 .effects()
@@ -3981,7 +4173,7 @@ impl BattleCore {
                     .effects
                     .iter()
                     .any(|effect| matches!(effect.op, SkillEffectDef::ExtraAttack { .. }))
-                    && !matches!(&execution.step.delivery, DeliveryDef::TileArea { area, .. } if area.duration_ms > 0)));
+                    && !matches!(&execution.step.delivery, DeliveryDef::TileArea { area, .. } if area.is_independent())));
         if owns_delivery {
             self.admit_authoring_runtime_growth(1, "use_effect_occurrence")?;
             if let Some(cast) = self.active_skill_casts.get_mut(&execution.cast_seq) {
@@ -4017,7 +4209,7 @@ impl BattleCore {
         let (cast_seq, step_index, time_ms) =
             (execution.cast_seq, execution.step_index, execution.time_ms);
         let result = if matches!(&execution.step.delivery, DeliveryDef::Instant)
-            || matches!(&execution.step.delivery, DeliveryDef::TileArea { area, .. } if area.duration_ms == 0)
+            || matches!(&execution.step.delivery, DeliveryDef::TileArea { area, .. } if !area.is_independent())
         {
             self.with_instant_resource_delivery(|core| core.execute_skill_step_inner(execution))
         } else {
@@ -4063,6 +4255,23 @@ impl BattleCore {
             execution.cast_target,
         );
         control::poll("skill_step_context_resolved")?;
+        if step_target.is_none()
+            && self
+                .runtime_fact_source
+                .causal()
+                .and_then(|c| c.program.as_ref())
+                .is_some()
+        {
+            let source = self.runtime_fact_source.clone();
+            self.causal_state()?.cancel_participants(&source)?;
+            self.finalize_skill_step(
+                execution.cast_seq,
+                execution.step_index,
+                SkillStepResult::default(),
+                execution.time_ms,
+            );
+            return Ok(());
+        }
         match self.evaluate_step_condition(
             execution.cast_seq,
             execution.step_index,
@@ -4209,7 +4418,7 @@ impl BattleCore {
                     Ok(())
                 }
                 DeliveryDef::TileArea { footprint, area } => {
-                    if area.duration_ms == 0 {
+                    if !area.is_independent() {
                         let mut aggregated_result = SkillStepResult::default();
 
                         for _ in 0..repeat_count {
@@ -4299,6 +4508,8 @@ impl BattleCore {
                                     cast_origin.clone(),
                                 )
                             })?;
+                            core.apply_area_hit_reaction(execution.caster_instance_id,
+                                area.on_hit_caster_heal_percent, &result, None, execution.time_ms)?;
                             aggregated_result.merge(&result);
                         }
 
@@ -4367,7 +4578,16 @@ impl BattleCore {
         event: impl Into<super::queue::DispatchEvent>,
         current_time_ms: u64,
     ) -> Result<(), GameError> {
-        self.process_owned_event(event, current_time_ms)
+        self.process_event_with_pending_bucket(event, current_time_ms, &[])
+    }
+
+    fn process_event_with_pending_bucket(
+        &mut self,
+        event: impl Into<super::queue::DispatchEvent>,
+        current_time_ms: u64,
+        pending_events: &[super::queue::QueuedEvent],
+    ) -> Result<(), GameError> {
+        self.process_owned_event(event, current_time_ms, pending_events)
             .map_err(|error| {
                 crate::game::battle::runtime_control::trusted_failure(error, "owned_event_dispatch")
             })
@@ -4377,6 +4597,7 @@ impl BattleCore {
         &mut self,
         event: impl Into<super::queue::DispatchEvent>,
         current_time_ms: u64,
+        pending_events: &[super::queue::QueuedEvent],
     ) -> Result<(), GameError> {
         control::charge(1, "battle_event_dispatch")?;
         self.reconcile_sustained(current_time_ms)?;
@@ -4413,11 +4634,81 @@ impl BattleCore {
             }
         }
         if result.is_ok() {
+            self.settle_causal_runtime(current_time_ms, pending_events)?;
             self.reconcile_sustained(current_time_ms)?;
             self.reconcile_field_work(current_time_ms);
             control::poll("field_work_reconciliation")?;
         }
         result
+    }
+
+    fn resolve_skill_start_gate(
+        &mut self,
+        time_ms: u64,
+        caster_instance_id: UnitInstanceId,
+        cause: BattleEventCause,
+    ) -> Result<(), GameError> {
+        let Some(start_seq) = cast_start_seq_from_cause(cause) else {
+            return Ok(());
+        };
+        let pending = self
+            .units
+            .get(&caster_instance_id)
+            .and_then(|unit| unit.pending_skill_cast.as_ref())
+            .filter(|pending| pending.start_seq == start_seq && pending.start_gate_pending)
+            .cloned();
+        let Some(pending) = pending else {
+            return Ok(());
+        };
+        let employee = self
+            .units
+            .get(&caster_instance_id)
+            .is_some_and(Self::is_employee_resonance_unit);
+        let credential = pending.action.as_ref().is_some_and(|action| {
+            self.has_resonance_use_credential(caster_instance_id, &pending.skill_id, action)
+        });
+        let target_valid = self
+            .pending_skill_view(&pending, caster_instance_id)
+            .is_some_and(|skill| {
+                self.admitted_skill_target_is_valid(caster_instance_id, skill, pending.cast_target)
+            });
+        let start_blocked = if self.current_action_interrupt_protected(caster_instance_id) {
+            false
+        } else if employee {
+            self.active_hard_cc_release_time_ms(caster_instance_id, time_ms)
+                .is_some()
+        } else {
+            self.skill_start_disabled_reason(caster_instance_id, time_ms)
+                .is_some()
+        };
+        if !target_valid
+            || start_blocked
+            || !self.units.get(&caster_instance_id).is_some_and(|unit| {
+                unit.is_active()
+                    && unit.skill_id.as_ref().is_some_and(|root| self.fragment_owns_skill(root, &pending.skill_id))
+                    && (if employee {
+                        credential
+                    } else {
+                        unit.resonance_current >= unit.resonance_max.max(1)
+                    })
+                    && unit.employee_trauma.is_none_or(|trauma| trauma < 100)
+            })
+        {
+            self.cancel_resonance_use_control(caster_instance_id);
+            self.cancel_boss_owned_work(time_ms, caster_instance_id, true, false);
+            return Ok(());
+        }
+        if let Some(active) = self
+            .units
+            .get_mut(&caster_instance_id)
+            .and_then(|unit| unit.pending_skill_cast.as_mut())
+        {
+            active.start_gate_pending = false;
+        }
+        if let Some(action) = pending.action.as_ref() {
+            self.try_start_corrosion(caster_instance_id, &pending.skill_id, action, time_ms)?;
+        }
+        Ok(())
     }
 
     fn process_event_inner(
@@ -4429,6 +4720,8 @@ impl BattleCore {
         current_time_ms: u64,
     ) -> Result<(), GameError> {
         match event {
+            BattleEvent::CausalInvoke { time_ms } => self.invoke_causal_program(time_ms),
+            BattleEvent::CausalPeriodic { time_ms } => self.process_causal_periodic(time_ms),
             BattleEvent::ResonancePulse {
                 time_ms,
                 unit_instance_id,
@@ -4444,6 +4737,7 @@ impl BattleCore {
             } => {
                 let spawned_unit_ids = self.spawn_scenario_group(&group_id)?;
                 self.record_spawned_units(time_ms, cause, &spawned_unit_ids)?;
+                self.start_causal_periodics(Some(time_ms))?;
 
                 for unit_id in spawned_unit_ids {
                     self.schedule_initial_attack_for_unit(unit_id, time_ms);
@@ -4565,80 +4859,7 @@ impl BattleCore {
             BattleEvent::SkillAreaExpire { area_id, cause, .. } => {
                 self.with_recording_context(cause, |core| core.expire_skill_area(area_id))
             }
-            BattleEvent::SkillStartGate {
-                time_ms,
-                caster_instance_id,
-                cause,
-            } => {
-                let Some(start_seq) = cast_start_seq_from_cause(cause) else {
-                    return Ok(());
-                };
-                let pending = self
-                    .units
-                    .get(&caster_instance_id)
-                    .and_then(|unit| unit.pending_skill_cast.as_ref())
-                    .filter(|pending| pending.start_seq == start_seq && pending.start_gate_pending)
-                    .cloned();
-                let Some(pending) = pending else {
-                    return Ok(());
-                };
-                let employee = self
-                    .units
-                    .get(&caster_instance_id)
-                    .is_some_and(Self::is_employee_resonance_unit);
-                let credential = pending.action.as_ref().is_some_and(|action| {
-                    self.has_resonance_use_credential(caster_instance_id, &pending.skill_id, action)
-                });
-                let target_valid = self
-                    .pending_skill_view(&pending, caster_instance_id)
-                    .is_some_and(|skill| {
-                        self.admitted_skill_target_is_valid(
-                            caster_instance_id,
-                            skill,
-                            pending.cast_target,
-                        )
-                    });
-                let start_blocked = if employee {
-                    self.active_hard_cc_release_time_ms(caster_instance_id, time_ms)
-                        .is_some()
-                } else {
-                    self.skill_start_disabled_reason(caster_instance_id, time_ms)
-                        .is_some()
-                };
-                if !target_valid
-                    || start_blocked
-                    || !self.units.get(&caster_instance_id).is_some_and(|unit| {
-                        unit.is_active()
-                            && unit.skill_id.as_ref() == Some(&pending.skill_id)
-                            && (if employee {
-                                credential
-                            } else {
-                                unit.resonance_current >= unit.resonance_max.max(1)
-                            })
-                            && unit.employee_trauma.is_none_or(|trauma| trauma < 100)
-                    })
-                {
-                    self.cancel_resonance_use_control(caster_instance_id);
-                    self.cancel_boss_owned_work(time_ms, caster_instance_id, true, false);
-                    return Ok(());
-                }
-                if let Some(active) = self
-                    .units
-                    .get_mut(&caster_instance_id)
-                    .and_then(|unit| unit.pending_skill_cast.as_mut())
-                {
-                    active.start_gate_pending = false;
-                }
-                if let Some(action) = pending.action.as_ref() {
-                    self.try_start_corrosion(
-                        caster_instance_id,
-                        &pending.skill_id,
-                        action,
-                        time_ms,
-                    )?;
-                }
-                Ok(())
-            }
+            BattleEvent::SkillStartGate { time_ms, caster_instance_id, cause } => self.resolve_skill_start_gate(time_ms,caster_instance_id,cause),
             BattleEvent::AutoCastStart {
                 time_ms,
                 caster_instance_id,
@@ -4739,6 +4960,11 @@ impl BattleCore {
                     None => return Ok(()),
                 };
 
+                if skill.resonance_admission.is_some() {
+                    // This portable target requires an explicit employee request.
+                    return Ok(());
+                }
+
                 // A new selected-recipient program requires accepted player
                 // input. This automatic path cannot manufacture that choice.
                 if self.requires_explicit_structural_selection(
@@ -4756,7 +4982,7 @@ impl BattleCore {
                     caster_owner,
                     caster_pos,
                 );
-                if !self.skill_has_useful_automatic_cast_target(
+                if !self.approach_taunt_skill_allowed(caster_instance_id, &skill, target) || !self.skill_has_useful_automatic_cast_target(
                     time_ms,
                     &skill,
                     caster_instance_id,
@@ -4779,7 +5005,7 @@ impl BattleCore {
                             .units
                             .get(&caster_instance_id)
                             .and_then(|unit| unit.fragment_source.as_ref())
-                            .filter(|source| source.skill_id == skill.id)
+                            .filter(|source| self.fragment_owns_skill(&source.skill_id, &skill.id))
                             .cloned(),
                         ..Default::default()
                     },
@@ -4789,7 +5015,7 @@ impl BattleCore {
 
                 let employee_use = self.admit_employee_resonance_use(
                     caster_instance_id,
-                    &skill.id,
+                    &skill,
                     &action,
                     time_ms,
                 )?;
@@ -4799,7 +5025,9 @@ impl BattleCore {
 
                 // "캐스트/집중"이 진행되는 동안 새로운 AutoCastStart를 막기 위한 캐스트 락.
                 // (공격/이동은 ActionLocks로 개별 게이트)
-                let cast_end_ms = if skill.focus_time_ms == 0 {
+                self.prepare_presence_burst(caster_instance_id, &skill, &action, time_ms)?;
+                self.prepare_tile_burst(caster_instance_id, &skill, &action, time_ms)?;
+                let cast_end_ms = if (Self::fusion_placement_skill(&skill) || Self::status_strike_declaration(&skill).is_some()) || Self::paired_area_skill(&skill) || Self::presence_burst_skill(&skill) || Self::tile_burst_skill(&skill) || Self::counter_channel_skill(&skill) || Self::relation_action_skill(&skill) { time_ms } else if skill.focus_time_ms == 0 {
                     time_ms.saturating_add(1)
                 } else {
                     time_ms.saturating_add(skill.focus_time_ms as u64)
@@ -4821,20 +5049,6 @@ impl BattleCore {
                     }
                 }
 
-                // 이동 금지 스킬이면 continuous movement 상태를 즉시 정지한다.
-                if !skill.focus_permissions.allows_move {
-                    let interrupted = self.interrupt_movement(
-                        time_ms,
-                        caster_instance_id,
-                        crate::game::battle::event_log::MovementStopReason::CastStarted,
-                        Some(cast_end_ms),
-                        ActionState::Idle,
-                    );
-                    if interrupted {
-                        self.schedule_continuous_movement_tick(cast_end_ms);
-                    }
-                }
-
                 let start_seq = self.with_recording_context(cause, |core| {
                     core.record_event_log(
                         time_ms,
@@ -4850,7 +5064,7 @@ impl BattleCore {
                         self.live_unit_projected_tile(unit_instance_id)
                     }
                     Some(SkillCastTarget::Tile { position }) => Some(position),
-                    None => None,
+                    None | Some(SkillCastTarget::TilePair { .. } | SkillCastTarget::Direction { .. }) => None,
                 };
 
                 if let Some(caster) = self.units.get_mut(&caster_instance_id) {
@@ -4861,6 +5075,7 @@ impl BattleCore {
                         skill_id: skill.id.clone(),
                         cast_target: target,
                         accepted_target_tile,
+                        accepted_facing: caster.facing_direction,
                         start_seq,
                     });
                 }
@@ -4925,8 +5140,8 @@ impl BattleCore {
                     .map(|unit| unit.next_action_time)
                     .unwrap_or(0)
                     .max(
-                        self.active_hard_cc_release_time_ms(caster_instance_id, time_ms)
-                            .unwrap_or(0),
+                        if self.current_action_interrupt_protected(caster_instance_id) {0} else {self.active_hard_cc_release_time_ms(caster_instance_id, time_ms)
+                            .unwrap_or(0)},
                     );
                 if time_ms < blocked_until {
                     self.event_queue.push(BattleEvent::AutoCastEnd {
@@ -4963,6 +5178,10 @@ impl BattleCore {
                     return Ok(());
                 }
 
+                let preserve_basic_clock = self.units.get(&caster_instance_id)
+                    .and_then(|u|u.pending_skill_cast.as_ref())
+                    .and_then(|p|self.pending_skill_view(p,caster_instance_id))
+                    .is_some_and(Self::skill_preserves_basic_clock);
                 let pending = self.units.get_mut(&caster_instance_id).and_then(|unit| {
                     if unit
                         .pending_skill_cast
@@ -4993,7 +5212,7 @@ impl BattleCore {
                             time_ms,
                             caster_instance_id,
                             &pending.skill_id,
-                            (pending.cast_target, pending.accepted_target_tile),
+                            (pending.cast_target, pending.accepted_target_tile, pending.accepted_facing),
                             cause,
                             false,
                             pending.action,
@@ -5012,7 +5231,9 @@ impl BattleCore {
                 };
                 let recovery_ends_at =
                     time_ms.saturating_add(caster.stats.attack_interval_ms.max(1));
-                caster.next_basic_attack_ms = caster.next_basic_attack_ms.max(recovery_ends_at);
+                if !preserve_basic_clock {
+                    caster.next_basic_attack_ms = caster.next_basic_attack_ms.max(recovery_ends_at);
+                }
                 let resonance_before_reset = caster.resonance_current;
                 if reset_resonance {
                     caster.resonance_current = 0;
@@ -5048,6 +5269,9 @@ impl BattleCore {
                 caster_instance_id,
                 cause,
             } => {
+                // An immediate action can finish in the same time bucket as
+                // its admission. Its start gate still precedes release.
+                self.resolve_skill_start_gate(time_ms,caster_instance_id,cause)?;
                 let Some(expected_start_seq) = cast_start_seq_from_cause(cause) else {
                     return Ok(());
                 };
@@ -5066,8 +5290,8 @@ impl BattleCore {
                     .map(|unit| unit.next_action_time)
                     .unwrap_or(0)
                     .max(
-                        self.active_hard_cc_release_time_ms(caster_instance_id, time_ms)
-                            .unwrap_or(0),
+                        if self.current_action_interrupt_protected(caster_instance_id) {0} else {self.active_hard_cc_release_time_ms(caster_instance_id, time_ms)
+                            .unwrap_or(0)},
                     );
                 if time_ms < blocked_until {
                     self.event_queue.push(BattleEvent::ManualCastEnd {
@@ -5104,6 +5328,10 @@ impl BattleCore {
                     return Ok(());
                 }
 
+                let preserve_basic_clock = self.units.get(&caster_instance_id)
+                    .and_then(|u|u.pending_skill_cast.as_ref())
+                    .and_then(|p|self.pending_skill_view(p,caster_instance_id))
+                    .is_some_and(Self::skill_preserves_basic_clock);
                 let pending = self.units.get_mut(&caster_instance_id).and_then(|unit| {
                     if unit
                         .pending_skill_cast
@@ -5134,7 +5362,7 @@ impl BattleCore {
                             time_ms,
                             caster_instance_id,
                             &pending.skill_id,
-                            (pending.cast_target, pending.accepted_target_tile),
+                            (pending.cast_target, pending.accepted_target_tile, pending.accepted_facing),
                             cause,
                             false,
                             pending.action,
@@ -5152,7 +5380,9 @@ impl BattleCore {
                 };
                 let recovery_ends_at =
                     time_ms.saturating_add(caster.stats.attack_interval_ms.max(1));
-                caster.next_basic_attack_ms = caster.next_basic_attack_ms.max(recovery_ends_at);
+                if !preserve_basic_clock {
+                    caster.next_basic_attack_ms = caster.next_basic_attack_ms.max(recovery_ends_at);
+                }
                 let resonance_before_reset = caster.resonance_current;
                 if reset_resonance {
                     caster.resonance_current = 0;
@@ -5186,6 +5416,20 @@ impl BattleCore {
 
                 Ok(())
             }
+            BattleEvent::TileBurstWave { time_ms, id } => self.tile_burst_wave(id,time_ms),
+            BattleEvent::ShotStockTick{source,time_ms}=>self.shot_stock_tick(source,time_ms),
+            BattleEvent::HostileCohortTick{source,time_ms}=>self.hostile_cohort_tick(source,time_ms),
+            BattleEvent::StatusMobileTick{time_ms}=>self.status_mobile_tick(time_ms),
+            BattleEvent::MobileEffectsTick{time_ms}=>self.mobile_effects_tick(time_ms),
+            BattleEvent::PairedAreaTick{time_ms,id}=>self.paired_area_tick(id,time_ms),
+            BattleEvent::PreparedVolleyTick{source,generation,time_ms}=>self.drive_prepared_volley(source,generation,time_ms),
+            BattleEvent::VolleyFlightTick{time_ms}=>self.volley_flight_tick(time_ms),
+            BattleEvent::ShotFlightTick{time_ms}=>self.shot_flight_tick(time_ms),
+            BattleEvent::RelationGain { source, generation, time_ms } => self.relation_gain(source, generation, time_ms),
+            BattleEvent::RelationActionTick { source, generation, time_ms } => self.drive_relation_action(source, generation, time_ms),
+            BattleEvent::CounterGain { source, generation, time_ms } => self.counter_gain(source, generation, time_ms),
+            BattleEvent::CounterChannelTick { source, generation, time_ms } => self.counter_channel_tick(source, generation, time_ms),
+            BattleEvent::PresenceTick { source, host, generation, time_ms } => self.presence_tick(source, host, generation, time_ms),
             BattleEvent::SustainedExpiry { activation, .. } => {
                 self.expire_sustained(activation, current_time_ms)
             }
@@ -5220,15 +5464,26 @@ impl BattleCore {
                 let Some(step) = Self::resolve_skill_step(&skill, step_index, &step_id) else {
                     return Ok(());
                 };
-                if self
-                    .units
-                    .get(&caster_instance_id)
-                    .and_then(|unit| unit.resonance_use.as_ref())
-                    .is_some_and(|use_state| {
-                        self.active_skill_casts.get(&cast_seq).is_some_and(|cast| {
-                            cast.fact_source.action.as_ref() == Some(&use_state.action)
+                // This is the release boundary. Previously released carriers bypass
+                // it and retain their original target and lifetime.
+                if !self.approach_taunt_skill_allowed(caster_instance_id, &skill, cast_target) {
+                    self.cancel_resonance_use_control(caster_instance_id);
+                    self.cancel_hostile_structured_flows(caster_instance_id, time_ms, crate::game::battle::runtime_facts::ActionCancelReason::Interrupted);
+                    return Ok(());
+                }
+                // A preleased structural child resolves its own step target;
+                // the original use's accepted target does not govern it.
+                // Original steps retain their target-lifecycle cancellation.
+                if !self.is_side_occurrence(cast_seq, step_index)
+                    && self
+                        .units
+                        .get(&caster_instance_id)
+                        .and_then(|unit| unit.resonance_use.as_ref())
+                        .is_some_and(|use_state| {
+                            self.active_skill_casts.get(&cast_seq).is_some_and(|cast| {
+                                cast.fact_source.action.as_ref() == Some(&use_state.action)
+                            })
                         })
-                    })
                     && !self.admitted_skill_target_is_valid(caster_instance_id, &skill, cast_target)
                 {
                     self.cancel_resonance_use_control(caster_instance_id);
@@ -5272,6 +5527,11 @@ impl BattleCore {
                 };
 
                 if duration_ms == 0 {
+                    return Ok(());
+                }
+                if def.kind == crate::game::battle::buffs::BuffKind::Stun && self.units.get(&target_instance_id).is_some_and(|u|u.target_traits.contains(&crate::game::battle::types::UnitTargetTrait::StunImmune)) { return Ok(()); }
+                if def.kind.control_capability().is_some()
+                    && self.sustained_invulnerable(target_instance_id, time_ms)? {
                     return Ok(());
                 }
 
@@ -5388,13 +5648,6 @@ impl BattleCore {
                         target_instance_id,
                     );
 
-                    self.interrupt_movement(
-                        time_ms,
-                        target_instance_id,
-                        crate::game::battle::event_log::MovementStopReason::HardCC,
-                        Some(lock_until),
-                        ActionState::Idle,
-                    );
                     self.refresh_block_state();
                     self.schedule_continuous_movement_tick(lock_until);
                 }
@@ -5570,6 +5823,7 @@ impl BattleCore {
 
                 self.last_continuous_movement_tick_ms = Some(time_ms);
                 self.run_continuous_attack_movement_tick(time_ms, movement_tick_ms);
+                self.settle_cohort_escapes(time_ms)?;
                 self.try_start_pending_basic_attacks(time_ms);
                 let next_time_ms = time_ms.saturating_add(movement_tick_ms);
                 if next_time_ms > time_ms {

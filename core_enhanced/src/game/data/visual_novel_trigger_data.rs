@@ -251,7 +251,7 @@ mod tests {
         VisualNovelTrigger {
             id: VisualNovelTriggerId::new(id),
             source: VisualNovelTriggerSource::RunStart {
-                game_mode: GameMode::Standard,
+                game_mode: GameMode::Expedition,
             },
             vn_id: VisualNovelId::new(vn_id),
             repeat: VisualNovelTriggerRepeat::OncePerRun,
@@ -289,7 +289,7 @@ mod tests {
             (
                 "run_start_once_per_battle",
                 VisualNovelTriggerSource::RunStart {
-                    game_mode: GameMode::Standard,
+                    game_mode: GameMode::Expedition,
                 },
                 VisualNovelTriggerRepeat::OncePerBattle,
                 "OncePerBattle requires BattleStarted or BattleTimeReached source",
@@ -297,7 +297,7 @@ mod tests {
             (
                 "run_start_once_per_node",
                 VisualNovelTriggerSource::RunStart {
-                    game_mode: GameMode::Standard,
+                    game_mode: GameMode::Expedition,
                 },
                 VisualNovelTriggerRepeat::OncePerNode,
                 "OncePerNode requires MapNodeEntered, BattleStarted, or BattleTimeReached source",
@@ -345,7 +345,7 @@ mod tests {
             (
                 "run_start",
                 VisualNovelTriggerSource::RunStart {
-                    game_mode: GameMode::Standard,
+                    game_mode: GameMode::Expedition,
                 },
             ),
             (

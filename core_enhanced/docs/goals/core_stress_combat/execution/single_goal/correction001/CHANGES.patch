@@ -1,0 +1,144 @@
+--- before/core_enhanced/src/game/stress_combat.rs
++++ after/core_enhanced/src/game/stress_combat.rs
+@@ -63,6 +63,9 @@
+             return Err(fail());
+         }
+         let mut seen = std::collections::HashSet::new();
++        let mut enkephalin = 0u32;
++        let mut equipment_dust = 0u32;
++        let mut materials = std::collections::BTreeMap::<&str, u32>::new();
+         for (index, round) in self.rounds.iter().enumerate() {
+             if round.wave_ids.is_empty() {
+                 return Err(fail());
+@@ -127,10 +130,7 @@
+                     return Err(fail());
+                 }
+                 match effect {
+-                    RewardEffect::GrantEnkephalin { amount }
+-                    | RewardEffect::GrantEquipmentDust { amount }
+-                    | RewardEffect::GrantEquipmentMaterial { amount, .. }
+-                    | RewardEffect::GrantExperience { amount, .. }
++                    RewardEffect::GrantExperience { amount, .. }
+                         if amount.checked_mul(2).is_none() =>
+                     {
+                         return Err(
+@@ -140,6 +140,28 @@
+                     }
+                     _ => {}
+                 }
++                // Successful extraction pays every completed round together.
++                // Validate each retained balance, including both dust grant
++                // spellings, across rounds and repeated effects in one round.
++                // XP consumes level costs after each grant; it is not a
++                // retained aggregate balance and keeps its per-effect check.
++                let (total, amount, resource) = match effect {
++                    RewardEffect::GrantEnkephalin { amount } =>
++                        (&mut enkephalin, *amount, "enkephalin"),
++                    RewardEffect::GrantEquipmentDust { amount } =>
++                        (&mut equipment_dust, *amount, "equipment_dust"),
++                    RewardEffect::GrantEquipmentMaterial { material_id, amount }
++                        if material_id == "equipment_dust" =>
++                        (&mut equipment_dust, *amount, "equipment_dust"),
++                    RewardEffect::GrantEquipmentMaterial { material_id, amount } =>
++                        (materials.entry(material_id.as_str()).or_default(), *amount, material_id.as_str()),
++                    _ => continue,
++                };
++                let sum = total.checked_add(amount).filter(|sum| sum.checked_mul(2).is_some())
++                    .ok_or_else(|| format!(
++                        "stress combat cumulative {resource} reward overflows the fixed unrestrained multiplier"
++                    ))?;
++                *total = sum;
+             }
+         }
+         if seen.len() != encounter.waves.len() {
+--- before/core_enhanced/src/game/world/tests/u164_stress.rs
++++ after/core_enhanced/src/game/world/tests/u164_stress.rs
+@@ -582,3 +582,80 @@
+     sources.facility_templates = &layout;
+     GameDataBase::load_live_sources(sources).expect("earlier actor dependency is accepted");
+ }
++
++fn load_cumulative_rewards(rounds: Vec<Vec<RewardEffect>>) -> Result<(), String> {
++    let mut sources = GameplayRonSourceSet::embedded();
++    let mut layouts = FacilityTemplateDatabase::from_ron_str(sources.facility_templates).unwrap();
++    let policy = layouts.layouts[0].stress_combat.as_mut().unwrap();
++    for (index, round) in policy.rounds.iter_mut().enumerate() {
++        round.rewards = rounds.get(index).cloned().unwrap_or_default();
++    }
++    let layout_text = ron::ser::to_string(&layouts).unwrap();
++    sources.facility_templates = &layout_text;
++    // A second supported material verifies that distinct stack owners are not
++    // incorrectly combined into a single global reward budget.
++    let mut equipment: crate::game::data::equipment_data::EquipmentDatabase =
++        ron::de::from_str(sources.equipment).unwrap();
++    let mut material = equipment.materials.iter()
++        .find(|m| m.id == "revival_catalyst").unwrap().clone();
++    material.id = "u164_other_parts".into();
++    material.uuid = Uuid::from_u128(16499);
++    equipment.materials.push(material);
++    let equipment_text = ron::ser::to_string(&equipment).unwrap();
++    sources.equipment = &equipment_text;
++    GameDataBase::load_live_sources(sources).map(|_| ()).map_err(|e| e.to_string())
++}
++
++#[test]
++fn u164_authoring_cumulative_currency_boundary() {
++    let split = [429_496_729, 429_496_729, 429_496_729, 429_496_729, 429_496_731];
++    let rewards = |amounts: &[u32]| amounts.iter()
++        .map(|&amount| vec![RewardEffect::GrantEnkephalin { amount }]).collect();
++    // Total 2,147,483,647; doubled 4,294,967,294 is representable.
++    load_cumulative_rewards(rewards(&split)).unwrap();
++    let mut excessive = split;
++    excessive[4] += 1;
++    for amounts in [excessive, [500_000_000; 5], [1_000_000_000; 5]] {
++        let error = load_cumulative_rewards(rewards(&amounts)).unwrap_err();
++        assert!(error.contains("cumulative"), "{error}");
++    }
++    let error = load_cumulative_rewards(vec![vec![
++        RewardEffect::GrantEnkephalin { amount: 1_073_741_824 },
++        RewardEffect::GrantEnkephalin { amount: 1_073_741_824 },
++    ]]).unwrap_err();
++    assert!(error.contains("cumulative"), "same-round duplicates: {error}");
++}
++
++#[test]
++fn u164_authoring_cumulative_dust_alias_and_material_boundary() {
++    let material = |id: &str, amount| RewardEffect::GrantEquipmentMaterial {
++        material_id: id.into(), amount,
++    };
++    for first in [
++        RewardEffect::GrantEquipmentDust { amount: 1_000_000_000 },
++        material("equipment_dust", 1_000_000_000),
++        material("revival_catalyst", 1_000_000_000),
++    ] {
++        let id = if matches!(&first, RewardEffect::GrantEquipmentMaterial { material_id, .. }
++            if material_id == "revival_catalyst") { "revival_catalyst" } else { "equipment_dust" };
++        load_cumulative_rewards(vec![vec![first.clone()], vec![material(id, 1_147_483_647)]]).unwrap();
++        let error = load_cumulative_rewards(vec![vec![first], vec![material(id, 1_147_483_648)]]).unwrap_err();
++        assert!(error.contains("cumulative"), "{id}: {error}");
++    }
++}
++
++#[test]
++fn u164_authoring_cumulative_keeps_distinct_owners_and_xp_grants() {
++    use crate::game::reward::ExperienceTargetPolicy;
++    let half = 2_147_483_647;
++    load_cumulative_rewards(vec![vec![
++        RewardEffect::GrantEnkephalin { amount: half },
++        RewardEffect::GrantEquipmentDust { amount: half },
++        RewardEffect::GrantEquipmentMaterial { material_id: "revival_catalyst".into(), amount: half },
++        RewardEffect::GrantEquipmentMaterial { material_id: "u164_other_parts".into(), amount: half },
++        // XP is consumed by leveling after each grant, not retained as a sum
++        // across grants. Preserve its existing per-effect multiplication limit.
++        RewardEffect::GrantExperience { amount: half, target: ExperienceTargetPolicy::CombatParticipants },
++        RewardEffect::GrantExperience { amount: half, target: ExperienceTargetPolicy::AliveRoster },
++    ]]).unwrap();
++}
+--- before/core_enhanced/docs/data_loading_contract.md
++++ after/core_enhanced/docs/data_loading_contract.md
+@@ -1016,4 +1016,4 @@
+ 
+ FacilityLayout의 optional `stress_combat: Some((encounter_id:..., rounds:[(wave_ids:[...],rewards:[...]), ...]))`가 활동 전용 연속 방어전을 정한다.5개의 비어 있지 않은 라운드가 조우의 모든 required 웨이브를 중복 없이 분할해야 한다. 조우 class는 StressCombat, mission_variant는Defense이며 ProtectUnit 목표와 같은 보호 대상의 UnitDefeated 패배 조건을 작성한다. 승리는 AllRequiredEnemyGroupsDefeated이고 별도 시간 승리/bonus_objectives는 사용하지 않는다. GroupCleared와 actor trigger 바인딩 모두 뒤 라운드의 wave를 참조하여 앞 라운드를 잠그는 입력은 거절한다.
+ 
+-라운드 rewards는 고정 엔케팔린/장비 가루/재료/XP/유물의 공통 RewardEffect이며 참조와 XP 대상 계약을 로더가 검증한다. 선택 직원을 추가로 요구하는 SelectedEmployee XP와 고정 무억제2배 수량을 표현할 수 없는 보상은 거절한다. explicit supported StressCombat 활동에 policy가 없으면 로더가 거절하며, 기존 optional policy 없는 layout은 이 활동을 미지원으로 안내한다. 공식 대표 조우는1/1/2/2/3명의I/II/II/III/III 적, 라운드당 엔케팔린10/20/30/40/50이다. 이 수치와 지원 외부 pack의 유물·재료·XP 표는 U21 최종 콘텐츠/밸런스 확정을 뜻하지 않는다.
++라운드 rewards는 고정 엔케팔린/장비 가루/재료/XP/유물의 공통 RewardEffect이며 참조와 XP 대상 계약을 로더가 검증한다. 선택 직원을 추가로 요구하는 SelectedEmployee XP와 고정 무억제2배 수량을 표현할 수 없는 보상은 거절한다. 엔케팔린·장비 가루·동일 material_id의 재료는 같은 라운드의 반복 효과와 모든 라운드를 합한 잔고별 누적량에도 이 검사를 적용한다. GrantEquipmentMaterial의 예약 ID equipment_dust는 GrantEquipmentDust와 같은 가루 잔고로 합산하며, 서로 다른 재료·잔고는 합치지 않는다. XP는 개별 지급마다 레벨업 비용을 소비하므로 기존 효과별 배율 검사를 유지한다. 이 작성 검사는 고정 보상 자체의 표현 가능성을 확인하며, 기존 보유량과 더할 때의 공통 런타임 잔고 한도·원자성 처리는 유지한다. explicit supported StressCombat 활동에 policy가 없으면 로더가 거절하며, 기존 optional policy 없는 layout은 이 활동을 미지원으로 안내한다. 공식 대표 조우는1/1/2/2/3명의I/II/II/III/III 적, 라운드당 엔케팔린10/20/30/40/50이다. 이 수치와 지원 외부 pack의 유물·재료·XP 표는 U21 최종 콘텐츠/밸런스 확정을 뜻하지 않는다.

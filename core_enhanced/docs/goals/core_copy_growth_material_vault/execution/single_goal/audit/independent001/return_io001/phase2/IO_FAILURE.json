@@ -1,0 +1,23 @@
+{
+  "command": {
+    "copy_uuid": "da6d0683-bf03-4cd3-b5b7-d2c97e384b59",
+    "form_id": "awakened",
+    "materials": [
+      {
+        "carried": 3,
+        "material_id": "u15_part_a",
+        "warehouse": 2
+      },
+      {
+        "carried": 3,
+        "material_id": "u15_part_b",
+        "warehouse": 0
+      }
+    ],
+    "type": "awaken_skill_fragment_with_materials"
+  },
+  "error": "player profile filesystem error: Is a directory (os error 21)",
+  "index": 16,
+  "memory_and_disk_unchanged": true,
+  "passed": true
+}

@@ -1,0 +1,16 @@
+--- before/PLAN.md
++++ after/PLAN.md
+@@ -19,10 +19,10 @@
+ [E1·Continue 회수 및 E2 범위](../../../../roadmaps/core_first/execution/u08_public_20261006_009/RECORD.ko.md)를 따른다.
+ 과거 실패·원 작성 이력·감사·target·HANDOFF는 보존한다. 프로세스 가시성은 sandbox namespace에 한정된다.
+ 
+-## 현재 우선 작업 — 2026-10-06/017
++## 현재 우선 작업 — 2026-10-06/018
+ 
+-R07 동일 기본stack 정확selector1/1 및 G1 duplicate/battle/weapon 각1/1 성공을 회수했다. G4는 정상 host limits 하의 CorruptRelic 초기/변경후2site 실패 rollback, 비용/variant/preview 음성을 포함한 u08_relics 모듈13/13 PASS다. 최종source438/4f289cee78777f175b2046b052c0f37170d2bda4834560b3700b80e90b27423b이며 G4는 테스트1파일만 변경됐다. root가3raw/438 actual bytes를 확인했다. [G4 결과와 다음 G2 계약](../../../../roadmaps/core_first/execution/u08_public_20261006_017/RECORD.ko.md)을 따른다. CoreDomain InvalidAction 정정과 G1 exact source/비영향 재사용은 [016](../../../../roadmaps/core_first/execution/u08_public_20261006_016/RECORD.ko.md)에 보존한다.
+-현재 Astra는 G2 외부RON/실제 catalog 변경 복원의 읽기 사전 확인 중이며 모든 제품/통합/성능은 HOLD다. G2/G3→G5/G6→G7 보강 뒤 통합을 재개한다. integrated003은 중도실패로 유지하고 전체 PASS로 세지 않는다. 후속 U17의 실제 부활촉매 교차시험을 이번 실행으로 주장하지 않는다.
++R07 기본stack 정확selector와 G1 세 검사, G4 모듈13/13의 성공을 보존한다. G2는 동일 최종source438/0eb5719496ccc828e6787c89032cb3791e84fbed06c4ea61194d4a8fde19d021에서 외부 데이터14음성사례1/1과 실제 변경/삭제 generation 복원 거절 및 원본 generation 정상복원1/1 PASS다. root가438 actual inputs·정확 테스트1파일 delta·6개 raw를 확인했다. [G2 결과·실패 원인·한계](../../../../roadmaps/core_first/execution/u08_public_20261006_018/RECORD.ko.md)를 따른다. 기존 [G4](../../../../roadmaps/core_first/execution/u08_public_20261006_017/RECORD.ko.md)와 [G1·CoreDomain 정정](../../../../roadmaps/core_first/execution/u08_public_20261006_016/RECORD.ko.md)은 보존한다.
++현재 Astra는 G3 읽기 사전 확인 중이며 제품/통합/성능은 HOLD다. G3→G5/G6→G7 보강 뒤 통합을 재개한다. integrated003은 중도실패로 유지한다. 후속 U17 실제 부활촉매 교차시험과 전체 U08 완료는 아직 주장하지 않는다.
+ 
+ ## 요청·역할·현재 인수
+ 

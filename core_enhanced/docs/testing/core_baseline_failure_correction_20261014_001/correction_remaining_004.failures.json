@@ -1,0 +1,122 @@
+[
+  {
+    "test": "authoring::trial::tests::u08_relics::u08_external_relic_invalid_catalogs_preserve_published_token_and_nonempty_run",
+    "failure": "\nthread 'authoring::trial::tests::u08_relics::u08_external_relic_invalid_catalogs_preserve_published_token_and_nonempty_run' (329) panicked at core_enhanced/src/authoring/trial.rs:2255:14:\ncalled `Option::unwrap()` on a `None` value\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+  },
+  {
+    "test": "authoring::trial::tests::d07_b15_public_trial_amount_preview_explain_and_exact_use_actual_legacy_execution",
+    "failure": "\nthread 'authoring::trial::tests::d07_b15_public_trial_amount_preview_explain_and_exact_use_actual_legacy_execution' (317) panicked at core_enhanced/src/authoring/trial.rs:2255:14:\ncalled `Option::unwrap()` on a `None` value\n"
+  },
+  {
+    "test": "authoring::trial::tests::u08_relics::u08_external_changed_or_missing_relic_generation_rejects_original_nonempty_save_atomically",
+    "failure": "\nthread 'authoring::trial::tests::u08_relics::u08_external_changed_or_missing_relic_generation_rejects_original_nonempty_save_atomically' (328) panicked at core_enhanced/src/authoring/trial.rs:2255:14:\ncalled `Option::unwrap()` on a `None` value\n"
+  },
+  {
+    "test": "authoring::trial::tests::u07_objects::u07_public_external_ron_trial_creates_actor_traps_walls_and_detaches_pool",
+    "failure": "\nthread 'authoring::trial::tests::u07_objects::u07_public_external_ron_trial_creates_actor_traps_walls_and_detaches_pool' (327) panicked at core_enhanced/src/authoring/trial.rs:2255:14:\ncalled `Option::unwrap()` on a `None` value\n"
+  },
+  {
+    "test": "authoring::trial::tests::amount_completion::r12_public_boss_flow_projectile_area_milestones_and_cli_export",
+    "failure": "\nthread 'authoring::trial::tests::amount_completion::r12_public_boss_flow_projectile_area_milestones_and_cli_export' (313) panicked at core_enhanced/src/authoring/trial/tests/amount_completion.rs:879:14:\ncalled `Option::unwrap()` on a `None` value\n"
+  },
+  {
+    "test": "authoring::trial::tests::public_trial_preview_is_bounded_and_preserves_the_accepted_session",
+    "failure": "\nthread 'authoring::trial::tests::public_trial_preview_is_bounded_and_preserves_the_accepted_session' (324) panicked at core_enhanced/src/authoring/trial.rs:1248:14:\ncalled `Option::unwrap()` on a `None` value\n"
+  },
+  {
+    "test": "authoring::trial::tests::u08_relics::u08_external_ron_normal_reward_and_declined_corruption_consume_authored_damage_in_real_hp",
+    "failure": "\nthread 'authoring::trial::tests::u08_relics::u08_external_ron_normal_reward_and_declined_corruption_consume_authored_damage_in_real_hp' (331) panicked at core_enhanced/src/authoring/trial.rs:2255:14:\ncalled `Option::unwrap()` on a `None` value\n"
+  },
+  {
+    "test": "authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process",
+    "failure": "\nthread 'authoring::trial::tests::r07_copies::r07_f07_f08_f09_public_ron_recipe_forms_sources_resources_and_fresh_process' (326) panicked at core_enhanced/src/authoring/trial.rs:2255:14:\ncalled `Option::unwrap()` on a `None` value\n"
+  },
+  {
+    "test": "authoring::trial::tests::amount_completion::r12_public_sustained_protection_amount_trace_and_cli_export",
+    "failure": "\nthread 'authoring::trial::tests::amount_completion::r12_public_sustained_protection_amount_trace_and_cli_export' (314) panicked at core_enhanced/src/authoring/trial.rs:2255:14:\ncalled `Option::unwrap()` on a `None` value\n"
+  },
+  {
+    "test": "authoring::trial::tests::amount_completion::r10_public_flow_amount_generation_query_trace_and_cli_export",
+    "failure": "\nthread 'authoring::trial::tests::amount_completion::r10_public_flow_amount_generation_query_trace_and_cli_export' (312) panicked at core_enhanced/src/authoring/trial.rs:2255:14:\ncalled `Option::unwrap()` on a `None` value\n"
+  },
+  {
+    "test": "authoring::trial::tests::u08_relics::u08_external_ron_normal_grants_savepoint_event_replay_and_fresh_process",
+    "failure": "\nthread 'authoring::trial::tests::u08_relics::u08_external_ron_normal_grants_savepoint_event_replay_and_fresh_process' (330) panicked at core_enhanced/src/authoring/trial.rs:2255:14:\ncalled `Option::unwrap()` on a `None` value\n"
+  },
+  {
+    "test": "authoring::trial::tests::amount_completion::r06_public_literal_expression_delivery_matrix_and_actual_damage_prefix",
+    "failure": "\nthread 'authoring::trial::tests::amount_completion::r06_public_literal_expression_delivery_matrix_and_actual_damage_prefix' (309) panicked at core_enhanced/src/authoring/trial.rs:2255:14:\ncalled `Option::unwrap()` on a `None` value\n"
+  },
+  {
+    "test": "authoring::trial::tests::optional_trace_private_trial_keeps_complete_receipts_and_public_results_identical",
+    "failure": "\nthread 'authoring::trial::tests::optional_trace_private_trial_keeps_complete_receipts_and_public_results_identical' (318) panicked at core_enhanced/src/authoring/trial.rs:1603:14:\ncalled `Option::unwrap()` on a `None` value\n"
+  },
+  {
+    "test": "authoring::trial::tests::amount_completion::r06_public_dynamic_query_limits_identity_lifecycle_and_trace_independence",
+    "failure": "\nthread 'authoring::trial::tests::amount_completion::r06_public_dynamic_query_limits_identity_lifecycle_and_trace_independence' (308) panicked at core_enhanced/src/authoring/trial.rs:2255:14:\ncalled `Option::unwrap()` on a `None` value\n"
+  },
+  {
+    "test": "authoring::trial::tests::amount_order::d07_f03_c07_public_replacement_rejects_actual_old_exact_and_retains_zero",
+    "failure": "\nthread 'authoring::trial::tests::amount_order::d07_f03_c07_public_replacement_rejects_actual_old_exact_and_retains_zero' (315) panicked at core_enhanced/src/authoring/trial.rs:2255:14:\ncalled `Option::unwrap()` on a `None` value\n"
+  },
+  {
+    "test": "authoring::trial::tests::u11_lab_continuation::world_lab_preparation_retreat_preserves_bulk_loadouts_and_normal_continue_rejects_duplicates",
+    "failure": "\nthread 'authoring::trial::tests::u11_lab_continuation::world_lab_preparation_retreat_preserves_bulk_loadouts_and_normal_continue_rejects_duplicates' (337) panicked at core_enhanced/src/authoring/trial/tests/u11_lab_continuation.rs:97:5:\nassertion `left == right` failed\n  left: \"invalid_action\"\n right: \"invalid_static_data\"\n"
+  },
+  {
+    "test": "authoring::trial::tests::u09_structural::rv003_external_structural_grants_queries_consumption_and_fresh_continue",
+    "failure": "\nthread 'authoring::trial::tests::u09_structural::rv003_external_structural_grants_queries_consumption_and_fresh_continue' (334) panicked at core_enhanced/src/authoring/trial.rs:2255:14:\ncalled `Option::unwrap()` on a `None` value\n"
+  },
+  {
+    "test": "authoring::trial::tests::u10_causal::u10_p_external_causal_join_periodic_wedge_and_fresh_continue",
+    "failure": "\nthread 'authoring::trial::tests::u10_causal::u10_p_external_causal_join_periodic_wedge_and_fresh_continue' (335) panicked at core_enhanced/src/authoring/trial.rs:2255:14:\ncalled `Option::unwrap()` on a `None` value\n"
+  },
+  {
+    "test": "authoring::trial::tests::u09_structural::families::rv003_external_representatives_and_cross_relic_closure_consume_normal_public_commands",
+    "failure": "\nthread 'authoring::trial::tests::u09_structural::families::rv003_external_representatives_and_cross_relic_closure_consume_normal_public_commands' (333) panicked at core_enhanced/src/authoring/trial.rs:2255:14:\ncalled `Option::unwrap()` on a `None` value\n"
+  },
+  {
+    "test": "authoring::trial::tests::u09_structural::amount_cases::rv004_external_structural_amount_active_exact_preview_explain_are_read_only",
+    "failure": "\nthread 'authoring::trial::tests::u09_structural::amount_cases::rv004_external_structural_amount_active_exact_preview_explain_are_read_only' (332) panicked at core_enhanced/src/authoring/trial.rs:2255:14:\ncalled `Option::unwrap()` on a `None` value\n"
+  },
+  {
+    "test": "game::world::tests::combat::resource_lifetimes::actual_same_copy_transfer_enhance_sale_and_dismantle_preserve_or_discard_only_that_run_key",
+    "failure": "\nthread 'game::world::tests::combat::resource_lifetimes::actual_same_copy_transfer_enhance_sale_and_dismantle_preserve_or_discard_only_that_run_key' (356) panicked at core_enhanced/src/game/world/tests/resource_lifetimes.rs:966:6:\ncalled `Result::unwrap()` on an `Err` value: SkillFragmentIncompatible { fragment_id: SkillFragmentId(\"training_single_heal\"), failure_codes: [WeaponArchetypeMismatch] }\n"
+  },
+  {
+    "test": "game::world::admin::tests::admin_save_point_fixture_uses_authored_slot_and_produces_a_valid_checkpoint",
+    "failure": "\nthread 'game::world::admin::tests::admin_save_point_fixture_uses_authored_slot_and_produces_a_valid_checkpoint' (344) panicked at core_enhanced/src/game/world/admin/tests.rs:304:5:\nassertion `left == right` failed\n  left: \"1\"\n right: \"save_archive\"\n"
+  },
+  {
+    "test": "game::world::tests::combat::resource_lifetimes::actual_run_result_failure_retry_and_fresh_public_checkpoint_preserve_nonempty_values",
+    "failure": "\nthread 'game::world::tests::combat::resource_lifetimes::actual_run_result_failure_retry_and_fresh_public_checkpoint_preserve_nonempty_values' (355) panicked at core_enhanced/src/game/world/tests/resource_lifetimes.rs:716:5:\nassertion `left == right` failed\n  left: Number(15)\n right: 12\n"
+  },
+  {
+    "test": "game::world::tests::combat::resource_lifetimes::actual_admin_acquisition_recruitment_and_employee_status_preserve_owner_identity",
+    "failure": "\nthread 'game::world::tests::combat::resource_lifetimes::actual_admin_acquisition_recruitment_and_employee_status_preserve_owner_identity' (352) panicked at core_enhanced/src/game/world/tests/resource_lifetimes.rs:2056:6:\ncalled `Result::unwrap()` on an `Err` value: InvalidAction\n"
+  },
+  {
+    "test": "game::world::tests::combat::resource_lifetimes::actual_event_defeat_commits_nonempty_resources_once_before_ack_and_restart",
+    "failure": "\nthread 'game::world::tests::combat::resource_lifetimes::actual_event_defeat_commits_nonempty_resources_once_before_ack_and_restart' (353) panicked at core_enhanced/src/game/world/tests/u04_continuation.inc.rs:6:7:\ncalled `Result::unwrap()` on an `Err` value: InvalidAction\n"
+  },
+  {
+    "test": "game::world::tests::combat::resource_lifetimes::nonempty_run_survives_repeat_retreat_second_result_floor_and_ends_at_new_run",
+    "failure": "\nthread 'game::world::tests::combat::resource_lifetimes::nonempty_run_survives_repeat_retreat_second_result_floor_and_ends_at_new_run' (363) panicked at core_enhanced/src/game/world/tests/resource_lifetimes.rs:1820:5:\nassertion failed: matches!(core.execute(player, PlayerBehavior::ConfirmEnterNode).unwrap(),\n    BehaviorResult::FloorAdvanced { .. })\n"
+  },
+  {
+    "test": "game::world::tests::snapshots_and_start::run_checkpoint_preserves_encounter_progression_graph",
+    "failure": "\nthread 'game::world::tests::snapshots_and_start::run_checkpoint_preserves_encounter_progression_graph' (378) panicked at core_enhanced/src/game/world/tests/snapshots_and_start.rs:908:10:\ncalled `Result::unwrap()` on an `Err` value: ActionUnavailable { action: LoadRunCheckpoint, reason: CheckpointUnavailable }\n"
+  },
+  {
+    "test": "game::world::tests::combat::resource_lifetimes::two_real_same_definition_copies_and_target_employee_selector_do_not_alias",
+    "failure": "\nthread 'game::world::tests::combat::resource_lifetimes::two_real_same_definition_copies_and_target_employee_selector_do_not_alias' (369) panicked at core_enhanced/src/game/world/tests/resource_lifetimes.rs:500:5:\nactual typed cost did not occur\n"
+  },
+  {
+    "test": "game::world::tests::u08_event_owner::relic_event_history_survives_a_later_legal_dismantle_of_its_selected_copy",
+    "failure": "\nthread 'game::world::tests::u08_event_owner::relic_event_history_survives_a_later_legal_dismantle_of_its_selected_copy' (383) panicked at core_enhanced/src/game/world/tests/u08_event_owner.rs:349:6:\ncalled `Result::unwrap()` on an `Err` value: NotImplemented(\"facility activity executor\")\n"
+  },
+  {
+    "test": "game::world::tests::node_sessions::live_shop_pool_separates_standard_shop_from_endless_floor_four_wandering_merchant",
+    "failure": "\nthread 'game::world::tests::node_sessions::live_shop_pool_separates_standard_shop_from_endless_floor_four_wandering_merchant' (376) panicked at core_enhanced/src/game/world/tests/node_sessions.rs:1130:42:\ncalled `Result::unwrap()` on an `Err` value: InvalidStaticData(\"saved facility room no longer matches authored layout\")\n\n"
+  }
+]

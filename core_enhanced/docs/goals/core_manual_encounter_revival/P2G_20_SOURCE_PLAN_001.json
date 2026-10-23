@@ -1,0 +1,129 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Review Scope/Source Requirement Plan",
+        "Artifact ID": "RSP-CMER-001",
+        "Content Digest": "sha256:f6993b20c2f57e8a8aede7db72adaea58391335c4c52ab56a847b0a58333119c"
+      },
+      "payload": {
+        "Evaluated Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CMER-003",
+          "Content Digest": "sha256:feb53f6636959b4b3736992afa1ceb5a3fb5bf5b49438b1d4a666e2c1544cb80"
+        },
+        "Requirements": [
+          {
+            "Requirement ID": "LEDGER",
+            "Required claim": "first source ledger exists; Elite combat uses third victory, sweep reacquires zero-owned fragment; natural selection depends on mastery",
+            "Affected Element IDs": [
+              "PE-CMER-G27",
+              "PE-CMER-G29",
+              "PE-CMER-LEGACY"
+            ],
+            "Source locators": [
+              "core_enhanced/src/game/encounter_progression.rs",
+              "core_enhanced/src/game/monolith.rs",
+              "core_enhanced/src/game/world/map_encounters.rs",
+              "core_enhanced/src/game/world/mastered_elite_sweep.rs"
+            ],
+            "Method": "bounded read-only source/symbol inspection"
+          },
+          {
+            "Requirement ID": "AUTHOR",
+            "Required claim": "source repeat fixed to dust5/10/20; monolith global stage tuning; no egg/catalyst recipe or stage equipment choices",
+            "Affected Element IDs": [
+              "PE-CMER-G27",
+              "PE-CMER-G28",
+              "PE-CMER-G29",
+              "PE-CMER-AUTHOR"
+            ],
+            "Source locators": [
+              "core_enhanced/src/game/data/pve_data.rs",
+              "core_enhanced/src/game/data/run_policy_data.rs",
+              "core_enhanced/src/game/map/types.rs",
+              "game_resources/data/pve/encounters.ron"
+            ],
+            "Method": "bounded read-only source/symbol inspection"
+          },
+          {
+            "Requirement ID": "HATCH",
+            "Required claim": "node conversion and entry separate methods; U15 exact allocation/debit available; U13 original reservation and seal identity must remain",
+            "Affected Element IDs": [
+              "PE-CMER-G28",
+              "PE-CMER-RESTORE",
+              "PE-CMER-LEGACY",
+              "PE-CMER-AUTHOR"
+            ],
+            "Source locators": [
+              "core_enhanced/src/game/world/node_flow.rs",
+              "core_enhanced/src/game/world/facility_rooms.rs",
+              "core_enhanced/src/game/world/shop.rs",
+              "core_enhanced/src/game/material_economy.rs",
+              "core_enhanced/src/game/world/maintenance.rs"
+            ],
+            "Method": "bounded read-only source/symbol inspection"
+          },
+          {
+            "Requirement ID": "RESULT",
+            "Required claim": "victory stages grants/progression/node completion and persisted ChooseOne entitlement; U14 quantity multiplier and actual retreat restore reused",
+            "Affected Element IDs": [
+              "PE-CMER-G27",
+              "PE-CMER-G29",
+              "PE-CMER-RESTORE",
+              "PE-CMER-AUTHOR"
+            ],
+            "Source locators": [
+              "core_enhanced/src/game/world/combat.rs",
+              "core_enhanced/src/game/combat_setup/rewards.rs",
+              "core_enhanced/src/game/world/grant_state.rs"
+            ],
+            "Method": "bounded read-only source/symbol inspection"
+          },
+          {
+            "Requirement ID": "STORE",
+            "Required claim": "current version16; Continue preserves preentry root/retreat-count overlay; stable NodeConfirm without unfinished marker recaptured; U15 debit reconcile",
+            "Affected Element IDs": [
+              "PE-CMER-G28",
+              "PE-CMER-G29",
+              "PE-CMER-RESTORE",
+              "PE-CMER-LEGACY",
+              "PE-CMER-AUTHOR"
+            ],
+            "Source locators": [
+              "core_enhanced/src/game/world/state.rs",
+              "core_enhanced/src/game/world/active_run.rs",
+              "core_enhanced/src/game/world/active_run/continuation.rs",
+              "core_enhanced/src/game/expedition_lifecycle.rs",
+              "core_enhanced/src/application.rs"
+            ],
+            "Method": "bounded read-only source/symbol inspection"
+          },
+          {
+            "Requirement ID": "PUBLIC",
+            "Required claim": "typed command/router/capability/query still expose monolith/sweep; shop/VN residual path coupled to old owner; add hatch/query and retire active legacy path",
+            "Affected Element IDs": [
+              "PE-CMER-G27",
+              "PE-CMER-G28",
+              "PE-CMER-G29",
+              "PE-CMER-RESTORE",
+              "PE-CMER-LEGACY",
+              "PE-CMER-AUTHOR"
+            ],
+            "Source locators": [
+              "core_enhanced/src/game/behavior.rs",
+              "core_enhanced/src/game/world.rs",
+              "core_enhanced/src/game/world/application.rs",
+              "core_enhanced/src/game/world/action_capability.rs",
+              "core_enhanced/src/game/world/snapshot.rs",
+              "core_enhanced/src/game/world/map_content.rs",
+              "core_enhanced/src/game/world/visual_novel_flow.rs"
+            ],
+            "Method": "bounded read-only source/symbol inspection"
+          }
+        ],
+        "Excluded sources": "Unity/individual final bosses/U18+ excluded; no deploy claims"
+      }
+    }
+  ]
+}

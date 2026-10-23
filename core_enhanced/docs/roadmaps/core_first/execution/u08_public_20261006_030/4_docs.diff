@@ -1,0 +1,25 @@
+--- core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_LATEST.ko.md before030
++++ core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_LATEST.ko.md after030
+@@ -1,4 +1,22 @@
+ # Core 우선 로드맵 최신 인수인계
++
++갱신 UTC 2026-10-06T13:54:36.327007+00:00. 현재 우선 위치는 [통합 인수030](u08_public_20261006_030/RECORD.ko.md)이다. 이전 최신본은 [HANDOFF_20261006_007.ko.md](HANDOFF_20261006_007.ko.md)에 exact 보존했다. 기존 연속 권한으로 실행을 계속하며 사용자 중지·전체 완료가 아니다.
++
++U08 현재 통합 인수030: R06 공개 사전 검증 결함을 compile.rs 한 파일에서 교정하고 5개 시험 파일에 9개 시험을 추가했다. source438/4c7bbd31에서 최종 포맷·관련 회귀가 통과했고, 각 집중 검사를 포함한42회 시험 실행과 동일7개CLI입력의 oracle이 충족됐다. 정상3개 콘텐츠 identity도 보존됐다. 중간source 집중 결과와 시험 준비 오류3건은 원본 그대로 유지한다. 전체 기능·성능·독립 감사·U09는 아직 미완료다.
++
++harness005의1322입력과 archive78+44+1200·flat1322·외부2개/8members, 최종source438/archive438을 root가 확인했다. 기존입력delta는0이고 새007출력167경로는 비어 있었다. Sol 단독runner가 실제 before UTC·source·input·닫힌root030을 기록한 뒤 통합007의49기능+8성능을 실행하도록 승인한다. PC/R05는 각각 모든49기능receipt가 닫힌 quiescence와 freshbuild/binary 결속을 유지한다. cap·workload·기존기대값 및R05 원peak경고만 유지한다. 이 준비 확인은 실제 실행 시각이나 PASS를 대신하지 않는다.
++
++최소읽기: 030/RECORD.json·FOCUSED_READBACK.json·HARNESS_READBACK.json→goal evidence/verify_harness_handoff005/HANDOFF.json·MANIFEST.json·EXECUTION_PLAN.json→실제 evidence/execution_harness_binding007 및 integrated_matrix007/verify_remaining007 이후receipt. goal root는 core_enhanced/docs/goals/core_relic_numeric_variants다. 준비문서와 실제실행기록을 구분하고006은 재개하지 않는다.
++
++현재 source/test/기존input writer0. Sol /root/u08_product_runner_resume(gpt-6.1-sol/xhigh)가 단독 통합runner를 인수한다. main /root/u08_test_author_resume(Astra/high)는 새coverage004와31R06문서, supplementary /root/u08_harness_author_resume(Astra/high)는 새191문서를 실행입력 밖에서만 작성한다. root는 계획/읽기/문서이고 최종 독립 감사자는 미배정이다. 새9selector와Normal실제HP selector를 최종Core default/fixtures/observation raw의 실제행에 연결한다. 1967은 예상시험수일뿐 실제값을 대신하지 않는다.
++
++007이 닫히면 selection→191+31 impact→adaptation→32문장/10차원/3node/16seam coverage→자체검증→PLAN/NOTES→직접unwrapped동결·격리정역복원→비참여AstraHigh의전체U08감사를 진행한다. PC8MiB·31성공5거절·R05원cap9030188의기존peak경고만 유지하고20분stress제외·sharedhost측정한계를 보존한다. U17실제부활촉매교차는후속미구현,16.2독립감사는대기다.
++
++환경fullaccess/network enabled/approval never이며sandbox_permissions 인자를사용하지않는다. 실행중source/input 변경은금지하고 실패원본은고유label로보존한다. 새제품/시험교정이필요하면 해당interval을닫은뒤 담당역할로반환한다.
++
++---
++
++아래029는 이전 시험 이관 이력이다.
+ 
+ 갱신 UTC 2026-10-06T13:26:34.201270+00:00. 현재 우선 위치는 [시험 이관029](u08_public_20261006_029/RECORD.ko.md)이다. 이전 최신본은 [HANDOFF_20261006_006.ko.md](HANDOFF_20261006_006.ko.md)에 보존했다.
+ 

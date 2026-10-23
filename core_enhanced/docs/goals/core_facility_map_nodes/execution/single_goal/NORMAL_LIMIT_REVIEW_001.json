@@ -1,0 +1,29 @@
+{
+  "actual_calibration": "normal_calibration001.stdout.log",
+  "sha256": "b10d0d63999728332b9227fc2af3b265dae8ff1a308c5172b61b6980dbd746a2",
+  "review": "Actual paired current-source3-repeat samples are complete with no unsupported coverage. Only unadopted criterion prevents Passed. Every actual phase remains below the inherited finite host diagnostic limits. Adopt unchanged limits; no cap increase or final SLO claim.",
+  "summary": {
+    "plain": {
+      "samples": 12,
+      "max_elapsed_ns": 713981755,
+      "max_native_work": 0,
+      "max_requested_heap_bytes": 0,
+      "max_rss_bytes": 0
+    },
+    "instrumented": {
+      "samples": 12,
+      "max_elapsed_ns": 781718625,
+      "max_native_work": 8445816,
+      "max_requested_heap_bytes": 25231569,
+      "max_rss_bytes": 52084736
+    }
+  },
+  "limits": {
+    "max_elapsed_ns": 6000000000,
+    "max_native_work": 233000000,
+    "max_requested_heap_bytes": 1342177280,
+    "max_rss_bytes": 1610612736
+  },
+  "limits_changed": false,
+  "decision": "proceed with current supervised adoption"
+}

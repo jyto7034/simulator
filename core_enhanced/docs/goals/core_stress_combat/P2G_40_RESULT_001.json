@@ -1,0 +1,11 @@
+{
+  "stage": "P2G-40",
+  "status": "complete",
+  "phase_plan_ref": {
+    "Artifact Type": "Phase Plan",
+    "Artifact ID": "PP-CSCB-001",
+    "Content Digest": "sha256:05552c05c1d8349a02ee760f5e440283ea1ad134e170b29b0fd25469ce4f2a63"
+  },
+  "validation": "P2G_40_VALIDATION_RECEIPT_001.json",
+  "execution_claim": false
+}

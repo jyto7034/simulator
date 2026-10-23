@@ -69,6 +69,10 @@ pub struct RewardSessionState {
     pub rewards: Vec<RewardOption>,
     pub selected_reward_uuid: Option<Uuid>,
     pub can_skip: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub relic_activity: Option<crate::game::relic_reward::RelicRewardSession>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dealer: Option<Box<crate::game::dealer::DealerSession>>,
 }
 
 impl RewardSessionState {
@@ -326,15 +330,23 @@ pub(crate) fn active_relic_history_extent(
 ) -> Result<usize, GameError> {
     match content {
         Some(ActiveNodeContent::Event(session)) => session.relic_history_extent(),
+        Some(ActiveNodeContent::Reward(session)) => session.relic_activity_extent(),
         _ => Ok(0),
     }
 }
 pub(crate) fn has_active_relic_history(content: &Option<ActiveNodeContent>) -> bool {
-    matches!(content, Some(ActiveNodeContent::Event(session)) if session.has_relic_history())
+    match content {
+        Some(ActiveNodeContent::Event(session)) => session.has_relic_history(),
+        Some(ActiveNodeContent::Reward(session)) => session.relic_activity.is_some() || session.dealer.is_some(),
+        _ => false,
+    }
 }
 
 #[derive(Debug, Clone)]
 pub struct CombatBattleState {
+    pub deterrence: crate::game::combat_preview::BattleDeterrenceSnapshot,
+    pub bonus_reward_effects: Vec<crate::game::reward::RewardEffect>,
+    pub(crate) credit_settlements: Vec<crate::game::credit_ledger::CreditSettlement>,
     pub(crate) typed_resource_result: Option<crate::game::resource::durable::RunResourceResult>,
     pub runtime_facts:
         Option<std::sync::Arc<crate::game::battle::runtime_facts::RuntimeFactSnapshot>>,
@@ -460,7 +472,9 @@ crate::authoring::clone_shape::struct_shape!(RewardSessionState {
     mode,
     rewards,
     selected_reward_uuid,
-    can_skip
+    can_skip,
+    relic_activity,
+    dealer
 });
 crate::authoring::clone_shape::struct_shape!(SavePointSessionState { node_id });
 crate::authoring::clone_shape::struct_shape!(MaintenanceSessionState { node_id });
@@ -470,7 +484,10 @@ crate::authoring::clone_shape::struct_shape!(HeadquartersContactSessionState {
     shop_pool_id
 });
 crate::authoring::clone_shape::struct_shape!(CombatBattleState {
+    deterrence,
+    bonus_reward_effects,
     typed_resource_result,
+    credit_settlements,
     runtime_facts,
     primary_abnormality_id,
     encounter_id,
@@ -504,3 +521,33 @@ crate::authoring::clone_shape::enum_shape!(ActiveNodeContent {
     ],
     records: []
 });
+
+impl RewardSessionState {
+    /// Only the added basic-activity owner opts legacy reward storage into the
+    /// relic budget. Its three choices own strings and GrantRelic effects.
+    pub(crate) fn relic_activity_extent(&self) -> Result<usize, GameError> {
+        if let Some(dealer) = &self.dealer { return dealer.extent(); }
+        if self.relic_activity.is_none() { return Ok(0); }
+        let mut bytes = self.rewards.capacity().checked_mul(std::mem::size_of::<RewardOption>()).ok_or(GameError::InvalidAction)?;
+        for option in &self.rewards {
+            crate::authoring::control::charge(1, "relic_activity_extent")?;
+            for size in [option.id.capacity(), option.name.capacity(), option.description.capacity(), option.icon.capacity(), option.effects.capacity().checked_mul(std::mem::size_of::<crate::game::reward::RewardEffect>()).ok_or(GameError::InvalidAction)?] {
+                bytes = bytes.checked_add(size).ok_or(GameError::InvalidAction)?;
+            }
+            for effect in &option.effects {
+                if let crate::game::reward::RewardEffect::GrantRelic { relic_id } = effect {
+                    bytes = bytes.checked_add(relic_id.capacity()).ok_or(GameError::InvalidAction)?;
+                }
+            }
+        }
+        Ok(bytes)
+    }
+    pub(crate) fn preflight_relic_activity_clone(&self) -> Result<(), GameError> {
+        if (self.relic_activity.is_none() && self.dealer.is_none()) || !crate::game::battle::runtime_control::is_active() { return Ok(()); }
+        crate::game::relic::allocation::admit_owned_projection(self, "relic_activity_clone")?;
+        if !crate::authoring::control::is_active() {
+            crate::game::resource::store::preflight_resource_clone(self).map_err(crate::game::resource::store::ResourceError::into_game_error)?;
+        }
+        Ok(())
+    }
+}

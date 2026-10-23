@@ -1,0 +1,67 @@
+{
+  "schema": "U10_AUDIT_CORRECTION_SOURCE_NONIMPACT_V1",
+  "status": "static_source_review_actual_guard_pending",
+  "frozen_runtime_source": {
+    "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization001/CURRENT_SOURCE.json",
+    "sha256": "dbd9bf0b77582290b9d0f4eae1e354a44944ab749fbeb8a6c424536a439e14ab",
+    "bytes": 101107
+  },
+  "frozen_runtime_identity": "02e185fad4820f3366c465af9904284fc33394d5f6d59ec65e0dc33710d329ac",
+  "closed_preceding_guard_receipt": {
+    "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/test_parts/runtime001/evidence/u10_audit_joint_tests003.json",
+    "sha256": "a743f8d0fc59ea85a19a7975dadb82c8fd2a19f5da6e235c9d2524b2f859cc50",
+    "bytes": 214743
+  },
+  "current_expected_scanner_sha256_from_same533_members": "76aba953d84c644d3659b553e50f99f342c5826c709952c1fe808984ebfc340d",
+  "membership": {
+    "prior": 532,
+    "current_expected": 533,
+    "added": [
+      "core_enhanced/src/game/world/tests/u10_causal/audit_joint_cases.rs"
+    ],
+    "removed": []
+  },
+  "modified_old_members": [
+    {
+      "before": {
+        "path": "core_enhanced/src/game/battle/core/relic_causal_tests.rs",
+        "sha256": "4f52834d5b0d8e38fc862a94b0b8c379bcd31a9d092bb93cf9574d2e6a2ba4e5",
+        "bytes": 13490
+      },
+      "after": {
+        "path": "core_enhanced/src/game/battle/core/relic_causal_tests.rs",
+        "sha256": "197d290b3ca041dbf513c772e790b40e83bcc47635b8c2c882c416a052d0c35a",
+        "bytes": 16531
+      }
+    },
+    {
+      "before": {
+        "path": "core_enhanced/src/game/world/tests/u10_causal.rs",
+        "sha256": "899e03b3fda73aeb58938d1f4e6df94d92a9c8fc010de446923316e59791a3be",
+        "bytes": 13576
+      },
+      "after": {
+        "path": "core_enhanced/src/game/world/tests/u10_causal.rs",
+        "sha256": "74cc138f05498f6b9c836d1d77064423e0b247ab7932c1950b0460736c690e1e",
+        "bytes": 13599
+      }
+    }
+  ],
+  "new_source": {
+    "path": "core_enhanced/src/game/world/tests/u10_causal/audit_joint_cases.rs",
+    "sha256": "cda686b13dbba0fc14d9f9512e90fa8817b495e0f0835cca751d2cd83de7c4fa",
+    "bytes": 40538
+  },
+  "exactly_unchanged_members": 530,
+  "unchanged_scope": "All other scanner-bound production Rust, Cargo/config/content and old runtime tools/fixtures/rosters unchanged from frozen001. Source identity changes only cfg(test) native helper additions, sibling-module registration and new test file.",
+  "old_body_proof": {
+    "native_original_body_from_evict_helper_onward_byte_equal": true,
+    "World_original_file_byte_equal_after_removing_only_new_mod_registration": true
+  },
+  "reuse": "Prior final46, PC/R05 original failures/warning and actual tests001 five controls/tests002 three joint PASS rows retain exact original source/raw and scoped semantics. No whole-suite freshness or new performance observation is claimed.",
+  "limitations": [
+    "This is file/source evidence, not actual guard runtime success.",
+    "Only the assigned Sol may run the remaining test/collector/freeze.",
+    "Root must review currentness and bind latest actual receipt before finalization."
+  ]
+}

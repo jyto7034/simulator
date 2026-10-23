@@ -1,6 +1,7 @@
 //! Common content-authoring operations over the production loader and core.
 
 mod amount;
+pub mod node_graph;
 mod amount_query;
 #[cfg(test)]
 pub(crate) use amount_query::{encode_record_for_test, validate_record_generation_for_test};
@@ -8,6 +9,8 @@ pub(crate) mod clone_shape;
 mod compiled;
 pub(crate) mod control;
 mod definition;
+mod lab_preparation;
+pub use lab_preparation::{LabEmployeeGroup,LabRelicLoadout,LabPlacement,LabPreparation,LabPreparationReceipt,WorldLabPreparation};
 mod diagnostic;
 mod output;
 mod preview;
@@ -126,6 +129,9 @@ pub struct AuthoringContent {
     validation_usage: ExecutionUsage,
 }
 impl AuthoringContent {
+    pub(crate) fn from_candidate(token: ValidatedGameData, validation_usage: ExecutionUsage) -> Self {
+        Self { token, validation_usage }
+    }
     pub fn token(&self) -> &ValidatedGameData {
         &self.token
     }

@@ -5,6 +5,7 @@ use super::capabilities::descriptor;
 use super::*;
 
 mod compiler_cases;
+mod storage_cases;
 
 #[test]
 fn u09_typed_errors_and_consumer_boundaries_do_not_clamp() {

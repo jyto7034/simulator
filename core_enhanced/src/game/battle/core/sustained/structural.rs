@@ -13,6 +13,7 @@ use crate::game::{
     skill_fragment::FragmentSourceSnapshot,
 };
 use std::sync::Arc;
+use crate::game::relic::structural::support::{SelectedSupportReach, shield_reach};
 
 #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize)]
 pub(super) struct PersonalShieldGroup {
@@ -21,10 +22,10 @@ pub(super) struct PersonalShieldGroup {
     fragment: Option<Arc<FragmentSourceSnapshot>>,
     effect: EffectiveEffectKey,
 }
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 pub(super) struct FixedRecipientConnection {
     pub recipient: UnitInstanceId,
-    pub reach: u32,
+    pub reach: SelectedSupportReach,
     pub terminal: bool,
 }
 #[derive(Debug, Clone, Default)]
@@ -32,7 +33,7 @@ pub(super) struct StructuralRecord {
     pub personal_group: Option<Arc<PersonalShieldGroup>>,
     pub fixed: Option<FixedRecipientConnection>,
 }
-crate::authoring::clone_shape::copy_shape!(FixedRecipientConnection);
+crate::authoring::clone_shape::struct_shape!(FixedRecipientConnection { recipient, reach, terminal });
 crate::authoring::clone_shape::struct_shape!(StructuralRecord {
     personal_group,
     fixed
@@ -62,6 +63,9 @@ impl StructuralRecord {
     }
     pub(super) fn extent(&self) -> Option<usize> {
         let mut bytes = std::mem::size_of::<Self>();
+        if let Some(FixedRecipientConnection { reach: SelectedSupportReach::Pattern { range, .. }, .. }) = &self.fixed {
+            bytes = bytes.checked_add(crate::game::relic::structural::support::pattern_extent(range)?)?;
+        }
         if let Some(group) = &self.personal_group {
             bytes = bytes.checked_add(std::mem::size_of::<PersonalShieldGroup>() + 64)?;
             let site = match &group.effect {
@@ -128,22 +132,27 @@ impl BattleCore {
         let reach = binding
             .execution()
             .selected_recipient_reach
+            .as_ref()
             .ok_or(GameError::InvalidAction)?;
         if recipient == cast.caster_instance_id
-            || !self.selected_player_employee_in_reach(cast.caster_instance_id, recipient, reach)
+            || !self.selected_support_in_reach(cast.caster_instance_id, recipient, reach)
         {
             return Err(GameError::InvalidAction);
         }
         crate::game::battle::runtime_control::admit_retained_growth(
             0,
-            Some(std::mem::size_of::<StructuralRecord>()),
+            match reach {
+                SelectedSupportReach::Radius(_) => Some(std::mem::size_of::<StructuralRecord>()),
+                SelectedSupportReach::Pattern { range, .. } => crate::game::relic::structural::support::pattern_extent(range)
+                    .and_then(|n| n.checked_add(std::mem::size_of::<StructuralRecord>())),
+            },
             "fixed_connection_storage",
         )?;
         Ok(Some(Box::new(StructuralRecord {
             personal_group: None,
             fixed: Some(FixedRecipientConnection {
                 recipient,
-                reach,
+                reach: crate::authoring::clone_shape::controlled_clone(reach)?,
                 terminal: false,
             }),
         })))
@@ -151,7 +160,7 @@ impl BattleCore {
     pub(super) fn fixed_connection_members(
         &self,
         caster: UnitInstanceId,
-        connection: FixedRecipientConnection,
+        connection: &FixedRecipientConnection,
     ) -> Result<(Vec<UnitInstanceId>, bool), GameError> {
         if connection.terminal {
             return Ok((Vec::new(), true));
@@ -160,8 +169,8 @@ impl BattleCore {
         if !identity_live {
             return Ok((Vec::new(), true));
         }
-        if !self.selected_player_employee_in_reach(caster, connection.recipient, connection.reach) {
-            return Ok((Vec::new(), false));
+        if !self.selected_support_in_reach(caster, connection.recipient, &connection.reach) {
+            return Ok((Vec::new(), matches!(connection.reach, SelectedSupportReach::Pattern { end_on_exit: true, .. })));
         }
         crate::game::battle::runtime_control::admit_retained_growth(
             0,
@@ -170,7 +179,7 @@ impl BattleCore {
         )?;
         Ok((vec![connection.recipient], false))
     }
-    pub(super) fn normal_player_employee(&self, unit: UnitInstanceId) -> bool {
+    pub(in crate::game::battle::core) fn normal_player_employee(&self, unit: UnitInstanceId) -> bool {
         self.units.get(&unit).is_some_and(|u| {
             u.owner == crate::game::enums::Side::Player
                 && u.is_active()
@@ -259,7 +268,11 @@ impl BattleCore {
         });
         let members = match definition.recipients {
             PersonalShieldRecipientsDef::PlayerEmployeesAtRelease { radius_units } => {
-                let members = self.employee_members(caster, radius_units, true)?;
+                let members = if let Some(support) = &definition.support {
+                    self.support_pattern_members(caster, &support.range, true)?
+                } else {
+                    self.employee_members(caster, radius_units, true)?
+                };
                 if members
                     .iter()
                     .any(|member| !self.normal_player_employee(*member))
@@ -269,7 +282,7 @@ impl BattleCore {
                 members
             }
             PersonalShieldRecipientsDef::SelectedPlayerEmployeeAtRelease {
-                authored_reach_units,
+                authored_reach_units: _,
             } => {
                 let cast = source.cast.as_ref().ok_or(GameError::InvalidAction)?;
                 let selected = self
@@ -283,10 +296,10 @@ impl BattleCore {
                 else {
                     return Err(GameError::InvalidAction);
                 };
-                if !self.selected_player_employee_in_reach(
+                if !self.selected_support_in_reach(
                     caster,
                     unit_instance_id,
-                    authored_reach_units,
+                    &shield_reach(definition),
                 ) {
                     return Err(GameError::InvalidAction);
                 }
@@ -332,7 +345,7 @@ impl BattleCore {
             base_amount
         };
         control::charge(
-            self.sustained.records.len() as u64,
+            self.sustained.records.len().checked_mul(if definition.replace_only_recipients { members.len().max(1) } else { 1 }).ok_or_else(|| overflow("personal_grant_replacement_scan"))? as u64,
             "personal_grant_replacement_scan",
         )?;
         crate::game::battle::runtime_control::admit_retained_growth(
@@ -348,7 +361,7 @@ impl BattleCore {
             .records
             .iter()
             .filter(|(_, record)| {
-                record
+                (!definition.replace_only_recipients || members.contains(&record.target)) && record
                     .structural
                     .as_ref()
                     .and_then(|value| value.personal_group.as_ref())
@@ -389,6 +402,7 @@ impl BattleCore {
                         personal_group: Some(Arc::clone(&group)),
                         fixed: None,
                     })),
+                    None,
                 )?;
             }
             for id in old {

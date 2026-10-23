@@ -1,0 +1,60 @@
+{
+  "status": "implementation_and_self_validation_ended_audit_request_pending",
+  "stage": "GEX-10",
+  "goal_set": "GS-CSNA-001",
+  "goal": "GOAL-CSNA-01",
+  "phase": "PHASE-CSNA-01",
+  "recorded_at": "2026-10-14T17:33:51.634244+00:00",
+  "target": "target/u16_1_current_001/AUDIT_TARGET_RECORD.json",
+  "source_sha256": "9f052914849f6b6a6b0f75689c390e62fb4f6734811ffee7143d32ea475c4acc",
+  "source_members": 1006,
+  "evidence_members": 963,
+  "delta_members": 443,
+  "restore_passed": true,
+  "freeze_exit_code": 0,
+  "acceptance": 18,
+  "validation_dimensions": 10,
+  "integration_acceptance": 5,
+  "default_core_unique_pass_coverage": 2188,
+  "core_reuse": "BASELINE_REUSE.json: full2108 + focused closure6 + integration72 + expanded regression1 + unchanged socket1; overlaps excluded.",
+  "single_full_green_invocation_claimed": false,
+  "existing_ignored": 6,
+  "known_current_failures": 0,
+  "native_g11_passed": 4,
+  "server_persistence_passed": 31,
+  "normal_host": {
+    "fresh_processes": 15,
+    "commands": 84,
+    "actual_io_failures_and_retries": 4
+  },
+  "authoring": {
+    "valid": 1,
+    "invalid_rejected": 12,
+    "additional_valid_bound_catalog": "runs/bound-package002.log"
+  },
+  "public_sale_refusals": 11,
+  "actual_consumable_terminal_cases": {
+    "victory": 1,
+    "defeat": 1,
+    "raw": "runs/consumable007/RESULT.json"
+  },
+  "cost": {
+    "shared_lifecycle_fresh_processes": 6,
+    "actual_expanded_continue_fresh_processes": 3,
+    "value_allocator_shapes": 30,
+    "all_owners_released_exactly": true
+  },
+  "limits_changed": false,
+  "goal_complete": false,
+  "audit_performed": false,
+  "predecessor_continuity": "U15 immutable Complete/High retained for historical target; U16 shared shop/restore delta and nonimpact reuse must be reviewed by requested U16 GEX20 before later bundles.",
+  "next": "Separately requested GEX20 on u16_1_current_001; U16-2/3/4 remain later bundles.",
+  "known_limits": [
+    "U16-1 implementation/self-validation only; GEX20 audit not performed and Goal not Complete. U16-2/3/4 remain later bundles.",
+    "Current official relic catalog is empty; normal supported external authored fixture supplies the representative relic; no official relic effects invented.",
+    "Initial authored prices 60/150/30 use recorded scoped delegation, not a completed balance study. U17 incubation and Unity inventory display remain outside this Goal.",
+    "Finite diagnostic workloads and dev opt0/debug0 cost samples are not deployment/device SLOs. Native retained/work, allocator requested bytes and RSS are distinct. Six inherited ignored Core tests remain ignored; no single full-green all-target invocation is claimed.",
+    "Root/node occupancy bound depends on current Rust BTreeMap and default serde_json backend; revalidate with toolchain/backend changes. Typed decode and cumulative default16MiB guard remain.",
+    "External arbitrary save/checksum/memory mutation cases are not new required protection work; inherited tests that happen to execute them do not expand acceptance."
+  ]
+}

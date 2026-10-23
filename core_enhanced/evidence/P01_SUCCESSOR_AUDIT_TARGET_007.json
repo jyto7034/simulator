@@ -1,0 +1,32 @@
+{
+  "record_ref": "ATR-CRAR-C2-P01-GEX20-007",
+  "goal_id": "GOAL-CRAR-C2-P01-PRESERVATION-OBSERVABILITY",
+  "successor_goal_id": "GOAL-CRAR-C2-P07-CORE-PUBLIC-PROJECTION",
+  "captured_date": "2026-08-23",
+  "verdict": "Complete / High",
+  "currentness": "current / expected P07 manifest and transport locator cutover",
+  "manifest_sha256": "2a8cfa963f1fafe0169f3015e49fcdede8b07ba40af8846eedaf1b33a51d7cd7",
+  "performance_receipt_sha256": "86ccd5c78b0dcdfab502b1c5842a48c8a9df8963557e36cbf49b3ea5ec2b5848",
+  "observer_source_sha256": "64debfd6546afb617636caf520fcb9e8ee49acc1ee2377306cf8a19afbd8c631",
+  "manifest_verifier_source_sha256": "9ad420948292c592f507a6790e8917b98bce8b25ca523b6e0c9bb20d25c65b37",
+  "current_locator_content_count": 44,
+  "current_locator_composite_sha256": "3c57aedd636a7010f0678dc57d4b6d31e819f3b184ef7ac50346785eca39325b",
+  "manifest_verifier": {
+    "result": "passed",
+    "features": 57,
+    "rulebook_headings": 57,
+    "evidence_bundles": 14,
+    "validation_dimensions": 10,
+    "legacy_targets": 10,
+    "errors": 0
+  },
+  "current_core_tests": {
+    "library": 1106,
+    "integrations": 51,
+    "total": 1157,
+    "failed": 0,
+    "ignored": 0
+  },
+  "performance_disposition": "immutable pre-change receipt retained; P08 owns successor comparison and PASS",
+  "external_scope": "game_server, Unity, sibling resources and external consumers uninspected and unclaimed"
+}

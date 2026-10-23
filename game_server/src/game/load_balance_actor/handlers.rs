@@ -1,5 +1,6 @@
 use actix::{Actor, Addr, AsyncContext, Handler};
 use tracing::{info, warn};
+use std::sync::Arc;
 
 use super::messages::*;
 use super::LoadBalanceActor;
@@ -46,18 +47,23 @@ impl Handler<GetOrCreatePlayerActor> for LoadBalanceActor {
             .as_ref()
             .and_then(|persistence| persistence.lock().ok()?.profile().ok())
             .unwrap_or_default();
-        let mut game_core =
-            game_core::application::CoreApplication::new(msg.game_data, msg.run_seed);
+        let (mut game_core, required) = match &self.approved_host {
+            Some(host) => { let (application, required) = host.new_application(msg.run_seed).expect("installed host selection must be available"); (application, Some(required)) },
+            None => (game_core::application::CoreApplication::new(msg.game_data, msg.run_seed), None),
+        };
         #[cfg(feature = "runtime-observation")]
         if let Some(observation) = &self.observation {
             observation.attach(&mut game_core);
         }
         game_core
-            .merge_player_profile(game_core::application::ApplicationDocument::new(
+            .install_authoritative_player_profile(game_core::application::ApplicationDocument::new(
                 serde_json::to_value(player_profile).expect("validated profile serialization"),
             ))
             .expect("stored player profile was validated before server publication");
         let mut actor = PlayerGameActor::new(msg.player_id, game_core, ctx.address());
+        if let (Some(host), Some(required), Some(persistence)) = (&self.approved_host, required, &self.approved_persistence) {
+            actor = actor.with_approved_host(Arc::clone(host), required, Arc::clone(persistence));
+        }
         if let Some(store) = self.active_run_store.clone() {
             actor = actor.with_active_run_store(store);
         }
@@ -94,7 +100,8 @@ impl Handler<GetPlayerCount> for LoadBalanceActor {
     }
 }
 
-#[cfg(test)]
+// Legacy raw-data fixtures require Core fixture APIs in release tests.
+#[cfg(all(test, any(debug_assertions, feature = "test-fixtures")))]
 mod tests {
     use super::*;
     use crate::game::player_game_actor::messages::GetEncounterCompendiumProfile;
@@ -169,7 +176,7 @@ mod tests {
             registered_ids: std::collections::BTreeSet::from([abnormality_id]),
         };
         assert!(matches!(
-            persistence.merge_and_persist(profile.clone()),
+            persistence.merge_and_persist(profile.clone()).unwrap(),
             crate::persistence::player_profile_store::PlayerProfilePersistOutcome::Saved
         ));
         let load_balance = LoadBalanceActor::with_persistence(active_store, persistence).start();

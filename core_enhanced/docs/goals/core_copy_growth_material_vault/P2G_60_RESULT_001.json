@@ -1,0 +1,10 @@
+{
+  "stage": "P2G-60",
+  "status": "complete",
+  "handoff_ref": {
+    "Artifact Type": "Handoff Artifact",
+    "Artifact ID": "HA-CGMV-001",
+    "Content Digest": "sha256:903a97450aa2e3144e43bfedc8f5a64ae1f719e102ea391c95652942d150f427"
+  },
+  "checks": "exact basis/5element trace/limitations/authorization boundary; no product mutation in P2G"
+}

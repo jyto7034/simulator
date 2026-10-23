@@ -1,0 +1,69 @@
+{
+  "passed": true,
+  "host_sha256": "eaec47bcb5eebd5461363bfaa9468263e248086d1c3fa2e12cfbfa16d1221c68",
+  "stores": "/tmp/u15-audit-return-io-lxx3qcvz",
+  "fresh_processes": 4,
+  "actual_io_failures_and_retries": 3,
+  "commands": 117,
+  "frozen_phase4_failure_was_domain_rejection": true,
+  "valid_return_failure_index": 30,
+  "product_and_frozen_input_mutations": 0,
+  "processes": [
+    {
+      "phase": 1,
+      "argv": [
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/artifacts/normal001/u15_economy_host",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/test_parts/normal_inputs003/admission.json",
+        "/tmp/u15-audit-return-io-lxx3qcvz/active",
+        "/tmp/u15-audit-return-io-lxx3qcvz/profile",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/audit/independent001/return_io001/phase1",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/test_parts/host_replays001/phase1.json"
+      ],
+      "input_sha256": "1f5ef21b4ea06a5a7c1be01b275f9d5d2b29fc1f92e2afb372c75409f030f5a5",
+      "exit_code": 0,
+      "seconds": 4.1813312390004285
+    },
+    {
+      "phase": 2,
+      "argv": [
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/artifacts/normal001/u15_economy_host",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/test_parts/normal_inputs003/admission.json",
+        "/tmp/u15-audit-return-io-lxx3qcvz/active",
+        "/tmp/u15-audit-return-io-lxx3qcvz/profile",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/audit/independent001/return_io001/phase2",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/test_parts/host_replays001/phase2.json"
+      ],
+      "input_sha256": "1e482a1d56273a7ea9c2a46ec8b84d0d3528075d8dc5e41d83ea21940c60b0b6",
+      "exit_code": 0,
+      "seconds": 3.0289149379968876
+    },
+    {
+      "phase": 3,
+      "argv": [
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/artifacts/normal001/u15_economy_host",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/test_parts/normal_inputs003/admission.json",
+        "/tmp/u15-audit-return-io-lxx3qcvz/active",
+        "/tmp/u15-audit-return-io-lxx3qcvz/profile",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/audit/independent001/return_io001/phase3",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/test_parts/host_replays001/phase3.json"
+      ],
+      "input_sha256": "87a1fbec896fe13d1d70dd95cec92719ea7a8e092311b787e076611bbbd5cf84",
+      "exit_code": 0,
+      "seconds": 3.1281778529955773
+    },
+    {
+      "phase": 4,
+      "argv": [
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/artifacts/normal001/u15_economy_host",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/test_parts/normal_inputs003/admission.json",
+        "/tmp/u15-audit-return-io-lxx3qcvz/active",
+        "/tmp/u15-audit-return-io-lxx3qcvz/profile",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/audit/independent001/return_io001/phase4",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/audit/independent001/return_io001/phase4.valid_return.json"
+      ],
+      "input_sha256": "aba8f8f0d565925853de92d90705499a58020e93f67dec54f24db7b7fd915302",
+      "exit_code": 0,
+      "seconds": 4.030530488002114
+    }
+  ]
+}

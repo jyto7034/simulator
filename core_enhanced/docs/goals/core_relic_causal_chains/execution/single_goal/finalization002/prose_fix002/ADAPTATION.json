@@ -1,0 +1,36 @@
+{
+  "schema": "U10_FINALIZATION_SUCCESSOR_ADAPTATION_V1",
+  "status": "author_actual_bindings_ready_for_root_review",
+  "reused_tools": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization001/collect_finalization.py",
+      "sha256": "6def75011b6bd2a55d615d5e79bdf6b6222f49bf52c9af273e083abce9c5ee1b",
+      "bytes": 21802
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization001/freeze_target.py",
+      "sha256": "554959468b680b81a3b21b97cf7b89a6a7d16b977f960d3032940e89a36aa37a",
+      "bytes": 22875
+    }
+  ],
+  "mechanics_preserved": [
+    "libtest terminal bounded row parser; explicit selected PASS only; failed parent retained",
+    "receipt/raw/source hashes and source_unchanged guards",
+    "exact archive/manifest and isolated binary forward/reverse patch mechanics",
+    "fresh output/target, parent logger ban, no workspace restore"
+  ],
+  "schema_adaptations": [
+    "Retain F001 collector/parser/source/receipt oracles; optional exact row supplement unions evidence and reports its narrow changed predicate without altering 288 original IDs/literals.",
+    "Retain U09 baseline495+2=497 and current source union restoration mechanics.",
+    "Index old U10-001 four full archives in addition to inherited/U09 archives before resolving historical refs.",
+    "Preserve old U10 pass001 eight audit artifacts as Not Complete/High/open2; keep U09 Complete/High/open0 as a separate role.",
+    "Add F01/F02 joint pending keys and explicit actual five PASS controls from original failed9; preserve all old raw/failures/warning."
+  ],
+  "execution_inputs_unchanged": "Only F002 paths modified after Sol C002 input freeze. Existing scanner roots/additional exact files and correction002 referenced files exclude F002; source/config/tests/C001/C002 unchanged.",
+  "actual_available": "Final46 and all original scoped U10 evidence remain unchanged. PC original strictFAIL plus accepted fixed empty-state cost successor and R05 original peak-only warning retained. Correction effective9 named PASS rows=tests001 five existing controls + tests002 three new joint cases + tests004 one guard. Original failed001/002/003 parents/raw/source archives and failed first independent audit remain immutable. Actual004 source76aba953/533 is unchanged; both World-dead/native-missing raw markers present; no remaining functional/performance binding pending.",
+  "still_pending": [
+    "Root final currentness review and four current document bindings",
+    "Sol collector and isolated baseline497→current freeze/restore",
+    "Nonparticipant whole-Goal successor audit"
+  ]
+}

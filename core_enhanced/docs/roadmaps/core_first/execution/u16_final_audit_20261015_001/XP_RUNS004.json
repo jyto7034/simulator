@@ -1,0 +1,25 @@
+{
+  "reason": "10M accepted with ~0.4s extra operation time and only727 extra accounted work; verify scale once at100M, same60s finite timeout.",
+  "runs": [
+    {
+      "kind": "package",
+      "argv": [
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_stress_combat/execution/single_goal/artifacts/normal002/package_official_content",
+        "/mnt/f/work/simulator/core_enhanced/docs/roadmaps/core_first/execution/u16_final_audit_20261015_001/xp_larger/source",
+        "/mnt/f/work/simulator/core_enhanced/docs/roadmaps/core_first/execution/u16_final_audit_20261015_001/xp_larger/content_root/official"
+      ],
+      "exit_code": 0
+    },
+    {
+      "kind": "run",
+      "argv": [
+        "/mnt/f/work/simulator/.cache/u164-review-dev-target/debug/u16_xp_audit",
+        "/mnt/f/work/simulator/core_enhanced/docs/roadmaps/core_first/execution/u16_final_audit_20261015_001/xp_larger/config.json",
+        "/mnt/f/work/simulator/core_enhanced/docs/goals/core_stress_combat/execution/single_goal/completion001/cost001/normal.trace.jsonl",
+        "/tmp/u16-xp-larger-745eb22n/result.json"
+      ],
+      "exit_code": 0,
+      "seconds": 10.795010798989097
+    }
+  ]
+}

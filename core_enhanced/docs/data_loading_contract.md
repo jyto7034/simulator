@@ -18,7 +18,7 @@ Runtime에서 검증된 data를 소비한 뒤의 결정론과 event/snapshot 경
 이 계약을 구현하며, 다른 경우 data-loading implementation drift로 기록하고 문서에 맞게 수정한다.
 Live RON은 이 계약이 허용하는 schema 안에서 exact authored ID·value·catalog membership을 제공한다.
 
-Production entrypoint는 [content_pack::load](../src/game/data/content_pack/mod.rs)다. Host는 trusted root,
+Core 콘텐츠 publication entrypoint는 [content_pack::load](../src/game/data/content_pack/mod.rs)다. Host는 trusted root,
 명시적인 `ContentSelection`과 trusted `InputLimits`를 전달한다. 현재 production release는 외부 파일만
 읽으며 CWD 탐색, embedded 보충, 이전 성공 세대 반환으로 실패를 대체하지 않는다.
 
@@ -32,10 +32,10 @@ Production entrypoint는 [content_pack::load](../src/game/data/content_pack/mod.
   없어 None이다. Writer receipt의 기존 semantic hash 입력·순서는 유지한다.
 - 각 선택 디렉터리의 `pack.ron`은 pack ID/version, Global 또는 Named namespace, contract,
   required capabilities, dependencies, typed catalog file 목록과 명시적 operations를 모두 요구한다.
-  Unknown field와 duplicate pack ID는 거부한다. 현재 contract는 pack format 1, catalog schema 5,
-  authoring 1, execution 2, fingerprint 1이며 exact match가 필요하다. 지원 capability는
+  Unknown field와 duplicate pack ID는 거부한다. 현재 contract는 pack format 1, catalog schema 6,
+  authoring 1, execution 3, fingerprint 1이며 exact match가 필요하다. 지원 capability는
   `gameplay_catalogs_v2`, `literal_effect_authoring_v1`, `boss_runtime_v1`, `summoned_units_v1`,
-  `typed_resources_v1`, `structured_skill_flow_v1`, `source_owned_sustained_effects_v1`이다.
+  `typed_resources_v1`, `structured_skill_flow_v1`, `source_owned_sustained_effects_v1`, `expedition_lifecycle_v1`이다.
 - 전체 파일을 bounded owned snapshot으로 확보한 뒤 typed raw definition을 읽는다. Structural schema와
   unsupported opcode는 나중에 폐기될 writer에서도 검증한다. Catalog별 조기 참조 해석 대신 모든
   Add/Replace/Remove를 해결한 최종 definition에서 참조·preset·compiled domain·generated combat
@@ -49,7 +49,7 @@ Production entrypoint는 [content_pack::load](../src/game/data/content_pack/mod.
   `LiveRonError.related_sources`는 각 contributor의 owned `source_file`, `object_id`,
   `field_path`를 제공하며 Display에도 표시한다. Generated preview의 wave 오류는 실제 실패한
   wave/field를 encounter 원문 또는 활성 RunPolicy의 `tuning.extra_waves` 원문에 결속한다.
-  함께 소비한 encounter·tuning·선택된 전장 template와 적용 가능한 Monolith/boss binding,
+  함께 소비한 encounter·tuning·선택된 전장 template와 적용 가능한 revival/boss binding,
   해당 compiled boss encounter가 사용하는 behavior·pattern 정의들은
   관련 출처로 유지한다. 단일 실패 필드를 제공하지 않는 setup 오류에서는 encounter를 검증
   문맥으로 유지하고 관련 입력을 함께 제시한다. 이 진단 정보는 성공한 generation의 semantic
@@ -65,6 +65,48 @@ Production entrypoint는 [content_pack::load](../src/game/data/content_pack/mod.
   line/column이며 `parser_reason`은 typed reason의 설명이다. Serde Message와 위치가 없는 오류는
   `position: null`이다. Expected/actual·definition/span을 message에서 추측하지 않는다.
   이 정보는 기존 Display/cause와 validation 의미를 보완하며 CLI·시험 세션의 완료를 뜻하지 않는다.
+
+### Mod grouping and approved host admission (U11)
+
+일반 local launcher와 `game_server`는 [AdmissionSession](../../game_server/src/mod_admission/session.rs)이
+검증한 `ApprovedHost`만 사용한다. 위 production loader와 public authoring/trial은 실제 동일 콘텐츠를
+진단·시뮬레이션할 수 있지만 private runtime approval을 발급하지 않는다.
+실행 설정과 명령은 [CMVA 사용 가이드](tools/cmva_workflow.ko.md)를 따른다. 2026-10-12 [실제 literal entry 검증](goals/core_mod_validation_apply/execution/single_goal/test_parts/runtime001/evidence/reviewed_adoption_functional002/24__public_entry__literal_smoke.json)은
+launcher 정상 run/Continue와 server 재시작 Continue·exact checkpoint 보존·invalid content의 persistence 이전 거절을 확인했다.
+
+- `ModRegistry`는 stable mod ID별 pack 묶음, version, dependencies와 선택을 소유한다. Trusted base와
+  dependency closure로 각 mod를 실제 검증한 뒤 최종 조합을 별도 실제 실행한다. 한 mod의 acquisition/
+  content/coverage 실패는 독립 mod의 결과를 지우지 않으며 그 종속 항목은 `DependencyHeld`다.
+  Individual winner는 실제 captured closure에 포함된 writer만 투영한다. Reduced final selection은 원
+  authored winner를 그대로 유지하므로 held winner를 다른 writer로 자동 대체하지 않는다.
+- Candidate는 선택한 전체 bytes와 source membership을 한 번 frozen capture하고 이후 individual/final
+  projection·Lab·교체는 그 capture를 사용한다. Trusted base 재사용은 full source receipt와 selection/settings
+  equality를 bounded 비교한 뒤 immutable validated publication을 공유하며 최종 publication 검증은 생략하지 않는다.
+  Caller 파일 변경·삭제가 retained candidate를 바꾸지 않으며 다른 base bytes는 후보 획득을 거절한다.
+- Content semantic identity, exact source receipts, candidate/required mod version·digest, trusted effective runtime
+  profile, suite revision/hash, actual Engine build와 worker pair/environment를 구분한다. Semantic identity가 같다는
+  사실만으로 source/profile/build의 승인·cache authority가 일치하지 않는다. 결과 DTO나 공개 generation token으로
+  `ApprovedGeneration`을 만들 수 없으며 private issuer가 실제 completed evidence를 확인해 발급한다.
+- Versioned `coverage_support()`/`mod_launcher --cmva-coverage-support`는45개 kind의 operation 지원을 조회한다.
+  현재 Add/Replace consumer는 Employee, Equipment, SkillFragment, Relic, PveEncounter, RunPolicy, Skill,
+  Buff, IndependentObject의9종이다. Remove는 앞5종이며 frozen trusted-base의 실제 positive reference preparation,
+  candidate의 정확한 removed-reference refusal와 surviving same-kind normal preparation을 모두 요구한다.
+  다른 mod에서만 도입된 definition 등 counterfactual이 없는 removal은 `Incomplete`다.
+- 자동 coverage는 변경한 모든 definition/site와 trusted suite의 추가 요구를 합친다. Catalog parse, trigger 또는
+  serialization만으로 actual consumption/effect와 terminal/reclamation을 대체하지 않는다. LegalNoop·ineligible는
+  별도 witness이며 positive effect를 대신하지 않는다. 합법 empty/zero-site shape와 아직 지원하지 않는 consumer는
+  `Incomplete`로 보존하며 valid authored shape를 금지해 승인 조건을 우회하지 않는다.
+- 실제 gameplay/runtime 오류는 `ContentFailed`다. 필요한 eligible target/trigger/coverage, setup·IO·worker transport,
+  measurement/parity completeness가 없으면 `Incomplete`다. Complete measurement의 criterion 초과는 `ContentFailed`며,
+  동시에 부족한 coverage가 있으면 양쪽 reasons를 보존한다. Individual PASS를 합쳐 final PASS를 추정하지 않는다.
+- 승인 Lab은 실제 production preparation·command·clock·effect 경로를 plain/instrumented 별도 child에서 실행하고
+  nonce/candidate/build/mode-bound 결과를 확인한다. Crash·timeout·잘못된 envelope를 complete sample로 바꾸지 않는다.
+  Requested heap·RSS·native work는 서로 다른 measurement며 plain native0은 uninstrumented sentinel다.
+- Criterion은 해당 executable/context의 실제 반복 측정·parity·coverage를 검토한 trusted host가 유한 versioned
+  limits로 채택하고 private issuer가 seal한다. Cache는 exact candidate/source/build/profile/suite/environment/method/
+  criterion 문맥을 분리하고 bounded private HMAC-authenticated record만 재사용한다. Cancelled/incomplete/stale 결과와
+  public report는 PASS cache나 승인으로 승격하지 않는다. Accepted rename 이후 IO 실패는 `RecoveryPending`이며
+  그 기록의 복구도 현재 exact authority 확인을 통과해야 한다.
 
 ### Common authoring validation
 
@@ -236,7 +278,7 @@ edge 합계 4,096, parser nesting 128이다. Host nesting은 1..=128이어야 �
 문자열/char/raw string/comment를 구분하는 bounded lexical check를 먼저 수행한다. Manifest가 한도를 늘릴 수 없다.
 
 [package_official](../src/game/data/content_pack/packaging.rs)는 명시적 source root의 `data/bundle.ron`과
-26개 catalog를 읽는다. Bundle은 exact schema 5와 strict fields를 검증한다. 같은 raw/resolve/publication
+26개 catalog를 읽는다. Bundle은 exact schema 6와 strict fields를 검증한다. 같은 raw/resolve/publication
 검증 후 catalog bytes를 그대로 별도 출력에 쓰고 current `pack.ron`을 마지막에 생성한다. 출력은 source
 밖의 존재하지 않는 디렉터리여야 한다. 빈 디렉터리·기존 pack·symlink도 merge/overwrite하지 않는다.
 Directory-relative exclusive creation/write 후 public loader로 다시 읽어 semantic identity와 모든 byte receipt를
@@ -273,15 +315,25 @@ simulate는 위 author_content를 사용한다. Interactive winner 선택과 이
 를 사용한다. 출력 경로는 존재하지 않아야 하며, script는 실제 source 복사본과 current release binaries를
 사용한다. 733은 이 격리된 검사의 starter currency일 뿐 공식 gameplay 값을 바꾸지 않는다.
 
+### Expedition authoring input
+
+Employee 정의의 required role은 `Dealer`/`Tank`/`Healer`이며 starter-eligible은 role별2/총6이다.
+세 직원 Tutorial preset와 starter/hire initial loadout은 같은 최종 catalog에서 참조/무기 적합성을 검증한다.
+RunPolicy는 tutorial preset, initial deterrence/first-entry cost와 HQ recruit price/depth/session limit을 소유한다.
+현재 Expedition 개발 schedule은 깊이1–4의 실제 HQ/조우/SavePoint/보상/Gate를 제공하며 fixed3층 Tutorial과
+구분한다. retained `standard_*`/`endless_*` authored schedule key와 difficulty band `Standard`는 mode alias가 아니다.
+새 `expedition_lifecycle_v1`, catalog6/execution3은 candidate/cache/required-save의 exact content identity에 포함한다.
+Profile vault는 metadata 사본이 아니라 canonical definition ID와 실제 사본 상태를 저장하며 dormant ID를 보존한다.
+
 ### Fixture and durable runtime boundaries
 
 `ValidatedGameData::load_live_embedded`, fixture builder와 bare `Arc<GameDataBase>` 변환은 명시적
 `test`, `debug_assertions` 또는 `test-fixtures` 경계에만 있다. Default release의 production fallback이 아니다.
 Fixture identity도 실제 catalog 내용으로 계산하며 상수나 Arc 주소를 사용하지 않는다.
 
-Core active-run continuation은 checksum-protected strict V11만 읽고 쓴다. Current와 독립 SavePoint의
+Core active-run continuation은 checksum-protected strict V12만 읽고 쓴다. Current와 독립 SavePoint의
 required `content_identity`는 contract version과 semantic SHA-256를 포함하고 checksum의 일부다.
-Retained generation과의 일치 및 기존 graph/seed/power/resource 검증을 유지한다. V10과 이전 버전,
+Retained generation과의 일치 및 instance/UUID/profile binding과 graph/seed/power/resource 검증을 유지한다. V11과 이전 버전,
 missing/unknown field, bad checksum과 unknown version은 변환이나 guessed identity 없이 거부한다.
 동일한 current/SavePoint의 codec 공유는 reader에서 독립 checkpoint로 복원하며 의미를 병합하지 않는다.
 
@@ -289,9 +341,12 @@ Continue는 최신 확정 상태의 run seed/UUID를 복원하며 constructor bo
 미완료 node는 진입 전 상태, 완료 결과/필수 선택은 저장된 receipt를 사용한다. Explicit load는 별도
 SavePoint로 되감고 현재 run seed와도 일치해야 한다. Continue는 load count를 소비하지 않고 explicit
 load는 최대 세 번이다. Profile/compendium과 run peak, 보존 대상 VN session counter의 단조성을 유지한다.
-Live battle은 저장하지 않으며 현재 stable VN session/queue는 continuation이 소유한다. Host V5 envelope,
-OS save path, lock, latest backup, V3 profile와 paired application intent는 host가 소유한다.
-현재 실제 local adapter 검증과 구형 원본 보호는 U04가 담당하며, 과거 R02 증거로 배포 호환을 주장하지 않는다.
+Live battle은 저장하지 않으며 현재 stable VN session/queue는 continuation이 소유한다. 현재 승인된 host writer는
+required configuration을 포함하는 V7 envelope와 accepted application journal V3를 사용한다. OS save path,
+lock, latest backup와 V4 profile는 host가 소유한다. 독립 SavePoint payload는 V13이다. 이전 envelope/journal은
+readonly preflight에서 원본을 보호하고 명시 거절하며 다른 mod generation의 승인을 추정하지 않는다.
+Readonly required-mod preflight와 accepted replay 경계는 [Core Runtime Contract](core_runtime_contract.md#durable-active-run-host-boundary)를 따른다.
+과거 R02 증거로 배포 호환을 주장하지 않는다.
 
 ### Typed resource catalog and execution
 
@@ -388,13 +443,15 @@ Live RON은 gameplay source data다. 새/core live schema는 가능한 한 autho
 - `summoned_units/base.ron`은 Boss-authored hostile definition의 독립 stat/limit/summoner-removal/behavior를
   소유한다. Boss compiler는 missing definition/behavior/route, recursive Summon, invalid occupancy/wait matrix,
   unbound batch/removal signal을 bundle publication 전에 거부한다.
-- PvE `reward_sources`는 생략할 수 없는 strict collection이다. 각 row는 stable
-  `reward_source_id`, 정확히 하나의 `encounter_id`/`fragment_id`, explicit `repeat_reward`를 소유하며
-  source/encounter/fragment identity는 각각 중복될 수 없다. Source encounter는 primary abnormality가
-  있는 Elite, NormalBoss 또는 FinalBoss여야 하고 fragment는 그 abnormality가 작성한 fragment와 정확히
-  같아야 한다. 현재 최소 bootstrap은 29 rows(Elite 13, NormalBoss 13, FinalBoss 3)이며 repeat reward는
-  class별 `GrantFragmentDust` 5/10/20으로 strict validation한다. `ReferenceFinalBoss`는 reward source가 될 수
-  없고 모든 outcome policy가 reward/bonus/progression을 비활성화해야 publication된다.
+- PvE `reward_sources`는 생략할 수 없는 strict collection이다. 각 row는 stable `reward_source_id`,
+  exact `encounter_id`/`fragment_id`, `first_equipment_ids`, `repeat_rewards`, `revival`을 소유한다.
+  source/encounter/fragment ID는 각각 중복될 수 없으며 source encounter는 primary abnormality가 있는
+  Elite/NormalBoss/FinalBoss여야 한다. 파편 origin은 해당 abnormality와 같아야 한다. 엘리트의 최초
+  장비 목록은 비어 있으면 안 되며 정상 참조·중복을 검사한다. 반복 보상은 양수 수량/AliveRoster XP나
+  명시 유물만 허용하고 최초 파편·구 FragmentDust·고정 장비 재지급은 거절한다.
+  공식29개 source는 Elite13/NormalBoss13/FinalBoss3이다. 마탄 source는 식별용으로 남되 일반 보상과
+  revival은 비어 있어야 한다. `ReferenceFinalBoss`는 source가 될 수 없고 모든 outcome의
+  reward/bonus/progression을 비활성화해야 한다.
 - Ordinary Reward catalog가 위 29 source fragment를 직접 지급하면 bundle publication을 거부한다.
   제거된 suppression research, research progress와 pending-delivery field/effect는 alias나 default로
   받아들이지 않는다.
@@ -546,10 +603,10 @@ facility generation/navigation or combat preview through that exact instance.
 - `facility_templates.ron` owns versioned semantic slots, allowed categories, authored tags, typed terminal
   roles, directed connections, optional connection reveal gates, manifestation rules and template pools.
   Duplicate/missing slot references, unknown tags, invalid terminal category/role, unreachable terminal,
-  directional deadlock, invalid manifestation dependency and Standard guardian-dominator violations reject
+  directional deadlock, invalid manifestation dependency and Tutorial guardian-dominator violations reject
   the bundle.
-- `node_assignment_profiles.ron` owns Standard exact Floor schedules and Endless contiguous/open-ended
-  stages/cycles. A Standard fixed profile uses `fixed_slot_assignments` only: every non-Start semantic slot has
+- `node_assignment_profiles.ron` owns Tutorial exact Floor schedules and Expedition contiguous/open-ended
+  stages/cycles through the retained authored keys `standard_schedule`/`endless_stages`. A Tutorial fixed profile uses `fixed_slot_assignments` only: every non-Start semantic slot has
   exact `slot_id`, `kind_id`, typed payload and optional authored combat policy, and runtime consumes it without
   category solving, shuffle or seed-dependent content selection. Adaptive profiles instead use category
   min/max/exact constraints, remaining-category weights and tagged assignments; the two modes cannot be mixed.
@@ -564,29 +621,48 @@ facility generation/navigation or combat preview through that exact instance.
   accepted as compatibility input or fallback.
 - `run/policy.ron` owns required `combat_difficulty.power_model_version = 2`, whose certified roster membership is
   `alive && physical_damage <= 4 && trauma < 100`, plus non-zero certified-power weights,
-  qualitative threat thresholds, exact Standard/open-ended Endless anchor schedules, and complete ordinary/role
+  qualitative threat thresholds, exact Tutorial/open-ended Expedition anchor schedules (`standard_floor_anchors`/`endless_floor_anchor_stages`), and complete ordinary/role
   profiles. Easy/Standard/Hard must occur once with quotas totaling 100; every special role must occur once;
   Hard and role reward multipliers must exceed Standard. Removed `floor_combat_scaling`, last-stage clamp and
   missing-profile defaults are rejected rather than migrated.
-- The fixed Standard schedule resolves `tutorial_fixed_v1`, whose `authored_fixed: true` profile retains the
+- The fixed Tutorial schedule resolves `tutorial_fixed_v1`, whose `authored_fixed: true` profile retains the
   structurally complete band/role table but applies exact 100% tuning and no certified-power/role adaptation.
   Its live bootstrap owns exactly three single-entry reward pools:
   `tutorial_f1_training_budget`, `tutorial_f3_salvage`, `tutorial_f3_budget`. The F3 final fixed assignment owns an
   actor-only `o-06-20_nothing_there` stat override `720/53/36/33`; validation requires that actor to belong to the
   referenced encounter and applies it only to that matching abnormality spawn, never other actors or occurrences.
-- 같은 `run/policy.ron`의 required `monolith` group은 Floor 4+ merchant ID, page/refresh/use/attempt 수,
-  residual threshold, price/weight, stage stat/reward multiplier와 exchange VN ID를 소유한다. Live bundle
-  validation은 merchant가 unknown-exploration context의 3-offer/1-refresh Shop인지, VN이 존재하는지,
-  모든 Elite primary abnormality가 unique fragment를 가지는지 검사한다.
-- Monolith role과 stage multiplier는 runtime의 단일 difficulty resolver가 합성한다. Stage stat은
-  target power와 적 최대 HP/공격/방어에 적용하되 generated wave budget/extra waves에는 적용하지 않고,
-  reward multiplier는 role+stage를 합성한 뒤 authored 원수량에 한 번만 적용한다. 현재 결과는 stage 2
-  `target 220/HP 165/ATK 145/DEF 145/wave 200/reward 250%`, stage 3
-  `275/207/182/182/200/313%`다.
-- Standard `unknown_exploration_shop`과 Endless-only `wandering_monolith_shop`은 서로 다른 live ID다.
-  `ShopMerchandise::Monolith`는 runtime-generated typed offer이며 static Shop preset/local entry에 저작할
-  수 없다. 방랑 상인의 static pool은 repeatable consumable만 제공하고 Core가 eligible monolith를
-  first page에 합성한다.
+- 구 `run/policy.ron.monolith` group과 global stage multiplier는 제거했다. 일반보스 source의
+  `revival`은 `catalyst_material_id`, 양수 `catalyst_amount`, 고유 `part_material_id`, `stage_2`,
+  `stage_3`를 작성한다. 마탄을 제외한 일반보스에는 필수이며 엘리트/최종보스에는 금지한다.
+- 각 단계는 같은 primary kind의 NormalBoss `encounter_id`, `stat_multiplier_percent`, `rewards`,
+  `equipment_choices`를 가진다. 2단계>100%,3단계>2단계이며 모든 실제 profile/role 합성은 overflow
+  없이 실행 가능해야 한다. 촉매는 `RevivalCatalyst`, 파츠는 `AbnormalityPart` 타입이어야 하고 각
+  단계는 자기 작성 파츠를 양수 지급해야 한다. 장비 후보는 유효·비중복이어야 하며0개도 유효하다.
+  빈 후보를 다른 장비나 보상으로 보충하지 않는다. 강화는 전투 stat에, stage rewards는 확정 수량에
+  쓰며 별도 옛 보상 배율은 없다. 무억제 수량2배는 공통 outcome 계약을 따른다.
+- 촉매는 기존 일반 상인의 `revival_catalyst` merchandise로 공급한다. 옛 이름의
+  `wandering_monolith_shop`도 현재는 일반 상점이며 모노리스 offer/자동 상점 교체/잔재 교환은 없다.
+  `ShopMerchandise::Monolith`의 static authoring은 계속 거절하며 runtime에서도 제안하지 않는다.
+
+### Authored Facility Layouts (U13)
+
+`facility_templates.ron.layouts`는 typed `FacilityLayout` record로 pack 분해/합성 및 definition 조회에 참여한다.
+한 publication에서 기본 Expedition layout은 최대 하나다. 방은 stable ID, depth/wing, 내부 template 참조,
+예약 활동, 정예 후보, 전조 호환 slot, 표시 좌표/asset ID와 명시적 지원 상태를 가진다. 실행 불가 콘텐츠도
+유효한 참조와 미지원 사유를 유지하며 누락 참조를 무시하는 호환 경로를 만들지 않는다.
+
+검증은 ID·참조·연결 방향·도달성·심층 동간 횡단·7층의 지정 최종방 연결·숨은 최종방의 전용 접근방,
+예약 충돌·고정 조우 우회·전조/정예 후보와 지원 개수 실현 가능성을 검사한다. 균등 추첨을 받는 자유 slot은
+가능한 배정 category 전체를 허용해야 한다. 제약을 만족하지 않는 제작 입력은 publication 전에 거절한다.
+
+지원 총수를 예약된 HQ/정비/상점 포함으로 먼저 뽑는다. 고정 지원0개는0/1/2개40/45/15,1개는1/2개85/15,
+2개는2개다. 이후 이벤트·추가보상·정예의 유효 개수 조합을 곱가중치로 뽑고 일반전 최소수를 유지한다.
+지원 종류30/45/25와 별도 `facility_rooms_v1` 일반 난도20/50/30은 authored 초기값이다. 위치는 적격 후보의
+균등 shuffle이며 좌표나 선택 유도 가중치를 사용하지 않는다. 보상 유형은 초기 고정 SimpleChoice를 제외하고
+SimpleChoice/ResourceInvestment/Gambling/RelicGacha/StressCombat 각20%다. 추첨 결과는 run이 보존한다.
+
+공식 전체89방/846활동의 구조 검증, 실제 지원 활동의 개발 profile 플레이, 미지원 고유/최종 조우는 서로 다른
+검증 범위다. 다섯 유물 활동은 배정·유형 공개만 지원하고 실제 실행은 U16에서 제공한다. SimpleChoice를 기존 default_treasures의 장비 보상으로 대체하지 않으며 초기 공식 방 전체 진행 성공을 주장하지 않는다. layout이 없는 기존 지원 pack은 기존 node-assignment profile 경로를 유지한다.
 
 ### Battlefield Template Authoring
 
@@ -628,8 +704,8 @@ Live data loading은 gameplay 시작 전에 authoring mistake를 잡는 gate다.
   authored progression으로 달성 불가능한 조건은 초기화를 거부하며 fallback chain, 조건 무시 또는
   자동 해금으로 복구하지 않는다. 현재 live membership은 one-step `white_night` 하나뿐이다.
 - Generated combat preview validation은 preserved baseline generation과 별도로 모든 live difficulty profile의
-  세 ordinary band, Elite/NormalBoss/FinalBoss/BossOmen role, Monolith Stage2/Stage3를 각 encounter와 고정된
-  다섯 seed에서 생성한다. Authored Boss node는 `Boss`, 나머지는 `Combat` category를 사용한다.
+  세 ordinary band, Elite/NormalBoss/FinalBoss/BossOmen role과 각 source가 실제 참조하는
+  Revival Stage2/Stage3를 고정된 다섯 seed에서 생성한다. Authored Boss node는 `Boss`, 나머지는 `Combat` category를 사용한다.
 - 각 manifested preview는 briefing warning을 검사한 바로 그 instance로 empty-player full setup feasibility를
   수행한다. 이 gate는 runtime의 `ResolvedCombatSetupPlan` authority를 재사용해 reward, enemy groups, field/
   tactical plan, Boss actor binding, scenario validation, `BattleCore` construction과 initial execution까지
@@ -816,7 +892,10 @@ source presence alone is not a completed acceptance result.
 
 실제 profile에서 생성한 FragmentSourceSnapshot(copy/definition/form/skill)은 runtime actor, cast/delivery, amount preview/explain 및 trace로 전달된다. FragmentCopy/SourceFragment는 기존 R05 Run/Attempt/Deployment/Activation/Delivery/Chain 수명과 같은 lease 검증을 사용한다. 장비 identity로 대체하지 않는다. 기존 delivery의 immutable source는 이후 inventory 선택에 의해 바뀌지 않는다. 새 사본·형태·owner 상태는 다음 Certified input fingerprint에 반영된다.
 
-Live data schema는5이며, R07 도입 당시 active-run 저장은 V8이었다. 현재 정상 reader/writer는 위 U04의 strict V11 continuation이다. 기존 명시 `CoreApplication::convert_active_run_v7(original, expected_original_identity)`는 원본 canonical checksum과 명시 원래 identity를 먼저 확인하고 정렬된 definition/count 및 employee UUID 순서로 사본을 배정한다. 기존 awakened는 해당 사본의 awakened 해금·선택으로 옮긴다. 제거된 rank/progress 및 0보유 history와 dust는 호환 출처/보존 자산이며 gameplay 성장 truth가 아니다. 이 역사적 변환 API와 `convert_active_run_v8`은 현재 소스에서 참조·checkpoint graph를 검증한 V12 bytes를 반환하며, 원본을 쓰거나 정상 V11 이어하기를 수행하지 않는다. V12 결과 역시 현재 Continue에서 거부된다. V11로의 자동·암묵 변환이나 fallback은 없고, 이전 V7/V8/V9 원자료와 동결 target은 당시 변환·보존 계약의 증거로 남긴다.
+R07 도입 당시 live data schema5/active-run V8와 명시 사본 변환은 역사적 계약이다. 현재는 catalog schema6,
+Core Continue12/독립 SavePoint13을 사용한다. `CoreApplication::convert_active_run_v7`/`convert_active_run_v8`은
+현재 미지원으로 명시 거절하며 원본을 쓰거나 새 bytes를 반환하지 않는다. 이전 V7/V8/V9 원자료와 동결 target은
+당시 변환/보존 증거로 남기며 현재 수용이나 자동 fallback의 근거가 아니다.
 
 
 ## U05 resonance authoring
@@ -834,9 +913,9 @@ rejected with an explicit publication error; separate independent areas and fini
 supported. RON and typed builders use the same validator. Employee manual fragment forms reject RetargetOnStep,
 including AutomaticUnit selection; opponent autonomous targeting retains its existing authoring contract.
 
-Employee profile serialization changed with continuationV11. Explicit historical V7/V8 conversion verifies
-original checksum/identity before removing only the supported historical0/100/1000 employee default. It emits
-checkpointV12, rejects custom legacy values and never overwrites the original or automatically continues it.
+Employee의 personality/condition/성장은 유지하고 trust/memory aggregate와 전용 입력은 제거한다.
+현재 Continue12/SavePoint13 strict decoder는 제거 필드/구 mode/이전 version을 거절한다.
+V7/V8 conversion은 현재 미지원이며 역사적 default 변환으로 현재 reader를 우회하지 않는다.
 
 ## U06 기본 Heal 및 초기 active loadout
 
@@ -850,7 +929,7 @@ EmployeeInitialLoadout의 `active_skill_fragment_id`는 선택적 실제 active 
 BasicAttackModifier만 허용한다. 초기 장비를 적용한 실제 profile과 active base form의 호환성을 로더에서
 검사한다. 공식6starter+6HQ는 각각 active1개와 역할 무기를 명시하며 새 훈련 무기는 일반 보상 pool에서 제외한다.
 
-`Damage`는 기존 암묵 기본값이며 BasicAttackDef/작성 basic profile/WeaponCombatProfile의 직렬화에서 생략한다. `Heal`은 명시 보존한다. 같은 V11 저장의 기본 피해 profile에 새 필드를 덧붙여 기존 canonical checksum을 무효화하지 않는다. 원래 암묵 Damage 문서의 checksum 검증·Continue·재출력 동일성과 신규 Heal loadout의 정상 저장을 각각 검증한다.
+`Damage`는 기존 암묵 기본값이며 BasicAttackDef/작성 basic profile/WeaponCombatProfile의 직렬화에서 생략한다. `Heal`은 명시 보존한다. 같은 V12 저장의 기본 피해 profile에 새 필드를 덧붙여 기존 canonical checksum을 무효화하지 않는다. 원래 암묵 Damage 문서의 checksum 검증·Continue·재출력 동일성과 신규 Heal loadout의 정상 저장을 각각 검증한다.
 
 ## U07 independent object authoring
 
@@ -863,3 +942,79 @@ Wall의 HP/방어 계약을 함께 검사한다. 기존 objects 부재의 canoni
 Instant/Once·명시 target·flow/damage-attachment 제한, 비용/진화 조합과 정확한 definition 참조를 발행 전에
 검사한다. 세부 작성 예시는 [작성 모델](skills/skill_authoring_model.ko.md#u07-독립-객체분절-pool-작성-포트)을 따른다.
 새 래티씨아 forms와 벽 consumer는 기존 catalog identity 안의 명시 정의이며 누락 참조를 fallback으로 숨기지 않는다.
+
+
+## U14 작성 필드
+
+- `MapNodeDefinition.first_entry_cost`와 `FacilityActivityDefinition.first_entry_cost`는 선택적 u32다.
+  activity→node→run 기본값 순서이며0은 무료다. Start/Gate는 무료이고 `breakdown_collapse_cost_limit`의
+  공식값은4다. 이전 `breakdown_collapse_node_limit`은 지원하지 않는다.
+- PVE `deterrence_tuning`은 무억제 HP/ATK 각150–200%, 봉인 HP/ATK 각100% 초과를 검증한다.
+  공식 초깃값은 모두150이다. 조우 안에서 다시 배율을 추첨하지 않는다.
+- PVE `bonus_objectives`는 고유ID, `ClearWithin { time_ms }` 또는
+  `DecisiveDamage { max_health_percent }`, 양수 수량 효과를 작성한다. 시간은 양수이고 해당 조우의 주환상체가
+  시작시 존재해야 한다. 피해비율은1–100이다. 재화/장비가루/장비재료/AliveRoster XP만 허용하고 참조를 검증한다.
+- Facility activity `golden_bough_candidate`, layout `golden_bough_plans`를 함께 작성한다. 계획은 고유ID,
+  양수weight/refill, 고유room/slot 목록을 소유한다. 후보가 있으면 여러 계획을 요구하고 각 계획은 모든 후보
+  wing을 포함하며 ENTRY에서 무조건 도달 가능한 비최종보스 후보만 참조한다. 정상 지원 후보는 NormalBoss
+  조우여야 한다. 공식 예약 미지원 본체는 명시 Unsupported 상태로 남고 U21에서 본체를 연결한다.
+  적합 계획 누락을 보스별 랜덤 선택으로 대체하지 않는다. 공식 두 계획은 A5/B4/C4 또는 A5/B7/C4,
+  각 weight50/보충8이다. 이는 초기 작성 튜닝이며 개별 네 보스의 플레이 완료 증거가 아니다.
+
+
+## U15 재료 목적과 성장 recipe
+
+`EquipmentMaterialType`의 `EquipmentDust`, `AbnormalityPart`, `RevivalCatalyst`는 서로 다른 목적이다.
+무기 enhancement recipe는 Weapon 대상과 EquipmentDust 비용, Attack/SpellPower modifier만 허용한다.
+Armor 대상이나 방어력/HP 강화, 다른 목적의 재료를 무기 강화 비용으로 작성하면 publication에서 거절한다.
+파편 개화 recipe의 재료는 AbnormalityPart여야 하며 요구량과 동반 enkephalin은 각 형태의 RON에서 온다.
+부활 촉매와 장비 가루를 개화 비용으로 대체할 수 없다. 중복 cost row는 checked 합산하며 0·overflow·
+미지 material reference는 거절한다. 공식 기본 무기는 현재 개발값 dust2/단계최대5와 Attack/SpellPower
+보정을 제공한다. 이 값은 최종 균형 확정을 뜻하지 않는다.
+
+성장 후 분쇄 환급의 기준은 저장된 실제 결제 원장이며 새 generation의 가격표가 아니다.
+새 사본의 빈 투자 원장과 구 저장의 필수 투자 필드 누락은 구별한다. U15 구 개발 저장은 자동 변환하지 않는다.
+
+
+### U16-1 상점 상품 작성
+
+`ShopMerchandise`는 기존 장비·소비품 외에 `relic`(relic_id),
+`revival_catalyst`(material_id), `relic_corruption_catalyst`를 지원한다.
+유물과 촉매 상품은 양수 `base_price`를 직접 작성한다. 장비·소비품은 기존 카탈로그 가격을
+사용하므로 이 필드를 작성하지 않는다. 유물·장비 수량은1이며 촉매 수량은 양수이다.
+부활촉매 참조는 `RevivalCatalyst` 목적의 재료만 허용한다. 장비 가루·환상체 파츠는 상품이 아니다.
+모노리스는 원정 진행에서 생성하므로 일반 상품 목록으로 직접 작성할 수 없다.
+
+`guaranteed: true` 항목은 구매이력에 따른 자격을 확인한 뒤 가중 추첨보다 먼저 페이지에 넣는다.
+기본값은false이며 기본상품 개수는 페이지 용량 이하여야 한다. 떠돌이 상점은 초기 모노리스
+두 자리도 확보해야 한다. `repeatable: false` 상품은 구매 후 같은 세션의 갱신에서 제외된다.
+모든 상품은 기존 상점 비율·올림으로 총가격을 확정한다. 조회의 유물 정의·촉매 목적과 구매 결과의
+`relic_diffs`/`crafting_resources`/재료스택을 통해 소비자가 실제 지급 owner를 구분한다.
+
+
+### U16-2 유물 활동 공급 작성
+
+FacilityLayout의 `relic_rewards`는 `candidates: [(relic_id, weight)]`와
+`dust_thresholds: (3,9,18)` 형태의 누적 비용 세 개를 가진다. 생략 시 빈 후보와 이 초기 비용을
+사용한다. 후보 ID는 유물 정의를 참조하고 중복이 없어야 하며 weight는 양수, 전체 합계는 u32
+범위여야 한다. 공급 후보의 rarity는 common/rare/special이어야 한다. 이 조건은 다른 용도의
+기존 유물 전체에 적용하지 않는다. 비용은 양수이며 엄격히 증가한다. 빈 공급은 유효하다.
+
+`reward_activity`는 Reward category와 Reward payload를 갖는 활동에만 작성한다. 초기
+공급 가중치1과 비용3/9/18은 작성 튜닝이며 최종 균형 확정이 아니다. 선택형은 전체 후보에서,
+투자/합성은 해당 등급에서 가중 추첨하며 선택 후보는 종류 중복 없이 최대3개다. 합성은 투입
+두 종류를 제외한 뒤 양수 확률 모든 등급의 후보 존재를 확인한다. 후보 부족을 다른 등급으로
+재분배하지 않는다. 외부 pack은 실제 효과 정의와 함께 공급을 작성해야 한다. 공식 유물 catalog의
+확장과 나머지 유물 활동은 후속 단계의 범위다.
+
+### U16-3 딜러 작성
+
+FacilityLayout의 optional `dealer: Some((...))`가 Gambling의 실행/조건/VN/상품 정책을 소유한다. 생략한 기존layout은 딜러미지원이며 silent default policy로바꾸지않는다. None은직렬화에서생략하여기존pack의정규화의미를보존한다. 공식layout은초기기본30·갬빗비중1:1·최소판돈1·Flip손실10/1위보너스20·원금10/30/60·기타rarity default_pledge_value10·빈상품과제안/VN참조를작성한다. 지원외부pack은실제유물정의/효과를상품에작성한다.
+
+기본포인트/최소판돈/Flip손실/등급별원금/default_pledge_value는양수이고갬빗2/3비중의u32합계는양수/overflow없음이어야한다. 상품은고유비어있지않은id,하나이상유효유물id,양수가격/재고를갖는다. 묶음은여러정의(동일종류여러사본포함)를허용한다. first_vn/repeat_vn은terminal accept/decline 두선택, gambit_vn은terminal yes/no 두선택을갖는유효VN entry를참조한다. 숫자·참조·선택계약오류는publication에서거절한다. 카드/주사위/정산규칙은고정Core규칙이고pack이새게임코드·RNG배열·임의포인트상태를주입하지않는다.
+
+### U16-4 스트레스 전투 작성
+
+FacilityLayout의 optional `stress_combat: Some((encounter_id:..., rounds:[(wave_ids:[...],rewards:[...]), ...]))`가 활동 전용 연속 방어전을 정한다.5개의 비어 있지 않은 라운드가 조우의 모든 required 웨이브를 중복 없이 분할해야 한다. 조우 class는 StressCombat, mission_variant는Defense이며 ProtectUnit 목표와 같은 보호 대상의 UnitDefeated 패배 조건을 작성한다. 승리는 AllRequiredEnemyGroupsDefeated이고 별도 시간 승리/bonus_objectives는 사용하지 않는다. GroupCleared와 actor trigger 바인딩 모두 뒤 라운드의 wave를 참조하여 앞 라운드를 잠그는 입력은 거절한다.
+
+라운드 rewards는 고정 엔케팔린/장비 가루/재료/XP/유물의 공통 RewardEffect이며 참조와 XP 대상 계약을 로더가 검증한다. 선택 직원을 추가로 요구하는 SelectedEmployee XP와 고정 무억제2배 수량을 표현할 수 없는 보상은 거절한다. 엔케팔린·장비 가루·동일 material_id의 재료는 같은 라운드의 반복 효과와 모든 라운드를 합한 잔고별 누적량에도 이 검사를 적용한다. GrantEquipmentMaterial의 예약 ID equipment_dust는 GrantEquipmentDust와 같은 가루 잔고로 합산하며, 서로 다른 재료·잔고는 합치지 않는다. XP는 개별 지급마다 레벨업 비용을 소비하므로 기존 효과별 배율 검사를 유지한다. 이 작성 검사는 고정 보상 자체의 표현 가능성을 확인하며, 기존 보유량과 더할 때의 공통 런타임 잔고 한도·원자성 처리는 유지한다. explicit supported StressCombat 활동에 policy가 없으면 로더가 거절하며, 기존 optional policy 없는 layout은 이 활동을 미지원으로 안내한다. 공식 대표 조우는1/1/2/2/3명의I/II/II/III/III 적, 라운드당 엔케팔린10/20/30/40/50이다. 이 수치와 지원 외부 pack의 유물·재료·XP 표는 U21 최종 콘텐츠/밸런스 확정을 뜻하지 않는다.

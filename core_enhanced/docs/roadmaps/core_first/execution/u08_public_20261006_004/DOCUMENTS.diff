@@ -1,0 +1,52 @@
+--- core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/PLAN.md:before
++++ core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/PLAN.md:after
+@@ -1,18 +1,19 @@
+ # U08 실행 PLAN — GOAL-CRNV-01
+ 
+-2026-10-06 · GEX-10의 A/B/C 공개 경로 13/13 PASS를 회수했고 query/Event owner 집중 검사를 진행한다.
+-공개 실행 `relic_public_bc001`은 source424 / `6005757cd6804fc7fb9fb6b6bd76516e00dc9aebafb7314a2941d4a4c5d11e58`에서 소스 불변·exit0이다.
+-이후 제품 redundant import 제거1행과 libtest Arc→Vec 교정1행만 바뀌었다. root가 전체 source delta와 실제 diff를 확인했으며 공개13에 비영향으로 재사용한다.
+-현재 고정 입력은 source424 / `31b4b0150dd181e43e49ae177c6ccfdfed3027f96dbddfde51e3ece2a805667d`이다.
+-`relic_query_owner001`은 libtest 타입 불일치로 test0/compile101이며 원본 보존한다. `relic_query_owner002`는 실행 중이고 성공 시 Event owner4를 이어간다.
+-A 이전 numeric 관측 on33/off31 및 behavior11 PASS는 이전 source417/6076ed…의 증거이며 변경 영향에 따라 현재 결속한다.
+-초기 PC는 이전409/6ea1… 경계의576행/36조건/31성공5기존거절·U07-M 비시간delta0/17반례 거절 증거로 보존한다.
+-전체 U08 완료가 아니다. query/Event owner 결과, 정상 공개 수명주기·actual carriers·newRON/CLI·최종 기능/성능·증거 결속·동결·독립 감사가 남았다.
+-현재 역할은 [역할 분리](../../../../roadmaps/core_first/execution/u08_roles_20261006_001/RECORD.ko.md),
+-공개 API는 [계약 및 부록](../../../../roadmaps/core_first/execution/u08_public_20261006_001/RECORD.ko.md),
+-Event owner의 실제 OwnedHashMap 근거와 strict restore는 [정정 설계](../../../../roadmaps/core_first/execution/u08_public_20261006_002/EVENT_OWNER_BOUNDARY_002_CORRECTION.ko.md),
+-최신 집중 실행은 [현재 기록](../../../../roadmaps/core_first/execution/u08_public_20261006_003/RECORD.ko.md)을 따른다.
+-모든 과거 실패·작성 이력·완료 감사·target과 사용자 HANDOFF 원문을 보존한다. process 조회는 sandbox namespace 한계가 있다.
++2026-10-06 · A/B/C 공개13 + query owner3 + Event owner4의 집중20 검증을 회수하고 D 정상 수명주기 시험 작성을 계속한다.
++최근 실제 검증 경계는 source424 / `2cfcdfe0555274844b85382ac1672c3315b3ca71c0f2701ba24271e64fef26ca`이다.
++`relic_public_bc002`13/13과 `relic_event_owner003`4/4는 해당 소스 불변·exit0. `relic_query_owner003`3/3은 f23454f…에서 통과했고 이후 Event fixture-only delta를 root가 전체 소스·diff로 확인해 비영향 재사용한다.
++이전 query compile/test 실패 및 Event lifetime/fixture 실패는 원본 보존하며 원인별 담당 교정과 새 label 결과로 연결했다.
++현재 D 시험 writer가 열려 있으므로 위 해시는 최근 검증 기준이며 실시간 현재 소스 해시를 대신하지 않는다. 제품 Sol은 HOLD다.
++D 첫 묶음은 실제 직원 간 이전, 미완료 Event의 공개 Continue pre-entry 복원, 정상 새 원정 copy/slot/material reset이다.
++독립 lifecycle001 map fixture2로 정상 Event 진입 경로를 만들고 기존 public001 generation은 보존한다.
++전체 U08 완료가 아니다. 실제 withdraw/deploy/death, 외부 trial/CLI·actual carriers, 최종 기능/성능·evidence/impact/adaptation/coverage·동결·독립 감사가 남았다.
++이전 numeric on33/off31·behavior11 및 초기 PC는 각 과거 경계의 유효 범위에서 보존하며 현재 변경 영향에 따라 결속한다.
++역할은 [역할 분리](../../../../roadmaps/core_first/execution/u08_roles_20261006_001/RECORD.ko.md), API는 [공개 계약](../../../../roadmaps/core_first/execution/u08_public_20261006_001/RECORD.ko.md),
++actual OwnedHashMap 근거는 [정정 설계](../../../../roadmaps/core_first/execution/u08_public_20261006_002/EVENT_OWNER_BOUNDARY_002_CORRECTION.ko.md),
++완료 Event 수명은 [현재 층 결정](../../../../roadmaps/core_first/execution/u08_public_20261006_003/EVENT_LIFETIME_DECISION_001.ko.md),
++집중20 결과와 D 파일 범위는 [현재 기록](../../../../roadmaps/core_first/execution/u08_public_20261006_004/RECORD.ko.md)을 따른다.
++과거 실패·원 작성 이력·감사·target·HANDOFF 원문은 보존한다. process 조회는 sandbox namespace 한계가 있다.
+ 
+ ## 요청·역할·현재 인수
+ 
+--- core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/EXPERIMENT_NOTES.md:before
++++ core_enhanced/docs/goals/core_relic_numeric_variants/execution/single_goal/EXPERIMENT_NOTES.md:after
+@@ -94,3 +94,14 @@
+ Event 맵이 raw라는 앞선 Sol/root 판단은 state.rs의 OwnedHashMap alias를 놓친 오류였다. 001 기록을 보존하고 EVENT_OWNER_BOUNDARY_002_CORRECTION으로 정정했다. 새 history Vec/String payload만의 native selected scope와 기존 OwnedHashMap/CloneShape를 유지하며 inline/table layout 영향은 최종 allocator/R05에서 실제 확인한다. strict restore는 historySome에만 실제 Event category/payload ID 및 역사 check 산술·branch 일관성을 추가한다. 현재 loadout으로 과거 modifier를 재산출하지 않는다.
+ 
+ 다음 작성 순서는 집중19 결과/교정 회수 뒤 공개 transfer·unfinished Event pre-entry Continue·완료 history·정상 newRun reset, 실제 withdraw/redeploy와 death reconciliation, 독립 external trial/CLI, 실제 queued/projectile/area carrier다. 기존 private SavePoint/GameCore restore/direct capture-consume 시험은 유효 범위에 재사용하며 정상 공개/실제 scheduler 증거로 재분류하지 않는다. 최종 whole-Goal independent audit는 여전히 미착수다.
++
++
++## 2026-10-06 — 집중20 회수 후 D 정상 수명주기 착수
++
++현재 source424/2cfcdfe0555274844b85382ac1672c3315b3ca71c0f2701ba24271e64fef26ca에서 공개bc00213/13·eventowner0034/4 PASS이다. queryowner0033/3(f23454f…)은 이후 Event test 한 파일의 Maintenance fixture 교정뿐임을 root가 전체 입력 목록과 diff로 확인해 비영향 재사용한다. 원 PASS/FAIL과 모든 고유 label을 보존한다. 전체 U08 완료로 게시하지 않는다.
++
++queryowner0020/2 실패는 외부 native allowance를 활성화한 시험이 정상 공개 경계와 내부 임시 diagnostic envelope를 혼동한 오류였다. 기존2는 outer typed firstfault/정확 admission prefix/rollback/동일 app 회복을 유지하고 내부 sentinel의 범위를 명시했다. 추가1은 축소된 immutable host settings와 바깥 wrapper 없는 정상 CoreApplication entry에서 typed AppError/code/site/cap/requested·재시도·fresh Continue/query 회복을 검증했다. 실제 정상 누적 admission 마지막296967이며 allocator heap/RSS가 아니다. 원8MiB 상한을 올리거나 제품 오류 mapping을 바꾸지 않았다.
++
++Eventowner0010/4는 기존 completion cleanup이 새 history를 삭제한 제품 누락이었다. current-floor historySome만 보존하고 None cleanup/next-floor·terminal·new-run 생성 경계를 유지하도록 Sol이 교정했다. eventowner0023/4의 나머지1은 AdminEnterMaintenance의 detached admin_fixture map을 정상 Continue에 사용한 시험 문제였다. Astra가 history 이전에 Maintenance 지원 map을 준비한 뒤 같은 map에서 정상 Event·Maintenance 진입으로 교정했다. map guard와 absent-copy/history/dust7/restore 기대는 유지했다. eventowner0034/4는 strict restore10case·branch3case·decline-only 각 독립 owner·appendone-short rollback·Continue hint 및 합법 분해 뒤 absent historical copy 복원을 확인한다. 실제 layout EventSession296/ActiveNode640/EventDto288/receipt48; 이전 layout 대비 증감이나 최종 R05 통과는 아직 주장하지 않는다.
++
++모든 runner 종료/receipt 회수 뒤 Astra에게 integration lifecycle.rs/root module 및 필요한 최소 support helper를 열었다. 독립 lifecycle001 facility_templates.ron/node_assignment_profiles.ron2 fixture도 승인했다. 기존 intro 기반 정상 map entry→records_annex와 해당 신규 Event payload를 authored input으로 구성한다. 기존 A/B/C public001 generation/catalog는 그대로 둔다. 이 fixture는 Event durable flow용이며 실제 battle/trial/CLI의 최종 E 증거를 대신하지 않는다. Sol 제품 writer는 HOLD, 새 format/build/run은 아직 미승인이다. 다음은 transfer·pre-entry Continue·normal reset 작은 묶음의 실제 실행이다.

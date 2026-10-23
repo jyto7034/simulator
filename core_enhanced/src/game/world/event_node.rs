@@ -1143,6 +1143,7 @@ mod tests {
         key: Option<&str>,
     ) -> EquipmentMetadata {
         EquipmentMetadata {
+            content_family: None,
             id: definition_id.to_string(),
             uuid: Uuid::from_u128(definition_uuid),
             name: definition_id.to_string(),

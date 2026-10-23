@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/home/blast/.cargo/bin/cargo",
+    "test",
+    "-p",
+    "game_core",
+    "--doc",
+    "--offline",
+    "--locked",
+    "--target-dir",
+    "/mnt/f/work/simulator/.cache/u12-vault-cost-target"
+  ],
+  "exit_code": 0,
+  "seconds": 50.60621367499698,
+  "stdout": "doc003.stdout.log",
+  "stderr": "doc003.stderr.log"
+}

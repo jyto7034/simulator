@@ -298,6 +298,28 @@ pub fn channel() -> (ObservationSender, ObservationReceiver) {
         ObservationReceiver { receiver, totals },
     )
 }
+/// A fresh, bounded host observation window around the real Lab phase. It
+/// changes neither runtime admission nor the measured application's owner.
+#[cfg(feature = "runtime-observation")]
+pub struct LabObservationWindow {
+    guard: Option<OperationGuard>,
+    receiver: ObservationReceiver,
+}
+#[cfg(feature = "runtime-observation")]
+pub fn begin_lab_window() -> Option<LabObservationWindow> {
+    let (sender, receiver) = channel();
+    let (mut observer, _) = sender.session(0);
+    let guard = observer.begin(Operation::Admin, 0)?;
+    Some(LabObservationWindow {guard:Some(guard), receiver})
+}
+#[cfg(feature = "runtime-observation")]
+impl LabObservationWindow {
+    pub fn finish(mut self) -> Option<OperationSummary> {
+        self.guard.take()?.finish(&Ok::<(), ApplicationError>(()));
+        let record = self.receiver.try_recv().ok()?;
+        (self.receiver.counters().dropped == 0).then_some(record)
+    }
+}
 impl ObservationReceiver {
     pub fn try_recv(&self) -> Result<OperationSummary, mpsc::TryRecvError> {
         self.receiver.try_recv()

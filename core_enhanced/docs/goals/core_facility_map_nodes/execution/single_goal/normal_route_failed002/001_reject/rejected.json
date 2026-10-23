@@ -1,0 +1,8 @@
+{
+  "command": {
+    "room_id": "B1-02",
+    "type": "move_to_facility_room"
+  },
+  "error": "approved command preparation failed: Application(ApplicationError { kind: ActionUnavailable, code: \"context_irrelevant\", details: ApplicationDocument(Object {\"action\": String(\"MoveToFacilityRoom\"), \"reason\": String(\"context_irrelevant\")}) })",
+  "unchanged": true
+}

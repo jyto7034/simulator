@@ -1,0 +1,25 @@
+[package]
+name = "u11_independent_public_probe"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+game_core = { path = "../../../../../../../.." }
+game_server = { path = "../../../../../../../../../game_server" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+ron = "0.5.1"
+sha2 = "0.10.9"
+uuid = { version = "1.14.0", features = ["serde", "v4"] }
+
+[features]
+default = []
+instrumented = ["game_server/cmva-lab-measurement"]
+invalid_deserialize_approval = []
+invalid_static_candidate = []
+invalid_result_dto = []
+invalid_comparator_result = []
+invalid_direct_future = []
+invalid_issuer_authority = []
+invalid_deserialize_calibration = []

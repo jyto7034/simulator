@@ -1,0 +1,490 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Review Scope/Source Requirement Plan",
+        "Artifact ID": "RSP-CRCE-002",
+        "Content Digest": "sha256:9236f4165f791dc4ff5448c0d4f11c04c6a16a3d955ef8d39f73febf599992ab"
+      },
+      "payload": {
+        "Bound Input Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CRCE-003",
+          "Content Digest": "sha256:374d57b08b6fc3ba1f90c264f925b33c4aadf126b671b695c7ae9ebf9235f24a"
+        },
+        "Requirement Set": [
+          {
+            "Requirement ID": "RQ01",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-01-REVIEWED-001",
+                "Content Digest": "sha256:19229986434bd6a3ff1ad1b8d956b96e7be6b2a1aed1db3c2ebc2bc23e9fa144"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-02-REVIEWED-001",
+                "Content Digest": "sha256:b6943471e050f8e9f897187161364ccf557d13ca028bc7d1d4c612135b2ec673"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-04-REVIEWED-001",
+                "Content Digest": "sha256:2b0864a61b313cc1f26a5341f0c54f6b19dc6c12d64ac5b93b8b2e2cecb77dde"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-05-REVIEWED-001",
+                "Content Digest": "sha256:f88d59fb9918466dfa3ada00383c0ce7cacbfc38410270dc7806cf0470d86be7"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-10-REVIEWED-001",
+                "Content Digest": "sha256:6d28df1536cfa4a1ffe9f45fb16efde78aff56dd3be302ce2fdfc8ce0e012ab8"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-11-REVIEWED-001",
+                "Content Digest": "sha256:a140d7e3befdc8d83cb22ac9b3422fe62fc9711f444a4241f654d74cd402e1e7"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-14-REVIEWED-001",
+                "Content Digest": "sha256:b48c26e2b2bdc38ec4f5f7e0b8f25855ef5e263b534fb23cd5a9142701c5980f"
+              }
+            ],
+            "Required claim/boundary": "Public RON schema, compiler, effective plan and descriptor/query consumer",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/game/relic",
+                "core_enhanced/src/game/data",
+                "core_enhanced/src/authoring",
+                "core_enhanced/src/game/value_expr"
+              ],
+              "dirty_basis": "Exact current bytes, no reset and no source edits during review"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRCE-003",
+                "Content Digest": "sha256:374d57b08b6fc3ba1f90c264f925b33c4aadf126b671b695c7ae9ebf9235f24a"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "Trace normal authored input through validation/compilation and actual bound plan; identify missing public subscriber/join/periodic/Wedge producers.",
+            "Investigation owner": "Root; RQ05 independent test Astra read-only proposal reused with exact currentness"
+          },
+          {
+            "Requirement ID": "RQ02",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-01-REVIEWED-001",
+                "Content Digest": "sha256:19229986434bd6a3ff1ad1b8d956b96e7be6b2a1aed1db3c2ebc2bc23e9fa144"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-02-REVIEWED-001",
+                "Content Digest": "sha256:b6943471e050f8e9f897187161364ccf557d13ca028bc7d1d4c612135b2ec673"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-03-REVIEWED-001",
+                "Content Digest": "sha256:55337da9fa595b33e3a70e877a419f1d8cf6cdc2baeeda84c2e35fce46fa19ec"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-04-REVIEWED-001",
+                "Content Digest": "sha256:2b0864a61b313cc1f26a5341f0c54f6b19dc6c12d64ac5b93b8b2e2cecb77dde"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-05-REVIEWED-001",
+                "Content Digest": "sha256:f88d59fb9918466dfa3ada00383c0ce7cacbfc38410270dc7806cf0470d86be7"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-06-REVIEWED-001",
+                "Content Digest": "sha256:0a64806728cde5162d8c33ddda3838a2f071a6b509c33864858fb264bdc318c4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-10-REVIEWED-001",
+                "Content Digest": "sha256:6d28df1536cfa4a1ffe9f45fb16efde78aff56dd3be302ce2fdfc8ce0e012ab8"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-11-REVIEWED-001",
+                "Content Digest": "sha256:a140d7e3befdc8d83cb22ac9b3422fe62fc9711f444a4241f654d74cd402e1e7"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-12-REVIEWED-001",
+                "Content Digest": "sha256:7b4f5f513f1ad512312d1bfdf2e0b28c0590b77ae38d6b3db5615b3f819a85e5"
+              }
+            ],
+            "Required claim/boundary": "Actual facts, source propagation, queue, real fork/join/periodic and strike consumers",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/game/battle/runtime_facts.rs",
+                "core_enhanced/src/game/battle/core",
+                "core_enhanced/src/game/battle/skill_source.rs"
+              ],
+              "dirty_basis": "Exact current bytes, no reset and no source edits during review"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRCE-003",
+                "Content Digest": "sha256:374d57b08b6fc3ba1f90c264f925b33c4aadf126b671b695c7ae9ebf9235f24a"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "Trace actual damage producer, command rebindings, delayed/projectile/area/DOT source, flow completion, and released owner lifetime; separate missing ancestry from existing numeric result aggregation.",
+            "Investigation owner": "Root; RQ05 independent test Astra read-only proposal reused with exact currentness"
+          },
+          {
+            "Requirement ID": "RQ03",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-07-REVIEWED-001",
+                "Content Digest": "sha256:cfe2201bdee60ad89ba13736c1e40bdecb16e9a579f9b7677561ff6af0135378"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-08-REVIEWED-001",
+                "Content Digest": "sha256:cdfd7f1bc997bbbb10fd4b487193dd8d4900d4ed652ccb1dd1a779cdbeb2f33a"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-09-REVIEWED-001",
+                "Content Digest": "sha256:b68ca07e99ecf07719487476395e769ea83b980bb75e5e594ff5d48fbb493e93"
+              }
+            ],
+            "Required claim/boundary": "Equipment counter/death suppression and resonance mutation authority",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/game/battle/core/triggers.rs",
+                "core_enhanced/src/game/battle/core/damage_runtime.rs",
+                "core_enhanced/src/game/battle/core/corrosion.rs",
+                "core_enhanced/src/game/battle/core/resonance.rs"
+              ],
+              "dirty_basis": "Exact current bytes, no reset and no source edits during review"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRCE-003",
+                "Content Digest": "sha256:374d57b08b6fc3ba1f90c264f925b33c4aadf126b671b695c7ae9ebf9235f24a"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "Read existing actual basic-hit, death dispatch, Corrosion mandatory-only finalization and common positive gain gate; find subscriber integration seams without expanding trigger semantics.",
+            "Investigation owner": "Root; RQ05 independent test Astra read-only proposal reused with exact currentness"
+          },
+          {
+            "Requirement ID": "RQ04",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-06-REVIEWED-001",
+                "Content Digest": "sha256:0a64806728cde5162d8c33ddda3838a2f071a6b509c33864858fb264bdc318c4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-12-REVIEWED-001",
+                "Content Digest": "sha256:7b4f5f513f1ad512312d1bfdf2e0b28c0590b77ae38d6b3db5615b3f819a85e5"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-13-REVIEWED-001",
+                "Content Digest": "sha256:d1d1266ab02a85d0896f9a6d69dea3a28e0c9dac71123c58a15c122b98b81a9f"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-14-REVIEWED-001",
+                "Content Digest": "sha256:b48c26e2b2bdc38ec4f5f7e0b8f25855ef5e263b534fb23cd5a9142701c5980f"
+              }
+            ],
+            "Required claim/boundary": "State ownership, clone/retained/admission/transaction and durable/fresh Core boundaries",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/game/battle/core",
+                "core_enhanced/src/game/battle/runtime_control",
+                "core_enhanced/src/game/world",
+                "core_enhanced/src/application.rs"
+              ],
+              "dirty_basis": "Exact current bytes, no reset and no source edits during review"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRCE-003",
+                "Content Digest": "sha256:374d57b08b6fc3ba1f90c264f925b33c4aadf126b671b695c7ae9ebf9235f24a"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "Inspect authoritative roots, clone and transaction call graph, cleanup, run saves/restore and actual public consumer; record transient vs durable responsibility and required changes.",
+            "Investigation owner": "Root; RQ05 independent test Astra read-only proposal reused with exact currentness"
+          },
+          {
+            "Requirement ID": "RQ05",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-01-REVIEWED-001",
+                "Content Digest": "sha256:19229986434bd6a3ff1ad1b8d956b96e7be6b2a1aed1db3c2ebc2bc23e9fa144"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-02-REVIEWED-001",
+                "Content Digest": "sha256:b6943471e050f8e9f897187161364ccf557d13ca028bc7d1d4c612135b2ec673"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-03-REVIEWED-001",
+                "Content Digest": "sha256:55337da9fa595b33e3a70e877a419f1d8cf6cdc2baeeda84c2e35fce46fa19ec"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-04-REVIEWED-001",
+                "Content Digest": "sha256:2b0864a61b313cc1f26a5341f0c54f6b19dc6c12d64ac5b93b8b2e2cecb77dde"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-05-REVIEWED-001",
+                "Content Digest": "sha256:f88d59fb9918466dfa3ada00383c0ce7cacbfc38410270dc7806cf0470d86be7"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-06-REVIEWED-001",
+                "Content Digest": "sha256:0a64806728cde5162d8c33ddda3838a2f071a6b509c33864858fb264bdc318c4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-07-REVIEWED-001",
+                "Content Digest": "sha256:cfe2201bdee60ad89ba13736c1e40bdecb16e9a579f9b7677561ff6af0135378"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-08-REVIEWED-001",
+                "Content Digest": "sha256:cdfd7f1bc997bbbb10fd4b487193dd8d4900d4ed652ccb1dd1a779cdbeb2f33a"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-09-REVIEWED-001",
+                "Content Digest": "sha256:b68ca07e99ecf07719487476395e769ea83b980bb75e5e594ff5d48fbb493e93"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-10-REVIEWED-001",
+                "Content Digest": "sha256:6d28df1536cfa4a1ffe9f45fb16efde78aff56dd3be302ce2fdfc8ce0e012ab8"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-11-REVIEWED-001",
+                "Content Digest": "sha256:a140d7e3befdc8d83cb22ac9b3422fe62fc9711f444a4241f654d74cd402e1e7"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-12-REVIEWED-001",
+                "Content Digest": "sha256:7b4f5f513f1ad512312d1bfdf2e0b28c0590b77ae38d6b3db5615b3f819a85e5"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-13-REVIEWED-001",
+                "Content Digest": "sha256:d1d1266ab02a85d0896f9a6d69dea3a28e0c9dac71123c58a15c122b98b81a9f"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-14-REVIEWED-001",
+                "Content Digest": "sha256:b48c26e2b2bdc38ec4f5f7e0b8f25855ef5e263b534fb23cd5a9142701c5980f"
+              }
+            ],
+            "Required claim/boundary": "Independent acceptance and regression seams",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/src/game/world/tests/u09_structural.rs",
+                "core_enhanced/src/authoring/trial/tests/u09_structural.rs",
+                "core_enhanced/src/game/battle/core/tests",
+                "core_enhanced/docs/goals/core_relic_structural_activation"
+              ],
+              "dirty_basis": "Exact current bytes, no reset and no source edits during review"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRCE-003",
+                "Content Digest": "sha256:374d57b08b6fc3ba1f90c264f925b33c4aadf126b671b695c7ae9ebf9235f24a"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "Reuse independent Astra read-only proposal and inspect normal entry/test helpers; choose impact-based existing regressions, do not claim future tests executed.",
+            "Investigation owner": "Root; RQ05 independent test Astra read-only proposal reused with exact currentness"
+          },
+          {
+            "Requirement ID": "RQ06",
+            "Exact Policy Element Revision Ref Set": [
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-01-REVIEWED-001",
+                "Content Digest": "sha256:19229986434bd6a3ff1ad1b8d956b96e7be6b2a1aed1db3c2ebc2bc23e9fa144"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-02-REVIEWED-001",
+                "Content Digest": "sha256:b6943471e050f8e9f897187161364ccf557d13ca028bc7d1d4c612135b2ec673"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-03-REVIEWED-001",
+                "Content Digest": "sha256:55337da9fa595b33e3a70e877a419f1d8cf6cdc2baeeda84c2e35fce46fa19ec"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-04-REVIEWED-001",
+                "Content Digest": "sha256:2b0864a61b313cc1f26a5341f0c54f6b19dc6c12d64ac5b93b8b2e2cecb77dde"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-05-REVIEWED-001",
+                "Content Digest": "sha256:f88d59fb9918466dfa3ada00383c0ce7cacbfc38410270dc7806cf0470d86be7"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-06-REVIEWED-001",
+                "Content Digest": "sha256:0a64806728cde5162d8c33ddda3838a2f071a6b509c33864858fb264bdc318c4"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-07-REVIEWED-001",
+                "Content Digest": "sha256:cfe2201bdee60ad89ba13736c1e40bdecb16e9a579f9b7677561ff6af0135378"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-08-REVIEWED-001",
+                "Content Digest": "sha256:cdfd7f1bc997bbbb10fd4b487193dd8d4900d4ed652ccb1dd1a779cdbeb2f33a"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-09-REVIEWED-001",
+                "Content Digest": "sha256:b68ca07e99ecf07719487476395e769ea83b980bb75e5e594ff5d48fbb493e93"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-10-REVIEWED-001",
+                "Content Digest": "sha256:6d28df1536cfa4a1ffe9f45fb16efde78aff56dd3be302ce2fdfc8ce0e012ab8"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-11-REVIEWED-001",
+                "Content Digest": "sha256:a140d7e3befdc8d83cb22ac9b3422fe62fc9711f444a4241f654d74cd402e1e7"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-12-REVIEWED-001",
+                "Content Digest": "sha256:7b4f5f513f1ad512312d1bfdf2e0b28c0590b77ae38d6b3db5615b3f819a85e5"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-13-REVIEWED-001",
+                "Content Digest": "sha256:d1d1266ab02a85d0896f9a6d69dea3a28e0c9dac71123c58a15c122b98b81a9f"
+              },
+              {
+                "Artifact Type": "Policy Element Revision",
+                "Artifact ID": "PER-CRCE-14-REVIEWED-001",
+                "Content Digest": "sha256:b48c26e2b2bdc38ec4f5f7e0b8f25855ef5e263b534fb23cd5a9142701c5980f"
+              }
+            ],
+            "Required claim/boundary": "Current policy, scope, predecessor independence and external applicability",
+            "Source type/role": "Workspace Actual",
+            "Required identity/location constraint": {
+              "repository": "/mnt/f/work/simulator",
+              "locations": [
+                "core_enhanced/docs/game_rules",
+                "core_enhanced/docs/goals/core_relic_causal_chains",
+                "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_038_pass002",
+                "core_enhanced/docs/roadmaps/core_first"
+              ],
+              "dirty_basis": "Exact current bytes, no reset and no source edits during review"
+            },
+            "Applicability/Necessity": "required",
+            "Applicability condition": null,
+            "Policy/Scope Basis Reference": {
+              "Working Revision Ref": {
+                "Artifact Type": "Working Revision",
+                "Artifact ID": "WR-CRCE-003",
+                "Content Digest": "sha256:374d57b08b6fc3ba1f90c264f925b33c4aadf126b671b695c7ae9ebf9235f24a"
+              },
+              "Scope selectors": [
+                "I01",
+                "I02",
+                "I03",
+                "I04"
+              ]
+            },
+            "Validation requirement": "Use exact intake, P2G10 decisions and U09 completion. Workspace implementation task; released/deployed production state and Unity/final-boss consumers are out of scope, not inferred compatible.",
+            "Investigation owner": "Root; RQ05 independent test Astra read-only proposal reused with exact currentness"
+          }
+        ],
+        "Non-applicable source boundaries": [
+          {
+            "source": "Released/Deployed actual, Unity and individual final bosses",
+            "reason": "Current approved Core workspace feature implementation, no rollout or external deployment compatibility claim; normal Core/authoring consumer required above."
+          }
+        ],
+        "Review stage": "Nonmaterial artifact revalidation correcting finding classification to canonical implementation_finding; same source and policy meaning",
+        "Predecessor candidate plan": {
+          "Artifact Type": "Review Scope/Source Requirement Plan",
+          "Artifact ID": "RSP-CRCE-001",
+          "Content Digest": "sha256:fb116d5f73983c3031b06ebac15469b1cc84ba38ce4c5a69e7c726a18201743c"
+        }
+      }
+    }
+  ]
+}

@@ -16,6 +16,7 @@ impl ActiveBattleSession {
     }
 
     pub(super) fn sync_selection_playback(&mut self) {
+        if self.battle.input_plan_paused(){self.playback.paused=true;return;}
         let before_speed = self.playback.speed;
         if self.has_selection() {
             self.interaction.restore_playback.get_or_insert(
@@ -123,6 +124,7 @@ impl GameCore {
             .active_battle
             .as_mut()
             .ok_or(GameError::InvalidAction)?;
+        if active.battle.input_plan_preparation_id().is_some(){return Err(GameError::InvalidAction);}
         active.ensure_battle_projection_commit_available()?;
         let unavailable = |reason| GameError::ActionUnavailable { action, reason };
         match behavior {

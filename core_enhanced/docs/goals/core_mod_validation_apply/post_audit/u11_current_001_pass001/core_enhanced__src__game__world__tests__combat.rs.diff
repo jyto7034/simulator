@@ -1,0 +1,232 @@
+--- core_enhanced/src/game/world/tests/combat.rs BEFORE
+
++++ core_enhanced/src/game/world/tests/combat.rs CURRENT
+
+@@ -12665,7 +12665,7 @@
+
+     let token = CancellationToken::default();
+     let phase = ExecutionPhase::TrialPreparation;
+     let player_id = Uuid::from_u128(1);
+-    let (mut source, _, provenance) = control::run_with_provenance(
++    let ((mut source, entry_projection, entry_uuid), _, provenance) = control::run_with_provenance(
+         &limits,
+         &token,
+         phase,
+@@ -12694,6 +12694,8 @@
+
+             );
+             core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
+                 .unwrap();
++            let entry_projection = core.get_run_snapshot_json().unwrap();
++            let entry_uuid = serde_json::to_value(&core.state.uuid_manager).unwrap();
+             core.execute(player_id, PlayerBehavior::ConfirmEnterNode)
+                 .unwrap();
+             assert!(core
+@@ -12704,7 +12706,7 @@
+
+                 .entry_snapshot
+                 .is_some());
+             assert!(core.state.run_checkpoint.payload.is_some());
+-            core
++            (core, entry_projection, entry_uuid)
+         },
+     )
+     .unwrap();
+@@ -12716,6 +12718,10 @@
+
+         .unwrap();
+     let mut candidate = candidate.unwrap();
+     assert_eq!(candidate.get_run_snapshot_json().unwrap(), original);
++    assert!(Arc::ptr_eq(
++        source.state.active_battle.as_ref().unwrap().entry_snapshot.as_ref().unwrap(),
++        candidate.state.active_battle.as_ref().unwrap().entry_snapshot.as_ref().unwrap(),
++    ));
+     assert!(std::ptr::eq(&*source.game_data, &*candidate.game_data));
+     assert!(Arc::ptr_eq(
+         source.state.continue_state.encoded.as_ref().unwrap(),
+@@ -12754,20 +12760,172 @@
+
+         );
+         assert_eq!(source.get_run_snapshot_json().unwrap(), original);
+     }
+-    // Both independent native copies restore their retained entry + checkpoint
+-    // and continue with the same UUID state after the actual retreat command.
+-    execute_current_battle_mutation(&mut candidate, player_id, PlayerBehavior::RetreatBattle)
+-        .unwrap();
++    // Live owners remain independent even though their immutable entry is shared.
++    for employee in candidate.state.roster.iter_mut() {
++        employee.condition.physical_damage = 3;
++    }
++    candidate.state.inventory.add_item_owned(
++        Uuid::from_u128(0xEC01),
++        Item::Equipment(Arc::new(equipment_meta(
++            0xEC02, "shared_entry_candidate", EquipmentType::Accessory,
++        ))),
++    ).unwrap();
++    assert_ne!(candidate.get_run_snapshot_json().unwrap(), original);
+     assert_eq!(source.get_run_snapshot_json().unwrap(), original);
++    for employee in source.state.roster.iter_mut() {
++        employee.condition.physical_damage = 5;
++    }
++    source.state.inventory.add_item_owned(
++        Uuid::from_u128(0xEC03),
++        Item::Equipment(Arc::new(equipment_meta(
++            0xEC04, "shared_entry_source", EquipmentType::Accessory,
++        ))),
++    ).unwrap();
++    let source_live = source.get_run_snapshot_json().unwrap();
++    assert_ne!(source_live, candidate.get_run_snapshot_json().unwrap());
++    let entry = source.state.active_battle.as_ref().unwrap().entry_snapshot.as_ref().unwrap();
++    let weak_entry = Arc::downgrade(entry);
++
++    // Copy accounting follows the storage actually copied: an Arc handle is
++    // smaller than materializing the captured roster, inventory and checkpoint.
++    let (handle, handle_usage, _) = control::run_with_provenance(
++        &limits, &token, phase, provenance, || controlled_clone(entry),
++    ).unwrap();
++    drop(handle.unwrap());
++    let (owned, owned_usage, _) = control::run_with_provenance(
++        &limits, &token, phase, provenance, || controlled_clone(entry.as_ref()),
++    ).unwrap();
++    let owned = owned.unwrap();
++    assert!(owned_usage.work > handle_usage.work);
++    assert!(owned_usage.clone_slots_peak > handle_usage.clone_slots_peak);
++
++    // A sole owner moves under limits too small to copy its children. The weak
++    // observer also proves the consumed allocation has no retained strong owner.
++    let unique = Arc::new(owned);
++    let weak_unique = Arc::downgrade(&unique);
++    let mut unique_target = controlled_clone(&source).unwrap();
++    let move_limits = ExecutionLimits {
++        max_work: 1,
++        max_clone_slots: 1,
++        ..limits.clone()
++    };
++    let (restored, move_usage, _) = control::run_with_provenance(
++        &move_limits, &token, phase, provenance, || {
++            super::super::state::BattleEntrySnapshot::restore_shared(unique, &mut unique_target.state)
++        },
++    ).unwrap();
++    restored.unwrap();
++    assert_eq!(move_usage.work, 0);
++    assert_eq!(move_usage.clone_slots_peak, 0);
++    assert!(weak_unique.upgrade().is_none());
++    assert_eq!(unique_target.get_run_snapshot_json().unwrap(), entry_projection);
++    assert_eq!(serde_json::to_value(&unique_target.state.uuid_manager).unwrap(), entry_uuid);
++    drop(unique_target);
++
++    // Shared restoration admits the full owned copy before changing any target
++    // field. Exact and one-short limits are measured on the real restore API.
++    let mut restored_target = controlled_clone(&source).unwrap();
++    let (restored, restore_usage, _) = control::run_with_provenance(
++        &limits, &token, phase, provenance, || {
++            super::super::state::BattleEntrySnapshot::restore_shared(Arc::clone(entry), &mut restored_target.state)
++        },
++    ).unwrap();
++    restored.unwrap();
++    assert_eq!(restored_target.get_run_snapshot_json().unwrap(), entry_projection);
++    assert_eq!(serde_json::to_value(&restored_target.state.uuid_manager).unwrap(), entry_uuid);
++    assert!(restore_usage.work >= owned_usage.work);
++    assert_eq!(restore_usage.clone_slots_peak, owned_usage.clone_slots_peak);
++    drop(restored_target);
++    let exact_restore = ExecutionLimits {
++        max_work: restore_usage.work,
++        max_clone_slots: restore_usage.clone_slots_peak,
++        ..limits.clone()
++    };
++    for short in [None, Some(true), Some(false)] {
++        let mut target = controlled_clone(&source).unwrap();
++        let before_uuid = serde_json::to_value(&target.state.uuid_manager).unwrap();
++        let mut bound = exact_restore.clone();
++        if let Some(short_work) = short {
++            if short_work { bound.max_work -= 1; } else { bound.max_clone_slots -= 1; }
++        }
++        let result = control::run_with_provenance(&bound, &token, phase, provenance, || {
++            super::super::state::BattleEntrySnapshot::restore_shared(Arc::clone(entry), &mut target.state)
++        });
++        if let Some(short_work) = short {
++            let failure = result.err().unwrap();
++            assert_eq!(failure.code, if short_work { "authoring_work_limit" } else { "authoring_clone_limit" });
++            assert_eq!(target.get_run_snapshot_json().unwrap(), source_live);
++            assert_eq!(serde_json::to_value(&target.state.uuid_manager).unwrap(), before_uuid);
++            assert!(Arc::ptr_eq(entry, target.state.active_battle.as_ref().unwrap().entry_snapshot.as_ref().unwrap()));
++        } else {
++            let (restored, usage, _) = result.unwrap();
++            restored.unwrap();
++            assert_eq!(usage, restore_usage);
++            assert_eq!(target.get_run_snapshot_json().unwrap(), entry_projection);
++        }
++    }
++
++    // Native fuel is independent of authoring limits. Refusal in the shared
++    // preflight must leave the complete target available for an ordinary retry.
++    for clone_fault in [true, false] {
++        use crate::game::battle::runtime_control::{self, RuntimeFactLimits, RuntimeFaultCode};
++        let mut target = controlled_clone(&source).unwrap();
++        let before_uuid = serde_json::to_value(&target.state.uuid_manager).unwrap();
++        let native_limits = if clone_fault {
++            RuntimeFactLimits { max_clone_slots: 1, ..Default::default() }
++        } else {
++            RuntimeFactLimits { max_work: 1, ..Default::default() }
++        };
++        let error = runtime_control::run(native_limits, || {
++            super::super::state::BattleEntrySnapshot::restore_shared(Arc::clone(entry), &mut target.state)
++        }).unwrap_err();
++        assert!(matches!(error, GameError::BattleRuntimeFault(ref fault)
++            if fault.code == if clone_fault { RuntimeFaultCode::CloneLimit } else { RuntimeFaultCode::WorkLimit }), "{error:?}");
++        assert_eq!(target.get_run_snapshot_json().unwrap(), source_live);
++        assert_eq!(serde_json::to_value(&target.state.uuid_manager).unwrap(), before_uuid);
++        assert!(Arc::ptr_eq(entry, target.state.active_battle.as_ref().unwrap().entry_snapshot.as_ref().unwrap()));
++        super::super::state::BattleEntrySnapshot::restore_shared(Arc::clone(entry), &mut target.state).unwrap();
++        assert_eq!(target.get_run_snapshot_json().unwrap(), entry_projection);
++    }
++
++    // The public command creates an outer draft, so it must also preserve the
++    // original active battle, ledger and UUID when its bounded attempt fails.
++    let mut retreat_probe = controlled_clone(&source).unwrap();
++    let (retreated, retreat_usage, _) = control::run_with_provenance(
++        &limits, &token, phase, provenance, || {
++            execute_current_battle_mutation(&mut retreat_probe, player_id, PlayerBehavior::RetreatBattle)
++        },
++    ).unwrap();
++    retreated.unwrap();
++    assert_eq!(retreat_probe.get_run_snapshot_json().unwrap(), projection_after_test_retreat(entry_projection.clone(), 1));
++    drop(retreat_probe);
++    for short_work in [true, false] {
++        let mut target = controlled_clone(&source).unwrap();
++        let before_uuid = serde_json::to_value(&target.state.uuid_manager).unwrap();
++        let mut bound = ExecutionLimits {
++            max_work: retreat_usage.work,
++            max_clone_slots: retreat_usage.clone_slots_peak,
++            ..limits.clone()
++        };
++        if short_work { bound.max_work -= 1; } else { bound.max_clone_slots -= 1; }
++        let failure = control::run_with_provenance(&bound, &token, phase, provenance, || {
++            execute_current_battle_mutation(&mut target, player_id, PlayerBehavior::RetreatBattle)
++        }).err().unwrap();
++        assert_eq!(failure.code, if short_work { "authoring_work_limit" } else { "authoring_clone_limit" });
++        assert_eq!(target.get_run_snapshot_json().unwrap(), source_live);
++        assert_eq!(serde_json::to_value(&target.state.uuid_manager).unwrap(), before_uuid);
++        assert!(Arc::ptr_eq(entry, target.state.active_battle.as_ref().unwrap().entry_snapshot.as_ref().unwrap()));
++    }
++
++    execute_current_battle_mutation(&mut candidate, player_id, PlayerBehavior::RetreatBattle).unwrap();
++    assert_eq!(source.get_run_snapshot_json().unwrap(), source_live);
++    assert!(weak_entry.upgrade().is_some());
+     execute_current_battle_mutation(&mut source, player_id, PlayerBehavior::RetreatBattle).unwrap();
+-    assert_eq!(
+-        candidate.get_run_snapshot_json().unwrap(),
+-        source.get_run_snapshot_json().unwrap()
+-    );
+-    assert_eq!(
+-        serde_json::to_value(&candidate.state.uuid_manager).unwrap(),
+-        serde_json::to_value(&source.state.uuid_manager).unwrap()
+-    );
++    assert!(weak_entry.upgrade().is_none());
++    assert_eq!(candidate.get_run_snapshot_json().unwrap(), projection_after_test_retreat(entry_projection.clone(), 1));
++    assert_eq!(source.get_run_snapshot_json().unwrap(), projection_after_test_retreat(entry_projection, 1));
++    assert_eq!(serde_json::to_value(&candidate.state.uuid_manager).unwrap(), entry_uuid);
++    assert_eq!(serde_json::to_value(&source.state.uuid_manager).unwrap(), entry_uuid);
+ }
+ 
+ #[test]

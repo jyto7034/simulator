@@ -1,0 +1,215 @@
+{
+  "created_at": "2026-10-13T13:59:54.587678+00:00",
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Policy Intake Snapshot",
+        "Artifact ID": "PIS-CFMN-001",
+        "Content Digest": "sha256:9adda5ab754da8b435b36832e528d87a746b966b6be58a2a59b5fdfab395e6a2"
+      },
+      "payload": {
+        "Working Policy Document ID": "WPD-CFMN-20261013",
+        "Snapshot Kind": "initial",
+        "Predecessor Policy Intake Snapshot Ref": null,
+        "Created By Stage": "P2G-00",
+        "Intake Items": [
+          {
+            "Intake Item ID": "IN-001",
+            "Intake Kind": "raw user request",
+            "Exact Content or Content Reference": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 을 읽은 뒤 u13 작업에 착수해줘.",
+            "User-Provided Locator": "2026-10-13 current conversation",
+            "User-Stated Constraint": "Read designated instructions and begin U13",
+            "Capture Limitation": null
+          },
+          {
+            "Intake Item ID": "IN-002",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+              "bytes": 380578,
+              "sha256": "13ec3130a11468f910aad3b0996b68d201b6268a785769fe807c7ac70f41be31",
+              "archive": "INTAKE_SOURCE_001.tar.gz",
+              "member": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md"
+            },
+            "User-Provided Locator": "designated execution instructions and linked U13 sources",
+            "User-Stated Constraint": "Core first, Unity later, individual final boss implementation excluded; single executor; preserve existing dirty work",
+            "Capture Limitation": "Raw bytes preserved. This intake does not claim formal code review, gameplay validation or policy closure."
+          },
+          {
+            "Intake Item ID": "IN-003",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md",
+              "bytes": 25265,
+              "sha256": "2f3242652e7492b00e5fcb8b6fe8898b8322a3b97dcef065f08ea88474be681c",
+              "archive": "INTAKE_SOURCE_001.tar.gz",
+              "member": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md"
+            },
+            "User-Provided Locator": "designated execution instructions and linked U13 sources",
+            "User-Stated Constraint": "Core first, Unity later, individual final boss implementation excluded; single executor; preserve existing dirty work",
+            "Capture Limitation": "Raw bytes preserved. This intake does not claim formal code review, gameplay validation or policy closure."
+          },
+          {
+            "Intake Item ID": "IN-004",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_LATEST.ko.md",
+              "bytes": 4700,
+              "sha256": "3def551bff36b24b9687adf8569692c89b5a0b40379b768ee29e6ad87f79842b",
+              "archive": "INTAKE_SOURCE_001.tar.gz",
+              "member": "core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_LATEST.ko.md"
+            },
+            "User-Provided Locator": "designated execution instructions and linked U13 sources",
+            "User-Stated Constraint": "Core first, Unity later, individual final boss implementation excluded; single executor; preserve existing dirty work",
+            "Capture Limitation": "Raw bytes preserved. This intake does not claim formal code review, gameplay validation or policy closure."
+          },
+          {
+            "Intake Item ID": "IN-005",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/reviews/2026-10-12-roadmap-review/stages/U13.ko.md",
+              "bytes": 1605,
+              "sha256": "94791886680cdc0b0fcad640bd324a2bb8a4a52cf332e698583c198e3f2406c5",
+              "archive": "INTAKE_SOURCE_001.tar.gz",
+              "member": "core_enhanced/docs/roadmaps/core_first/reviews/2026-10-12-roadmap-review/stages/U13.ko.md"
+            },
+            "User-Provided Locator": "designated execution instructions and linked U13 sources",
+            "User-Stated Constraint": "Core first, Unity later, individual final boss implementation excluded; single executor; preserve existing dirty work",
+            "Capture Limitation": "Raw bytes preserved. This intake does not claim formal code review, gameplay validation or policy closure."
+          },
+          {
+            "Intake Item ID": "IN-006",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/game_rules/run-and-map.md",
+              "bytes": 51266,
+              "sha256": "28ef8a0dbb431b9487491e6fcd6f92057f052e0c87ea617a434155224bef187d",
+              "archive": "INTAKE_SOURCE_001.tar.gz",
+              "member": "core_enhanced/docs/game_rules/run-and-map.md"
+            },
+            "User-Provided Locator": "designated execution instructions and linked U13 sources",
+            "User-Stated Constraint": "Core first, Unity later, individual final boss implementation excluded; single executor; preserve existing dirty work",
+            "Capture Limitation": "Raw bytes preserved. This intake does not claim formal code review, gameplay validation or policy closure."
+          },
+          {
+            "Intake Item ID": "IN-007",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/ui-layout/md/facility-room-assignment-v1.ko.md",
+              "bytes": 13874,
+              "sha256": "20d30e37b2d8771608cdd8b7c485408596a7e942a738662062693c37aa9da9d1",
+              "archive": "INTAKE_SOURCE_001.tar.gz",
+              "member": "core_enhanced/docs/ui-layout/md/facility-room-assignment-v1.ko.md"
+            },
+            "User-Provided Locator": "designated execution instructions and linked U13 sources",
+            "User-Stated Constraint": "Core first, Unity later, individual final boss implementation excluded; single executor; preserve existing dirty work",
+            "Capture Limitation": "Raw bytes preserved. This intake does not claim formal code review, gameplay validation or policy closure."
+          },
+          {
+            "Intake Item ID": "IN-008",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/ui-layout/md/facility-room-activity-allocation-v1.ko.md",
+              "bytes": 11922,
+              "sha256": "baeec1314868dfb604ddfebb1c569d350bd20d573c54eeeb41d38fa58a32aa6d",
+              "archive": "INTAKE_SOURCE_001.tar.gz",
+              "member": "core_enhanced/docs/ui-layout/md/facility-room-activity-allocation-v1.ko.md"
+            },
+            "User-Provided Locator": "designated execution instructions and linked U13 sources",
+            "User-Stated Constraint": "Core first, Unity later, individual final boss implementation excluded; single executor; preserve existing dirty work",
+            "Capture Limitation": "Raw bytes preserved. This intake does not claim formal code review, gameplay validation or policy closure."
+          },
+          {
+            "Intake Item ID": "IN-009",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/policy_to_goal_pipeline_revised_v2.md",
+              "bytes": 324407,
+              "sha256": "e070cc60b1b1225e8260bf463b98bcebfec3a16608f73de3a6d45f9b219d0ca7",
+              "archive": "INTAKE_SOURCE_001.tar.gz",
+              "member": "core_enhanced/docs/policy_to_goal_pipeline_revised_v2.md"
+            },
+            "User-Provided Locator": "designated execution instructions and linked U13 sources",
+            "User-Stated Constraint": "Core first, Unity later, individual final boss implementation excluded; single executor; preserve existing dirty work",
+            "Capture Limitation": "Raw bytes preserved. This intake does not claim formal code review, gameplay validation or policy closure."
+          },
+          {
+            "Intake Item ID": "IN-010",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/goal_execution_pipeline(1).md",
+              "bytes": 132649,
+              "sha256": "9ae04d15909bfe07652b58805a416adfd402e43ce1045405eb396b3094db79cc",
+              "archive": "INTAKE_SOURCE_001.tar.gz",
+              "member": "core_enhanced/docs/goal_execution_pipeline(1).md"
+            },
+            "User-Provided Locator": "designated execution instructions and linked U13 sources",
+            "User-Stated Constraint": "Core first, Unity later, individual final boss implementation excluded; single executor; preserve existing dirty work",
+            "Capture Limitation": "Raw bytes preserved. This intake does not claim formal code review, gameplay validation or policy closure."
+          }
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CFMN-001",
+        "Content Digest": "sha256:19175ae180b1ce43d4367a3a6c368d455050556a362f8b070beeb080b5a96c49"
+      },
+      "payload": {
+        "Predecessor Working Revision Ref": null,
+        "Predecessor Final Policy Freeze Ref": null,
+        "Approved metadata and scope": {
+          "Working Policy Document ID": "WPD-CFMN-20261013",
+          "Policy Topic": "U13 고정 시설·노드 배정·탐사와 브리핑 조회",
+          "Requested Result": "U13 구현·자체 검증 후 감사 요청 인계. 필요한 P2G-00→60 및 GEX-00→10; 실제 미결 정책은 P2G-10에서 질문 후 대기.",
+          "Target Project/Repository": "/mnt/f/work/simulator",
+          "Target Documentation Root": "core_enhanced/docs",
+          "Policy Directory Name": "core_facility_map_nodes",
+          "User-Approved Scope": [
+            {
+              "id": "IN-U13",
+              "disposition": "in",
+              "meaning": "ROADMAP §5 U13의 S11/G07/G08/G09/G10/G11/G12, §1.8 최신 지도 입력, U12 인수·U20 호환·정상 저장/조회/검증",
+              "approval": {
+                "ref": "USER-20261013-U13-START",
+                "exact_text": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 을 읽은 뒤 u13 작업에 착수해줘.",
+                "date": "2026-10-13",
+                "interpretation": "U13 착수 및 동일 범위의 필요한 정책 상세화·Goal 준비·구현·자체 검증. 새 확률 결정과 감사까지의 별도 위임은 추정하지 않음."
+              }
+            },
+            {
+              "id": "OUT-U13",
+              "disposition": "out",
+              "meaning": "U13 카드의 명시적 제외: 최종보스 고유 구현·Unity 지도 렌더링·비공개 정보 선공개·가짜 참조/클리어. U14 이후 독립 기능·감사 자동 착수 제외.",
+              "approval": {
+                "ref": "USER-20261013-U13-START",
+                "exact_text": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 을 읽은 뒤 u13 작업에 착수해줘.",
+                "date": "2026-10-13",
+                "interpretation": "U13 착수 및 동일 범위의 필요한 정책 상세화·Goal 준비·구현·자체 검증. 새 확률 결정과 감사까지의 별도 위임은 추정하지 않음."
+              }
+            }
+          ]
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CFMN-001",
+          "Content Digest": "sha256:9adda5ab754da8b435b36832e528d87a746b966b6be58a2a59b5fdfab395e6a2"
+        },
+        "Current Policy Element Revision map": {},
+        "Decision Revision Ref Set": [],
+        "Open Policy Question Ref Set": [],
+        "Post-Freeze Change/Closure basis": null
+      }
+    }
+  ]
+}

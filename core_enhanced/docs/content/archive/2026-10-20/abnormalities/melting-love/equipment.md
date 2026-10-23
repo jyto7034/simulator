@@ -1,0 +1,145 @@
+# 녹아내리는 사랑 · 장비 · 정리 전 기록
+
+<!-- wiki-category: history -->
+<!-- wiki-archive-of: content/abnormalities/melting-love/equipment -->
+
+> 2026-10-20 정리 전 기록. 합의·제안·미정이 섞여 있던 원문을 보존하며, 현재 규칙으로 사용하지 않는다.
+
+[최신 합의](../../../../abnormalities/melting-love/equipment.md) · [보존 원문](equipment.source.txt)
+
+# 녹아내리는 사랑 · 장비
+
+[콘텐츠 위키](../../../../README.md) · [개요](../../../../abnormalities/melting-love/README.md) · [조우](../../../../abnormalities/melting-love/encounter.md) · [파편](../../../../abnormalities/melting-love/fragment.md) · [검토 기록](../../../../abnormalities/melting-love/review.md)
+
+> 콘텐츠 설계. 원문의 합의·초안·미정 구분을 유지한다. 구현 완료를 뜻하지 않는다.
+
+
+<a id="source-frag-1806-1917"></a>
+<!-- wiki-source:frag-1806-1917 begin -->
+<a id="frag-무기--이름-미정-4"></a>
+## 무기 — 이름 미정
+
+> 상태: 핵심 구조 합의 / 이름·수치·세부 판정 미정
+
+| 항목 | 값 |
+| --- | --- |
+| `range_role` | 근거리 |
+| `weapon_archetype` | `Shield` |
+| `deployment_affinity` | 지상 전용 |
+| `block_capacity` | 기본 `3` 후보 + 현재 고기방패 스택 |
+| `ground_defense_focus` | open design |
+| `platform_rest` | 해당 없음 |
+| `damage_type` | 물리 우선, exact open design |
+| `targeting_profile` | 저지 중인 적 우선 |
+| `air_capable` | 불가능 |
+| `defense_tile_range` | 근거리 |
+| `interval_ms` | open design |
+| `windup_ms` | open design |
+| `delivery` | 즉시 근접 타격 |
+
+무기는 적에게 감염도를 쌓고 감염된 시체를 흡수해, 별도 HP를 가진 고기방패와 추가 저지를 만드는
+성장형 `Shield`다. 고기방패가 하나도 없어도 기본 `3`저지 탱커로 역할을 수행해야 하며 최대
+고기방패를 전제로 기본 성능을 낮추지 않는다.
+
+**감염도와 시체 소유권**
+
+- 기본 공격이 적중한 적에게 무기 소유자별 `감염도` 스택을 부여한다.
+- 적의 HP가 실제로 `0`이 되어 사망할 때 해당 소유자의 감염도가 authored 임계치 이상이면 그
+  소유자의 고기방패 HP를 한 구간만큼 보충한다.
+- 마지막 공격의 소유자는 묻지 않는다. 다른 아군이 처치해도 감염 조건을 만족하면 시체를 흡수한다.
+- 적 하나는 감염도가 임계치를 여러 번 넘겨도 고기방패 한 구간만 제공한다.
+- 도주, non-kill despawn과 소환 해제는 시체 흡수 대상이 아니다.
+- 한 적이 여러 소유자의 임계치를 만족하면 시체를 복제하지 않는다. 가장 높은 감염도를 기여한
+  소유자 한 명이 흡수하고, 동률은 최초 감염 시점 또는 stable employee ID로 결정한다. exact
+  tie-break는 후속 판정 정책에서 고정한다.
+
+**고기방패 HP와 스택**
+
+고기방패는 장착 유닛의 HP와 완전히 분리된 하나의 segmented HP pool이다. 스택을 별도 truth로
+저장하지 않고 현재 HP에서 계산한다.
+
+```text
+고기방패 최대 HP = 구간 HP x 스택 상한
+현재 고기방패 스택 = ceil(현재 고기방패 HP / 구간 HP)
+현재 추가 저지 수 = 현재 고기방패 스택
+```
+
+- 시체 하나를 흡수하면 고기방패 HP를 한 구간만큼 회복하고 최대 HP에서 clamp한다.
+- 스택 상한에서도 새 시체는 버려지지 않고 손상된 고기방패 HP를 한 구간만큼 수복한다.
+- 고기방패는 일반 회복, 지속 회복, 흡혈과 다른 보호막 수복 효과를 받을 수 없다.
+- **오직 유효한 감염 시체를 흡수할 때만 회복한다.**
+- 고기방패 HP가 구간 임계치 아래로 내려갈 때마다 계산된 스택과 추가 저지 수가 `1`씩 감소한다.
+- 전투 중 획득한 고기방패 HP와 스택은 해당 전투 동안 유지하고 전투 종료 시 초기화한다.
+
+고기방패는 시체가 분홍 점액에 녹아 무기 소유자 주변의 움직이는 육벽에 합류하는 presentation을
+사용한다. 시체마다 별도 전투 유닛을 소환하지 않으며, gameplay truth는 무기 소유자의 segmented HP
+pool 하나다.
+
+**피해 전달**
+
+고기방패 HP가 `1` 이상이면 장착 유닛을 향한 eligible 피해를 먼저 받는다.
+
+```text
+raw incoming damage
+-> 장착 유닛의 현재 방어력·저항으로 한 번 감쇄
+-> 감쇄된 피해를 고기방패 HP에 우선 적용
+-> 고기방패를 모두 소진한 초과분만 장착 유닛 HP에 적용
+```
+
+- 초과분에는 방어력과 저항을 다시 적용하지 않는다.
+- 한 번의 큰 공격은 고기방패 여러 구간을 파괴하고 남은 피해를 장착 유닛에게 전달할 수 있다.
+- 스택 감소로 현재 저지 수가 새 상한을 넘으면 기존 deterministic blocker 우선순위에 따라 초과
+  적을 풀어준다. 이미 resolution을 시작한 공격은 고기방패 파괴로 취소하지 않는다.
+- 고기방패가 흡수한 피해는 장착 유닛의 실제 HP 피해로 세지 않는다. physical damage·trauma와
+  일반 피격 trigger, 피해 반사·흡혈의 source가 되지 않는다.
+- 탱커가 고기방패로 전선을 유지하는 동안에도 스킬을 충전할 수 있게, 흡수 피해는 무기 전용
+  resonance source로 허용하는 방향을 우선한다. exact 변환률은 open design이다.
+- HP 비용, 자해와 고기방패를 우회해야 하는 damage source의 목록은 후속 판정 정책에서 정한다.
+
+open design:
+
+- 감염도 임계치, 적중당 획득량, 대상별 상한과 지속 시간
+- 고기방패 구간 HP와 스택 상한. 첫 prototype은 추가 저지 `+2`를 우선 검토한다
+- 고기방패가 참조하는 방어력·저항 snapshot 시점과 eligible damage source
+- 시체 소유권의 exact tie-break와 kill·corpse lifecycle 판정
+- 고기방패 흡수 피해의 resonance 변환률
+- 전술 이동·철수·전투불능·재배치 때 고기방패 HP 보존 여부
+- 무기 강화가 공격력 외에 감염도 또는 고기방패 구간 HP를 성장시키는지
+- 최종 이름과 점액·좀비 육벽 presentation
+
+<a id="frag-방어구--이름-미정-2"></a>
+## 방어구 — 이름 미정
+
+착용자뿐 아니라 착용자의 방어력을 참조하는 고기방패와 고기벽의 실효 내구도를 함께 높이는 단순
+수치 방어구다.
+
+| 항목 | 값 |
+| --- | --- |
+| 효과 | 높은 방어력 |
+| 자체 특수 효과 | 없음 |
+| 정확한 수치 | open design |
+
+<a id="frag-액세서리--이름-미정-1"></a>
+## 액세서리 — 이름 미정
+
+착용자의 생존력을 높이고, 고기방패가 없을 때 유닛 HP를 비용으로 세우는 고기벽 fallback을 보조하는
+단순 수치 액세서리다.
+
+| 항목 | 값 |
+| --- | --- |
+| 효과 | 최대 HP 증가 |
+| 자체 특수 효과 | 없음 |
+| 정확한 수치 | open design |
+<!-- wiki-source:frag-1806-1917 end -->
+
+
+관련 상태·공통 미정: [환상체 개요](../../../../abnormalities/melting-love/README.md).
+
+<details>
+<summary>이관 출처</summary>
+
+- [abnormality_skill_fragments_design_notes.md · 1806–1917행](../../../../../skills/abnormality_skill_fragments_design_notes.pre_wiki_2026-10-18.md) — 파편·장비·공통 미정의 소유 분리
+
+이관 대응표는 [보존 기록](../../../../maintenance/README.md)에서 확인한다.
+
+</details>

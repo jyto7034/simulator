@@ -1,0 +1,24 @@
+{
+  "mode": "verification",
+  "files": [
+    {
+      "path": "core_enhanced/docs/goals/core_resonance_lifecycle/WORKING_POLICY.ko.md",
+      "before_sha256": "60314666df3832aea4d0244bea0b443da59fe61b72f60e3a1c7b3bc632f09fc9",
+      "after_sha256": "e8850aba5605e4c37c2b3d25029158f391d9f637bcea2ad9a63f03bc3f01b976",
+      "before_archive": "core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/status_history/verification/WORKING_POLICY.ko.md"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/PLAN.md",
+      "before_sha256": "ccb21ed87f84b9e82134be8778db55a1b435402ea96f502d38f416bdf3419f66",
+      "after_sha256": "2674473479c68b3a438041acb4c4b4e92b799c45d90f8dc686da09f0431287e5",
+      "before_archive": "core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/status_history/verification/PLAN.md"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/EXPERIMENT_NOTES.md",
+      "before_sha256": "49defe57382572f95e7edc80adfff2c4ab82d562bb2b830f2182aa8e9b5bf12f",
+      "after_sha256": "3f9731cfa71b5bac4c15f64a8611db954071ac40b393eac92e167f4f31915c3b",
+      "before_archive": "core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/status_history/verification/EXPERIMENT_NOTES.md"
+    }
+  ],
+  "frozen_policy_or_goal_changed": false
+}

@@ -117,6 +117,12 @@ impl RegularBasicSupportSnapshot {
 #[derive(Debug, Clone)]
 pub struct DamageSourceSnapshot {
     pub fact_source: super::runtime_facts::RuntimeFactSource,
+    pub(crate) reactive_capture: Option<std::sync::Arc<crate::game::battle::core::status_strike::ReactiveHitCapture>>,
+    pub(crate) mobile_capture: Option<std::sync::Arc<crate::game::battle::core::mobile_effect::MobileCapture>>,
+    pub(crate) weapon_mark_capture: Option<std::sync::Arc<crate::game::battle::core::weapon_marks::WeaponMarkCapture>>,
+    pub(crate) presence_capture: Option<std::sync::Arc<crate::game::battle::core::marks::PresenceCapture>>,
+    pub(crate) weapon_growth: Option<std::sync::Arc<super::core::weapon_growth::WeaponGrowthCapture>>,
+    pub(crate) prepared_basic: Option<std::sync::Arc<PreparedBasicSnapshot>>,
     pub skill_cast_source: Option<std::sync::Arc<super::skill_source::SkillCastExecutionSource>>,
     /// Immutable release-time expression carrier. Equality deliberately
     /// ignores observation metadata, matching `fact_source` above.
@@ -164,6 +170,11 @@ impl PartialEq for DamageSourceSnapshot {
             _ => false,
         };
         cast_equal
+            && self.weapon_growth == other.weapon_growth
+            && self.presence_capture == other.presence_capture
+            && self.reactive_capture == other.reactive_capture
+            && self.mobile_capture == other.mobile_capture
+            && self.weapon_mark_capture == other.weapon_mark_capture
             && self.source_id == other.source_id
             && self.source_side == other.source_side
             && self.source_attack == other.source_attack
@@ -184,6 +195,12 @@ impl Eq for DamageSourceSnapshot {}
 
 crate::authoring::clone_shape::struct_shape!(DamageSourceSnapshot {
     fact_source,
+    prepared_basic,
+    weapon_growth,
+    presence_capture,
+    reactive_capture,
+    mobile_capture,
+    weapon_mark_capture,
     skill_cast_source,
     value_expr_capture,
     source_id,
@@ -218,6 +235,12 @@ impl DamageSourceSnapshot {
         self.fact_source
             .retained_extent()?
             .checked_add(lifesteal_sources)?
+            .checked_add(self.reactive_capture.as_ref().map_or(Some(0), |p| p.retained_extent())?)?
+            .checked_add(self.mobile_capture.as_ref().map_or(Some(0), |p| p.retained_extent())?)?
+            .checked_add(self.weapon_mark_capture.as_ref().map_or(Some(0), |p| p.retained_extent())?)?
+            .checked_add(self.presence_capture.as_ref().map_or(Some(0), |p| p.retained_extent())?)?
+            .checked_add(self.weapon_growth.as_ref().map_or(Some(0), |g| g.as_ref().retained_extent())?)?
+            .checked_add(self.prepared_basic.as_ref().map_or(Some(0), |p| p.retained_extent())?)?
             .checked_add(
                 self.basic_lifesteal
                     .capacity()
@@ -773,6 +796,15 @@ pub fn damage_feedback_tags(
         tags.push(DamageFeedbackTag::Critical);
     }
     tags
+}
+
+/// Last-added reduction credit after the shared mitigation, cap and minimum rules.
+/// `without_guard` is the target modifier snapshot before this one contribution.
+pub(crate) fn reduction_credit(request: &DamageRequest, ctx: &DamageContext, result: &DamageResult, without_guard: DamageModifiers) -> u32 {
+    let modifiers=request.modifiers.merge(without_guard).merge(modifiers_from_effects(ctx.on_attack_effects)).merge(modifiers_from_effects(ctx.on_hit_effects));
+    let mut without=result.breakdown.iter().fold(0u32,|sum,c| sum.saturating_add(apply_post_mitigation_modifiers(mitigate_damage(c.raw_damage,c.damage_type,resistance_for_type(c.damage_type,ctx,modifiers)),c.damage_type,modifiers)));
+    if result.raw_damage>0 { without=without.max(request.minimum_damage); }
+    without.saturating_sub(result.final_damage)
 }
 
 /// 데미지 계산 및 결과 생성
@@ -1615,5 +1647,31 @@ mod tests {
     #[test]
     fn feedback_tags_are_empty_for_plain_damage() {
         assert!(damage_feedback_tags(DamageType::Physical, 100, 100, false).is_empty());
+    }
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct PreparedBasicSnapshot {
+    pub activation: u64,
+    pub numerator: u64,
+    pub denominator: u64,
+    pub source: super::runtime_facts::RuntimeFactSource,
+}
+crate::authoring::clone_shape::struct_shape!(PreparedBasicSnapshot {
+    activation,
+    numerator,
+    denominator,
+    source
+});
+impl PreparedBasicSnapshot {
+    pub(crate) fn retained_extent(&self) -> Option<usize> {
+        self.source
+            .retained_extent()?
+            .checked_add(std::mem::size_of::<Self>() + 64)
+    }
+    pub(crate) fn apply(&self, base: u32) -> Result<u32, crate::game::behavior::GameError> {
+        let value = u128::from(base) * u128::from(self.numerator) / u128::from(self.denominator);
+        u32::try_from(value)
+            .map_err(|_| super::runtime_control::invariant("prepared_basic_damage_overflow"))
     }
 }

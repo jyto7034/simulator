@@ -1,0 +1,45 @@
+{
+  "basis": "Actual dirty workspace at intake; original U17 target preserved; no active owned build/host session",
+  "files": [
+    {
+      "path": "core_enhanced/src/game/world/state.rs",
+      "sha256": "c6a571296dec9eaf1b8c3e297c2f3e2c8411f3ef72bb888107013db4c00a964a",
+      "bytes": 92771
+    },
+    {
+      "path": "core_enhanced/src/game/world/active_run/continuation.rs",
+      "sha256": "1da0e407ac60b990b40cfd1a2c5c694fb14606e1d8d5def51042b9da00dda749",
+      "bytes": 52822
+    },
+    {
+      "path": "core_enhanced/src/game/world/combat.rs",
+      "sha256": "ef2c4ea49009a7dd408bb7bcf6e7bfa6570d62a8a67671d9229ee3a21df7980d",
+      "bytes": 142506
+    },
+    {
+      "path": "core_enhanced/src/game/world/node_flow.rs",
+      "sha256": "03632e02fe3f58192182ee1d9037a3281fe56b6e03bd63bf9a3452093609547f",
+      "bytes": 66446
+    },
+    {
+      "path": "core_enhanced/src/game/revival.rs",
+      "sha256": "d4096f2d0c855fe60ac67c85bd2a56a1ce11c44890aa9642c711e9db051aeac3",
+      "bytes": 8809
+    },
+    {
+      "path": "core_enhanced/src/game/relic/allocation.rs",
+      "sha256": "a171e39954572a055b76523d2c1b4ad7f7c04a76c976e1180002ab211a5971f4",
+      "bytes": 11510
+    },
+    {
+      "path": "core_enhanced/src/game/world/tests/u17_public.rs",
+      "sha256": "bb54718c338cbb571979442368e4298dc59f19f81ec54fa51ecf00bb188b83c2",
+      "bytes": 41202
+    },
+    {
+      "path": "core_enhanced/src/game/world/tests/mod.rs",
+      "sha256": "096458d3769252f7de07e2354ac3244bd82b32694e9e53ccccb22c92136e95f8",
+      "bytes": 77258
+    }
+  ]
+}

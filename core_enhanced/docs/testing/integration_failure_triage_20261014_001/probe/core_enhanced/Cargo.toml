@@ -1,0 +1,9 @@
+[package]
+name = "integration_triage17"
+version = "0.1.0"
+edition = "2021"
+[dependencies]
+game_core = { path = "/mnt/f/work/simulator/core_enhanced" }
+ron = "0.5.1"
+serde_json = "1.0"
+uuid = { version = "1.14.0", features = ["v4", "serde"] }

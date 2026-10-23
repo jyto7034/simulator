@@ -43,7 +43,7 @@ use crate::game::combat_preview::{
 };
 use crate::game::employee::EmployeeDefinition;
 use crate::game::map::{
-    EndlessFacilityScheduleStage, FacilityTemplate, FacilityTemplateDatabase, FacilityTemplatePool,
+    EndlessFacilityScheduleStage, FacilityLayout, FacilityTemplate, FacilityTemplateDatabase, FacilityTemplatePool,
     MapNodeDefinition, MapNodeDefinitionDatabase, NodeAssignmentProfile,
     NodeAssignmentProfileDatabase, StandardFacilityScheduleEntry,
 };
@@ -209,6 +209,7 @@ definitions! {
     MapNode(MapNodeDefinition) => (MapNodes, "nodes", IndependentString, |value: &MapNodeDefinition| value.kind_id.as_str().to_owned()),
     FacilityTags(Vec<String>) => (FacilityTemplates, "tag_catalog", FixedKey, |_value: &Vec<String>| "tag_catalog".to_owned()),
     FacilityTemplate(FacilityTemplate) => (FacilityTemplates, "templates", IndependentString, |value: &FacilityTemplate| value.id.as_str().to_owned()),
+    FacilityLayout(FacilityLayout) => (FacilityTemplates, "layouts", IndependentString, |value: &FacilityLayout| value.id.clone()),
     FacilityPool(FacilityTemplatePool) => (FacilityTemplates, "pools", IndependentString, |value: &FacilityTemplatePool| value.id.as_str().to_owned()),
     NodeAssignmentProfile(NodeAssignmentProfile) => (NodeAssignmentProfiles, "profiles", IndependentString, |value: &NodeAssignmentProfile| value.id.as_str().to_owned()),
     StandardSchedule(StandardFacilityScheduleEntry) => (NodeAssignmentProfiles, "standard_schedule", FixedKey, |value: &StandardFacilityScheduleEntry| value.floor.to_string()),
@@ -547,6 +548,9 @@ impl CatalogKind {
                         format!("templates[{index}]"),
                     )?;
                 }
+                for (index, value) in catalog.layouts.into_iter().enumerate() {
+                    push(RawDefinition::FacilityLayout(value), format!("layouts[{index}]"))?;
+                }
                 for (index, value) in catalog.pools.into_iter().enumerate() {
                     push(
                         RawDefinition::FacilityPool(value),
@@ -784,6 +788,7 @@ pub(super) fn assemble(
     let mut raw_map_node: Vec<MapNodeDefinition> = Default::default();
     let mut raw_facility_tags: Option<Vec<String>> = Default::default();
     let mut raw_facility_template: Vec<FacilityTemplate> = Default::default();
+    let mut raw_facility_layout: Vec<FacilityLayout> = Default::default();
     let mut raw_facility_pool: Vec<FacilityTemplatePool> = Default::default();
     let mut raw_node_assignment_profile: Vec<NodeAssignmentProfile> = Default::default();
     let mut raw_standard_schedule: Vec<StandardFacilityScheduleEntry> = Default::default();
@@ -924,6 +929,7 @@ pub(super) fn assemble(
             RawDefinition::FacilityTemplate(value) => {
                 raw_facility_template.push(value);
             }
+            RawDefinition::FacilityLayout(value) => { raw_facility_layout.push(value); }
             RawDefinition::FacilityPool(value) => {
                 raw_facility_pool.push(value);
             }
@@ -1061,6 +1067,7 @@ pub(super) fn assemble(
                 tag_catalog: raw_facility_tags,
                 templates: raw_facility_template,
                 pools: raw_facility_pool,
+                layouts: raw_facility_layout,
             }),
             node_assignment_profiles: Arc::new(NodeAssignmentProfileDatabase {
                 profiles: raw_node_assignment_profile,

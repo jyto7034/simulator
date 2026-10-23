@@ -1,0 +1,23 @@
+--- before/game_server/src/game/player_game_actor/messages.rs
++++ after/game_server/src/game/player_game_actor/messages.rs
+@@ -592,7 +592,11 @@
+         for (kind, input) in [
+             (
+                 K::SelectStarterEmployees,
+-                serde_json::json!({"type":"select_starter_employees","employee_definition_ids":["a","b","c"]}),
++                serde_json::json!({"type":"select_starter_employees","employee_definition_ids":["a","b","c"],"loan_copy_ids":[]}),
++            ),
++            (
++                K::SelectStarterEmployees,
++                serde_json::json!({"type":"select_starter_employees","employee_definition_ids":["a","b","c"],"loan_copy_ids":[copy,Uuid::from_u128(0xF002)]}),
+             ),
+             (
+                 K::ConvertMapNodeWithMonolith,
+@@ -643,6 +647,7 @@
+             assert_command(input, kind);
+         }
+         for input in [
++            serde_json::json!({"type":"select_starter_employees","employee_definition_ids":["a","b","c"]}),
+             serde_json::json!({"type":"choose_support","support_type":"Rest"}),
+             serde_json::json!({"type":"upgrade_skill_fragment","target_fragment_id":"fragment_a"}),
+             serde_json::json!({"type":"awaken_skill_fragment","target_fragment_id":"fragment_a"}),

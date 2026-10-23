@@ -1,0 +1,17 @@
+{
+  "stage": "P2G-20",
+  "status": "complete",
+  "result_working_revision_ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CGMV-004",
+    "Content Digest": "sha256:b2ca20b8453c720b4a8c54c7b5f0f4b57a0c7085e68cb193eb7cae061ab11544"
+  },
+  "review_batch_ref": {
+    "Artifact Type": "Review Batch",
+    "Artifact ID": "RB-CGMV-001",
+    "Content Digest": "sha256:7ce934682922e69d1058ce4e91153623c315cb64f9b1403f50a2762b17d24e14"
+  },
+  "source_count": 26,
+  "runtime_tests": 0,
+  "checks": "5 decided→reviewed; policy/acceptance unchanged;6source boundaries covered; frozen source archive members identified"
+}

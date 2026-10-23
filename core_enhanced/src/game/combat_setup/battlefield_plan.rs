@@ -18,6 +18,7 @@ use crate::game::data::GameDataBase;
 pub(crate) struct BattleStartPlan {
     pub(crate) field_size: (u8, u8),
     valid_tiles: Vec<Position>,
+    walkable_paths: Vec<Position>,
     static_obstacles: Vec<Position>,
     object_placement: IndependentPlacementDomain,
 }
@@ -111,7 +112,15 @@ impl BattleStartPlan {
         );
         reserved.sort_unstable_by_key(|position| (position.y, position.x));
         reserved.dedup();
+        let path_count = combat_preview.routes.iter().try_fold(0usize, |n,r|n.checked_add(r.cells.len())).ok_or(GameError::InvalidAction)?;
+        crate::authoring::control::charge((path_count as u64).saturating_mul(u64::from(usize::BITS-path_count.leading_zeros())+1), "burst_path_union")?;
+        crate::game::battle::runtime_control::admit_retained_growth(0, path_count.checked_mul(std::mem::size_of::<Position>()), "burst_path_union")?;
+        let mut walkable_paths = Vec::with_capacity(path_count);
+        walkable_paths.extend(combat_preview.routes.iter().flat_map(|r|r.cells.iter().copied()));
+        walkable_paths.sort_unstable_by_key(|p|(p.y,p.x));
+        walkable_paths.dedup();
         Ok(Self {
+            walkable_paths,
             field_size,
             valid_tiles: combat_preview.valid_tiles.clone(),
             static_obstacles: combat_preview.obstacles.clone(),
@@ -121,6 +130,7 @@ impl BattleStartPlan {
 
     pub(crate) fn into_battlefield_spec(self) -> BattleFieldSpec {
         BattleFieldSpec {
+            walkable_paths: self.walkable_paths,
             object_placement: Some(self.object_placement),
             width: self.field_size.0,
             height: self.field_size.1,
@@ -173,6 +183,7 @@ mod u07_preview_accounting_tests {
             Position::new(2, 0),
         ];
         let preview = CombatPreview {
+            deterrence: Default::default(),
             node_id: MapNodeId(uuid::Uuid::from_u128(7)),
             encounter_id: None,
             battlefield_template_id: "accounting".into(),
@@ -220,7 +231,9 @@ mod u07_preview_accounting_tests {
         };
         let before = serde_json::to_string(&preview).unwrap();
         // Six borrowed records; seven cells admitted/scanned/copied; reserve
-        // four endpoints at sixteen sort units; three extra ground visits.
+        // four endpoints at sixteen sort units; three extra ground visits;
+        // three path cells at three scan/sort units each, plus three storage
+        // admission units (no active waves required).
         for (requested, site) in [
             (6, "object_preview_domain_count"),
             (13, "object_preview_domain"),
@@ -228,6 +241,8 @@ mod u07_preview_accounting_tests {
             (27, "object_preview_domain_copy"),
             (43, "object_preview_domain_sort"),
             (46, "object_preview_domain_copy_sort"),
+            (55, "burst_path_union"),
+            (58, "burst_path_union"),
         ] {
             let (short, admissions) = native::observe_retained_admissions(|| {
                 native::run(
@@ -251,17 +266,24 @@ mod u07_preview_accounting_tests {
         }
         let plan = native::run(
             RuntimeFactLimits {
-                max_work: 46,
+                max_work: 58,
                 ..Default::default()
             },
             || BattleStartPlan::from_resolved_preview(&preview),
         )
         .unwrap();
         assert_eq!(plan.object_placement.ground, ground);
+        assert_eq!(plan.walkable_paths, ground);
         assert_eq!(
             plan.object_placement.reserved,
             vec![Position::new(0, 0), Position::new(2, 0)]
         );
         assert_eq!(serde_json::to_string(&preview).unwrap(), before);
+        let mut multiple = preview.clone();
+        multiple.routes[0].cells=vec![Position::new(0,0),Position::new(1,0)];
+        multiple.routes.push(BattlefieldRoute {id:"other".into(),start:Position::new(1,0),end:Position::new(2,0),cells:vec![Position::new(1,0),Position::new(2,0)]});
+        assert!(multiple.spawn_waves.is_empty());
+        let all=native::run(RuntimeFactLimits::default(),||BattleStartPlan::from_resolved_preview(&multiple)).unwrap().into_battlefield_spec();
+        assert_eq!(all.walkable_paths,ground,"all routes contribute once even without a wave");
     }
 }

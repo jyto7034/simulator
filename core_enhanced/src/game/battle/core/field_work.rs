@@ -742,6 +742,7 @@ mod tests {
         draft
             .equipped_items
             .push(crate::game::battle::types::BattleEquipmentBinding {
+            weapon_stage: Default::default(),
                 base_uuid: weapon.uuid,
                 persistent_copy_uuid: None,
                 slot: None,
@@ -852,6 +853,48 @@ mod tests {
             panic!("expected deployed Any worker");
         };
         unit_id
+    }
+
+    #[test]
+    fn u164_stress_blocks_generic_ally_heal_and_protection_but_allows_authored_repair() {
+        use crate::game::battle::damage::BattleCommand;
+        let (mut core, mut execution) = field_work_core(vec![FieldWorkCellDef {
+            id: FieldWorkCellId::new("repair_cell"), position: Position::new(1, 1), tile_kind: TacticalTileKind::Ground,
+        }], 1000);
+        core.configure_stress_rounds(vec![vec!["never_clear".into()]; 5]);
+        let target = core.protected_unit_id().unwrap();
+        core.apply_hp_delta_and_record(None, target, -100, 0, HpChangeReason::Command);
+        let worker = deploy_worker(&mut core, 0x16401, 1, Position::new(1, 1), 0);
+        assert!(!core.is_alive_ally(target, Side::Player));
+        assert!(!core.stress_allied_effect_allowed(Some(worker), target));
+        assert!(!core.stress_protected_target(worker));
+        core.process_commands(vec![BattleCommand::ApplyHeal { target_id: target, flat: 100, percent: 0, source_id: Some(worker) }], 0);
+        assert_eq!(core.units[&target].stats.current_health, 100, "generic employee healing cannot repair objective");
+        core.step_battle_execution_by(&mut execution, 1000).unwrap();
+        assert_eq!(core.units[&target].stats.current_health, 200, "explicit RepairProtectedUnit remains effective");
+    }
+
+    #[test]
+    fn u164_stress_generic_sustained_protection_cannot_reach_objective() {
+        use crate::game::ability::{SkillHitTargetFilter, sustained::SustainedEffectDef};
+        use crate::game::battle::damage::BattleCommand;
+        for stress in [false, true] {
+            let (mut core, _) = field_work_core(vec![FieldWorkCellDef {
+                id: FieldWorkCellId::new("repair_cell"), position: Position::new(1, 1), tile_kind: TacticalTileKind::Ground,
+            }], 1000);
+            if stress { core.configure_stress_rounds(vec![vec!["never_clear".into()]; 5]); }
+            let target = core.protected_unit_id().unwrap();
+            let worker = deploy_worker(&mut core, 0x16402, 1, Position::new(1, 1), 0);
+            // Authored TileArea/Any delivery can include an objective even when
+            // the single-ally selector excludes it. The effect owner must gate it.
+            assert!(core.skill_delivery_accepts_unit(Side::Player, worker, target, SkillHitTargetFilter::Any, false));
+            core.process_commands(vec![BattleCommand::BeginSustained {
+                caster_id: worker, target_id: target,
+                definition: SustainedEffectDef::Shield { duration_ms: 1000, amount: 100, priority: 0, shared_radius_units: None },
+            }], 0);
+            let receipt = core.absorb_sustained_shields(target, 50, 0).unwrap();
+            assert_eq!(receipt.absorbed, if stress { 0 } else { 50 });
+        }
     }
 
     #[test]

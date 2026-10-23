@@ -41,7 +41,7 @@ use crate::game::{
     reward::RewardEffect,
 };
 
-pub const LIVE_RON_SCHEMA_VERSION: u32 = 5;
+pub const LIVE_RON_SCHEMA_VERSION: u32 = 6;
 
 /// The actual content producer that rejected an input, independent of its
 /// human-readable message. Wrappers preserve a producer's phase.
@@ -453,6 +453,25 @@ impl ParsedGameplayRon {
         )
         .map_err(|error| live_domain_error("data/events/rewards/base.ron", "rewards", error))?;
         self.validate_reward_effect_contracts()?;
+        for source in &self.pve_encounters.reward_sources {
+            let Some(policy) = &source.revival else { continue; };
+            for profile in &self.run_policy.combat_difficulty.profiles {
+                for stage in [crate::game::revival::RevivalStage::Stage2, crate::game::revival::RevivalStage::Stage3] {
+                    let difficulty = crate::game::map::MapNodeCombatDifficulty {
+                        power_model_version: self.run_policy.combat_difficulty.power_model_version,
+                        difficulty_profile_id: profile.id.clone(),
+                        class: crate::game::map::MapNodeCombatDifficultyClass::Role(super::run_policy_data::CombatNodeDifficultyRole::Revival),
+                        revival: Some(crate::game::revival::RevivalNodeTuning { stage, stat_multiplier_percent: policy.stage(stage).stat_multiplier_percent }),
+                        floor_power_anchor: 100, target_power: 0,
+                    };
+                    if self.run_policy.resolved_tuning_for_manifested_node(&difficulty).is_none() {
+                        return Err(LiveRonError::validation("data/pve/encounters.ron", "pve_encounters", Some(&source.reward_source_id),
+                            Some(format!("revival.{stage:?}.stat_multiplier_percent")), "revival stage and profile composition must fit u32"));
+                    }
+                }
+            }
+        }
+
         super::validation::validate_pve_enemy_references(
             &self.pve_encounters,
             &self.abnormalities,
@@ -467,6 +486,7 @@ impl ParsedGameplayRon {
         self.validate_map_difficulty_profile_references()?;
         self.validate_map_payload_references()?;
         self.validate_fixed_standard_authoring()?;
+        self.validate_facility_layout_authoring()?;
         Ok(compiled_boss_runtime)
     }
 
@@ -643,6 +663,9 @@ impl ParsedGameplayRon {
             &self.skill_fragments,
         )
         .map_err(|error| live_domain_error("data/pve/encounters.ron", "pve_encounters", error))?;
+        super::validation::validate_revival_rewards(&self.pve_encounters, &self.equipment, &self.rewards,
+            &self.consumables, &self.skill_fragments, &self.relics)
+            .map_err(|error| live_domain_error("data/pve/encounters.ron", "pve_encounters", error))?;
         super::validation::validate_ordinary_reward_source_exclusion(
             &self.rewards,
             &self.pve_encounters,
@@ -688,16 +711,15 @@ impl ParsedGameplayRon {
             &self.shops,
             &self.consumables,
             &self.equipment,
+            &self.relics,
         )
         .map_err(|error| live_domain_error("data/events/shops/base.ron", "shops", error))?;
-        super::validation::validate_monolith_references(
-            &self.run_policy,
-            &self.shops,
-            &self.visual_novels,
-            &self.pve_encounters,
-            &self.abnormalities,
-        )
-        .map_err(|error| live_domain_error("data/run/policy.ron", "monolith", error))?;
+        for id in &self.run_policy.tutorial_employee_definition_ids {
+            if !self.employee_definitions.get_by_id(id).is_some_and(|definition| definition.starter_eligible) {
+                return Err(LiveRonError::validation("data/run/policy.ron", "run_policy", Some(id),
+                    Some("tutorial_employee_definition_ids"), "tutorial preset requires a current starter definition"));
+            }
+        }
         super::validation::validate_starter_employee_loadout_references(
             &self.employee_definitions,
             &self.equipment,
@@ -952,6 +974,14 @@ impl ParsedGameplayRon {
     }
 
     fn validate_reward_effect_contracts(&self) -> Result<(), LiveRonError> {
+        for (encounter_index, encounter) in self.pve_encounters.encounters.iter().enumerate() {
+            for (objective_index, objective) in encounter.bonus_objectives.iter().enumerate() {
+                for (effect_index, effect) in objective.effects.iter().enumerate() {
+                    self.validate_reward_effect_at(effect, "data/pve/encounters.ron", "pve_encounters",
+                        &encounter.id, format!("encounters[{encounter_index}].bonus_objectives[{objective_index}].effects[{effect_index}]"))?;
+                }
+            }
+        }
         for (reward_index, reward) in self.rewards.rewards.iter().enumerate() {
             for (effect_index, effect) in reward.effects.iter().enumerate() {
                 self.validate_reward_effect_at(
@@ -1018,7 +1048,7 @@ impl ParsedGameplayRon {
     }
 
     fn validate_run_start_contract(&self) -> Result<(), LiveRonError> {
-        for game_mode in [GameMode::Standard, GameMode::Endless] {
+        for game_mode in [GameMode::Tutorial, GameMode::Expedition] {
             let matching = self
                 .visual_novel_triggers
                 .triggers
@@ -1125,6 +1155,122 @@ impl ParsedGameplayRon {
                     cause,
                 )
             })?;
+        }
+        Ok(())
+    }
+
+    fn validate_facility_layout_authoring(&self) -> Result<(), LiveRonError> {
+        for layout in &self.map_catalogs.facility_templates.layouts {
+            let error = |cause: String| LiveRonError::validation("data/map/facility_templates.ron", "facility_layouts", Some(&layout.id), None::<String>, cause);
+            if self.run_policy.combat_difficulty_profile(&layout.difficulty_profile_id).is_none() {
+                return Err(error("unknown layout difficulty profile".into()));
+            }
+            layout.relic_rewards.validate(&self.relics).map_err(&error)?;
+            if let Some(stress) = &layout.stress_combat {
+                stress.validate(&self.pve_encounters).map_err(&error)?;
+                for (ri, round) in stress.rounds.iter().enumerate() {
+                    for (ei, effect) in round.rewards.iter().enumerate() {
+                        self.validate_reward_effect_at(effect, "data/maps/facility_layouts.ron", "facility_layouts", &layout.id, format!("stress_combat.rounds[{ri}].rewards[{ei}]"))?;
+                    }
+                }
+            }
+            if layout.activities.iter().any(|a| a.support.is_supported() && a.reward_activity == Some(crate::game::map::RewardActivityKind::StressCombat)) && layout.stress_combat.is_none() {
+                return Err(error("supported StressCombat requires stress_combat policy".into()));
+            }
+            if let Some(dealer) = &layout.dealer { dealer.validate(&self.relics, &self.visual_novels).map_err(&error)?; }
+            for activity in &layout.activities {
+                let node = self.map_catalogs.map_node_definitions.nodes.iter().find(|n| n.kind_id == activity.kind_id).ok_or_else(|| error(format!("activity '{}' has unknown node kind",activity.id)))?;
+                validate_authored_map_payload(self,&activity.payload).map_err(&error)?;
+                if activity.reward_activity.is_some() && node.category != crate::game::map::MapNodeCategory::Reward {
+                    return Err(error(format!("activity '{}' relic reward type requires Reward category", activity.id)));
+                }
+                if activity.golden_bough_candidate {
+                    use crate::game::{map::{MapNodeCategory,MapNodePayload},data::pve_data::PveEncounterClass};
+                    let valid = node.category == MapNodeCategory::Boss && activity.condition.is_none()
+                        && match &activity.payload {
+                            MapNodePayload::Encounter { encounter_id: Some(id) } => self.pve_encounters.get_by_id(id)
+                                .is_some_and(|e| e.encounter_class == PveEncounterClass::NormalBoss),
+                            MapNodePayload::Encounter { encounter_id: None } => !activity.support.is_supported(),
+                            _ => false,
+                        };
+                    if !valid {return Err(error(format!("activity '{}' is not an immediate normal-boss candidate",activity.id)));}
+                }
+                if std::mem::discriminant(&node.payload) != std::mem::discriminant(&activity.payload) {
+                    return Err(error(format!("activity '{}' payload does not match node kind",activity.id)));
+                }
+            }
+            // Role IDs are authoring choices, but their semantics must match
+            // the allocator and the existing difficulty/encounter consumers.
+            use crate::game::map::{MapNodeCategory as C, MapNodePayload as P};
+            let roles = [
+                ("normal", &layout.allocation.normal_activity_id),
+                ("elite", &layout.allocation.elite_activity_id),
+                ("event", &layout.allocation.event_activity_id),
+                ("reward", &layout.allocation.reward_activity_id),
+                ("gate", &layout.allocation.gate_activity_id),
+            ];
+            for (role, id) in roles.into_iter().chain(layout.allocation.support_activities.keys().map(|id| ("support", id))) {
+                let a = layout.activity(id).expect("allocation references validated");
+                let node = self.map_catalogs.map_node_definitions.nodes.iter().find(|n| n.kind_id == a.kind_id).expect("kind validated");
+                let valid = match (role, node.category, &a.payload) {
+                    ("normal", C::Combat, P::Encounter { .. }) => !a.kind_id.as_str().contains("elite"),
+                    ("elite", C::Combat, P::Encounter { .. }) => a.kind_id.as_str() == "combat_elite",
+                    ("event", C::Event, P::Event { .. }) | ("reward", C::Reward, P::Reward { .. }) |
+                    ("gate", C::Gate, P::None) | ("support", C::Maintenance, P::Maintenance) |
+                    ("support", C::Shop, P::Shop { .. }) | ("support", C::HeadquartersContact, P::HeadquartersContact { .. }) => true,
+                    _ => false,
+                };
+                let encounter_class_matches = match (&a.payload, role) {
+                    (P::Encounter { encounter_id: Some(id) }, "normal" | "elite") => {
+                        use crate::game::data::pve_data::PveEncounterClass;
+                        self.pve_encounters.encounters.iter().find(|e| &e.id == id).is_some_and(|e|
+                            e.encounter_class == if role == "normal" { PveEncounterClass::Normal } else { PveEncounterClass::Elite })
+                    }
+                    _ => true,
+                };
+                if !valid || !encounter_class_matches || (role != "reward" && a.reward_activity.is_some()) {
+                    return Err(error(format!("allocation role '{}' activity '{}' has incompatible semantics", role, id)));
+                }
+            }
+            for room in &layout.rooms {
+                if let Some(template) = room.template_id.as_ref().and_then(|id| self.map_catalogs.facility_templates.template(id)) {
+                    // Uniform allocation uses every free position. Reject a authored
+                    // template/category mismatch before it can reach generation.
+                    for slot in &template.slots {
+                        let reservation=room.reservations.iter().find(|r|r.slot_id==slot.id);
+                        let mut possible=Vec::new();
+                        match slot.role {
+                            crate::game::map::FacilitySlotRole::Start => {},
+                            crate::game::map::FacilitySlotRole::Terminal(_) => possible.push(&layout.allocation.gate_activity_id),
+                            _ if reservation.is_some() => {
+                                let id=&reservation.unwrap().activity_id;
+                                if room.final_room && layout.allocation.support_activities.contains_key(id) {possible.extend(layout.allocation.support_activities.keys());}
+                            },
+                            _ => {
+                                possible.push(&layout.allocation.normal_activity_id);
+                                if room.omen_slot.as_ref()!=Some(&slot.id) {
+                                    possible.push(&layout.allocation.event_activity_id);
+                                    possible.push(&layout.allocation.reward_activity_id);
+                                    possible.extend(layout.allocation.support_activities.keys());
+                                    if room.elite_slots.contains(&slot.id) {possible.push(&layout.allocation.elite_activity_id);}
+                                }
+                            },
+                        }
+                        for id in possible {
+                            let activity=layout.activity(id).expect("allocation references validated");
+                            let node=self.map_catalogs.map_node_definitions.nodes.iter().find(|n|n.kind_id==activity.kind_id).expect("kind validated");
+                            if !slot.allowed_categories.contains(&node.category) {return Err(error(format!("room '{}' slot '{}' rejects a possible allocated category",room.id,slot.id.as_str())));}
+                        }
+                    }
+                    for reservation in &room.reservations {
+                        let activity = layout.activity(&reservation.activity_id).expect("layout references validated");
+                        let node = self.map_catalogs.map_node_definitions.nodes.iter().find(|n| n.kind_id == activity.kind_id).expect("kind validated");
+                        if template.slots.iter().find(|s| s.id == reservation.slot_id).is_none_or(|s| !s.allowed_categories.contains(&node.category)) {
+                            return Err(error(format!("room '{}' reserved slot rejects activity category",room.id)));
+                        }
+                    }
+                }
+            }
         }
         Ok(())
     }
@@ -2467,15 +2613,15 @@ mod tests {
 
     #[test]
     fn manifest_requires_exact_supported_schema_version() {
-        validate_live_ron_manifest("(schema_version: 5)")
+        validate_live_ron_manifest("(schema_version: 6)")
             .expect("current schema version should load");
 
-        let error = validate_live_ron_manifest("(schema_version: 4)")
+        let error = validate_live_ron_manifest("(schema_version: 5)")
             .expect_err("unsupported schema version must reject");
         assert_eq!(error.source_file, "data/bundle.ron");
         assert_eq!(error.domain, "bundle_manifest");
         assert_eq!(error.field_path.as_deref(), Some("schema_version"));
-        assert!(error.cause.contains("expected exactly 5"));
+        assert!(error.cause.contains("expected exactly 6"));
     }
 
     #[test]
@@ -2668,11 +2814,11 @@ mod tests {
                         "ReferenceFinalBoss"
                     }
                     crate::game::data::pve_data::PveEncounterClass::Normal => "Normal",
+                    crate::game::data::pve_data::PveEncounterClass::StressCombat => "StressCombat",
                 };
-                let dust = match source.repeat_reward {
-                    crate::game::reward::RewardEffect::GrantFragmentDust { amount } => amount,
-                    _ => panic!("validated repeat reward must grant fragment dust"),
-                };
+                let dust = source.repeat_rewards.iter().find_map(|effect| match effect {
+                    crate::game::reward::RewardEffect::GrantEquipmentDust { amount } => Some(*amount), _ => None,
+                }).unwrap_or(0);
                 (
                     class,
                     source.reward_source_id.as_str(),
@@ -2793,7 +2939,7 @@ mod tests {
                 "normal_boss_freischutz",
                 "suppress_freischutz",
                 "fragment_freischutz_black_round",
-                10,
+                0,
             ),
             (
                 "NormalBoss",
@@ -2914,8 +3060,8 @@ mod tests {
                             .clone();
                 }
                 1 => {
-                    parsed.pve_encounters.reward_sources[0].repeat_reward =
-                        crate::game::reward::RewardEffect::GrantFragmentDust { amount: 6 };
+                    parsed.pve_encounters.reward_sources[0].repeat_rewards =
+                        vec![crate::game::reward::RewardEffect::GrantFragmentDust { amount: 6 }];
                 }
                 2 => {
                     parsed.pve_encounters.reward_sources[0].fragment_id =
@@ -3466,7 +3612,7 @@ mod tests {
             !matches!(
                 trigger.source,
                 VisualNovelTriggerSource::RunStart {
-                    game_mode: GameMode::Endless
+                    game_mode: GameMode::Expedition
                 }
             )
         });
@@ -3475,7 +3621,7 @@ mod tests {
             .expect_err("missing Endless RunStart must reject before publication");
         assert_eq!(
             error.field_path.as_deref(),
-            Some("triggers.RunStart.Endless")
+            Some("triggers.RunStart.Expedition")
         );
         assert!(error.cause.contains("found 0"));
 
@@ -3489,7 +3635,7 @@ mod tests {
                 matches!(
                     trigger.source,
                     VisualNovelTriggerSource::RunStart {
-                        game_mode: GameMode::Standard
+                        game_mode: GameMode::Tutorial
                     }
                 )
             })
@@ -4262,7 +4408,7 @@ mod tests {
             (
                 "bundle_run_start_once_per_battle",
                 VisualNovelTriggerSource::RunStart {
-                    game_mode: GameMode::Standard,
+                    game_mode: GameMode::Tutorial,
                 },
                 VisualNovelTriggerRepeat::OncePerBattle,
                 "OncePerBattle requires BattleStarted or BattleTimeReached source",
@@ -4270,7 +4416,7 @@ mod tests {
             (
                 "bundle_run_start_once_per_node",
                 VisualNovelTriggerSource::RunStart {
-                    game_mode: GameMode::Standard,
+                    game_mode: GameMode::Tutorial,
                 },
                 VisualNovelTriggerRepeat::OncePerNode,
                 "OncePerNode requires MapNodeEntered, BattleStarted, or BattleTimeReached source",
@@ -4798,6 +4944,8 @@ mod tests {
                     equipment_id: missing_id.to_string(),
                 },
                 quantity: 1,
+            base_price: None,
+            guaranteed: false,
                 weight: 1,
                 repeatable: false,
                 buy_percent: None,
@@ -5241,5 +5389,57 @@ mod tests {
         assert_eq!(error.domain, "node_assignment_profiles");
         assert!(error.cause.contains("not an abnormality actor"));
         assert!(error.cause.contains("suppress_nothing_there"));
+    }
+}
+
+#[cfg(test)]
+mod u17_authoring_tests {
+    use super::*;
+    #[test]
+    fn u17_authored_revival_rejects_invalid_recipe_stage_and_reward_contracts() {
+        for case in 0..12 {
+            let mut parsed=parse_gameplay_ron_sources(GameplayRonSourceSet::embedded()).unwrap();
+            let index=parsed.pve_encounters.reward_sources.iter().position(|s|s.reward_source_id=="normal_boss_big_bad_wolf").unwrap();
+            let policy=parsed.pve_encounters.reward_sources[index].revival.as_mut().unwrap();
+            match case {
+                0=>policy.catalyst_material_id="missing".into(),
+                1=>policy.catalyst_material_id="equipment_dust".into(),
+                2=>policy.catalyst_amount=0,
+                3=>policy.stage_2.encounter_id="missing".into(),
+                4=>policy.stage_2.encounter_id="suppress_yin".into(),
+                5=>policy.stage_2.stat_multiplier_percent=100,
+                6=>policy.stage_3.stat_multiplier_percent=policy.stage_2.stat_multiplier_percent,
+                7=>policy.stage_3.stat_multiplier_percent=u32::MAX,
+                8=>policy.stage_3.rewards.clear(),
+                9=>policy.stage_3.equipment_choices=vec!["missing".into()],
+                10=>policy.stage_3.equipment_choices.push(policy.stage_3.equipment_choices[0].clone()),
+                11=>policy.stage_3.rewards.push(RewardEffect::GrantSkillFragment {fragment_id:"fragment_big_bad_wolf_trace".into()}),
+                _=>unreachable!(),
+            }
+            let error=parsed.validate_domain_catalogs().expect_err(&format!("authored invalid case {case}"));
+            assert_eq!(error.source_file,"data/pve/encounters.ron","case{case}: {error:?}");
+        }
+    }
+    #[test]
+    fn u17_empty_equipment_candidates_are_valid_and_do_not_generate_substitutes() {
+        let mut parsed=parse_gameplay_ron_sources(GameplayRonSourceSet::embedded()).unwrap();
+        let index=parsed.pve_encounters.reward_sources.iter().position(|s|s.revival.is_some()).unwrap();
+        let policy=parsed.pve_encounters.reward_sources[index].revival.as_mut().unwrap();
+        policy.stage_2.equipment_choices.clear();policy.stage_3.equipment_choices.clear();
+        parsed.validate_domain_catalogs().unwrap();
+        assert!(parsed.pve_encounters.reward_sources[index].revival.as_ref().unwrap().stage_2.equipment_choices.is_empty());
+    }
+    #[test]
+    fn u17_elites_cannot_leave_eggs_and_rewardless_story_cannot_gain_ordinary_rewards() {
+        for story in [false,true] {
+            let mut parsed=parse_gameplay_ron_sources(GameplayRonSourceSet::embedded()).unwrap();
+            if story {
+                parsed.pve_encounters.encounters.iter_mut().find(|e|e.id=="suppress_freischutz").unwrap().outcome_policies[0].advance_encounter_progression=true;
+            } else {
+                let policy=parsed.pve_encounters.reward_sources.iter().find_map(|s|s.revival.clone()).unwrap();
+                parsed.pve_encounters.reward_sources[0].revival=Some(policy);
+            }
+            assert!(parsed.validate_domain_catalogs().is_err());
+        }
     }
 }

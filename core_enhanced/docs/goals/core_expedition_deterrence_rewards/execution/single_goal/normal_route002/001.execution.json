@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/artifacts/normal001/u13_facility_host",
+    "start",
+    "core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/test_parts/normal_inputs001/admission.json",
+    "/tmp/u14-normal-route002/active",
+    "/tmp/u14-normal-route002/profile",
+    "/tmp/u14-normal-route002/000_start"
+  ],
+  "exit_code": 0
+}

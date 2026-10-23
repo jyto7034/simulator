@@ -12,6 +12,9 @@ use sha2::{Digest, Sha256};
 use uuid::Uuid;
 
 use super::{replace_file, sync_directory};
+use super::mod_requirements::ApprovedStoreGate;
+use game_core::mod_validation::RequiredConfiguration;
+use std::sync::Arc;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -40,7 +43,7 @@ impl StoredCheckpoint {
 }
 
 pub type ActiveRunRevision = Uuid;
-const ACTIVE_RUN_VERSION: u32 = 5;
+const ACTIVE_RUN_VERSION: u32 = 7;
 const CURRENT_FILE: &str = "active_run.json";
 const BACKUP_FILE: &str = "active_run.backup.json";
 const TEMP_FILE: &str = "active_run.tmp";
@@ -55,6 +58,7 @@ pub enum ActiveRunStoreError {
     UnsupportedVersion(u32),
     UnsupportedCoreVersion(u32),
     ChecksumMismatch,
+    ProtectedOriginal(String),
     BothCopiesInvalid {
         current: String,
         backup: String,
@@ -68,6 +72,7 @@ pub enum ActiveRunStoreError {
 impl std::fmt::Display for ActiveRunStoreError {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
+            Self::ProtectedOriginal(reason) => write!(formatter, "protected active-run original: {reason}"),
             Self::Io(error) => write!(formatter, "active-run filesystem error: {error}"),
             Self::InvalidEnvelope(error) => {
                 write!(formatter, "invalid active-run envelope: {error}")
@@ -123,6 +128,8 @@ pub enum ActiveRunLoad {
 pub(crate) struct ActiveRunRecord {
     pub revision: ActiveRunRevision,
     pub checkpoint: Option<StoredCheckpoint>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub required_configuration: Option<RequiredConfiguration>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -130,6 +137,7 @@ pub struct ActiveRunSnapshot {
     pub revision: ActiveRunRevision,
     pub checkpoint: Option<StoredCheckpoint>,
     pub recovered_from_backup: bool,
+    pub required_configuration: Option<RequiredConfiguration>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -156,6 +164,23 @@ struct ActiveRunEnvelope {
     checksum_sha256: String,
 }
 
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct UnsignedActiveRunEnvelopeV6 {
+    version: u32,
+    revision: ActiveRunRevision,
+    core_payload_base64: Option<String>,
+    monotonic: Option<ActiveRunMonotonicMetadata>,
+    required_configuration: RequiredConfiguration,
+}
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct ActiveRunEnvelopeV6 {
+    #[serde(flatten)]
+    unsigned: UnsignedActiveRunEnvelopeV6,
+    checksum_sha256: String,
+}
+
 fn core_version(bytes: &[u8]) -> Result<(), ActiveRunStoreError> {
     #[derive(Deserialize)]
     struct Header {
@@ -163,10 +188,18 @@ fn core_version(bytes: &[u8]) -> Result<(), ActiveRunStoreError> {
     }
     let header: Header = serde_json::from_slice(bytes)
         .map_err(|error| ActiveRunStoreError::InvalidEnvelope(error.to_string()))?;
-    if header.version != 11 {
+    // The envelope preserves prior opaque writers; V16 adds paid investment and warehouse consumption.
+    // Core decides whether a payload version can be resumed.
+    // V13 was an independent checkpoint format, never an active-run writer.
+    if !matches!(header.version, 12 | 14 | 15 | 16 | 17) {
         return Err(ActiveRunStoreError::UnsupportedCoreVersion(header.version));
     }
     Ok(())
+}
+
+fn admit_active_output(bytes: Vec<u8>) -> Result<Vec<u8>, ActiveRunStoreError> {
+    if bytes.len() > super::mod_requirements::ACTIVE_MAX_BYTES { return Err(ActiveRunStoreError::InvalidEnvelope("active envelope exceeds supported byte ceiling".into())); }
+    Ok(bytes)
 }
 
 impl ActiveRunEnvelope {
@@ -178,6 +211,18 @@ impl ActiveRunEnvelope {
         }
         if let Some(checkpoint) = &record.checkpoint {
             core_version(&checkpoint.core_payload_json)?;
+        }
+        if let Some(required) = &record.required_configuration {
+            validate_requirement(record)?;
+            let unsigned = UnsignedActiveRunEnvelopeV6 {
+                version: ACTIVE_RUN_VERSION, revision: record.revision,
+                core_payload_base64: record.checkpoint.as_ref().map(|c| BASE64.encode(&c.core_payload_json)),
+                monotonic: record.checkpoint.as_ref().map(|c| ActiveRunMonotonicMetadata { loads_used: c.loads_used, run_peak_certified_power: c.run_peak_certified_power }),
+                required_configuration: required.clone(),
+            };
+            let checksum_sha256 = format!("{:x}", Sha256::digest(serde_json::to_vec(&unsigned).map_err(|e| ActiveRunStoreError::InvalidEnvelope(e.to_string()))?));
+            let bytes = serde_json::to_vec_pretty(&ActiveRunEnvelopeV6 { unsigned, checksum_sha256 }).map_err(|e| ActiveRunStoreError::InvalidEnvelope(e.to_string()))?;
+            return admit_active_output(bytes);
         }
         let unsigned = UnsignedActiveRunEnvelope {
             version: ACTIVE_RUN_VERSION,
@@ -203,17 +248,30 @@ impl ActiveRunEnvelope {
             monotonic: unsigned.monotonic,
             checksum_sha256: format!("{:x}", Sha256::digest(unsigned_bytes)),
         };
-        serde_json::to_vec_pretty(&envelope)
-            .map_err(|error| ActiveRunStoreError::InvalidEnvelope(error.to_string()))
+        admit_active_output(serde_json::to_vec_pretty(&envelope).map_err(|error| ActiveRunStoreError::InvalidEnvelope(error.to_string()))?)
     }
 
     fn decode_record(bytes: &[u8]) -> Result<ActiveRunRecord, ActiveRunStoreError> {
+        if bytes.len() > super::mod_requirements::ACTIVE_MAX_BYTES { return Err(ActiveRunStoreError::InvalidEnvelope("active envelope exceeds supported byte ceiling".into())); }
         #[derive(Deserialize)]
         struct Header {
             version: u32,
         }
         let header: Header = serde_json::from_slice(bytes)
             .map_err(|error| ActiveRunStoreError::InvalidEnvelope(error.to_string()))?;
+        if header.version != ACTIVE_RUN_VERSION { return Err(ActiveRunStoreError::UnsupportedVersion(header.version)); }
+        if serde_json::from_slice::<serde_json::Value>(bytes).map_err(|e| ActiveRunStoreError::InvalidEnvelope(e.to_string()))?.get("required_configuration").is_some() {
+            let envelope: ActiveRunEnvelopeV6 = serde_json::from_slice(bytes).map_err(|e| ActiveRunStoreError::InvalidEnvelope(e.to_string()))?;
+            let unsigned = envelope.unsigned;
+            if envelope.checksum_sha256 != format!("{:x}", Sha256::digest(serde_json::to_vec(&unsigned).map_err(|e| ActiveRunStoreError::InvalidEnvelope(e.to_string()))?)) {
+                return Err(ActiveRunStoreError::ChecksumMismatch);
+            }
+            if unsigned.revision.is_nil() { return Err(ActiveRunStoreError::InvalidEnvelope("nil publication revision".into())); }
+            let checkpoint = decode_checkpoint(unsigned.core_payload_base64, unsigned.monotonic)?;
+            let record = ActiveRunRecord { revision: unsigned.revision, checkpoint, required_configuration: Some(unsigned.required_configuration) };
+            validate_requirement(&record)?;
+            return Ok(record);
+        }
         if header.version != ACTIVE_RUN_VERSION {
             return Err(ActiveRunStoreError::UnsupportedVersion(header.version));
         }
@@ -257,6 +315,7 @@ impl ActiveRunEnvelope {
         Ok(ActiveRunRecord {
             revision: unsigned.revision,
             checkpoint,
+            required_configuration: None,
         })
     }
 
@@ -265,6 +324,7 @@ impl ActiveRunEnvelope {
         Self::encode_record(&ActiveRunRecord {
             revision: Uuid::new_v4(),
             checkpoint: Some(checkpoint.clone()),
+            required_configuration: None,
         })
     }
     #[cfg(test)]
@@ -275,9 +335,27 @@ impl ActiveRunEnvelope {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct OriginalFileIdentity { length: u64, sha256: String }
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct CorruptActiveOriginals {
+    #[serde(deserialize_with = "required_original_option")]
+    current: Option<OriginalFileIdentity>,
+    #[serde(deserialize_with = "required_original_option")]
+    backup: Option<OriginalFileIdentity>,
+}
+fn required_original_option<'de, D, T>(d: D) -> Result<Option<T>, D::Error>
+where D: serde::Deserializer<'de>, T: Deserialize<'de> { Option::<T>::deserialize(d) }
+fn original_identity(bytes: &[u8]) -> OriginalFileIdentity {
+    OriginalFileIdentity { length: bytes.len() as u64, sha256: format!("{:x}", Sha256::digest(bytes)) }
+}
+
 pub struct ActiveRunStore {
     root: PathBuf,
     _lock: File,
+    gate: Option<Arc<ApprovedStoreGate>>,
 }
 impl ActiveRunStore {
     pub fn open(root: impl AsRef<Path>) -> Result<Self, ActiveRunStoreError> {
@@ -290,12 +368,21 @@ impl ActiveRunStore {
             .open(root.join(LOCK_FILE))?;
         lock.try_lock_exclusive()
             .map_err(ActiveRunStoreError::LockUnavailable)?;
-        Ok(Self { root, _lock: lock })
+        Ok(Self { root, _lock: lock, gate: None })
+    }
+
+    pub(crate) fn open_approved(root: impl AsRef<Path>, gate: Arc<ApprovedStoreGate>) -> Result<Self, ActiveRunStoreError> {
+        gate.preflight()?;
+        let mut store = Self::open(root)?;
+        store.gate = Some(gate);
+        store.protect_versions()?;
+        Ok(store)
     }
 
     /// Unsupported current, backup and legacy marker bytes are protected before
     /// recovery or mutation; a supported backup cannot hide an incompatible file.
     pub(crate) fn protect_versions(&self) -> Result<(), ActiveRunStoreError> {
+        if let Some(gate) = &self.gate { gate.preflight()?; }
         if self.path(INVALIDATED_FILE).exists() {
             return Err(ActiveRunStoreError::UnsupportedVersion(4));
         }
@@ -303,7 +390,7 @@ impl ActiveRunStore {
             match self.read_decoded(file) {
                 Err(
                     error @ (ActiveRunStoreError::UnsupportedVersion(_)
-                    | ActiveRunStoreError::UnsupportedCoreVersion(_)),
+                    | ActiveRunStoreError::UnsupportedCoreVersion(_) | ActiveRunStoreError::ProtectedOriginal(_)),
                 ) => return Err(error),
                 Err(ActiveRunStoreError::Io(error)) => return Err(ActiveRunStoreError::Io(error)),
                 _ => {}
@@ -318,7 +405,7 @@ impl ActiveRunStore {
             Ok(Some(record)) => (record, false),
             current => match self.read_decoded(BACKUP_FILE) {
                 Ok(Some(record)) => {
-                    let bytes = ActiveRunEnvelope::encode_record(&record)?;
+                    let bytes = fs::read(self.path(BACKUP_FILE))?;
                     self.write_synced(TEMP_FILE, &bytes)?;
                     replace_file(&self.path(TEMP_FILE), &self.path(CURRENT_FILE))?;
                     self.sync_root()?;
@@ -329,6 +416,7 @@ impl ActiveRunStore {
                         ActiveRunRecord {
                             revision: Uuid::nil(),
                             checkpoint: None,
+                            required_configuration: None,
                         },
                         false,
                     ),
@@ -354,6 +442,7 @@ impl ActiveRunStore {
             revision: record.revision,
             checkpoint: record.checkpoint,
             recovered_from_backup,
+            required_configuration: record.required_configuration,
         })
     }
 
@@ -387,9 +476,11 @@ impl ActiveRunStore {
                 .run_peak_certified_power
                 .max(previous.run_peak_certified_power);
         }
+        let required_configuration = match &self.gate { Some(gate) => Some(gate.configuration_for_checkpoint(checkpoint.as_ref(), current.required_configuration.as_ref())?), None => None };
         let record = ActiveRunRecord {
             revision: Uuid::new_v4(),
             checkpoint,
+            required_configuration,
         };
         let bytes = ActiveRunEnvelope::encode_record(&record)?;
         ActiveRunEnvelope::decode_record(&bytes)?;
@@ -401,6 +492,13 @@ impl ActiveRunStore {
         Ok(())
     }
 
+    pub(crate) fn bind_record(&self, record: &mut ActiveRunRecord, required: &RequiredConfiguration) -> Result<(), ActiveRunStoreError> {
+        let gate = self.gate.as_ref().ok_or_else(|| ActiveRunStoreError::ProtectedOriginal("approved store gate is missing".into()))?;
+        gate.ensure_allowed(required)?;
+        record.required_configuration = Some(required.clone());
+        Self::validate_record(record)
+    }
+
     pub(crate) fn validate_install(
         &self,
         expected: ActiveRunRevision,
@@ -409,7 +507,7 @@ impl ActiveRunStore {
         Self::validate_record(record)?;
         let current = self.snapshot()?;
         if current.revision == record.revision {
-            if current.checkpoint != record.checkpoint {
+            if current.checkpoint != record.checkpoint || current.required_configuration != record.required_configuration {
                 return Err(ActiveRunStoreError::InvalidEnvelope(
                     "published revision has different contents".into(),
                 ));
@@ -430,7 +528,7 @@ impl ActiveRunStore {
     ) -> Result<(), ActiveRunStoreError> {
         let current = self.snapshot()?;
         if current.revision == record.revision {
-            if current.checkpoint != record.checkpoint {
+            if current.checkpoint != record.checkpoint || current.required_configuration != record.required_configuration {
                 return Err(ActiveRunStoreError::InvalidEnvelope(
                     "published revision has different contents".into(),
                 ));
@@ -464,12 +562,74 @@ impl ActiveRunStore {
 
     /// Administrative corruption reset preserves unsupported originals. The new
     /// tombstone has a unique revision, so an older missing token cannot return.
+    /// Capture only supported, truly corrupt originals. No file repair or mutation occurs.
+    pub(crate) fn prepare_corrupt_reset(&self) -> Result<(CorruptActiveOriginals, ActiveRunRecord), ActiveRunStoreError> {
+        if self.path(INVALIDATED_FILE).exists() { return Err(ActiveRunStoreError::UnsupportedVersion(4)); }
+        let current = super::mod_requirements::read_optional(&self.path(CURRENT_FILE), super::mod_requirements::ACTIVE_MAX_BYTES as u64)?;
+        let backup = super::mod_requirements::read_optional(&self.path(BACKUP_FILE), super::mod_requirements::ACTIVE_MAX_BYTES as u64)?;
+        if current.is_none() && backup.is_none() { return Err(ActiveRunStoreError::InvalidEnvelope("reset requires corrupt originals".into())); }
+        for bytes in current.iter().chain(backup.iter()) {
+            self.validate_corrupt_original(bytes)?;
+            match ActiveRunEnvelope::decode_record(bytes) {
+                Err(error) if error.is_corrupt() => {},
+                Err(error) => return Err(error),
+                Ok(_) => return Err(ActiveRunStoreError::InvalidEnvelope("reset cannot replace a valid recovery copy".into())),
+            }
+        }
+        let originals = CorruptActiveOriginals { current: current.as_deref().map(original_identity), backup: backup.as_deref().map(original_identity) };
+        let record = ActiveRunRecord { revision: Uuid::new_v4(), checkpoint: None,
+            required_configuration: self.gate.as_ref().map(|gate| gate.configuration_for_checkpoint(None, None)).transpose()? };
+        Self::validate_record(&record)?;
+        Ok((originals, record))
+    }
+
+    fn validate_corrupt_original(&self, bytes: &[u8]) -> Result<(), ActiveRunStoreError> {
+        if let Ok(value) = serde_json::from_slice::<serde_json::Value>(bytes) {
+            if let Some(version) = value.get("version").and_then(|value| value.as_u64()) {
+                if version != u64::from(ACTIVE_RUN_VERSION) { return Err(ActiveRunStoreError::ProtectedOriginal(format!("active version {version}"))); }
+            }
+            if let Some(required) = value.get("required_configuration") {
+                let required: RequiredConfiguration = serde_json::from_value(required.clone()).map_err(|e| ActiveRunStoreError::ProtectedOriginal(e.to_string()))?;
+                required.validate().map_err(|e| ActiveRunStoreError::ProtectedOriginal(e.to_string()))?;
+                if let Some(gate) = &self.gate { gate.ensure_allowed(&required)?; }
+            }
+            if let Some(encoded) = value.get("core_payload_base64").and_then(|value| value.as_str()) {
+                if let Ok(core) = BASE64.decode(encoded) {
+                    if let Err(error @ ActiveRunStoreError::UnsupportedCoreVersion(_)) = core_version(&core) { return Err(error); }
+                }
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn verify_corrupt_reset_originals(root: &Path, originals: &CorruptActiveOriginals, next: &ActiveRunRecord) -> Result<(), ActiveRunStoreError> {
+        let accepted = ActiveRunEnvelope::encode_record(next)?;
+        for (name, expected) in [(CURRENT_FILE, &originals.current), (BACKUP_FILE, &originals.backup)] {
+            let bytes = super::mod_requirements::read_optional(&root.join(name), super::mod_requirements::ACTIVE_MAX_BYTES as u64)?;
+            let identity = bytes.as_deref().map(original_identity);
+            // A completed per-file write from this same accepted intent is legal during recovery.
+            if identity != *expected && bytes.as_deref() != Some(accepted.as_slice()) {
+                return Err(ActiveRunStoreError::ProtectedOriginal(format!("corrupt reset original changed: {name}")));
+            }
+        }
+        Ok(())
+    }
+    pub(crate) fn validate_corrupt_reset_install(&self, originals: &CorruptActiveOriginals, next: &ActiveRunRecord) -> Result<(), ActiveRunStoreError> {
+        Self::validate_record(next)?;
+        Self::verify_corrupt_reset_originals(&self.root, originals, next)
+    }
+    pub(crate) fn install_corrupt_reset(&self, originals: &CorruptActiveOriginals, next: &ActiveRunRecord) -> Result<(), ActiveRunStoreError> {
+        self.validate_corrupt_reset_install(originals, next)?;
+        self.write_record(next)
+    }
+
     pub fn reset_corrupt(&self) -> Result<(), ActiveRunStoreError> {
         self.protect_versions()?;
         match self.snapshot() {
             Err(error) if error.is_corrupt() => self.write_record(&ActiveRunRecord {
                 revision: Uuid::new_v4(),
                 checkpoint: None,
+                required_configuration: self.gate.as_ref().map(|g| g.configuration_for_checkpoint(None, None)).transpose()?,
             }),
             Err(error) => Err(error),
             Ok(_) => Err(ActiveRunStoreError::InvalidEnvelope(
@@ -499,7 +659,8 @@ impl ActiveRunStore {
         let mut bytes = Vec::new();
         match File::open(self.path(file_name)) {
             Ok(mut file) => {
-                file.read_to_end(&mut bytes)?;
+                if !file.metadata()?.is_file() || file.metadata()?.len() > super::mod_requirements::ACTIVE_MAX_BYTES as u64 { return Err(ActiveRunStoreError::ProtectedOriginal("unsupported file type or byte ceiling".into())); }
+                file.take(super::mod_requirements::ACTIVE_MAX_BYTES as u64 + 1).read_to_end(&mut bytes)?;
             }
             Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
             Err(error) => return Err(error.into()),
@@ -523,14 +684,72 @@ impl ActiveRunStore {
         self.root.join(name)
     }
 }
+
+fn decode_checkpoint(bytes: Option<String>, monotonic: Option<ActiveRunMonotonicMetadata>) -> Result<Option<StoredCheckpoint>, ActiveRunStoreError> {
+    match (bytes, monotonic) {
+        (None, None) => Ok(None),
+        (Some(bytes), Some(m)) if m.loads_used <= 3 => {
+            let core_payload_json = BASE64.decode(bytes).map_err(|e| ActiveRunStoreError::InvalidEnvelope(e.to_string()))?;
+            core_version(&core_payload_json)?;
+            Ok(Some(StoredCheckpoint { core_payload_json, loads_used: m.loads_used, run_peak_certified_power: m.run_peak_certified_power }))
+        }
+        _ => Err(ActiveRunStoreError::InvalidEnvelope("incoherent tombstone or load count".into())),
+    }
+}
+fn validate_requirement(record: &ActiveRunRecord) -> Result<(), ActiveRunStoreError> {
+    if let Some(required) = &record.required_configuration {
+        required.validate().map_err(|e| ActiveRunStoreError::ProtectedOriginal(e.to_string()))?;
+        if let Some(checkpoint) = &record.checkpoint {
+            let identity = game_core::application::CoreApplication::inspect_checkpoint_requirements(&checkpoint.core_payload_json, 64 * 1024 * 1024).map_err(|e| ActiveRunStoreError::InvalidEnvelope(e.to_string()))?;
+            if identity != required.content_identity { return Err(ActiveRunStoreError::ProtectedOriginal("Core/required configuration identity mismatch".into())); }
+        }
+    }
+    Ok(())
+}
+impl ActiveRunStore {
+    pub(crate) fn read_originals(root: &Path) -> Result<Vec<(String, Result<ActiveRunRecord, ActiveRunStoreError>)>, ActiveRunStoreError> {
+        if root.join(INVALIDATED_FILE).exists() { return Err(ActiveRunStoreError::UnsupportedVersion(4)); }
+        let mut records = Vec::new();
+        for name in [CURRENT_FILE, BACKUP_FILE] {
+            match super::mod_requirements::read_optional(&root.join(name), super::mod_requirements::ACTIVE_MAX_BYTES as u64)? {
+                Some(bytes) => records.push((name.into(), ActiveRunEnvelope::decode_record(&bytes))),
+                None => {},
+            }
+        }
+        Ok(records)
+    }
+    pub(crate) fn readonly_record(&self) -> Result<ActiveRunRecord, ActiveRunStoreError> {
+        let records = Self::read_originals(&self.root)?;
+        for (_, record) in records { if let Ok(record) = record { return Ok(record); } }
+        Ok(ActiveRunRecord { revision: Uuid::nil(), checkpoint: None, required_configuration: None })
+    }
+}
 #[cfg(test)]
 mod tests {
     use super::*;
 
+    #[test]
+    fn u15_current_and_previous_core_writers_publish_and_reopen() {
+        for version in [12, 14, 15, 16] {
+            let directory = tempfile::tempdir().unwrap();
+            let store = ActiveRunStore::open(directory.path()).unwrap();
+            // This store owns the envelope, while Core owns the opaque payload.
+            let checkpoint = StoredCheckpoint {
+                core_payload_json: serde_json::to_vec(&serde_json::json!({"version":version,"fixture_payload":"opaque store payload"})).unwrap(),
+                loads_used: 1,
+                run_peak_certified_power: 100,
+            };
+            store.publish(&checkpoint).unwrap();
+            drop(store);
+            let store = ActiveRunStore::open(directory.path()).unwrap();
+            assert!(matches!(store.load().unwrap(),ActiveRunLoad::Loaded {checkpoint: actual,..} if actual == checkpoint));
+        }
+    }
+
     fn checkpoint(payload: &[u8], loads_used: u8) -> StoredCheckpoint {
         StoredCheckpoint {
             core_payload_json: serde_json::to_vec(
-                &serde_json::json!({"version":11,"fixture_payload":payload}),
+                &serde_json::json!({"version":12,"fixture_payload":payload}),
             )
             .unwrap(),
             loads_used,
@@ -545,7 +764,7 @@ mod tests {
     ) -> StoredCheckpoint {
         StoredCheckpoint {
             core_payload_json: serde_json::to_vec(
-                &serde_json::json!({"version":11,"fixture_payload":payload}),
+                &serde_json::json!({"version":12,"fixture_payload":payload}),
             )
             .unwrap(),
             loads_used,
@@ -831,13 +1050,13 @@ mod tests {
     fn old_envelope_version_and_removed_monotonic_anchor_are_rejected() {
         let bytes = ActiveRunEnvelope::encode(&checkpoint(b"payload", 0)).unwrap();
         let current: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
-        assert_eq!(current["version"], 5);
+        assert_eq!(current["version"], 7);
         assert!(current["monotonic"].get("power_model_version").is_none());
         assert!(current["monotonic"]
             .get("current_floor_power_anchor")
             .is_none());
 
-        for old_version_number in [2, 3, 4] {
+        for old_version_number in [2, 3, 4, 5, 6] {
             let mut old_version = current.clone();
             old_version["version"] = serde_json::json!(old_version_number);
             assert!(matches!(

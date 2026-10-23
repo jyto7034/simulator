@@ -1,0 +1,3841 @@
+{
+  "schema": "u12.current-scope-condition-review/v1",
+  "verdict": "Complete",
+  "confidence": "High",
+  "scope": "USER-20261013-VALIDATION-SCOPE",
+  "acceptances": [
+    {
+      "id": "A-PS01-1",
+      "exact_acceptance": "활성 직원 모델·정상 신규 저장·query/DTO·작성/public capability에 기억 및 해당 최근 반응/사건 필드/기능이 없다.",
+      "disposition": "PASS",
+      "independent_reason": "Employee의 실제 필드, EmployeeProfile/EmployeeSnapshotDto, 신규 serializer와 clone shape를 대조했다. 기억/최근 반응 상태가 없고 profile·condition의 양성 필드는 유지된다. 제거 모듈 membership도 기존 입출구 검사로 확인했다.",
+      "groups": [
+        "G08",
+        "G12"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/employee.rs",
+          "bytes": 43626,
+          "sha256": "edcbee17070a3b7c81712c7bdc58ac493f146b66f3281e5c504c811639762c2f"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run.rs",
+          "bytes": 10056,
+          "sha256": "c0887760c59968a30af69c1cb04577b6b8f7ce4a99a9579fd985661408778cac"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/continuation.rs",
+          "bytes": 52169,
+          "sha256": "680447003ff7a4887e32ea5c0824cfb427ce311a9f096b01c7dd70370c66f0a7"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/v7.rs",
+          "bytes": 3737,
+          "sha256": "9de70999862b0c71fa5f37e2f76609a22dc4105a69c19b4d9676ecc60215df31"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/v8.rs",
+          "bytes": 2206,
+          "sha256": "2dc90c379a5b9233c74ac0fb505deb21b441e7602c565ba42ca02a930373a2ef"
+        },
+        {
+          "path": "core_enhanced/src/game/behavior.rs",
+          "bytes": 258087,
+          "sha256": "c5eb8f68453a447a104ac0677e7bcc45ebaf6f21b32a804ecfb3b7849e041f1c"
+        },
+        {
+          "path": "core_enhanced/src/game/mod.rs",
+          "bytes": 641,
+          "sha256": "16af2e304e1a2ac878d85a0a930c53b81390eb6c9ffce46d8f6184d07b8bc81c"
+        },
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "criterion_stale",
+          "run": "full60_stale_criterion001"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "required_missing",
+          "run": "full60_missing_required001"
+        },
+        {
+          "id": "server_model",
+          "run": "server_functional001"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-PS01-2",
+      "exact_acceptance": "기억 합침·기간·노드 경과·최근8 생산을 새로 구현하거나 잔존 동작으로 유지하지 않는다. 후퇴/checkpoint/Continue·사망·새 원정에서도 제거 시스템을 재생성하지 않는다.",
+      "disposition": "PASS",
+      "independent_reason": "world/node_flow·active_run/continuation의 캡처/복원과 새 개인 생성은 현재 Employee 타입을 소비한다. 제거된 노드 경과·최근8 생산 owner가 재연결되지 않으며 실제 새 원정/튜토리얼/Continue 관측과 일치한다.",
+      "groups": [
+        "G02",
+        "G03",
+        "G04",
+        "G07",
+        "G08"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/employee.rs",
+          "bytes": 43626,
+          "sha256": "edcbee17070a3b7c81712c7bdc58ac493f146b66f3281e5c504c811639762c2f"
+        },
+        {
+          "path": "core_enhanced/src/game/world.rs",
+          "bytes": 42987,
+          "sha256": "fd687fc59a778ca6cc7a6f392b841065fb5a6abf650bc089c43ed3e7ade488cf"
+        },
+        {
+          "path": "core_enhanced/src/game/managers/uuid_manager.rs",
+          "bytes": 9393,
+          "sha256": "f50c79afef512c62fca8416cdb14f5509f35eda9791da254e556f3813b75b2d2"
+        },
+        {
+          "path": "core_enhanced/src/game/combat_setup/player_spawns.rs",
+          "bytes": 12126,
+          "sha256": "179b4d6cae98e4e24eadb121114fab6ce06660a48844f915e42f0d54b40ace12"
+        },
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        },
+        {
+          "path": "core_enhanced/src/game/world/visual_novel_flow.rs",
+          "bytes": 12024,
+          "sha256": "73da2371e41bdc6443420483e2bf4bb40c7d8cdda50a28918c84a4b861711b8a"
+        },
+        {
+          "path": "game_resources/data/map/facility_templates.ron",
+          "bytes": 15114,
+          "sha256": "f1912696c1251c3a700a39b951a4cb5360392ee501947361c0bebf343fbff270"
+        },
+        {
+          "path": "core_enhanced/src/game/expedition_lifecycle.rs",
+          "bytes": 9355,
+          "sha256": "ff4973a59ea5c21d7574fe22dfbd81d2e0c6d0bf70535d8b3d5e0ddc55714885"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/continuation.rs",
+          "bytes": 52169,
+          "sha256": "680447003ff7a4887e32ea5c0824cfb427ce311a9f096b01c7dd70370c66f0a7"
+        },
+        {
+          "path": "core_enhanced/src/game/world/expedition_recovery.rs",
+          "bytes": 13456,
+          "sha256": "7d128a158859f7d36c4a7277f66a1d3152d4799c25db35aa2e54052d48ee3f59"
+        },
+        {
+          "path": "core_enhanced/src/game/world/combat.rs",
+          "bytes": 137850,
+          "sha256": "19e82246675b66f6c1ac566153079d18bdf85bb3e7afcc7f0b454de7a02fdf78"
+        },
+        {
+          "path": "core_enhanced/src/game/world/action_capability.rs",
+          "bytes": 33462,
+          "sha256": "768f14ad1fdc58a6bfb02ccec5109765ebb26b94449d0b9a3f6bd09079ab6687"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run.rs",
+          "bytes": 10056,
+          "sha256": "c0887760c59968a30af69c1cb04577b6b8f7ce4a99a9579fd985661408778cac"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/v7.rs",
+          "bytes": 3737,
+          "sha256": "9de70999862b0c71fa5f37e2f76609a22dc4105a69c19b4d9676ecc60215df31"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/v8.rs",
+          "bytes": 2206,
+          "sha256": "2dc90c379a5b9233c74ac0fb505deb21b441e7602c565ba42ca02a930373a2ef"
+        },
+        {
+          "path": "core_enhanced/src/game/behavior.rs",
+          "bytes": 258087,
+          "sha256": "c5eb8f68453a447a104ac0677e7bcc45ebaf6f21b32a804ecfb3b7849e041f1c"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "defeat_abandon_direct",
+          "run": "public_defeat003"
+        },
+        {
+          "id": "failure_direct",
+          "run": "public_failure002"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        },
+        {
+          "id": "server_model",
+          "run": "server_functional001"
+        },
+        {
+          "id": "tutorial_direct",
+          "run": "public_tutorial_complete005"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-PS01-3",
+      "exact_acceptance": "고정 성격 위험/사회 두 축과 condition/사망·영구 도감/탐사/귀환/획득 기록을 삭제하거나 기억 시스템으로 재해석하지 않는다.",
+      "disposition": "PASS",
+      "independent_reason": "정의의 risk/social, condition/사망 자격, 영구 knowledge merge와 현재 소지품 정산을 구별했다. 직원 condition 회귀와 동일 instance 복원 및 knowledge 보존 증거를 확인했다.",
+      "groups": [
+        "G02",
+        "G04",
+        "G07",
+        "G08"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/employee.rs",
+          "bytes": 43626,
+          "sha256": "edcbee17070a3b7c81712c7bdc58ac493f146b66f3281e5c504c811639762c2f"
+        },
+        {
+          "path": "core_enhanced/src/game/world.rs",
+          "bytes": 42987,
+          "sha256": "fd687fc59a778ca6cc7a6f392b841065fb5a6abf650bc089c43ed3e7ade488cf"
+        },
+        {
+          "path": "core_enhanced/src/game/managers/uuid_manager.rs",
+          "bytes": 9393,
+          "sha256": "f50c79afef512c62fca8416cdb14f5509f35eda9791da254e556f3813b75b2d2"
+        },
+        {
+          "path": "core_enhanced/src/game/combat_setup/player_spawns.rs",
+          "bytes": 12126,
+          "sha256": "179b4d6cae98e4e24eadb121114fab6ce06660a48844f915e42f0d54b40ace12"
+        },
+        {
+          "path": "core_enhanced/src/game/expedition_lifecycle.rs",
+          "bytes": 9355,
+          "sha256": "ff4973a59ea5c21d7574fe22dfbd81d2e0c6d0bf70535d8b3d5e0ddc55714885"
+        },
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/continuation.rs",
+          "bytes": 52169,
+          "sha256": "680447003ff7a4887e32ea5c0824cfb427ce311a9f096b01c7dd70370c66f0a7"
+        },
+        {
+          "path": "core_enhanced/src/game/world/expedition_recovery.rs",
+          "bytes": 13456,
+          "sha256": "7d128a158859f7d36c4a7277f66a1d3152d4799c25db35aa2e54052d48ee3f59"
+        },
+        {
+          "path": "core_enhanced/src/game/world/combat.rs",
+          "bytes": 137850,
+          "sha256": "19e82246675b66f6c1ac566153079d18bdf85bb3e7afcc7f0b454de7a02fdf78"
+        },
+        {
+          "path": "core_enhanced/src/game/world/action_capability.rs",
+          "bytes": 33462,
+          "sha256": "768f14ad1fdc58a6bfb02ccec5109765ebb26b94449d0b9a3f6bd09079ab6687"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run.rs",
+          "bytes": 10056,
+          "sha256": "c0887760c59968a30af69c1cb04577b6b8f7ce4a99a9579fd985661408778cac"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/v7.rs",
+          "bytes": 3737,
+          "sha256": "9de70999862b0c71fa5f37e2f76609a22dc4105a69c19b4d9676ecc60215df31"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/v8.rs",
+          "bytes": 2206,
+          "sha256": "2dc90c379a5b9233c74ac0fb505deb21b441e7602c565ba42ca02a930373a2ef"
+        },
+        {
+          "path": "core_enhanced/src/game/behavior.rs",
+          "bytes": 258087,
+          "sha256": "c5eb8f68453a447a104ac0677e7bcc45ebaf6f21b32a804ecfb3b7849e041f1c"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "defeat_abandon_direct",
+          "run": "public_defeat003"
+        },
+        {
+          "id": "failure_direct",
+          "run": "public_failure002"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        },
+        {
+          "id": "server_model",
+          "run": "server_functional001"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-PS02-1",
+      "exact_acceptance": "활성 모델·기본 초기화·신규 저장·query/DTO에서 신뢰 점수/band와 전용 입력/public capability가 없다. 신뢰 gameplay를 향후 필수 또는 미정 기능으로 남기지 않는다.",
+      "disposition": "PASS",
+      "independent_reason": "Employee·DTO·공개 명령 열거/정확 dispatch에서 trust 점수/band 입력 및 owner를 제거했다. 정상 snapshot은 condition과 고정 성격을 계속 제공하고 미래 신뢰 gameplay를 필수 잔여로 두지 않는다.",
+      "groups": [
+        "G08",
+        "G12"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/employee.rs",
+          "bytes": 43626,
+          "sha256": "edcbee17070a3b7c81712c7bdc58ac493f146b66f3281e5c504c811639762c2f"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run.rs",
+          "bytes": 10056,
+          "sha256": "c0887760c59968a30af69c1cb04577b6b8f7ce4a99a9579fd985661408778cac"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/continuation.rs",
+          "bytes": 52169,
+          "sha256": "680447003ff7a4887e32ea5c0824cfb427ce311a9f096b01c7dd70370c66f0a7"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/v7.rs",
+          "bytes": 3737,
+          "sha256": "9de70999862b0c71fa5f37e2f76609a22dc4105a69c19b4d9676ecc60215df31"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/v8.rs",
+          "bytes": 2206,
+          "sha256": "2dc90c379a5b9233c74ac0fb505deb21b441e7602c565ba42ca02a930373a2ef"
+        },
+        {
+          "path": "core_enhanced/src/game/behavior.rs",
+          "bytes": 258087,
+          "sha256": "c5eb8f68453a447a104ac0677e7bcc45ebaf6f21b32a804ecfb3b7849e041f1c"
+        },
+        {
+          "path": "core_enhanced/src/game/mod.rs",
+          "bytes": 641,
+          "sha256": "16af2e304e1a2ac878d85a0a930c53b81390eb6c9ffce46d8f6184d07b8bc81c"
+        },
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "criterion_stale",
+          "run": "full60_stale_criterion001"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "required_missing",
+          "run": "full60_missing_required001"
+        },
+        {
+          "id": "server_model",
+          "run": "server_functional001"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-PS02-2",
+      "exact_acceptance": "미지원 구형 개발/테스트 저장이나 제거 시스템 전용 입력을 정상 지원 데이터처럼 조용히 수용하지 않는다. 명시 거절 후 원본 파일 및 거절 전 활성 상태를 보호한다.",
+      "disposition": "PASS_WITH_CURRENT_SCOPE",
+      "independent_reason": "실제 preimplementation V7 원본 bytes/hash 고정 사례의 Continue/converter 반복 거절과 전체 roots 불변을 확인했다. 지원 명령의 옛 시작 모드도 거절한다. F-U12-001과 checksum 재작성형 임의 변조는 현재 상위 범위에서 제외한다.",
+      "groups": [
+        "G08",
+        "G09"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/employee.rs",
+          "bytes": 43626,
+          "sha256": "edcbee17070a3b7c81712c7bdc58ac493f146b66f3281e5c504c811639762c2f"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run.rs",
+          "bytes": 10056,
+          "sha256": "c0887760c59968a30af69c1cb04577b6b8f7ce4a99a9579fd985661408778cac"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/continuation.rs",
+          "bytes": 52169,
+          "sha256": "680447003ff7a4887e32ea5c0824cfb427ce311a9f096b01c7dd70370c66f0a7"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/v7.rs",
+          "bytes": 3737,
+          "sha256": "9de70999862b0c71fa5f37e2f76609a22dc4105a69c19b4d9676ecc60215df31"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/v8.rs",
+          "bytes": 2206,
+          "sha256": "2dc90c379a5b9233c74ac0fb505deb21b441e7602c565ba42ca02a930373a2ef"
+        },
+        {
+          "path": "core_enhanced/src/game/behavior.rs",
+          "bytes": 258087,
+          "sha256": "c5eb8f68453a447a104ac0677e7bcc45ebaf6f21b32a804ecfb3b7849e041f1c"
+        },
+        {
+          "path": "game_server/src/persistence/player_profile_store/application_intent.rs",
+          "bytes": 34890,
+          "sha256": "818244cf75298d6b411259d0433f06ab73ddb2e1c25dc827cd409443daaf6412"
+        },
+        {
+          "path": "game_server/src/persistence/active_run_store.rs",
+          "bytes": 45539,
+          "sha256": "11407bfdf9879ae99dbbb1dab9679e69bb255436937c086dbd0f1b486c07a355"
+        },
+        {
+          "path": "game_server/src/mod_admission/persistence.rs",
+          "bytes": 4966,
+          "sha256": "73546ac247016ca5a3beff63e0324d83d98250f2948975559ed068095dcf7935"
+        },
+        {
+          "path": "core_enhanced/src/application.rs",
+          "bytes": 92864,
+          "sha256": "dd3d394ec782e4c7df33683f9b37c4f88bc397126d9b2c3e1a14794600cbfbd7"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_ack_current",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        },
+        {
+          "id": "server_model",
+          "run": "server_functional001"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-PS02-3",
+      "exact_acceptance": "새 지원 저장·후퇴/checkpoint/Continue·원정 시작/귀환/실패/다음 직원 초기화가 두 시스템을 재생성하지 않으며 다른 승인 상태의 정상 저장·복원이 유지된다.",
+      "disposition": "PASS",
+      "independent_reason": "현재 typed writer와 복원/개인 생성 경로가 제거 필드를 생성하지 않는다. 정상 pair 저장/fresh Continue의 roots·required configuration·revision 일치와 동일 개인/사본 보존을 확인했다.",
+      "groups": [
+        "G02",
+        "G04",
+        "G07",
+        "G08"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/employee.rs",
+          "bytes": 43626,
+          "sha256": "edcbee17070a3b7c81712c7bdc58ac493f146b66f3281e5c504c811639762c2f"
+        },
+        {
+          "path": "core_enhanced/src/game/world.rs",
+          "bytes": 42987,
+          "sha256": "fd687fc59a778ca6cc7a6f392b841065fb5a6abf650bc089c43ed3e7ade488cf"
+        },
+        {
+          "path": "core_enhanced/src/game/managers/uuid_manager.rs",
+          "bytes": 9393,
+          "sha256": "f50c79afef512c62fca8416cdb14f5509f35eda9791da254e556f3813b75b2d2"
+        },
+        {
+          "path": "core_enhanced/src/game/combat_setup/player_spawns.rs",
+          "bytes": 12126,
+          "sha256": "179b4d6cae98e4e24eadb121114fab6ce06660a48844f915e42f0d54b40ace12"
+        },
+        {
+          "path": "core_enhanced/src/game/expedition_lifecycle.rs",
+          "bytes": 9355,
+          "sha256": "ff4973a59ea5c21d7574fe22dfbd81d2e0c6d0bf70535d8b3d5e0ddc55714885"
+        },
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/continuation.rs",
+          "bytes": 52169,
+          "sha256": "680447003ff7a4887e32ea5c0824cfb427ce311a9f096b01c7dd70370c66f0a7"
+        },
+        {
+          "path": "core_enhanced/src/game/world/expedition_recovery.rs",
+          "bytes": 13456,
+          "sha256": "7d128a158859f7d36c4a7277f66a1d3152d4799c25db35aa2e54052d48ee3f59"
+        },
+        {
+          "path": "core_enhanced/src/game/world/combat.rs",
+          "bytes": 137850,
+          "sha256": "19e82246675b66f6c1ac566153079d18bdf85bb3e7afcc7f0b454de7a02fdf78"
+        },
+        {
+          "path": "core_enhanced/src/game/world/action_capability.rs",
+          "bytes": 33462,
+          "sha256": "768f14ad1fdc58a6bfb02ccec5109765ebb26b94449d0b9a3f6bd09079ab6687"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run.rs",
+          "bytes": 10056,
+          "sha256": "c0887760c59968a30af69c1cb04577b6b8f7ce4a99a9579fd985661408778cac"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/v7.rs",
+          "bytes": 3737,
+          "sha256": "9de70999862b0c71fa5f37e2f76609a22dc4105a69c19b4d9676ecc60215df31"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/v8.rs",
+          "bytes": 2206,
+          "sha256": "2dc90c379a5b9233c74ac0fb505deb21b441e7602c565ba42ca02a930373a2ef"
+        },
+        {
+          "path": "core_enhanced/src/game/behavior.rs",
+          "bytes": 258087,
+          "sha256": "c5eb8f68453a447a104ac0677e7bcc45ebaf6f21b32a804ecfb3b7849e041f1c"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "defeat_abandon_direct",
+          "run": "public_defeat003"
+        },
+        {
+          "id": "failure_direct",
+          "run": "public_failure002"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        },
+        {
+          "id": "server_model",
+          "run": "server_functional001"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-01-1",
+      "exact_acceptance": "새 profile에서 튜토리얼 완료 없이 정상 명령으로 원정을 시작한다. 옛 Standard 완료→Endless 해금 gate를 사용하지 않는다.",
+      "disposition": "PASS",
+      "independent_reason": "새 profile StartExpedition에 tutorial unlock 조건이 없으며 active marker만 중복 시작을 거절한다. 정상 승인 local start와 fresh Continue raw admission을 확인했다.",
+      "groups": [
+        "G01",
+        "G02"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        },
+        {
+          "path": "core_enhanced/src/game/world.rs",
+          "bytes": 42987,
+          "sha256": "fd687fc59a778ca6cc7a6f392b841065fb5a6abf650bc089c43ed3e7ade488cf"
+        },
+        {
+          "path": "game_server/src/mod_admission.rs",
+          "bytes": 635,
+          "sha256": "b72ee3612787ad0e691ac6f26f90b63e24b5d73f426fe2e09a3ed26657a22cf7"
+        },
+        {
+          "path": "core_enhanced/src/game/employee.rs",
+          "bytes": 43626,
+          "sha256": "edcbee17070a3b7c81712c7bdc58ac493f146b66f3281e5c504c811639762c2f"
+        },
+        {
+          "path": "core_enhanced/src/game/managers/uuid_manager.rs",
+          "bytes": 9393,
+          "sha256": "f50c79afef512c62fca8416cdb14f5509f35eda9791da254e556f3813b75b2d2"
+        },
+        {
+          "path": "core_enhanced/src/game/combat_setup/player_spawns.rs",
+          "bytes": 12126,
+          "sha256": "179b4d6cae98e4e24eadb121114fab6ce06660a48844f915e42f0d54b40ace12"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "local_current_continue",
+          "run": "normal_local_continue002"
+        },
+        {
+          "id": "local_current_start",
+          "run": "normal_local_start002"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_local_return",
+          "run": "normal_local_return001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-01-2",
+      "exact_acceptance": "튜토리얼 시작·보상·완료·실패·skip·반복·종료/Continue·checkpoint 복원 전후의 원정 vault/진행 기록/첫 귀환 이력이 동일하다. 튜토리얼 내부 진행 저장은 정상 동작한다.",
+      "disposition": "PASS",
+      "independent_reason": "Tutorial의 영구 profile 보존 owner와 SkipTutorial을 읽고, 실제 pending/consumed profile을 가진 full tutorial 정상 host 증거 및 반복/포기/Continue 사례를 대조했다. 튜토리얼 진행 저장과 영구 원정 기록을 분리한다.",
+      "groups": [
+        "G03",
+        "G09"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        },
+        {
+          "path": "core_enhanced/src/game/world/visual_novel_flow.rs",
+          "bytes": 12024,
+          "sha256": "73da2371e41bdc6443420483e2bf4bb40c7d8cdda50a28918c84a4b861711b8a"
+        },
+        {
+          "path": "game_resources/data/map/facility_templates.ron",
+          "bytes": 15114,
+          "sha256": "f1912696c1251c3a700a39b951a4cb5360392ee501947361c0bebf343fbff270"
+        },
+        {
+          "path": "game_server/src/persistence/player_profile_store/application_intent.rs",
+          "bytes": 34890,
+          "sha256": "818244cf75298d6b411259d0433f06ab73ddb2e1c25dc827cd409443daaf6412"
+        },
+        {
+          "path": "game_server/src/persistence/active_run_store.rs",
+          "bytes": 45539,
+          "sha256": "11407bfdf9879ae99dbbb1dab9679e69bb255436937c086dbd0f1b486c07a355"
+        },
+        {
+          "path": "game_server/src/mod_admission/persistence.rs",
+          "bytes": 4966,
+          "sha256": "73546ac247016ca5a3beff63e0324d83d98250f2948975559ed068095dcf7935"
+        },
+        {
+          "path": "core_enhanced/src/application.rs",
+          "bytes": 92864,
+          "sha256": "dd3d394ec782e4c7df33683f9b37c4f88bc397126d9b2c3e1a14794600cbfbd7"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_ack_current",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        },
+        {
+          "id": "tutorial_direct",
+          "run": "public_tutorial_complete005"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-02-1",
+      "exact_acceptance": "기존 ST1-NT60 고정 슬롯/활동을 현재 로더·정상 명령으로 진행해 3층 마지막 일반 보스 승리까지 도달하며 가짜 terminal/빈 executor로 대체하지 않는다. 실패 후 새 반복과 같은 패배 노드 재도전을 구별한다.",
+      "disposition": "PASS",
+      "independent_reason": "고정 facility template와 실제 Tutorial005 전투 trace를 확인했다. 0/1/2층의 실제 전투 5회와 terminal을 거친다. 동일 프로세스 복원은 새 프로세스 증거로 승격하지 않았고 실패 후보 재시도와 새 instance를 구별했다.",
+      "groups": [
+        "G03"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        },
+        {
+          "path": "core_enhanced/src/game/world/visual_novel_flow.rs",
+          "bytes": 12024,
+          "sha256": "73da2371e41bdc6443420483e2bf4bb40c7d8cdda50a28918c84a4b861711b8a"
+        },
+        {
+          "path": "game_resources/data/map/facility_templates.ron",
+          "bytes": 15114,
+          "sha256": "f1912696c1251c3a700a39b951a4cb5360392ee501947361c0bebf343fbff270"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "tutorial_direct",
+          "run": "public_tutorial_complete005"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-02-2",
+      "exact_acceptance": "사전 설정 장비/파편은 사용할 수 있지만 별도 파편 학습 grant/시퀀스는 없다. 전투력/원정 peak가 적의 작성된 고정 값을 바꾸지 않는다. 기존 수치는 검증할 초기값이며 보스 actor 감쇠를 다른 출현/적/보상에 전파하지 않는다.",
+      "disposition": "PASS",
+      "independent_reason": "authored_fixed 경로와 해당 보스 actor에만 적용하는 stat override를 대조했다. 추가 학습 grant가 없고 전투력/peak 기반 재조정 경로를 사용하지 않는다. 공식 loadout oracle의 정정도 실제 작성 데이터를 기준으로 확인했다.",
+      "groups": [
+        "G03",
+        "G10"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        },
+        {
+          "path": "core_enhanced/src/game/world/visual_novel_flow.rs",
+          "bytes": 12024,
+          "sha256": "73da2371e41bdc6443420483e2bf4bb40c7d8cdda50a28918c84a4b861711b8a"
+        },
+        {
+          "path": "game_resources/data/map/facility_templates.ron",
+          "bytes": 15114,
+          "sha256": "f1912696c1251c3a700a39b951a4cb5360392ee501947361c0bebf343fbff270"
+        },
+        {
+          "path": "tools/cmva_build.py",
+          "bytes": 8725,
+          "sha256": "1345a807a7fca6d4c71ecb21dad914685540d4c587ddfd604dc224793f6783de"
+        },
+        {
+          "path": "core_enhanced/build.rs",
+          "bytes": 9088,
+          "sha256": "b7483b0be8d34a781bfbdd06567201e94313aeda831a7da942b8cfc1aebf8138"
+        },
+        {
+          "path": "game_server/src/mod_admission/worker.rs",
+          "bytes": 6872,
+          "sha256": "ce323d49ce72724957053810575b3575e7b135bfa4fff062b07302710e6f2c20"
+        },
+        {
+          "path": "game_server/src/mod_admission.rs",
+          "bytes": 635,
+          "sha256": "b72ee3612787ad0e691ac6f26f90b63e24b5d73f426fe2e09a3ed26657a22cf7"
+        },
+        {
+          "path": "core_enhanced/src/game/data/content_pack/mod.rs",
+          "bytes": 17162,
+          "sha256": "1155196933f7844f63d09381da4e09aea2fc9f323e57c2f985033c16ed574b40"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "criterion_stale",
+          "run": "full60_stale_criterion001"
+        },
+        {
+          "id": "full60_current",
+          "run": "full60_combined_calibration002"
+        },
+        {
+          "id": "full60_current_accept",
+          "run": "full60_accept002"
+        },
+        {
+          "id": "full60_current_continue",
+          "run": "full60_continue002"
+        },
+        {
+          "id": "local_current_continue",
+          "run": "normal_local_continue002"
+        },
+        {
+          "id": "local_current_start",
+          "run": "normal_local_start002"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        },
+        {
+          "id": "required_missing",
+          "run": "full60_missing_required001"
+        },
+        {
+          "id": "server_current_adoption",
+          "run": "normal_server_adoption003"
+        },
+        {
+          "id": "server_current_calibration",
+          "run": "normal_server_calibration003"
+        },
+        {
+          "id": "standalone_current_adoption",
+          "run": "normal_standalone_adoption002"
+        },
+        {
+          "id": "standalone_current_calibration",
+          "run": "normal_standalone_calibration006"
+        },
+        {
+          "id": "tutorial_direct",
+          "run": "public_tutorial_complete005"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-02-3",
+      "exact_acceptance": "튜토리얼에 기존 Event·보급·정비·상점·본사 연락·SavePoint가 연결되고 현재 노드/결과 원자 확정과 중단 복원을 따른다. 직원 처분 설정과 첫귀환 VN은 미리 소비/설명하지 않는다.",
+      "disposition": "PASS",
+      "independent_reason": "공용 Event/HQ/SavePoint와 결과 확정 owner를 읽었다. Tutorial005의 HQ2/SavePoint1 및 normal host full tutorial에서 서비스·복원과 profile 보존이 관측된다. 첫 귀환 story는 튜토리얼에서 소비되지 않는다.",
+      "groups": [
+        "G03"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        },
+        {
+          "path": "core_enhanced/src/game/world/visual_novel_flow.rs",
+          "bytes": 12024,
+          "sha256": "73da2371e41bdc6443420483e2bf4bb40c7d8cdda50a28918c84a4b861711b8a"
+        },
+        {
+          "path": "game_resources/data/map/facility_templates.ron",
+          "bytes": 15114,
+          "sha256": "f1912696c1251c3a700a39b951a4cb5360392ee501947361c0bebf343fbff270"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "tutorial_direct",
+          "run": "public_tutorial_complete005"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-03-1",
+      "exact_acceptance": "역할별2/총6 중 서로 다른3개 정의를 선택한다. 잘못된 개수·중복·없는 후보는 상태/예산/장비를 부분 생성하지 않고 거절한다. 정상 선발 직원마다 기본 세트가 정확히 한 번 지급된다.",
+      "disposition": "PASS",
+      "independent_reason": "typed catalog의 역할별2·총6 검증과 정확히3명의 고유 선택, draft에서의 장비/예산/loan 전체 확정을 확인했다. functional007의 실제6 data 검사와 invalid selection의 roots 불변을 결속한다.",
+      "groups": [
+        "G01",
+        "G02",
+        "G10"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        },
+        {
+          "path": "core_enhanced/src/game/world.rs",
+          "bytes": 42987,
+          "sha256": "fd687fc59a778ca6cc7a6f392b841065fb5a6abf650bc089c43ed3e7ade488cf"
+        },
+        {
+          "path": "game_server/src/mod_admission.rs",
+          "bytes": 635,
+          "sha256": "b72ee3612787ad0e691ac6f26f90b63e24b5d73f426fe2e09a3ed26657a22cf7"
+        },
+        {
+          "path": "core_enhanced/src/game/employee.rs",
+          "bytes": 43626,
+          "sha256": "edcbee17070a3b7c81712c7bdc58ac493f146b66f3281e5c504c811639762c2f"
+        },
+        {
+          "path": "core_enhanced/src/game/managers/uuid_manager.rs",
+          "bytes": 9393,
+          "sha256": "f50c79afef512c62fca8416cdb14f5509f35eda9791da254e556f3813b75b2d2"
+        },
+        {
+          "path": "core_enhanced/src/game/combat_setup/player_spawns.rs",
+          "bytes": 12126,
+          "sha256": "179b4d6cae98e4e24eadb121114fab6ce06660a48844f915e42f0d54b40ace12"
+        },
+        {
+          "path": "tools/cmva_build.py",
+          "bytes": 8725,
+          "sha256": "1345a807a7fca6d4c71ecb21dad914685540d4c587ddfd604dc224793f6783de"
+        },
+        {
+          "path": "core_enhanced/build.rs",
+          "bytes": 9088,
+          "sha256": "b7483b0be8d34a781bfbdd06567201e94313aeda831a7da942b8cfc1aebf8138"
+        },
+        {
+          "path": "game_server/src/mod_admission/worker.rs",
+          "bytes": 6872,
+          "sha256": "ce323d49ce72724957053810575b3575e7b135bfa4fff062b07302710e6f2c20"
+        },
+        {
+          "path": "core_enhanced/src/game/data/content_pack/mod.rs",
+          "bytes": 17162,
+          "sha256": "1155196933f7844f63d09381da4e09aea2fc9f323e57c2f985033c16ed574b40"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "criterion_stale",
+          "run": "full60_stale_criterion001"
+        },
+        {
+          "id": "full60_current",
+          "run": "full60_combined_calibration002"
+        },
+        {
+          "id": "full60_current_accept",
+          "run": "full60_accept002"
+        },
+        {
+          "id": "full60_current_continue",
+          "run": "full60_continue002"
+        },
+        {
+          "id": "local_current_continue",
+          "run": "normal_local_continue002"
+        },
+        {
+          "id": "local_current_start",
+          "run": "normal_local_start002"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_local_return",
+          "run": "normal_local_return001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        },
+        {
+          "id": "required_missing",
+          "run": "full60_missing_required001"
+        },
+        {
+          "id": "server_current_adoption",
+          "run": "normal_server_adoption003"
+        },
+        {
+          "id": "server_current_calibration",
+          "run": "normal_server_calibration003"
+        },
+        {
+          "id": "standalone_current_adoption",
+          "run": "normal_standalone_adoption002"
+        },
+        {
+          "id": "standalone_current_calibration",
+          "run": "normal_standalone_calibration006"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-03-2",
+      "exact_acceptance": "추가 훈련용 파편 선택/무상 대여 대체는 없다. 10명 보유/8명 배치 경계와 철수 후 다른 인원 배치, condition·무기·비용·재배치 대기를 유지한다.",
+      "disposition": "PASS",
+      "independent_reason": "선발 기본 세트와 vault loan을 별도 owner로 다룬다. 현재 shield/last_line oracle,10명 보유/11번째 거절,8명 배치·무기/condition/재배치 회귀를 확인했다. 추가 무료 학습 선택을 생성하지 않는다.",
+      "groups": [
+        "G02",
+        "G04",
+        "G05"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/employee.rs",
+          "bytes": 43626,
+          "sha256": "edcbee17070a3b7c81712c7bdc58ac493f146b66f3281e5c504c811639762c2f"
+        },
+        {
+          "path": "core_enhanced/src/game/world.rs",
+          "bytes": 42987,
+          "sha256": "fd687fc59a778ca6cc7a6f392b841065fb5a6abf650bc089c43ed3e7ade488cf"
+        },
+        {
+          "path": "core_enhanced/src/game/managers/uuid_manager.rs",
+          "bytes": 9393,
+          "sha256": "f50c79afef512c62fca8416cdb14f5509f35eda9791da254e556f3813b75b2d2"
+        },
+        {
+          "path": "core_enhanced/src/game/combat_setup/player_spawns.rs",
+          "bytes": 12126,
+          "sha256": "179b4d6cae98e4e24eadb121114fab6ce06660a48844f915e42f0d54b40ace12"
+        },
+        {
+          "path": "core_enhanced/src/game/expedition_lifecycle.rs",
+          "bytes": 9355,
+          "sha256": "ff4973a59ea5c21d7574fe22dfbd81d2e0c6d0bf70535d8b3d5e0ddc55714885"
+        },
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/continuation.rs",
+          "bytes": 52169,
+          "sha256": "680447003ff7a4887e32ea5c0824cfb427ce311a9f096b01c7dd70370c66f0a7"
+        },
+        {
+          "path": "core_enhanced/src/game/world/headquarters.rs",
+          "bytes": 7713,
+          "sha256": "bb170bb816db4d7a0c5ebbdc45d7d54509503e9a34697871530b984fd63d4a36"
+        },
+        {
+          "path": "core_enhanced/src/game/world/map_content.rs",
+          "bytes": 14445,
+          "sha256": "13f901e9bdb3c27e7b416d549155f54fe67d4ac85a5237d0cc874127500356b8"
+        },
+        {
+          "path": "core_enhanced/src/game/recruitment.rs",
+          "bytes": 8835,
+          "sha256": "03ce0271c0f9687a84649ac57731de36c723dd24af0e5bb01ca97d07c1d1842a"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-04-1",
+      "exact_acceptance": "같은 seed와 확정 선택에서 offer 순서가 재진입·저장/Continue·checkpoint로 임의 재추첨되지 않는다. 채용하지 않은 후보는 제시 순서대로 뒤로 이동하며 비채용 HQ 선택은 제안 전원을 같은 순서로 돌린다.",
+      "disposition": "PASS",
+      "independent_reason": "seed 기반 sorted/shuffled queue와 offer의 정확한 회전을 읽었다. Continue는 저장된 queue와 개인 stream을 보존하고 미선택 tail/비채용 전체 반환을 유료 HQ 시험으로 확인했다.",
+      "groups": [
+        "G05"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/world/headquarters.rs",
+          "bytes": 7713,
+          "sha256": "bb170bb816db4d7a0c5ebbdc45d7d54509503e9a34697871530b984fd63d4a36"
+        },
+        {
+          "path": "core_enhanced/src/game/world/map_content.rs",
+          "bytes": 14445,
+          "sha256": "13f901e9bdb3c27e7b416d549155f54fe67d4ac85a5237d0cc874127500356b8"
+        },
+        {
+          "path": "core_enhanced/src/game/recruitment.rs",
+          "bytes": 8835,
+          "sha256": "03ce0271c0f9687a84649ac57731de36c723dd24af0e5bb01ca97d07c1d1842a"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-04-2",
+      "exact_acceptance": "고정 초반 기회에서 최대2명 유료 채용이 가능하고 작성된 비용·보유 한도·실제 후보/기본 장비 유효성을 함께 적용한다. 부족 비용/10명 초과/없는 후보 거절은 queue/offer/roster·지갑·장비를 부분 변경하지 않는다.",
+      "disposition": "PASS",
+      "independent_reason": "실제 작성 가격·wallet·roster·loadout 자격을 함께 계산한 후 draft를 확정한다. 자금이 있는 정상 fixture, 최대2명 및10/11명 경계·실패 rollback oracle을 확인했다.",
+      "groups": [
+        "G01",
+        "G05",
+        "G09"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        },
+        {
+          "path": "core_enhanced/src/game/world.rs",
+          "bytes": 42987,
+          "sha256": "fd687fc59a778ca6cc7a6f392b841065fb5a6abf650bc089c43ed3e7ade488cf"
+        },
+        {
+          "path": "game_server/src/mod_admission.rs",
+          "bytes": 635,
+          "sha256": "b72ee3612787ad0e691ac6f26f90b63e24b5d73f426fe2e09a3ed26657a22cf7"
+        },
+        {
+          "path": "core_enhanced/src/game/world/headquarters.rs",
+          "bytes": 7713,
+          "sha256": "bb170bb816db4d7a0c5ebbdc45d7d54509503e9a34697871530b984fd63d4a36"
+        },
+        {
+          "path": "core_enhanced/src/game/world/map_content.rs",
+          "bytes": 14445,
+          "sha256": "13f901e9bdb3c27e7b416d549155f54fe67d4ac85a5237d0cc874127500356b8"
+        },
+        {
+          "path": "core_enhanced/src/game/recruitment.rs",
+          "bytes": 8835,
+          "sha256": "03ce0271c0f9687a84649ac57731de36c723dd24af0e5bb01ca97d07c1d1842a"
+        },
+        {
+          "path": "game_server/src/persistence/player_profile_store/application_intent.rs",
+          "bytes": 34890,
+          "sha256": "818244cf75298d6b411259d0433f06ab73ddb2e1c25dc827cd409443daaf6412"
+        },
+        {
+          "path": "game_server/src/persistence/active_run_store.rs",
+          "bytes": 45539,
+          "sha256": "11407bfdf9879ae99dbbb1dab9679e69bb255436937c086dbd0f1b486c07a355"
+        },
+        {
+          "path": "game_server/src/mod_admission/persistence.rs",
+          "bytes": 4966,
+          "sha256": "73546ac247016ca5a3beff63e0324d83d98250f2948975559ed068095dcf7935"
+        },
+        {
+          "path": "core_enhanced/src/application.rs",
+          "bytes": 92864,
+          "sha256": "dd3d394ec782e4c7df33683f9b37c4f88bc397126d9b2c3e1a14794600cbfbd7"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "local_current_continue",
+          "run": "normal_local_continue002"
+        },
+        {
+          "id": "local_current_start",
+          "run": "normal_local_start002"
+        },
+        {
+          "id": "normal_ack_current",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_local_return",
+          "run": "normal_local_return001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-04-3",
+      "exact_acceptance": "깊이5 이상 일반 채용은 제공되지 않으며 0층 시작 선발은 별도다. 본사 다른 서비스까지 제거하지 않는다. 정확한 방 배치·가격은 승인된 플레이 조절값이며 U13 전체 배치 완료를 주장하지 않는다.",
+      "disposition": "PASS",
+      "independent_reason": "현재 깊이와 실제 HQ offers의 eligibility가 일반 채용을 초반으로 제한한다. 깊이5 이후 채용 부재와 다른 HQ 서비스 존속을 구분했다. U13의 전체 배치 완료 주장은 하지 않는다.",
+      "groups": [
+        "G05",
+        "G10"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/world/headquarters.rs",
+          "bytes": 7713,
+          "sha256": "bb170bb816db4d7a0c5ebbdc45d7d54509503e9a34697871530b984fd63d4a36"
+        },
+        {
+          "path": "core_enhanced/src/game/world/map_content.rs",
+          "bytes": 14445,
+          "sha256": "13f901e9bdb3c27e7b416d549155f54fe67d4ac85a5237d0cc874127500356b8"
+        },
+        {
+          "path": "core_enhanced/src/game/recruitment.rs",
+          "bytes": 8835,
+          "sha256": "03ce0271c0f9687a84649ac57731de36c723dd24af0e5bb01ca97d07c1d1842a"
+        },
+        {
+          "path": "tools/cmva_build.py",
+          "bytes": 8725,
+          "sha256": "1345a807a7fca6d4c71ecb21dad914685540d4c587ddfd604dc224793f6783de"
+        },
+        {
+          "path": "core_enhanced/build.rs",
+          "bytes": 9088,
+          "sha256": "b7483b0be8d34a781bfbdd06567201e94313aeda831a7da942b8cfc1aebf8138"
+        },
+        {
+          "path": "game_server/src/mod_admission/worker.rs",
+          "bytes": 6872,
+          "sha256": "ce323d49ce72724957053810575b3575e7b135bfa4fff062b07302710e6f2c20"
+        },
+        {
+          "path": "game_server/src/mod_admission.rs",
+          "bytes": 635,
+          "sha256": "b72ee3612787ad0e691ac6f26f90b63e24b5d73f426fe2e09a3ed26657a22cf7"
+        },
+        {
+          "path": "core_enhanced/src/game/data/content_pack/mod.rs",
+          "bytes": 17162,
+          "sha256": "1155196933f7844f63d09381da4e09aea2fc9f323e57c2f985033c16ed574b40"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "criterion_stale",
+          "run": "full60_stale_criterion001"
+        },
+        {
+          "id": "full60_current",
+          "run": "full60_combined_calibration002"
+        },
+        {
+          "id": "full60_current_accept",
+          "run": "full60_accept002"
+        },
+        {
+          "id": "full60_current_continue",
+          "run": "full60_continue002"
+        },
+        {
+          "id": "local_current_continue",
+          "run": "normal_local_continue002"
+        },
+        {
+          "id": "local_current_start",
+          "run": "normal_local_start002"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        },
+        {
+          "id": "required_missing",
+          "run": "full60_missing_required001"
+        },
+        {
+          "id": "server_current_adoption",
+          "run": "normal_server_adoption003"
+        },
+        {
+          "id": "server_current_calibration",
+          "run": "normal_server_calibration003"
+        },
+        {
+          "id": "standalone_current_adoption",
+          "run": "normal_standalone_adoption002"
+        },
+        {
+          "id": "standalone_current_calibration",
+          "run": "normal_standalone_calibration006"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-05-1",
+      "exact_acceptance": "정의의 두 성격 축은 UUID·신뢰·기억에서 생성하지 않고 정상 조회/새 저장/복원에서 유지한다. 표시 적성을 무기 제한·보너스·불일치 페널티로 사용하지 않는다.",
+      "disposition": "PASS",
+      "independent_reason": "authored profile의 두 성격 축을 그대로 복사한다. 교정된 aptitude 시험은 동일한 base stats/loadout에서 표시 적성만 바꾸고 전체 effective battle inputs 동일성을 비교하므로 무기 제한/보너스 회귀를 검출한다.",
+      "groups": [
+        "G02",
+        "G08"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/employee.rs",
+          "bytes": 43626,
+          "sha256": "edcbee17070a3b7c81712c7bdc58ac493f146b66f3281e5c504c811639762c2f"
+        },
+        {
+          "path": "core_enhanced/src/game/world.rs",
+          "bytes": 42987,
+          "sha256": "fd687fc59a778ca6cc7a6f392b841065fb5a6abf650bc089c43ed3e7ade488cf"
+        },
+        {
+          "path": "core_enhanced/src/game/managers/uuid_manager.rs",
+          "bytes": 9393,
+          "sha256": "f50c79afef512c62fca8416cdb14f5509f35eda9791da254e556f3813b75b2d2"
+        },
+        {
+          "path": "core_enhanced/src/game/combat_setup/player_spawns.rs",
+          "bytes": 12126,
+          "sha256": "179b4d6cae98e4e24eadb121114fab6ce06660a48844f915e42f0d54b40ace12"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run.rs",
+          "bytes": 10056,
+          "sha256": "c0887760c59968a30af69c1cb04577b6b8f7ce4a99a9579fd985661408778cac"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/continuation.rs",
+          "bytes": 52169,
+          "sha256": "680447003ff7a4887e32ea5c0824cfb427ce311a9f096b01c7dd70370c66f0a7"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/v7.rs",
+          "bytes": 3737,
+          "sha256": "9de70999862b0c71fa5f37e2f76609a22dc4105a69c19b4d9676ecc60215df31"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/v8.rs",
+          "bytes": 2206,
+          "sha256": "2dc90c379a5b9233c74ac0fb505deb21b441e7602c565ba42ca02a930373a2ef"
+        },
+        {
+          "path": "core_enhanced/src/game/behavior.rs",
+          "bytes": 258087,
+          "sha256": "c5eb8f68453a447a104ac0677e7bcc45ebaf6f21b32a804ecfb3b7849e041f1c"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        },
+        {
+          "id": "server_model",
+          "run": "server_functional001"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-05-2",
+      "exact_acceptance": "채용과 새 원정은 새 개인 identity를 만들되 Continue/checkpoint/후퇴는 해당 시점의 같은 개인을 복원한다. 이전 개인의 성장/부상/트라우마/사망 상태를 다음 개인에게 넘기지 않는다.",
+      "disposition": "PASS",
+      "independent_reason": "player/단조 sequence의 expedition instance와 개인 UUID stream을 확인했다. 같은 seed의 지도는 같아도 새 출발의 개인/사본은 달라지고 Continue/후퇴는 같은 개인을 복원한다. 다음 출발에 개인 condition을 복사하지 않는다.",
+      "groups": [
+        "G02",
+        "G04",
+        "G07",
+        "G09"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/employee.rs",
+          "bytes": 43626,
+          "sha256": "edcbee17070a3b7c81712c7bdc58ac493f146b66f3281e5c504c811639762c2f"
+        },
+        {
+          "path": "core_enhanced/src/game/world.rs",
+          "bytes": 42987,
+          "sha256": "fd687fc59a778ca6cc7a6f392b841065fb5a6abf650bc089c43ed3e7ade488cf"
+        },
+        {
+          "path": "core_enhanced/src/game/managers/uuid_manager.rs",
+          "bytes": 9393,
+          "sha256": "f50c79afef512c62fca8416cdb14f5509f35eda9791da254e556f3813b75b2d2"
+        },
+        {
+          "path": "core_enhanced/src/game/combat_setup/player_spawns.rs",
+          "bytes": 12126,
+          "sha256": "179b4d6cae98e4e24eadb121114fab6ce06660a48844f915e42f0d54b40ace12"
+        },
+        {
+          "path": "core_enhanced/src/game/expedition_lifecycle.rs",
+          "bytes": 9355,
+          "sha256": "ff4973a59ea5c21d7574fe22dfbd81d2e0c6d0bf70535d8b3d5e0ddc55714885"
+        },
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/continuation.rs",
+          "bytes": 52169,
+          "sha256": "680447003ff7a4887e32ea5c0824cfb427ce311a9f096b01c7dd70370c66f0a7"
+        },
+        {
+          "path": "core_enhanced/src/game/world/expedition_recovery.rs",
+          "bytes": 13456,
+          "sha256": "7d128a158859f7d36c4a7277f66a1d3152d4799c25db35aa2e54052d48ee3f59"
+        },
+        {
+          "path": "core_enhanced/src/game/world/combat.rs",
+          "bytes": 137850,
+          "sha256": "19e82246675b66f6c1ac566153079d18bdf85bb3e7afcc7f0b454de7a02fdf78"
+        },
+        {
+          "path": "core_enhanced/src/game/world/action_capability.rs",
+          "bytes": 33462,
+          "sha256": "768f14ad1fdc58a6bfb02ccec5109765ebb26b94449d0b9a3f6bd09079ab6687"
+        },
+        {
+          "path": "game_server/src/persistence/player_profile_store/application_intent.rs",
+          "bytes": 34890,
+          "sha256": "818244cf75298d6b411259d0433f06ab73ddb2e1c25dc827cd409443daaf6412"
+        },
+        {
+          "path": "game_server/src/persistence/active_run_store.rs",
+          "bytes": 45539,
+          "sha256": "11407bfdf9879ae99dbbb1dab9679e69bb255436937c086dbd0f1b486c07a355"
+        },
+        {
+          "path": "game_server/src/mod_admission/persistence.rs",
+          "bytes": 4966,
+          "sha256": "73546ac247016ca5a3beff63e0324d83d98250f2948975559ed068095dcf7935"
+        },
+        {
+          "path": "core_enhanced/src/application.rs",
+          "bytes": 92864,
+          "sha256": "dd3d394ec782e4c7df33683f9b37c4f88bc397126d9b2c3e1a14794600cbfbd7"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "defeat_abandon_direct",
+          "run": "public_defeat003"
+        },
+        {
+          "id": "failure_direct",
+          "run": "public_failure002"
+        },
+        {
+          "id": "normal_ack_current",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-06-1",
+      "exact_acceptance": "새 원정 시작 확정 시에만 예산을 한 번 받고 중복 입력·브리핑 재진입·Continue·checkpoint·후퇴로 추가 지급되지 않는다.",
+      "disposition": "PASS",
+      "independent_reason": "예산은 starter/departure draft의 최초 확정에서만 생성되고 active marker 및 selection phase가 재지급을 막는다. 중복 시작·Continue·checkpoint의 wallet/roots oracle을 확인했다.",
+      "groups": [
+        "G01",
+        "G02",
+        "G09"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        },
+        {
+          "path": "core_enhanced/src/game/world.rs",
+          "bytes": 42987,
+          "sha256": "fd687fc59a778ca6cc7a6f392b841065fb5a6abf650bc089c43ed3e7ade488cf"
+        },
+        {
+          "path": "game_server/src/mod_admission.rs",
+          "bytes": 635,
+          "sha256": "b72ee3612787ad0e691ac6f26f90b63e24b5d73f426fe2e09a3ed26657a22cf7"
+        },
+        {
+          "path": "core_enhanced/src/game/employee.rs",
+          "bytes": 43626,
+          "sha256": "edcbee17070a3b7c81712c7bdc58ac493f146b66f3281e5c504c811639762c2f"
+        },
+        {
+          "path": "core_enhanced/src/game/managers/uuid_manager.rs",
+          "bytes": 9393,
+          "sha256": "f50c79afef512c62fca8416cdb14f5509f35eda9791da254e556f3813b75b2d2"
+        },
+        {
+          "path": "core_enhanced/src/game/combat_setup/player_spawns.rs",
+          "bytes": 12126,
+          "sha256": "179b4d6cae98e4e24eadb121114fab6ce06660a48844f915e42f0d54b40ace12"
+        },
+        {
+          "path": "game_server/src/persistence/player_profile_store/application_intent.rs",
+          "bytes": 34890,
+          "sha256": "818244cf75298d6b411259d0433f06ab73ddb2e1c25dc827cd409443daaf6412"
+        },
+        {
+          "path": "game_server/src/persistence/active_run_store.rs",
+          "bytes": 45539,
+          "sha256": "11407bfdf9879ae99dbbb1dab9679e69bb255436937c086dbd0f1b486c07a355"
+        },
+        {
+          "path": "game_server/src/mod_admission/persistence.rs",
+          "bytes": 4966,
+          "sha256": "73546ac247016ca5a3beff63e0324d83d98250f2948975559ed068095dcf7935"
+        },
+        {
+          "path": "core_enhanced/src/application.rs",
+          "bytes": 92864,
+          "sha256": "dd3d394ec782e4c7df33683f9b37c4f88bc397126d9b2c3e1a14794600cbfbd7"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "local_current_continue",
+          "run": "normal_local_continue002"
+        },
+        {
+          "id": "local_current_start",
+          "run": "normal_local_start002"
+        },
+        {
+          "id": "normal_ack_current",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_local_return",
+          "run": "normal_local_return001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-06-2",
+      "exact_acceptance": "성공 귀환과 실패 모두 잔액을 차기 원정/창고에 더하지 않는다. 기본 세트·대여·예산은 별도이며 초기 액수는 초반 유료 채용/상점 가격과 함께 조절 가능한 작성값으로 유지한다.",
+      "disposition": "PASS",
+      "independent_reason": "성공/실패 terminal은 run wallet을 비우고 vault에는 허용된 사본만 이동한다. 작성 초기 예산과 paid recruitment 가격을 확인했고 다음 출발의 신규 예산과 구별했다.",
+      "groups": [
+        "G02",
+        "G04"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/employee.rs",
+          "bytes": 43626,
+          "sha256": "edcbee17070a3b7c81712c7bdc58ac493f146b66f3281e5c504c811639762c2f"
+        },
+        {
+          "path": "core_enhanced/src/game/world.rs",
+          "bytes": 42987,
+          "sha256": "fd687fc59a778ca6cc7a6f392b841065fb5a6abf650bc089c43ed3e7ade488cf"
+        },
+        {
+          "path": "core_enhanced/src/game/managers/uuid_manager.rs",
+          "bytes": 9393,
+          "sha256": "f50c79afef512c62fca8416cdb14f5509f35eda9791da254e556f3813b75b2d2"
+        },
+        {
+          "path": "core_enhanced/src/game/combat_setup/player_spawns.rs",
+          "bytes": 12126,
+          "sha256": "179b4d6cae98e4e24eadb121114fab6ce06660a48844f915e42f0d54b40ace12"
+        },
+        {
+          "path": "core_enhanced/src/game/expedition_lifecycle.rs",
+          "bytes": 9355,
+          "sha256": "ff4973a59ea5c21d7574fe22dfbd81d2e0c6d0bf70535d8b3d5e0ddc55714885"
+        },
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/continuation.rs",
+          "bytes": 52169,
+          "sha256": "680447003ff7a4887e32ea5c0824cfb427ce311a9f096b01c7dd70370c66f0a7"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-07-1",
+      "exact_acceptance": "0/1/2사본은 허용하고 총3개·동일사본중복·없는사본·이미반입중인사본은 거절한다. 장비2/파편2/혼합을 같은 총한도로 판정한다.",
+      "disposition": "PASS",
+      "independent_reason": "equipment/fragment를 합산한 최대2와 중복·부재·사용 중 사본 검증이 mutation 전에 수행된다.0/1/2 및3·혼합 loan 경계의 정상/거절 결과를 확인했다.",
+      "groups": [
+        "G04"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/expedition_lifecycle.rs",
+          "bytes": 9355,
+          "sha256": "ff4973a59ea5c21d7574fe22dfbd81d2e0c6d0bf70535d8b3d5e0ddc55714885"
+        },
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/continuation.rs",
+          "bytes": 52169,
+          "sha256": "680447003ff7a4887e32ea5c0824cfb427ce311a9f096b01c7dd70370c66f0a7"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-07-2",
+      "exact_acceptance": "선발/대여 확정·저장/Continue·checkpoint·재시작/중복 입력으로 같은 사본이 vault와 현재 원정에 이중 존재하거나 기본 세트로 복제되지 않는다. 미반입 vault 사본은 이번 원정 실패로 소실되지 않는다.",
+      "disposition": "PASS",
+      "independent_reason": "확정 대여는 vault에서 현재 run으로 소유권을 이동하며 기본 세트와 별도로 부여한다. Continue와 실제 loan crash/recovery를 대조했고 실패 때 미반입 vault가 남는다는 oracle을 확인했다.",
+      "groups": [
+        "G04",
+        "G09"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/expedition_lifecycle.rs",
+          "bytes": 9355,
+          "sha256": "ff4973a59ea5c21d7574fe22dfbd81d2e0c6d0bf70535d8b3d5e0ddc55714885"
+        },
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/continuation.rs",
+          "bytes": 52169,
+          "sha256": "680447003ff7a4887e32ea5c0824cfb427ce311a9f096b01c7dd70370c66f0a7"
+        },
+        {
+          "path": "game_server/src/persistence/player_profile_store/application_intent.rs",
+          "bytes": 34890,
+          "sha256": "818244cf75298d6b411259d0433f06ab73ddb2e1c25dc827cd409443daaf6412"
+        },
+        {
+          "path": "game_server/src/persistence/active_run_store.rs",
+          "bytes": 45539,
+          "sha256": "11407bfdf9879ae99dbbb1dab9679e69bb255436937c086dbd0f1b486c07a355"
+        },
+        {
+          "path": "game_server/src/mod_admission/persistence.rs",
+          "bytes": 4966,
+          "sha256": "73546ac247016ca5a3beff63e0324d83d98250f2948975559ed068095dcf7935"
+        },
+        {
+          "path": "core_enhanced/src/application.rs",
+          "bytes": 92864,
+          "sha256": "dd3d394ec782e4c7df33683f9b37c4f88bc397126d9b2c3e1a14794600cbfbd7"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_ack_current",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-08-1",
+      "exact_acceptance": "현재 깊이2는 목적지가3이어도 귀환을 거절하고 현재깊이3의 실제 선택 가능한 Gate는 귀환/진행을 허용한다. 방문 수/횡단 수로 깊이 조건을 대신하거나 가상 미래 Gate를 현재 자격으로 세지 않는다.",
+      "disposition": "PASS",
+      "independent_reason": "Gate return eligibility가 현재 depth와 실제 selectable node를 사용한다. depth2→3 목적지는 아직 귀환 불가이며 depth3 선택 가능한 Gate의 Return/Continue 대조를 확인했다.",
+      "groups": [
+        "G06"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        },
+        {
+          "path": "core_enhanced/src/game/world/node_flow.rs",
+          "bytes": 72482,
+          "sha256": "fabb1e724a0bb7dbc361a7b7c853610ce7f7e87e91afbd67117feb496da84e37"
+        },
+        {
+          "path": "core_enhanced/src/game/map/progression.rs",
+          "bytes": 33826,
+          "sha256": "84418521d9db84652f13c4b5682c78bd9c2d53ef2fdcf8ecc309f47cbe6ff098"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_local_return",
+          "run": "normal_local_return001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-08-2",
+      "exact_acceptance": "소진 입장 처리 뒤 활동 시작 전 현재깊이에 맞는 선택을 제공한다. 깊이1–2는 계속/포기, 깊이3 이상은 귀환/계속. 계속 후 잔량0 유지나 깊이3 진입만으로 소진 선택을 반복 열지 않는다.",
+      "disposition": "PASS",
+      "independent_reason": "비Gate 입장 receipt가 활동 이전에 비용과 pending choice를 확정한다. depth1–2/3+ 분기, 잔량0 Continue 및 복원에서 재과금/재개방 부재를 확인했다. entry receipt와 현재 phase/session/node의 정상 결속을 대조했다.",
+      "groups": [
+        "G06",
+        "G09"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        },
+        {
+          "path": "core_enhanced/src/game/world/node_flow.rs",
+          "bytes": 72482,
+          "sha256": "fabb1e724a0bb7dbc361a7b7c853610ce7f7e87e91afbd67117feb496da84e37"
+        },
+        {
+          "path": "core_enhanced/src/game/map/progression.rs",
+          "bytes": 33826,
+          "sha256": "84418521d9db84652f13c4b5682c78bd9c2d53ef2fdcf8ecc309f47cbe6ff098"
+        },
+        {
+          "path": "game_server/src/persistence/player_profile_store/application_intent.rs",
+          "bytes": 34890,
+          "sha256": "818244cf75298d6b411259d0433f06ab73ddb2e1c25dc827cd409443daaf6412"
+        },
+        {
+          "path": "game_server/src/persistence/active_run_store.rs",
+          "bytes": 45539,
+          "sha256": "11407bfdf9879ae99dbbb1dab9679e69bb255436937c086dbd0f1b486c07a355"
+        },
+        {
+          "path": "game_server/src/mod_admission/persistence.rs",
+          "bytes": 4966,
+          "sha256": "73546ac247016ca5a3beff63e0324d83d98250f2948975559ed068095dcf7935"
+        },
+        {
+          "path": "core_enhanced/src/application.rs",
+          "bytes": 92864,
+          "sha256": "dd3d394ec782e4c7df33683f9b37c4f88bc397126d9b2c3e1a14794600cbfbd7"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_ack_current",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_local_return",
+          "run": "normal_local_return001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-08-3",
+      "exact_acceptance": "실제 귀환을 선택하기 전에는 보상 수령/일반 보스 승리만으로 반출·원정 종료가 일어나지 않는다. 개별 최종보스 구현/E2E는 제외하되 원문 계속탐사 정책을 일반 자동귀환으로 바꾸지 않는다.",
+      "disposition": "PASS",
+      "independent_reason": "전투 보상/결과 ack는 settlement owner를 호출하지 않으며 ReturnExpedition만 성공 정산한다. Gate Continue와 일반 보스 후 실제 진행 증거가 이를 확인한다. 개별 최종보스 E2E는 원래 제외 범위다.",
+      "groups": [
+        "G01",
+        "G04",
+        "G06"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        },
+        {
+          "path": "core_enhanced/src/game/world.rs",
+          "bytes": 42987,
+          "sha256": "fd687fc59a778ca6cc7a6f392b841065fb5a6abf650bc089c43ed3e7ade488cf"
+        },
+        {
+          "path": "game_server/src/mod_admission.rs",
+          "bytes": 635,
+          "sha256": "b72ee3612787ad0e691ac6f26f90b63e24b5d73f426fe2e09a3ed26657a22cf7"
+        },
+        {
+          "path": "core_enhanced/src/game/expedition_lifecycle.rs",
+          "bytes": 9355,
+          "sha256": "ff4973a59ea5c21d7574fe22dfbd81d2e0c6d0bf70535d8b3d5e0ddc55714885"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/continuation.rs",
+          "bytes": 52169,
+          "sha256": "680447003ff7a4887e32ea5c0824cfb427ce311a9f096b01c7dd70370c66f0a7"
+        },
+        {
+          "path": "core_enhanced/src/game/world/node_flow.rs",
+          "bytes": 72482,
+          "sha256": "fabb1e724a0bb7dbc361a7b7c853610ce7f7e87e91afbd67117feb496da84e37"
+        },
+        {
+          "path": "core_enhanced/src/game/map/progression.rs",
+          "bytes": 33826,
+          "sha256": "84418521d9db84652f13c4b5682c78bd9c2d53ef2fdcf8ecc309f47cbe6ff098"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "local_current_continue",
+          "run": "normal_local_continue002"
+        },
+        {
+          "id": "local_current_start",
+          "run": "normal_local_start002"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_local_return",
+          "run": "normal_local_return001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-09-1",
+      "exact_acceptance": "승리 보상·결과 ack·전투 후퇴·Continue가 반납 원인이 되지 않고 실제 귀환 한 번에만 현재 보유 사본을 이동한다. 이미 소비/분쇄/상실한 사본을 history로 재발급하지 않는다.",
+      "disposition": "PASS",
+      "independent_reason": "정산은 실제 current inventory/fragment 소유 사본을 열거하며 획득 history를 읽어 재발급하지 않는다. consumed/dismantled/absent copy 대조와 normal_return_boundaries003 및 정상 귀환 후 fresh reopen을 확인했다.",
+      "groups": [
+        "G04",
+        "G06"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/expedition_lifecycle.rs",
+          "bytes": 9355,
+          "sha256": "ff4973a59ea5c21d7574fe22dfbd81d2e0c6d0bf70535d8b3d5e0ddc55714885"
+        },
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/continuation.rs",
+          "bytes": 52169,
+          "sha256": "680447003ff7a4887e32ea5c0824cfb427ce311a9f096b01c7dd70370c66f0a7"
+        },
+        {
+          "path": "core_enhanced/src/game/world/node_flow.rs",
+          "bytes": 72482,
+          "sha256": "fabb1e724a0bb7dbc361a7b7c853610ce7f7e87e91afbd67117feb496da84e37"
+        },
+        {
+          "path": "core_enhanced/src/game/map/progression.rs",
+          "bytes": 33826,
+          "sha256": "84418521d9db84652f13c4b5682c78bd9c2d53ef2fdcf8ecc309f47cbe6ff098"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_return",
+          "run": "normal_local_return001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-09-2",
+      "exact_acceptance": "귀환 무기 일반 강화는 초기화하고 파편의 실제 보유 개화 상태는 유지한다. 아직 도입되지 않은 U15 투자/재료 창고 필드는 선추가하지 않으며 도입 시 그 owner가 같은 사본 수명에 연결한다.",
+      "disposition": "PASS",
+      "independent_reason": "vault 반환 시 무기 일반 강화0, fragment 실제 form/개화 보존을 확인했다. U15 투자/재료 owner를 선추가하지 않았고 loan/return cycle의 동일 copy identity와 구별해 검토했다.",
+      "groups": [
+        "G04",
+        "G07"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/expedition_lifecycle.rs",
+          "bytes": 9355,
+          "sha256": "ff4973a59ea5c21d7574fe22dfbd81d2e0c6d0bf70535d8b3d5e0ddc55714885"
+        },
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/continuation.rs",
+          "bytes": 52169,
+          "sha256": "680447003ff7a4887e32ea5c0824cfb427ce311a9f096b01c7dd70370c66f0a7"
+        },
+        {
+          "path": "core_enhanced/src/game/world/expedition_recovery.rs",
+          "bytes": 13456,
+          "sha256": "7d128a158859f7d36c4a7277f66a1d3152d4799c25db35aa2e54052d48ee3f59"
+        },
+        {
+          "path": "core_enhanced/src/game/world/combat.rs",
+          "bytes": 137850,
+          "sha256": "19e82246675b66f6c1ac566153079d18bdf85bb3e7afcc7f0b454de7a02fdf78"
+        },
+        {
+          "path": "core_enhanced/src/game/world/action_capability.rs",
+          "bytes": 33462,
+          "sha256": "768f14ad1fdc58a6bfb02ccec5109765ebb26b94449d0b9a3f6bd09079ab6687"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "defeat_abandon_direct",
+          "run": "public_defeat003"
+        },
+        {
+          "id": "failure_direct",
+          "run": "public_failure002"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-09-3",
+      "exact_acceptance": "확정 실패/포기는 반입 및 획득 소지품에 손실을 적용하되 미반입 vault·이미 확정한 도감/탐사 등 별도 영구 기록을 보호한다. rollback 가능한 실패 후보를 최종 실패 정산으로 오인하지 않는다.",
+      "disposition": "PASS",
+      "independent_reason": "terminal failure/Abandon은 현재 run assets만 제거하고 미반입 vault와 knowledge는 보존한다. checkpoint 가능한 failure candidate는 terminal 정산 전 상태이며 공개 actual RunFailed와 명시 Abandon 경로를 따로 확인했다.",
+      "groups": [
+        "G04",
+        "G07",
+        "G09"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/expedition_lifecycle.rs",
+          "bytes": 9355,
+          "sha256": "ff4973a59ea5c21d7574fe22dfbd81d2e0c6d0bf70535d8b3d5e0ddc55714885"
+        },
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/continuation.rs",
+          "bytes": 52169,
+          "sha256": "680447003ff7a4887e32ea5c0824cfb427ce311a9f096b01c7dd70370c66f0a7"
+        },
+        {
+          "path": "core_enhanced/src/game/world/expedition_recovery.rs",
+          "bytes": 13456,
+          "sha256": "7d128a158859f7d36c4a7277f66a1d3152d4799c25db35aa2e54052d48ee3f59"
+        },
+        {
+          "path": "core_enhanced/src/game/world/combat.rs",
+          "bytes": 137850,
+          "sha256": "19e82246675b66f6c1ac566153079d18bdf85bb3e7afcc7f0b454de7a02fdf78"
+        },
+        {
+          "path": "core_enhanced/src/game/world/action_capability.rs",
+          "bytes": 33462,
+          "sha256": "768f14ad1fdc58a6bfb02ccec5109765ebb26b94449d0b9a3f6bd09079ab6687"
+        },
+        {
+          "path": "game_server/src/persistence/player_profile_store/application_intent.rs",
+          "bytes": 34890,
+          "sha256": "818244cf75298d6b411259d0433f06ab73ddb2e1c25dc827cd409443daaf6412"
+        },
+        {
+          "path": "game_server/src/persistence/active_run_store.rs",
+          "bytes": 45539,
+          "sha256": "11407bfdf9879ae99dbbb1dab9679e69bb255436937c086dbd0f1b486c07a355"
+        },
+        {
+          "path": "game_server/src/mod_admission/persistence.rs",
+          "bytes": 4966,
+          "sha256": "73546ac247016ca5a3beff63e0324d83d98250f2948975559ed068095dcf7935"
+        },
+        {
+          "path": "core_enhanced/src/application.rs",
+          "bytes": 92864,
+          "sha256": "dd3d394ec782e4c7df33683f9b37c4f88bc397126d9b2c3e1a14794600cbfbd7"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "defeat_abandon_direct",
+          "run": "public_defeat003"
+        },
+        {
+          "id": "failure_direct",
+          "run": "public_failure002"
+        },
+        {
+          "id": "normal_ack_current",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-10-1",
+      "exact_acceptance": "카테고리 존재·가상 미래 치료·빈 offer·돈 없는 채용·무기 없는 직원·깊이2 귀환을 회복 가능으로 세지 않는다. 실제 허용 행동으로 결과를 확인하며 행동 뒤 조건을 재평가한다.",
+      "disposition": "PASS",
+      "independent_reason": "RecoveryContext는 같은 staged wallet/map/roster의 실제 치료·무기·fragment removal·paid recruit planner를 사용한다. category만 있는 HQ,빈 offer/무자금/무기 없음 거절과 compound 순서 양쪽 회복을 확인했다.",
+      "groups": [
+        "G07"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/world/expedition_recovery.rs",
+          "bytes": 13456,
+          "sha256": "7d128a158859f7d36c4a7277f66a1d3152d4799c25db35aa2e54052d48ee3f59"
+        },
+        {
+          "path": "core_enhanced/src/game/world/combat.rs",
+          "bytes": 137850,
+          "sha256": "19e82246675b66f6c1ac566153079d18bdf85bb3e7afcc7f0b454de7a02fdf78"
+        },
+        {
+          "path": "core_enhanced/src/game/world/action_capability.rs",
+          "bytes": 33462,
+          "sha256": "768f14ad1fdc58a6bfb02ccec5109765ebb26b94449d0b9a3f6bd09079ab6687"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "defeat_abandon_direct",
+          "run": "public_defeat003"
+        },
+        {
+          "id": "failure_direct",
+          "run": "public_failure002"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-10-2",
+      "exact_acceptance": "복구 제한은 실제 회복 행동과 checkpoint 불러오기만 허용하고 선택 가능한 경로/사유를 노출한다. Gate 하강 회복과 성공귀환 깊이를 구별한다.",
+      "disposition": "PASS",
+      "independent_reason": "recovery action whitelist와 payload별 실제 효과·재평가를 읽었다. depth2 Gate healing은 귀환 자격과 별개이고 관련 없는/no-op 행동은 거절한다. functional012의8PASS와 교정013의2PASS 범위를 구별했다.",
+      "groups": [
+        "G07",
+        "G06"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/world/expedition_recovery.rs",
+          "bytes": 13456,
+          "sha256": "7d128a158859f7d36c4a7277f66a1d3152d4799c25db35aa2e54052d48ee3f59"
+        },
+        {
+          "path": "core_enhanced/src/game/world/combat.rs",
+          "bytes": 137850,
+          "sha256": "19e82246675b66f6c1ac566153079d18bdf85bb3e7afcc7f0b454de7a02fdf78"
+        },
+        {
+          "path": "core_enhanced/src/game/world/action_capability.rs",
+          "bytes": 33462,
+          "sha256": "768f14ad1fdc58a6bfb02ccec5109765ebb26b94449d0b9a3f6bd09079ab6687"
+        },
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        },
+        {
+          "path": "core_enhanced/src/game/world/node_flow.rs",
+          "bytes": 72482,
+          "sha256": "fabb1e724a0bb7dbc361a7b7c853610ce7f7e87e91afbd67117feb496da84e37"
+        },
+        {
+          "path": "core_enhanced/src/game/map/progression.rs",
+          "bytes": 33826,
+          "sha256": "84418521d9db84652f13c4b5682c78bd9c2d53ef2fdcf8ecc309f47cbe6ff098"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "defeat_abandon_direct",
+          "run": "public_defeat003"
+        },
+        {
+          "id": "failure_direct",
+          "run": "public_failure002"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_local_return",
+          "run": "normal_local_return001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-10-3",
+      "exact_acceptance": "생존자 없음/실제 복구 불가의 실패 후보에서 유효 checkpoint와 남은 횟수를 확인한다. 복구 포기·없는 checkpoint의 확정 실패/자발포기·정상 원정 완료는 Continue를 무효화하고 정산을 한 번만 수행한다. U04의 checkpoint 사용횟수 비되돌림과 장애 원자성을 유지한다.",
+      "disposition": "PASS",
+      "independent_reason": "패배 후 checkpoint/잔여횟수에 따라 후보를 만들거나 실패 정산한다. public_failure002의 실제5패배→ConfirmRunFailure→새 instance와 normal failure Continue를 확인했다. 사용횟수 비되돌림과 terminal Continue 제거는 U04 회귀로 연결한다.",
+      "groups": [
+        "G07",
+        "G09"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/world/expedition_recovery.rs",
+          "bytes": 13456,
+          "sha256": "7d128a158859f7d36c4a7277f66a1d3152d4799c25db35aa2e54052d48ee3f59"
+        },
+        {
+          "path": "core_enhanced/src/game/world/combat.rs",
+          "bytes": 137850,
+          "sha256": "19e82246675b66f6c1ac566153079d18bdf85bb3e7afcc7f0b454de7a02fdf78"
+        },
+        {
+          "path": "core_enhanced/src/game/world/action_capability.rs",
+          "bytes": 33462,
+          "sha256": "768f14ad1fdc58a6bfb02ccec5109765ebb26b94449d0b9a3f6bd09079ab6687"
+        },
+        {
+          "path": "game_server/src/persistence/player_profile_store/application_intent.rs",
+          "bytes": 34890,
+          "sha256": "818244cf75298d6b411259d0433f06ab73ddb2e1c25dc827cd409443daaf6412"
+        },
+        {
+          "path": "game_server/src/persistence/active_run_store.rs",
+          "bytes": 45539,
+          "sha256": "11407bfdf9879ae99dbbb1dab9679e69bb255436937c086dbd0f1b486c07a355"
+        },
+        {
+          "path": "game_server/src/mod_admission/persistence.rs",
+          "bytes": 4966,
+          "sha256": "73546ac247016ca5a3beff63e0324d83d98250f2948975559ed068095dcf7935"
+        },
+        {
+          "path": "core_enhanced/src/application.rs",
+          "bytes": 92864,
+          "sha256": "dd3d394ec782e4c7df33683f9b37c4f88bc397126d9b2c3e1a14794600cbfbd7"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "defeat_abandon_direct",
+          "run": "public_defeat003"
+        },
+        {
+          "id": "failure_direct",
+          "run": "public_failure002"
+        },
+        {
+          "id": "normal_ack_current",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-11-1",
+      "exact_acceptance": "성공 자산 정산과 종료 직원 처리가 한 확정 경계로 저장되고 처분이 추가 실패 손실을 만들지 않는다. 시작/채용 직원 모두 동일하게 적용한다.",
+      "disposition": "PASS",
+      "independent_reason": "귀환 사본 이동·직원 제거·wallet/active/Continue 정리는 하나의 prepared publication이다. 정상 귀환과 accepted crash recovery에서 같은 pair를 재현하며 직원 처분의 추가 손실 연산이 없다.",
+      "groups": [
+        "G04",
+        "G09"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/expedition_lifecycle.rs",
+          "bytes": 9355,
+          "sha256": "ff4973a59ea5c21d7574fe22dfbd81d2e0c6d0bf70535d8b3d5e0ddc55714885"
+        },
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/continuation.rs",
+          "bytes": 52169,
+          "sha256": "680447003ff7a4887e32ea5c0824cfb427ce311a9f096b01c7dd70370c66f0a7"
+        },
+        {
+          "path": "game_server/src/persistence/player_profile_store/application_intent.rs",
+          "bytes": 34890,
+          "sha256": "818244cf75298d6b411259d0433f06ab73ddb2e1c25dc827cd409443daaf6412"
+        },
+        {
+          "path": "game_server/src/persistence/active_run_store.rs",
+          "bytes": 45539,
+          "sha256": "11407bfdf9879ae99dbbb1dab9679e69bb255436937c086dbd0f1b486c07a355"
+        },
+        {
+          "path": "game_server/src/mod_admission/persistence.rs",
+          "bytes": 4966,
+          "sha256": "73546ac247016ca5a3beff63e0324d83d98250f2948975559ed068095dcf7935"
+        },
+        {
+          "path": "core_enhanced/src/application.rs",
+          "bytes": 92864,
+          "sha256": "dd3d394ec782e4c7df33683f9b37c4f88bc397126d9b2c3e1a14794600cbfbd7"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_ack_current",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-11-2",
+      "exact_acceptance": "중단/Continue/checkpoint/전투 후퇴는 원정 종료로 세지 않고 개인을 처분/교체하지 않는다. 실제 종료 뒤 다음 원정에 이전 직원 identity/개인 상태가 계승되지 않는다.",
+      "disposition": "PASS",
+      "independent_reason": "후퇴/SavePoint/Continue는 동일 instance 개인을 복원하고 terminal만 roster를 비운다. start/recruit identity와 fresh next departure, latest profile merge 대조로 개인 상태 비계승을 확인했다.",
+      "groups": [
+        "G02",
+        "G04",
+        "G07"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/employee.rs",
+          "bytes": 43626,
+          "sha256": "edcbee17070a3b7c81712c7bdc58ac493f146b66f3281e5c504c811639762c2f"
+        },
+        {
+          "path": "core_enhanced/src/game/world.rs",
+          "bytes": 42987,
+          "sha256": "fd687fc59a778ca6cc7a6f392b841065fb5a6abf650bc089c43ed3e7ade488cf"
+        },
+        {
+          "path": "core_enhanced/src/game/managers/uuid_manager.rs",
+          "bytes": 9393,
+          "sha256": "f50c79afef512c62fca8416cdb14f5509f35eda9791da254e556f3813b75b2d2"
+        },
+        {
+          "path": "core_enhanced/src/game/combat_setup/player_spawns.rs",
+          "bytes": 12126,
+          "sha256": "179b4d6cae98e4e24eadb121114fab6ce06660a48844f915e42f0d54b40ace12"
+        },
+        {
+          "path": "core_enhanced/src/game/expedition_lifecycle.rs",
+          "bytes": 9355,
+          "sha256": "ff4973a59ea5c21d7574fe22dfbd81d2e0c6d0bf70535d8b3d5e0ddc55714885"
+        },
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/continuation.rs",
+          "bytes": 52169,
+          "sha256": "680447003ff7a4887e32ea5c0824cfb427ce311a9f096b01c7dd70370c66f0a7"
+        },
+        {
+          "path": "core_enhanced/src/game/world/expedition_recovery.rs",
+          "bytes": 13456,
+          "sha256": "7d128a158859f7d36c4a7277f66a1d3152d4799c25db35aa2e54052d48ee3f59"
+        },
+        {
+          "path": "core_enhanced/src/game/world/combat.rs",
+          "bytes": 137850,
+          "sha256": "19e82246675b66f6c1ac566153079d18bdf85bb3e7afcc7f0b454de7a02fdf78"
+        },
+        {
+          "path": "core_enhanced/src/game/world/action_capability.rs",
+          "bytes": 33462,
+          "sha256": "768f14ad1fdc58a6bfb02ccec5109765ebb26b94449d0b9a3f6bd09079ab6687"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "defeat_abandon_direct",
+          "run": "public_defeat003"
+        },
+        {
+          "id": "failure_direct",
+          "run": "public_failure002"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-12-1",
+      "exact_acceptance": "첫 성공 귀환 전/실패/튜토리얼에서 pending이나 소비 이력을 만들지 않는다. 정산 뒤 종료/재시작해도 pending이 남고 재생/skip ack로 한 번만 소비된다.",
+      "disposition": "PASS",
+      "independent_reason": "Never→Pending은 Expedition 성공 정산에서만, Pending→Consumed는 ack에서만 일어난다. normal full tutorial·failure와 실제 story crash/reopen을 대조해 재시작 pending 보존을 확인했다.",
+      "groups": [
+        "G03",
+        "G04",
+        "G09"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        },
+        {
+          "path": "core_enhanced/src/game/world/visual_novel_flow.rs",
+          "bytes": 12024,
+          "sha256": "73da2371e41bdc6443420483e2bf4bb40c7d8cdda50a28918c84a4b861711b8a"
+        },
+        {
+          "path": "game_resources/data/map/facility_templates.ron",
+          "bytes": 15114,
+          "sha256": "f1912696c1251c3a700a39b951a4cb5360392ee501947361c0bebf343fbff270"
+        },
+        {
+          "path": "core_enhanced/src/game/expedition_lifecycle.rs",
+          "bytes": 9355,
+          "sha256": "ff4973a59ea5c21d7574fe22dfbd81d2e0c6d0bf70535d8b3d5e0ddc55714885"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/continuation.rs",
+          "bytes": 52169,
+          "sha256": "680447003ff7a4887e32ea5c0824cfb427ce311a9f096b01c7dd70370c66f0a7"
+        },
+        {
+          "path": "game_server/src/persistence/player_profile_store/application_intent.rs",
+          "bytes": 34890,
+          "sha256": "818244cf75298d6b411259d0433f06ab73ddb2e1c25dc827cd409443daaf6412"
+        },
+        {
+          "path": "game_server/src/persistence/active_run_store.rs",
+          "bytes": 45539,
+          "sha256": "11407bfdf9879ae99dbbb1dab9679e69bb255436937c086dbd0f1b486c07a355"
+        },
+        {
+          "path": "game_server/src/mod_admission/persistence.rs",
+          "bytes": 4966,
+          "sha256": "73546ac247016ca5a3beff63e0324d83d98250f2948975559ed068095dcf7935"
+        },
+        {
+          "path": "core_enhanced/src/application.rs",
+          "bytes": 92864,
+          "sha256": "dd3d394ec782e4c7df33683f9b37c4f88bc397126d9b2c3e1a14794600cbfbd7"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_ack_current",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        },
+        {
+          "id": "tutorial_direct",
+          "run": "public_tutorial_complete005"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-12-2",
+      "exact_acceptance": "중복 ack·재접속·다음 성공 귀환은 첫 이야기 재생 권리를 재생성하거나 정산/처분을 중복하지 않는다. query는 현재 pending/소비 여부를 Core 권위 상태로 제공한다.",
+      "disposition": "PASS",
+      "independent_reason": "Consumed ack는 idempotent하되 stale revision 검증은 no-change shortcut보다 먼저다. 교정된 normal_return_boundaries003과 다음 귀환/재접속에서 story 권리 재생성 부재를 확인했다.",
+      "groups": [
+        "G04",
+        "G09"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/expedition_lifecycle.rs",
+          "bytes": 9355,
+          "sha256": "ff4973a59ea5c21d7574fe22dfbd81d2e0c6d0bf70535d8b3d5e0ddc55714885"
+        },
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/continuation.rs",
+          "bytes": 52169,
+          "sha256": "680447003ff7a4887e32ea5c0824cfb427ce311a9f096b01c7dd70370c66f0a7"
+        },
+        {
+          "path": "game_server/src/persistence/player_profile_store/application_intent.rs",
+          "bytes": 34890,
+          "sha256": "818244cf75298d6b411259d0433f06ab73ddb2e1c25dc827cd409443daaf6412"
+        },
+        {
+          "path": "game_server/src/persistence/active_run_store.rs",
+          "bytes": 45539,
+          "sha256": "11407bfdf9879ae99dbbb1dab9679e69bb255436937c086dbd0f1b486c07a355"
+        },
+        {
+          "path": "game_server/src/mod_admission/persistence.rs",
+          "bytes": 4966,
+          "sha256": "73546ac247016ca5a3beff63e0324d83d98250f2948975559ed068095dcf7935"
+        },
+        {
+          "path": "core_enhanced/src/application.rs",
+          "bytes": 92864,
+          "sha256": "dd3d394ec782e4c7df33683f9b37c4f88bc397126d9b2c3e1a14794600cbfbd7"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_ack_current",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-13-1",
+      "exact_acceptance": "정상 공개 entry에서 시작→실제 조우→귀환/실패→다음 원정과 튜토리얼3층을 실행할 수 있고 내부 상태 직접 주입만으로 공개 경로 완료를 대체하지 않는다. UI 최초 구현은 요구하지 않는다.",
+      "disposition": "PASS",
+      "independent_reason": "Core public Tutorial005/Expedition002/Failure002와 normal approved host start→return/failure→next departure 및 fresh Continue를 구분해 확인했다. 실제 battle/HostTick 관측이 있으며 내부 fixture만으로 공개 실행을 대신하지 않는다.",
+      "groups": [
+        "G01",
+        "G03",
+        "G10"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        },
+        {
+          "path": "core_enhanced/src/game/world.rs",
+          "bytes": 42987,
+          "sha256": "fd687fc59a778ca6cc7a6f392b841065fb5a6abf650bc089c43ed3e7ade488cf"
+        },
+        {
+          "path": "game_server/src/mod_admission.rs",
+          "bytes": 635,
+          "sha256": "b72ee3612787ad0e691ac6f26f90b63e24b5d73f426fe2e09a3ed26657a22cf7"
+        },
+        {
+          "path": "core_enhanced/src/game/world/visual_novel_flow.rs",
+          "bytes": 12024,
+          "sha256": "73da2371e41bdc6443420483e2bf4bb40c7d8cdda50a28918c84a4b861711b8a"
+        },
+        {
+          "path": "game_resources/data/map/facility_templates.ron",
+          "bytes": 15114,
+          "sha256": "f1912696c1251c3a700a39b951a4cb5360392ee501947361c0bebf343fbff270"
+        },
+        {
+          "path": "tools/cmva_build.py",
+          "bytes": 8725,
+          "sha256": "1345a807a7fca6d4c71ecb21dad914685540d4c587ddfd604dc224793f6783de"
+        },
+        {
+          "path": "core_enhanced/build.rs",
+          "bytes": 9088,
+          "sha256": "b7483b0be8d34a781bfbdd06567201e94313aeda831a7da942b8cfc1aebf8138"
+        },
+        {
+          "path": "game_server/src/mod_admission/worker.rs",
+          "bytes": 6872,
+          "sha256": "ce323d49ce72724957053810575b3575e7b135bfa4fff062b07302710e6f2c20"
+        },
+        {
+          "path": "core_enhanced/src/game/data/content_pack/mod.rs",
+          "bytes": 17162,
+          "sha256": "1155196933f7844f63d09381da4e09aea2fc9f323e57c2f985033c16ed574b40"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "criterion_stale",
+          "run": "full60_stale_criterion001"
+        },
+        {
+          "id": "full60_current",
+          "run": "full60_combined_calibration002"
+        },
+        {
+          "id": "full60_current_accept",
+          "run": "full60_accept002"
+        },
+        {
+          "id": "full60_current_continue",
+          "run": "full60_continue002"
+        },
+        {
+          "id": "local_current_continue",
+          "run": "normal_local_continue002"
+        },
+        {
+          "id": "local_current_start",
+          "run": "normal_local_start002"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_local_return",
+          "run": "normal_local_return001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        },
+        {
+          "id": "required_missing",
+          "run": "full60_missing_required001"
+        },
+        {
+          "id": "server_current_adoption",
+          "run": "normal_server_adoption003"
+        },
+        {
+          "id": "server_current_calibration",
+          "run": "normal_server_calibration003"
+        },
+        {
+          "id": "standalone_current_adoption",
+          "run": "normal_standalone_adoption002"
+        },
+        {
+          "id": "standalone_current_calibration",
+          "run": "normal_standalone_calibration006"
+        },
+        {
+          "id": "tutorial_direct",
+          "run": "public_tutorial_complete005"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-13-2",
+      "exact_acceptance": "새 저장/반영 실패에서 profile와 active run·vault·roster·budget·story가 부분 확정되거나 자산이 복제/소실되지 않는다. 이전 정상 저장/다른 session과 미지원 원본을 보호하고 실제 재시작으로 같은 확정 상태를 소비한다.",
+      "disposition": "PASS_WITH_CURRENT_SCOPE",
+      "independent_reason": "profile→active lock, revision CAS, accepted intent rename과 recovery publish 순서를 직접 읽었다.22 actual crash 각2 fresh recovery 및 unaccepted3 retry에서 정확한 pair/파일 불변을 재집계했다. 실제 구writer 원본 보호는 유지하며 외부 임의 변조 F-U12-001만 제외한다.",
+      "groups": [
+        "G04",
+        "G07",
+        "G09"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/expedition_lifecycle.rs",
+          "bytes": 9355,
+          "sha256": "ff4973a59ea5c21d7574fe22dfbd81d2e0c6d0bf70535d8b3d5e0ddc55714885"
+        },
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/continuation.rs",
+          "bytes": 52169,
+          "sha256": "680447003ff7a4887e32ea5c0824cfb427ce311a9f096b01c7dd70370c66f0a7"
+        },
+        {
+          "path": "core_enhanced/src/game/world/expedition_recovery.rs",
+          "bytes": 13456,
+          "sha256": "7d128a158859f7d36c4a7277f66a1d3152d4799c25db35aa2e54052d48ee3f59"
+        },
+        {
+          "path": "core_enhanced/src/game/world/combat.rs",
+          "bytes": 137850,
+          "sha256": "19e82246675b66f6c1ac566153079d18bdf85bb3e7afcc7f0b454de7a02fdf78"
+        },
+        {
+          "path": "core_enhanced/src/game/world/action_capability.rs",
+          "bytes": 33462,
+          "sha256": "768f14ad1fdc58a6bfb02ccec5109765ebb26b94449d0b9a3f6bd09079ab6687"
+        },
+        {
+          "path": "game_server/src/persistence/player_profile_store/application_intent.rs",
+          "bytes": 34890,
+          "sha256": "818244cf75298d6b411259d0433f06ab73ddb2e1c25dc827cd409443daaf6412"
+        },
+        {
+          "path": "game_server/src/persistence/active_run_store.rs",
+          "bytes": 45539,
+          "sha256": "11407bfdf9879ae99dbbb1dab9679e69bb255436937c086dbd0f1b486c07a355"
+        },
+        {
+          "path": "game_server/src/mod_admission/persistence.rs",
+          "bytes": 4966,
+          "sha256": "73546ac247016ca5a3beff63e0324d83d98250f2948975559ed068095dcf7935"
+        },
+        {
+          "path": "core_enhanced/src/application.rs",
+          "bytes": 92864,
+          "sha256": "dd3d394ec782e4c7df33683f9b37c4f88bc397126d9b2c3e1a14794600cbfbd7"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "defeat_abandon_direct",
+          "run": "public_defeat003"
+        },
+        {
+          "id": "failure_direct",
+          "run": "public_failure002"
+        },
+        {
+          "id": "normal_ack_current",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    },
+    {
+      "id": "A-13-3",
+      "exact_acceptance": "U12 새 capability/콘텐츠 identity 변경은 정상 검증/승인/cache/Apply/required-mod-save 경계를 함께 소비한다. 부적합·누락·stale 승인/전용 구입력은 구체적으로 거절하고 fixture/문서를 같은 새 공개 계약에 연결한다.",
+      "disposition": "PASS",
+      "independent_reason": "최종 source/build/calibration/adoption과 local/server/full60 실제 admission을 연결했다. required-mod 누락과 stale criterion 거절은 지원 경로 오류이며 유지한다. generation pinning·새 시작 adoption·fresh Continue의 같은 required identity를 확인했다.",
+      "groups": [
+        "G08",
+        "G10",
+        "G12"
+      ],
+      "source_refs": [
+        {
+          "path": "core_enhanced/src/game/employee.rs",
+          "bytes": 43626,
+          "sha256": "edcbee17070a3b7c81712c7bdc58ac493f146b66f3281e5c504c811639762c2f"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run.rs",
+          "bytes": 10056,
+          "sha256": "c0887760c59968a30af69c1cb04577b6b8f7ce4a99a9579fd985661408778cac"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/continuation.rs",
+          "bytes": 52169,
+          "sha256": "680447003ff7a4887e32ea5c0824cfb427ce311a9f096b01c7dd70370c66f0a7"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/v7.rs",
+          "bytes": 3737,
+          "sha256": "9de70999862b0c71fa5f37e2f76609a22dc4105a69c19b4d9676ecc60215df31"
+        },
+        {
+          "path": "core_enhanced/src/game/world/active_run/v8.rs",
+          "bytes": 2206,
+          "sha256": "2dc90c379a5b9233c74ac0fb505deb21b441e7602c565ba42ca02a930373a2ef"
+        },
+        {
+          "path": "core_enhanced/src/game/behavior.rs",
+          "bytes": 258087,
+          "sha256": "c5eb8f68453a447a104ac0677e7bcc45ebaf6f21b32a804ecfb3b7849e041f1c"
+        },
+        {
+          "path": "tools/cmva_build.py",
+          "bytes": 8725,
+          "sha256": "1345a807a7fca6d4c71ecb21dad914685540d4c587ddfd604dc224793f6783de"
+        },
+        {
+          "path": "core_enhanced/build.rs",
+          "bytes": 9088,
+          "sha256": "b7483b0be8d34a781bfbdd06567201e94313aeda831a7da942b8cfc1aebf8138"
+        },
+        {
+          "path": "game_server/src/mod_admission/worker.rs",
+          "bytes": 6872,
+          "sha256": "ce323d49ce72724957053810575b3575e7b135bfa4fff062b07302710e6f2c20"
+        },
+        {
+          "path": "game_server/src/mod_admission.rs",
+          "bytes": 635,
+          "sha256": "b72ee3612787ad0e691ac6f26f90b63e24b5d73f426fe2e09a3ed26657a22cf7"
+        },
+        {
+          "path": "core_enhanced/src/game/data/content_pack/mod.rs",
+          "bytes": 17162,
+          "sha256": "1155196933f7844f63d09381da4e09aea2fc9f323e57c2f985033c16ed574b40"
+        },
+        {
+          "path": "core_enhanced/src/game/mod.rs",
+          "bytes": 641,
+          "sha256": "16af2e304e1a2ac878d85a0a930c53b81390eb6c9ffce46d8f6184d07b8bc81c"
+        },
+        {
+          "path": "core_enhanced/src/game/world/expedition_lifecycle.rs",
+          "bytes": 13934,
+          "sha256": "c2c7db7cd8926bf9fd5f38017e6ab1c9f8d6951b25a75366f04653d23378bfc8"
+        }
+      ],
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "criterion_stale",
+          "run": "full60_stale_criterion001"
+        },
+        {
+          "id": "full60_current",
+          "run": "full60_combined_calibration002"
+        },
+        {
+          "id": "full60_current_accept",
+          "run": "full60_accept002"
+        },
+        {
+          "id": "full60_current_continue",
+          "run": "full60_continue002"
+        },
+        {
+          "id": "local_current_continue",
+          "run": "normal_local_continue002"
+        },
+        {
+          "id": "local_current_start",
+          "run": "normal_local_start002"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        },
+        {
+          "id": "required_missing",
+          "run": "full60_missing_required001"
+        },
+        {
+          "id": "server_current_adoption",
+          "run": "normal_server_adoption003"
+        },
+        {
+          "id": "server_current_calibration",
+          "run": "normal_server_calibration003"
+        },
+        {
+          "id": "server_model",
+          "run": "server_functional001"
+        },
+        {
+          "id": "standalone_current_adoption",
+          "run": "normal_standalone_adoption002"
+        },
+        {
+          "id": "standalone_current_calibration",
+          "run": "normal_standalone_calibration006"
+        }
+      ],
+      "selector_locator": "EVIDENCE_INDEX.json: groups and raw named test results",
+      "current_blocking_findings": []
+    }
+  ],
+  "integration_seams": [
+    {
+      "id": "IVA-CEXL-PS01",
+      "acceptance_ids": [
+        "A-PS01-1",
+        "A-PS01-2",
+        "A-PS01-3"
+      ],
+      "audit_disposition": "PASS",
+      "independent_basis": "Mapped acceptance decisions and directly reviewed group evidence; current user scope applies."
+    },
+    {
+      "id": "IVA-CEXL-PS02",
+      "acceptance_ids": [
+        "A-PS02-1",
+        "A-PS02-2",
+        "A-PS02-3"
+      ],
+      "audit_disposition": "PASS",
+      "independent_basis": "Mapped acceptance decisions and directly reviewed group evidence; current user scope applies."
+    },
+    {
+      "id": "IVA-CEXL-01",
+      "acceptance_ids": [
+        "A-01-1",
+        "A-01-2"
+      ],
+      "audit_disposition": "PASS",
+      "independent_basis": "Mapped acceptance decisions and directly reviewed group evidence; current user scope applies."
+    },
+    {
+      "id": "IVA-CEXL-02",
+      "acceptance_ids": [
+        "A-02-1",
+        "A-02-2",
+        "A-02-3"
+      ],
+      "audit_disposition": "PASS",
+      "independent_basis": "Mapped acceptance decisions and directly reviewed group evidence; current user scope applies."
+    },
+    {
+      "id": "IVA-CEXL-03",
+      "acceptance_ids": [
+        "A-03-1",
+        "A-03-2"
+      ],
+      "audit_disposition": "PASS",
+      "independent_basis": "Mapped acceptance decisions and directly reviewed group evidence; current user scope applies."
+    },
+    {
+      "id": "IVA-CEXL-04",
+      "acceptance_ids": [
+        "A-04-1",
+        "A-04-2",
+        "A-04-3"
+      ],
+      "audit_disposition": "PASS",
+      "independent_basis": "Mapped acceptance decisions and directly reviewed group evidence; current user scope applies."
+    },
+    {
+      "id": "IVA-CEXL-05",
+      "acceptance_ids": [
+        "A-05-1",
+        "A-05-2"
+      ],
+      "audit_disposition": "PASS",
+      "independent_basis": "Mapped acceptance decisions and directly reviewed group evidence; current user scope applies."
+    },
+    {
+      "id": "IVA-CEXL-06",
+      "acceptance_ids": [
+        "A-06-1",
+        "A-06-2"
+      ],
+      "audit_disposition": "PASS",
+      "independent_basis": "Mapped acceptance decisions and directly reviewed group evidence; current user scope applies."
+    },
+    {
+      "id": "IVA-CEXL-07",
+      "acceptance_ids": [
+        "A-07-1",
+        "A-07-2"
+      ],
+      "audit_disposition": "PASS",
+      "independent_basis": "Mapped acceptance decisions and directly reviewed group evidence; current user scope applies."
+    },
+    {
+      "id": "IVA-CEXL-08",
+      "acceptance_ids": [
+        "A-08-1",
+        "A-08-2",
+        "A-08-3"
+      ],
+      "audit_disposition": "PASS",
+      "independent_basis": "Mapped acceptance decisions and directly reviewed group evidence; current user scope applies."
+    },
+    {
+      "id": "IVA-CEXL-09",
+      "acceptance_ids": [
+        "A-09-1",
+        "A-09-2",
+        "A-09-3"
+      ],
+      "audit_disposition": "PASS",
+      "independent_basis": "Mapped acceptance decisions and directly reviewed group evidence; current user scope applies."
+    },
+    {
+      "id": "IVA-CEXL-10",
+      "acceptance_ids": [
+        "A-10-1",
+        "A-10-2",
+        "A-10-3"
+      ],
+      "audit_disposition": "PASS",
+      "independent_basis": "Mapped acceptance decisions and directly reviewed group evidence; current user scope applies."
+    },
+    {
+      "id": "IVA-CEXL-11",
+      "acceptance_ids": [
+        "A-11-1",
+        "A-11-2"
+      ],
+      "audit_disposition": "PASS",
+      "independent_basis": "Mapped acceptance decisions and directly reviewed group evidence; current user scope applies."
+    },
+    {
+      "id": "IVA-CEXL-12",
+      "acceptance_ids": [
+        "A-12-1",
+        "A-12-2"
+      ],
+      "audit_disposition": "PASS",
+      "independent_basis": "Mapped acceptance decisions and directly reviewed group evidence; current user scope applies."
+    },
+    {
+      "id": "IVA-CEXL-13",
+      "acceptance_ids": [
+        "A-13-1",
+        "A-13-2",
+        "A-13-3"
+      ],
+      "audit_disposition": "PASS",
+      "independent_basis": "Mapped acceptance decisions and directly reviewed group evidence; current user scope applies."
+    },
+    {
+      "id": "IVA-CEXL-PUBLIC",
+      "groups": [
+        "G01",
+        "G03",
+        "G10"
+      ],
+      "audit_disposition": "PASS",
+      "independent_basis": "Mapped acceptance decisions and directly reviewed group evidence; current user scope applies."
+    },
+    {
+      "id": "IVA-CEXL-ATOMIC",
+      "groups": [
+        "G04",
+        "G09"
+      ],
+      "audit_disposition": "PASS",
+      "independent_basis": "Mapped acceptance decisions and directly reviewed group evidence; current user scope applies."
+    },
+    {
+      "id": "IVA-CEXL-REGRESSION",
+      "groups": [
+        "G07",
+        "G08",
+        "G10",
+        "G11"
+      ],
+      "audit_disposition": "PASS",
+      "independent_basis": "Mapped acceptance decisions and directly reviewed group evidence; current user scope applies."
+    },
+    {
+      "id": "IVA-CEXL-STRUCTURE",
+      "groups": [
+        "G12"
+      ],
+      "audit_disposition": "PASS",
+      "independent_basis": "Mapped acceptance decisions and directly reviewed group evidence; current user scope applies."
+    }
+  ],
+  "required_dimensions": [
+    {
+      "id": "success",
+      "required": true,
+      "groups": [
+        "G01",
+        "G03",
+        "G04"
+      ],
+      "audit_disposition": "PASS",
+      "independent_reason": "정상 신규 출발/실전/귀환/다음 원정 및 Tutorial terminal의 공개 실행. 내부 fixture만으로 대체하지 않는다."
+    },
+    {
+      "id": "invalid_input",
+      "required": true,
+      "groups": [
+        "G02",
+        "G04",
+        "G08"
+      ],
+      "audit_disposition": "PASS",
+      "independent_reason": "지원 starter/loan/recruit 오용, authored role/loadout 오류,missing required/stale criterion 거절. checksum/내부 상태 임의 변조 방어는 제외."
+    },
+    {
+      "id": "failure_rollback",
+      "required": true,
+      "groups": [
+        "G02",
+        "G05",
+        "G09",
+        "G11"
+      ],
+      "audit_disposition": "PASS",
+      "independent_reason": "draft discard·지원 입력 거절·budget/cancel·preaccept IO와 actual failure candidate/terminal을 구별."
+    },
+    {
+      "id": "retry_idempotency",
+      "required": true,
+      "groups": [
+        "G02",
+        "G04",
+        "G06",
+        "G09"
+      ],
+      "audit_disposition": "PASS",
+      "independent_reason": "loan/return/story accepted replay,unaccepted retry,duplicate start/ack,Continue 비용 receipt의 반복 불변."
+    },
+    {
+      "id": "ordering_concurrency",
+      "required": true,
+      "groups": [
+        "G09",
+        "G10"
+      ],
+      "audit_disposition": "PASS",
+      "independent_reason": "profile→active lock 및 CAS-before-nochange. stale actor ACK와 checkpointNone도 충돌 거절; accepted journal pair 순서."
+    },
+    {
+      "id": "boundary_empty_max",
+      "required": true,
+      "groups": [
+        "G02",
+        "G04",
+        "G05",
+        "G06",
+        "G07"
+      ],
+      "audit_disposition": "PASS",
+      "independent_reason": "starter3/6,loan0/1/2/3,roster10/deploy8,depth2/3,paid2,empty/normal/expanded vault의 적용 경계."
+    },
+    {
+      "id": "disconnect_restart_persistence",
+      "required": true,
+      "groups": [
+        "G03",
+        "G08",
+        "G09"
+      ],
+      "audit_disposition": "PASS",
+      "independent_reason": "normal local/full60 fresh Continue roots/required/revision 동일;22 crash 각2 fresh process와 retry3의 정확한 pair."
+    },
+    {
+      "id": "live_data",
+      "required": true,
+      "groups": [
+        "G01",
+        "G03",
+        "G10"
+      ],
+      "audit_disposition": "PASS",
+      "independent_reason": "실제 고정 facility 및 공식 six starters/loadout, public Tutorial/Expedition의 battle와 HQ/SavePoint,final normal approval."
+    },
+    {
+      "id": "producer_consumer",
+      "required": true,
+      "groups": [
+        "G01",
+        "G09",
+        "G10"
+      ],
+      "audit_disposition": "PASS",
+      "independent_reason": "Core prepared→approved/unbound host→paired journal→fresh load,UI는 비요구. DTO는 Core 상태를 소비."
+    },
+    {
+      "id": "legacy_fallback_absence",
+      "required": true,
+      "groups": [
+        "G08",
+        "G12"
+      ],
+      "audit_disposition": "PASS",
+      "independent_reason": "실제 구writer V7 bytes 거절/원본·roots 보존,removed capability 부재와 새typed writer 검토. 임의 변조형 구형 흉내는 현재 요구에서 제외."
+    }
+  ],
+  "execution_nodes": [
+    {
+      "id": "AG-CEXL-LIFECYCLE",
+      "groups": [
+        "G02",
+        "G04",
+        "G05",
+        "G06",
+        "G07",
+        "G08"
+      ],
+      "audit_disposition": "PASS"
+    },
+    {
+      "id": "WP-CEXL-PUBLIC",
+      "groups": [
+        "G01",
+        "G03",
+        "G09",
+        "G10"
+      ],
+      "audit_disposition": "PASS"
+    },
+    {
+      "id": "WP-CEXL-VERIFY",
+      "groups": [
+        "G01",
+        "G02",
+        "G03",
+        "G04",
+        "G05",
+        "G06",
+        "G07",
+        "G08",
+        "G09",
+        "G10",
+        "G11",
+        "G12"
+      ],
+      "audit_disposition": "PASS"
+    }
+  ],
+  "remaining_mandatory_review": []
+}

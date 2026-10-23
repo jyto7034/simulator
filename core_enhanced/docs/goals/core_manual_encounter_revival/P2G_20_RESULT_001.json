@@ -1,0 +1,17 @@
+{
+  "stage": "P2G-20",
+  "status": "complete",
+  "result_working_revision_ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CMER-004",
+    "Content Digest": "sha256:044a2704e36e24c196c54281b37833244819374bb6c1379d3ac7238fe8d7e91a"
+  },
+  "review_batch_ref": {
+    "Artifact Type": "Review Batch",
+    "Artifact ID": "RB-CMER-001",
+    "Content Digest": "sha256:c23d064b41268a7a398d5130ee5271cea5c89129e2f807bc706608760bcb2d33"
+  },
+  "source_count": 29,
+  "runtime_tests": 0,
+  "checks": "6 decided→reviewed; policy/acceptance unchanged;6source boundaries covered; frozen source archive members identified"
+}

@@ -1,0 +1,507 @@
+--- a/core_enhanced/docs/core_runtime_contract.md
++++ b/core_enhanced/docs/core_runtime_contract.md
+@@ -47,6 +47,12 @@
+ capability다. 동일 application의 다음 한 mutation에만 유효하고, premature/foreign/stale/중복 복원은 거절한다.
+ 복원은 monotonic player profile을 유지한다. Active battle에서는 token을 발급하지 않고 복원도 거절한다.
+ 이 capability는 gameplay undo나 오래 보관하는 checkpoint가 아니다.
++전투 진입 시 기존 checkpoint의 peak metadata도 바뀔 수 있으므로 host는
++`prepare_non_battle_command`로 결과와 checkpoint를 준비하고, 필요한 저장이 성공한 뒤에만
++`PreparedNonBattleApplication::commit`을 소비한다. 준비 객체는 해당 application을 독점적으로 빌리며
++Clone/Serde/raw root 접근을 제공하지 않는다. 폐기하면 원래 gameplay 상태를 보존하고, commit은
++준비한 상태를 한 번 반영하며 gameplay나 allowance를 다시 실행하지 않는다. Active battle에서는
++이 준비 capability를 발급하지 않는다. 저장 실패 후 재시도는 새 명령 시도로 처리한다.
+ 
+ History 한도는 전투 길이 제한이 아니다. 생성·import·streaming deserialize는 선택된 window를 적용하고
+ eviction 뒤 floor/latest sequence 및 gap/resync 의미를 유지한다. Log에 serialize된 한도로 host policy를
+@@ -624,7 +630,8 @@
+ ### Transport-Neutral Core Public Projection
+ 
+ - Default release의 public root는 `application::CoreApplication`이다. 이 service는 `GameCore`를 private으로
+-  소유하며 inner borrow, dereference, raw-state conversion, commit/rollback token을 제공하지 않는다.
++  소유하며 inner borrow, dereference, raw-state conversion을 제공하지 않는다. Host 저장용 capability는
++  위 U02 non-battle rollback/borrowed preparation 계약으로 제한된다.
+   `game::world`, `PlayerBehavior`, `BehaviorResult`와 legacy command-result contract family는 crate-private이다.
+ - `ApplicationCommandKind`는 현재 58개 Core player action과 exact bijection이다. `ApplicationCommand`는 immutable
+   `ApplicationDocument`를 private domain command로 decode하고 kind/payload 일치를 authority access 전에 검증한다.
+--- a/core_enhanced/src/application.rs
++++ b/core_enhanced/src/application.rs
+@@ -907,6 +907,38 @@
+     rollback: crate::game::world::ActiveRunTransactionRollback,
+ }
+ 
++/// A staged command that exclusively borrows its originating application.
++/// Dropping it discards the draft; commit consumes it without running gameplay
++/// again. The result and durable checkpoint are prepared before host publication.
++pub struct PreparedNonBattleApplication<'a> {
++    application: &'a mut CoreApplication,
++    prepared: crate::game::world::PreparedApplicationCommit<BehaviorResult>,
++    result: ApplicationResult,
++    checkpoint: Option<ApplicationCheckpoint>,
++    enters_battle: bool,
++}
++
++impl PreparedNonBattleApplication<'_> {
++    pub fn result(&self) -> &ApplicationResult {
++        &self.result
++    }
++
++    pub fn checkpoint(&self) -> Option<&ApplicationCheckpoint> {
++        self.checkpoint.as_ref()
++    }
++
++    pub fn enters_battle(&self) -> bool {
++        self.enters_battle
++    }
++
++    pub fn commit(self) -> ApplicationResult {
++        self.application
++            .core
++            .commit_prepared_application(self.prepared);
++        self.result
++    }
++}
++
+ impl CoreApplication {
+     pub(crate) fn new_for_authoring(game_data: ValidatedGameData, run_seed: u64) -> Self {
+         Self {
+@@ -1035,6 +1067,58 @@
+         context: ApplicationExecutionContext,
+     ) -> Result<ApplicationResult, ApplicationError> {
+         self.execute_internal(player_id, command, context, None)
++    }
++
++    /// Prepare a command only while outside battle. The exclusive borrow prevents
++    /// interleaving or committing into another application; all fallible work
++    /// finishes before the host publishes the checkpoint and consumes commit.
++    pub fn prepare_non_battle_command(
++        &mut self,
++        player_id: Uuid,
++        command: ApplicationCommand,
++        context: ApplicationExecutionContext,
++    ) -> Result<PreparedNonBattleApplication<'_>, ApplicationError> {
++        if self.has_active_battle() {
++            return Err(ApplicationError::invalid_input(
++                ApplicationErrorKind::InvalidAction,
++                "active_battle_preparation",
++                "non-battle preparation is unavailable during an active battle",
++            ));
++        }
++        self.advance_transaction_revision();
++        let prepared = self
++            .core
++            .prepare_with_transport_context(
++                player_id,
++                command.into_domain(),
++                context.source_command_id.as_deref(),
++                context.battle_event_after_seq,
++                context.expected_battle_authority.map(Into::into),
++            )
++            .map_err(ApplicationError::from_domain)?;
++        let result = ApplicationResult::from_behavior(prepared.output())?;
++        let checkpoint = prepared
++            .draft()
++            .export_active_run_checkpoint()
++            .map_err(ApplicationError::from_domain)?
++            .map(|checkpoint| {
++                ApplicationCheckpoint::new(
++                    checkpoint.core_payload_json,
++                    checkpoint.loads_used,
++                    checkpoint.run_peak_certified_power,
++                )
++            });
++        let enters_battle = matches!(
++            prepared.draft().get_state(),
++            crate::game::resources::GameState::InBattle { .. }
++        );
++        Ok(PreparedNonBattleApplication {
++            application: self,
++            prepared,
++            result,
++            checkpoint,
++            enters_battle,
++        })
+     }
+ 
+     /// Install a validated generation only through an eligible StartNewGame
+@@ -1431,6 +1515,57 @@
+             .snapshot(ApplicationSnapshotKind::SelectedEvent)
+             .unwrap();
+         assert_eq!(snapshot.read_model().as_value(), &Value::Null);
++    }
++
++    #[test]
++    fn prepared_command_preserves_first_authoring_fault_and_original_root() {
++        use crate::authoring::{control, CancellationToken, ExecutionLimits, ExecutionPhase};
++        let mut app = CoreApplication::new(
++            crate::game::data::GameDataBuilder::empty().build_arc(),
++            0xCA07_0008,
++        );
++        let before = app.snapshot(ApplicationSnapshotKind::Run).unwrap();
++        for cancelled in [false, true] {
++            let command = ApplicationCommand::try_new(
++                ApplicationCommandKind::StartNewGame,
++                ApplicationDocument(
++                    json!({"game_mode": GameMode::Standard, "replace_active_run": false}),
++                ),
++            )
++            .unwrap();
++            let cancel = CancellationToken::default();
++            let limits = ExecutionLimits {
++                max_work: 1,
++                ..ExecutionLimits::default()
++            };
++            let outcome = control::run(&limits, &cancel, ExecutionPhase::TrialExecution, || {
++                if cancelled {
++                    cancel.cancel();
++                } else {
++                    assert!(control::charge(2, "prepared_prior_failure").is_err());
++                }
++                assert!(app
++                    .prepare_non_battle_command(
++                        Uuid::from_u128(1),
++                        command,
++                        ApplicationExecutionContext::default(),
++                    )
++                    .is_err());
++            })
++            .unwrap_err();
++            assert_eq!(
++                outcome.code,
++                if cancelled {
++                    "authoring_cancelled"
++                } else {
++                    "authoring_work_limit"
++                }
++            );
++            if !cancelled {
++                assert_eq!(outcome.site, "prepared_prior_failure");
++            }
++            assert_eq!(app.snapshot(ApplicationSnapshotKind::Run).unwrap(), before);
++        }
+     }
+ 
+     #[test]
+--- a/core_enhanced/src/game/world.rs
++++ b/core_enhanced/src/game/world.rs
+@@ -50,6 +50,7 @@
+ pub(crate) use active_run::ActiveRunCheckpointExport;
+ pub(crate) use active_run::ActiveRunTransactionRollback;
+ pub(crate) use admin::AdminCommand;
++pub(crate) use application::PreparedApplicationCommit;
+ 
+ #[derive(Clone)]
+ pub(crate) struct GameCore {
+@@ -281,6 +282,27 @@
+                 battle_event_after_seq,
+                 expected_battle_authority,
+                 generation,
++            )
++        })
++    }
++
++    pub(crate) fn prepare_with_transport_context(
++        &mut self,
++        player_id: Uuid,
++        behavior: PlayerBehavior,
++        source_command_id: Option<&str>,
++        battle_event_after_seq: u64,
++        expected_battle_authority: Option<crate::game::behavior::BattleStateAuthorityDto>,
++    ) -> Result<PreparedApplicationCommit<BehaviorResult>, GameError> {
++        let route = application::ApplicationRoute::Behavior(behavior.kind());
++        self.prepare_application(route, move |draft| {
++            draft.execute_behavior_draft(
++                player_id,
++                behavior,
++                source_command_id,
++                battle_event_after_seq,
++                expected_battle_authority,
++                None,
+             )
+         })
+     }
+--- a/core_enhanced/src/game/world/application.rs
++++ b/core_enhanced/src/game/world/application.rs
+@@ -1,4 +1,4 @@
+-use super::{GameCore, GameCoreState};
++use super::GameCore;
+ use crate::game::behavior::{ActionKind, GameError};
+ 
+ /// Exact application owner for a routed Core operation. The owner is a routing
+@@ -124,14 +124,20 @@
+     }
+ }
+ 
+-struct PreparedApplicationCommit<T> {
+-    state: GameCoreState,
+-    run_seed: u64,
+-    game_data: crate::game::data::ValidatedGameData,
+-    authoring_lifecycle: Option<super::authoring_lifecycle::TrialLifecycle>,
+-    authoring_observation: Option<super::authoring_observation::TrialObservation>,
++pub(crate) struct PreparedApplicationCommit<T> {
++    draft: GameCore,
+     output: T,
+     route: ApplicationRoute,
++}
++
++impl<T> PreparedApplicationCommit<T> {
++    pub(crate) fn draft(&self) -> &GameCore {
++        &self.draft
++    }
++
++    pub(crate) fn output(&self) -> &T {
++        &self.output
++    }
+ }
+ 
+ #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+@@ -175,6 +181,15 @@
+         route: ApplicationRoute,
+         operation: impl FnOnce(&mut Self) -> Result<T, GameError>,
+     ) -> Result<T, GameError> {
++        let prepared = self.prepare_application(route, operation)?;
++        Ok(self.commit_prepared_application(prepared))
++    }
++
++    pub(super) fn prepare_application<T>(
++        &mut self,
++        route: ApplicationRoute,
++        operation: impl FnOnce(&mut Self) -> Result<T, GameError>,
++    ) -> Result<PreparedApplicationCommit<T>, GameError> {
+         if !crate::game::battle::runtime_control::has_operation_scope() {
+             let limits = self
+                 .state
+@@ -184,9 +199,9 @@
+                 .or_else(|| self.pending_resource_limits());
+             return crate::game::battle::runtime_control::run_deferred(|| match limits {
+                 Some(limits) => crate::game::battle::runtime_control::run(limits, || {
+-                    self.execute_application(route, operation)
++                    self.prepare_application(route, operation)
+                 }),
+-                None => self.execute_application(route, operation),
++                None => self.prepare_application(route, operation),
+             });
+         }
+         if self
+@@ -255,16 +270,18 @@
+         draft.state.validate_application_context()?;
+         crate::authoring::control::poll("application_commit")?;
+ 
+-        let prepared = PreparedApplicationCommit {
+-            state: draft.state,
+-            run_seed: draft.run_seed,
+-            game_data: draft.game_data,
+-            authoring_lifecycle: draft.authoring_lifecycle,
+-            authoring_observation: draft.authoring_observation,
++        Ok(PreparedApplicationCommit {
++            draft,
+             output,
+             route,
+-        };
+-        Ok(self.commit_application(prepared).publish())
++        })
++    }
++
++    pub(crate) fn commit_prepared_application<T>(
++        &mut self,
++        prepared: PreparedApplicationCommit<T>,
++    ) -> T {
++        self.commit_application(prepared).publish()
+     }
+ 
+     /// The sole live-root replacement port for application operations.
+@@ -273,20 +290,12 @@
+         prepared: PreparedApplicationCommit<T>,
+     ) -> CommittedApplication<T> {
+         let PreparedApplicationCommit {
+-            state,
+-            run_seed,
+-            game_data,
+-            authoring_lifecycle,
+-            authoring_observation,
++            draft,
+             output,
+             route,
+         } = prepared;
+         let _committed_route = route;
+-        self.state = state;
+-        self.run_seed = run_seed;
+-        self.game_data = game_data;
+-        self.authoring_lifecycle = authoring_lifecycle;
+-        self.authoring_observation = authoring_observation;
++        *self = draft;
+         CommittedApplication {
+             output,
+             disposition: PublicationDisposition::Accepted,
+--- a/game_server/src/game/player_game_actor/handlers.rs
++++ b/game_server/src/game/player_game_actor/handlers.rs
+@@ -277,6 +277,7 @@
+             }
+         }
+         let mut recovered_from_backup = false;
++        let mut prepared_battle_entry = false;
+         let execution = if is_continue {
+             let store = self.active_run_store.clone().ok_or_else(|| {
+                 PlayerGameActorError::new(
+@@ -310,20 +311,55 @@
+             self.game_core
+                 .continue_from_active_run_checkpoint(self.player_id, &checkpoint.to_application())
+         } else {
+-            self.game_core.execute(
+-                self.player_id,
+-                msg.behavior,
+-                ApplicationExecutionContext {
+-                    source_command_id: Some(msg.request_id.clone()),
+-                    battle_event_after_seq,
+-                    expected_battle_authority: msg.battle_authority.map(|authority| {
+-                        ApplicationBattleAuthority {
+-                            battle_uuid: authority.battle_uuid,
+-                            battle_state_revision: authority.battle_state_revision,
++            let context = ApplicationExecutionContext {
++                source_command_id: Some(msg.request_id.clone()),
++                battle_event_after_seq,
++                expected_battle_authority: msg.battle_authority.map(|authority| {
++                    ApplicationBattleAuthority {
++                        battle_uuid: authority.battle_uuid,
++                        battle_state_revision: authority.battle_state_revision,
++                    }
++                }),
++            };
++            if !self.game_core.has_active_battle() && self.active_run_store.is_some() {
++                match self.game_core.prepare_non_battle_command(
++                    self.player_id,
++                    msg.behavior,
++                    context,
++                ) {
++                    Ok(prepared) => {
++                        prepared_battle_entry = prepared.enters_battle();
++                        if prepared_battle_entry
++                            && prepared.checkpoint() != checkpoint_before.as_ref()
++                        {
++                            if let Some(checkpoint) = prepared.checkpoint() {
++                                self.active_run_store
++                                    .as_ref()
++                                    .expect("store checked above")
++                                    .lock()
++                                    .map_err(|_| {
++                                        PlayerGameActorError::new(
++                                            "active_run_lock_poisoned",
++                                            "Active-run persistence lock is poisoned",
++                                        )
++                                    })?
++                                    .publish(&StoredCheckpoint::from(checkpoint))
++                                    .map_err(|error| {
++                                        PlayerGameActorError::new(
++                                            "active_run_persistence_failed",
++                                            error.to_string(),
++                                        )
++                                    })?;
++                            }
+                         }
+-                    }),
+-                },
+-            )
++                        Ok(prepared.commit())
++                    }
++                    Err(error) => Err(error),
++                }
++            } else {
++                self.game_core
++                    .execute(self.player_id, msg.behavior, context)
++            }
+         };
+         let result = match execution {
+             Ok(result) => result,
+@@ -412,7 +448,7 @@
+                 })?
+                 .finish_standard_completion()
+                 .is_err();
+-        } else if !is_continue {
++        } else if !is_continue && !prepared_battle_entry {
+             if let Some(store) = self.active_run_store.as_ref() {
+                 let checkpoint_after = self
+                     .game_core
+@@ -1405,6 +1441,63 @@
+     }
+ 
+     #[test]
++    fn prepared_battle_entry_drop_preserves_root_and_commit_matches_direct_execution() {
++        let player = Uuid::from_u128(0xC252);
++        let mut app = game_core_waiting_on_live_defense_node(player);
++        let before = app.snapshot(ApplicationSnapshotKind::Run).unwrap();
++        let checkpoint = app.export_active_run_checkpoint().unwrap();
++        let prepared = app
++            .prepare_non_battle_command(
++                player,
++                command!(ConfirmEnterNode),
++                ApplicationExecutionContext::default(),
++            )
++            .unwrap();
++        assert!(prepared.enters_battle());
++        let expected = prepared.result().clone();
++        drop(prepared);
++        assert!(!app.has_active_battle());
++        assert_eq!(app.snapshot(ApplicationSnapshotKind::Run).unwrap(), before);
++        assert_eq!(app.export_active_run_checkpoint().unwrap(), checkpoint);
++        let prepared = app
++            .prepare_non_battle_command(
++                player,
++                command!(ConfirmEnterNode),
++                ApplicationExecutionContext::default(),
++            )
++            .unwrap();
++        let projected_checkpoint = prepared.checkpoint().cloned();
++        assert_eq!(prepared.commit(), expected);
++        assert!(app.has_active_battle());
++        assert_eq!(
++            app.export_active_run_checkpoint().unwrap(),
++            projected_checkpoint
++        );
++        let after = app.active_battle_reconnect(0).unwrap();
++        let error = match app.prepare_non_battle_command(
++            player,
++            command!(RequestBattleState),
++            ApplicationExecutionContext::default(),
++        ) {
++            Ok(_) => panic!("active battle must not admit preparation"),
++            Err(error) => error,
++        };
++        assert_eq!(error.code(), "active_battle_preparation");
++        assert_eq!(app.active_battle_reconnect(0).unwrap(), after);
++        let mut direct = game_core_waiting_on_live_defense_node(player);
++        assert_eq!(
++            direct
++                .execute_fixture(player, command!(ConfirmEnterNode))
++                .unwrap(),
++            expected
++        );
++        assert_eq!(
++            direct.snapshot(ApplicationSnapshotKind::Run).unwrap(),
++            app.snapshot(ApplicationSnapshotKind::Run).unwrap()
++        );
++    }
++
++    #[test]
+     fn first_public_battle_entry_uses_host_work_limit_and_active_battle_has_no_rollback_token() {
+         let player = Uuid::from_u128(0xC250);
+         let raw = std::str::from_utf8(game_core::runtime_safety::EMBEDDED_RUNTIME_SAFETY_RON)
+@@ -1425,6 +1518,20 @@
+         let failure = limited
+             .execute_fixture(player, command!(ConfirmEnterNode))
+             .unwrap_err();
++        assert_eq!(failure.code(), "battle_runtime_work_limit");
++        assert_eq!(
++            limited.snapshot(ApplicationSnapshotKind::Run).unwrap(),
++            before
++        );
++        assert!(!limited.has_active_battle());
++        let failure = match limited.prepare_non_battle_command(
++            player,
++            command!(ConfirmEnterNode),
++            ApplicationExecutionContext::default(),
++        ) {
++            Ok(_) => panic!("preparation must retain the same native work limit"),
++            Err(error) => error,
++        };
+         assert_eq!(failure.code(), "battle_runtime_work_limit");
+         assert_eq!(
+             limited.snapshot(ApplicationSnapshotKind::Run).unwrap(),

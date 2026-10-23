@@ -1,0 +1,7 @@
+[
+  {
+    "path": "core_enhanced/src/game/world/tests/u12_lifecycle/cost.rs",
+    "before": "885ca70fa454468814c435878bbe248d2b29e37cf0f4ad4a858163f289f1b1b1",
+    "after": "124b748e7d518029fded1e54e96fb241ea8ebfd169a18840bad87ecc6e3c025a"
+  }
+]

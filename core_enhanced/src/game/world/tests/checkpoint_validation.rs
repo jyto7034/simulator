@@ -14,10 +14,12 @@ const CONTENT_ERROR: &str =
 const CANONICAL_V4_CHECKPOINT_SHA256: &str =
     "64f78ce035c38e523c95b14456296750aa2a04a1b43f3f0f00b5c101d608bcc2";
 
-const CURRENT_CHECKPOINT_KEYS: [&str; 21] = [
+const CURRENT_CHECKPOINT_KEYS: [&str; 23] = [
     "abnormality_attempts",
     "combat_previews",
     "content_identity",
+    "crafting_resources",
+    "credit_ledgers",
     "current_floor_power_anchor",
     "encounter_progression",
     "enkephalin",
@@ -59,7 +61,7 @@ struct MutationCase {
     mutate: fn(&mut Value),
 }
 
-fn active_fragment_metadata() -> SkillFragmentMetadata {
+pub(super) fn active_fragment_metadata() -> SkillFragmentMetadata {
     SkillFragmentMetadata {
         corrosion_class: crate::game::data::skill_fragment_data::FragmentCorrosionClass::Ordinary,
         id: SkillFragmentId::from(ACTIVE_FRAGMENT_ID),
@@ -140,10 +142,7 @@ fn valid_checkpoint_source() -> (Arc<GameDataBase>, GameCore) {
         .inventory
         .add_consumable(Arc::new(checkpoint_consumable()), 2)
         .unwrap();
-    core.state
-        .inventory
-        .equipment_materials
-        .add("equipment_dust", 5)
+    core.state.crafting_resources.grant_equipment_dust(5)
         .unwrap();
 
     let node_id = force_first_available_node(
@@ -442,7 +441,7 @@ fn mutation_cases() -> [MutationCase; 19] {
         },
         MutationCase {
             name: "fragment key/embedded UUID",
-            expected_error: FRAGMENT_ERROR,
+            expected_error: "fragment copy has multiple owners",
             mutate: mutate_fragment_stack_count,
         },
         MutationCase {
@@ -469,7 +468,7 @@ fn assert_invalid_static_data(error: GameError, expected: &str) -> Result<(), St
 
 #[test]
 fn u06_v11_implicit_damage_profile_preserves_canonical_checksum_and_continue() {
-    let (game_data, _, exported, mut document) = valid_checkpoint_fixture();
+    let (game_data, source, exported, mut document) = valid_checkpoint_fixture();
     fn omit_damage(value: &mut Value) -> usize {
         match value {
             Value::Object(fields) => {
@@ -497,8 +496,9 @@ fn u06_v11_implicit_damage_profile_preserves_canonical_checksum_and_continue() {
     let original_bytes = serde_json::to_vec(&document).unwrap();
     let original_hash = document["continuation_sha256"].clone();
     let mut destination = GameCore::new(game_data, 912_006);
+    destination.install_authoritative_player_profile(source.state.player_profile.clone()).unwrap();
     destination.continue_from_active_run_checkpoint(
-        Uuid::from_u128(0xC006), &original_bytes,
+        Uuid::from_u128(1), &original_bytes,
         exported.loads_used, exported.run_peak_certified_power,
     ).expect("supported V11 without the formerly implicit Damage field must retain its canonical checksum");
     let restored = destination.export_active_run_checkpoint().unwrap().unwrap();
@@ -509,13 +509,13 @@ fn u06_v11_implicit_damage_profile_preserves_canonical_checksum_and_continue() {
 }
 
 #[test]
-fn current_v11_checkpoint_document_has_exact_envelope_and_checksum() {
+fn current_v12_checkpoint_document_has_exact_envelope_and_checksum() {
     let (_, _, _, document) = valid_checkpoint_fixture();
     assert_eq!(
         object_keys(&document),
         ["continuation", "continuation_sha256", "version"]
     );
-    assert_eq!(document["version"], json!(11));
+    assert_eq!(document["version"], json!(18));
     assert_eq!(
         object_keys(&document["continuation"]["current"]),
         CURRENT_CHECKPOINT_KEYS
@@ -530,13 +530,13 @@ fn current_v11_checkpoint_document_has_exact_envelope_and_checksum() {
 }
 
 #[test]
-fn current_v11_checkpoint_document_has_exact_flat_semantic_field_set_and_values() {
+fn current_v12_checkpoint_document_has_exact_flat_semantic_field_set_and_values() {
     let (game_data, core, valid_export, document) = valid_checkpoint_fixture();
     assert_eq!(
         object_keys(&document),
         ["continuation", "continuation_sha256", "version"]
     );
-    assert_eq!(document["version"], json!(11));
+    assert_eq!(document["version"], json!(18));
     assert_eq!(
         object_keys(&document["continuation"]["current"]),
         CURRENT_CHECKPOINT_KEYS
@@ -545,26 +545,9 @@ fn current_v11_checkpoint_document_has_exact_flat_semantic_field_set_and_values(
         document["continuation"]["current"]["content_identity"],
         json!(core.content_identity())
     );
-    // Compare unchanged gameplay roots directly to immutable pre-R06 V7 bytes.
-    let original: Value = serde_json::from_slice(include_bytes!("../../../../docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/evidence/preimplementation/active_run_v7.pre_r06.json")).unwrap();
-
-    for key in CURRENT_CHECKPOINT_KEYS {
-        if [
-            "content_identity",
-            "skill_fragments",
-            "roster",
-            "uuid_manager",
-        ]
-        .contains(&key)
-        {
-            continue;
-        }
-        assert_eq!(
-            document["continuation"]["current"][key], original["checkpoint"][key],
-            "unchanged gameplay root {key}"
-        );
-    }
-
+    // U12 changes mode/identity/roster semantics. Compare every current field
+    // to its independently held owner below; historical V7 byte integrity and
+    // explicit rejection are retained in the dedicated legacy test.
     let run = core.state.run.as_ref().expect("fixture run");
     macro_rules! assert_run_field_parity {
         ($($field:ident),+ $(,)?) => {
@@ -613,6 +596,7 @@ fn current_v11_checkpoint_document_has_exact_flat_semantic_field_set_and_values(
             serde_json::to_value(&core.state.inventory).unwrap(),
         ),
         ("roster", serde_json::to_value(&core.state.roster).unwrap()),
+        ("crafting_resources", serde_json::to_value(&core.state.crafting_resources).unwrap()),
         (
             "skill_fragments",
             serde_json::to_value(&core.state.skill_fragments).unwrap(),
@@ -638,9 +622,10 @@ fn current_v11_checkpoint_document_has_exact_flat_semantic_field_set_and_values(
             .unwrap()
             .insert(excluded.to_string(), Value::Null);
         let mut destination = GameCore::new(game_data.clone(), 30_000 + index as u64);
+    destination.install_authoritative_player_profile(core.state.player_profile.clone()).unwrap();
         let error = destination
             .continue_from_active_run_checkpoint(
-                Uuid::from_u128(0xC000 + index as u128),
+                Uuid::from_u128(1),
                 &serde_json::to_vec(&rejected).unwrap(),
                 valid_export.loads_used,
                 valid_export.run_peak_certified_power,
@@ -655,8 +640,8 @@ fn current_v11_checkpoint_document_has_exact_flat_semantic_field_set_and_values(
 }
 
 #[test]
-fn current_v11_strictly_rejects_missing_extra_research_and_pending_shapes() {
-    let (game_data, _, valid_export, document) = valid_checkpoint_fixture();
+fn current_v12_strictly_rejects_missing_extra_research_and_pending_shapes() {
+    let (game_data, source, valid_export, document) = valid_checkpoint_fixture();
     let mut cases = Vec::new();
 
     let mut missing = document.clone();
@@ -686,9 +671,10 @@ fn current_v11_strictly_rejects_missing_extra_research_and_pending_shapes() {
 
     for (index, (name, case)) in cases.into_iter().enumerate() {
         let mut destination = GameCore::new(game_data.clone(), 50_000 + index as u64);
+    destination.install_authoritative_player_profile(source.state.player_profile.clone()).unwrap();
         let error = destination
             .continue_from_active_run_checkpoint(
-                Uuid::from_u128(0xE000 + index as u128),
+                Uuid::from_u128(1),
                 &serde_json::to_vec(&case).unwrap(),
                 valid_export.loads_used,
                 valid_export.run_peak_certified_power,
@@ -704,7 +690,7 @@ fn current_v11_strictly_rejects_missing_extra_research_and_pending_shapes() {
 }
 
 #[test]
-fn current_v11_checkpoint_continue_then_v11_capture_is_semantically_identical() {
+fn current_v12_checkpoint_continue_then_v12_capture_is_semantically_identical() {
     let (game_data, mut source) = valid_checkpoint_source();
     source
         .state
@@ -725,9 +711,10 @@ fn current_v11_checkpoint_continue_then_v11_capture_is_semantically_identical() 
     );
 
     let mut restored = GameCore::new(game_data, 40_000);
+    restored.install_authoritative_player_profile(source.state.player_profile.clone()).unwrap();
     restored
         .continue_from_active_run_checkpoint(
-            Uuid::from_u128(0xD000),
+            Uuid::from_u128(1),
             &original.core_payload_json,
             original.loads_used,
             original.run_peak_certified_power,
@@ -755,7 +742,7 @@ fn current_v11_checkpoint_continue_then_v11_capture_is_semantically_identical() 
         .expect("restored checkpoint must recapture");
     let recaptured_document =
         serde_json::from_slice::<Value>(&recaptured.core_payload_json).unwrap();
-    assert_eq!(recaptured_document["version"], json!(11));
+    assert_eq!(recaptured_document["version"], json!(18));
     assert_eq!(
         recaptured_document["continuation"]["current"],
         original_document["continuation"]["current"]
@@ -768,12 +755,13 @@ fn current_v11_checkpoint_continue_then_v11_capture_is_semantically_identical() 
 }
 
 #[test]
-fn current_v11_checkpoint_graph_rejects_one_edge_defects_before_continue_mutation() {
-    let (game_data, _, valid_export, valid_document) = valid_checkpoint_fixture();
+fn current_v12_checkpoint_graph_rejects_one_edge_defects_before_continue_mutation() {
+    let (game_data, source, valid_export, valid_document) = valid_checkpoint_fixture();
     let mut valid_restored = GameCore::new(game_data.clone(), 9_999);
+    valid_restored.install_authoritative_player_profile(source.state.player_profile.clone()).unwrap();
     valid_restored
         .continue_from_active_run_checkpoint(
-            Uuid::from_u128(2),
+            Uuid::from_u128(1),
             &valid_export.core_payload_json,
             valid_export.loads_used,
             valid_export.run_peak_certified_power,
@@ -815,13 +803,14 @@ fn current_v11_checkpoint_graph_rejects_one_edge_defects_before_continue_mutatio
         let bytes = serde_json::to_vec(&document).unwrap();
         let initial_seed = 20_000 + index as u64;
         let mut destination = GameCore::new(game_data.clone(), initial_seed);
+    destination.install_authoritative_player_profile(source.state.player_profile.clone()).unwrap();
         let next_employee_uuid = destination
             .state
             .uuid_manager
             .peek(crate::game::managers::uuid_manager::UuidManager::NS_EMPLOYEE);
         let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
             destination.continue_from_active_run_checkpoint(
-                Uuid::from_u128(3),
+                Uuid::from_u128(1),
                 &bytes,
                 valid_export.loads_used,
                 valid_export.run_peak_certified_power,
@@ -976,15 +965,16 @@ fn checkpoint_explicit_load_rejects_an_internally_consistent_foreign_seed() {
 }
 
 #[test]
-fn current_v11_checkpoint_fragment_equip_limit_is_validated_as_part_of_the_graph() {
-    let (game_data, _, valid_export, mut document) = valid_checkpoint_fixture();
+fn current_v12_checkpoint_fragment_equip_limit_is_validated_as_part_of_the_graph() {
+    let (game_data, source, valid_export, mut document) = valid_checkpoint_fixture();
     mutate_active_fragment_over_owned_copies(&mut document);
     refresh_active_run_checksum(&mut document);
     let bytes = serde_json::to_vec(&document).unwrap();
     let mut destination = GameCore::new(game_data, 4_321);
+    destination.install_authoritative_player_profile(source.state.player_profile.clone()).unwrap();
     let error = destination
         .continue_from_active_run_checkpoint(
-            Uuid::from_u128(4),
+            Uuid::from_u128(1),
             &bytes,
             valid_export.loads_used,
             valid_export.run_peak_certified_power,
@@ -1025,7 +1015,7 @@ fn continuation_authority_snapshot(core: &GameCore) -> Value {
 }
 
 #[test]
-fn current_v11_checkpoint_round_trips_with_canonical_map_order_independent_checksum() {
+fn current_v12_checkpoint_round_trips_with_canonical_map_order_independent_checksum() {
     let (game_data, source, export, document) = valid_checkpoint_fixture();
     let repeated_export = source
         .export_active_run_checkpoint()
@@ -1033,8 +1023,9 @@ fn current_v11_checkpoint_round_trips_with_canonical_map_order_independent_check
         .expect("same checkpoint must remain exportable");
     assert_eq!(repeated_export, export);
 
-    let player_id = Uuid::from_u128(0xF501);
+    let player_id = source.state.player.as_ref().unwrap().id;
     let mut direct = GameCore::new(game_data.clone(), 100_001);
+    direct.install_authoritative_player_profile(source.state.player_profile.clone()).unwrap();
     let direct_result = direct
         .continue_from_active_run_checkpoint(
             player_id,
@@ -1046,8 +1037,9 @@ fn current_v11_checkpoint_round_trips_with_canonical_map_order_independent_check
 
     let checkpoint_json = serde_json::to_string(&document["continuation"]).unwrap();
     let checksum_json = serde_json::to_string(&document["continuation_sha256"]).unwrap();
+    let version=document["version"].as_u64().unwrap();
     let reordered_bytes = format!(
-        "{{\"continuation_sha256\":{checksum_json},\"continuation\":{checkpoint_json},\"version\":11}}"
+        "{{\"continuation_sha256\":{checksum_json},\"continuation\":{checkpoint_json},\"version\":{version}}}"
     )
     .into_bytes();
     assert_ne!(
@@ -1056,6 +1048,7 @@ fn current_v11_checkpoint_round_trips_with_canonical_map_order_independent_check
     );
 
     let mut reordered = GameCore::new(game_data, 100_002);
+    reordered.install_authoritative_player_profile(source.state.player_profile.clone()).unwrap();
     let reordered_result = reordered
         .continue_from_active_run_checkpoint(
             player_id,
@@ -1092,11 +1085,12 @@ fn public_application_checkpoint_port_round_trips_into_a_fresh_application() {
         .unwrap()
         .expect("completed SavePoint must export through the application port");
     let document: Value = serde_json::from_slice(checkpoint.core_payload_json()).unwrap();
-    assert_eq!(document["version"], 11);
+    assert_eq!(document["version"], 18);
 
     let mut destination = crate::application::CoreApplication::new(game_data, 0xCA07_0004);
+    install_application_profile_for_continue(&mut destination, &source);
     let continued = destination
-        .continue_from_active_run_checkpoint(Uuid::from_u128(0xCA07_0004), &checkpoint)
+        .continue_from_active_run_checkpoint(Uuid::from_u128(1), &checkpoint)
         .unwrap();
     assert_eq!(
         continued.kind(),
@@ -1117,7 +1111,7 @@ fn public_application_checkpoint_port_round_trips_into_a_fresh_application() {
 }
 
 #[test]
-fn current_v11_continue_restores_rng_and_replays_the_same_next_gate() {
+fn current_v12_continue_restores_rng_and_replays_the_same_next_gate() {
     let (game_data, mut source) = valid_checkpoint_source();
     let player_id = source.state.player.as_ref().unwrap().id;
     let gate = force_first_available_node(
@@ -1129,6 +1123,7 @@ fn current_v11_continue_restores_rng_and_replays_the_same_next_gate() {
     source.save_run_checkpoint_for_test().unwrap();
     let export = source.export_active_run_checkpoint().unwrap().unwrap();
     let mut restored = GameCore::new(game_data, 110_002);
+    restored.install_authoritative_player_profile(source.state.player_profile.clone()).unwrap();
     restored
         .continue_from_active_run_checkpoint(
             player_id,
@@ -1201,8 +1196,8 @@ fn current_v11_continue_restores_rng_and_replays_the_same_next_gate() {
 }
 
 #[test]
-fn current_v11_corrupt_strict_and_unknown_inputs_reject_before_mutation_on_retry() {
-    let (game_data, _, export, document) = valid_checkpoint_fixture();
+fn current_v12_corrupt_strict_and_unknown_inputs_reject_before_mutation_on_retry() {
+    let (game_data, source, export, document) = valid_checkpoint_fixture();
     let mut cases: Vec<(&str, Vec<u8>)> = vec![("malformed JSON", b"{".to_vec())];
 
     let mut missing_version = document.clone();
@@ -1219,7 +1214,7 @@ fn current_v11_corrupt_strict_and_unknown_inputs_reject_before_mutation_on_retry
         serde_json::to_vec(&unknown_version).unwrap(),
     ));
 
-    for old in [9, 10, 12] {
+    for old in [9, 10, 11, 13] {
         let mut old_version = document.clone();
         old_version["version"] = json!(old);
         cases.push((
@@ -1336,10 +1331,11 @@ fn current_v11_corrupt_strict_and_unknown_inputs_reject_before_mutation_on_retry
 
     for (index, (name, bytes)) in cases.into_iter().enumerate() {
         let mut destination = GameCore::new(game_data.clone(), 120_000 + index as u64);
+    destination.install_authoritative_player_profile(source.state.player_profile.clone()).unwrap();
         let before = continuation_authority_snapshot(&destination);
         let first = destination
             .continue_from_active_run_checkpoint(
-                Uuid::from_u128(0xF600 + index as u128),
+                Uuid::from_u128(1),
                 &bytes,
                 export.loads_used,
                 export.run_peak_certified_power,
@@ -1354,7 +1350,7 @@ fn current_v11_corrupt_strict_and_unknown_inputs_reject_before_mutation_on_retry
 
         let retry = destination
             .continue_from_active_run_checkpoint(
-                Uuid::from_u128(0xF600 + index as u128),
+                Uuid::from_u128(1),
                 &bytes,
                 export.loads_used,
                 export.run_peak_certified_power,
@@ -1366,6 +1362,52 @@ fn current_v11_corrupt_strict_and_unknown_inputs_reject_before_mutation_on_retry
             before,
             "{name}"
         );
+    }
+}
+
+#[test]
+fn u12_removed_psychology_rejects_current_and_nested_savepoint_before_mutation() {
+    let (game_data, source, export, mut document) = valid_checkpoint_fixture();
+    // Encode the genuine SavePoint explicitly so its reader is exercised
+    // independently of the compact reference to the current checkpoint.
+    assert!(document["continuation"]["savepoint"].is_object());
+    document["continuation"]["savepoint"] = json!({
+        "snapshot": {"checkpoint": document["continuation"]["current"].clone()}
+    });
+    refresh_active_run_checksum(&mut document);
+    let mut positive = GameCore::new(game_data.clone(), 0xC120);
+    positive.install_authoritative_player_profile(source.state.player_profile.clone()).unwrap();
+    positive.continue_from_active_run_checkpoint(
+        Uuid::from_u128(1), &serde_json::to_vec(&document).unwrap(),
+        export.loads_used, export.run_peak_certified_power,
+    ).expect("explicit nested SavePoint is valid before the removed field is injected");
+    assert_eq!(serde_json::to_value(&positive.state.roster).unwrap(), serde_json::to_value(&source.state.roster).unwrap());
+
+    for nested in [false, true] {
+        for removed in [Value::Null, json!({}), json!({"memory": [], "trust": {}})] {
+            let mut invalid = document.clone();
+            let checkpoint = if nested {
+                &mut invalid["continuation"]["savepoint"]["snapshot"]["checkpoint"]
+            } else {
+                &mut invalid["continuation"]["current"]
+            };
+            let employee = checkpoint["roster"]["employees"].as_object_mut().unwrap().values_mut().next().unwrap();
+            assert!(employee.get("psychology").is_none());
+            employee["psychology"] = removed;
+            refresh_active_run_checksum(&mut invalid);
+            let bytes = serde_json::to_vec(&invalid).unwrap();
+            let mut destination = GameCore::new(game_data.clone(), 0xC121);
+            destination.install_authoritative_player_profile(source.state.player_profile.clone()).unwrap();
+            let before = continuation_authority_snapshot(&destination);
+            for _ in 0..2 {
+                let error = destination.continue_from_active_run_checkpoint(
+                    Uuid::from_u128(1), &bytes, export.loads_used, export.run_peak_certified_power,
+                ).expect_err("removed psychology must be rejected, including null and empty objects");
+                assert!(matches!(error, GameError::InvalidStaticData(_)), "{error:?}");
+                assert!(format!("{error:?}").contains("psychology"), "must reach the removed-field reader: {error:?}");
+                assert_eq!(continuation_authority_snapshot(&destination), before);
+            }
+        }
     }
 }
 
@@ -1383,8 +1425,8 @@ fn append_boundary_consumable(document: &mut Value, index: usize) {
 }
 
 #[test]
-fn current_v11_checkpoint_round_trips_exact_inventory_reservation_boundary() {
-    let (game_data, _, export, mut document) = valid_checkpoint_fixture();
+fn current_v12_checkpoint_round_trips_exact_inventory_reservation_boundary() {
+    let (game_data, source, export, mut document) = valid_checkpoint_fixture();
     let equipment_count = document["continuation"]["current"]["inventory"]["equipments"]["items"]
         .as_object()
         .unwrap()
@@ -1413,9 +1455,10 @@ fn current_v11_checkpoint_round_trips_exact_inventory_reservation_boundary() {
     refresh_active_run_checksum(&mut document);
 
     let mut exact = GameCore::new(game_data.clone(), 125_000);
+    exact.install_authoritative_player_profile(source.state.player_profile.clone()).unwrap();
     exact
         .continue_from_active_run_checkpoint(
-            Uuid::from_u128(0xF700),
+            Uuid::from_u128(1),
             &serde_json::to_vec(&document).unwrap(),
             export.loads_used,
             export.run_peak_certified_power,
@@ -1439,7 +1482,7 @@ fn current_v11_checkpoint_round_trips_exact_inventory_reservation_boundary() {
                 .core_payload_json
         )
         .unwrap()["version"],
-        json!(11)
+        json!(18)
     );
 
     let mut overflow = document;
@@ -1449,10 +1492,11 @@ fn current_v11_checkpoint_round_trips_exact_inventory_reservation_boundary() {
     );
     refresh_active_run_checksum(&mut overflow);
     let mut rejected = GameCore::new(game_data, 125_001);
+    rejected.install_authoritative_player_profile(source.state.player_profile.clone()).unwrap();
     let before = continuation_authority_snapshot(&rejected);
     let error = rejected
         .continue_from_active_run_checkpoint(
-            Uuid::from_u128(0xF701),
+            Uuid::from_u128(1),
             &serde_json::to_vec(&overflow).unwrap(),
             export.loads_used,
             export.run_peak_certified_power,
@@ -1463,13 +1507,14 @@ fn current_v11_checkpoint_round_trips_exact_inventory_reservation_boundary() {
 }
 
 #[test]
-fn current_v11_load_count_and_active_lifecycle_boundaries_reject_without_mutation() {
+fn current_v12_load_count_and_active_lifecycle_boundaries_reject_without_mutation() {
     let (game_data, source, export, _) = valid_checkpoint_fixture();
-    let player_id = Uuid::from_u128(0xF503);
+    let player_id = source.state.player.as_ref().unwrap().id;
     let empty = GameCore::new(checkpoint_game_data(), 130_000);
     assert_eq!(empty.export_active_run_checkpoint().unwrap(), None);
 
     let mut at_max = GameCore::new(game_data, 130_001);
+    at_max.install_authoritative_player_profile(source.state.player_profile.clone()).unwrap();
     at_max
         .continue_from_active_run_checkpoint(
             player_id,
@@ -1511,8 +1556,8 @@ fn current_v11_load_count_and_active_lifecycle_boundaries_reject_without_mutatio
 }
 
 #[test]
-fn current_v11_rejects_v4_and_v5_before_mutation_on_retry() {
-    let (game_data, _, export, document) = valid_checkpoint_fixture();
+fn current_v12_rejects_v4_and_v5_before_mutation_on_retry() {
+    let (game_data, source, export, document) = valid_checkpoint_fixture();
     for version in [4, 5, 6] {
         let mut legacy = document.clone();
         legacy["version"] = json!(version);
@@ -1529,11 +1574,12 @@ fn current_v11_rejects_v4_and_v5_before_mutation_on_retry() {
             legacy["continuation_sha256"] = json!(CANONICAL_V4_CHECKPOINT_SHA256);
         }
         let mut destination = GameCore::new(game_data.clone(), 140_000 + version);
+    destination.install_authoritative_player_profile(source.state.player_profile.clone()).unwrap();
         let before = continuation_authority_snapshot(&destination);
         for _ in 0..2 {
             let error = destination
                 .continue_from_active_run_checkpoint(
-                    Uuid::from_u128(0xF800),
+                    Uuid::from_u128(1),
                     &serde_json::to_vec(&legacy).unwrap(),
                     export.loads_used,
                     export.run_peak_certified_power,
@@ -1552,8 +1598,8 @@ fn current_v11_rejects_v4_and_v5_before_mutation_on_retry() {
 }
 
 #[test]
-fn current_v11_rejects_each_content_authority_mismatch_even_with_valid_checksum() {
-    let (game_data, _, export, document) = valid_checkpoint_fixture();
+fn current_v12_rejects_each_content_authority_mismatch_even_with_valid_checksum() {
+    let (game_data, source, export, document) = valid_checkpoint_fixture();
     for field in [
         "semantic_sha256",
         "pack_format",
@@ -1571,11 +1617,12 @@ fn current_v11_rejects_each_content_authority_mismatch_even_with_valid_checksum(
         }
         refresh_active_run_checksum(&mut mismatched);
         let mut destination = GameCore::new(game_data.clone(), 150_000);
+    destination.install_authoritative_player_profile(source.state.player_profile.clone()).unwrap();
         let before = continuation_authority_snapshot(&destination);
         for _ in 0..2 {
             let error = destination
                 .continue_from_active_run_checkpoint(
-                    Uuid::from_u128(0xF900),
+                    Uuid::from_u128(1),
                     &serde_json::to_vec(&mismatched).unwrap(),
                     export.loads_used,
                     export.run_peak_certified_power,
@@ -1637,7 +1684,7 @@ fn external_generations_bind_save_continue_explicit_load_and_cached_export() {
         export
     );
     let document: Value = serde_json::from_slice(&export.core_payload_json).unwrap();
-    assert_eq!(document["version"], 11);
+    assert_eq!(document["version"], 18);
     assert_eq!(
         document["continuation"]["current"]["content_identity"],
         json!(a_identity)
@@ -1680,6 +1727,7 @@ fn external_generations_bind_save_continue_explicit_load_and_cached_export() {
     let equivalent_a = files.load();
     assert_eq!(equivalent_a.identity(), &a_identity);
     let mut restored = GameCore::new(equivalent_a, 160_001);
+    restored.install_authoritative_player_profile(source.state.player_profile.clone()).unwrap();
     restored.state.player_profile.highest_floor_reached = 15;
     restored
         .continue_from_active_run_checkpoint(
@@ -1746,7 +1794,7 @@ fn external_generations_bind_save_continue_explicit_load_and_cached_export() {
 }
 
 #[test]
-fn r07_original_preimplementation_v7_bytes_convert_explicitly_without_overwrite() {
+fn u12_original_preimplementation_v7_bytes_are_unsupported_and_preserved() {
     use sha2::{Digest, Sha256};
     let raw = include_bytes!("../../../../docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/evidence/preimplementation/active_run_v7.pre_r06.json");
     let original_digest = "47af09db635ab1691dc61d7094d6b2414237562c27cd6e1d1b6ce9a4e49024c9";
@@ -1755,43 +1803,12 @@ fn r07_original_preimplementation_v7_bytes_convert_explicitly_without_overwrite(
     let expected = serde_json::from_value(value["checkpoint"]["content_identity"].clone()).unwrap();
     let mut core = GameCore::new(checkpoint_game_data(), 900);
     let before = continuation_authority_snapshot(&core);
-    assert!(core
-        .continue_from_active_run_checkpoint(Uuid::from_u128(0xD000), raw, 0, 1)
-        .is_err());
-    assert!(core
-        .convert_active_run_v7(raw, core.content_identity())
-        .is_err());
-    let mut corrupt = value.clone();
-    corrupt["checkpoint"]["enkephalin"]["amount"] = json!(99);
-    assert!(core
-        .convert_active_run_v7(&serde_json::to_vec(&corrupt).unwrap(), &expected)
-        .is_err());
-    let converted = core.convert_active_run_v7(raw, &expected).unwrap();
-    assert_eq!(
-        converted,
-        core.convert_active_run_v7(raw, &expected).unwrap()
-    );
-    assert_eq!(continuation_authority_snapshot(&core), before);
-    let converted_value: Value = serde_json::from_slice(&converted).unwrap();
-    assert_eq!(converted_value["version"], 12);
-    assert_eq!(
-        converted_value["checkpoint"]["skill_fragments"]["legacy_progress"][ACTIVE_FRAGMENT_ID]
-            ["upgrade_level"],
-        7
-    );
-    assert!(core
-        .continue_from_active_run_checkpoint(Uuid::from_u128(0xD000), &converted, 0, 1)
-        .is_err());
-    assert_eq!(continuation_authority_snapshot(&core), before);
-    let checkpoint: RunCheckpointPayload =
-        serde_json::from_value(converted_value["checkpoint"].clone()).unwrap();
-    assert!(checkpoint.roster.iter().all(|employee| employee
-        .combat_profile
-        .battle_profile
-        .stats
-        .spell_power
-        == 0));
-    assert_eq!(format!("{:x}", Sha256::digest(raw)), original_digest);
+    for _ in 0..2 {
+        assert!(core.continue_from_active_run_checkpoint(Uuid::from_u128(0xD000), raw, 0, 1).is_err());
+        assert!(core.convert_active_run_v7(raw, &expected).is_err());
+        assert_eq!(continuation_authority_snapshot(&core), before);
+        assert_eq!(format!("{:x}", Sha256::digest(raw)), original_digest);
+    }
 }
 
 #[test]
@@ -1801,6 +1818,7 @@ fn r06_nonzero_checkpoint_fresh_process_preserves_effective_inputs_and_rejects_t
         let wrapper: Value = serde_json::from_slice(&std::fs::read(path).unwrap()).unwrap();
         let raw = serde_json::to_vec(&wrapper["save"]).unwrap();
         let mut core = GameCore::new(checkpoint_game_data(), 987654);
+        core.install_authoritative_player_profile(serde_json::from_value(wrapper["profile"].clone()).unwrap()).unwrap();
         core.continue_from_active_run_checkpoint(Uuid::from_u128(1), &raw, 0, 1)
             .unwrap();
         assert_eq!(
@@ -1859,7 +1877,7 @@ fn r06_nonzero_checkpoint_fresh_process_preserves_effective_inputs_and_rejects_t
             )
         })
         .collect::<std::collections::BTreeMap<_, _>>();
-    let wrapper = json!({"save":save,"fingerprint":core.certified_input_fingerprint().unwrap(),"profiles":profiles});
+    let wrapper = json!({"profile":core.state.player_profile,"save":save,"fingerprint":core.certified_input_fingerprint().unwrap(),"profiles":profiles});
     let path = std::env::temp_dir().join(format!(
         "r06-nonzero-checkpoint-{}.json",
         std::process::id()
@@ -1879,226 +1897,54 @@ fn r06_nonzero_checkpoint_fresh_process_preserves_effective_inputs_and_rejects_t
 }
 
 #[test]
-fn r07_f10_v7_multiple_awakened_copies_zero_count_history_and_rejection_oracles() {
-    fn refresh_raw(value: &mut Value) {
-        use sha2::{Digest, Sha256};
-        fn sorted(value: &Value) -> Value {
-            match value {
-                Value::Object(map) => {
-                    let sorted: std::collections::BTreeMap<_, _> =
-                        map.iter().map(|(k, v)| (k.clone(), sorted(v))).collect();
-                    serde_json::to_value(sorted).unwrap()
-                }
-                Value::Array(a) => Value::Array(a.iter().map(sorted).collect()),
-                _ => value.clone(),
-            }
-        }
-        value["checkpoint_sha256"] = json!(format!(
-            "{:x}",
-            Sha256::digest(serde_json::to_vec(&sorted(&value["checkpoint"])).unwrap())
-        ));
-    }
-    let raw=include_bytes!("../../../../docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/evidence/preimplementation/active_run_v7.pre_r06.json");
+fn u12_v7_converter_rejects_awakened_zero_count_and_duplicate_raw_legacy_shapes() {
+    let raw = include_bytes!("../../../../docs/goals/content_authoring_value_expressions_reassessment/execution/single_goal/evidence/preimplementation/active_run_v7.pre_r06.json");
+    let original = raw.to_vec();
     let mut value: Value = serde_json::from_slice(raw).unwrap();
     let expected = serde_json::from_value(value["checkpoint"]["content_identity"].clone()).unwrap();
-    let mut meta = active_fragment_metadata();
-    if let SkillFragmentEffectDef::ActiveSkill { forms, .. } = &mut meta.effect {
-        forms.insert("awakened".into(), forms["base"].clone());
+    let core = GameCore::new(checkpoint_game_data(), 900);
+    let before = continuation_authority_snapshot(&core);
+    for count in [0, 2] {
+        value["checkpoint"]["skill_fragments"]["stacks"][ACTIVE_FRAGMENT_ID]["count"] = json!(count);
+        value["checkpoint"]["skill_fragments"]["progress"][ACTIVE_FRAGMENT_ID]["awakened"] = json!(true);
+        refresh_active_run_checksum(&mut value);
+        let input = serde_json::to_vec(&value).unwrap();
+        assert!(core.convert_active_run_v7(&input, &expected).is_err());
+        assert_eq!(continuation_authority_snapshot(&core), before);
     }
-    let core = GameCore::new(game_data_with_skill_fragments(vec![meta]), 900);
-    value["checkpoint"]["skill_fragments"]["stacks"][ACTIVE_FRAGMENT_ID]["count"] = json!(2);
-    value["checkpoint"]["skill_fragments"]["progress"][ACTIVE_FRAGMENT_ID]["awakened"] =
-        json!(true);
-    value["checkpoint"]["skill_fragments"]["progress"][ACTIVE_FRAGMENT_ID]["awakening_available"] =
-        json!(true);
-    refresh_raw(&mut value);
-    let input = serde_json::to_vec(&value).unwrap();
-    let converted = core.convert_active_run_v7(&input, &expected).unwrap();
-    assert_eq!(
-        converted,
-        core.convert_active_run_v7(&input, &expected).unwrap()
-    );
-    let result: Value = serde_json::from_slice(&converted).unwrap();
-    let copies = result["checkpoint"]["skill_fragments"]["copies"]
-        .as_object()
-        .unwrap();
-    assert_eq!(copies.len(), 2);
-    assert!(copies
-        .values()
-        .all(|copy| copy["selected_form"] == "awakened"));
-    assert_eq!(
-        copies
-            .values()
-            .filter(|copy| !copy["equipped_to"].is_null())
-            .count(),
-        1
-    );
-    let base_only = GameCore::new(checkpoint_game_data(), 900);
-    assert!(base_only.convert_active_run_v7(&input, &expected).is_err());
-    for employee in value["checkpoint"]["roster"]["employees"]
-        .as_object_mut()
-        .unwrap()
-        .values_mut()
-    {
-        employee["skill_fragments"]["active_fragment_id"] = Value::Null;
-    }
-    value["checkpoint"]["skill_fragments"]["stacks"] = json!({});
-    refresh_raw(&mut value);
-    let result: Value = serde_json::from_slice(
-        &core
-            .convert_active_run_v7(&serde_json::to_vec(&value).unwrap(), &expected)
-            .unwrap(),
-    )
-    .unwrap();
-    assert_eq!(result["checkpoint"]["skill_fragments"]["copies"], json!({}));
-    assert_eq!(
-        result["checkpoint"]["skill_fragments"]["legacy_progress"][ACTIVE_FRAGMENT_ID]
-            ["upgrade_level"],
-        7
-    );
-    let employee = object_keys(&value["checkpoint"]["roster"]["employees"])[0].clone();
-    value["checkpoint"]["roster"]["employees"][employee]["skill_fragments"]["active_fragment_id"] =
-        json!(ACTIVE_FRAGMENT_ID);
-    refresh_raw(&mut value);
-    assert!(core
-        .convert_active_run_v7(&serde_json::to_vec(&value).unwrap(), &expected)
-        .is_err());
-    let duplicate = String::from_utf8(input).unwrap().replacen(
-        "\"version\":7",
-        "\"version\":7,\"version\":7",
-        1,
-    );
-    assert!(core
-        .convert_active_run_v7(duplicate.as_bytes(), &expected)
-        .is_err());
+    let duplicate = String::from_utf8(original.clone()).unwrap().replacen(
+        "\"version\":7", "\"version\":7,\"version\":7", 1);
+    assert!(core.convert_active_run_v7(duplicate.as_bytes(), &expected).is_err());
+    assert_eq!(raw.as_slice(), original.as_slice());
 }
 
 #[test]
-fn r09_v8_explicit_conversion_and_current_counter_validation_preserve_original() {
+fn u12_v8_converter_and_continue_reject_even_checksum_valid_legacy_shape() {
     use sha2::{Digest, Sha256};
     let (data, source, _, current) = valid_checkpoint_fixture();
-    let mut legacy = json!({ "version": 8, "checkpoint": current["continuation"]["current"].clone(), "checkpoint_sha256": "" });
-    let employees = legacy["checkpoint"]["roster"]["employees"]
-        .as_object_mut()
-        .unwrap();
-    let first = employees.keys().next().unwrap().clone();
-    for employee in employees.values_mut() {
-        employee.as_object_mut().unwrap().remove("breakdown");
-        employee["combat_profile"]["battle_profile"]["resonance"] =
-            json!({"start": 0, "max": 100, "gain_lock_ms": 1000});
-    }
-    employees[&first]["condition"]["trauma"] = json!(100);
-    // Generated legacy-shape fixture, not a claim that these are original historical bytes.
-    fn refresh_raw(value: &mut Value) {
-        fn sorted(value: &Value) -> Value {
-            match value {
-                Value::Object(map) => serde_json::to_value(
-                    map.iter()
-                        .map(|(k, v)| (k.clone(), sorted(v)))
-                        .collect::<std::collections::BTreeMap<_, _>>(),
-                )
-                .unwrap(),
-                Value::Array(items) => Value::Array(items.iter().map(sorted).collect()),
-                _ => value.clone(),
-            }
-        }
-        value["checkpoint_sha256"] = json!(format!(
-            "{:x}",
-            Sha256::digest(serde_json::to_vec(&sorted(&value["checkpoint"])).unwrap())
-        ));
-    }
-    refresh_raw(&mut legacy);
-    for unsupported in [
-        json!(null),
-        json!({"start":20,"max":100,"gain_lock_ms":0}),
-        json!({"start":0,"max":99,"gain_lock_ms":1000}),
-        json!({"start":0,"max":100,"gain_lock_ms":1000,"unknown":0}),
-    ] {
-        let mut custom = legacy.clone();
-        custom["checkpoint"]["roster"]["employees"][&first]["combat_profile"]["battle_profile"]
-            ["resonance"] = unsupported;
-        refresh_raw(&mut custom);
-        let bytes = serde_json::to_vec(&custom).unwrap();
-        assert!(source
-            .convert_active_run_v8(&bytes, source.content_identity())
-            .is_err());
-    }
+    let mut legacy = json!({"version":8,"checkpoint":current["continuation"]["current"],"checkpoint_sha256":""});
+    refresh_active_run_checksum(&mut legacy);
     let original = serde_json::to_vec(&legacy).unwrap();
     let digest = Sha256::digest(&original);
     let mut destination = GameCore::new(data, 9);
     let before = continuation_authority_snapshot(&destination);
-    assert!(destination
-        .continue_from_active_run_checkpoint(Uuid::from_u128(9), &original, 0, 1)
-        .is_err());
-    let converted = destination
-        .convert_active_run_v8(&original, source.content_identity())
-        .unwrap();
-    assert_eq!(continuation_authority_snapshot(&destination), before);
-    let document: Value = serde_json::from_slice(&converted).unwrap();
-    assert_eq!(document["version"], 12);
-    assert_eq!(
-        document["checkpoint"]["roster"]["employees"][&first]["breakdown"]["Active"]
-            ["remaining_nodes"],
-        2
-    );
-    assert_eq!(Sha256::digest(&original), digest);
-    for mode in 0..3 {
-        let mut bad = current.clone();
-        bad["continuation"]["current"] = document["checkpoint"].clone();
-        let employee = &mut bad["continuation"]["current"]["roster"]["employees"][&first];
-        match mode {
-            0 => {
-                employee.as_object_mut().unwrap().remove("breakdown");
-            }
-            1 => employee["breakdown"]["Active"]["remaining_nodes"] = json!(0),
-            _ => employee["condition"]["trauma"] = json!(99),
-        }
-        refresh_active_run_checksum(&mut bad);
-        assert!(destination
-            .continue_from_active_run_checkpoint(
-                Uuid::from_u128(9),
-                &serde_json::to_vec(&bad).unwrap(),
-                0,
-                1
-            )
-            .is_err());
+    for _ in 0..2 {
+        assert!(destination.continue_from_active_run_checkpoint(Uuid::from_u128(9), &original, 0, 1).is_err());
+        assert!(destination.convert_active_run_v8(&original, source.content_identity()).is_err());
         assert_eq!(continuation_authority_snapshot(&destination), before);
+        assert_eq!(Sha256::digest(&original), digest);
     }
-    assert!(destination
-        .continue_from_active_run_checkpoint(Uuid::from_u128(9), &converted, 0, 1)
-        .is_err());
-    assert_eq!(continuation_authority_snapshot(&destination), before);
-    let mut upgraded = current;
-    upgraded["continuation"]["current"] = document["checkpoint"].clone();
-    refresh_active_run_checksum(&mut upgraded);
-    destination
-        .continue_from_active_run_checkpoint(
-            Uuid::from_u128(9),
-            &serde_json::to_vec(&upgraded).unwrap(),
-            0,
-            1,
-        )
-        .unwrap();
-    assert_eq!(
-        destination
-            .state
-            .roster
-            .get(&Uuid::parse_str(&first).unwrap())
-            .unwrap()
-            .breakdown
-            .remaining_nodes(),
-        Some(2)
-    );
 }
 
 #[test]
-fn r09_counter_checkpoint_fresh_process_preserves_remaining_nodes() {
+fn r09_counter_checkpoint_fresh_process_preserves_remaining_cost() {
     const CHILD: &str = "R09_COUNTER_CHECKPOINT_CHILD";
     if let Some(path) = std::env::var_os(CHILD) {
         let wrapper: Value = serde_json::from_slice(&std::fs::read(path).unwrap()).unwrap();
         let raw = serde_json::to_vec(&wrapper["save"]).unwrap();
         let mut core = GameCore::new(checkpoint_game_data(), 919);
-        core.continue_from_active_run_checkpoint(Uuid::from_u128(919), &raw, 0, 1)
+        core.install_authoritative_player_profile(serde_json::from_value(wrapper["profile"].clone()).unwrap()).unwrap();
+        core.continue_from_active_run_checkpoint(Uuid::from_u128(1), &raw, 0, 1)
             .unwrap();
         let employee = core
             .state
@@ -2106,7 +1952,7 @@ fn r09_counter_checkpoint_fresh_process_preserves_remaining_nodes() {
             .get(&serde_json::from_value(wrapper["employee"].clone()).unwrap())
             .unwrap();
         assert_eq!(employee.condition.trauma, 100);
-        assert_eq!(employee.breakdown.remaining_nodes(), Some(1));
+        assert_eq!(employee.breakdown.remaining_cost(), Some(1));
         assert_eq!(
             serde_json::to_value(employee.breakdown).unwrap(),
             wrapper["counter"]
@@ -2118,19 +1964,19 @@ fn r09_counter_checkpoint_fresh_process_preserves_remaining_nodes() {
     let employee = core.state.roster.get_mut(&id).unwrap();
     employee.condition.trauma = 100;
     employee.breakdown = crate::game::employee::BreakdownCounter::Active {
-        remaining_nodes: 1,
+        remaining_cost: 1,
         entered_node: None,
     };
     let counter = employee.breakdown;
     core.save_run_checkpoint_for_test().unwrap();
     let export = core.export_active_run_checkpoint().unwrap().unwrap();
-    let wrapper = json!({"save":serde_json::from_slice::<Value>(&export.core_payload_json).unwrap(),"employee":id,"counter":counter});
+    let wrapper = json!({"profile":core.state.player_profile,"save":serde_json::from_slice::<Value>(&export.core_payload_json).unwrap(),"employee":id,"counter":counter});
     let path = std::env::temp_dir().join(format!(
         "r09-counter-checkpoint-{}.json",
         std::process::id()
     ));
     std::fs::write(&path, serde_json::to_vec(&wrapper).unwrap()).unwrap();
-    let output = std::process::Command::new(std::env::current_exe().unwrap()).args(["--exact", "game::world::tests::checkpoint_validation::r09_counter_checkpoint_fresh_process_preserves_remaining_nodes", "--nocapture"]).env(CHILD, &path).output().unwrap();
+    let output = std::process::Command::new(std::env::current_exe().unwrap()).args(["--exact", "game::world::tests::checkpoint_validation::r09_counter_checkpoint_fresh_process_preserves_remaining_cost", "--nocapture"]).env(CHILD, &path).output().unwrap();
     assert!(
         output.status.success(),
         "{}\n{}",

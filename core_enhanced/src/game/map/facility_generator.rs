@@ -91,6 +91,14 @@ impl FacilityMapGenerator {
         floor_power_anchor: u64,
         requirements: FacilityGenerationRequirements,
     ) -> Result<GeneratedFacilityMap, String> {
+        if mode == GameMode::Expedition {
+            if let Some(layout) = catalogs.facility_templates.layouts.iter().find(|l| {
+                current_state.rooms.as_ref().map_or(l.expedition_default, |r| r.layout_id == l.id)
+            }) {
+                let room_id = current_state.rooms.as_ref().map_or(layout.initial_room_id.as_str(), |r| r.current_room_id.as_str());
+                return Self::generate_room(run_seed, room_id, current_state, layout, catalogs, run_policy, floor_power_anchor);
+            }
+        }
         let schedule = catalogs.node_assignment_profiles.resolve(
             &catalogs.facility_templates,
             mode,
@@ -167,7 +175,7 @@ impl FacilityMapGenerator {
                                 schedule.profile.id, schedule.profile.difficulty_profile_id
                             )
                         })?;
-                    if schedule.profile.fixed_slot_assignments.is_empty() {
+                    if !difficulty_profile.authored_fixed {
                         assign_combat_difficulties(
                             &mut map,
                             &assignments,
@@ -200,6 +208,52 @@ impl FacilityMapGenerator {
             schedule.profile.id,
             last_error.unwrap_or_else(|| "pool produced no candidates".to_string())
         ))
+    }
+
+    fn generate_room(
+        run_seed: u64,
+        room_id: &str,
+        current_state: &FacilityRunState,
+        layout: &super::FacilityLayout,
+        catalogs: &GameplayMapCatalogs,
+        run_policy: &RunPolicyData,
+        anchor: u64,
+    ) -> Result<GeneratedFacilityMap, String> {
+        let room = layout.room(room_id).ok_or("missing current facility room")?;
+        if !room.support.is_supported() { return Err(format!("unsupported facility room '{room_id}'")); }
+        let template = room.template_id.as_ref().and_then(|id| catalogs.facility_templates.template(id)).ok_or("missing room template")?;
+        let seed = determinism::seed_with_namespace(run_seed ^ stable_text_seed(&layout.id) ^ stable_text_seed(room_id), FACILITY_ASSIGNMENT_NS);
+        let mut rng = StdRng::seed_from_u64(seed);
+        let metadata = layout.sample_activities(room, template, &mut rng)?;
+        let mut assignments = HashMap::new();
+        for slot in &template.slots {
+            let assignment = if slot.role == FacilitySlotRole::Start {
+                SlotAssignment { category: MapNodeCategory::Start, fixed_kind_id: None, payload_override: None }
+            } else {
+                let m = metadata.get(&slot.id).ok_or("missing room activity assignment")?;
+                let activity = layout.activity(&m.activity_id).ok_or("missing assigned activity")?;
+                let definition = catalogs.map_node_definitions.nodes.iter().find(|d| d.kind_id == activity.kind_id).ok_or("missing activity node kind")?;
+                if !slot.allowed_categories.contains(&definition.category) { return Err(format!("room '{room_id}' slot '{}' rejects activity category",slot.id.as_str())); }
+                SlotAssignment { category: definition.category, fixed_kind_id: Some(activity.kind_id.clone()), payload_override: Some(activity.payload.clone()) }
+            };
+            assignments.insert(slot.id.clone(),assignment);
+        }
+        let mut map = build_run_map(template,&assignments,catalogs,seed,room.depth.saturating_sub(1),seed)?;
+        let difficulty = run_policy.combat_difficulty_profile(&layout.difficulty_profile_id).ok_or("unknown room difficulty profile")?;
+        assign_combat_difficulties(&mut map,&assignments,difficulty,run_policy.combat_difficulty.power_model_version,anchor,seed)?;
+        let mut next = current_state.clone();
+        if next.rooms.is_none() {
+            next.rooms = Some(super::FacilityExplorationState {
+                layout_id: layout.id.clone(), current_room_id: room.id.clone(),
+                visited_rooms: Default::default(), activity_metadata: Default::default(),
+                golden_boughs: layout.choose_golden_bough_plan(run_seed)?,
+            });
+        }
+        let state = next.rooms.as_mut().expect("room state initialized");
+        for node in &map.nodes {
+            if let Some(m) = metadata.get(&node.slot_id) {state.activity_metadata.insert(node.id,m.clone());}
+        }
+        Ok(GeneratedFacilityMap {map,facility_run_state:next})
     }
 
     pub fn generate_capstone(
@@ -320,7 +374,7 @@ pub(crate) fn test_facility_map(run_seed: u64) -> RunMap {
     let catalogs = crate::game::data::live_ron::embedded_map_catalogs_for_fixtures();
     FacilityMapGenerator::generate(
         run_seed,
-        GameMode::Standard,
+        GameMode::Tutorial,
         0,
         &FacilityRunState::default(),
         &catalogs,
@@ -842,7 +896,7 @@ fn assign_combat_difficulties(
                     Some(CombatNodeDifficultyRole::NormalBoss)
                 }
                 crate::game::map::FacilityTerminalResolution::SpecialRunCompletion => {
-                    Some(CombatNodeDifficultyRole::MonolithRemanifestation)
+                    Some(CombatNodeDifficultyRole::Revival)
                 }
                 crate::game::map::FacilityTerminalResolution::FloorGate
                 | crate::game::map::FacilityTerminalResolution::BossOmenExitGate => None,
@@ -890,7 +944,7 @@ fn assign_combat_difficulties(
                 power_model_version,
                 difficulty_profile_id: profile.id.clone(),
                 class: MapNodeCombatDifficultyClass::Role(role),
-                monolith_stage: None,
+                revival: None,
                 floor_power_anchor,
                 target_power: percent_of_anchor_ceil(
                     floor_power_anchor,
@@ -951,7 +1005,7 @@ fn assign_combat_difficulties(
             power_model_version,
             difficulty_profile_id: profile.id.clone(),
             class: MapNodeCombatDifficultyClass::Ordinary(band),
-            monolith_stage: None,
+            revival: None,
             floor_power_anchor,
             target_power: percent_of_anchor_ceil(
                 floor_power_anchor,
@@ -1008,7 +1062,7 @@ fn assign_fixed_standard_combat_difficulties(
             power_model_version,
             difficulty_profile_id: profile.id.clone(),
             class,
-            monolith_stage: None,
+            revival: None,
             // Fixed Standard never derives tuning from this value. It is retained only
             // as the existing versioned Active Run checkpoint-integrity witness.
             floor_power_anchor: integrity_floor_anchor,
@@ -1085,7 +1139,7 @@ mod tests {
         for floor_index in 0..3 {
             let generated = FacilityMapGenerator::generate(
                 42,
-                GameMode::Standard,
+                GameMode::Tutorial,
                 floor_index,
                 &state,
                 &catalogs,
@@ -1110,11 +1164,13 @@ mod tests {
 
     #[test]
     fn endless_pool_does_not_repeat_before_exhaustion() {
-        let catalogs = crate::game::data::live_ron::embedded_map_catalogs_for_fixtures();
+        let mut catalogs = crate::game::data::live_ron::embedded_map_catalogs_for_fixtures();
+        std::sync::Arc::make_mut(&mut catalogs.facility_templates).layouts.clear(); // Explicit legacy pool input.
+        // Depths 1–4 use the fixed development template; the pool starts at depth 5.
         let first = FacilityMapGenerator::generate(
             77,
-            GameMode::Endless,
-            0,
+            GameMode::Expedition,
+            4,
             &FacilityRunState::default(),
             &catalogs,
             &RunPolicyData::builtin(),
@@ -1123,8 +1179,8 @@ mod tests {
         .unwrap();
         let second = FacilityMapGenerator::generate(
             77,
-            GameMode::Endless,
-            1,
+            GameMode::Expedition,
+            5,
             &first.facility_run_state,
             &catalogs,
             &RunPolicyData::builtin(),
@@ -1136,11 +1192,12 @@ mod tests {
 
     #[test]
     fn monolith_guarantee_authors_exactly_one_shop_on_next_endless_floor() {
-        let catalogs = crate::game::data::live_ron::embedded_map_catalogs_for_fixtures();
+        let mut catalogs = crate::game::data::live_ron::embedded_map_catalogs_for_fixtures();
+        std::sync::Arc::make_mut(&mut catalogs.facility_templates).layouts.clear(); // Explicit legacy pool input.
         let generated = FacilityMapGenerator::generate_with_requirements(
             77,
-            GameMode::Endless,
-            3,
+            GameMode::Expedition,
+            4,
             &FacilityRunState::default(),
             &catalogs,
             &RunPolicyData::builtin(),
@@ -1174,7 +1231,7 @@ mod tests {
         let catalogs = crate::game::data::live_ron::embedded_map_catalogs_for_fixtures();
         let left = FacilityMapGenerator::generate(
             91,
-            GameMode::Standard,
+            GameMode::Tutorial,
             2,
             &FacilityRunState::default(),
             &catalogs,
@@ -1184,7 +1241,7 @@ mod tests {
         .unwrap();
         let right = FacilityMapGenerator::generate(
             91,
-            GameMode::Standard,
+            GameMode::Tutorial,
             2,
             &FacilityRunState::default(),
             &catalogs,
@@ -1370,7 +1427,7 @@ mod tests {
         {
             let left = FacilityMapGenerator::generate(
                 91,
-                GameMode::Standard,
+                GameMode::Tutorial,
                 floor_index as u32,
                 &FacilityRunState::default(),
                 &catalogs,
@@ -1380,7 +1437,7 @@ mod tests {
             .unwrap();
             let right = FacilityMapGenerator::generate(
                 9_901,
-                GameMode::Standard,
+                GameMode::Tutorial,
                 floor_index as u32,
                 &FacilityRunState::default(),
                 &catalogs,
@@ -1414,7 +1471,7 @@ mod tests {
                     assert_eq!(difficulty.difficulty_profile_id, "tutorial_fixed_v1");
                     assert_eq!(difficulty.floor_power_anchor, 150);
                     assert_eq!(difficulty.target_power, 0);
-                    assert_eq!(difficulty.monolith_stage, None);
+                    assert_eq!(difficulty.revival, None);
                     assert_ne!(
                         difficulty.class,
                         MapNodeCombatDifficultyClass::Role(CombatNodeDifficultyRole::FinalBoss)
@@ -1427,7 +1484,7 @@ mod tests {
 
         let floor_two = FacilityMapGenerator::generate(
             91,
-            GameMode::Standard,
+            GameMode::Tutorial,
             1,
             &FacilityRunState::default(),
             &catalogs,
@@ -1450,7 +1507,7 @@ mod tests {
         );
         let floor_three = FacilityMapGenerator::generate(
             91,
-            GameMode::Standard,
+            GameMode::Tutorial,
             2,
             &FacilityRunState::default(),
             &catalogs,
@@ -1534,13 +1591,14 @@ mod tests {
 
     #[test]
     fn manifestation_reveals_preassigned_bonus_only_after_all_prerequisites_complete() {
-        let catalogs = crate::game::data::live_ron::embedded_map_catalogs_for_fixtures();
+        let mut catalogs = crate::game::data::live_ron::embedded_map_catalogs_for_fixtures();
+        std::sync::Arc::make_mut(&mut catalogs.facility_templates).layouts.clear(); // Explicit legacy pool input.
         let mut state = FacilityRunState::default();
         let mut puzzle = None;
         for floor_index in 3..8 {
             let generated = FacilityMapGenerator::generate(
                 314,
-                GameMode::Endless,
+                GameMode::Expedition,
                 floor_index,
                 &state,
                 &catalogs,

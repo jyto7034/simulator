@@ -28,7 +28,10 @@ mod combat;
 #[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
 mod combat_trace;
 mod event_node;
+mod expedition_lifecycle;
+mod expedition_recovery;
 mod facility;
+mod facility_rooms;
 mod grant_state;
 mod headquarters;
 mod helpers;
@@ -36,8 +39,11 @@ mod maintenance;
 mod map_content;
 mod map_encounters;
 mod mastered_elite_sweep;
+mod revival;
 mod node_flow;
 mod relic_runtime;
+mod relic_reward;
+mod dealer;
 mod resource_runtime;
 mod reward;
 mod shop;
@@ -84,6 +90,12 @@ fn runtime_presentation_mode(
 }
 
 impl GameCore {
+    pub(crate) fn prepare_lab(&mut self,recipe:&crate::authoring::LabPreparation)->Result<crate::authoring::LabPreparationReceipt,GameError>{
+        recipe.validate()?;
+        crate::authoring::control::metadata_size(recipe)?;
+        crate::authoring::control::charge_serialized(recipe,"lab_bulk_request")?;
+        self.execute_application(application::ApplicationRoute::AdminCommand,|draft|draft.prepare_lab_draft(recipe))
+    }
     pub(crate) fn runtime_safety(&self) -> &crate::runtime_safety::RuntimeSafetySettings {
         self.game_data.runtime_safety()
     }
@@ -157,6 +169,8 @@ impl GameCore {
     }
 
     pub(crate) fn capture_player_profile(&self) -> Result<PlayerProfileState, GameError> {
+        crate::game::resource::store::preflight_resource_clone(&self.state.player_profile)
+            .map_err(crate::game::resource::store::ResourceError::into_game_error)?;
         crate::authoring::clone_shape::controlled_clone(&self.state.player_profile)
     }
 
@@ -203,12 +217,37 @@ impl GameCore {
         profile
             .validate_persisted()
             .map_err(GameError::InvalidStaticData)?;
-        self.state.player_profile.merge(profile);
-        Ok(())
+        self.state.player_profile.merge(profile).map_err(GameError::InvalidStaticData)
+    }
+
+    /// Host authority installation replaces exact ownership; it never unions vault assets.
+    pub fn install_authoritative_player_profile(&mut self, profile: PlayerProfileState) -> Result<(), GameError> {
+        self.execute_application(application::ApplicationRoute::InstallPlayerProfile, move |draft| draft.install_authoritative_profile_draft(profile))
+    }
+
+    pub(crate) fn prepare_authoritative_profile_install(&mut self, profile: PlayerProfileState) -> Result<PreparedApplicationCommit<()>, GameError> {
+        self.prepare_application_for_publication(application::ApplicationRoute::InstallPlayerProfile, move |draft| draft.install_authoritative_profile_draft(profile))
+    }
+
+    fn install_authoritative_profile_draft(&mut self, profile: PlayerProfileState) -> Result<(), GameError> {
+    profile.validate_persisted().map_err(GameError::InvalidStaticData)?;
+    if let Some(run) = self.state.run.as_ref() {
+        if run.run_progression.game_mode == GameMode::Expedition
+            && !matches!(self.state.lifecycle.phase(), GameState::RunComplete | GameState::RunFailed { .. }) {
+            if profile.lifecycle.active_expedition != run.run_progression.expedition_instance {
+                return Err(GameError::InvalidAction);
+            }
+            profile.lifecycle.vault.validate_active_ownership(&self.state.inventory, &self.state.skill_fragments)
+                .map_err(GameError::InvalidStaticData)?;
+        }
+    }
+    self.state.player_profile = profile;
+    Ok(())
     }
 
     pub fn reset_player_profile(&mut self) -> Result<(), GameError> {
         self.execute_application(application::ApplicationRoute::ResetPlayerProfile, |draft| {
+            if draft.state.player_profile.lifecycle.active_expedition.is_some() { return Err(GameError::InvalidAction); }
             draft.state.player_profile = PlayerProfileState::default();
             Ok(())
         })
@@ -339,6 +378,9 @@ impl GameCore {
     ) -> Result<BehaviorResult, GameError> {
         debug!("Executing behavior {:?} for player {}", behavior, player_id);
         let action_kind = behavior.kind();
+        if matches!(action_kind, ActionKind::ConvertMapNodeWithMonolith | ActionKind::SweepMasteredElite | ActionKind::CompleteMasteredEliteSweep) {
+            return Err(Self::retired_encounter_action(action_kind));
+        }
         let tactical_world_mutation = matches!(
             &behavior,
             PlayerBehavior::DeployUnit { .. }
@@ -408,7 +450,8 @@ impl GameCore {
         let Some(expected) = expected else {
             return Err(GameError::MissingBattleStateAuthority { current });
         };
-        if expected == current {
+        let replay=matches!(behavior,PlayerBehavior::CommitInputPlan{battle_uuid,employee_uuid,input,..} if *battle_uuid==current.battle_uuid && active.battle.input_plan_employee_receipt(*employee_uuid,input.preparation,input.request).is_some());
+        if expected == current || (expected.battle_uuid==current.battle_uuid && replay) {
             Ok(())
         } else {
             Err(GameError::StaleBattleStateAuthority { expected, current })
@@ -494,24 +537,30 @@ impl GameCore {
         behavior: PlayerBehavior,
     ) -> Result<BehaviorResult, GameError> {
         match behavior {
-            PlayerBehavior::StartNewGame { game_mode, .. } => {
+            PlayerBehavior::StartNewGame { game_mode, replace_active_run } => {
+                if replace_active_run { return Err(GameError::InvalidAction); }
                 self.handle_start_new_game(player_id, game_mode)
             }
+            PlayerBehavior::ReturnFromExpedition { materials } => self.handle_return_from_expedition(&materials),
+            PlayerBehavior::ChooseExpeditionContinuation { choice } => self.handle_choose_expedition_continuation(choice),
+            PlayerBehavior::SkipTutorial => self.handle_skip_tutorial(),
+            PlayerBehavior::AcknowledgeFirstReturnStory => self.handle_acknowledge_first_return_story(),
             PlayerBehavior::ContinueRun => Err(GameError::InvalidAction),
             PlayerBehavior::ResetActiveRun => Err(GameError::InvalidAction),
             PlayerBehavior::RetryPlayerProfile => Err(GameError::InvalidAction),
             PlayerBehavior::ResetPlayerProfile => Err(GameError::InvalidAction),
-            PlayerBehavior::SelectStarterEmployees {
-                employee_definition_ids,
-            } => {
+            PlayerBehavior::SelectStarterEmployees { employee_definition_ids, loan_copy_ids } => {
+                if self.state.pending_game_mode != Some(GameMode::Expedition) { return Err(GameError::InvalidAction); }
                 self.validate_starter_employee_selection(&employee_definition_ids)?;
-                self.handle_select_starter_employees(employee_definition_ids)
+                self.handle_select_starter_employees(employee_definition_ids, loan_copy_ids)
             }
             PlayerBehavior::RequestMapData => self.handle_request_map_data(),
+            PlayerBehavior::MoveToFacilityRoom { room_id } => self.handle_move_to_facility_room(&room_id),
             PlayerBehavior::SelectMapNode { node_id } => {
                 self.validate_select_map_node(node_id)?;
                 self.handle_select_map_node(node_id)
             }
+            PlayerBehavior::HatchEncounter { node_id, reward_source_id, stage, payment } => self.handle_hatch_encounter(node_id, &reward_source_id, stage, &payment),
             PlayerBehavior::ConvertMapNodeWithMonolith {
                 node_id,
                 abnormality_id,
@@ -565,6 +614,8 @@ impl GameCore {
             PlayerBehavior::PreviewRelicCorruption { copy_uuid } => self
                 .handle_preview_relic(copy_uuid, crate::game::relic::RelicOperationKind::Corrupt),
             PlayerBehavior::CorruptRelic { copy_uuid } => self.handle_corrupt_relic(copy_uuid),
+            PlayerBehavior::PreviewSkillFragmentBloom { copy_uuid, form_id, materials, weapon_copy_uuid } =>
+                self.handle_preview_skill_fragment_bloom(copy_uuid, &form_id, &materials, weapon_copy_uuid),
             PlayerBehavior::PreviewRelicDismantle { copy_uuid } => self
                 .handle_preview_relic(copy_uuid, crate::game::relic::RelicOperationKind::Dismantle),
             PlayerBehavior::DismantleRelic {
@@ -598,6 +649,8 @@ impl GameCore {
                 copy_uuid,
                 target_employee_uuid,
             } => self.handle_transfer_skill_fragment(copy_uuid, target_employee_uuid),
+            PlayerBehavior::AwakenSkillFragmentWithWeapon { copy_uuid, form_id, weapon_copy_uuid, materials } => self.handle_awaken_skill_fragment_selected(copy_uuid, &form_id, materials.as_deref(), Some(weapon_copy_uuid)),
+            PlayerBehavior::AwakenSkillFragmentWithMaterials { copy_uuid, form_id, materials } => self.handle_awaken_skill_fragment_with_materials(copy_uuid, &form_id, Some(&materials)),
             PlayerBehavior::AwakenSkillFragment { copy_uuid, form_id } => {
                 self.handle_awaken_skill_fragment(copy_uuid, &form_id)
             }
@@ -608,6 +661,7 @@ impl GameCore {
                 copy_uuid,
                 confirmed,
             } => self.handle_dismantle_skill_fragment(copy_uuid, confirmed),
+            PlayerBehavior::DismantleEquipmentConfirmed { item_uuid, confirmed } => self.handle_dismantle_equipment_confirmed(item_uuid, confirmed),
             PlayerBehavior::DismantleEquipment { item_uuid } => {
                 self.handle_dismantle_equipment(item_uuid)
             }
@@ -648,6 +702,10 @@ impl GameCore {
                 self.validate_select_reward_payload(reward_id)?;
                 self.handle_select_reward(reward_id)
             }
+            PlayerBehavior::InvestRelicReward => self.handle_invest_relic_reward(),
+            PlayerBehavior::SelectRelicFusionInputs { copies } => self.handle_select_relic_fusion_inputs(copies),
+            PlayerBehavior::ConfirmRelicFusion => self.handle_confirm_relic_fusion(),
+            PlayerBehavior::DealerAct { revision, action } => self.handle_dealer_action(revision, action),
             PlayerBehavior::ClaimReward => self.execute_reward_action(RewardAction::Claim),
             PlayerBehavior::ExitReward => self.execute_reward_action(RewardAction::Exit),
             _ => unreachable!("behavior routed to reward domain incorrectly"),
@@ -808,6 +866,8 @@ impl GameCore {
                 source_command_id,
                 battle_event_after_seq,
             ),
+            PlayerBehavior::CommitInputPlan{battle_uuid,revision,employee_uuid,input}=>self.handle_input_plan_command(battle_uuid,revision,employee_uuid,Some(input),None,source_command_id,battle_event_after_seq),
+            PlayerBehavior::CancelInputPlan{battle_uuid,revision,employee_uuid,preparation}=>self.handle_input_plan_command(battle_uuid,revision,employee_uuid,None,Some(preparation),source_command_id,battle_event_after_seq),
             PlayerBehavior::ActivateSkill {
                 employee_uuid,
                 skill_id,
@@ -821,6 +881,7 @@ impl GameCore {
                 battle_event_after_seq,
             ),
             PlayerBehavior::RetreatBattle => self.handle_retreat_battle(),
+            PlayerBehavior::StressCombatAct { battle_uuid, completed_rounds, extract } => self.handle_stress_combat_action(battle_uuid, completed_rounds, extract),
             PlayerBehavior::PauseBattle => self.handle_pause_battle(battle_event_after_seq),
             PlayerBehavior::ResumeBattle => self.handle_resume_battle(battle_event_after_seq),
             PlayerBehavior::SetBattleSpeed { speed } => {
@@ -853,23 +914,14 @@ impl GameCore {
         player_id: Uuid,
         game_mode: GameMode,
     ) -> Result<BehaviorResult, GameError> {
-        if game_mode == GameMode::Endless && !self.state.player_profile.standard_tutorial_completed
-        {
-            return Err(GameError::TutorialCompletionRequired { game_mode });
+        if !matches!(self.state.lifecycle.phase(), GameState::NotStarted | GameState::RunComplete | GameState::RunFailed { .. })
+            || self.state.player_profile.lifecycle.active_expedition.is_some() {
+            return Err(GameError::InvalidAction);
         }
+        let player_profile = self.capture_player_profile()?;
+        self.state = GameCoreState::new(self.run_seed);
+        self.state.player_profile = player_profile;
         self.initial_player(player_id);
-        self.state.roster.clear();
-        self.state.starter_candidates.clear();
-        self.state.run = None;
-        self.state.node_session = None;
-        self.state.active_node_content = None;
-        self.state.active_battle = None;
-        self.state.confirmed_combat_result = None;
-        self.state.combat_reward_continuation = None;
-        self.state.run_checkpoint = Default::default();
-        self.state.continue_state = Default::default();
-        self.state.visual_novel = VisualNovelRuntimeState::default();
-        self.state.visual_novel_triggers = VisualNovelTriggerRuntimeState::default();
         self.state.pending_game_mode = Some(game_mode);
         let activated = self.evaluate_visual_novel_triggers(
             visual_novel_triggers::VisualNovelTriggerEvent::RunStart { game_mode },
@@ -886,7 +938,7 @@ impl GameCore {
             "Run start flow opened pre-run HQ briefing for player {} in {:?} mode",
             player_id, game_mode
         );
-
+        self.record_lab_definition("RunPolicy","run_policy","run_start_policy")?;
         Ok(BehaviorResult::RunStartFlowStarted {
             game_mode,
             visual_novel: self.visual_novel_snapshot_dto()?,
@@ -897,8 +949,9 @@ impl GameCore {
         if self.state.run.is_none() {
             return Err(GameError::InvalidAction);
         }
+        self.settle_expedition_terminal(false)?;
         let player = self.state.player.clone();
-        let player_profile = self.state.player_profile.clone();
+        let player_profile = self.capture_player_profile()?;
         let mut next = GameCoreState::new(self.run_seed);
         next.player = player;
         next.player_profile = player_profile;
@@ -925,26 +978,24 @@ impl GameCore {
     fn handle_select_starter_employees(
         &mut self,
         employee_definition_ids: Vec<String>,
+        loan_copy_ids: Vec<Uuid>,
     ) -> Result<BehaviorResult, GameError> {
+        let game_mode = self.state.pending_game_mode.ok_or(GameError::InvalidAction)?;
+        let run_progression = self.prepare_departure_identity(game_mode)?;
         let setup_policy = self.run_policy().setup;
         let employee_uuids =
             self.initialize_selected_starter_employees(&employee_definition_ids)?;
         // 기초 자원 지급: 첫 안전 노드에서 상점에 들어가도 하나는 살 수 있도록 여유 있게.
-        self.state
-            .enkephalin
-            .checked_add(setup_policy.starter_enkephalin)?;
+        self.state.enkephalin.amount = 0;
+        self.state.enkephalin.checked_add(setup_policy.starter_enkephalin)?;
+        if game_mode == GameMode::Expedition { self.take_departure_loans(&loan_copy_ids)?; }
+        else if !loan_copy_ids.is_empty() { return Err(GameError::InvalidAction); }
         info!(
             "Granted starter enkephalin: amount={}, total={}",
             setup_policy.starter_enkephalin, self.state.enkephalin.amount
         );
 
-        let game_mode = self
-            .state
-            .pending_game_mode
-            .take()
-            .ok_or(GameError::InvalidAction)?;
-        let run_progression =
-            RunProgression::new(self.run_seed, game_mode, setup_policy.standard_floor_count);
+        self.state.pending_game_mode = None;
         let mut encounter_progression = EncounterProgressionState::default();
         let recruitment = RecruitmentState::initialize(
             self.run_seed,
@@ -960,7 +1011,7 @@ impl GameCore {
             &crate::game::map::FacilityRunState::default(),
             &mut encounter_progression,
         );
-        if run_progression.game_mode == GameMode::Endless {
+        if run_progression.game_mode == GameMode::Expedition {
             self.state
                 .player_profile
                 .record_floor_reached(run_progression.floor_index().saturating_add(1));
@@ -973,6 +1024,7 @@ impl GameCore {
         );
         self.state.node_session = None;
         self.state.active_node_content = None;
+        self.state.starter_candidates.clear();
         self.transition_to(GameState::ViewingMap)?;
 
         let map = self.current_map_view()?;

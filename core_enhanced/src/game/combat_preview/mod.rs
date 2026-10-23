@@ -468,6 +468,8 @@ impl BattlefieldGenerator {
             attack_percent: difficulty_tuning.attack_multiplier_percent,
             defense_percent: difficulty_tuning.defense_multiplier_percent,
             exact_override: None,
+            encounter_health_percent: 100,
+            encounter_attack_percent: 100,
         };
         let spawn_waves = spawn_waves_for(
             node_type,
@@ -614,6 +616,7 @@ impl CombatPreview {
         instance: BattlefieldInstance,
     ) -> Self {
         Self {
+            deterrence: Default::default(),
             node_id,
             encounter_id,
             battlefield_template_id: instance.battlefield_template_id,
@@ -1075,7 +1078,7 @@ mod tests {
             power_model_version: 2,
             difficulty_profile_id: "default_facility".to_string(),
             class: crate::game::map::MapNodeCombatDifficultyClass::Ordinary(band),
-            monolith_stage: None,
+            revival: None,
             floor_power_anchor: 100,
             target_power: 100,
         }
@@ -1105,6 +1108,8 @@ mod tests {
         GameDataBuilder::empty()
             .with_abnormalities(vec![preview_test_abnormality(&abnormality_id, 0xDADA)])
             .with_pve(PveEncounterDatabase::new(vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
                 id: encounter_id.to_string(),
                 encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
                 primary_abnormality_id: Some(abnormality_id.clone()),
@@ -1206,6 +1211,8 @@ mod tests {
         let data = GameDataBuilder::empty()
             .with_abnormalities(vec![armored])
             .with_pve(PveEncounterDatabase::new(vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
                 id: "threat_encounter".to_string(),
                 encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
                 primary_abnormality_id: Some("armored_enemy".to_string()),
@@ -1280,6 +1287,8 @@ mod tests {
         let data = GameDataBuilder::empty()
             .with_abnormalities(vec![drone])
             .with_pve(PveEncounterDatabase::new(vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
                 id: "airborne_encounter".to_string(),
                 encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
                 primary_abnormality_id: Some("airborne_enemy".to_string()),
@@ -1360,6 +1369,8 @@ mod tests {
         let data = GameDataBuilder::empty()
             .with_abnormalities(vec![preview_test_abnormality("scaled_enemy", 0xC0_51C1)])
             .with_pve(PveEncounterDatabase::new(vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
                 id: "scaled_encounter".to_string(),
                 encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
                 primary_abnormality_id: Some("scaled_enemy".to_string()),
@@ -1435,10 +1446,12 @@ mod tests {
     }
 
     #[test]
-    fn monolith_stage_changes_actual_enemy_scale_without_changing_waves() {
+    fn revival_changes_actual_enemy_scale_without_changing_waves() {
         let data = GameDataBuilder::empty()
             .with_abnormalities(vec![preview_test_abnormality("monolith_enemy", 0xC0_51C2)])
             .with_pve(PveEncounterDatabase::new(vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
                 id: "monolith_encounter".to_string(),
                 encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
                 primary_abnormality_id: Some("monolith_enemy".to_string()),
@@ -1461,12 +1474,12 @@ mod tests {
             crate::game::data::run_policy_data::OrdinaryCombatDifficultyBand::Standard,
         );
         stage_two.class = crate::game::map::MapNodeCombatDifficultyClass::Role(
-            crate::game::data::run_policy_data::CombatNodeDifficultyRole::MonolithRemanifestation,
+            crate::game::data::run_policy_data::CombatNodeDifficultyRole::Revival,
         );
-        stage_two.monolith_stage = Some(crate::game::map::MonolithRemanifestationStage::Stage2);
+        stage_two.revival = Some(crate::game::revival::RevivalNodeTuning { stage: crate::game::map::RevivalStage::Stage2, stat_multiplier_percent: 150 });
         stage_two.target_power = 330;
         let mut stage_three = stage_two.clone();
-        stage_three.monolith_stage = Some(crate::game::map::MonolithRemanifestationStage::Stage3);
+        stage_three.revival = Some(crate::game::revival::RevivalNodeTuning { stage: crate::game::map::RevivalStage::Stage3, stat_multiplier_percent: 200 });
         stage_three.target_power = 440;
 
         let generate = |difficulty| {
@@ -2224,6 +2237,8 @@ mod tests {
                 ],
             ))
             .with_pve(PveEncounterDatabase::new(vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
                 id: "encounter".to_string(),
                 encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
                 primary_abnormality_id: Some("display_abno".to_string()),
@@ -2340,6 +2355,8 @@ mod tests {
                 ],
             }]))
             .with_pve(PveEncounterDatabase::new(vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
                 id: "generated_corroded_encounter".to_string(),
                 encounter_class: crate::game::data::pve_data::PveEncounterClass::Normal,
                 primary_abnormality_id: None,
@@ -2483,6 +2500,8 @@ mod tests {
                 preview_test_abnormality("enemy_a", 0xE0A),
             ])
             .with_pve(PveEncounterDatabase::new(vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
                 id: "authored_route".to_string(),
                 encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
                 primary_abnormality_id: Some("enemy_a".to_string()),
@@ -2544,6 +2563,8 @@ mod tests {
                 preview_test_abnormality("enemy_a", 0xE0A),
             ])
             .with_pve(PveEncounterDatabase::new(vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
                 id: "authored_obstacles".to_string(),
                 encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
                 primary_abnormality_id: Some("enemy_a".to_string()),

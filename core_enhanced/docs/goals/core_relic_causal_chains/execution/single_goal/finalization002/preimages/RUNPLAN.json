@@ -1,0 +1,53 @@
+{
+  "schema": "U10_FINALIZATION_MECHANICAL_RUNPLAN_V1",
+  "status": "prepared_unexecuted_root_review_pending",
+  "executor": "Assigned sole Sol only; author never executes collector/freeze/restore/tests/measurement",
+  "sequence": [
+    "003 retained2 and PC002 plus causal-empty successor actuals available; R05 original101 peak-only summary0 available; preserve original strict PC002 failure and all raw receipts.",
+    "Root actual source/currentness/cost review; bind exact successful results with LATE_BINDINGS.json only after receipt exists.",
+    "Freeze inputs; select exact current scanner files/sha256 manifest from closed receipt; save as CURRENT_SOURCE.json without inventing success.",
+    "Run collector in fresh generated001; inspect exact outputs and pending list.",
+    "Root final document/currentness handoff, all writers and runners0; run freeze directly with raw capture outside goal tree.",
+    "Nonparticipant auditor receives exact frozen MANIFEST; never mutate frozen target after audit."
+  ],
+  "command": [
+    "python3",
+    "-B",
+    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization001/collect_finalization.py",
+    "--source-manifest",
+    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization001/CURRENT_SOURCE.json",
+    "--late-bindings",
+    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization001/LATE_BINDINGS.json",
+    "--output",
+    "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization001/generated001"
+  ],
+  "inputs": [
+    "EVIDENCE_INPUT.json",
+    "COVERAGE_INPUT.json",
+    "PREDECESSOR_BINDINGS.json",
+    "PREDECESSOR_REVIEW.ko.md",
+    "../PLAN.md",
+    "CURRENT_SOURCE.json exact current files/sha256",
+    "LATE_BINDINGS.json actual remaining results"
+  ],
+  "output_contract": "Exact288 predecessor IDs/literals;28 exact policy sentences;19 verbatim phase-plan integration rows with pointers;10dimensions;3nodes. Original failed parent receipts remain failed. No completion awarded.",
+  "on_failure": "Preserve raw/partial directory, report exact parsing/path/hash/status gap; routine adapter correction only in safe author window and fresh output label; no oracle changes.",
+  "late_binding_schema": {
+    "receipts": [],
+    "artifacts": [
+      {
+        "id": "external_current_pair",
+        "path": "test_parts/runtime001/evidence/u10_external_measure003.json",
+        "raw_format": "generic_combined_log",
+        "result_artifact": "test_parts/runtime001/evidence/u10_external003_measurement/runs/RUN.json",
+        "expected_json_fields": {
+          "completed": true
+        },
+        "scope": "Only bind after actual:2retained parents legacy8 expected refusal/current embedded16 success; no new plain/allocator samples."
+      }
+    ],
+    "composites": [],
+    "preserved_failed_attempts": []
+  },
+  "pending_gate": "Only frozen_restore/independent_completion may remain pending when frozen; corresponding predecessor_impact future gate is allowed. Functional/performance pending blocks freeze."
+}

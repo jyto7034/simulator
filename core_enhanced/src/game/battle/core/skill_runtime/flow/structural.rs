@@ -10,13 +10,17 @@ pub(super) struct SideOccurrence {
     pub(super) flow: Box<FlowState>,
     source: RuntimeFactSource,
     started: bool,
+    // Cancellation closes the branch reservation, but an already released
+    // child still owns its exact result frontier until its delivery settles.
+    settlement_only: bool,
 }
 crate::authoring::clone_shape::struct_shape!(SideOccurrence {
     anchor,
     anchor_occurrence,
     flow,
     source,
-    started
+    started,
+    settlement_only
 });
 
 impl FlowState {
@@ -111,6 +115,7 @@ impl FlowState {
                 flow: Box::new(child),
                 source,
                 started: false,
+                settlement_only: false,
             });
         }
         Ok(())
@@ -125,7 +130,7 @@ impl FlowState {
         };
         control::charge(sides.len() as u64, "flow_side_settlement_scan")?;
         for side in sides.iter_mut() {
-            if side.started {
+            if side.started || side.settlement_only {
                 continue;
             }
             let Some(progress) = core
@@ -194,22 +199,29 @@ impl FlowState {
                     side.flow.nodes.len() as u64,
                     "flow_side_delivery_settlement",
                 )?;
-                let released_pending = side.flow.pending_child_delivery(core, cast)
-                    || side
-                        .flow
-                        .nodes
-                        .iter()
-                        .enumerate()
-                        .filter(|(node, _)| *node >= first_generated)
-                        .filter_map(|(_, node)| node.occurrence)
-                        .any(|occurrence| {
-                            core.active_skill_casts
-                                .get(&cast)
-                                .and_then(|cast| cast.step_progress.get(&occurrence))
-                                .is_none_or(|progress| !progress.is_terminal())
-                        });
+                let released_pending = if side.settlement_only {
+                    side.flow
+                        .released_child_pending(core, cast, first_generated)?
+                } else {
+                    side.flow.pending_child_delivery(core, cast)
+                        || side
+                            .flow
+                            .nodes
+                            .iter()
+                            .enumerate()
+                            .filter(|(node, _)| *node >= first_generated)
+                            .filter_map(|(_, node)| node.occurrence)
+                            .any(|occurrence| {
+                                core.active_skill_casts
+                                    .get(&cast)
+                                    .and_then(|cast| cast.step_progress.get(&occurrence))
+                                    .is_none_or(|progress| !progress.is_terminal())
+                            })
+                };
                 if side.flow.complete && !released_pending {
-                    Self::close_side(core, &side.source, now)?;
+                    if !side.settlement_only {
+                        Self::close_side(core, &side.source, now)?;
+                    }
                     let anchor_occurrence = side.anchor_occurrence;
                     sides.remove(index);
                     if !sides
@@ -248,19 +260,95 @@ impl FlowState {
     pub(super) fn cancel_sides(
         &mut self,
         core: &mut BattleCore,
+        cast: u64,
         now: u64,
     ) -> Result<(), GameError> {
-        let Some(sides) = &mut self.side_occurrences else {
+        let Some(mut sides) = self.side_occurrences.take() else {
             return Ok(());
         };
-        control::charge(sides.len() as u64, "flow_side_cancel")?;
-        for side in sides.iter() {
-            Self::close_side(core, &side.source, now)?;
+        let operation = (|| {
+            control::charge(sides.len() as u64, "flow_side_cancel")?;
+            crate::game::battle::runtime_control::charge(sides.len() as u64, "flow_side_cancel")?;
+            control::charge(
+                self.plan.side_branches.len() as u64,
+                "flow_cancel_child_roots",
+            )?;
+            crate::game::battle::runtime_control::charge(
+                self.plan.side_branches.len() as u64,
+                "flow_cancel_child_roots",
+            )?;
+            let first_generated = self
+                .plan
+                .side_branches
+                .iter()
+                .map(|branch| branch.root)
+                .min()
+                .unwrap_or(usize::MAX);
+            let mut closed = Ok(());
+            sides.retain_mut(|side| {
+                if closed.is_err() {
+                    return true;
+                }
+                let retained = (|| {
+                    if !side.settlement_only {
+                        Self::close_side(core, &side.source, now)?;
+                        side.settlement_only = true;
+                        // The child interpreter and cancelled reservation cannot
+                        // authorize any further Action or retain a closed ticket.
+                        side.flow.complete = true;
+                        side.flow.wake = None;
+                        side.source = RuntimeFactSource::default();
+                    }
+                    side.flow
+                        .released_child_pending(core, cast, first_generated)
+                })();
+                match retained {
+                    Ok(pending) => pending,
+                    Err(error) => {
+                        closed = Err(error);
+                        true
+                    }
+                }
+            });
+            closed
+        })();
+        // Keep the temporary owner in the failed candidate as well; the
+        // surrounding transaction decides whether any change can commit.
+        self.side_occurrences = Some(sides);
+        operation
+    }
+    fn released_child_pending(
+        &self,
+        core: &BattleCore,
+        cast: u64,
+        first_generated: usize,
+    ) -> Result<bool, GameError> {
+        let scopes = self.scope_results.as_ref().map_or(0, |rows| rows.len());
+        for count in [scopes, self.nodes.len()] {
+            control::charge(count as u64, "flow_cancelled_child_settlement")?;
+            crate::game::battle::runtime_control::charge(
+                count as u64,
+                "flow_cancelled_child_settlement",
+            )?;
         }
-        // Already released carriers retain their own source/Delivery tickets;
-        // unstarted child actions lose this branch authority without refunds.
-        sides.clear();
-        Ok(())
+        let released = |occurrence| {
+            core.active_skill_casts
+                .get(&cast)
+                .and_then(|cast| cast.step_progress.get(&occurrence))
+                .is_some_and(|progress| progress.started && !progress.is_terminal())
+        };
+        // A Repeat may have reset the node of an earlier released occurrence.
+        // Its prefix row remains the bounded owner of that exact occurrence.
+        Ok(self.scope_results.as_ref().is_some_and(|rows| {
+            rows.keys()
+                .any(|occurrence| released(*occurrence) && self.scope_prefix(*occurrence).is_some())
+        }) || self
+            .nodes
+            .iter()
+            .enumerate()
+            .filter(|(node, _)| *node >= first_generated)
+            .filter_map(|(_, node)| node.occurrence)
+            .any(released))
     }
     pub(super) fn occurrence_node(&self, occurrence: usize) -> Option<usize> {
         control::charge(self.nodes.len() as u64, "flow_source_lookup").ok()?;
@@ -316,6 +404,9 @@ impl FlowState {
         for side in sides.iter() {
             control::charge(side.flow.nodes.len() as u64, "flow_side_source_lookup")?;
             if side.flow.owns_child_occurrence(occurrence, first_generated) {
+                if side.settlement_only {
+                    return Err(GameError::InvalidAction);
+                }
                 side.source.admit_owner("flow_side_dispatch_source")?;
                 return Ok(Some(side.source.clone()));
             }

@@ -1,0 +1,287 @@
+{
+  "stage": "P2G-10",
+  "status": "complete",
+  "recorded_at": "2026-10-12T09:14:54.791676+09:00",
+  "evaluation_basis": {
+    "Input Working Revision Ref": {
+      "Artifact Type": "Working Revision",
+      "Artifact ID": "WR-CEXL-005",
+      "Content Digest": "sha256:f6146321f2dde87be6ae595e990d27198bca05fd5576d6bdb3175e9dcecf4fea"
+    },
+    "Exact User-Approved Target Scope/Change Request": null,
+    "Policy Intake Snapshot Ref": {
+      "Artifact Type": "Policy Intake Snapshot",
+      "Artifact ID": "PIS-CEXL-002",
+      "Content Digest": "sha256:2f2319ff330310ce5df82c17f6f333d1dbaa3dc90db4e1913288f8c123bdf2f3"
+    }
+  },
+  "result_working_revision_ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CEXL-007",
+    "Content Digest": "sha256:47ef539d03103b7f3d5609b01dd154b605e38248890a871c0301c21efbec2d8b"
+  },
+  "produced_disposition_refs": [],
+  "current_element_revision_map": {
+    "PE-CEXL-PS01": {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CEXL-PS01-003",
+      "Content Digest": "sha256:58e70bd8deab1df18ea5ecc7744bb1bf527fb5877f5a3ee8db9aacbc562bd84b"
+    },
+    "PE-CEXL-PS02": {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CEXL-PS02-002",
+      "Content Digest": "sha256:d8abb5fdd8b029ee2972af7a710ef84b50538c6ce44ac5fcf4f1218434cf349b"
+    },
+    "PE-CEXL-01": {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CEXL-01-DECIDED-001",
+      "Content Digest": "sha256:4da9f629609d72fd0cd2eb9acfff1b9e3047d4ace70bf8f394490a10d225747e"
+    },
+    "PE-CEXL-02": {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CEXL-02-DECIDED-001",
+      "Content Digest": "sha256:f846558cdad97ba3756c3262900d6067fe8bcccf08f8acb008721fa3c530b164"
+    },
+    "PE-CEXL-03": {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CEXL-03-DECIDED-001",
+      "Content Digest": "sha256:ba4f0ec1ad06f72c5e80a12bfa4b2b53af7a0a2dbbdfaca68f9f649ccba6c5fb"
+    },
+    "PE-CEXL-04": {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CEXL-04-DECIDED-001",
+      "Content Digest": "sha256:5adce744c7a57eeca242a0ff73de14ef02d1ccf1f9812745f72182a2b34319b3"
+    },
+    "PE-CEXL-05": {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CEXL-05-DECIDED-001",
+      "Content Digest": "sha256:33f26467e6e2b4a62336cfb2b64bccd347f5c04958c94e63ab5c188378137d3d"
+    },
+    "PE-CEXL-06": {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CEXL-06-DECIDED-001",
+      "Content Digest": "sha256:5e59f86ae05ca78354c46e6208e808e01c64b141a91c888da2d15c12232027c4"
+    },
+    "PE-CEXL-07": {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CEXL-07-DECIDED-002",
+      "Content Digest": "sha256:837ae8483283bce0d25df6a91ba897309655d611a4ee7f94bca66ed8be324ddb"
+    },
+    "PE-CEXL-08": {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CEXL-08-DECIDED-001",
+      "Content Digest": "sha256:62983f38a76802ac747a34c291f55d68bf509abfb3289dcde07ef99eb6b35138"
+    },
+    "PE-CEXL-09": {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CEXL-09-DECIDED-001",
+      "Content Digest": "sha256:c20d991e10a4973e77833fd02faff2e9d05d9df971f6447da0df34c3f24488b4"
+    },
+    "PE-CEXL-10": {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CEXL-10-DECIDED-001",
+      "Content Digest": "sha256:b4653af7477180c8309e3f2a4dbacf39261dc638f4c18201bf75362962104848"
+    },
+    "PE-CEXL-11": {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CEXL-11-DECIDED-001",
+      "Content Digest": "sha256:e5d7c8481b8f4e1fe0afe6100d6f933b06fa6c963d49b97a639ea27eaba38c40"
+    },
+    "PE-CEXL-12": {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CEXL-12-DECIDED-001",
+      "Content Digest": "sha256:668336c5eb9241a703342b9aeedcfafbcf5771b10d369994162968f178bd55d6"
+    },
+    "PE-CEXL-13": {
+      "Artifact Type": "Policy Element Revision",
+      "Artifact ID": "PER-CEXL-13-DECIDED-001",
+      "Content Digest": "sha256:4225acc360168976d6f9f3c016b7c5c102f611243dca7f6a94ddb3d0b144f640"
+    }
+  },
+  "current_decision_revision_ref_set": [
+    {
+      "Artifact Type": "Decision Revision",
+      "Artifact ID": "DR-CEXL-001",
+      "Content Digest": "sha256:f06a3df5b4372fd6dcc4c9a14acd22cbd4de3b804e601a7a0c1521d2bd88cc07"
+    },
+    {
+      "Artifact Type": "Decision Revision",
+      "Artifact ID": "DR-CEXL-01-001",
+      "Content Digest": "sha256:d457a3cf4a5a706b5193972145002f8e16e70e46e09e74a0a065cf227121f1de"
+    },
+    {
+      "Artifact Type": "Decision Revision",
+      "Artifact ID": "DR-CEXL-02-001",
+      "Content Digest": "sha256:e7bb32a47e1b974ae60e4e1308039f549d8be7af709dad7f4a765aedb82b7215"
+    },
+    {
+      "Artifact Type": "Decision Revision",
+      "Artifact ID": "DR-CEXL-03-001",
+      "Content Digest": "sha256:11df1fb6c7d38ebfa7242682362805b780be47c6124bece702e651cc3f101670"
+    },
+    {
+      "Artifact Type": "Decision Revision",
+      "Artifact ID": "DR-CEXL-04-001",
+      "Content Digest": "sha256:5531465d6e691a6971d40c41f456005d0040a457b01db926f4cf7d3cf368aba8"
+    },
+    {
+      "Artifact Type": "Decision Revision",
+      "Artifact ID": "DR-CEXL-05-001",
+      "Content Digest": "sha256:a3eb48d465b2853c23457b55afd7420ebf6bbd0a0b17eab109162ed8c8ed7986"
+    },
+    {
+      "Artifact Type": "Decision Revision",
+      "Artifact ID": "DR-CEXL-06-001",
+      "Content Digest": "sha256:69a8141f7375fcbea280807a6ce304cbc27d132068e766cc66709a359053d3d0"
+    },
+    {
+      "Artifact Type": "Decision Revision",
+      "Artifact ID": "DR-CEXL-07-002",
+      "Content Digest": "sha256:83a1dbdbab890ede77e8d966da3fd79d10e8d525c9abb94066ac8d0bcc896cc5"
+    },
+    {
+      "Artifact Type": "Decision Revision",
+      "Artifact ID": "DR-CEXL-08-001",
+      "Content Digest": "sha256:0501abffa8ca7825e2cc2afbe37dd99f0e5eedc3b5eb3abbd0fea2d795791287"
+    },
+    {
+      "Artifact Type": "Decision Revision",
+      "Artifact ID": "DR-CEXL-09-001",
+      "Content Digest": "sha256:e41d738f60318dbfcf9afc549c4b0683a085bd0cb255edd6c72980abf88deadf"
+    },
+    {
+      "Artifact Type": "Decision Revision",
+      "Artifact ID": "DR-CEXL-10-001",
+      "Content Digest": "sha256:c905fe8c24332b7dfa3bb59adb3a6b0d914cc3d3e267986e5d14002d3510c8cd"
+    },
+    {
+      "Artifact Type": "Decision Revision",
+      "Artifact ID": "DR-CEXL-11-001",
+      "Content Digest": "sha256:07f12d37116a65f072b69455d58b3b4bf25c43734c7d8291b4c4c91d3534dde6"
+    },
+    {
+      "Artifact Type": "Decision Revision",
+      "Artifact ID": "DR-CEXL-12-001",
+      "Content Digest": "sha256:b3bfc700a9dfcdacf3b0dd94ee8d51c1bb883db72b991c6001eb63c3ad4603b1"
+    },
+    {
+      "Artifact Type": "Decision Revision",
+      "Artifact ID": "DR-CEXL-13-001",
+      "Content Digest": "sha256:1c445c525a9f695e9d3037d3e86f95f055cb827bb4fa01c0b3f32d3b3af472e0"
+    }
+  ],
+  "open_policy_question_ref_set": [],
+  "scope_coverage": {
+    "I01": [
+      "PE-CEXL-01",
+      "PE-CEXL-02"
+    ],
+    "I02": [
+      "PE-CEXL-03",
+      "PE-CEXL-04",
+      "PE-CEXL-05",
+      "PE-CEXL-06"
+    ],
+    "I03": [
+      "PE-CEXL-07",
+      "PE-CEXL-09"
+    ],
+    "I04": [
+      "PE-CEXL-05",
+      "PE-CEXL-06",
+      "PE-CEXL-08",
+      "PE-CEXL-09",
+      "PE-CEXL-10",
+      "PE-CEXL-11",
+      "PE-CEXL-12"
+    ],
+    "I05": [
+      "PE-CEXL-05",
+      "PE-CEXL-PS01",
+      "PE-CEXL-PS02"
+    ],
+    "I06": [
+      "PE-CEXL-13"
+    ],
+    "O01": [
+      "CAND-CEXL-X01"
+    ],
+    "O02": [
+      "CAND-CEXL-X02"
+    ],
+    "O03": [
+      "CAND-CEXL-X03"
+    ]
+  },
+  "finding_triage_log": [
+    {
+      "Finding ID": "F-CEXL-020-001",
+      "primary_classification": "material_policy",
+      "disposition": "Closed by existing equipment policy applied in P2G-10; exact prior lineage replaced",
+      "decision": {
+        "Artifact Type": "Decision Revision",
+        "Artifact ID": "DR-CEXL-07-002",
+        "Content Digest": "sha256:83a1dbdbab890ede77e8d966da3fd79d10e8d525c9abb94066ac8d0bcc896cc5"
+      }
+    }
+  ],
+  "policy_source_evidence": [
+    {
+      "path": "core_enhanced/docs/game_rulebook.md",
+      "bytes": 28666,
+      "sha256": "28bf5ed614fb7222d9c9e432e36410a785f1f9ce58eba67b2971153668045855"
+    },
+    {
+      "path": "core_enhanced/docs/game_rules/run-and-map.md",
+      "bytes": 50266,
+      "sha256": "616aeb4257fcdf36ee4cbd10100bbe52390256eda2bafe979e7a6140c6cad7d9"
+    },
+    {
+      "path": "core_enhanced/docs/game_rules/results-and-save.md",
+      "bytes": 42598,
+      "sha256": "eb5543540c00e89ffb7eee333f2fae54845afa95ad2951556ab0ffff98ab7220"
+    },
+    {
+      "path": "core_enhanced/docs/game_rules/expedition-and-deterrence.md",
+      "bytes": 21355,
+      "sha256": "ad93d3105b6c0d286b85ee28d57c1eec0d9c9354aa477ac13f86a78d8692e3c1"
+    },
+    {
+      "path": "core_enhanced/docs/game_rules/equipment-and-fragments.md",
+      "bytes": 16041,
+      "sha256": "6e60273588bd9e7c1e105a902559cdb7eeee5961dce3aa7fe9148936cc4fb5b8"
+    },
+    {
+      "path": "core_enhanced/docs/game_rules/growth-and-rewards.md",
+      "bytes": 31744,
+      "sha256": "20ad6dbc4d9ff58bb95d68246fc84b872cb839e47296b1dfed07d1d728a8ad18"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+      "bytes": 341622,
+      "sha256": "318e34be8fde9aed2316dfd4da5d8d30cefe262c4c89b0368df4b6304e5526eb"
+    },
+    {
+      "path": "core_enhanced/docs/goals/game_rulebook_policy_implementation_readiness_audit/CONTENT_INPUT_CANDIDATES.md",
+      "bytes": 15007,
+      "sha256": "884249ff92488e07dd19a09ec6160e91fefc1e79f7306e9c4277f10cf707ead1"
+    }
+  ],
+  "exit_evidence": {
+    "complete_predicate": true,
+    "element_count": 15,
+    "decision_count": 14,
+    "current_dispositions": 18,
+    "open_questions": 0,
+    "cross_reference_consistency": "Producer exact refs/digests/current decisions/nonempty acceptance/approved scope preservation checked; no runtime test claim. Existing PS01/02 disposition/decision chains preserved.",
+    "semantic_review": "Prior full policy review preserved; only PE07/DR07 corrected to already approved all-equipment meaning. Prior source facts show armor exists. All other 14 exact element revisions, 13 decision refs, approved scope and PIS002 unchanged. No question/declaration needed.",
+    "change_basis": "No Final Freeze exists; post-freeze Change/declaration/resolution not applicable. Raw policy snapshot PIS002 exact-preserved; source grammar-only corrections archived in current source evidence and do not change meaning."
+  },
+  "limitations": [
+    "Policy closure only; no code-reviewed element/source batch/freeze/Goal/product or tests yet.",
+    "Exact initial recruit price/budget and tutorial enemy values are authored tunable starting values under existing policy; final play balance not claimed.",
+    "U13 full facilities, U15 future assets/material storage/investment, Unity actual UI and unique final-boss implementations remain out; no fake support claimed."
+  ],
+  "next": "P2G-20 fresh batch on WR007/RSP002; reuse raw investigation only with fresh binding",
+  "previous_complete_result": "P2G_10_RESULT_001.json"
+}

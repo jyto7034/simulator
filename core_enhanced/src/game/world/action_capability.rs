@@ -25,8 +25,11 @@ const MAINTENANCE_ACTIONS: [ActionKind; 5] = [
 
 // This is observable projection order, not route ownership. ActionKind::descriptor owns
 // membership and the debug parity checks below prevent this ordered view from drifting.
-const COMMON_ACTION_PROJECTION_ORDER: [ActionKind; 49] = [
+const COMMON_ACTION_PROJECTION_ORDER: [ActionKind; 59] = [
     ActionKind::StartNewGame,
+    ActionKind::SkipTutorial,
+    ActionKind::AcknowledgeFirstReturnStory,
+    ActionKind::ChooseExpeditionContinuation,
     ActionKind::SelectStarterEmployees,
     ActionKind::UseConsumableItem,
     ActionKind::EquipItem,
@@ -47,10 +50,13 @@ const COMMON_ACTION_PROJECTION_ORDER: [ActionKind; 49] = [
     ActionKind::PreviewRelicCorruption,
     ActionKind::CorruptRelic,
     ActionKind::PreviewRelicDismantle,
+    ActionKind::PreviewSkillFragmentBloom,
     ActionKind::DismantleRelic,
     ActionKind::RequestMapData,
+    ActionKind::MoveToFacilityRoom,
     ActionKind::SelectMapNode,
     ActionKind::ConvertMapNodeWithMonolith,
+    ActionKind::HatchEncounter,
     ActionKind::ConfirmEnterNode,
     ActionKind::CancelSelectedNode,
     ActionKind::CompleteNode,
@@ -65,6 +71,10 @@ const COMMON_ACTION_PROJECTION_ORDER: [ActionKind; 49] = [
     ActionKind::RefreshShop,
     ActionKind::ExitShop,
     ActionKind::SelectReward,
+    ActionKind::InvestRelicReward,
+    ActionKind::SelectRelicFusionInputs,
+    ActionKind::ConfirmRelicFusion,
+    ActionKind::DealerAct,
     ActionKind::ClaimReward,
     ActionKind::ExitReward,
     ActionKind::AdvanceEventScene,
@@ -142,6 +152,8 @@ impl GameCore {
                 .active
                 .as_ref()
                 .is_some_and(|session| session.blocking)
+            && !(action == ActionKind::SkipTutorial
+                && matches!(self.state.lifecycle.phase(), GameState::PreRunBriefing { game_mode: crate::game::map::GameMode::Tutorial }))
             && !matches!(
                 action,
                 ActionKind::AdvanceVisualNovel | ActionKind::SelectVisualNovelChoice
@@ -149,13 +161,57 @@ impl GameCore {
         {
             return CommonActionEvaluation::Irrelevant;
         }
+        if self.state.run.as_ref().is_some_and(|run| run.run_progression.pending_continuation.is_some()) {
+            if matches!(action, ActionKind::ChooseExpeditionContinuation | ActionKind::RequestMapData) {
+                return CommonActionEvaluation::Enabled;
+            }
+            if !self.has_combat_recovery_restriction()
+                || !matches!(action, ActionKind::LoadRunCheckpoint | ActionKind::AdvanceVisualNovel | ActionKind::SelectVisualNovelChoice)
+            {
+                return CommonActionEvaluation::Irrelevant;
+            }
+        }
+        if self.has_combat_recovery_restriction() && !matches!(action,
+            ActionKind::UseConsumableItem | ActionKind::EquipItem | ActionKind::UnequipSkillFragment
+            | ActionKind::RequestRelicState | ActionKind::RequestRelicNumericPlan | ActionKind::RequestRelicEffectivePlan
+            | ActionKind::PreviewRelicCorruption | ActionKind::PreviewRelicDismantle
+            | ActionKind::ChooseExpeditionContinuation | ActionKind::MoveToFacilityRoom | ActionKind::RequestMapData | ActionKind::SelectMapNode | ActionKind::ConfirmEnterNode
+            | ActionKind::CancelSelectedNode | ActionKind::CompleteNode | ActionKind::LoadRunCheckpoint
+            | ActionKind::CompleteCombatResult
+            | ActionKind::ConfirmRunFailure | ActionKind::AbandonRun | ActionKind::RecruitEmployee
+            | ActionKind::AdvanceVisualNovel | ActionKind::SelectVisualNovelChoice)
+        {
+            return CommonActionEvaluation::Disabled(ActionDisabledReasonCode::NoEligiblePayload);
+        }
         match action {
+            ActionKind::PreviewSkillFragmentBloom => {
+                if self.is_in_maintenance_node() { CommonActionEvaluation::Enabled } else { CommonActionEvaluation::Irrelevant }
+            }
+            ActionKind::ChooseExpeditionContinuation => {
+                if self.facility_gate_reached() && self.state.run.as_ref().is_some_and(|r| r.run_progression.floor_index() >= 2) { CommonActionEvaluation::Enabled } else { CommonActionEvaluation::Irrelevant }
+            }
+            ActionKind::MoveToFacilityRoom => {
+                if self.facility_gate_reached() { CommonActionEvaluation::Enabled } else { CommonActionEvaluation::Irrelevant }
+            }
             ActionKind::StartNewGame => {
-                if matches!(self.state.lifecycle.phase(), GameState::NotStarted) {
+                if matches!(self.state.lifecycle.phase(), GameState::NotStarted | GameState::RunComplete | GameState::RunFailed { .. })
+                    && self.state.player_profile.lifecycle.active_expedition.is_none() {
                     CommonActionEvaluation::Enabled
                 } else {
                     CommonActionEvaluation::Irrelevant
                 }
+            }
+            ActionKind::SkipTutorial => {
+                if matches!(self.state.lifecycle.phase(), GameState::PreRunBriefing { game_mode: crate::game::map::GameMode::Tutorial }) {
+                    CommonActionEvaluation::Enabled
+                } else { CommonActionEvaluation::Irrelevant }
+            }
+            ActionKind::AcknowledgeFirstReturnStory => {
+                if self.state.pending_game_mode != Some(crate::game::map::GameMode::Tutorial)
+                    && !self.state.run.as_ref().is_some_and(|run| run.run_progression.game_mode == crate::game::map::GameMode::Tutorial)
+                    && self.state.player_profile.lifecycle.first_return_story != crate::game::expedition_lifecycle::FirstReturnStory::Never {
+                    CommonActionEvaluation::Enabled
+                } else { CommonActionEvaluation::Irrelevant }
             }
             ActionKind::SelectStarterEmployees => {
                 if !matches!(
@@ -254,18 +310,11 @@ impl GameCore {
                     CommonActionEvaluation::Disabled(ActionDisabledReasonCode::NoEligiblePayload)
                 }
             }
-            ActionKind::ConvertMapNodeWithMonolith => {
-                if !matches!(self.state.lifecycle.phase(), GameState::NodeConfirm { .. }) {
-                    return CommonActionEvaluation::Irrelevant;
-                }
-                if self
-                    .monolith_conversion_snapshot()
-                    .is_some_and(|value| value.options.iter().any(|option| option.enabled))
-                {
-                    CommonActionEvaluation::Enabled
-                } else {
-                    CommonActionEvaluation::Irrelevant
-                }
+            ActionKind::ConvertMapNodeWithMonolith => CommonActionEvaluation::Irrelevant,
+            ActionKind::HatchEncounter => {
+                if self.hatchable_node().is_none() { CommonActionEvaluation::Irrelevant }
+                else if self.revival_snapshot().is_some_and(|s| s.hatch_options.iter().any(|o| o.can_hatch)) { CommonActionEvaluation::Enabled }
+                else { CommonActionEvaluation::Disabled(ActionDisabledReasonCode::InsufficientResources) }
             }
             ActionKind::LoadRunCheckpoint => {
                 if !matches!(
@@ -310,6 +359,12 @@ impl GameCore {
                 if !matches!(self.state.lifecycle.phase(), GameState::NodeConfirm { .. }) {
                     return CommonActionEvaluation::Irrelevant;
                 }
+                if self.has_combat_recovery_restriction()
+                    && !matches!(self.state.lifecycle.phase(), GameState::NodeConfirm { node_id, .. }
+                        if self.selectable_map_node_ids().contains(node_id))
+                {
+                    return CommonActionEvaluation::Disabled(ActionDisabledReasonCode::NoEligiblePayload);
+                }
                 if let Some(evaluation) = self.mastered_elite_resolution_evaluation() {
                     return match evaluation.dto.direct_battle.disabled_reason_code {
                         None => CommonActionEvaluation::Enabled,
@@ -331,6 +386,7 @@ impl GameCore {
                     CommonActionEvaluation::Irrelevant
                 }
             }
+            ActionKind::StressCombatAct => CommonActionEvaluation::Irrelevant,
             ActionKind::CompleteNode => self.evaluate_complete_node(),
             ActionKind::RecruitEmployee
             | ActionKind::RequestEmergencySupplies
@@ -339,7 +395,8 @@ impl GameCore {
             | ActionKind::SellItem
             | ActionKind::RefreshShop
             | ActionKind::ExitShop => self.evaluate_shop_action(action),
-            ActionKind::SelectReward | ActionKind::ClaimReward | ActionKind::ExitReward => {
+            ActionKind::SelectReward | ActionKind::ClaimReward | ActionKind::ExitReward
+            | ActionKind::InvestRelicReward | ActionKind::SelectRelicFusionInputs | ActionKind::ConfirmRelicFusion | ActionKind::DealerAct => {
                 self.evaluate_reward_action(action)
             }
             ActionKind::AdvanceEventScene
@@ -494,8 +551,7 @@ impl GameCore {
                     && !session.employee_definition_ids.is_empty()
             });
         if action == ActionKind::RecruitEmployee
-            && (!has_recruitment_candidates
-                || self.state.roster.len() >= crate::game::employee::MAX_EMPLOYEE_ROSTER_SIZE)
+            && (!has_recruitment_candidates || !self.paid_recruitment_is_available())
         {
             CommonActionEvaluation::Disabled(ActionDisabledReasonCode::NoEligiblePayload)
         } else {
@@ -548,7 +604,22 @@ impl GameCore {
         else {
             return CommonActionEvaluation::Disabled(ActionDisabledReasonCode::ContentUnavailable);
         };
+        if reward.dealer.is_some() {
+            return if action == ActionKind::DealerAct { CommonActionEvaluation::Enabled } else { CommonActionEvaluation::Irrelevant };
+        }
         match action {
+            ActionKind::DealerAct => CommonActionEvaluation::Irrelevant,
+            ActionKind::InvestRelicReward | ActionKind::SelectRelicFusionInputs | ActionKind::ConfirmRelicFusion => {
+                let Some(activity) = &reward.relic_activity else { return CommonActionEvaluation::Irrelevant; };
+                use crate::game::map::RewardActivityKind;
+                let enabled = match (action, activity.kind) {
+                    (ActionKind::InvestRelicReward, RewardActivityKind::ResourceInvestment) => self.relic_investment_preview(activity).is_ok_and(|p| p.eligibility.enabled),
+                    (ActionKind::SelectRelicFusionInputs, RewardActivityKind::RelicGacha) => true,
+                    (ActionKind::ConfirmRelicFusion, RewardActivityKind::RelicGacha) => self.relic_fusion_preview(activity.fusion_inputs).is_ok_and(|p| p.eligibility.enabled),
+                    _ => return CommonActionEvaluation::Irrelevant,
+                };
+                if enabled { CommonActionEvaluation::Enabled } else { CommonActionEvaluation::Disabled(ActionDisabledReasonCode::NoEligiblePayload) }
+            }
             ActionKind::SelectReward if reward.mode == RewardMode::ChooseOne => {
                 if reward.rewards.is_empty() {
                     CommonActionEvaluation::Disabled(ActionDisabledReasonCode::NoEligiblePayload)

@@ -98,6 +98,9 @@ fn segment_wall_contact(
 }
 
 impl BattleCore {
+    fn enemy_block_demand(&self,id:UnitInstanceId)->u32 {self.shot_cohort_block_demand(id).unwrap_or(1)}
+    fn occupied_block_capacity(&self,id:UnitInstanceId)->u32 {self.block_state.blocker_to_enemies.get(&id).map_or(0,|enemies|enemies.iter().fold(0u32,|total,enemy|total.saturating_add(self.enemy_block_demand(*enemy))))}
+
     // Only the new HP-form evolution boundary opts into this admission. The
     // generic reconciler retains its existing callers and authority semantics.
     pub(in crate::game::battle::core) fn refresh_independent_form_block_state(
@@ -291,10 +294,11 @@ impl BattleCore {
             let Some(capacity) = remaining_capacity.get_mut(&blocker_id) else {
                 continue;
             };
-            if *capacity == 0 {
+            let demand=self.enemy_block_demand(enemy_id);
+            if *capacity < demand {
                 continue;
             }
-            *capacity = capacity.saturating_sub(1);
+            *capacity = capacity.saturating_sub(self.enemy_block_demand(enemy_id));
             block_state
                 .blocker_to_enemies
                 .entry(blocker_id)
@@ -313,7 +317,7 @@ impl BattleCore {
                 continue;
             };
             if let Some(capacity) = remaining_capacity.get_mut(&blocker_id) {
-                *capacity = capacity.saturating_sub(1);
+                *capacity = capacity.saturating_sub(self.enemy_block_demand(enemy_id));
             }
             block_state
                 .blocker_to_enemies
@@ -352,6 +356,7 @@ impl BattleCore {
                 .units
                 .values()
                 .filter(|blocker| self.is_valid_blocker(blocker.instance_id))
+                .filter(|blocker| self.approach_taunt(*unit_id).is_none_or(|(source, _)| source == blocker.instance_id))
                 .filter(|blocker| {
                     self.units
                         .get(unit_id)
@@ -363,12 +368,8 @@ impl BattleCore {
                 })
                 .filter(|blocker| {
                     blocker.role == BattleUnitRole::IndependentWall
-                        || self
-                            .block_state
-                            .blocker_to_enemies
-                            .get(&blocker.instance_id)
-                            .map_or(0, Vec::len)
-                            < self.effective_block_capacity(blocker.instance_id) as usize
+                        || self.occupied_block_capacity(blocker.instance_id).saturating_add(self.enemy_block_demand(*unit_id))
+                            <= self.effective_block_capacity(blocker.instance_id)
                 })
                 .filter_map(|blocker| {
                     let contact = if blocker.role == BattleUnitRole::IndependentWall {
@@ -524,7 +525,7 @@ impl BattleCore {
                     .get(id)
                     .is_some_and(|unit| unit.role != BattleUnitRole::IndependentWall)
             })
-            .filter(|blocker_id| remaining_capacity.get(blocker_id).copied().unwrap_or(0) > 0)
+            .filter(|blocker_id| remaining_capacity.get(blocker_id).copied().unwrap_or(0) >= self.enemy_block_demand(enemy_id))
             .filter(|blocker_id| self.is_enemy_inside_block_radius(enemy_id, *blocker_id))
             .min_by(|a, b| {
                 let distance_order = self
@@ -597,13 +598,29 @@ impl BattleCore {
         let Some(enemy) = self.units.get(&enemy_id) else {
             return 0.0;
         };
+        self.enemy_route_progress_from(enemy_id, enemy.body.position)
+    }
+
+    pub(in crate::game::battle::core) fn enemy_route_progress_at(
+        &self,
+        enemy_id: UnitInstanceId,
+        time_ms: u64,
+    ) -> f32 {
+        self.sample_unit_world_position_at(enemy_id, time_ms)
+            .map_or(0.0, |position| self.enemy_route_progress_from(enemy_id, position))
+    }
+
+    fn enemy_route_progress_from(&self, enemy_id: UnitInstanceId, position: WorldVec2) -> f32 {
+        let Some(enemy) = self.units.get(&enemy_id) else {
+            return 0.0;
+        };
         let plan = enemy
             .enemy_movement_plan
             .as_ref()
             .unwrap_or(&self.scenario.tactical_plan.enemy_plan);
         match plan {
             EnemyMovementPlan::PathAlongCells { cells } => {
-                route_progress_along_cells(cells, enemy.body.position).unwrap_or(0.0)
+                route_progress_along_cells(cells, position).unwrap_or(0.0)
             }
         }
     }
@@ -631,6 +648,7 @@ impl BattleCore {
         enemy_id: UnitInstanceId,
         blocker_id: UnitInstanceId,
     ) -> bool {
+        if self.approach_taunt(enemy_id).is_some_and(|(source, _)| source != blocker_id) { return false; }
         let Some(distance_sq) = self.block_distance_sq(blocker_id, enemy_id) else {
             return false;
         };

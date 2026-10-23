@@ -1,0 +1,717 @@
+{
+  "validation_receipt_ref": {
+    "Artifact Type": "Phase Plan Validation Receipt",
+    "Artifact ID": "PVR-CMVA-001",
+    "Content Digest": null
+  },
+  "validator_method_version": "p2g40-receipt-validator/1.2.0",
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Phase Plan",
+        "Artifact ID": "PP-CMVA-001",
+        "Content Digest": "sha256:bb6ff74ca67c2312c583c3fefbdfeb0688a3920fa5e772a1c3b8c67ea055da45"
+      },
+      "payload": {
+        "Bound Final Policy Freeze Ref": {
+          "Artifact Type": "Final Policy Freeze",
+          "Artifact ID": "FPF-CMVA-001",
+          "Content Digest": "sha256:e4009fb88d9916523324a97434900a9efcd7e81f4ffc5378831153e9400c2aa6"
+        },
+        "Exact Prerequisite Composite Basis": {
+          "Working Revision Ref": {
+            "Artifact Type": "Working Revision",
+            "Artifact ID": "WR-CMVA-003",
+            "Content Digest": "sha256:b366ad2b16b9fa3dd912d69f14b5712eae056ec8b4e2cfedc4c2b93c87cfebaa"
+          },
+          "Final Policy Freeze Ref": {
+            "Artifact Type": "Final Policy Freeze",
+            "Artifact ID": "FPF-CMVA-001",
+            "Content Digest": "sha256:e4009fb88d9916523324a97434900a9efcd7e81f4ffc5378831153e9400c2aa6"
+          },
+          "Phase Plan Ref": null,
+          "Goal Set Ref": null,
+          "Handoff Artifact Ref": null,
+          "Post-Freeze Change Record Ref Set": [],
+          "Authoritative Change Obligation Declaration Ref Set": []
+        },
+        "Applicable P2G-40 Obligation Key Set": [],
+        "P2G-40 Resolution Record Ref Set": [],
+        "Applicable Obligation Supersession Record Ref Set": [],
+        "Goal Structure Fact": "single_phase",
+        "Parallelization": "none approved",
+        "work_packages": [
+          {
+            "id": "WP-CMVA-CANDIDATE",
+            "selectors": {
+              "implementation": [
+                "PE-CMVA-01",
+                "PE-CMVA-02",
+                "PE-CMVA-06",
+                "PE-CMVA-07"
+              ],
+              "supporting": [
+                "PE-CMVA-08",
+                "PE-CMVA-12",
+                "PE-CMVA-13",
+                "PE-CMVA-14"
+              ]
+            },
+            "boundary": "Mod registry and selection→pack resolver/snapshot→immutable generation candidate; CODE_REVIEW T01.",
+            "expected_change": "Explicit multi-pack mod ownership/dependency closure; acquire once, retain receipts/selection/writers and exact engine/safety/Lab identity. Individual dependency-closure validation and final-combination validation are separate; hold whole failed mod/dependents, re-resolve original definitions after reselection.",
+            "prerequisite": "Existing strict content_pack loader and final-winner compiler; LAB/ISSUER consumer must interpret same immutable candidate.",
+            "validation": "Multiple packs/mod, malformed/dependency/cycle/oversize, individual PASS plus combination FAIL, Replace/Remove reselection, TOCTOU and same-semantic/different-profile identity.",
+            "unknown": "Concrete registry schema/limits and engine-build identity wiring Sol chooses; no invented trusted client fingerprint or file=mod rule."
+          },
+          {
+            "id": "WP-CMVA-LAB",
+            "selectors": {
+              "implementation": [
+                "PE-CMVA-02",
+                "PE-CMVA-03",
+                "PE-CMVA-04",
+                "PE-CMVA-05",
+                "PE-CMVA-13",
+                "PE-CMVA-14"
+              ],
+              "supporting": [
+                "PE-CMVA-06",
+                "PE-CMVA-07",
+                "PE-CMVA-09",
+                "PE-CMVA-11",
+                "PE-CMVA-12"
+              ]
+            },
+            "boundary": "Public authoring preparation→normal World run/node/combat lifecycle→actual bounded producer coverage and finite measurement; CODE_REVIEW T02/T03/T07.",
+            "expected_change": "Add versioned finite bulk preparation using normal owners and real entry. Issuer suite derives required changed definition/site/family coverage and actual trigger/ineligible/no-op/effect/cleanup. Profile owns workload/seeds/repeats/windows/criteria; real calibration must precede qualifying approval. Distinguish setup/content/instrumentation/cancel outcomes; no caller supplied PASS.",
+            "prerequisite": "Immutable CANDIDATE plus existing World/Trial/native accounting and measurement support; ISSUER owns trusted suite/profile and result acceptance.",
+            "validation": "Actual normal/expanded/pathological calibration, valid bulk actors/effects, same-bucket multiple sites and cleanup, absent trigger/overflow/incomplete refusal, plain-release vs instrumented digest equality and separate time/heap/native/RSS/drop semantics.",
+            "unknown": "Numerical criteria currently unmeasured; Sol runs prepared independent measurements, Root adopts evidence-backed concrete profile and independent author verifies exact/one-over plus real normal Lab→Apply before completion."
+          },
+          {
+            "id": "WP-CMVA-ISSUER",
+            "selectors": {
+              "implementation": [
+                "PE-CMVA-04",
+                "PE-CMVA-05",
+                "PE-CMVA-06",
+                "PE-CMVA-07",
+                "PE-CMVA-09",
+                "PE-CMVA-13",
+                "PE-CMVA-14"
+              ],
+              "supporting": [
+                "PE-CMVA-01",
+                "PE-CMVA-02",
+                "PE-CMVA-08",
+                "PE-CMVA-10",
+                "PE-CMVA-11",
+                "PE-CMVA-12"
+              ]
+            },
+            "boundary": "Issuer-local job/revision/cancellation and authenticated restart cache→opaque approved-generation capability; CODE_REVIEW T04/T07.",
+            "expected_change": "Finite job/result lifecycle; issue only full actual suite/coverage/calibrated criterion success; stale/cancelled/duplicate result cannot publish. Owner-authenticated atomic cache exact keys, private key separation/single writer, corruption/foreign/partial rejection; preserve valid cache/current selection on IO failure.",
+            "prerequisite": "CANDIDATE identity and LAB actual producer/measurement result; HOST normal Apply consumes issuer capability, never public DTO PASS.",
+            "validation": "Exact restart cache HIT and meaningful identity MISS; foreign/tamper/truncate, cancellation/reselection/late callback/duplicate, interrupted durable publication/retry and independent sessions/reclaim.",
+            "unknown": "Sol specifies proven authentication primitive and private-root/build binding; Root reviews authority and persistence semantics before product changes to those boundaries."
+          },
+          {
+            "id": "WP-CMVA-HOST",
+            "selectors": {
+              "implementation": [
+                "PE-CMVA-08",
+                "PE-CMVA-09",
+                "PE-CMVA-11",
+                "PE-CMVA-12",
+                "PE-CMVA-14"
+              ],
+              "supporting": [
+                "PE-CMVA-02",
+                "PE-CMVA-06",
+                "PE-CMVA-07",
+                "PE-CMVA-10",
+                "PE-CMVA-13"
+              ]
+            },
+            "boundary": "Normal local API/CLI and real game_server bootstrap/AppState/load-balance/player actor→approved future generation; CODE_REVIEW T05.",
+            "expected_change": "Route normal mod Apply through approved facade; trusted manager commits future B, active A retains identity. New actor/eligible Start installs approved B at existing staged boundary; no ordinary player path/profile authority. U03 fault gate and U04 durable acceptance preserved.",
+            "prerequisite": "ISSUER approval+selection revision and SAVE protection before any persistence side effects; raw static loader remains diagnostic/low-level trusted foundation.",
+            "validation": "Default-release external local plus real host route actual gameplay/query, unauthorized/stale/tamper refusal, A/B coexistence, precommit failure/seed identity preservation, fault actor rejected while another actor continues.",
+            "unknown": "No unauthenticated remote management endpoint. Concrete CLI/host-owner API allowed within current host authority; no claim of isolation from malicious arbitrary in-process Rust."
+          },
+          {
+            "id": "WP-CMVA-SAVE",
+            "selectors": {
+              "implementation": [
+                "PE-CMVA-10",
+                "PE-CMVA-11"
+              ],
+              "supporting": [
+                "PE-CMVA-06",
+                "PE-CMVA-08",
+                "PE-CMVA-09",
+                "PE-CMVA-12",
+                "PE-CMVA-14"
+              ]
+            },
+            "boundary": "Required mod/full-content metadata read-only preflight→ActiveRunStore backup/pending intent/profile merge and Core Continue; CODE_REVIEW T06.",
+            "expected_change": "Check required approved configuration BEFORE writer-capable read/recovery/merge/replacement. Preserve current/backup/profile/active originals on missing/held/stale/mismatch. Restore same original after required approved config returns. Explicit separate persistence root permits independent new/compatible sessions.",
+            "prerequisite": "CANDIDATE exact required identities; ISSUER current approval and HOST actor/persistence owner; existing V11 Continue/V12 SavePoint and paired intent/CAS.",
+            "validation": "Fresh-process normal Continue, missing/failed/stale mod original-byte preservation including backup/pending intent, restored-mod same-save positive, strict unsupported-version retention, cache/save separation and accepted-intent semantics.",
+            "unknown": "Metadata/codec/envelope version transition must be explicit before edit and reviewed by Root; no hidden migration or automatic new slot. Ordinary implementation corrections remain autonomous."
+          },
+          {
+            "id": "WP-CMVA-PUBLIC",
+            "selectors": {
+              "implementation": [
+                "PE-CMVA-12",
+                "PE-CMVA-13"
+              ],
+              "supporting": [
+                "PE-CMVA-01",
+                "PE-CMVA-02",
+                "PE-CMVA-03",
+                "PE-CMVA-04",
+                "PE-CMVA-05",
+                "PE-CMVA-06",
+                "PE-CMVA-07",
+                "PE-CMVA-08",
+                "PE-CMVA-09",
+                "PE-CMVA-10",
+                "PE-CMVA-11",
+                "PE-CMVA-14"
+              ]
+            },
+            "boundary": "Actual supported usage, representative external mod inputs and canonical API/CLI/host documentation.",
+            "expected_change": "Document normal approval workflow, diagnostics vs qualifying result, trusted host authority, exact cache reuse, explicit persistence-root selection, profile/coverage/measurement limits. Product examples consume completed approval facade.",
+            "prerequisite": "Atomic admission implementation including calibrated criterion available before public success example is claimed.",
+            "validation": "Independent default-release external probe consumes published input/API instructions through local and actual server boundary.",
+            "unknown": "API/module names are implementation choices; product docs/examples Sol, independent test fixtures/oracles Astra own separate files."
+          },
+          {
+            "id": "WP-CMVA-VERIFY",
+            "selectors": {
+              "validation_only": [
+                "PE-CMVA-01",
+                "PE-CMVA-02",
+                "PE-CMVA-03",
+                "PE-CMVA-04",
+                "PE-CMVA-05",
+                "PE-CMVA-06",
+                "PE-CMVA-07",
+                "PE-CMVA-08",
+                "PE-CMVA-09",
+                "PE-CMVA-10",
+                "PE-CMVA-11",
+                "PE-CMVA-12",
+                "PE-CMVA-13",
+                "PE-CMVA-14",
+                "PE-CMVA-15"
+              ]
+            },
+            "boundary": "Independent acceptance/measurement/failure/persistence tests and impact-based predecessor evidence→current exact target→whole Goal audit.",
+            "expected_change": "Astra independently authors reusable meaningful bundles; Sol sole runner preserves raw outcomes/failures; Root actual code/coverage review and measured criterion adoption; nonparticipant Astra independent whole Goal audit.",
+            "prerequisite": "Atomic admission and public path implemented; measurement separated from functional execution, inputs frozen per bundle.",
+            "validation": "All 15 elements/30 acceptance items, assigned integrations and 10 required dimensions; actual calibration/normal Apply, affected predecessor regressions, restoration and Complete/High/open0.",
+            "unknown": "Final command roster follows actual source impact. No automatic all-tests requirement and no reuse based only on unchanged test source."
+          }
+        ],
+        "dependencies": [
+          {
+            "from": "WP-CMVA-CANDIDATE",
+            "to": "WP-CMVA-LAB",
+            "type": "producer_consumer",
+            "evidence": "Actual trial and coverage consume exact validated generation and selected definitions.",
+            "broken": "Coverage could refer to another selection or unvalidated data."
+          },
+          {
+            "from": "WP-CMVA-LAB",
+            "to": "WP-CMVA-ISSUER",
+            "type": "authority",
+            "evidence": "Only actual complete suite, coverage and calibrated metrics justify approval.",
+            "broken": "Static or diagnostic success could authorize Apply."
+          },
+          {
+            "from": "WP-CMVA-ISSUER",
+            "to": "WP-CMVA-CANDIDATE",
+            "type": "authority",
+            "evidence": "Issuer suite/profile/build and selection revision bind immutable candidate approval eligibility.",
+            "broken": "Candidate keys could omit required validation identity or accept client labels."
+          },
+          {
+            "from": "WP-CMVA-CANDIDATE",
+            "to": "WP-CMVA-ISSUER",
+            "type": "schema_data",
+            "evidence": "Source/dependency/writer/semantic/profile identity is the cache and result binding.",
+            "broken": "Approval can outlive actual selection changes."
+          },
+          {
+            "from": "WP-CMVA-ISSUER",
+            "to": "WP-CMVA-LAB",
+            "type": "authority",
+            "evidence": "Trusted suite and required coverage/profile predicates govern jobs and producer collection.",
+            "broken": "Untrusted mod could choose missing scenarios or PASS predicates."
+          },
+          {
+            "from": "WP-CMVA-ISSUER",
+            "to": "WP-CMVA-HOST",
+            "type": "authority",
+            "evidence": "Opaque approval and current selection revision are normal Apply authority.",
+            "broken": "Normal server path bypasses actual validation."
+          },
+          {
+            "from": "WP-CMVA-HOST",
+            "to": "WP-CMVA-ISSUER",
+            "type": "transaction",
+            "evidence": "Exactly-once apply/revision and cancellation lifecycle must agree with result/cache publication.",
+            "broken": "Late result revives cancelled/stale selection or changes wrong actor."
+          },
+          {
+            "from": "WP-CMVA-ISSUER",
+            "to": "WP-CMVA-SAVE",
+            "type": "migration_compatibility",
+            "evidence": "Required configuration must be approved/current before any writer-capable restore step.",
+            "broken": "Invalid mod approval can repair or overwrite protected original."
+          },
+          {
+            "from": "WP-CMVA-SAVE",
+            "to": "WP-CMVA-HOST",
+            "type": "persistence_lifetime",
+            "evidence": "Preflight precedes snapshot/recovery/profile merge/new-run replacement in real host.",
+            "broken": "Apply/start can mutate incompatible original before refusal."
+          },
+          {
+            "from": "WP-CMVA-HOST",
+            "to": "WP-CMVA-SAVE",
+            "type": "transaction",
+            "evidence": "Host actor and paired-intent owner supply approved generation and persistence-root boundary.",
+            "broken": "Disconnected preflight misses writer-capable reads or wrong persistence root."
+          },
+          {
+            "from": "WP-CMVA-CANDIDATE",
+            "to": "WP-CMVA-PUBLIC",
+            "type": "producer_consumer",
+            "evidence": "Normal documented route consumes the completed admission contract.",
+            "broken": "Documentation would advertise unsupported or diagnostic-only Apply."
+          },
+          {
+            "from": "WP-CMVA-LAB",
+            "to": "WP-CMVA-PUBLIC",
+            "type": "producer_consumer",
+            "evidence": "Normal documented route consumes the completed admission contract.",
+            "broken": "Documentation would advertise unsupported or diagnostic-only Apply."
+          },
+          {
+            "from": "WP-CMVA-ISSUER",
+            "to": "WP-CMVA-PUBLIC",
+            "type": "producer_consumer",
+            "evidence": "Normal documented route consumes the completed admission contract.",
+            "broken": "Documentation would advertise unsupported or diagnostic-only Apply."
+          },
+          {
+            "from": "WP-CMVA-HOST",
+            "to": "WP-CMVA-PUBLIC",
+            "type": "producer_consumer",
+            "evidence": "Normal documented route consumes the completed admission contract.",
+            "broken": "Documentation would advertise unsupported or diagnostic-only Apply."
+          },
+          {
+            "from": "WP-CMVA-SAVE",
+            "to": "WP-CMVA-PUBLIC",
+            "type": "producer_consumer",
+            "evidence": "Normal documented route consumes the completed admission contract.",
+            "broken": "Documentation would advertise unsupported or diagnostic-only Apply."
+          },
+          {
+            "from": "WP-CMVA-PUBLIC",
+            "to": "WP-CMVA-VERIFY",
+            "type": "validation",
+            "evidence": "External independent probes must consume actual supported normal path.",
+            "broken": "Only internal helper evidence for a public end-to-end requirement."
+          },
+          {
+            "from": "WP-CMVA-LAB",
+            "to": "WP-CMVA-VERIFY",
+            "type": "validation",
+            "evidence": "Current actual producer/failure/measurement/persistence behavior is the input to independent evidence.",
+            "broken": "Prepared tests alone cannot prove unimplemented behavior."
+          },
+          {
+            "from": "WP-CMVA-ISSUER",
+            "to": "WP-CMVA-VERIFY",
+            "type": "validation",
+            "evidence": "Current actual producer/failure/measurement/persistence behavior is the input to independent evidence.",
+            "broken": "Prepared tests alone cannot prove unimplemented behavior."
+          },
+          {
+            "from": "WP-CMVA-HOST",
+            "to": "WP-CMVA-VERIFY",
+            "type": "validation",
+            "evidence": "Current actual producer/failure/measurement/persistence behavior is the input to independent evidence.",
+            "broken": "Prepared tests alone cannot prove unimplemented behavior."
+          },
+          {
+            "from": "WP-CMVA-SAVE",
+            "to": "WP-CMVA-VERIFY",
+            "type": "validation",
+            "evidence": "Current actual producer/failure/measurement/persistence behavior is the input to independent evidence.",
+            "broken": "Prepared tests alone cannot prove unimplemented behavior."
+          }
+        ],
+        "atomic_groups": [
+          {
+            "id": "AG-CMVA-ADMISSION",
+            "members": [
+              "WP-CMVA-CANDIDATE",
+              "WP-CMVA-LAB",
+              "WP-CMVA-ISSUER",
+              "WP-CMVA-HOST",
+              "WP-CMVA-SAVE"
+            ],
+            "evidence": "Minimal complete normal admission authority/cutover: immutable selection, qualifying actual Lab evidence, issuer approval/cache, real Apply and save preflight share result/revision/persistence meaning. Without any component the approved public admission claim is invalid or originals can be mutated before rejection. Internal implementation order is allowed; no subset is separately declared supported mod Apply."
+          }
+        ],
+        "standalone": [
+          "WP-CMVA-PUBLIC",
+          "WP-CMVA-VERIFY"
+        ],
+        "cyclic_sccs": [
+          {
+            "members": [
+              "WP-CMVA-CANDIDATE",
+              "WP-CMVA-LAB",
+              "WP-CMVA-ISSUER",
+              "WP-CMVA-HOST",
+              "WP-CMVA-SAVE"
+            ],
+            "disposition": "coimplement_atomic",
+            "atomic_group": "AG-CMVA-ADMISSION",
+            "evidence": "Candidate/Lab/issuer identity and authority cycle plus issuer/host result commit and host/save preflight transaction; condensed graph has public and verification downstream."
+          }
+        ],
+        "phases": [
+          {
+            "id": "PHASE-CMVA-01",
+            "primary": [
+              "PE-CMVA-01",
+              "PE-CMVA-02",
+              "PE-CMVA-03",
+              "PE-CMVA-04",
+              "PE-CMVA-05",
+              "PE-CMVA-06",
+              "PE-CMVA-07",
+              "PE-CMVA-08",
+              "PE-CMVA-09",
+              "PE-CMVA-10",
+              "PE-CMVA-11",
+              "PE-CMVA-12",
+              "PE-CMVA-13",
+              "PE-CMVA-14",
+              "PE-CMVA-15"
+            ],
+            "supporting": [],
+            "nodes": [
+              "AG-CMVA-ADMISSION",
+              "WP-CMVA-PUBLIC",
+              "WP-CMVA-VERIFY"
+            ],
+            "exit": "All 15 elements/30 acceptance items, actual calibrated normal/expanded workload plus normal Lab→Apply/local/server/save restore, 10 required dimensions and impact regressions complete; independent Complete/High/open0. No future Unity/U30 phase needed for present validity."
+          }
+        ],
+        "audits": [
+          {
+            "phase": "PHASE-CMVA-01",
+            "state": "Normal mod selection has one issuer admission authority and actual calibrated validation; immutable generations and required-mod protected persistence are end-to-end connected.",
+            "checks": "Single normal approval path; actual coverage, finite calibrated metric windows, atomic authenticated cache and revision commit, A/B lifetime, fault isolation, read-only save preflight before every mutation-capable operation; trusted static diagnostics clearly distinguished.",
+            "evidence": "Exact member acceptance projection, CODE_REVIEW T01–T07, independent external/local/server/fresh-process/failure/boundary/measurement evidence and current source inspection.",
+            "limitation": "Planning audit only; no runtime PASS or chosen numeric criterion yet. Detailed implementation choices cannot silently alter approval/save semantics. Phase parallelization none; nonconflicting file authoring only with explicit ownership."
+          }
+        ],
+        "integration": [
+          {
+            "id": "IVA-CMVA-V01",
+            "source": "FPF-CMVA-001 PE-CMVA-01: both exact acceptance items; CODE_REVIEW policy-element delta/seam row",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CMVA-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CMVA-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V01; independent tests/public probes/measurement evidence to be authored",
+            "evidence": "Nonzero actual current execution and independently derived oracle, exact inputs/raw result; public requirements use real normal consumers. Explicit unchanged/nonimpact reuse only. Failed/incomplete/zero cannot be PASS.",
+            "prerequisite": "AG-CMVA-ADMISSION and WP-CMVA-PUBLIC; author/executor separated, writer0 during runs."
+          },
+          {
+            "id": "IVA-CMVA-V02",
+            "source": "FPF-CMVA-001 PE-CMVA-02: both exact acceptance items; CODE_REVIEW policy-element delta/seam row",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CMVA-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CMVA-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V02; independent tests/public probes/measurement evidence to be authored",
+            "evidence": "Nonzero actual current execution and independently derived oracle, exact inputs/raw result; public requirements use real normal consumers. Explicit unchanged/nonimpact reuse only. Failed/incomplete/zero cannot be PASS.",
+            "prerequisite": "AG-CMVA-ADMISSION and WP-CMVA-PUBLIC; author/executor separated, writer0 during runs."
+          },
+          {
+            "id": "IVA-CMVA-V03",
+            "source": "FPF-CMVA-001 PE-CMVA-03: both exact acceptance items; CODE_REVIEW policy-element delta/seam row",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CMVA-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CMVA-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V03; independent tests/public probes/measurement evidence to be authored",
+            "evidence": "Nonzero actual current execution and independently derived oracle, exact inputs/raw result; public requirements use real normal consumers. Explicit unchanged/nonimpact reuse only. Failed/incomplete/zero cannot be PASS.",
+            "prerequisite": "AG-CMVA-ADMISSION and WP-CMVA-PUBLIC; author/executor separated, writer0 during runs."
+          },
+          {
+            "id": "IVA-CMVA-V04",
+            "source": "FPF-CMVA-001 PE-CMVA-04: both exact acceptance items; CODE_REVIEW policy-element delta/seam row",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CMVA-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CMVA-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V04; independent tests/public probes/measurement evidence to be authored",
+            "evidence": "Nonzero actual current execution and independently derived oracle, exact inputs/raw result; public requirements use real normal consumers. Explicit unchanged/nonimpact reuse only. Failed/incomplete/zero cannot be PASS.",
+            "prerequisite": "AG-CMVA-ADMISSION and WP-CMVA-PUBLIC; author/executor separated, writer0 during runs."
+          },
+          {
+            "id": "IVA-CMVA-V05",
+            "source": "FPF-CMVA-001 PE-CMVA-05: both exact acceptance items; CODE_REVIEW policy-element delta/seam row",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CMVA-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CMVA-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V05; independent tests/public probes/measurement evidence to be authored",
+            "evidence": "Nonzero actual current execution and independently derived oracle, exact inputs/raw result; public requirements use real normal consumers. Explicit unchanged/nonimpact reuse only. Failed/incomplete/zero cannot be PASS.",
+            "prerequisite": "AG-CMVA-ADMISSION and WP-CMVA-PUBLIC; author/executor separated, writer0 during runs."
+          },
+          {
+            "id": "IVA-CMVA-V06",
+            "source": "FPF-CMVA-001 PE-CMVA-06: both exact acceptance items; CODE_REVIEW policy-element delta/seam row",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CMVA-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CMVA-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V06; independent tests/public probes/measurement evidence to be authored",
+            "evidence": "Nonzero actual current execution and independently derived oracle, exact inputs/raw result; public requirements use real normal consumers. Explicit unchanged/nonimpact reuse only. Failed/incomplete/zero cannot be PASS.",
+            "prerequisite": "AG-CMVA-ADMISSION and WP-CMVA-PUBLIC; author/executor separated, writer0 during runs."
+          },
+          {
+            "id": "IVA-CMVA-V07",
+            "source": "FPF-CMVA-001 PE-CMVA-07: both exact acceptance items; CODE_REVIEW policy-element delta/seam row",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CMVA-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CMVA-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V07; independent tests/public probes/measurement evidence to be authored",
+            "evidence": "Nonzero actual current execution and independently derived oracle, exact inputs/raw result; public requirements use real normal consumers. Explicit unchanged/nonimpact reuse only. Failed/incomplete/zero cannot be PASS.",
+            "prerequisite": "AG-CMVA-ADMISSION and WP-CMVA-PUBLIC; author/executor separated, writer0 during runs."
+          },
+          {
+            "id": "IVA-CMVA-V08",
+            "source": "FPF-CMVA-001 PE-CMVA-08: both exact acceptance items; CODE_REVIEW policy-element delta/seam row",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CMVA-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CMVA-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V08; independent tests/public probes/measurement evidence to be authored",
+            "evidence": "Nonzero actual current execution and independently derived oracle, exact inputs/raw result; public requirements use real normal consumers. Explicit unchanged/nonimpact reuse only. Failed/incomplete/zero cannot be PASS.",
+            "prerequisite": "AG-CMVA-ADMISSION and WP-CMVA-PUBLIC; author/executor separated, writer0 during runs."
+          },
+          {
+            "id": "IVA-CMVA-V09",
+            "source": "FPF-CMVA-001 PE-CMVA-09: both exact acceptance items; CODE_REVIEW policy-element delta/seam row",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CMVA-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CMVA-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V09; independent tests/public probes/measurement evidence to be authored",
+            "evidence": "Nonzero actual current execution and independently derived oracle, exact inputs/raw result; public requirements use real normal consumers. Explicit unchanged/nonimpact reuse only. Failed/incomplete/zero cannot be PASS.",
+            "prerequisite": "AG-CMVA-ADMISSION and WP-CMVA-PUBLIC; author/executor separated, writer0 during runs."
+          },
+          {
+            "id": "IVA-CMVA-V10",
+            "source": "FPF-CMVA-001 PE-CMVA-10: both exact acceptance items; CODE_REVIEW policy-element delta/seam row",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CMVA-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CMVA-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V10; independent tests/public probes/measurement evidence to be authored",
+            "evidence": "Nonzero actual current execution and independently derived oracle, exact inputs/raw result; public requirements use real normal consumers. Explicit unchanged/nonimpact reuse only. Failed/incomplete/zero cannot be PASS.",
+            "prerequisite": "AG-CMVA-ADMISSION and WP-CMVA-PUBLIC; author/executor separated, writer0 during runs."
+          },
+          {
+            "id": "IVA-CMVA-V11",
+            "source": "FPF-CMVA-001 PE-CMVA-11: both exact acceptance items; CODE_REVIEW policy-element delta/seam row",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CMVA-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CMVA-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V11; independent tests/public probes/measurement evidence to be authored",
+            "evidence": "Nonzero actual current execution and independently derived oracle, exact inputs/raw result; public requirements use real normal consumers. Explicit unchanged/nonimpact reuse only. Failed/incomplete/zero cannot be PASS.",
+            "prerequisite": "AG-CMVA-ADMISSION and WP-CMVA-PUBLIC; author/executor separated, writer0 during runs."
+          },
+          {
+            "id": "IVA-CMVA-V12",
+            "source": "FPF-CMVA-001 PE-CMVA-12: both exact acceptance items; CODE_REVIEW policy-element delta/seam row",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CMVA-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CMVA-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V12; independent tests/public probes/measurement evidence to be authored",
+            "evidence": "Nonzero actual current execution and independently derived oracle, exact inputs/raw result; public requirements use real normal consumers. Explicit unchanged/nonimpact reuse only. Failed/incomplete/zero cannot be PASS.",
+            "prerequisite": "AG-CMVA-ADMISSION and WP-CMVA-PUBLIC; author/executor separated, writer0 during runs."
+          },
+          {
+            "id": "IVA-CMVA-V13",
+            "source": "FPF-CMVA-001 PE-CMVA-13: both exact acceptance items; CODE_REVIEW policy-element delta/seam row",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CMVA-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CMVA-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V13; independent tests/public probes/measurement evidence to be authored",
+            "evidence": "Nonzero actual current execution and independently derived oracle, exact inputs/raw result; public requirements use real normal consumers. Explicit unchanged/nonimpact reuse only. Failed/incomplete/zero cannot be PASS.",
+            "prerequisite": "AG-CMVA-ADMISSION and WP-CMVA-PUBLIC; author/executor separated, writer0 during runs."
+          },
+          {
+            "id": "IVA-CMVA-V14",
+            "source": "FPF-CMVA-001 PE-CMVA-14: both exact acceptance items; CODE_REVIEW policy-element delta/seam row",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CMVA-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CMVA-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V14; independent tests/public probes/measurement evidence to be authored",
+            "evidence": "Nonzero actual current execution and independently derived oracle, exact inputs/raw result; public requirements use real normal consumers. Explicit unchanged/nonimpact reuse only. Failed/incomplete/zero cannot be PASS.",
+            "prerequisite": "AG-CMVA-ADMISSION and WP-CMVA-PUBLIC; author/executor separated, writer0 during runs."
+          },
+          {
+            "id": "IVA-CMVA-V15",
+            "source": "FPF-CMVA-001 PE-CMVA-15: both exact acceptance items; CODE_REVIEW policy-element delta/seam row",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CMVA-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CMVA-01"
+            ],
+            "locator": "execution/single_goal/COVERAGE.json V15; independent tests/public probes/measurement evidence to be authored",
+            "evidence": "Nonzero actual current execution and independently derived oracle, exact inputs/raw result; public requirements use real normal consumers. Explicit unchanged/nonimpact reuse only. Failed/incomplete/zero cannot be PASS.",
+            "prerequisite": "AG-CMVA-ADMISSION and WP-CMVA-PUBLIC; author/executor separated, writer0 during runs."
+          },
+          {
+            "id": "IVA-CMVA-CALIBRATION",
+            "source": "PE04/05/13; T03",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CMVA-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CMVA-01"
+            ],
+            "locator": "execution/single_goal test_parts and finalization evidence; exact test/measurement roster authored before execution",
+            "evidence": "Actual representative normal/expanded/pathological raw measurements→Root concrete versioned criterion adoption→independent exact-boundary/one-over→normal Lab→Apply. No synthetic-only threshold closure.",
+            "prerequisite": "Completed actual producers and immutable execution inputs; measurement is isolated from functional runs."
+          },
+          {
+            "id": "IVA-CMVA-PUBLIC",
+            "source": "PE02/08/12; T05",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CMVA-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CMVA-01"
+            ],
+            "locator": "execution/single_goal test_parts and finalization evidence; exact test/measurement roster authored before execution",
+            "evidence": "Default-release external RON through local and actual server owner into actual gameplay/query; A retained/B future, raw diagnostic route never counted as normal approval.",
+            "prerequisite": "Completed actual producers and immutable execution inputs; measurement is isolated from functional runs."
+          },
+          {
+            "id": "IVA-CMVA-SAVE",
+            "source": "PE08/09/10/11; T06",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CMVA-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CMVA-01"
+            ],
+            "locator": "execution/single_goal test_parts and finalization evidence; exact test/measurement roster authored before execution",
+            "evidence": "Writer-capable snapshot/backup/intent/profile/start preflight refusal preserves original bytes; restore required approved configuration and Continue same original in fresh process.",
+            "prerequisite": "Completed actual producers and immutable execution inputs; measurement is isolated from functional runs."
+          },
+          {
+            "id": "IVA-CMVA-REGRESSION",
+            "source": "PE11/13/14/15; U02/U03/U04/U07M/U10",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CMVA-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CMVA-01"
+            ],
+            "locator": "execution/single_goal test_parts and finalization evidence; exact test/measurement roster authored before execution",
+            "evidence": "Impact-based strict loader/winner/source identity, fault/transaction/clone, paired-intent/strict persistence, native accounting and actual feature/coverage hot-path parity/cost; historical valid evidence reused with explicit nonimpact.",
+            "prerequisite": "Completed actual producers and immutable execution inputs; measurement is isolated from functional runs."
+          },
+          {
+            "id": "IVA-CMVA-STRUCTURE",
+            "source": "PE15; GEX finalization",
+            "disposition": "assigned_execution_node",
+            "nodes": [
+              "WP-CMVA-VERIFY"
+            ],
+            "phases": [
+              "PHASE-CMVA-01"
+            ],
+            "locator": "execution/single_goal test_parts and finalization evidence; exact test/measurement roster authored before execution",
+            "evidence": "Current requirement/acceptance/dimension/node and predecessor coverage; source/evidence currentness, isolated exact forward/reverse restoration, nonparticipant whole Goal Complete/High/open0.",
+            "prerequisite": "Completed actual producers and immutable execution inputs; measurement is isolated from functional runs."
+          }
+        ],
+        "Shared Contract Handoff": "CODE_REVIEW T01–T07 and exact per-element seam rows. CANDIDATE owns mod/source/selection identity; LAB actual normal preparation/producer coverage and metrics; ISSUER suite/profile/job/approval/cache authority; HOST normal apply and actor-generation transition; SAVE read-only required-config preflight and durable ownership. Product Sol owns concrete APIs/format/build/auth primitive, Root reviews public/authority/save/lifetime and adopts measured criteria. All new shared APIs are proposals until atomic node implements them; PUBLIC and VERIFY consume actual implementation. Test author owns separate files, entire shared product/test registration file changes are sequential.",
+        "Known Unknown/Limitations": "Real numerical thresholds/workload feasibility remain required measured GEX work, not a current-source gap. No uncalibrated qualifying profile, low-PC exemption, arbitrary cap/waiver or silent regression weakening. Schema/envelope/version and authentication/build details reviewed before affected edits; unknown source premise returns earliest owner. Independent author and sole executor separate; final auditor is nonparticipant. Impact-based validation and explicit reuse, not automatic full suites."
+      }
+    }
+  ]
+}

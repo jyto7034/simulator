@@ -325,7 +325,7 @@ cast start event-log `seq`가 cast epoch/token이다. core는 `ManualCastStart` 
 
 `InterruptCast`가 성공하면 대상의 pending cast를 제거하고 `SkillCastInterrupted` event를 기록한다. 이후 예전에 예약된 cast-end event가 도착해도 start seq가 맞지 않으므로 stale event로 무시한다.
 
-시전자 자신이 철수해 lifecycle이 `Withdrawn`으로 바뀌는 경우는 외부 방해 효과가 아니므로 `SkillCastInterrupted`를 쓰지 않는다. core는 pending manual/auto cast 또는 이미 시작된 active skill runtime을 제거하고 `SkillCastCancelled { reason: Withdrawn }` event를 기록한다.
+시전자 자신이 철수해 lifecycle이 `Withdrawn`으로 바뀌는 경우는 외부 방해 효과가 아니므로 `SkillCastInterrupted`를 쓰지 않는다. core는 pending manual/auto cast와 남은 active cast 제어를 취소하고 `SkillCastCancelled { reason: Withdrawn }` event를 기록한다.
 
 정책:
 
@@ -336,7 +336,9 @@ cast start event-log `seq`가 cast epoch/token이다. core는 `ManualCastStart` 
 - pending cast가 없으면 `SkillCastInterrupted` event를 만들지 않지만 남은 flow/channel/use control의 취소는 적용된다.
 - interrupted cast는 `ManualCastEnd` 또는 `AutoCastEnd` 완료 event를 만들지 않는다.
 - withdrawn으로 취소된 cast는 `SkillCastCancelled`를 만들고, 해당 cast에 대한 `ManualCastEnd` 또는 `AutoCastEnd` 완료 event를 만들지 않는다.
-- withdrawn caster의 active cast와 source-bound `FollowCaster`/`FollowTarget` area runtime은 제거된다.
+- withdrawn caster의 pending/unreleased 제어와 source-bound `FollowCaster`/`FollowTarget` area runtime은 제거된다.
+  structural side branch가 있는 cast는 이미 시작된 delivery의 결과 범위·source 문맥을 정산 완료까지 유지한다.
+  이 retained cast 문맥은 취소된 제어를 되살리거나 새 미방출 동작을 허용하지 않는다. 그 밖의 active cast는 제거된다.
   이미 release된 skill projectile과 `GroundFixed` area는 launch-time snapshot으로 계속 resolve하며, 이미 event
   log에 기록된 과거 event는 수정하지 않는다.
 

@@ -1,0 +1,980 @@
+{
+  "format": "node-graph",
+  "version": 1,
+  "id": "5d9b9db1-16fc-4613-9f88-0db1b93d1477",
+  "name": "범위 구성 · 전방 일격",
+  "nodes": [
+    {
+      "id": "0155fbe4-9f56-4af7-b357-776029396656",
+      "kind": "skill-cue",
+      "title": "관통 공격 표시",
+      "position": {
+        "x": 1800,
+        "y": 2415
+      },
+      "values": {
+        "description": "실제 기본 공격 사건에 맞춰 직선 관통 공격을 표시합니다. 별도 추가 타격이나 물리 투사체를 생성하는 지시가 아닙니다."
+      },
+      "note": "",
+      "frame": "d66e9842-2ea3-4f65-bccb-4872d38ef353"
+    },
+    {
+      "id": "0d69f0c9-9fe3-4ff7-95d4-0941315fb396",
+      "kind": "skill-attack-profile",
+      "title": "Hello 관통 공격",
+      "position": {
+        "x": 2240,
+        "y": 2049
+      },
+      "values": {
+        "length": "",
+        "piercingRelics": true,
+        "power": "",
+        "weaponEffects": true,
+        "width": ""
+      },
+      "note": "미미크리 장착 시 실제 HP 피해를 공격별 합산해 무기 흡혈 상한을 한 번 적용합니다. 관통 유물 이력은 다음 공격에서 초기화합니다.",
+      "frame": "d66e9842-2ea3-4f65-bccb-4872d38ef353"
+    },
+    {
+      "id": "1c1b398d-113f-4c01-84e0-16675c0ed333",
+      "kind": "skill-finish",
+      "title": "이탈 상태 정리",
+      "position": {
+        "x": 480,
+        "y": 1367
+      },
+      "values": {
+        "reason": "owner-exit"
+      },
+      "note": "",
+      "frame": "76965cf1-55c7-426d-a9de-4e590af09fef"
+    },
+    {
+      "id": "1d0498dd-4704-4be5-ba65-f8a2fbd7870b",
+      "kind": "skill-owner-exit",
+      "title": "Hello 외부 종료",
+      "position": {
+        "x": 40,
+        "y": 1437
+      },
+      "values": {
+        "policy": "unresolved"
+      },
+      "note": "",
+      "frame": "76965cf1-55c7-426d-a9de-4e590af09fef"
+    },
+    {
+      "id": "1f15e156-8f3b-4de3-95ad-63fd39729803",
+      "kind": "skill-state",
+      "title": "Hello 상태 선언",
+      "position": {
+        "x": 920,
+        "y": 2526
+      },
+      "values": {},
+      "note": "이 선언은 상태의 종류를 식별합니다. 직원·장착 스킬별 활성은 상태 시작에서 생성되며, 각 활성에 타이머와 마무리 권리가 속합니다.",
+      "frame": "d66e9842-2ea3-4f65-bccb-4872d38ef353"
+    },
+    {
+      "id": "22f17c47-a8c1-45a8-bd78-5448b574bc4d",
+      "kind": "skill-area-damage",
+      "title": "Goodbye 일격",
+      "position": {
+        "x": 1800,
+        "y": 695
+      },
+      "values": {},
+      "note": "",
+      "frame": "501cbd44-3280-412e-ae17-59961f84021d"
+    },
+    {
+      "id": "2659a44f-965e-4fa6-9363-b040b61f28cc",
+      "kind": "skill-range",
+      "title": "스킬 효과 범위",
+      "position": {
+        "x": 40,
+        "y": 284
+      },
+      "values": {
+        "includeAnchor": false,
+        "pattern": ""
+      },
+      "note": "",
+      "frame": "345d12c7-5a5d-4676-a920-9a6d65f2985c"
+    },
+    {
+      "id": "29604436-a79e-4322-8f7c-16fc40a65a0f",
+      "kind": "skill-resonance-amount",
+      "title": "Hello 공명 저장 상한",
+      "position": {
+        "x": 40,
+        "y": 2929.7380952380954
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "d66e9842-2ea3-4f65-bccb-4872d38ef353"
+    },
+    {
+      "id": "2bca7c93-b98a-45e9-b300-881ec6d987f1",
+      "kind": "skill-range-placement",
+      "title": "효과 범위 배치",
+      "position": {
+        "x": 480,
+        "y": 266
+      },
+      "values": {
+        "facingTime": "unresolved",
+        "origin": "caster",
+        "positionTime": "unresolved"
+      },
+      "note": "",
+      "frame": "345d12c7-5a5d-4676-a920-9a6d65f2985c"
+    },
+    {
+      "id": "2cf5447a-360e-4d2e-8096-ba8d783a314f",
+      "kind": "skill-capture-time",
+      "title": "포기할 시간 고정",
+      "position": {
+        "x": 920,
+        "y": 664
+      },
+      "values": {
+        "moment": "unresolved"
+      },
+      "note": "",
+      "frame": "501cbd44-3280-412e-ae17-59961f84021d"
+    },
+    {
+      "id": "3513fa31-519b-40a5-bb0d-5d4c73d56cea",
+      "kind": "skill-resonance-settings",
+      "title": "Hello 공명 설정",
+      "position": {
+        "x": 480,
+        "y": 2947.7380952380954
+      },
+      "values": {},
+      "note": "",
+      "frame": "d66e9842-2ea3-4f65-bccb-4872d38ef353"
+    },
+    {
+      "id": "35f4e21d-e675-4dde-b62a-d42ac8bf8bc1",
+      "kind": "skill-cue",
+      "title": "포신 변형 표시",
+      "position": {
+        "x": 3120,
+        "y": 2274
+      },
+      "values": {
+        "description": "같은 직원의 팔을 포신처럼 표시합니다. 실제 위치·저지·무기 종류를 바꾸지 않습니다."
+      },
+      "note": "",
+      "frame": "d66e9842-2ea3-4f65-bccb-4872d38ef353"
+    },
+    {
+      "id": "387ffb72-19d1-4f04-bd9e-ce760367fb8c",
+      "kind": "skill-finish",
+      "title": "Hello 조기 종료",
+      "position": {
+        "x": 1360,
+        "y": 997
+      },
+      "values": {
+        "reason": "manual"
+      },
+      "note": "",
+      "frame": "501cbd44-3280-412e-ae17-59961f84021d"
+    },
+    {
+      "id": "3c80e77b-990f-48db-b8bd-7eebb57b6c8e",
+      "kind": "skill-claim",
+      "title": "Goodbye 마무리 권리",
+      "position": {
+        "x": 480,
+        "y": 734
+      },
+      "values": {
+        "expiryOrder": "expiry-first"
+      },
+      "note": "",
+      "frame": "501cbd44-3280-412e-ae17-59961f84021d"
+    },
+    {
+      "id": "43fc40ae-59ac-43ba-a9b5-4ac49c9a9575",
+      "kind": "skill-finish",
+      "title": "만료 후 복귀",
+      "position": {
+        "x": 480,
+        "y": 1633
+      },
+      "values": {
+        "reason": "expiry"
+      },
+      "note": "",
+      "frame": "76965cf1-55c7-426d-a9de-4e590af09fef"
+    },
+    {
+      "id": "5608442c-efd7-4040-a7fd-eef65331ba53",
+      "kind": "skill-resonance-read",
+      "title": "Hello 공명 조회",
+      "position": {
+        "x": 920,
+        "y": 2940.0714285714284
+      },
+      "values": {},
+      "note": "",
+      "frame": "d66e9842-2ea3-4f65-bccb-4872d38ef353"
+    },
+    {
+      "id": "5c5191de-5599-48c0-85b6-5085a7a67c42",
+      "kind": "skill-time-power",
+      "title": "Goodbye 위력",
+      "position": {
+        "x": 1360,
+        "y": 667
+      },
+      "values": {
+        "base": "",
+        "cap": "",
+        "curve": "unresolved",
+        "rate": ""
+      },
+      "note": "",
+      "frame": "501cbd44-3280-412e-ae17-59961f84021d"
+    },
+    {
+      "id": "5e2772d5-a737-4e79-bc68-748713537ed3",
+      "kind": "skill-request",
+      "title": "Hello / Goodbye 입력",
+      "position": {
+        "x": 480,
+        "y": 3187
+      },
+      "values": {},
+      "note": "",
+      "frame": "d66e9842-2ea3-4f65-bccb-4872d38ef353"
+    },
+    {
+      "id": "638ea58c-dfd9-4f59-a222-09ef4f7f0200",
+      "kind": "skill-lookup",
+      "title": "Hello 활성 조회",
+      "position": {
+        "x": 1360,
+        "y": 3314
+      },
+      "values": {},
+      "note": "",
+      "frame": "d66e9842-2ea3-4f65-bccb-4872d38ef353"
+    },
+    {
+      "id": "69df9066-700c-49c8-935c-60f79eae709f",
+      "kind": "skill-seconds",
+      "title": "Hello 유지 시간",
+      "position": {
+        "x": 2240,
+        "y": 2415
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "d66e9842-2ea3-4f65-bccb-4872d38ef353"
+    },
+    {
+      "id": "8f420bc9-5961-482d-9a62-9ba5fab0d23e",
+      "kind": "skill-permission",
+      "title": "Goodbye 재입력 허용",
+      "position": {
+        "x": 40,
+        "y": 789.3333333333334
+      },
+      "values": {
+        "permission": "manual-followup"
+      },
+      "note": "",
+      "frame": "501cbd44-3280-412e-ae17-59961f84021d"
+    },
+    {
+      "id": "9aecbd89-d2c6-4194-ab3e-b8a1eb9a7a37",
+      "kind": "skill-resonance-install",
+      "title": "Hello 적용",
+      "position": {
+        "x": 2680,
+        "y": 2153
+      },
+      "values": {},
+      "note": "시간제 공격 교체 동안 공명 사용 잠금을 유지합니다. Goodbye로 교체를 끝내도 남은 마무리 동작의 사용 의무를 함께 확인합니다.",
+      "frame": "d66e9842-2ea3-4f65-bccb-4872d38ef353"
+    },
+    {
+      "id": "a35d91ed-502f-463f-81a7-280fe978499a",
+      "kind": "skill-resonance-qualify",
+      "title": "Hello 첫 사용 자격",
+      "position": {
+        "x": 1800,
+        "y": 2782.8
+      },
+      "values": {},
+      "note": "",
+      "frame": "d66e9842-2ea3-4f65-bccb-4872d38ef353"
+    },
+    {
+      "id": "a3bf4d46-96c8-4d11-a2b7-cabb5e00c8de",
+      "kind": "skill-resonance-admit",
+      "title": "Hello 접수와 지불",
+      "position": {
+        "x": 2240,
+        "y": 2699.3
+      },
+      "values": {},
+      "note": "",
+      "frame": "d66e9842-2ea3-4f65-bccb-4872d38ef353"
+    },
+    {
+      "id": "a8ce4f41-bb6b-4cc4-a529-93871248c03f",
+      "kind": "skill-resonance-requirement",
+      "title": "Hello 공명 조건",
+      "position": {
+        "x": 1360,
+        "y": 3116
+      },
+      "values": {
+        "mode": "full"
+      },
+      "note": "",
+      "frame": "d66e9842-2ea3-4f65-bccb-4872d38ef353"
+    },
+    {
+      "id": "b23c445b-7776-4f37-9618-9243bf5137ed",
+      "kind": "skill-target-selection",
+      "title": "입력의 대상 선택",
+      "position": {
+        "x": 40,
+        "y": 80
+      },
+      "values": {
+        "mode": "self"
+      },
+      "note": "",
+      "frame": "345d12c7-5a5d-4676-a920-9a6d65f2985c"
+    },
+    {
+      "id": "cc4c1d3a-0d1e-47e9-923d-650e71da8e0c",
+      "kind": "skill-cue",
+      "title": "생체 칼날 표시",
+      "position": {
+        "x": 2240,
+        "y": 721
+      },
+      "values": {
+        "description": "전방 일격의 실제 사건에 맞춰 팔을 생체 칼날로 표시합니다. Hello 관통 공격의 이력·흡혈은 적용하지 않습니다."
+      },
+      "note": "",
+      "frame": "501cbd44-3280-412e-ae17-59961f84021d"
+    },
+    {
+      "id": "d58c859e-387b-411c-8bec-b32a5649d8cb",
+      "kind": "skill-expiry",
+      "title": "Hello 자연 만료",
+      "position": {
+        "x": 40,
+        "y": 1715
+      },
+      "values": {},
+      "note": "",
+      "frame": "76965cf1-55c7-426d-a9de-4e590af09fef"
+    },
+    {
+      "id": "d5d25918-05b8-4a7e-8dff-b38032242b22",
+      "kind": "skill-cue",
+      "title": "정상 모습 복귀",
+      "position": {
+        "x": 920,
+        "y": 1424
+      },
+      "values": {
+        "description": "일격 종료·자연 만료·이탈 정리 후 정상 외형을 표시합니다. 자동 Goodbye나 부활을 발생시키지 않습니다."
+      },
+      "note": "",
+      "frame": "76965cf1-55c7-426d-a9de-4e590af09fef"
+    },
+    {
+      "id": "ddf2471a-c1c3-4cf3-a9a1-67ecda356be3",
+      "kind": "skill-resonance-cost",
+      "title": "Hello 공명 비용",
+      "position": {
+        "x": 1360,
+        "y": 2602
+      },
+      "values": {
+        "minimumCost": "",
+        "mode": "all",
+        "percent": ""
+      },
+      "note": "",
+      "frame": "d66e9842-2ea3-4f65-bccb-4872d38ef353"
+    },
+    {
+      "id": "e1b95077-83c6-4fe5-a626-d67b224d9362",
+      "kind": "skill-basic-event",
+      "title": "Hello의 개별 기본 공격",
+      "position": {
+        "x": 1360,
+        "y": 2433
+      },
+      "values": {},
+      "note": "",
+      "frame": "d66e9842-2ea3-4f65-bccb-4872d38ef353"
+    }
+  ],
+  "edges": [
+    {
+      "id": "01aa9a62-018c-47ef-987f-338ba2d6960b",
+      "source": {
+        "node": "8f420bc9-5961-482d-9a62-9ba5fab0d23e",
+        "port": "permit"
+      },
+      "target": {
+        "node": "3c80e77b-990f-48db-b8bd-7eebb57b6c8e",
+        "port": "permit"
+      }
+    },
+    {
+      "id": "08e53d2a-4a92-4459-9a7f-026cbb0fe315",
+      "source": {
+        "node": "5e2772d5-a737-4e79-bc68-748713537ed3",
+        "port": "request"
+      },
+      "target": {
+        "node": "8f420bc9-5961-482d-9a62-9ba5fab0d23e",
+        "port": "request"
+      }
+    },
+    {
+      "id": "0cbe47ce-5e98-4270-b70f-37801878524f",
+      "source": {
+        "node": "1f15e156-8f3b-4de3-95ad-63fd39729803",
+        "port": "state"
+      },
+      "target": {
+        "node": "e1b95077-83c6-4fe5-a626-d67b224d9362",
+        "port": "state"
+      }
+    },
+    {
+      "id": "0cdde4e4-c9bf-452e-a00a-d99842a41555",
+      "source": {
+        "node": "a3bf4d46-96c8-4d11-a2b7-cabb5e00c8de",
+        "port": "out"
+      },
+      "target": {
+        "node": "9aecbd89-d2c6-4194-ab3e-b8a1eb9a7a37",
+        "port": "in"
+      }
+    },
+    {
+      "id": "0f05c5ee-3d00-4b64-9acf-6f2d9d43c137",
+      "source": {
+        "node": "638ea58c-dfd9-4f59-a222-09ef4f7f0200",
+        "port": "activation"
+      },
+      "target": {
+        "node": "8f420bc9-5961-482d-9a62-9ba5fab0d23e",
+        "port": "activation"
+      }
+    },
+    {
+      "id": "134afa8c-67e0-46a0-90c8-acecfe3fb89a",
+      "source": {
+        "node": "638ea58c-dfd9-4f59-a222-09ef4f7f0200",
+        "port": "vacancy"
+      },
+      "target": {
+        "node": "a35d91ed-502f-463f-81a7-280fe978499a",
+        "port": "vacancy"
+      }
+    },
+    {
+      "id": "17d9cc4a-9ff7-4e7b-a5e0-29253f387b44",
+      "source": {
+        "node": "2bca7c93-b98a-45e9-b300-881ec6d987f1",
+        "port": "area"
+      },
+      "target": {
+        "node": "22f17c47-a8c1-45a8-bd78-5448b574bc4d",
+        "port": "area"
+      }
+    },
+    {
+      "id": "1c247aad-8df5-40af-b829-5ee7936ecf72",
+      "source": {
+        "node": "5e2772d5-a737-4e79-bc68-748713537ed3",
+        "port": "request"
+      },
+      "target": {
+        "node": "638ea58c-dfd9-4f59-a222-09ef4f7f0200",
+        "port": "request"
+      }
+    },
+    {
+      "id": "237d0c4f-513d-487a-85f5-60b934c68250",
+      "source": {
+        "node": "69df9066-700c-49c8-935c-60f79eae709f",
+        "port": "value"
+      },
+      "target": {
+        "node": "9aecbd89-d2c6-4194-ab3e-b8a1eb9a7a37",
+        "port": "duration"
+      }
+    },
+    {
+      "id": "2b942d7a-effe-4735-af0e-d21f9a2218b5",
+      "source": {
+        "node": "5e2772d5-a737-4e79-bc68-748713537ed3",
+        "port": "request"
+      },
+      "target": {
+        "node": "a35d91ed-502f-463f-81a7-280fe978499a",
+        "port": "request"
+      }
+    },
+    {
+      "id": "3025b0d7-f6b0-44ca-a3f9-b1fe024232ab",
+      "source": {
+        "node": "2cf5447a-360e-4d2e-8096-ba8d783a314f",
+        "port": "out"
+      },
+      "target": {
+        "node": "387ffb72-19d1-4f04-bd9e-ce760367fb8c",
+        "port": "in"
+      }
+    },
+    {
+      "id": "31119b6d-74df-4bbc-a689-d1472b9308ca",
+      "source": {
+        "node": "a35d91ed-502f-463f-81a7-280fe978499a",
+        "port": "permit"
+      },
+      "target": {
+        "node": "a3bf4d46-96c8-4d11-a2b7-cabb5e00c8de",
+        "port": "permit"
+      }
+    },
+    {
+      "id": "3b256cd7-3f0c-4a39-ac98-b2afaec19040",
+      "source": {
+        "node": "5e2772d5-a737-4e79-bc68-748713537ed3",
+        "port": "request"
+      },
+      "target": {
+        "node": "5608442c-efd7-4040-a7fd-eef65331ba53",
+        "port": "request"
+      }
+    },
+    {
+      "id": "3f4b35ee-8c5e-4693-9ec3-867d43c5091f",
+      "source": {
+        "node": "1f15e156-8f3b-4de3-95ad-63fd39729803",
+        "port": "state"
+      },
+      "target": {
+        "node": "9aecbd89-d2c6-4194-ab3e-b8a1eb9a7a37",
+        "port": "state"
+      }
+    },
+    {
+      "id": "4c289055-c075-4979-aa97-1713a382d9a6",
+      "source": {
+        "node": "b23c445b-7776-4f37-9618-9243bf5137ed",
+        "port": "selection"
+      },
+      "target": {
+        "node": "5e2772d5-a737-4e79-bc68-748713537ed3",
+        "port": "selection"
+      }
+    },
+    {
+      "id": "4c9a195a-9204-4715-a002-878587a440c8",
+      "source": {
+        "node": "43fc40ae-59ac-43ba-a9b5-4ac49c9a9575",
+        "port": "cue"
+      },
+      "target": {
+        "node": "d5d25918-05b8-4a7e-8dff-b38032242b22",
+        "port": "event"
+      }
+    },
+    {
+      "id": "5c6c50e9-44ff-47b0-a8b3-948c3c0d8037",
+      "source": {
+        "node": "3513fa31-519b-40a5-bb0d-5d4c73d56cea",
+        "port": "settings"
+      },
+      "target": {
+        "node": "5608442c-efd7-4040-a7fd-eef65331ba53",
+        "port": "settings"
+      }
+    },
+    {
+      "id": "5f392256-42ce-4ce0-a8d0-68005afdd510",
+      "source": {
+        "node": "638ea58c-dfd9-4f59-a222-09ef4f7f0200",
+        "port": "present"
+      },
+      "target": {
+        "node": "8f420bc9-5961-482d-9a62-9ba5fab0d23e",
+        "port": "in"
+      }
+    },
+    {
+      "id": "613648ce-eb8f-4296-81c4-a96f8c0dc658",
+      "source": {
+        "node": "29604436-a79e-4322-8f7c-16fc40a65a0f",
+        "port": "value"
+      },
+      "target": {
+        "node": "3513fa31-519b-40a5-bb0d-5d4c73d56cea",
+        "port": "capacity"
+      }
+    },
+    {
+      "id": "778dafad-7eae-44d2-9524-cf21338b5d22",
+      "source": {
+        "node": "5c5191de-5599-48c0-85b6-5085a7a67c42",
+        "port": "power"
+      },
+      "target": {
+        "node": "22f17c47-a8c1-45a8-bd78-5448b574bc4d",
+        "port": "power"
+      }
+    },
+    {
+      "id": "8be4dcfb-5394-4923-b224-6031526de69f",
+      "source": {
+        "node": "3c80e77b-990f-48db-b8bd-7eebb57b6c8e",
+        "port": "activation"
+      },
+      "target": {
+        "node": "387ffb72-19d1-4f04-bd9e-ce760367fb8c",
+        "port": "activation"
+      }
+    },
+    {
+      "id": "8fbc47a7-7f1d-4461-9416-400b64ac5be7",
+      "source": {
+        "node": "1d0498dd-4704-4be5-ba65-f8a2fbd7870b",
+        "port": "activation"
+      },
+      "target": {
+        "node": "1c1b398d-113f-4c01-84e0-16675c0ed333",
+        "port": "activation"
+      }
+    },
+    {
+      "id": "95fa7824-ea79-44b3-8324-a9c90ec0fd3d",
+      "source": {
+        "node": "1f15e156-8f3b-4de3-95ad-63fd39729803",
+        "port": "state"
+      },
+      "target": {
+        "node": "638ea58c-dfd9-4f59-a222-09ef4f7f0200",
+        "port": "state"
+      }
+    },
+    {
+      "id": "97ffcc34-0a95-42fc-b98a-7df2d73e8e7d",
+      "source": {
+        "node": "638ea58c-dfd9-4f59-a222-09ef4f7f0200",
+        "port": "absent"
+      },
+      "target": {
+        "node": "a35d91ed-502f-463f-81a7-280fe978499a",
+        "port": "in"
+      }
+    },
+    {
+      "id": "9a08745b-c3ae-46ba-8b6a-5eef27616524",
+      "source": {
+        "node": "5608442c-efd7-4040-a7fd-eef65331ba53",
+        "port": "snapshot"
+      },
+      "target": {
+        "node": "a35d91ed-502f-463f-81a7-280fe978499a",
+        "port": "snapshot"
+      }
+    },
+    {
+      "id": "a050495b-0c55-46ff-8be1-d7c18824838b",
+      "source": {
+        "node": "3c80e77b-990f-48db-b8bd-7eebb57b6c8e",
+        "port": "out"
+      },
+      "target": {
+        "node": "2cf5447a-360e-4d2e-8096-ba8d783a314f",
+        "port": "in"
+      }
+    },
+    {
+      "id": "ad5b0f09-87a2-4422-bffd-2976b3d0c7c8",
+      "source": {
+        "node": "a8ce4f41-bb6b-4cc4-a529-93871248c03f",
+        "port": "requirement"
+      },
+      "target": {
+        "node": "a35d91ed-502f-463f-81a7-280fe978499a",
+        "port": "requirement"
+      }
+    },
+    {
+      "id": "addc14b1-fec5-4d19-a468-072bcd17bac7",
+      "source": {
+        "node": "22f17c47-a8c1-45a8-bd78-5448b574bc4d",
+        "port": "completed"
+      },
+      "target": {
+        "node": "d5d25918-05b8-4a7e-8dff-b38032242b22",
+        "port": "event"
+      }
+    },
+    {
+      "id": "b90b0460-c317-4047-9ebc-2e77802f2a8a",
+      "source": {
+        "node": "8f420bc9-5961-482d-9a62-9ba5fab0d23e",
+        "port": "out"
+      },
+      "target": {
+        "node": "3c80e77b-990f-48db-b8bd-7eebb57b6c8e",
+        "port": "in"
+      }
+    },
+    {
+      "id": "c80723f5-d1e0-405c-8635-7a49b04fa24d",
+      "source": {
+        "node": "2659a44f-965e-4fa6-9363-b040b61f28cc",
+        "port": "range"
+      },
+      "target": {
+        "node": "2bca7c93-b98a-45e9-b300-881ec6d987f1",
+        "port": "range"
+      }
+    },
+    {
+      "id": "c925117e-a7c0-429f-b7c5-a23ab9aed9af",
+      "source": {
+        "node": "22f17c47-a8c1-45a8-bd78-5448b574bc4d",
+        "port": "cue"
+      },
+      "target": {
+        "node": "cc4c1d3a-0d1e-47e9-923d-650e71da8e0c",
+        "port": "event"
+      }
+    },
+    {
+      "id": "cfcb4d72-5667-480e-b575-74bd5dd5d45d",
+      "source": {
+        "node": "1c1b398d-113f-4c01-84e0-16675c0ed333",
+        "port": "cue"
+      },
+      "target": {
+        "node": "d5d25918-05b8-4a7e-8dff-b38032242b22",
+        "port": "event"
+      }
+    },
+    {
+      "id": "d0ac0f75-4073-4465-bf7c-d85785988dc6",
+      "source": {
+        "node": "1f15e156-8f3b-4de3-95ad-63fd39729803",
+        "port": "state"
+      },
+      "target": {
+        "node": "d58c859e-387b-411c-8bec-b32a5649d8cb",
+        "port": "state"
+      }
+    },
+    {
+      "id": "d0c9ee35-8a88-4224-a8e1-5b1e0e01559b",
+      "source": {
+        "node": "ddf2471a-c1c3-4cf3-a9a1-67ecda356be3",
+        "port": "cost"
+      },
+      "target": {
+        "node": "a35d91ed-502f-463f-81a7-280fe978499a",
+        "port": "cost"
+      }
+    },
+    {
+      "id": "d20a9d27-b8d9-41f0-b1a3-b03deac222de",
+      "source": {
+        "node": "5e2772d5-a737-4e79-bc68-748713537ed3",
+        "port": "out"
+      },
+      "target": {
+        "node": "638ea58c-dfd9-4f59-a222-09ef4f7f0200",
+        "port": "in"
+      }
+    },
+    {
+      "id": "d2f5b97d-8e3b-49ea-89ab-781cc450dcb9",
+      "source": {
+        "node": "9aecbd89-d2c6-4194-ab3e-b8a1eb9a7a37",
+        "port": "cue"
+      },
+      "target": {
+        "node": "35f4e21d-e675-4dde-b62a-d42ac8bf8bc1",
+        "port": "event"
+      }
+    },
+    {
+      "id": "d3ab0651-1012-4a64-b469-dd82c63ad36a",
+      "source": {
+        "node": "0d69f0c9-9fe3-4ff7-95d4-0941315fb396",
+        "port": "profile"
+      },
+      "target": {
+        "node": "9aecbd89-d2c6-4194-ab3e-b8a1eb9a7a37",
+        "port": "profile"
+      }
+    },
+    {
+      "id": "d582dcb0-806a-43c6-960c-440c074d0ab8",
+      "source": {
+        "node": "a3bf4d46-96c8-4d11-a2b7-cabb5e00c8de",
+        "port": "use"
+      },
+      "target": {
+        "node": "9aecbd89-d2c6-4194-ab3e-b8a1eb9a7a37",
+        "port": "use"
+      }
+    },
+    {
+      "id": "d6966695-8e3b-44f1-bd14-b12dd6623e02",
+      "source": {
+        "node": "387ffb72-19d1-4f04-bd9e-ce760367fb8c",
+        "port": "out"
+      },
+      "target": {
+        "node": "22f17c47-a8c1-45a8-bd78-5448b574bc4d",
+        "port": "in"
+      }
+    },
+    {
+      "id": "ddac9149-786d-43ea-b2e8-d32d37eb693c",
+      "source": {
+        "node": "1f15e156-8f3b-4de3-95ad-63fd39729803",
+        "port": "state"
+      },
+      "target": {
+        "node": "1d0498dd-4704-4be5-ba65-f8a2fbd7870b",
+        "port": "state"
+      }
+    },
+    {
+      "id": "ddaee342-47d1-4604-afbc-ceff6e4bf1cd",
+      "source": {
+        "node": "d58c859e-387b-411c-8bec-b32a5649d8cb",
+        "port": "activation"
+      },
+      "target": {
+        "node": "43fc40ae-59ac-43ba-a9b5-4ac49c9a9575",
+        "port": "activation"
+      }
+    },
+    {
+      "id": "ea67fa19-14b0-42ff-99e2-f7437cb000fd",
+      "source": {
+        "node": "d58c859e-387b-411c-8bec-b32a5649d8cb",
+        "port": "out"
+      },
+      "target": {
+        "node": "43fc40ae-59ac-43ba-a9b5-4ac49c9a9575",
+        "port": "in"
+      }
+    },
+    {
+      "id": "ea7d670b-6f6e-41cf-a6f3-99d17ee0c80b",
+      "source": {
+        "node": "5608442c-efd7-4040-a7fd-eef65331ba53",
+        "port": "snapshot"
+      },
+      "target": {
+        "node": "ddf2471a-c1c3-4cf3-a9a1-67ecda356be3",
+        "port": "snapshot"
+      }
+    },
+    {
+      "id": "ecaf3308-be87-4abc-ba8e-deca00f0403d",
+      "source": {
+        "node": "3c80e77b-990f-48db-b8bd-7eebb57b6c8e",
+        "port": "activation"
+      },
+      "target": {
+        "node": "2cf5447a-360e-4d2e-8096-ba8d783a314f",
+        "port": "activation"
+      }
+    },
+    {
+      "id": "ed1e5696-1045-4e41-bc7e-8d6cacb53fb7",
+      "source": {
+        "node": "e1b95077-83c6-4fe5-a626-d67b224d9362",
+        "port": "cue"
+      },
+      "target": {
+        "node": "0155fbe4-9f56-4af7-b357-776029396656",
+        "port": "event"
+      }
+    },
+    {
+      "id": "f240934d-51c5-49d6-8148-0980cc3a1a2d",
+      "source": {
+        "node": "1d0498dd-4704-4be5-ba65-f8a2fbd7870b",
+        "port": "out"
+      },
+      "target": {
+        "node": "1c1b398d-113f-4c01-84e0-16675c0ed333",
+        "port": "in"
+      }
+    },
+    {
+      "id": "f3efd15a-7a0f-4bcf-a625-5139d1c69807",
+      "source": {
+        "node": "2cf5447a-360e-4d2e-8096-ba8d783a314f",
+        "port": "seconds"
+      },
+      "target": {
+        "node": "5c5191de-5599-48c0-85b6-5085a7a67c42",
+        "port": "seconds"
+      }
+    },
+    {
+      "id": "f9adbfa9-1128-452a-8b0d-a84359c2c009",
+      "source": {
+        "node": "a35d91ed-502f-463f-81a7-280fe978499a",
+        "port": "out"
+      },
+      "target": {
+        "node": "a3bf4d46-96c8-4d11-a2b7-cabb5e00c8de",
+        "port": "in"
+      }
+    }
+  ],
+  "frames": [
+    {
+      "id": "345d12c7-5a5d-4676-a920-9a6d65f2985c",
+      "title": "범위 구성 · 타일 배치와 수치는 미정"
+    },
+    {
+      "id": "501cbd44-3280-412e-ae17-59961f84021d",
+      "title": "2 · 재입력과 Goodbye"
+    },
+    {
+      "id": "76965cf1-55c7-426d-a9de-4e590af09fef",
+      "title": "3 · 만료와 외부 종료"
+    },
+    {
+      "id": "d66e9842-2ea3-4f65-bccb-4872d38ef353",
+      "title": "1 · Hello 시작과 기본 공격"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "command": [
+    ".cache/d07-static-explain-product-target/debug/deps/game_core-705cc9514d94a1fe",
+    "u13_fixed_encounter",
+    "--test-threads=1",
+    "--nocapture"
+  ],
+  "exit_code": 0,
+  "seconds": 5.230712482996751,
+  "stdout": "focused002.stdout.log",
+  "stderr": "focused002.stderr.log"
+}

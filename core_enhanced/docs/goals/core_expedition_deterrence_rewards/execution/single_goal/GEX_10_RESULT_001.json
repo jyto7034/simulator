@@ -1,0 +1,53 @@
+{
+  "status": "implementation_and_self_validation_ended_audit_request_pending",
+  "stage": "GEX-10",
+  "goal_set": "GS-CEDR-001",
+  "goal": "GOAL-CEDR-01",
+  "phase": "PHASE-CEDR-01",
+  "recorded_at": "2026-10-14T08:45:42.421933+00:00",
+  "target": "target/u14_current_001/AUDIT_TARGET_RECORD.json",
+  "source_sha256": "49e2263de43ce65589a414277eb16b69f9a8cdcd6543896936aa284b2c33e456",
+  "acceptance": 31,
+  "validation_dimensions": 10,
+  "integration_acceptance": 10,
+  "focused_core": {
+    "passed": 82,
+    "failed": 0
+  },
+  "g11_default": {
+    "passed": 4,
+    "failed": 0
+  },
+  "g11_native": {
+    "passed": 4,
+    "failed": 0
+  },
+  "server_persistence": {
+    "passed": 29,
+    "failed": 0
+  },
+  "approved_host_stable_operations": {
+    "route": 30,
+    "actual_sealed_victory_io_retry": 10
+  },
+  "actual_growth_battles": 12,
+  "measurements": 6,
+  "known_preexisting_full_core_failures": 138,
+  "full_core_green_claimed": false,
+  "restore_passed": true,
+  "source_members": 704,
+  "evidence_members": 980,
+  "delta_members": 117,
+  "finalization_execution": {
+    "command": [
+      "python3",
+      "core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/test_parts/finalize.py"
+    ],
+    "exit_code": 0,
+    "stdout": "fixed source 704 members\nrestore passed 117 operations\n{\"source_members\": 704, \"evidence_members\": 980, \"delta_members\": 117, \"restore_passed\": true, \"source_sha256\": \"49e2263de43ce65589a414277eb16b69f9a8cdcd6543896936aa284b2c33e456\"}\n"
+  },
+  "goal_complete": false,
+  "audit_performed": false,
+  "U15_started": false,
+  "next": "Separate user-requested nonparticipant GEX20 audit of frozen u14_current_001; no automatic audit or delegation."
+}

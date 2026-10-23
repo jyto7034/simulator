@@ -1,0 +1,104 @@
+{
+  "captured_at": "2026-10-12T11:20:51.796153+00:00",
+  "purpose": "로드맵 문서 검토 입력 식별. 제품 동결 또는 감사 target 아님.",
+  "files": [
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+      "sha256": "318e34be8fde9aed2316dfd4da5d8d30cefe262c4c89b0368df4b6304e5526eb"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
+      "sha256": "6feb352b5644b80f31d9234bdde69f43c82eb2294ea8f2de6dd65769333eec32"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_LATEST.ko.md",
+      "sha256": "c76ac120aa16f5a7857ef2326616fd2eecaa37b494b6a2db9001279927fefcec"
+    },
+    {
+      "path": "core_enhanced/docs/game_rulebook.md",
+      "sha256": "28bf5ed614fb7222d9c9e432e36410a785f1f9ce58eba67b2971153668045855"
+    },
+    {
+      "path": "core_enhanced/docs/game_rules/battle-controls.md",
+      "sha256": "44b2292ee635268aaf55fcb172cfe1013b1cf791451ee9091cb1f44b36a41f91"
+    },
+    {
+      "path": "core_enhanced/docs/game_rules/blocking-and-targeting.md",
+      "sha256": "e74ac54b99064786584df5aa1f30ec19b2c8afa39453644c9f068b2a013fd562"
+    },
+    {
+      "path": "core_enhanced/docs/game_rules/combat.md",
+      "sha256": "f7fd43b1b629b6da82ca548f8c5da9472b47c680a8753c56e75510863b3a5fbc"
+    },
+    {
+      "path": "core_enhanced/docs/game_rules/equipment-and-fragments.md",
+      "sha256": "6e60273588bd9e7c1e105a902559cdb7eeee5961dce3aa7fe9148936cc4fb5b8"
+    },
+    {
+      "path": "core_enhanced/docs/game_rules/expedition-and-deterrence.md",
+      "sha256": "ad93d3105b6c0d286b85ee28d57c1eec0d9c9354aa477ac13f86a78d8692e3c1"
+    },
+    {
+      "path": "core_enhanced/docs/game_rules/growth-and-rewards.md",
+      "sha256": "20ad6dbc4d9ff58bb95d68246fc84b872cb839e47296b1dfed07d1d728a8ad18"
+    },
+    {
+      "path": "core_enhanced/docs/game_rules/open-decisions.md",
+      "sha256": "bba03cd9f395700bb922e8f575727be68fcafdcf7d1a096903f051d9c1bfb6dd"
+    },
+    {
+      "path": "core_enhanced/docs/game_rules/relic-reward-nodes.md",
+      "sha256": "e0dc7008ead03d03e96c9ee7b311452c3e5de37618e28d6f2b424fcd2a1dd2d7"
+    },
+    {
+      "path": "core_enhanced/docs/game_rules/relics.md",
+      "sha256": "be09f2c6f3053ba43a44b1bf13396438810a70a00a1761ab4a2a2538c6dcb6dc"
+    },
+    {
+      "path": "core_enhanced/docs/game_rules/results-and-save.md",
+      "sha256": "eb5543540c00e89ffb7eee333f2fae54845afa95ad2951556ab0ffff98ab7220"
+    },
+    {
+      "path": "core_enhanced/docs/game_rules/run-and-map.md",
+      "sha256": "616aeb4257fcdf36ee4cbd10100bbe52390256eda2bafe979e7a6140c6cad7d9"
+    }
+  ],
+  "additional_inputs_at_close": [
+    {
+      "path": "core_enhanced/docs/roadmaps/content_authoring/OPERATING_RULES.md",
+      "sha256": "1dfcfd389b87a4919f78a9ea87ffabaa2dc778c67510fab1172f9cf420606bd0",
+      "coverage": "관련 절/함수의 한정 검토; 파일 전체 제품 감사 아님"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/WORKING_POLICY.ko.md",
+      "sha256": "8d29badfb1a18792834739a587f6748053da6ed2a43fde61d66443ef70a8312c",
+      "coverage": "관련 절/함수의 한정 검토; 파일 전체 제품 감사 아님"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/CODE_REVIEW.ko.md",
+      "sha256": "7ef30d46d00dafa76d77945b5e5633c5f03bfbbc925ae65c555bc1867771975e",
+      "coverage": "관련 절/함수의 한정 검토; 파일 전체 제품 감사 아님"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_40_PHASE_PLAN_001.json",
+      "sha256": "1d56c857e443925c9105ad74e2d4435bf2199c410b90e55b6465a54ab023e8f2",
+      "coverage": "관련 절/함수의 한정 검토; 파일 전체 제품 감사 아님"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/execution/single_goal/PLAN.md",
+      "sha256": "9c9bcefc192216f083e76e722834382859537bd74054bfc53c88dbe5a082ad86",
+      "coverage": "관련 절/함수의 한정 검토; 파일 전체 제품 감사 아님"
+    },
+    {
+      "path": "core_enhanced/src/game/world/combat.rs",
+      "sha256": "3ec1f4e39ae259abd5dfb587071e47744da6ee0f02ba73ced0d2b40a72b056bf",
+      "coverage": "관련 절/함수의 한정 검토; 파일 전체 제품 감사 아님"
+    },
+    {
+      "path": "core_enhanced/src/game/world/headquarters.rs",
+      "sha256": "8eb24cc23a2a4475e81065a28844735033f58a35c36de12818cefd27db0ff820",
+      "coverage": "관련 절/함수의 한정 검토; 파일 전체 제품 감사 아님"
+    }
+  ],
+  "close_capture_at": "2026-10-12T11:32:39.897773+00:00"
+}

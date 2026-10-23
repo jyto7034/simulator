@@ -1,0 +1,31 @@
+{
+  "observed_at_utc": "2026-10-11T23:16:38.337033+00:00",
+  "pid": 475717,
+  "process_directory_exists": true,
+  "elapsed_seconds": 989.45,
+  "state": "D",
+  "wchan": "p9_client_rpc",
+  "cpu_seconds": 166.46,
+  "elapsed_delta_from_prior_seconds": 225.45,
+  "cpu_delta_from_prior_seconds": 35.37,
+  "current_workspace_fds": [],
+  "target_exists": true,
+  "target_file_names": [
+    "EXTERNAL_ARCHIVES.json",
+    "FORWARD.patch",
+    "GIT_STATUS.txt",
+    "HISTORICAL_REFERENCES.json",
+    "MEMBERSHIP.json",
+    "RECORDS.json",
+    "RECORDS.tar.gz",
+    "REFERENCES.json",
+    "REFERENCES.tar.gz",
+    "RESTORE_FORWARD.log",
+    "RESTORE_REVERSE.log",
+    "RESTORE_VERIFICATION.json",
+    "REVERSE.patch",
+    "SOURCE_AFTER.tar.gz",
+    "SOURCE_BEFORE.tar.gz"
+  ],
+  "internal_phase_not_determined": true
+}

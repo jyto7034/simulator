@@ -989,6 +989,20 @@ impl BossEncounterRuntime {
         Ok(false)
     }
 
+    /// Stop special percentage damage at the next authored health transition.
+    /// A pending transition remains protected until its timing boundary commits.
+    pub(super) fn corrosion_health_floor(&self, unit: UnitInstanceId, current: u32, maximum: u32) -> u32 {
+        let Some(slot) = self.actors.iter().find(|actor| actor.unit_id == Some(unit))
+            .and_then(|actor| actor.encounter_slot_index)
+            .and_then(|index| self.definition.actor_slots.get(index)) else { return 0; };
+        self.definition.phases[self.current_phase_index].transitions.iter()
+            .filter_map(|transition| match &transition.condition {
+                BossEncounterConditionData::ActorHealthAtOrBelowPercent { actor_slot_id, percent }
+                    if actor_slot_id == slot => Some(((u64::from(maximum) * u64::from(*percent)) / 100).max(1) as u32),
+                _ => None,
+            }).max().unwrap_or(0).min(current)
+    }
+
     fn select_phase_transition(&self, core: &BattleCore) -> Option<usize> {
         self.definition.phases[self.current_phase_index]
             .transitions
@@ -1113,7 +1127,7 @@ impl BossEncounterRuntime {
                                         .units
                                         .get(&unit_instance_id)
                                         .is_none_or(|unit| !unit.is_active()),
-                                    SkillCastTarget::Tile { .. } => false,
+                                    SkillCastTarget::Tile { .. } | SkillCastTarget::TilePair { .. } | SkillCastTarget::Direction { .. } => false,
                                 });
                         if target_lost {
                             Some(BossTaskResultData::TargetInvalidated)
@@ -2964,7 +2978,7 @@ fn route_point_reached(core: &BattleCore, unit_id: UnitInstanceId, target: Posit
 }
 
 #[cfg(test)]
-mod tests {
+pub(super) mod tests {
     include!("boss_action_tests.rs");
     include!("boss_action_cancellation_tests.rs");
     include!("tests/u06_starter_effects.inc.rs");
@@ -3147,6 +3161,7 @@ mod tests {
         let player_group_id = ScenarioGroupId::new("player_group");
         BattleScenario {
             battlefield: BattleFieldSpec {
+            walkable_paths: Vec::new(),
                 object_placement: None,
                 width: 8,
                 height: 4,
@@ -3522,6 +3537,24 @@ mod tests {
             &next_actor.behavior.as_ref().unwrap().nodes[next_control.node_index],
             CompiledBossControlNode::State { id, .. } if id.as_str() == "route_combat"
         ));
+    }
+
+    #[test]
+    fn corrosion_damage_stops_at_authored_phase_and_allows_required_transition() {
+        let setup = fixture_setup_with_phase_timing(BossPhaseTransitionTimingData::Immediate);
+        let mut core = BattleCore::new_from_scenario(fixture_scenario_with_setup(Some(setup)), GameDataBuilder::empty().build_arc(), 17);
+        let mut execution = core.start_battle_execution().unwrap();
+        core.step_battle_execution(&mut execution).unwrap();
+        let boss = actor_runtime(&core).unit_id.unwrap();
+        let player = core.units.values().find(|unit| unit.owner == crate::game::enums::Side::Player).unwrap().instance_id;
+        core.units.get_mut(&boss).unwrap().stats.current_health = 600;
+        core.apply_corrosion_percent_damage(player, boss, 1).unwrap();
+        assert_eq!(core.units[&boss].stats.current_health, 500);
+        core.run_boss_runtime_boundary(1).unwrap();
+        assert_eq!(core.boss_runtime.as_ref().unwrap().current_phase_index, 1);
+        core.apply_corrosion_percent_damage(player, boss, 2).unwrap();
+        assert_eq!(core.units[&boss].stats.current_health, 250);
+        assert!(core.runtime_fact_summary().latest_death.is_none());
     }
 
     #[test]
@@ -3958,6 +3991,8 @@ mod tests {
     fn cancellation_preserves_focus_permitted_locks() {
         let skill_id = SkillId::from("focus_permitted_boss_skill");
         let skill = SkillDef {
+            action_policy: None,
+            resonance_admission: None,
             use_lifetime: crate::game::ability::SkillUseLifetime::Action,
             flow: None,
             id: skill_id.clone(),
@@ -4006,6 +4041,7 @@ mod tests {
             skill_id: skill_id.clone(),
             cast_target: None,
             accepted_target_tile: None,
+            accepted_facing: None,
             start_seq: 7,
         });
         actor.next_action_time = cast_lock_until;

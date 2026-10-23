@@ -1,0 +1,32 @@
+{
+  "record_ref": "ATR-CRAR-C2-P03-GEX20-004",
+  "goal_id": "GOAL-CRAR-C2-P03-APPLICATION-AUTHORITY",
+  "successor_goal_id": "GOAL-CRAR-C2-P06-CHECKPOINT-MIGRATION",
+  "captured_date": "2026-08-23",
+  "verdict": "Complete / High",
+  "currentness": "current / expected P05 plus P06 subordinate deltas",
+  "completion_target_ref": "ATR-CRAR-C2-P03-GEX10-001",
+  "frozen_members": 33,
+  "unchanged_members": 22,
+  "expected_changed_members": [
+    {"path":"src/game/world.rs","current_sha256":"4821030666dbf7b0b0e40ac05b2a527659dc54a7b4728e638dc4e0e8698cc82e","disposition":"P05 bounded projection delta; P06 does not change root ownership"},
+    {"path":"src/game/world/state.rs","current_sha256":"66b50f568571935e82f708becea67e033ecf2322a1243e4b7971193b52541b52","disposition":"P05 lifetime delta; P06 leaves closed lifecycle state byte-identical"},
+    {"path":"src/game/world/combat.rs","current_sha256":"d9d65b3316adf3b70d25d2f95a3292563f727750830373f58b2215d0ebef4b6a","disposition":"P05 transaction-owned result delta; P06 does not change combat writer"},
+    {"path":"src/game/world/active_run.rs","current_sha256":"0bba5a9a9284302fd0b60049589be23bcbdff9a7bcba1b37dc72655b90e91a56","disposition":"P06 strict V4/V5 parse and checksum complete before assignment inside the existing ActiveRunContinue draft"},
+    {"path":"src/game/world/visual_novel_flow.rs","current_sha256":"c2a44c5a2def17c1a264c8746047c5bd6100735e876a51a318dc44193d7a19ac","disposition":"P05 projection delta; P06 unchanged"},
+    {"path":"src/game/world/snapshot.rs","current_sha256":"704ad2dc9baa8b7ffe1f5f2c16fb94418faf46bc8c1d432145870b3ef58aa0b6","disposition":"P05 projection delta; P06 unchanged"},
+    {"path":"src/game/world/tests/mod.rs","current_sha256":"7b49a1e16fc81226a9be6bf756d64a0eb2d0f1769d0b37b85de92db791c757a8","disposition":"P06 test-only checksum refresh helper for intentional graph/cache mutations"},
+    {"path":"src/game/world/tests/combat.rs","current_sha256":"653edd119f13a5c1c8b03f60b98366d1873e8ca9a3aeec76db1b41792c49aafd","disposition":"P05 lifetime oracles plus P06 V5 cache-mutation checksum maintenance"},
+    {"path":"docs/core_runtime_contract.md","current_sha256":"56060826753d66af3cd10c725b351cb74a41d219b67cbf4033b1cf9192098a4e","disposition":"P04-P06 subordinate contracts added; P03 single-owner/atomic publish rules retained"},
+    {"path":"tools/application_authority_api_audit/valid/Cargo.lock","current_sha256":"fddf9fdd014a35e70bef91842045ad328333b5d4aebe4b32d525b48c78bbf062","disposition":"P06 direct sha2 dependency resolution only"},
+    {"path":"tools/application_authority_api_audit/invalid/Cargo.lock","current_sha256":"cfbb5c5c47057406e95f866fbd4336fe527abf17d1806f774b6e61bd772df8bd","disposition":"P06 direct sha2 dependency resolution only"}
+  ],
+  "validation": [
+    "release check exit 0 warnings 0",
+    "current Core 1150 passed, 0 failed, 0 ignored",
+    "P06 malformed/checksum/graph failures and retries leave full continuation authority equal",
+    "active-run competing lifecycle rejects before mutation",
+    "P03 valid release probe exit 0 and invalid probe expected exit 101 E0603/E0599/E0616"
+  ],
+  "external_scope": "game_server, Unity, sibling resources and external consumers uninspected and unclaimed"
+}

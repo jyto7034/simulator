@@ -1,0 +1,10 @@
+{
+  "status": "complete",
+  "goal_set_ref": {
+    "Artifact Type": "Goal Set",
+    "Artifact ID": "GS-CFMN-001",
+    "Content Digest": "sha256:ce9117ff92944d58e223fa1859a8601961cb356231d94d26b8892a473df82693"
+  },
+  "structural_validation": "P2G_50_VALIDATION_001.json passed",
+  "semantic_review": "all30 acceptance copied exactly,10dimensions/10integration owned; user scope and stop maintained"
+}

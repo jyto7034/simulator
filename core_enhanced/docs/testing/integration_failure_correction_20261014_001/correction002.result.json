@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/home/blast/.cargo/bin/cargo",
+    "test",
+    "-p",
+    "game_core",
+    "--test",
+    "ron_loading",
+    "--test",
+    "u08_relic_public",
+    "--offline",
+    "--locked",
+    "--target-dir",
+    "/mnt/f/work/simulator/.cache/u12-vault-cost-target",
+    "--no-fail-fast"
+  ],
+  "exit_code": 0,
+  "seconds": 64.534073376999,
+  "stdout": "correction002.stdout.log",
+  "stderr": "correction002.stderr.log"
+}

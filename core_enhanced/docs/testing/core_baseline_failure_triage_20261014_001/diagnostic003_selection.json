@@ -1,0 +1,7 @@
+[
+  "application::fault_tests::native_fault_preserves_last_root_first_cause_and_every_public_mutation_gate",
+  "game::world::tests::combat::live_ron_defense_route_playable_path_runs_to_combat_result",
+  "game::world::tests::combat::paused_live_battle_commits_deploy_and_withdraw_without_advancing_time",
+  "game::world::tests::combat::r12_world_two_employees_shared_personal_parry_cost_result_and_fresh_restore",
+  "game::world::tests::combat::track_and_rejoin_raw_live_bundle_reaches_typed_world_setup_identity"
+]

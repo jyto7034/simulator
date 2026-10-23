@@ -1,0 +1,220 @@
+{
+  "created_at": "2026-10-15T13:45:15.011360+00:00",
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Policy Intake Snapshot",
+        "Artifact ID": "PIS-CMER-001",
+        "Content Digest": "sha256:30bc59413be78e3899f717f1f26f53b8c6c365f648e4c19b386bf14d21dac4ac"
+      },
+      "payload": {
+        "Working Policy Document ID": "WPD-CMER-20261015",
+        "Snapshot Kind": "initial",
+        "Predecessor Policy Intake Snapshot Ref": null,
+        "Created By Stage": "P2G-00",
+        "Intake Items": [
+          {
+            "Intake Item ID": "IN-001",
+            "Intake Kind": "raw user request",
+            "Exact Content or Content Reference": {
+              "ref": "USER-20261015-U17-START",
+              "exact_text": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u17 작업에 착수해줄래?",
+              "date": "2026-10-15",
+              "interpretation": "U17 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+            },
+            "User-Provided Locator": "current conversation 2026-10-15",
+            "User-Stated Constraint": "U17 착수",
+            "Capture Limitation": null
+          },
+          {
+            "Intake Item ID": "IN-002",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md",
+              "bytes": 380973,
+              "sha256": "6946331d2c5563ff63202e079ae2d01fe5a61f6c4b9997d77cf8ba187c277b6e",
+              "archive": "INTAKE_SOURCE_001.tar.gz",
+              "member": "core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md"
+            },
+            "User-Provided Locator": "requested instructions and linked U17 sources",
+            "User-Stated Constraint": "Core first; U17 card scope; Unity and individual final bosses excluded",
+            "Capture Limitation": "raw capture only, no code-reviewed or runtime claim"
+          },
+          {
+            "Intake Item ID": "IN-003",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md",
+              "bytes": 26977,
+              "sha256": "bfd4af06f0b6e4aa09549f5f983118e88e5b5808c7e08e88a93320d0f961e385",
+              "archive": "INTAKE_SOURCE_001.tar.gz",
+              "member": "core_enhanced/docs/roadmaps/core_first/execution/CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md"
+            },
+            "User-Provided Locator": "requested instructions and linked U17 sources",
+            "User-Stated Constraint": "Core first; U17 card scope; Unity and individual final bosses excluded",
+            "Capture Limitation": "raw capture only, no code-reviewed or runtime claim"
+          },
+          {
+            "Intake Item ID": "IN-004",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_LATEST.ko.md",
+              "bytes": 2079,
+              "sha256": "2c9e98687dbd74e8d4a29e6170dd7b4b40b4d42500cadbf00081714d3b0ff5d2",
+              "archive": "INTAKE_SOURCE_001.tar.gz",
+              "member": "core_enhanced/docs/roadmaps/core_first/execution/HANDOFF_LATEST.ko.md"
+            },
+            "User-Provided Locator": "requested instructions and linked U17 sources",
+            "User-Stated Constraint": "Core first; U17 card scope; Unity and individual final bosses excluded",
+            "Capture Limitation": "raw capture only, no code-reviewed or runtime claim"
+          },
+          {
+            "Intake Item ID": "IN-005",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/roadmaps/core_first/reviews/2026-10-12-roadmap-review/stages/U17.ko.md",
+              "bytes": 1323,
+              "sha256": "4a4f8cbadea1cc4d7e471f55fd93a41b7c8ef73df7994a50458e1613e3f3588d",
+              "archive": "INTAKE_SOURCE_001.tar.gz",
+              "member": "core_enhanced/docs/roadmaps/core_first/reviews/2026-10-12-roadmap-review/stages/U17.ko.md"
+            },
+            "User-Provided Locator": "requested instructions and linked U17 sources",
+            "User-Stated Constraint": "Core first; U17 card scope; Unity and individual final bosses excluded",
+            "Capture Limitation": "raw capture only, no code-reviewed or runtime claim"
+          },
+          {
+            "Intake Item ID": "IN-006",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/game_rules/equipment-and-fragments.md",
+              "bytes": 17351,
+              "sha256": "c9b22cc03d0b806a4c4ffbafe06b53a2ae35c68d97822b903873dd4e1279f9cf",
+              "archive": "INTAKE_SOURCE_001.tar.gz",
+              "member": "core_enhanced/docs/game_rules/equipment-and-fragments.md"
+            },
+            "User-Provided Locator": "requested instructions and linked U17 sources",
+            "User-Stated Constraint": "Core first; U17 card scope; Unity and individual final bosses excluded",
+            "Capture Limitation": "raw capture only, no code-reviewed or runtime claim"
+          },
+          {
+            "Intake Item ID": "IN-007",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/game_rules/results-and-save.md",
+              "bytes": 42598,
+              "sha256": "eb5543540c00e89ffb7eee333f2fae54845afa95ad2951556ab0ffff98ab7220",
+              "archive": "INTAKE_SOURCE_001.tar.gz",
+              "member": "core_enhanced/docs/game_rules/results-and-save.md"
+            },
+            "User-Provided Locator": "requested instructions and linked U17 sources",
+            "User-Stated Constraint": "Core first; U17 card scope; Unity and individual final bosses excluded",
+            "Capture Limitation": "raw capture only, no code-reviewed or runtime claim"
+          },
+          {
+            "Intake Item ID": "IN-008",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/game_rules/growth-and-rewards.md",
+              "bytes": 31743,
+              "sha256": "225f3dc22d13c04457c39adfa4dcbe5d469c3d5473e9b4a4bab5c1f34295b0ee",
+              "archive": "INTAKE_SOURCE_001.tar.gz",
+              "member": "core_enhanced/docs/game_rules/growth-and-rewards.md"
+            },
+            "User-Provided Locator": "requested instructions and linked U17 sources",
+            "User-Stated Constraint": "Core first; U17 card scope; Unity and individual final bosses excluded",
+            "Capture Limitation": "raw capture only, no code-reviewed or runtime claim"
+          },
+          {
+            "Intake Item ID": "IN-009",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/game_rules/open-decisions.md",
+              "bytes": 41021,
+              "sha256": "74c8b482453db24b2cf247ba8fab4e9a3011fab1acfbfc39e58d2a32be47be6e",
+              "archive": "INTAKE_SOURCE_001.tar.gz",
+              "member": "core_enhanced/docs/game_rules/open-decisions.md"
+            },
+            "User-Provided Locator": "requested instructions and linked U17 sources",
+            "User-Stated Constraint": "Core first; U17 card scope; Unity and individual final bosses excluded",
+            "Capture Limitation": "raw capture only, no code-reviewed or runtime claim"
+          },
+          {
+            "Intake Item ID": "IN-010",
+            "Intake Kind": "exact repository reference",
+            "Exact Content or Content Reference": {
+              "repository": "/mnt/f/work/simulator",
+              "path": "core_enhanced/docs/game_rules/run-and-map.md",
+              "bytes": 53068,
+              "sha256": "3678fcb31088c6260cc504b18004fcb4c5434a6c9675736910ec9ad3dd52be5c",
+              "archive": "INTAKE_SOURCE_001.tar.gz",
+              "member": "core_enhanced/docs/game_rules/run-and-map.md"
+            },
+            "User-Provided Locator": "requested instructions and linked U17 sources",
+            "User-Stated Constraint": "Core first; U17 card scope; Unity and individual final bosses excluded",
+            "Capture Limitation": "raw capture only, no code-reviewed or runtime claim"
+          }
+        ]
+      }
+    },
+    {
+      "ref": {
+        "Artifact Type": "Working Revision",
+        "Artifact ID": "WR-CMER-001",
+        "Content Digest": "sha256:5731cbfd003d73a593e1babc44fcaa55e5130a0500a8bad697a653a14a69f0a2"
+      },
+      "payload": {
+        "Predecessor Working Revision Ref": null,
+        "Predecessor Final Policy Freeze Ref": null,
+        "Approved metadata and scope": {
+          "Working Policy Document ID": "WPD-CMER-20261015",
+          "Policy Topic": "U17 수동 조우·최초 보상·알 부화·반복 이행",
+          "Requested Result": "U17 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음.",
+          "Target Project/Repository": "/mnt/f/work/simulator",
+          "Target Documentation Root": "core_enhanced/docs",
+          "Policy Directory Name": "core_manual_encounter_revival",
+          "User-Approved Scope": [
+            {
+              "id": "IN-U17",
+              "disposition": "in",
+              "meaning": "U17 G27/G28/G29: 종류별 원정별 최초 보상·엘리트 자연 반복·일반 보스 알 부화·선택 보상·소지/창고 촉매·진입/후퇴/결과/복원·구명령/저장 명시 거절·query와 consumer 검증",
+              "approval": {
+                "ref": "USER-20261015-U17-START",
+                "exact_text": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u17 작업에 착수해줄래?",
+                "date": "2026-10-15",
+                "interpretation": "U17 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+              }
+            },
+            {
+              "id": "OUT-U17",
+              "disposition": "out",
+              "meaning": "U17 명시 제외: 엘리트 알·격파횟수 자동강화·파편 상실 후 최초권리 재개방·부화 자동전투·후퇴 추가부화비·마탄 무보상 예외 제거·구저장 임의삭제. U18 이후 카드·Unity·개별최종보스·자동 감사 제외",
+              "approval": {
+                "ref": "USER-20261015-U17-START",
+                "exact_text": "CONTINUOUS_EXECUTION_INSTRUCTIONS_REVISED.ko.md 문서를 지침 삼아 u17 작업에 착수해줄래?",
+                "date": "2026-10-15",
+                "interpretation": "U17 P2G 준비→GEX 구현·자체검증→최종 감사요청 인계. 중간 단계검토 opt-in 없음. 서브에이전트 없음."
+              }
+            }
+          ]
+        },
+        "Policy Intake Snapshot Ref": {
+          "Artifact Type": "Policy Intake Snapshot",
+          "Artifact ID": "PIS-CMER-001",
+          "Content Digest": "sha256:30bc59413be78e3899f717f1f26f53b8c6c365f648e4c19b386bf14d21dac4ac"
+        },
+        "Current Policy Element Revision Map": {},
+        "Decision Revision Ref Set": [],
+        "Open Policy Question Ref Set": [],
+        "Post-Freeze Change/Closure basis": null
+      }
+    }
+  ]
+}

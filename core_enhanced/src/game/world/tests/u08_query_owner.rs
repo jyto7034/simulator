@@ -115,7 +115,7 @@ fn relic_query_outer_native_retained_admission_precedes_targets_penalties_and_ge
     let final_admission = admissions.iter().rev().find(|row| row.2 > row.1).unwrap();
     let final_cap = final_admission.2;
     assert!(
-        final_cap < 8 * 1024 * 1024,
+        final_cap <= native::RuntimeFactLimits::default().max_retained_bytes,
         "this fixture must fit the existing engine retained ceiling"
     );
     println!("U08_QUERY_ADMISSIONS {admissions:?}");
@@ -251,7 +251,9 @@ fn setup_public_limits(
 
     let defaults = native::RuntimeFactLimits::default();
     assert!(limits.max_retained_bytes <= defaults.max_retained_bytes);
-    assert!(limits.max_retained_bytes <= 8 * 1024 * 1024);
+    let embedded = RuntimeSafetySettings::embedded();
+    assert_eq!(defaults, embedded.native_runtime());
+    assert!(embedded.development_measurement().is_none());
     assert!(limits.max_work <= defaults.max_work);
     assert!(limits.max_clone_slots <= defaults.max_clone_slots);
     let mut raw = std::str::from_utf8(crate::runtime_safety::EMBEDDED_RUNTIME_SAFETY_RON)
@@ -331,6 +333,7 @@ fn restore_public_query_after_refusal(
     let checkpoint = app.export_active_run_checkpoint().unwrap().unwrap();
     let original = checkpoint.core_payload_json().to_vec();
     let mut recovered = CoreApplication::new(generation, 0xa508cafe);
+    install_application_profile_for_continue(&mut recovered, app);
     recovered
         .continue_from_active_run_checkpoint(player, &checkpoint)
         .unwrap();

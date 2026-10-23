@@ -1,0 +1,104 @@
+{
+  "goal_set": "GS-CEDR-001",
+  "goal": "GOAL-CEDR-01",
+  "phase": "PHASE-CEDR-01",
+  "pass": "GEX-10 u14_correction_001",
+  "correction_verified": true,
+  "goal_complete": false,
+  "audit_performed": false,
+  "status": "correction and self-validation complete; successor freeze then independent re-audit handoff",
+  "predecessor_target": "u14_current_001",
+  "successor_target": "u14_current_002",
+  "prior_verdict": "Not Complete; original audit/u14_independent_001 unchanged",
+  "findings": [
+    {
+      "id": "F-U14-001",
+      "classification": "in scope — supported authored input and normal public room movement",
+      "correction": "Shared room/node seal predicate; visited-room public previews use their own room and map node",
+      "self_verification": "core002; public003 restrained/unrestrained/collected: node and activity preview equal, room-slot isolation, readonly roots, hidden identity, return marker/scale stable, fresh process Continue twice per case",
+      "independent_closure": "pending"
+    },
+    {
+      "id": "C-U14-002",
+      "classification": "in scope — discovered public002 actual boss victory/refill/checkpoint",
+      "correction": "Current and SavePoint validation include collected-bough refill in their supply bound; initial amount is not a runtime balance cap",
+      "self_verification": "core002 actual victory balance12->19 and restore; public003 actual victory12->18, away16, second SavePoint and return13; all6 new-process resumes match exact public roots",
+      "independent_closure": "pending"
+    }
+  ],
+  "runtime_source": [
+    "core_enhanced/src/game/world/facility_rooms.rs",
+    "core_enhanced/src/game/world/expedition_lifecycle.rs",
+    "core_enhanced/src/game/world/node_flow.rs"
+  ],
+  "test_source": "core_enhanced/src/game/world/tests/u14_deterrence.rs",
+  "current_tests": {
+    "core": {
+      "selected": 99,
+      "executed": 99,
+      "passed": 99,
+      "failed": 0,
+      "ignored": 0,
+      "result": "core002.result.json",
+      "selection": "CORE_SELECTION_FINAL.json"
+    },
+    "g11_default": {
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "result": "g11_default001.result.json"
+    },
+    "g11_native": {
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "result": "g11_native001.result.json"
+    },
+    "public": {
+      "scenarios": 3,
+      "passed": 3,
+      "fresh_process_resumes": 6,
+      "result": "public003_observations/RESULT.json"
+    },
+    "measurements": {
+      "samples": 6,
+      "passed": 6,
+      "exact_requested_bytes_recovered": 6,
+      "result": "measurements001/RESULT.json",
+      "comparison": "MEASUREMENT_COMPARISON.json"
+    }
+  },
+  "failed_attempts": [
+    {
+      "run": "public001",
+      "exit_code": 1,
+      "cause": "Fixture attempted slot1 before SavePoint2 made it selectable; corrected only preparation route",
+      "retained": "public001_observations"
+    },
+    {
+      "run": "public002",
+      "exit_code": 101,
+      "cause": "Actual legitimate refill exceeded obsolete initial supply bound; product correction C-U14-002",
+      "retained": "public002_observations"
+    }
+  ],
+  "reuse": {
+    "source_identity": "Original source704/evidence980 preserved; original archive is preimage. No runtime/data/server edits after final validation. Canonical/runtime docs and records updated only.",
+    "scope": "Unchanged reward producer, host paired journal IO/crash/retry, profile ownership, content/config/schema/version, XP/growth and unsupported content boundaries. Current changed projection and checkpoint consumers rerun.",
+    "evidence": [
+      "../../raw_logs001/u14-server-persistence001.log",
+      "../../normal_route002/RESULT.json",
+      "../../sealed_host001/RESULT.json",
+      "../../growth_public004/RESULT.json",
+      "../../BASELINE_REUSE.json"
+    ],
+    "no_new_host_approval": true
+  },
+  "limitations": [
+    "Mandatory nonparticipating independent GEX-20 not performed; current executor implemented correction",
+    "No U15 work",
+    "Preexisting138 full-Core failures retain baseline classification; no full-suite green claim",
+    "Official unsupported unique bosses/final bosses, U16 activities, Unity/deployment and final SLO outside this change",
+    "U11 FacilityLayout/Abnormality changed-mod coverage remains unsupported; authored trusted-base public loading is not a new Normal approval"
+  ]
+}

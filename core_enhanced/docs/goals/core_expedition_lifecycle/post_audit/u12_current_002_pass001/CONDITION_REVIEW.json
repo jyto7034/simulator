@@ -1,0 +1,2049 @@
+{
+  "schema": "u12.independent-negative-condition-review/v1",
+  "verdict": "Not Complete",
+  "interpretation": "Exact policy/locator tracking plus independent review observations. Pending rows are not PASS. Stop on confirmed source defect under GEX20; corrective source cannot be authored in this audit. Unfinished positive certification is retained explicitly.",
+  "acceptances": [
+    {
+      "id": "A-PS01-1",
+      "exact_acceptance": "활성 직원 모델·정상 신규 저장·query/DTO·작성/public capability에 기억 및 해당 최근 반응/사건 필드/기능이 없다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Employee/DTO/clone and node progression removal paths read; strict nested-employee oracle and retained personality/condition paths inspected. Whole structural absence certification remains open at this negative exit.",
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "criterion_stale",
+          "run": "full60_stale_criterion001"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "required_missing",
+          "run": "full60_missing_required001"
+        },
+        {
+          "id": "server_model",
+          "run": "server_functional001"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-PS01-2",
+      "exact_acceptance": "기억 합침·기간·노드 경과·최근8 생산을 새로 구현하거나 잔존 동작으로 유지하지 않는다. 후퇴/checkpoint/Continue·사망·새 원정에서도 제거 시스템을 재생성하지 않는다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Employee/DTO/clone and node progression removal paths read; strict nested-employee oracle and retained personality/condition paths inspected. Whole structural absence certification remains open at this negative exit.",
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "defeat_abandon_direct",
+          "run": "public_defeat003"
+        },
+        {
+          "id": "failure_direct",
+          "run": "public_failure002"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        },
+        {
+          "id": "server_model",
+          "run": "server_functional001"
+        },
+        {
+          "id": "tutorial_direct",
+          "run": "public_tutorial_complete005"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-PS01-3",
+      "exact_acceptance": "고정 성격 위험/사회 두 축과 condition/사망·영구 도감/탐사/귀환/획득 기록을 삭제하거나 기억 시스템으로 재해석하지 않는다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Employee/DTO/clone and node progression removal paths read; strict nested-employee oracle and retained personality/condition paths inspected. Whole structural absence certification remains open at this negative exit.",
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "defeat_abandon_direct",
+          "run": "public_defeat003"
+        },
+        {
+          "id": "failure_direct",
+          "run": "public_failure002"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        },
+        {
+          "id": "server_model",
+          "run": "server_functional001"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-PS02-1",
+      "exact_acceptance": "활성 모델·기본 초기화·신규 저장·query/DTO에서 신뢰 점수/band와 전용 입력/public capability가 없다. 신뢰 gameplay를 향후 필수 또는 미정 기능으로 남기지 않는다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Strict Employee/profile/Continue decoding and retired converter rejection read. Existing both-invalid/version-header tests do not establish one-unsupported-plus-one-valid profile protection; F-U12-001 prevents closure.",
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "criterion_stale",
+          "run": "full60_stale_criterion001"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "required_missing",
+          "run": "full60_missing_required001"
+        },
+        {
+          "id": "server_model",
+          "run": "server_functional001"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-PS02-2",
+      "exact_acceptance": "미지원 구형 개발/테스트 저장이나 제거 시스템 전용 입력을 정상 지원 데이터처럼 조용히 수용하지 않는다. 명시 거절 후 원본 파일 및 거절 전 활성 상태를 보호한다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [
+        "F-U12-001"
+      ],
+      "independent_review_note": "Strict Employee/profile/Continue decoding and retired converter rejection read. Existing both-invalid/version-header tests do not establish one-unsupported-plus-one-valid profile protection; F-U12-001 prevents closure.",
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_ack_current",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        },
+        {
+          "id": "server_model",
+          "run": "server_functional001"
+        }
+      ],
+      "new_probe": "original_protection_probe/RESULT.json"
+    },
+    {
+      "id": "A-PS02-3",
+      "exact_acceptance": "새 지원 저장·후퇴/checkpoint/Continue·원정 시작/귀환/실패/다음 직원 초기화가 두 시스템을 재생성하지 않으며 다른 승인 상태의 정상 저장·복원이 유지된다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Strict Employee/profile/Continue decoding and retired converter rejection read. Existing both-invalid/version-header tests do not establish one-unsupported-plus-one-valid profile protection; F-U12-001 prevents closure.",
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "defeat_abandon_direct",
+          "run": "public_defeat003"
+        },
+        {
+          "id": "failure_direct",
+          "run": "public_failure002"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        },
+        {
+          "id": "server_model",
+          "run": "server_functional001"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-01-1",
+      "exact_acceptance": "새 profile에서 튜토리얼 완료 없이 정상 명령으로 원정을 시작한다. 옛 Standard 완료→Endless 해금 gate를 사용하지 않는다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Current start has no tutorial-completion gate; tutorial uses independent preset and preserves the permanent profile. Existing direct Tutorial and normal-host profile/Continue evidence inspected; no new tutorial run by auditor.",
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "local_current_continue",
+          "run": "normal_local_continue002"
+        },
+        {
+          "id": "local_current_start",
+          "run": "normal_local_start002"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_local_return",
+          "run": "normal_local_return001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-01-2",
+      "exact_acceptance": "튜토리얼 시작·보상·완료·실패·skip·반복·종료/Continue·checkpoint 복원 전후의 원정 vault/진행 기록/첫 귀환 이력이 동일하다. 튜토리얼 내부 진행 저장은 정상 동작한다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Current start has no tutorial-completion gate; tutorial uses independent preset and preserves the permanent profile. Existing direct Tutorial and normal-host profile/Continue evidence inspected; no new tutorial run by auditor.",
+      "existing_evidence_locators": [
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_ack_current",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        },
+        {
+          "id": "tutorial_direct",
+          "run": "public_tutorial_complete005"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-02-1",
+      "exact_acceptance": "기존 ST1-NT60 고정 슬롯/활동을 현재 로더·정상 명령으로 진행해 3층 마지막 일반 보스 승리까지 도달하며 가짜 terminal/빈 executor로 대체하지 않는다. 실패 후 새 반복과 같은 패배 노드 재도전을 구별한다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Fixed Tutorial schedule, authored_fixed difficulty, common activity flow and terminal behavior inspected; direct raw result reaches actual battles across three floors. Direct same-process restoration is distinguished from fresh host reopening.",
+      "existing_evidence_locators": [
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "tutorial_direct",
+          "run": "public_tutorial_complete005"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-02-2",
+      "exact_acceptance": "사전 설정 장비/파편은 사용할 수 있지만 별도 파편 학습 grant/시퀀스는 없다. 전투력/원정 peak가 적의 작성된 고정 값을 바꾸지 않는다. 기존 수치는 검증할 초기값이며 보스 actor 감쇠를 다른 출현/적/보상에 전파하지 않는다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Fixed Tutorial schedule, authored_fixed difficulty, common activity flow and terminal behavior inspected; direct raw result reaches actual battles across three floors. Direct same-process restoration is distinguished from fresh host reopening.",
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "criterion_stale",
+          "run": "full60_stale_criterion001"
+        },
+        {
+          "id": "full60_current",
+          "run": "full60_combined_calibration002"
+        },
+        {
+          "id": "full60_current_accept",
+          "run": "full60_accept002"
+        },
+        {
+          "id": "full60_current_continue",
+          "run": "full60_continue002"
+        },
+        {
+          "id": "local_current_continue",
+          "run": "normal_local_continue002"
+        },
+        {
+          "id": "local_current_start",
+          "run": "normal_local_start002"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        },
+        {
+          "id": "required_missing",
+          "run": "full60_missing_required001"
+        },
+        {
+          "id": "server_current_adoption",
+          "run": "normal_server_adoption003"
+        },
+        {
+          "id": "server_current_calibration",
+          "run": "normal_server_calibration003"
+        },
+        {
+          "id": "standalone_current_adoption",
+          "run": "normal_standalone_adoption002"
+        },
+        {
+          "id": "standalone_current_calibration",
+          "run": "normal_standalone_calibration006"
+        },
+        {
+          "id": "tutorial_direct",
+          "run": "public_tutorial_complete005"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-02-3",
+      "exact_acceptance": "튜토리얼에 기존 Event·보급·정비·상점·본사 연락·SavePoint가 연결되고 현재 노드/결과 원자 확정과 중단 복원을 따른다. 직원 처분 설정과 첫귀환 VN은 미리 소비/설명하지 않는다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Fixed Tutorial schedule, authored_fixed difficulty, common activity flow and terminal behavior inspected; direct raw result reaches actual battles across three floors. Direct same-process restoration is distinguished from fresh host reopening.",
+      "existing_evidence_locators": [
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "tutorial_direct",
+          "run": "public_tutorial_complete005"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-03-1",
+      "exact_acceptance": "역할별2/총6 중 서로 다른3개 정의를 선택한다. 잘못된 개수·중복·없는 후보는 상태/예산/장비를 부분 생성하지 않고 거절한다. 정상 선발 직원마다 기본 세트가 정확히 한 번 지급된다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Typed six candidates/two per role, exact three selection, draft grants/loans and retained roster/deploy limits inspected. Source/test correction currentness requires the recorded exact selectors, not old expected counts.",
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "criterion_stale",
+          "run": "full60_stale_criterion001"
+        },
+        {
+          "id": "full60_current",
+          "run": "full60_combined_calibration002"
+        },
+        {
+          "id": "full60_current_accept",
+          "run": "full60_accept002"
+        },
+        {
+          "id": "full60_current_continue",
+          "run": "full60_continue002"
+        },
+        {
+          "id": "local_current_continue",
+          "run": "normal_local_continue002"
+        },
+        {
+          "id": "local_current_start",
+          "run": "normal_local_start002"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_local_return",
+          "run": "normal_local_return001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        },
+        {
+          "id": "required_missing",
+          "run": "full60_missing_required001"
+        },
+        {
+          "id": "server_current_adoption",
+          "run": "normal_server_adoption003"
+        },
+        {
+          "id": "server_current_calibration",
+          "run": "normal_server_calibration003"
+        },
+        {
+          "id": "standalone_current_adoption",
+          "run": "normal_standalone_adoption002"
+        },
+        {
+          "id": "standalone_current_calibration",
+          "run": "normal_standalone_calibration006"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-03-2",
+      "exact_acceptance": "추가 훈련용 파편 선택/무상 대여 대체는 없다. 10명 보유/8명 배치 경계와 철수 후 다른 인원 배치, condition·무기·비용·재배치 대기를 유지한다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Typed six candidates/two per role, exact three selection, draft grants/loans and retained roster/deploy limits inspected. Source/test correction currentness requires the recorded exact selectors, not old expected counts.",
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-04-1",
+      "exact_acceptance": "같은 seed와 확정 선택에서 offer 순서가 재진입·저장/Continue·checkpoint로 임의 재추첨되지 않는다. 채용하지 않은 후보는 제시 순서대로 뒤로 이동하며 비채용 HQ 선택은 제안 전원을 같은 순서로 돌린다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Current paid recruitment uses price/roster/depth/session checks and a staged queue/grant; max two and depth-five refusal keep other HQ services. Query filtering and command eligibility were read together.",
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-04-2",
+      "exact_acceptance": "고정 초반 기회에서 최대2명 유료 채용이 가능하고 작성된 비용·보유 한도·실제 후보/기본 장비 유효성을 함께 적용한다. 부족 비용/10명 초과/없는 후보 거절은 queue/offer/roster·지갑·장비를 부분 변경하지 않는다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Current paid recruitment uses price/roster/depth/session checks and a staged queue/grant; max two and depth-five refusal keep other HQ services. Query filtering and command eligibility were read together.",
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "local_current_continue",
+          "run": "normal_local_continue002"
+        },
+        {
+          "id": "local_current_start",
+          "run": "normal_local_start002"
+        },
+        {
+          "id": "normal_ack_current",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_local_return",
+          "run": "normal_local_return001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-04-3",
+      "exact_acceptance": "깊이5 이상 일반 채용은 제공되지 않으며 0층 시작 선발은 별도다. 본사 다른 서비스까지 제거하지 않는다. 정확한 방 배치·가격은 승인된 플레이 조절값이며 U13 전체 배치 완료를 주장하지 않는다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Current paid recruitment uses price/roster/depth/session checks and a staged queue/grant; max two and depth-five refusal keep other HQ services. Query filtering and command eligibility were read together.",
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "criterion_stale",
+          "run": "full60_stale_criterion001"
+        },
+        {
+          "id": "full60_current",
+          "run": "full60_combined_calibration002"
+        },
+        {
+          "id": "full60_current_accept",
+          "run": "full60_accept002"
+        },
+        {
+          "id": "full60_current_continue",
+          "run": "full60_continue002"
+        },
+        {
+          "id": "local_current_continue",
+          "run": "normal_local_continue002"
+        },
+        {
+          "id": "local_current_start",
+          "run": "normal_local_start002"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        },
+        {
+          "id": "required_missing",
+          "run": "full60_missing_required001"
+        },
+        {
+          "id": "server_current_adoption",
+          "run": "normal_server_adoption003"
+        },
+        {
+          "id": "server_current_calibration",
+          "run": "normal_server_calibration003"
+        },
+        {
+          "id": "standalone_current_adoption",
+          "run": "normal_standalone_adoption002"
+        },
+        {
+          "id": "standalone_current_calibration",
+          "run": "normal_standalone_calibration006"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-05-1",
+      "exact_acceptance": "정의의 두 성격 축은 UUID·신뢰·기억에서 생성하지 않고 정상 조회/새 저장/복원에서 유지한다. 표시 적성을 무기 제한·보너스·불일치 페널티로 사용하지 않는다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Authored personality fields survive Employee/DTO serialization; UUID namespace is expedition-instance based. Existing identity/restart evidence is distinguished from a new employee after terminal. Final aptitude-oracle detail remains unclosed at this negative exit.",
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        },
+        {
+          "id": "server_model",
+          "run": "server_functional001"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-05-2",
+      "exact_acceptance": "채용과 새 원정은 새 개인 identity를 만들되 Continue/checkpoint/후퇴는 해당 시점의 같은 개인을 복원한다. 이전 개인의 성장/부상/트라우마/사망 상태를 다음 개인에게 넘기지 않는다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Authored personality fields survive Employee/DTO serialization; UUID namespace is expedition-instance based. Existing identity/restart evidence is distinguished from a new employee after terminal. Final aptitude-oracle detail remains unclosed at this negative exit.",
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "defeat_abandon_direct",
+          "run": "public_defeat003"
+        },
+        {
+          "id": "failure_direct",
+          "run": "public_failure002"
+        },
+        {
+          "id": "normal_ack_current",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-06-1",
+      "exact_acceptance": "새 원정 시작 확정 시에만 예산을 한 번 받고 중복 입력·브리핑 재진입·Continue·checkpoint·후퇴로 추가 지급되지 않는다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Starter confirmation owns one budget grant; settlement clears run resources without crediting next expedition/vault. Duplicate commands and checkpoints do not create a second budget grant in reviewed paths.",
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "local_current_continue",
+          "run": "normal_local_continue002"
+        },
+        {
+          "id": "local_current_start",
+          "run": "normal_local_start002"
+        },
+        {
+          "id": "normal_ack_current",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_local_return",
+          "run": "normal_local_return001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-06-2",
+      "exact_acceptance": "성공 귀환과 실패 모두 잔액을 차기 원정/창고에 더하지 않는다. 기본 세트·대여·예산은 별도이며 초기 액수는 초반 유료 채용/상점 가격과 함께 조절 가능한 작성값으로 유지한다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Starter confirmation owns one budget grant; settlement clears run resources without crediting next expedition/vault. Duplicate commands and checkpoints do not create a second budget grant in reviewed paths.",
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-07-1",
+      "exact_acceptance": "0/1/2사본은 허용하고 총3개·동일사본중복·없는사본·이미반입중인사본은 거절한다. 장비2/파편2/혼합을 같은 총한도로 판정한다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Loan prevalidation covers total two, uniqueness, current definitions and vault ownership; exact copies move in the prepared draft. Strict duplicate raw vault keys/forms and cross-kind union tests inspected.",
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-07-2",
+      "exact_acceptance": "선발/대여 확정·저장/Continue·checkpoint·재시작/중복 입력으로 같은 사본이 vault와 현재 원정에 이중 존재하거나 기본 세트로 복제되지 않는다. 미반입 vault 사본은 이번 원정 실패로 소실되지 않는다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Loan prevalidation covers total two, uniqueness, current definitions and vault ownership; exact copies move in the prepared draft. Strict duplicate raw vault keys/forms and cross-kind union tests inspected.",
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_ack_current",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-08-1",
+      "exact_acceptance": "현재 깊이2는 목적지가3이어도 귀환을 거절하고 현재깊이3의 실제 선택 가능한 Gate는 귀환/진행을 허용한다. 방문 수/횡단 수로 깊이 조건을 대신하거나 가상 미래 Gate를 현재 자격으로 세지 않는다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Current depth/cause/node identity and stored entry receipts own continuation choices. Gate and genuine positive-to-zero entry are distinct; activity executes only after a legal Continue choice. Actual ordinary boss rewards do not automatically return an expedition.",
+      "existing_evidence_locators": [
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_local_return",
+          "run": "normal_local_return001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-08-2",
+      "exact_acceptance": "소진 입장 처리 뒤 활동 시작 전 현재깊이에 맞는 선택을 제공한다. 깊이1–2는 계속/포기, 깊이3 이상은 귀환/계속. 계속 후 잔량0 유지나 깊이3 진입만으로 소진 선택을 반복 열지 않는다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Current depth/cause/node identity and stored entry receipts own continuation choices. Gate and genuine positive-to-zero entry are distinct; activity executes only after a legal Continue choice. Actual ordinary boss rewards do not automatically return an expedition.",
+      "existing_evidence_locators": [
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_ack_current",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_local_return",
+          "run": "normal_local_return001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-08-3",
+      "exact_acceptance": "실제 귀환을 선택하기 전에는 보상 수령/일반 보스 승리만으로 반출·원정 종료가 일어나지 않는다. 개별 최종보스 구현/E2E는 제외하되 원문 계속탐사 정책을 일반 자동귀환으로 바꾸지 않는다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Current depth/cause/node identity and stored entry receipts own continuation choices. Gate and genuine positive-to-zero entry are distinct; activity executes only after a legal Continue choice. Actual ordinary boss rewards do not automatically return an expedition.",
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "local_current_continue",
+          "run": "normal_local_continue002"
+        },
+        {
+          "id": "local_current_start",
+          "run": "normal_local_start002"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_local_return",
+          "run": "normal_local_return001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-09-1",
+      "exact_acceptance": "승리 보상·결과 ack·전투 후퇴·Continue가 반납 원인이 되지 않고 실제 귀환 한 번에만 현재 보유 사본을 이동한다. 이미 소비/분쇄/상실한 사본을 history로 재발급하지 않는다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Settlement reads current inventory/fragments rather than acquisition history or old SavePoint; weapon enhancement resets and fragment forms persist. Current-copy-absence external oracle is explicitly an injected boundary fixture, not dismantling E2E.",
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_return",
+          "run": "normal_local_return001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-09-2",
+      "exact_acceptance": "귀환 무기 일반 강화는 초기화하고 파편의 실제 보유 개화 상태는 유지한다. 아직 도입되지 않은 U15 투자/재료 창고 필드는 선추가하지 않으며 도입 시 그 owner가 같은 사본 수명에 연결한다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Settlement reads current inventory/fragments rather than acquisition history or old SavePoint; weapon enhancement resets and fragment forms persist. Current-copy-absence external oracle is explicitly an injected boundary fixture, not dismantling E2E.",
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "defeat_abandon_direct",
+          "run": "public_defeat003"
+        },
+        {
+          "id": "failure_direct",
+          "run": "public_failure002"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-09-3",
+      "exact_acceptance": "확정 실패/포기는 반입 및 획득 소지품에 손실을 적용하되 미반입 vault·이미 확정한 도감/탐사 등 별도 영구 기록을 보호한다. rollback 가능한 실패 후보를 최종 실패 정산으로 오인하지 않는다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Settlement reads current inventory/fragments rather than acquisition history or old SavePoint; weapon enhancement resets and fragment forms persist. Current-copy-absence external oracle is explicitly an injected boundary fixture, not dismantling E2E.",
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "defeat_abandon_direct",
+          "run": "public_defeat003"
+        },
+        {
+          "id": "failure_direct",
+          "run": "public_failure002"
+        },
+        {
+          "id": "normal_ack_current",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-10-1",
+      "exact_acceptance": "카테고리 존재·가상 미래 치료·빈 offer·돈 없는 채용·무기 없는 직원·깊이2 귀환을 회복 가능으로 세지 않는다. 실제 허용 행동으로 결과를 확인하며 행동 뒤 조건을 재평가한다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "RecoveryContext uses staged/current wallet/roster/map together; actual treatment, loadout/fragment removal, HQ offers and gate/savepoint effects determine recovery. Inspected source and selected compound/futile/depth cases; no category-only fallback accepted.",
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "defeat_abandon_direct",
+          "run": "public_defeat003"
+        },
+        {
+          "id": "failure_direct",
+          "run": "public_failure002"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-10-2",
+      "exact_acceptance": "복구 제한은 실제 회복 행동과 checkpoint 불러오기만 허용하고 선택 가능한 경로/사유를 노출한다. Gate 하강 회복과 성공귀환 깊이를 구별한다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "RecoveryContext uses staged/current wallet/roster/map together; actual treatment, loadout/fragment removal, HQ offers and gate/savepoint effects determine recovery. Inspected source and selected compound/futile/depth cases; no category-only fallback accepted.",
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "defeat_abandon_direct",
+          "run": "public_defeat003"
+        },
+        {
+          "id": "failure_direct",
+          "run": "public_failure002"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_local_return",
+          "run": "normal_local_return001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-10-3",
+      "exact_acceptance": "생존자 없음/실제 복구 불가의 실패 후보에서 유효 checkpoint와 남은 횟수를 확인한다. 복구 포기·없는 checkpoint의 확정 실패/자발포기·정상 원정 완료는 Continue를 무효화하고 정산을 한 번만 수행한다. U04의 checkpoint 사용횟수 비되돌림과 장애 원자성을 유지한다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "RecoveryContext uses staged/current wallet/roster/map together; actual treatment, loadout/fragment removal, HQ offers and gate/savepoint effects determine recovery. Inspected source and selected compound/futile/depth cases; no category-only fallback accepted.",
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "defeat_abandon_direct",
+          "run": "public_defeat003"
+        },
+        {
+          "id": "failure_direct",
+          "run": "public_failure002"
+        },
+        {
+          "id": "normal_ack_current",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-11-1",
+      "exact_acceptance": "성공 자산 정산과 종료 직원 처리가 한 확정 경계로 저장되고 처분이 추가 실패 손실을 만들지 않는다. 시작/채용 직원 모두 동일하게 적용한다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Terminal settlement clears staff/assets/Continue in the prepared publication; nonterminal rollback keeps instance identity and latest profile. Existing crash/terminal cases inspected; unsupported-original gap remains F-U12-001.",
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_ack_current",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-11-2",
+      "exact_acceptance": "중단/Continue/checkpoint/전투 후퇴는 원정 종료로 세지 않고 개인을 처분/교체하지 않는다. 실제 종료 뒤 다음 원정에 이전 직원 identity/개인 상태가 계승되지 않는다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Terminal settlement clears staff/assets/Continue in the prepared publication; nonterminal rollback keeps instance identity and latest profile. Existing crash/terminal cases inspected; unsupported-original gap remains F-U12-001.",
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "defeat_abandon_direct",
+          "run": "public_defeat003"
+        },
+        {
+          "id": "failure_direct",
+          "run": "public_failure002"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-12-1",
+      "exact_acceptance": "첫 성공 귀환 전/실패/튜토리얼에서 pending이나 소비 이력을 만들지 않는다. 정산 뒤 종료/재시작해도 pending이 남고 재생/skip ack로 한 번만 소비된다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Never/Pending/Consumed transitions and idempotent acknowledgement read. Profile-only checkpointNone CAS is checked before no-change shortcut in approved and unbound host publication. Corrected named ACK evidence retained separately from its earlier failure.",
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_ack_current",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        },
+        {
+          "id": "tutorial_direct",
+          "run": "public_tutorial_complete005"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-12-2",
+      "exact_acceptance": "중복 ack·재접속·다음 성공 귀환은 첫 이야기 재생 권리를 재생성하거나 정산/처분을 중복하지 않는다. query는 현재 pending/소비 여부를 Core 권위 상태로 제공한다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Never/Pending/Consumed transitions and idempotent acknowledgement read. Profile-only checkpointNone CAS is checked before no-change shortcut in approved and unbound host publication. Corrected named ACK evidence retained separately from its earlier failure.",
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "normal_ack_current",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-13-1",
+      "exact_acceptance": "정상 공개 entry에서 시작→실제 조우→귀환/실패→다음 원정과 튜토리얼3층을 실행할 수 있고 내부 상태 직접 주입만으로 공개 경로 완료를 대체하지 않는다. UI 최초 구현은 요구하지 않는다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Normal approved producer/consumer, profile->active lock/CAS, accepted journal and restart paths read. New actual default-release normal-host probe demonstrates unsupported profile acceptance and overwrite; whole public/persistence completion fails.",
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "criterion_stale",
+          "run": "full60_stale_criterion001"
+        },
+        {
+          "id": "full60_current",
+          "run": "full60_combined_calibration002"
+        },
+        {
+          "id": "full60_current_accept",
+          "run": "full60_accept002"
+        },
+        {
+          "id": "full60_current_continue",
+          "run": "full60_continue002"
+        },
+        {
+          "id": "local_current_continue",
+          "run": "normal_local_continue002"
+        },
+        {
+          "id": "local_current_start",
+          "run": "normal_local_start002"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_local_return",
+          "run": "normal_local_return001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        },
+        {
+          "id": "required_missing",
+          "run": "full60_missing_required001"
+        },
+        {
+          "id": "server_current_adoption",
+          "run": "normal_server_adoption003"
+        },
+        {
+          "id": "server_current_calibration",
+          "run": "normal_server_calibration003"
+        },
+        {
+          "id": "standalone_current_adoption",
+          "run": "normal_standalone_adoption002"
+        },
+        {
+          "id": "standalone_current_calibration",
+          "run": "normal_standalone_calibration006"
+        },
+        {
+          "id": "tutorial_direct",
+          "run": "public_tutorial_complete005"
+        }
+      ],
+      "new_probe": null
+    },
+    {
+      "id": "A-13-2",
+      "exact_acceptance": "새 저장/반영 실패에서 profile와 active run·vault·roster·budget·story가 부분 확정되거나 자산이 복제/소실되지 않는다. 이전 정상 저장/다른 session과 미지원 원본을 보호하고 실제 재시작으로 같은 확정 상태를 소비한다.",
+      "completion_disposition": "FAIL",
+      "finding_refs": [
+        "F-U12-001"
+      ],
+      "independent_review_note": "Normal approved producer/consumer, profile->active lock/CAS, accepted journal and restart paths read. New actual default-release normal-host probe demonstrates unsupported profile acceptance and overwrite; whole public/persistence completion fails.",
+      "existing_evidence_locators": [
+        {
+          "id": "absent_copies",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "defeat_abandon_direct",
+          "run": "public_defeat003"
+        },
+        {
+          "id": "failure_direct",
+          "run": "public_failure002"
+        },
+        {
+          "id": "normal_ack_current",
+          "run": "normal_return_boundaries003"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_local_failure",
+          "run": "normal_local_failure001"
+        },
+        {
+          "id": "normal_local_failure_continue",
+          "run": "normal_local_failure_continue001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        }
+      ],
+      "new_probe": "original_protection_probe/RESULT.json"
+    },
+    {
+      "id": "A-13-3",
+      "exact_acceptance": "U12 새 capability/콘텐츠 identity 변경은 정상 검증/승인/cache/Apply/required-mod-save 경계를 함께 소비한다. 부적합·누락·stale 승인/전용 구입력은 구체적으로 거절하고 fixture/문서를 같은 새 공개 계약에 연결한다.",
+      "completion_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT",
+      "finding_refs": [],
+      "independent_review_note": "Normal approved producer/consumer, profile->active lock/CAS, accepted journal and restart paths read. New actual default-release normal-host probe demonstrates unsupported profile acceptance and overwrite; whole public/persistence completion fails.",
+      "existing_evidence_locators": [
+        {
+          "id": "core13",
+          "run": "final_coverage_regression002"
+        },
+        {
+          "id": "core72",
+          "run": "final_coverage_regression001"
+        },
+        {
+          "id": "core91",
+          "run": "final_core_regression001"
+        },
+        {
+          "id": "criterion_stale",
+          "run": "full60_stale_criterion001"
+        },
+        {
+          "id": "full60_current",
+          "run": "full60_combined_calibration002"
+        },
+        {
+          "id": "full60_current_accept",
+          "run": "full60_accept002"
+        },
+        {
+          "id": "full60_current_continue",
+          "run": "full60_continue002"
+        },
+        {
+          "id": "local_current_continue",
+          "run": "normal_local_continue002"
+        },
+        {
+          "id": "local_current_start",
+          "run": "normal_local_start002"
+        },
+        {
+          "id": "normal_crash",
+          "run": "normal_persistence001"
+        },
+        {
+          "id": "normal_return_current",
+          "run": "normal_return_cycle002"
+        },
+        {
+          "id": "required_missing",
+          "run": "full60_missing_required001"
+        },
+        {
+          "id": "server_current_adoption",
+          "run": "normal_server_adoption003"
+        },
+        {
+          "id": "server_current_calibration",
+          "run": "normal_server_calibration003"
+        },
+        {
+          "id": "server_model",
+          "run": "server_functional001"
+        },
+        {
+          "id": "standalone_current_adoption",
+          "run": "normal_standalone_adoption002"
+        },
+        {
+          "id": "standalone_current_calibration",
+          "run": "normal_standalone_calibration006"
+        }
+      ],
+      "new_probe": null
+    }
+  ],
+  "integration_seams": [
+    {
+      "id": "IVA-CEXL-PS01",
+      "acceptance_ids": [
+        "A-PS01-1",
+        "A-PS01-2",
+        "A-PS01-3"
+      ],
+      "audit_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT"
+    },
+    {
+      "id": "IVA-CEXL-PS02",
+      "acceptance_ids": [
+        "A-PS02-1",
+        "A-PS02-2",
+        "A-PS02-3"
+      ],
+      "audit_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT"
+    },
+    {
+      "id": "IVA-CEXL-01",
+      "acceptance_ids": [
+        "A-01-1",
+        "A-01-2"
+      ],
+      "audit_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT"
+    },
+    {
+      "id": "IVA-CEXL-02",
+      "acceptance_ids": [
+        "A-02-1",
+        "A-02-2",
+        "A-02-3"
+      ],
+      "audit_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT"
+    },
+    {
+      "id": "IVA-CEXL-03",
+      "acceptance_ids": [
+        "A-03-1",
+        "A-03-2"
+      ],
+      "audit_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT"
+    },
+    {
+      "id": "IVA-CEXL-04",
+      "acceptance_ids": [
+        "A-04-1",
+        "A-04-2",
+        "A-04-3"
+      ],
+      "audit_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT"
+    },
+    {
+      "id": "IVA-CEXL-05",
+      "acceptance_ids": [
+        "A-05-1",
+        "A-05-2"
+      ],
+      "audit_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT"
+    },
+    {
+      "id": "IVA-CEXL-06",
+      "acceptance_ids": [
+        "A-06-1",
+        "A-06-2"
+      ],
+      "audit_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT"
+    },
+    {
+      "id": "IVA-CEXL-07",
+      "acceptance_ids": [
+        "A-07-1",
+        "A-07-2"
+      ],
+      "audit_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT"
+    },
+    {
+      "id": "IVA-CEXL-08",
+      "acceptance_ids": [
+        "A-08-1",
+        "A-08-2",
+        "A-08-3"
+      ],
+      "audit_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT"
+    },
+    {
+      "id": "IVA-CEXL-09",
+      "acceptance_ids": [
+        "A-09-1",
+        "A-09-2",
+        "A-09-3"
+      ],
+      "audit_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT"
+    },
+    {
+      "id": "IVA-CEXL-10",
+      "acceptance_ids": [
+        "A-10-1",
+        "A-10-2",
+        "A-10-3"
+      ],
+      "audit_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT"
+    },
+    {
+      "id": "IVA-CEXL-11",
+      "acceptance_ids": [
+        "A-11-1",
+        "A-11-2"
+      ],
+      "audit_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT"
+    },
+    {
+      "id": "IVA-CEXL-12",
+      "acceptance_ids": [
+        "A-12-1",
+        "A-12-2"
+      ],
+      "audit_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT"
+    },
+    {
+      "id": "IVA-CEXL-13",
+      "acceptance_ids": [
+        "A-13-1",
+        "A-13-2",
+        "A-13-3"
+      ],
+      "audit_disposition": "FAIL_F-U12-001"
+    },
+    {
+      "id": "IVA-CEXL-PUBLIC",
+      "groups": [
+        "G01",
+        "G03",
+        "G10"
+      ],
+      "pending": [],
+      "audit_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT"
+    },
+    {
+      "id": "IVA-CEXL-ATOMIC",
+      "groups": [
+        "G04",
+        "G09"
+      ],
+      "pending": [],
+      "audit_disposition": "FAIL_F-U12-001"
+    },
+    {
+      "id": "IVA-CEXL-REGRESSION",
+      "groups": [
+        "G07",
+        "G08",
+        "G10",
+        "G11"
+      ],
+      "pending": [],
+      "audit_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT"
+    },
+    {
+      "id": "IVA-CEXL-STRUCTURE",
+      "groups": [
+        "G12"
+      ],
+      "pending": [
+        "independent_whole_goal_verdict"
+      ],
+      "audit_disposition": "FAIL_F-U12-001"
+    }
+  ],
+  "required_dimensions": [
+    {
+      "id": "success",
+      "required": true,
+      "groups": [
+        "G01",
+        "G03",
+        "G04"
+      ],
+      "audit_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT"
+    },
+    {
+      "id": "invalid_input",
+      "required": true,
+      "groups": [
+        "G02",
+        "G04",
+        "G08"
+      ],
+      "audit_disposition": "FAIL_F-U12-001"
+    },
+    {
+      "id": "failure_rollback",
+      "required": true,
+      "groups": [
+        "G02",
+        "G05",
+        "G09",
+        "G11"
+      ],
+      "audit_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT"
+    },
+    {
+      "id": "retry_idempotency",
+      "required": true,
+      "groups": [
+        "G02",
+        "G04",
+        "G06",
+        "G09"
+      ],
+      "audit_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT"
+    },
+    {
+      "id": "ordering_concurrency",
+      "required": true,
+      "groups": [
+        "G09",
+        "G10"
+      ],
+      "audit_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT"
+    },
+    {
+      "id": "boundary_empty_max",
+      "required": true,
+      "groups": [
+        "G02",
+        "G04",
+        "G05",
+        "G06",
+        "G07"
+      ],
+      "audit_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT"
+    },
+    {
+      "id": "disconnect_restart_persistence",
+      "required": true,
+      "groups": [
+        "G03",
+        "G08",
+        "G09"
+      ],
+      "audit_disposition": "FAIL_F-U12-001"
+    },
+    {
+      "id": "live_data",
+      "required": true,
+      "groups": [
+        "G01",
+        "G03",
+        "G10"
+      ],
+      "audit_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT"
+    },
+    {
+      "id": "producer_consumer",
+      "required": true,
+      "groups": [
+        "G01",
+        "G09",
+        "G10"
+      ],
+      "audit_disposition": "FAIL_F-U12-001"
+    },
+    {
+      "id": "legacy_fallback_absence",
+      "required": true,
+      "groups": [
+        "G08",
+        "G12"
+      ],
+      "audit_disposition": "FAIL_F-U12-001"
+    }
+  ],
+  "execution_nodes": [
+    {
+      "id": "AG-CEXL-LIFECYCLE",
+      "groups": [
+        "G02",
+        "G04",
+        "G05",
+        "G06",
+        "G07",
+        "G08"
+      ],
+      "audit_disposition": "NOT_CLOSED_AT_NEGATIVE_EXIT"
+    },
+    {
+      "id": "WP-CEXL-PUBLIC",
+      "groups": [
+        "G01",
+        "G03",
+        "G09",
+        "G10"
+      ],
+      "audit_disposition": "FAIL_F-U12-001"
+    },
+    {
+      "id": "WP-CEXL-VERIFY",
+      "groups": [
+        "G01",
+        "G02",
+        "G03",
+        "G04",
+        "G05",
+        "G06",
+        "G07",
+        "G08",
+        "G09",
+        "G10",
+        "G11",
+        "G12"
+      ],
+      "audit_disposition": "FAIL_F-U12-001"
+    }
+  ],
+  "remaining_positive_review": [
+    "Complete independent remaining cost/raw aggregation and measurement-oracle assessment if relevant after correction.",
+    "Finish any remaining source/test delta checks, including final aptitude oracle and individual late functional/data locator reconciliation.",
+    "Determine correction impact on all 38 conditions, applicable U03/U04/U07M/U11 contracts and current approval inputs; only valid unchanged evidence may be reused.",
+    "Do not infer Complete for unclosed conditions from implementation-authored COVERAGE status."
+  ]
+}

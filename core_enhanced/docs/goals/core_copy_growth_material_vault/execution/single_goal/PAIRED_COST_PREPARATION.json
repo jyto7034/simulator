@@ -1,0 +1,21 @@
+{
+  "actual_product_members_verified": 519,
+  "after_input_manifest": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/test_parts/paired_cost_inputs001/manifest.json",
+  "approval_claimed": false,
+  "authoritative_product_archive": "core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/BASELINE_SOURCE_001.tar.gz",
+  "baseline_root": "/tmp/u15-before-cost-7r6pe5ax",
+  "before_input_manifest": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/test_parts/g11_inputs001/manifest.json",
+  "changes_between_input_shapes": "required empty paid ledger and material warehouse fields; no current paid asset represented as an old save",
+  "manifest": "/tmp/u15-before-cost-7r6pe5ax/core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/test_parts/cost001/probe/Cargo.toml",
+  "probe_source_sha256": "2ddc59a6dc3c1bff51628e6a3f0e806d6d1ff4c09fa66458aa8ebcc87b63edd0",
+  "same_workload": [
+    "Tutorial public start",
+    "profile prepare/discard/commit",
+    "JSON projection",
+    "checkpoint export",
+    "command prepare/discard/commit",
+    "fresh Continue",
+    "owner release"
+  ],
+  "supplemental_unchanged_build_dependencies": "core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/target/u14_current_001/SOURCE.tar.gz"
+}

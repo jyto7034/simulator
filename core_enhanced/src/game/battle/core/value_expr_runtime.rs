@@ -55,6 +55,7 @@ pub(crate) enum RuntimeAmount {
 #[derive(Debug)]
 pub(crate) struct RuntimeAmountEvaluation {
     pub(crate) amount: RuntimeAmount,
+    pub(crate) pre_numeric: Option<super::relic_wedge::PreNumericAmount>,
     pub(crate) evaluated: EvaluatedAmount,
     pub(crate) usage: ExprUsage,
     pub(crate) observation: Option<RuntimeAmountObservation>,
@@ -895,6 +896,7 @@ pub(crate) fn evaluate_compiled_amount(
     };
     Ok(RuntimeAmountEvaluation {
         amount,
+        pre_numeric: None,
         evaluated,
         usage: meter.usage(),
         observation: None,
@@ -2548,6 +2550,32 @@ impl BattleCore {
                 "runtime effect source has no authored source identity",
             )
         })?;
+        if let Some(binding) = source.causal().and_then(|c| c.program.as_ref()) {
+            let entry = binding
+                .execution()
+                .amounts
+                .get(&plan.source().site)
+                .ok_or_else(|| {
+                    fault(
+                        &plan,
+                        ValueExprFaultCode::Unavailable,
+                        0,
+                        "causal plan-local amount entry absent",
+                    )
+                })?;
+            if binding.generation.identity() != generation.as_ref()
+                || source.actor != Some(binding.owner)
+                || entry.kind() != kind
+                || !Arc::ptr_eq(entry.plan(), &plan)
+            {
+                return Err(fault(
+                    &plan,
+                    ValueExprFaultCode::Unavailable,
+                    0,
+                    "causal compiled entry is not the exact accepted plan",
+                ));
+            }
+        }
         if let Some(binding) = source.relic_effective() {
             binding
                 .validate(&generation, source)
@@ -2834,6 +2862,7 @@ impl BattleCore {
             )?),
         };
         let mut result = evaluate_compiled_amount(plan, capture.kind, frame.as_ref())?;
+        let evaluated_base = result.amount;
         if let Some(binding) = capture.source.relic_effective() {
             binding
                 .validate(generation, &capture.source)
@@ -2841,6 +2870,46 @@ impl BattleCore {
             result.amount = binding
                 .compose_amount(&plan.source().site, capture.kind, result.amount)
                 .map_err(|error| control_fault(plan, error, "effective amount composition"))?;
+        }
+        // The published effective program already includes legacy flat and
+        // percent contributions. Preserve its original base and coefficients,
+        // after proving the ordinary composition above; Wedge adds only to
+        // that same Scale class, without a second composition or division.
+        if self.source_has_wedge(&capture.source) {
+            if let RuntimeAmount::Damage(base) = evaluated_base {
+                let binding = capture.source.relic_effective().ok_or_else(|| {
+                    fault(
+                        plan,
+                        ValueExprFaultCode::Unavailable,
+                        0,
+                        "Wedge effective owner absent",
+                    )
+                })?;
+                crate::game::battle::runtime_control::charge(
+                    binding.execution().effects.len() as u64,
+                    "wedge_numeric_capture",
+                )
+                .map_err(|error| control_fault(plan, error, "Wedge numeric capture"))?;
+                let effect = binding.effect(&plan.source().site).ok_or_else(|| {
+                    fault(
+                        plan,
+                        ValueExprFaultCode::Unavailable,
+                        0,
+                        "Wedge effect binding absent",
+                    )
+                })?;
+                crate::game::battle::runtime_control::charge(
+                    effect.properties.len() as u64,
+                    "wedge_property_capture",
+                )
+                .map_err(|error| control_fault(plan, error, "Wedge property capture"))?;
+                let program = effect.properties.iter().find(|p| {
+                    p.property == crate::game::relic::structural::authoring::RelicProperty::DamageAmount
+                }).ok_or_else(|| {
+                    fault(plan, ValueExprFaultCode::Unavailable, 0, "Wedge numeric property absent")
+                })?.program;
+                result.pre_numeric = Some(super::relic_wedge::PreNumericAmount { base, program });
+            }
         }
         if let Some(binding) = capture.source.relic_numeric() {
             binding.validate_skill(generation, plan, &capture.source)?;
@@ -3304,6 +3373,7 @@ mod tests {
         equipment_type: EquipmentType,
     ) -> EquipmentMetadata {
         EquipmentMetadata {
+            content_family: None,
             id: id.to_string(),
             uuid: base_uuid,
             name: id.to_string(),
@@ -3370,11 +3440,13 @@ mod tests {
                         3,
                         vec![
                             BattleEquipmentBinding {
+            weapon_stage: Default::default(),
                                 base_uuid: weapon_base,
                                 persistent_copy_uuid: Some(weapon_x),
                                 slot: Some(EquipmentSlotAddress::Weapon),
                             },
                             BattleEquipmentBinding {
+            weapon_stage: Default::default(),
                                 base_uuid: armor_base,
                                 persistent_copy_uuid: Some(armor_y),
                                 slot: Some(EquipmentSlotAddress::Armor),
@@ -3392,6 +3464,7 @@ mod tests {
                         100,
                         5,
                         vec![BattleEquipmentBinding {
+            weapon_stage: Default::default(),
                             base_uuid: weapon_base,
                             persistent_copy_uuid: Some(weapon_z),
                             slot: Some(EquipmentSlotAddress::Weapon),
@@ -3418,6 +3491,7 @@ mod tests {
                     100,
                     3,
                     vec![BattleEquipmentBinding {
+            weapon_stage: Default::default(),
                         base_uuid: weapon_base,
                         persistent_copy_uuid: Some(Uuid::from_u128(0x200000 + index as u128)),
                         slot: Some(EquipmentSlotAddress::Weapon),
@@ -3473,11 +3547,13 @@ mod tests {
                 .build(),
         );
         let weapon = |copy, slot| BattleEquipmentBinding {
+            weapon_stage: Default::default(),
             base_uuid: weapon_base,
             persistent_copy_uuid: copy,
             slot,
         };
         let armor = |copy, slot| BattleEquipmentBinding {
+            weapon_stage: Default::default(),
             base_uuid: armor_base,
             persistent_copy_uuid: copy,
             slot,
@@ -3607,6 +3683,7 @@ mod tests {
         let mut armor_draft = draft(0x5801, 0x5800, 100, 3);
         armor_draft.equipment_layout = Some(SlotLayoutKind::ByType);
         armor_draft.equipped_items = vec![BattleEquipmentBinding {
+            weapon_stage: Default::default(),
             base_uuid: armor_base,
             persistent_copy_uuid: Some(armor_copy),
             slot: Some(EquipmentSlotAddress::Armor),
@@ -3627,11 +3704,13 @@ mod tests {
         let mut any3_draft = draft(0x5802, 0x5803, 100, 3);
         any3_draft.equipped_items = vec![
             BattleEquipmentBinding {
+            weapon_stage: Default::default(),
                 base_uuid: weapon_base,
                 persistent_copy_uuid: Some(first_copy),
                 slot: Some(EquipmentSlotAddress::Any3(1)),
             },
             BattleEquipmentBinding {
+            weapon_stage: Default::default(),
                 base_uuid: weapon_base,
                 persistent_copy_uuid: Some(second_copy),
                 slot: Some(EquipmentSlotAddress::Any3(0)),
@@ -3766,6 +3845,7 @@ mod tests {
         }
         if let Some(binding) = source_equipment {
             builder = builder.with_equipment(vec![EquipmentMetadata {
+                content_family: None,
                 id: "frame_fixture_item".to_string(),
                 uuid: binding.base_uuid,
                 name: "Frame fixture item".to_string(),
@@ -4389,6 +4469,7 @@ mod tests {
             Vec::new(),
             None,
             Some(BattleEquipmentBinding {
+            weapon_stage: Default::default(),
                 base_uuid: Uuid::from_u128(91),
                 persistent_copy_uuid: None,
                 slot: None,
@@ -4575,6 +4656,7 @@ mod tests {
                 ],
                 None,
                 Some(BattleEquipmentBinding {
+            weapon_stage: Default::default(),
                     base_uuid: Uuid::from_u128(0x4001),
                     persistent_copy_uuid: Some(copy),
                     slot: None,

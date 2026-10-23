@@ -21,32 +21,50 @@ pub struct EncounterCompendiumProfileState {
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct PlayerProfileState {
+    #[serde(default, skip_serializing_if = "std::collections::BTreeMap::is_empty")]
+    pub facility_knowledge: std::collections::BTreeMap<String, crate::game::map::FacilityKnowledge>,
     pub encounter_compendium: EncounterCompendiumProfileState,
-    pub standard_tutorial_completed: bool,
     pub highest_floor_reached: u32,
     pub longest_deathless_floor_streak: u32,
     pub all_live_final_bosses_defeated: bool,
+    pub lifecycle: crate::game::expedition_lifecycle::ExpeditionLifecycle,
 }
 
 crate::authoring::clone_shape::struct_shape!(EncounterCompendiumProfileState { registered_ids });
 crate::authoring::clone_shape::struct_shape!(PlayerProfileState {
+    facility_knowledge,
     encounter_compendium,
-    standard_tutorial_completed,
     highest_floor_reached,
     longest_deathless_floor_streak,
     all_live_final_bosses_defeated,
+    lifecycle,
 });
 
 impl PlayerProfileState {
     pub fn validate_persisted(&self) -> Result<(), String> {
-        self.encounter_compendium.validate_persisted()
+        self.encounter_compendium.validate_persisted()?;
+        self.lifecycle.validate()
     }
 
-    pub fn merge(&mut self, committed: impl Into<Self>) {
+    /// Knowledge-only import must never silently ignore different exact assets.
+    pub fn merge(&mut self, committed: impl Into<Self>) -> Result<(), String> {
         let committed = committed.into();
+        committed.validate_persisted()?;
+        if self.lifecycle != committed.lifecycle {
+            return Err("profile lifecycle requires authoritative installation or accepted publication".into());
+        }
+        self.merge_knowledge(&committed);
+        Ok(())
+    }
+
+    pub fn merge_knowledge(&mut self, committed: &Self) {
+        for (layout, knowledge) in &committed.facility_knowledge {
+            let current = self.facility_knowledge.entry(layout.clone()).or_default();
+            current.completed_rooms.extend(knowledge.completed_rooms.iter().cloned());
+            current.discovered_final_rooms.extend(knowledge.discovered_final_rooms.iter().cloned());
+        }
         self.encounter_compendium
-            .merge(committed.encounter_compendium);
-        self.standard_tutorial_completed |= committed.standard_tutorial_completed;
+            .merge(committed.encounter_compendium.clone());
         self.highest_floor_reached = self
             .highest_floor_reached
             .max(committed.highest_floor_reached);
@@ -54,6 +72,14 @@ impl PlayerProfileState {
             .longest_deathless_floor_streak
             .max(committed.longest_deathless_floor_streak);
         self.all_live_final_bosses_defeated |= committed.all_live_final_bosses_defeated;
+    }
+
+    /// Only an accepted paired publication may adopt decreasing copy ownership.
+    pub fn adopt_accepted(&mut self, mut committed: Self) -> Result<(), String> {
+        committed.validate_persisted()?;
+        committed.merge_knowledge(self);
+        *self = committed;
+        Ok(())
     }
 
     pub fn record_floor_reached(&mut self, floor_number: u32) {
@@ -207,7 +233,7 @@ mod tests {
     #[test]
     fn successor_profile_defaults_are_strict_and_merge_is_monotonic() {
         let defaults = PlayerProfileState::default();
-        assert!(!defaults.standard_tutorial_completed);
+        assert_eq!(defaults.lifecycle, Default::default());
         assert_eq!(defaults.highest_floor_reached, 0);
         assert_eq!(defaults.longest_deathless_floor_streak, 0);
         assert!(!defaults.all_live_final_bosses_defeated);
@@ -226,26 +252,38 @@ mod tests {
         .unwrap_err()
         .to_string()
         .contains("unknown field"));
+        let current = serde_json::to_value(&defaults).unwrap();
+        assert_eq!(serde_json::from_value::<PlayerProfileState>(current.clone()).unwrap(), defaults);
+        let mut unexpected = current.clone();
+        unexpected["unknown"] = serde_json::json!(true);
+        assert!(serde_json::from_value::<PlayerProfileState>(unexpected).is_err());
+        for old in [false, true] {
+            let mut legacy = current.clone();
+            legacy["standard_tutorial_completed"] = serde_json::json!(old);
+            assert!(serde_json::from_value::<PlayerProfileState>(legacy).is_err());
+        }
 
         let mut profile = PlayerProfileState {
+            facility_knowledge: Default::default(),
             encounter_compendium: EncounterCompendiumProfileState {
                 registered_ids: BTreeSet::from(["first".to_string()]),
             },
-            standard_tutorial_completed: true,
+            lifecycle: Default::default(),
             highest_floor_reached: 8,
             longest_deathless_floor_streak: 5,
             all_live_final_bosses_defeated: false,
         };
         profile.merge(PlayerProfileState {
+            facility_knowledge: Default::default(),
             encounter_compendium: EncounterCompendiumProfileState {
                 registered_ids: BTreeSet::from(["second".to_string()]),
             },
-            standard_tutorial_completed: false,
+            lifecycle: Default::default(),
             highest_floor_reached: 3,
             longest_deathless_floor_streak: 2,
             all_live_final_bosses_defeated: true,
-        });
-        assert!(profile.standard_tutorial_completed);
+        }).unwrap();
+        assert_eq!(profile.lifecycle, Default::default());
         assert_eq!(profile.highest_floor_reached, 8);
         assert_eq!(profile.longest_deathless_floor_streak, 5);
         assert!(profile.all_live_final_bosses_defeated);

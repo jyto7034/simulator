@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "source": "core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/normal_calibration002.stdout.log",
+  "sha256": "34c9f8794a732bf16e6ebeb92185b757942cd41926adb47c9f63d616807422f0",
+  "limits": {
+    "max_elapsed_ns": 6000000000,
+    "max_native_work": 233000000,
+    "max_requested_heap_bytes": 1342177280,
+    "max_rss_bytes": 1610612736
+  },
+  "limits_changed": false,
+  "summary": {
+    "plain": {
+      "samples": 12,
+      "max_elapsed_ns": 657952296,
+      "max_native_work": null,
+      "max_requested_heap_bytes": null,
+      "max_rss_bytes": null
+    },
+    "instrumented": {
+      "samples": 12,
+      "max_elapsed_ns": 915803189,
+      "max_native_work": 8445816,
+      "max_requested_heap_bytes": 23122213,
+      "max_rss_bytes": 49811456
+    }
+  },
+  "scope": "finite diagnostic scenario; plain missing counters remain null; no final gameplay SLO claim"
+}

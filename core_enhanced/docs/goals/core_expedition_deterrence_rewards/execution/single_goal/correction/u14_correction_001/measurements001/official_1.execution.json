@@ -1,0 +1,10 @@
+{
+  "argv": [
+    "/mnt/f/work/simulator/core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/correction/u14_correction_001/artifacts/u14_correction_probe",
+    "measure",
+    "official",
+    "/tmp/u14-correction-measurements001/official_1.json"
+  ],
+  "exit_code": 0,
+  "seconds": 1.045761429995764
+}

@@ -1,0 +1,8 @@
+(rewards: [
+    (id: "u08_public_relic_reward", uuid: "a5080000-0000-0000-0000-000000000301",
+     name: "Public relic supply probe", description: "One authored normal reward grant",
+     icon: "u08_probe", effects: [GrantRelic(relic_id: "u08_public_blend")]),
+ ],
+ pools: [(id: "u08_public_relic_reward_pool", reward_ids: ["u08_public_relic_reward"])],
+ equipment_pools: [],
+)

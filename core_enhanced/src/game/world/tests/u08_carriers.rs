@@ -114,7 +114,12 @@ fn prepare_with_catalog(
     }
     let data = GameDataBuilder::from_validated(&base)
         .with_abnormalities(enemies)
-        .with_equipment(equipment)
+        .with_equipment_data(Arc::new(crate::game::data::equipment_data::EquipmentDatabase::with_all(
+            equipment,
+            base.equipment_data.materials.clone(),
+            base.equipment_data.dismantle_recipes.clone(),
+            base.equipment_data.enhancement_recipes.clone(),
+        )))
         .with_skills(skills)
         .with_skill_fragments(SkillFragmentDatabase::new(fragments))
         .with_relics(relics)
@@ -865,7 +870,12 @@ fn typed_form_and_weapon_changes_rebind_actual_skill_and_basic_damage_in_fresh_b
         relics.relics[0].corruption.as_mut().unwrap().effects = effects(40, 50);
         GameDataBuilder::from_validated(&data)
             .with_skill_fragments(SkillFragmentDatabase::new(fragments))
-            .with_equipment(equipment)
+            .with_equipment_data(Arc::new(crate::game::data::equipment_data::EquipmentDatabase::with_all(
+            equipment,
+            data.equipment_data.materials.clone(),
+            data.equipment_data.dismantle_recipes.clone(),
+            data.equipment_data.enhancement_recipes.clone(),
+        )))
             .with_relics(relics)
             .build_arc()
             .into()
@@ -1105,7 +1115,12 @@ fn physical_magic_modifiers_and_resistance_consume_relic_once_and_negative_penal
                 GameDataBuilder::from_validated(&data)
                     .with_skills(SkillDatabase::from_ron(SOURCE, &authored).unwrap())
                     .with_abnormalities(enemies)
-                    .with_equipment(equipment)
+                    .with_equipment_data(Arc::new(crate::game::data::equipment_data::EquipmentDatabase::with_all(
+            equipment,
+            data.equipment_data.materials.clone(),
+            data.equipment_data.dismantle_recipes.clone(),
+            data.equipment_data.enhancement_recipes.clone(),
+        )))
                     .build_arc()
                     .into()
             });

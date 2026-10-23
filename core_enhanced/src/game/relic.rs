@@ -413,6 +413,12 @@ impl RelicInventory {
         self.copies.get_mut(&copy).ok_or_else(invalid)?.variant = RelicVariant::Corrupt;
         Ok(())
     }
+    pub(crate) fn return_dealer_escrow(&mut self, copy: OwnedRelic) -> Result<(), GameError> {
+        if copy.copy_uuid.is_nil() || self.copies.contains_key(&copy.copy_uuid) { return Err(invalid()); }
+        let bytes = std::mem::size_of::<(Uuid, OwnedRelic)>().checked_mul(11).and_then(|n| n.checked_add(copy.definition_id.len())).and_then(|n| n.checked_add(224));
+        crate::game::battle::runtime_control::admit_retained_growth(0, bytes, "dealer_escrow_return")?;
+        self.copies.insert(copy.copy_uuid, copy); Ok(())
+    }
     pub(crate) fn remove(&mut self, copy: Uuid) -> Result<OwnedRelic, GameError> {
         self.unequip(copy)?;
         self.copies.remove(&copy).ok_or_else(invalid)

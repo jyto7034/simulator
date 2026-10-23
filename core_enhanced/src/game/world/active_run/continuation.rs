@@ -81,6 +81,7 @@ pub(in crate::game::world) struct ContinuePayload {
     current: RunCheckpointPayload,
     savepoint: Option<Arc<RunCheckpointPayload>>,
     phase: GameState,
+    pending_node_session: Option<crate::game::map::NodeSession>,
     recovery_restriction: Option<CombatRecoveryRestriction>,
     result: Option<Arc<ConfirmedCombatResult>>,
     reward: Option<RewardSessionState>,
@@ -109,6 +110,8 @@ struct ContinuePayloadWire {
     savepoint: Option<ContinueSavePointWire>,
     phase: GameState,
     #[serde(deserialize_with = "required_option")]
+    pending_node_session: Option<crate::game::map::NodeSession>,
+    #[serde(deserialize_with = "required_option")]
     recovery_restriction: Option<CombatRecoveryRestriction>,
     #[serde(deserialize_with = "required_option")]
     result: Option<Arc<ConfirmedCombatResult>>,
@@ -126,38 +129,24 @@ impl ContinuePayloadWire {
             None => None,
             Some(ContinueSavePointWire::Snapshot { checkpoint }) => Some(checkpoint),
             Some(ContinueSavePointWire::Current {}) => {
+                if self.current.run_progression.pending_continuation.is_some() { return Err(invalid("SavePoint alias cannot carry a pending choice")); }
                 // This is the fresh, tombstone-free serde owner. Account for
                 // its native table before the first independent checkpoint
                 // clone, not only after resolving and validating the payload.
-                crate::authoring::control::monolith_imported_fresh(
-                    self.current
-                        .encounter_progression
-                        .monolith
-                        .remanifestation_nodes
-                        .capacity(),
-                );
-                crate::game::resource::store::preflight_resource_clone(
-                    &self.current.typed_resources,
-                )
-                .map_err(crate::game::resource::store::ResourceError::into_game_error)?;
-                self.current.relics.preflight_clone()?;
-                self.current.uuid_manager.preflight_relic_stream_clone()?;
-                self.current.preflight_relic_history_clone()?;
-                if self.current.has_relic_owner() {
+                {
                     crate::game::relic::allocation::admit_arc(
                         std::mem::size_of::<RunCheckpointPayload>(),
                         "relic_continue_savepoint_arc",
                     )?;
                 }
-                Some(Arc::new(crate::authoring::clone_shape::controlled_clone(
-                    &self.current,
-                )?))
+                Some(Arc::new(self.current.copy_owned()?))
             }
         };
         Ok(ContinuePayload {
             current: self.current,
             savepoint,
             phase: self.phase,
+            pending_node_session: self.pending_node_session,
             recovery_restriction: self.recovery_restriction,
             result: self.result,
             reward: self.reward,
@@ -168,121 +157,50 @@ impl ContinuePayloadWire {
     }
 }
 
-#[derive(Default, Deserialize)]
-struct RelicCheckpointHint {
-    #[serde(default, deserialize_with = "member_present")]
-    relics: bool,
-    #[serde(default, deserialize_with = "member_present")]
-    crafting_resources: bool,
-    #[serde(default)]
-    uuid_manager: RelicUuidHint,
-    #[serde(default)]
-    event_sessions: RelicEventSessionsHint,
-}
-impl RelicCheckpointHint {
-    fn has_relic_owner(&self) -> bool {
-        self.relics
-            || self.crafting_resources
-            || self.uuid_manager.counters.0
-            || self.event_sessions.0
-    }
-}
-#[derive(Default, Deserialize)]
-struct RelicEventSessionHint {
-    #[serde(default, deserialize_with = "member_present")]
-    relic_corruption_selections: bool,
-}
-#[derive(Default)]
-struct RelicEventSessionsHint(bool);
-impl<'de> Deserialize<'de> for RelicEventSessionsHint {
-    fn deserialize<D: serde::Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-        struct Visitor;
-        impl<'de> serde::de::Visitor<'de> for Visitor {
-            type Value = RelicEventSessionsHint;
-            fn expecting(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-                f.write_str("Event session map")
-            }
-            fn visit_map<A: serde::de::MapAccess<'de>>(
-                self,
-                mut map: A,
-            ) -> Result<Self::Value, A::Error> {
-                let mut present = false;
-                while map.next_key::<Uuid>()?.is_some() {
-                    present |= map
-                        .next_value::<RelicEventSessionHint>()?
-                        .relic_corruption_selections;
-                }
-                Ok(RelicEventSessionsHint(present))
-            }
-        }
-        d.deserialize_map(Visitor)
-    }
-}
-fn member_present<'de, D: serde::Deserializer<'de>>(d: D) -> Result<bool, D::Error> {
-    serde::de::IgnoredAny::deserialize(d)?;
-    Ok(true)
-}
-#[derive(Default, Deserialize)]
-struct RelicUuidHint {
-    #[serde(default)]
-    counters: RelicCounterHint,
-}
-#[derive(Default)]
-struct RelicCounterHint(bool);
-impl<'de> Deserialize<'de> for RelicCounterHint {
-    fn deserialize<D: serde::Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-        struct Visitor;
-        impl<'de> serde::de::Visitor<'de> for Visitor {
-            type Value = RelicCounterHint;
-            fn expecting(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-                f.write_str("UUID counter map")
-            }
-            fn visit_map<A: serde::de::MapAccess<'de>>(
-                self,
-                mut map: A,
-            ) -> Result<Self::Value, A::Error> {
-                let mut relic = false;
-                while let Some(key) = map.next_key::<u64>()? {
-                    map.next_value::<serde::de::IgnoredAny>()?;
-                    relic |=
-                        key == crate::game::managers::uuid_manager::UuidManager::NS_OWNED_RELIC;
-                }
-                Ok(RelicCounterHint(relic))
-            }
-        }
-        d.deserialize_map(Visitor)
-    }
-}
-#[derive(Default, Deserialize)]
-struct RelicSavepointHint {
-    #[serde(default)]
-    snapshot: Option<RelicSnapshotHint>,
-}
-#[derive(Default, Deserialize)]
-struct RelicSnapshotHint {
-    #[serde(default)]
-    checkpoint: RelicCheckpointHint,
-}
-#[derive(Default, Deserialize)]
-struct RelicContinuationHint {
-    #[serde(default)]
-    current: RelicCheckpointHint,
-    #[serde(default)]
-    savepoint: Option<RelicSavepointHint>,
-}
-impl RelicContinuationHint {
-    fn has_relic_owner(&self) -> bool {
-        self.current.has_relic_owner()
-            || self
-                .savepoint
-                .as_ref()
-                .and_then(|s| s.snapshot.as_ref())
-                .is_some_and(|s| s.checkpoint.has_relic_owner())
-    }
+// Only the wire ownership shape is needed before typed decoding. Relic
+// inventory no longer decides whether the rest of the continuation is metered.
+#[derive(Deserialize)]
+struct ContinueAllocationHint {
+    continuation: ContinueSavepointHint,
 }
 #[derive(Deserialize)]
-struct RelicContinueHint {
-    continuation: RelicContinuationHint,
+struct ContinueSavepointHint {
+    current: CheckpointAllocationHint,
+    savepoint: Option<SavepointAllocationHint>,
+}
+#[derive(Deserialize)]
+struct SavepointAllocationHint {
+    snapshot: Option<SnapshotAllocationHint>,
+}
+#[derive(Deserialize)]
+struct SnapshotAllocationHint {
+    checkpoint: CheckpointAllocationHint,
+}
+#[derive(Deserialize)]
+struct CheckpointAllocationHint {
+    typed_resources: ResourceAllocationHint,
+}
+#[derive(Deserialize)]
+struct ResourceAllocationHint {
+    entries: EntryCount,
+}
+struct EntryCount(usize);
+impl<'de> Deserialize<'de> for EntryCount {
+    fn deserialize<D: serde::Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+        struct Visitor;
+        impl<'de> serde::de::Visitor<'de> for Visitor {
+            type Value = EntryCount;
+            fn expecting(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result { f.write_str("run resource entries") }
+            fn visit_seq<A: serde::de::SeqAccess<'de>>(self, mut seq: A) -> Result<EntryCount, A::Error> {
+                let mut count = 0usize;
+                while seq.next_element::<serde::de::IgnoredAny>()?.is_some() {
+                    count = count.checked_add(1).ok_or_else(|| serde::de::Error::custom("resource count overflow"))?;
+                }
+                Ok(EntryCount(count))
+            }
+        }
+        d.deserialize_seq(Visitor)
+    }
 }
 
 #[derive(Serialize, Deserialize)]
@@ -293,7 +211,30 @@ struct ContinueDocument {
     continuation_sha256: String,
 }
 
-const VERSION: u32 = 11;
+const VERSION: u32 = 18;
+
+/// Strict codec/checksum inspection only. No application or restored World is
+/// created, and no gameplay or filesystem owner is changed.
+pub(crate) fn inspect_requirements(bytes: &[u8], max_bytes: usize) -> Result<crate::game::data::content_pack::ContentIdentity, GameError> {
+    if bytes.len() > max_bytes.min(64 * 1024 * 1024) {
+        return Err(invalid("read-only inspection byte ceiling"));
+    }
+    let header: super::ActiveRunCorePayloadHeader = super::parse_active_run_checkpoint(bytes)?;
+    if header.version != VERSION {
+        return Err(invalid(&format!("unsupported read-only continuation version {}", header.version)));
+    }
+    let document: ContinueDocument = super::parse_active_run_checkpoint(bytes)?;
+    if document.continuation_sha256 != canonical_digest(&canonical_value(&document.continuation, false)?)? {
+        return Err(invalid("SHA-256 mismatch"));
+    }
+    let identity = document.continuation.current.content_identity;
+    if let Some(ContinueSavePointWire::Snapshot { checkpoint }) = document.continuation.savepoint {
+        if checkpoint.content_identity != identity {
+            return Err(invalid("current and SavePoint content identities differ"));
+        }
+    }
+    Ok(identity)
+}
 
 crate::authoring::clone_shape::struct_shape!(ContinueState {
     payload,
@@ -304,6 +245,7 @@ crate::authoring::clone_shape::struct_shape!(ContinuePayload {
     current,
     savepoint,
     phase,
+    pending_node_session,
     recovery_restriction,
     result,
     reward,
@@ -314,19 +256,19 @@ crate::authoring::clone_shape::struct_shape!(ContinuePayload {
 
 fn canonical_value(
     value: &impl Serialize,
-    relic_owner: bool,
+    meter_storage: bool,
 ) -> Result<serde_json::Value, GameError> {
     crate::authoring::control::metadata_size(value)?;
     crate::authoring::control::charge_serialized(value, "continue_encode_value")?;
     let mut value = serde_json::to_value(value)
         .map_err(|error| super::active_run_checkpoint_codec_error("serialization", error))?;
-    normalize_unordered_checkpoint_fields(&mut value, relic_owner)?;
+    normalize_unordered_checkpoint_fields(&mut value, meter_storage)?;
     Ok(value)
 }
 
-fn canonical_bytes(value: &serde_json::Value, relic_owner: bool) -> Result<Vec<u8>, GameError> {
+fn canonical_bytes(value: &serde_json::Value, meter_storage: bool) -> Result<Vec<u8>, GameError> {
     crate::authoring::control::charge_serialized(value, "continue_encode_bytes")?;
-    let mut bytes = if relic_owner {
+    let mut bytes = if meter_storage {
         Vec::with_capacity(crate::game::relic::allocation::admit_json_buffer(value)?)
     } else {
         Vec::new()
@@ -337,18 +279,49 @@ fn canonical_bytes(value: &serde_json::Value, relic_owner: bool) -> Result<Vec<u
     Ok(bytes)
 }
 
-fn canonical(value: &impl Serialize, relic_owner: bool) -> Result<Vec<u8>, GameError> {
-    if relic_owner {
-        crate::game::relic::allocation::admit_json_value(value)?;
+fn canonical_digest(value: &serde_json::Value) -> Result<String, GameError> {
+    struct HashWriter(Sha256);
+    impl std::io::Write for HashWriter {
+        fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
+            self.0.update(bytes);
+            Ok(bytes.len())
+        }
+        fn flush(&mut self) -> std::io::Result<()> { Ok(()) }
     }
-    canonical_bytes(&canonical_value(value, relic_owner)?, relic_owner)
+    crate::authoring::control::charge_serialized(value, "continue_checksum_bytes")?;
+    let mut writer = HashWriter(Sha256::new());
+    super::write_canonical_json(value, &mut writer)
+        .map_err(|error| super::active_run_checkpoint_codec_error("checksum", error))?;
+    Ok(format!("{:x}", writer.0.finalize()))
+}
+
+// Writer and reader consume the same normalized wire value. The reader keeps
+// this verified encoding instead of capturing and encoding the World again.
+fn seal_document(continuation: serde_json::Value, expected: Option<&str>) -> Result<Vec<u8>, GameError> {
+    crate::game::relic::allocation::admit_codec_fields(
+        &["version", "continuation", "continuation_sha256"], 64,
+    )?;
+    let digest = canonical_digest(&continuation)?;
+    if expected.is_some_and(|expected| expected != digest) {
+        return Err(invalid("SHA-256 mismatch"));
+    }
+    let document = serde_json::Value::Object(serde_json::Map::from_iter([
+        ("version".into(), serde_json::Value::from(VERSION)),
+        ("continuation".into(), continuation),
+        ("continuation_sha256".into(), serde_json::Value::String(digest)),
+    ]));
+    let encoded = canonical_bytes(&document, true)?;
+    if encoded.len() > 64 * 1024 * 1024 {
+        return Err(invalid("continuation exceeds supported byte ceiling"));
+    }
+    Ok(encoded)
 }
 
 // These checkpoint collections are sets. Their iteration order is deliberately
 // excluded from the wire identity, including after a fresh-process restore.
 fn normalize_unordered_checkpoint_fields(
     value: &mut serde_json::Value,
-    relic_owner: bool,
+    meter_storage: bool,
 ) -> Result<(), GameError> {
     match value {
         serde_json::Value::Object(fields) => {
@@ -366,7 +339,7 @@ fn normalize_unordered_checkpoint_fields(
                             comparisons as u64,
                             "continue_set_order",
                         )?;
-                        if relic_owner {
+                        if meter_storage {
                             crate::game::relic::allocation::admit_normalization_keys(values)?;
                         } else {
                             for value in values.iter() {
@@ -381,12 +354,12 @@ fn normalize_unordered_checkpoint_fields(
                         });
                     }
                 }
-                normalize_unordered_checkpoint_fields(value, relic_owner)?;
+                normalize_unordered_checkpoint_fields(value, meter_storage)?;
             }
         }
         serde_json::Value::Array(values) => {
             for value in values {
-                normalize_unordered_checkpoint_fields(value, relic_owner)?;
+                normalize_unordered_checkpoint_fields(value, meter_storage)?;
             }
         }
         _ => {}
@@ -452,16 +425,27 @@ impl GameCore {
             )
     }
 
+    fn ensure_continuation_operation(&self) -> Result<(), GameError> {
+        use crate::game::battle::runtime_control as native;
+        if native::is_active() { return native::poll(); }
+        let settings = self.game_data.runtime_safety();
+        native::run_with_profile(settings.native_runtime(), settings, || {
+            // Existing relic owners keep their established seed. Storage
+            // producers below account independently of inventory contents.
+            native::seed_retained_extent(self.state.relic_owned_extent()?)
+        })
+    }
+
     fn install_continue_payload(&mut self, payload: ContinuePayload) -> Result<(), GameError> {
-        let relic_owner = payload.has_relic_owner();
-        if relic_owner {
+        self.ensure_continuation_operation()?;
+        {
             crate::game::relic::allocation::admit_json_value(&payload)?;
             crate::game::relic::allocation::admit_codec_fields(
                 &["savepoint", "snapshot", "checkpoint", "current"],
                 0,
             )?;
         }
-        let mut continuation = canonical_value(&payload, relic_owner)?;
+        let mut continuation = canonical_value(&payload, true)?;
         let fields = continuation
             .as_object_mut()
             .expect("typed continuation object");
@@ -490,28 +474,12 @@ impl GameCore {
             }
         };
         fields.insert("savepoint".into(), savepoint);
-        // Move the already admitted value into its envelope. Do not serialize
-        // both large checkpoint owners a second time to build the document.
-        if relic_owner {
-            crate::game::relic::allocation::admit_codec_fields(
-                &["version", "continuation", "continuation_sha256"],
-                64,
-            )?;
-        }
-        let digest = format!(
-            "{:x}",
-            Sha256::digest(canonical_bytes(&continuation, relic_owner)?)
-        );
-        let document = serde_json::Value::Object(serde_json::Map::from_iter([
-            ("version".into(), serde_json::Value::from(VERSION)),
-            ("continuation".into(), continuation),
-            (
-                "continuation_sha256".into(),
-                serde_json::Value::String(digest),
-            ),
-        ]));
-        let encoded = canonical_bytes(&document, relic_owner)?;
-        if relic_owner {
+        let encoded = seal_document(continuation, None)?;
+        self.cache_continue_payload(payload, encoded)
+    }
+
+    fn cache_continue_payload(&mut self, payload: ContinuePayload, encoded: Vec<u8>) -> Result<(), GameError> {
+        {
             crate::game::relic::allocation::admit_arc(
                 std::mem::size_of::<ContinuePayload>(),
                 "relic_continue_payload_arc",
@@ -524,29 +492,23 @@ impl GameCore {
     }
 
     fn capture_continue_payload(&self) -> Result<ContinuePayload, GameError> {
+        self.ensure_continuation_operation()?;
         let run = self.run_state()?;
         let current = RunCheckpointPayload::capture(&self.state, run, self.game_data.identity())?;
         let savepoint = match &self.state.run_checkpoint.payload {
             Some(checkpoint) => {
-                crate::game::resource::store::preflight_resource_clone(&checkpoint.typed_resources)
-                    .map_err(crate::game::resource::store::ResourceError::into_game_error)?;
-                checkpoint.relics.preflight_clone()?;
-                checkpoint.uuid_manager.preflight_relic_stream_clone()?;
-                checkpoint.preflight_relic_history_clone()?;
-                if self.state.has_relic_owner() {
+                {
                     crate::game::relic::allocation::admit_arc(
                         std::mem::size_of::<RunCheckpointPayload>(),
                         "relic_continue_savepoint_arc",
                     )?;
                 }
-                Some(Arc::new(crate::authoring::clone_shape::controlled_clone(
-                    checkpoint,
-                )?))
+                Some(Arc::new(checkpoint.copy_owned()?))
             }
             None => None,
         };
         let phase = match self.get_state() {
-            GameState::NodeConfirm { .. } => GameState::ViewingMap,
+            GameState::NodeConfirm { .. } if run.run_progression.pending_continuation.is_none() => GameState::ViewingMap,
             phase => phase,
         };
         let reward = if self.state.combat_reward_continuation.is_some() {
@@ -586,6 +548,9 @@ impl GameCore {
             current,
             savepoint,
             phase,
+            pending_node_session: if run.run_progression.pending_continuation.is_some() {
+                crate::authoring::clone_shape::controlled_clone(&self.state.node_session)?
+            } else { None },
             recovery_restriction: crate::authoring::clone_shape::controlled_clone(
                 &run.combat_recovery_restriction,
             )?,
@@ -595,6 +560,17 @@ impl GameCore {
                 &self.state.combat_reward_continuation,
             )?,
         })
+    }
+
+    pub(in crate::game::world) fn capture_expedition_entry_for_continue(&mut self, node_id: MapNodeId) -> Result<(), GameError> {
+        if self.run_state()?.run_progression.game_mode == crate::game::map::GameMode::Expedition
+            && self.state.continue_state.unfinished_node != Some(node_id)
+        {
+            let payload = self.capture_continue_payload()?;
+            self.install_continue_payload(payload)?;
+            self.state.continue_state.unfinished_node = Some(node_id);
+        }
+        Ok(())
     }
 
     pub(in crate::game::world) fn prepare_continue_before_operation(
@@ -636,7 +612,17 @@ impl GameCore {
             self.state.continue_state = Default::default();
             return Ok(());
         }
-        if matches!(route, ApplicationRoute::Behavior(ActionKind::RetreatBattle)) {
+        // Continue has already validated and installed its canonical confirmed
+        // root. Reconciliation below the restore boundary does not invent new
+        // progress; recapturing here duplicated decode/clone/JSON costs.
+        if matches!(route, ApplicationRoute::ActiveRunContinue) {
+            return Ok(());
+        }
+        // Ordinary retreat returns to confirmation and preserves its pre-entry
+        // Continue root. Stress retreat consumes the node and must publish the
+        // resulting stable state below, including its retained entry cost.
+        if matches!(route, ApplicationRoute::Behavior(ActionKind::RetreatBattle))
+            && matches!(phase, GameState::NodeConfirm { .. }) {
             let node_id = self
                 .state
                 .continue_state
@@ -648,14 +634,8 @@ impl GameCore {
                 .payload
                 .as_ref()
                 .ok_or(GameError::InvalidAction)?;
-            crate::game::resource::store::preflight_resource_clone(&before.current.typed_resources)
-                .map_err(crate::game::resource::store::ResourceError::into_game_error)?;
-            // This transient independently clones current; SavePoint/result
-            // remain shared Arc handles. Admission must precede this clone,
-            // independently of install_continue_payload's later destinations.
-            before.current.relics.preflight_clone()?;
-            before.current.uuid_manager.preflight_relic_stream_clone()?;
-            before.current.preflight_relic_history_clone()?;
+            // Only current is independently copied; SavePoint/result remain shared.
+            before.current.preflight_copy()?;
             let mut payload = crate::authoring::clone_shape::controlled_clone(before.as_ref())?;
             payload.current.abnormality_attempts.insert(
                 node_id,
@@ -674,7 +654,9 @@ impl GameCore {
             GameState::ViewingMap
             | GameState::CombatResult { .. }
             | GameState::AwaitingRunFailureDecision { .. } => true,
-            GameState::NodeConfirm { .. } => self.state.continue_state.unfinished_node.is_none(),
+            GameState::NodeConfirm { .. } => self.state.continue_state.unfinished_node.is_none()
+                || self.run_state()?.run_progression.pending_continuation.is_some_and(|pending|
+                    pending.cause == crate::game::expedition_lifecycle::ExpeditionContinuationCause::Gate),
             GameState::InReward { .. } | GameState::InRewardClaimed { .. } => {
                 self.state.combat_reward_continuation.is_some()
             }
@@ -691,6 +673,7 @@ impl GameCore {
                         | ActionKind::RequestRelicNumericPlan
                         | ActionKind::PreviewRelicCorruption
                         | ActionKind::PreviewRelicDismantle
+                        | ActionKind::PreviewSkillFragmentBloom
                         | ActionKind::RequestBattleState
                         | ActionKind::RequestDeploymentRangePreview
                         | ActionKind::PreviewSkillTarget
@@ -715,22 +698,18 @@ impl GameCore {
         loads_used: u8,
         run_peak_certified_power: u64,
     ) -> Result<(), GameError> {
-        let hint: RelicContinueHint = super::parse_active_run_checkpoint(bytes)?;
-        let relic_owner = hint.continuation.has_relic_owner();
-        if relic_owner {
-            self.ensure_relic_operation()?;
-            crate::game::relic::allocation::admit_json_input(bytes)?;
-            if hint
-                .continuation
-                .savepoint
-                .as_ref()
-                .is_some_and(|s| s.snapshot.is_some())
-            {
-                crate::game::relic::allocation::admit_arc(
-                    std::mem::size_of::<RunCheckpointPayload>(),
-                    "relic_continue_decode_savepoint_arc",
-                )?;
-            }
+        self.ensure_continuation_operation()?;
+        let hint: ContinueAllocationHint = super::parse_active_run_checkpoint(bytes)?;
+        let snapshot = hint.continuation.savepoint.as_ref().and_then(|s| s.snapshot.as_ref());
+        let resource_entries = hint.continuation.current.typed_resources.entries.0
+            .checked_add(snapshot.map_or(0, |s| s.checkpoint.typed_resources.entries.0))
+            .ok_or_else(|| invalid("resource decode count overflow"))?;
+        crate::game::relic::allocation::admit_json_input(bytes, resource_entries)?;
+        if hint.continuation.savepoint.as_ref().is_some_and(|s| s.snapshot.is_some()) {
+            crate::game::relic::allocation::admit_arc(
+                std::mem::size_of::<RunCheckpointPayload>(),
+                "relic_continue_decode_savepoint_arc",
+            )?;
         }
         let header: super::ActiveRunCorePayloadHeader = super::parse_active_run_checkpoint(bytes)?;
         if header.version != VERSION {
@@ -740,15 +719,13 @@ impl GameCore {
             )));
         }
         let document: ContinueDocument = super::parse_active_run_checkpoint(bytes)?;
-        if document.continuation_sha256
-            != format!(
-                "{:x}",
-                Sha256::digest(canonical(&document.continuation, relic_owner)?)
-            )
-        {
-            return Err(invalid("SHA-256 mismatch"));
-        }
+        crate::game::relic::allocation::admit_json_value(&document.continuation)?;
+        let encoded = seal_document(canonical_value(&document.continuation, true)?,
+            Some(&document.continuation_sha256))?;
         let payload = document.continuation.resolve()?;
+        if payload.current.run_progression.expedition_instance.is_some_and(|instance| instance.player_id != player_id) {
+            return Err(invalid("continuation belongs to another player"));
+        }
         self.validate_continue_payload(&payload)?;
         let next = payload
             .result
@@ -760,51 +737,44 @@ impl GameCore {
         {
             return Err(invalid("failure decision has no available SavePoint"));
         }
-        for checkpoint in std::iter::once(&payload.current).chain(payload.savepoint.as_deref()) {
-            crate::authoring::control::monolith_imported_fresh(
-                checkpoint
-                    .encounter_progression
-                    .monolith
-                    .remanifestation_nodes
-                    .capacity(),
-            );
-        }
+        // Preserve the validated immutable continuation before moving gameplay
+        // roots into the draft. Only current is independently copied here;
+        // the shared SavePoint uses the same preflight in from_shared below.
+        payload.current.preflight_copy()?;
+        let retained = crate::authoring::clone_shape::controlled_clone(&payload)?;
         self.run_seed = payload.current.run_progression.run_seed;
         self.state.initialize_player(player_id);
         self.state.uuid_manager =
-            crate::game::managers::uuid_manager::UuidManager::new(self.run_seed);
-        self.state.run_checkpoint.payload = payload
-            .savepoint
-            .as_deref()
-            .map(|checkpoint| {
-                crate::game::resource::store::preflight_resource_clone(&checkpoint.typed_resources)
-                    .map_err(crate::game::resource::store::ResourceError::into_game_error)?;
-                checkpoint.relics.preflight_clone()?;
-                checkpoint.uuid_manager.preflight_relic_stream_clone()?;
-                checkpoint.preflight_relic_history_clone()?;
-                crate::authoring::clone_shape::controlled_clone(checkpoint)
-            })
+            crate::game::managers::uuid_manager::UuidManager::for_instance(self.run_seed, payload.current.run_progression.instance_namespace);
+        self.state.run_checkpoint.payload = payload.savepoint
+            .map(RunCheckpointPayload::from_shared)
             .transpose()?;
         self.state.run_checkpoint.loads_used = loads_used;
         self.state.run_power_authority.run_peak_certified_power = run_peak_certified_power;
-        payload.current.restore_into_state(&mut self.state);
+        payload.current.restore_into_state(&mut self.state)?;
         self.run_state_mut()?.combat_recovery_restriction = payload.recovery_restriction;
         self.state.confirmed_combat_result = payload.result;
         self.state.combat_reward_continuation = payload.reward_continuation;
         self.state.active_node_content = payload.reward.map(ActiveNodeContent::Reward);
         self.state.visual_novel = payload.visual_novel;
+        self.state.node_session = payload.pending_node_session;
         self.state.visual_novel_triggers.persistent_consumed =
             payload.persistent_vn_consumed.into_iter().collect();
         self.state.continue_state = Default::default();
         self.transition_to(payload.phase)?;
+        self.cache_continue_payload(retained, encoded)?;
         Ok(())
     }
 
     fn validate_continue_payload(&self, payload: &ContinuePayload) -> Result<(), GameError> {
         self.validate_run_checkpoint_payload_for_continue(&payload.current)?;
+        self.validate_pending_expedition_selection(&payload.current.run_progression, &payload.current.map,
+            &payload.current.map_progression, &payload.phase, payload.pending_node_session.as_ref())?;
         if let Some(checkpoint) = &payload.savepoint {
+            if checkpoint.run_progression.pending_continuation.is_some() { return Err(invalid("SavePoint cannot carry pending expedition choice")); }
             self.validate_run_checkpoint_payload_for_continue(checkpoint)?;
-            if checkpoint.run_progression.run_seed != payload.current.run_progression.run_seed {
+            if checkpoint.run_progression.run_seed != payload.current.run_progression.run_seed
+                || checkpoint.run_progression.instance_namespace != payload.current.run_progression.instance_namespace {
                 return Err(invalid("SavePoint belongs to another run"));
             }
         }
@@ -813,7 +783,7 @@ impl GameCore {
             .abnormality_attempts
             .iter()
             .any(|(node, attempt)| {
-                payload.current.map.node(*node).is_none()
+                payload.current.facility_run_state.node(&payload.current.map,*node).is_none()
                     || attempt.retreats_used > 2
                     || attempt.max_attempts != 3
                     || attempt.attempts_started > 3
@@ -829,7 +799,7 @@ impl GameCore {
                 restriction
                     .allowed_node_ids
                     .iter()
-                    .any(|node| payload.current.map.node(*node).is_none())
+                    .any(|node| payload.current.facility_run_state.node(&payload.current.map,*node).is_none())
             })
         {
             return Err(invalid("invalid recovery restriction"));
@@ -930,6 +900,14 @@ impl GameCore {
                 {
                     return Err(invalid("invalid combat grant context"));
                 }
+                if let Some(hatched)=payload.current.encounter_progression.revival.nodes.get(&crate::game::map::MapNodeId(reward.stage_uuid)) {
+                    let stage = hatched.stage_policy(&self.game_data.pve_data)
+                        .map_err(|_| invalid("pending revival reward source is unavailable"))?;
+                    let expected = stage.equipment_reward_options(&self.game_data.equipment_data)?;
+                    if !hatched.resolved || reward.rewards!=expected {
+                        return Err(invalid("pending revival reward differs from retained content"));
+                    }
+                } else {
                 for option in &reward.rewards {
                     let definition = self
                         .game_data
@@ -948,14 +926,14 @@ impl GameCore {
                                 .resolved_tuning_for_manifested_node(difficulty)
                         })
                         .map_or(100, |tuning| tuning.reward_multiplier_percent);
-                    let mut scaled = original.clone();
-                    crate::game::combat_setup::rewards::apply_combat_reward_multiplier(
-                        std::slice::from_mut(&mut scaled),
+                    if !crate::game::combat_setup::rewards::matches_retained_combat_reward(
+                        option,
+                        &original,
                         multiplier,
-                    )?;
-                    if option != &original && option != &scaled {
+                    ) {
                         return Err(invalid("pending reward differs from retained content"));
                     }
+                }
                 }
             }
             _ => return Err(invalid("reward continuation is incomplete")),
@@ -1055,6 +1033,7 @@ impl GameCore {
                     return Err(invalid("invalid combat reward phase"));
                 }
             }
+            (GameState::NodeConfirm { .. }, None) if payload.current.run_progression.pending_continuation.is_some() && payload.reward.is_none() => {},
             (GameState::ViewingMap | GameState::AwaitingRunFailureDecision { .. }, None)
                 if payload.reward.is_none() => {}
             _ => return Err(invalid("unsupported continuation phase")),
@@ -1080,17 +1059,17 @@ mod tests {
     use crate::game::{
         data::content_pack::{ContentContract, ContentIdentity},
         map::{test_facility_map, GameMode, MapProgression, RunProgression},
-        monolith::MonolithRemanifestationNode,
+        revival::{HatchedEncounter, RevivalStage},
         world::state::{GameCoreState, RunState},
     };
 
     #[test]
-    fn u04_shared_savepoint_import_charges_fresh_monolith_buckets_before_clone() {
+    fn u17_shared_savepoint_import_charges_revival_tree_before_clone() {
         let map = test_facility_map(41);
         let run = RunState::new(
             map.clone(),
             MapProgression::from_map(&map),
-            RunProgression::new(41, GameMode::Standard, 1),
+            RunProgression::new(41, GameMode::Tutorial, 1),
         );
         let mut current = RunCheckpointPayload::capture(
             &GameCoreState::new(41),
@@ -1104,21 +1083,18 @@ mod tests {
         for id in 1..=64 {
             current
                 .encounter_progression
-                .monolith
-                .remanifestation_nodes
+                .revival
+                .nodes
                 .insert(
                     MapNodeId(Uuid::from_u128(id)),
-                    MonolithRemanifestationNode {
-                        abnormality_id: "test".into(),
-                        encounter_id: "test".into(),
-                        stage: 1,
-                    },
+                    HatchedEncounter { reward_source_id: "test".into(), stage: RevivalStage::Stage2, resolved: false, payment: Default::default() },
                 );
         }
         let wire = ContinuePayloadWire {
             current,
             savepoint: Some(ContinueSavePointWire::Current {}),
             phase: GameState::ViewingMap,
+            pending_node_session: None,
             recovery_restriction: None,
             result: None,
             reward: None,
@@ -1131,13 +1107,6 @@ mod tests {
         let bytes = serde_json::to_vec(&wire).unwrap();
         let fresh = || serde_json::from_slice::<ContinuePayloadWire>(&bytes).unwrap();
         let baseline = fresh();
-        let capacity = baseline
-            .current
-            .encounter_progression
-            .monolith
-            .remanifestation_nodes
-            .capacity();
-        assert!(capacity >= 64);
         let limits = ExecutionLimits::default();
         let token = CancellationToken::default();
         let phase = ExecutionPhase::TrialPreparation;
@@ -1147,7 +1116,6 @@ mod tests {
             phase,
             NativeStorageProvenance::fresh(),
             || {
-                control::monolith_imported_fresh(capacity);
                 crate::authoring::clone_shape::controlled_clone(&baseline.current)
             },
         )
@@ -1164,15 +1132,16 @@ mod tests {
         .unwrap();
         let resolved = resolved.unwrap();
         assert_eq!(actual.clone_slots_peak, usage.clone_slots_peak);
-        assert_eq!(actual.work, usage.work);
+        assert!(actual.work > usage.work,
+            "wire alias also admits its Arc owner, including without relics");
         assert_eq!(
-            resolved.current.encounter_progression.monolith,
+            resolved.current.encounter_progression.revival,
             resolved
                 .savepoint
                 .as_ref()
                 .unwrap()
                 .encounter_progression
-                .monolith
+                .revival
         );
         let mut exact = limits.clone();
         exact.max_clone_slots = usage.clone_slots_peak;
@@ -1201,11 +1170,9 @@ mod tests {
         .unwrap();
         assert_eq!(failure.code, "authoring_clone_limit");
         let input = fresh();
-        let failure = control::run(&ExecutionLimits::default(), &token, phase, || {
-            input.resolve()
-        })
-        .err()
-        .unwrap();
-        assert_eq!(failure.code, "authoring_clone_limit");
+        // A BTreeMap's native clone shape is bounded by length; it does not
+        // need the deleted HashMap's tombstone/capacity provenance.
+        control::run(&ExecutionLimits::default(), &token, phase, || input.resolve())
+            .unwrap().0.unwrap();
     }
 }

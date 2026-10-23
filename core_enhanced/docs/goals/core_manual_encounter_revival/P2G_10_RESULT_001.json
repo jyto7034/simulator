@@ -1,0 +1,56 @@
+{
+  "stage": "P2G-10",
+  "status": "complete",
+  "result_working_revision_ref": {
+    "Artifact Type": "Working Revision",
+    "Artifact ID": "WR-CMER-003",
+    "Content Digest": "sha256:feb53f6636959b4b3736992afa1ceb5a3fb5bf5b49438b1d4a666e2c1544cb80"
+  },
+  "intake_snapshot_ref": {
+    "Artifact Type": "Policy Intake Snapshot",
+    "Artifact ID": "PIS-CMER-001",
+    "Content Digest": "sha256:30bc59413be78e3899f717f1f26f53b8c6c365f648e4c19b386bf14d21dac4ac"
+  },
+  "candidate_dispositions": [
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CPED-CMER-G27-001",
+      "Content Digest": "sha256:faffb690112463213977e408b56b20aaaa2cd3e4883bfa8975e5f5fe51931636"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CPED-CMER-G28-001",
+      "Content Digest": "sha256:a9261d4644593b3c0b01276e455826de34ebb4e045547249448ac8be1bac7611"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CPED-CMER-G29-001",
+      "Content Digest": "sha256:bb45ca53bcf43e5275ebf89b571471d5433931f2ae54f1613dc67c17f0556b17"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CPED-CMER-RESTORE-001",
+      "Content Digest": "sha256:5bc2812a7253c0bb1652d17a4b4470ec083f24f79d65deb98472d22952bcbbd3"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CPED-CMER-LEGACY-001",
+      "Content Digest": "sha256:51c5dcc8b2c1b090503a37314d42b49fdb241da6daabe3ea2a91192837a31599"
+    },
+    {
+      "Artifact Type": "Candidate Policy Element Disposition Record",
+      "Artifact ID": "CPED-CMER-AUTHOR-001",
+      "Content Digest": "sha256:af2a0690614358063513b984e2b1015c8ea1b5273beafa290583e5edf23178c6"
+    }
+  ],
+  "elements": 6,
+  "acceptance": 22,
+  "open_questions": 0,
+  "checks": {
+    "scope_coverage": "G27/G28/G29 and restoration/legacy/authoring",
+    "all_decisions_approved": true,
+    "all_acceptance_nonempty": true,
+    "no_product_implementation_claim": true
+  },
+  "next": "P2G-20 exact current source review"
+}

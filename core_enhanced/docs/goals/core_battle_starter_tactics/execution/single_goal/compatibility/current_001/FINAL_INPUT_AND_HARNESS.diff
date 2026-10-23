@@ -1,0 +1,373 @@
+--- core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001/compare_pc.py
++++ core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/compare_pc.py
+@@ -3,7 +3,7 @@
+ import json
+ from pathlib import Path
+ C = Path(__file__).resolve().parent
+-D = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle')
++D = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics')
+ a = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/pc_raw_current_002.json')
+ b = C / 'evidence/pc_raw_current_002.json'
+ def normalize(p):
+--- core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001/compare_pc_exact_u05.py
++++ core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/compare_pc_exact_u05.py
+@@ -3,7 +3,7 @@
+ import json
+ from pathlib import Path
+ C = Path(__file__).resolve().parent
+-D = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle')
++D = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics')
+ a = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_runtime_safety_observability/execution/s2/compatibility/current_001/evidence/pc_raw_current_002.json')
+ b = C / 'evidence/pc_raw_current_003.json'
+ def normalize(p):
+--- core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001/default_parity.py
++++ core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/default_parity.py
+@@ -109,7 +109,7 @@
+               archive_sha256=hashlib.sha256(archive_path.read_bytes()).hexdigest(),
+               configured_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+               scope="Numeric parity only. Execution/error parity uses current full suites and public predecessor oracles.")
+-with (Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001') / "evidence/DEFAULT_NUMBERS_001.json").open("x") as stream:
++with (Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001') / "evidence/DEFAULT_NUMBERS_001.json").open("x") as stream:
+     json.dump(result, stream, indent=2)
+     stream.write("\n")
+ print(json.dumps(dict(passed=True, compared_defaults=len(rows))))
+--- core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001/finish_pc_u05.py
++++ core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/finish_pc_u05.py
+@@ -9,7 +9,7 @@
+ from pathlib import Path
+ 
+ ROOT = Path('/mnt/f/work/simulator')
+-H = ROOT / 'core_enhanced/docs/goals/core_resonance_lifecycle'
++H = ROOT / 'core_enhanced/docs/goals/core_battle_starter_tactics'
+ C = Path(__file__).resolve().parent
+ sys.path.insert(0, str(H / 'tools'))
+ from run import identity
+--- core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001/host_peak_failure_probe.rs
++++ core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/host_peak_failure_probe.rs
+@@ -8,7 +8,7 @@
+ use serde_json::{Value,json};
+ use std::path::Path;
+ fn main(){
+- let root=Path::new("/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001/inputs/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06");
++ let root=Path::new("/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/inputs/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06");
+  let selection:ContentSelection=serde_json::from_slice(&std::fs::read(root.join("selection.json")).unwrap()).unwrap();
+  let data=content_pack::load(&root.join("content"),&selection,&InputLimits::default()).unwrap();
+  let scenario:Value=serde_json::from_slice(&std::fs::read(root.join("scenario.json")).unwrap()).unwrap();
+--- core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001/prepare_pc.py
++++ core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/prepare_pc.py
+@@ -1,8 +1,8 @@
+ import sys
+ from pathlib import Path
+-sys.path.insert(0, '/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle/tools')
++sys.path.insert(0, '/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/tools')
+ import run
+-run.HERE = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001')
++run.HERE = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001')
+ """Copy the final product source and attach the frozen PC36 test probe."""
+ 
+ import hashlib
+@@ -15,7 +15,7 @@
+ 
+ 
+ ROOT = Path("/mnt/f/work/simulator")
+-HERE = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001')
++HERE = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001')
+ SUFFIX = sys.argv[1] if len(sys.argv) > 1 else "final"
+ PRIOR = ROOT / (
+     "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/"
+--- core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001/prepare_pc_u05.py
++++ core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/prepare_pc_u05.py
+@@ -1,8 +1,8 @@
+ import sys
+ from pathlib import Path
+-sys.path.insert(0, '/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle/tools')
++sys.path.insert(0, '/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/tools')
+ import run
+-run.HERE = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001')
++run.HERE = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001')
+ """Copy the final product source and attach the frozen PC36 test probe."""
+ 
+ import hashlib
+@@ -15,7 +15,7 @@
+ 
+ 
+ ROOT = Path("/mnt/f/work/simulator")
+-HERE = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001')
++HERE = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001')
+ SUFFIX = sys.argv[1] if len(sys.argv) > 1 else "final"
+ PRIOR = ROOT / (
+     "core_enhanced/docs/goals/content_authoring_value_expressions_reassessment/"
+@@ -103,6 +103,20 @@
+         "\n#[cfg(test)]\npub(crate) fn baseline_usage() -> Option<(u64, usize, Option<usize>)> {\n"
+         " ACTIVE.with(|slot| slot.borrow().as_ref().map(|b| (b.work, b.clone_slots, b.retained_admission)))\n}\n"
+     )
++# Layout output occurs before the frozen probe opens its measured allocation
++# regions. Preserve every workload row and expose the actual compiler layout.
++layout_probe = '''
++    eprintln!("U06_LAYOUT {}", serde_json::json!({
++        "runtime_unit_bytes": std::mem::size_of::<crate::game::battle::core::types::RuntimeUnit>(),
++        "basic_attack_bytes": std::mem::size_of::<crate::game::data::abnormality_data::BasicAttackDef>(),
++        "basic_action_bytes": std::mem::size_of::<crate::game::data::abnormality_data::BasicAttackAction>(),
++        "tactical_state_bytes": std::mem::size_of::<crate::game::battle::core::types::UnitTacticalState>()
++    }));
++'''
++probe_path = isolate / "pc_probe.rs"
++probe = probe_path.read_text()
++assert probe.count("fn pc_load_baseline() {") == 1
++probe_path.write_text(probe.replace("fn pc_load_baseline() {", "fn pc_load_baseline() {" + layout_probe))
+ instrumented = identity(isolate)
+ hooks = HERE / f"evidence/pc_isolate_hooks_{SUFFIX}.tar.gz"
+ with tarfile.open(hooks, "x:gz") as archive:
+@@ -115,6 +129,7 @@
+     "built_source": instrumented,
+     "instrumented_paths": [ADAPTER, NATIVE],
+     "fixture_migration": "Explicit original nonemployee TestFixture resonance0/100/1000 in isolated private draft helper; production Employee default20/100/0 is unchanged.",
++    "layout_observation": "Print actual current compiler layout before any measured allocation/time region; workload, numerical caps and every raw row are unchanged.",
+     "supplemental": {
+         name: digest((isolate / name).read_bytes())
+         for name in ["review_probes.rs", "pc_probe.rs"]
+--- core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001/probe.py
++++ core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/probe.py
+@@ -7,7 +7,7 @@
+ import tempfile
+ 
+ C = Path(__file__).resolve().parent
+-D = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle')
++D = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics')
+ R = D.parents[3]
+ sha = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
+ label = sys.argv[1] if len(sys.argv) > 1 else '001'
+@@ -40,7 +40,7 @@
+     assert result.returncode == 0, result.stderr[-2000:]
+     result = subprocess.run([str(binary)], capture_output=True)
+     (out / 'run.log').write_bytes(result.stdout + result.stderr)
+-    fixture = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001/inputs') / old['fixture']
++    fixture = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/inputs') / old['fixture']
+     inputs += [source] + [p for p in fixture.rglob('*') if p.is_file()]
+     receipt = dict(command=command, exit_code=result.returncode, source_sha256=sha(source), binary_sha256=sha(binary), input_files=[dict(path=str(p.relative_to(R)), sha256=sha(p)) for p in sorted(inputs)], output_files=[dict(path=p.name, sha256=sha(p)) for p in sorted(out.iterdir())], expectation='failed host publication preserves run and durable checkpoint without battle; retry enters battle with higher persisted peak')
+     (out / 'RESULT.json').write_text(json.dumps(receipt, indent=2) + '\n')
+--- core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001/public_boundary_probe.py
++++ core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/public_boundary_probe.py
+@@ -4,9 +4,9 @@
+ from pathlib import Path
+ import subprocess
+ import sys
+-sys.path.insert(0, '/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle/tools')
++sys.path.insert(0, '/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/tools')
+ from initialize import ROOT
+-HERE = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001')
++HERE = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001')
+ 
+ label = sys.argv[1] if len(sys.argv) > 1 else "001"
+ assert label.isdigit()
+--- core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001/public_cli.py
++++ core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/public_cli.py
+@@ -1,10 +1,10 @@
+ """Public release CLI; exact sources and unmodified predecessor packs are retained."""
+ import hashlib,json,subprocess,sys
+ from pathlib import Path
+-H=Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001/inputs/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001');E=H.parents[1]/'evidence';R=Path('/mnt/f/work/simulator');B=R/'.cache/d07-runtime-amount-product-target/release/author_content'
++H=Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/inputs/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001');E=H.parents[1]/'evidence';R=Path('/mnt/f/work/simulator');B=R/'.cache/d07-runtime-amount-product-target/release/author_content'
+ OLD=R/'core_enhanced/docs/goals/content_authoring_fragment_copies/execution/single_goal/evidence'
+ PACKS=[('r06',E/'cli_predecessor_current_001/r06','fragment_freischutz_black_round'),('r07_snapshot',E/'cli_predecessor_current_001/r07_snapshot','r07_awakened'),('r07_live',E/'cli_predecessor_current_001/r07_live','r07_awakened'),('r10_snapshot',E/'r10_public_cli_002/snapshot','fragment_freischutz_black_round'),('r10_live',E/'r10_public_cli_002/live','fragment_freischutz_black_round')]+[(f'r12_{name}',E/'r12_public_cli_003'/name,'r08_strike' if name in ['released','effectssettled'] else 'fragment_freischutz_black_round') for name in ['hello','protection','released','effectssettled']]
+-E=Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001')/'evidence'/'cli_current';E.mkdir(exist_ok=False)
++E=Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001')/'evidence'/'cli_current';E.mkdir(exist_ok=False)
+ commands=[];comparisons=[]
+ def run(name,args):
+     log=E/f'{name}.log'
+--- core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001/public_probe.py
++++ core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/public_probe.py
+@@ -1,15 +1,15 @@
+ import sys
+ from pathlib import Path
+-sys.path.insert(0, '/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle/tools')
++sys.path.insert(0, '/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/tools')
+ import run
+-run.HERE = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001')
++run.HERE = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001')
+ """Re-execute the five frozen public F01 inputs without rewriting old evidence."""
+ import json
+ import subprocess
+ import sys
+ from pathlib import Path
+ import run
+-run.PRIOR = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001/inputs') / 'core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001'
++run.PRIOR = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/inputs') / 'core_enhanced/docs/goals/content_authoring_r08_r12_runtime/reviews/r08_r12_20261002_001'
+ 
+ label = sys.argv[1]
+ assert label in ('before', 'after', 'after_002')
+--- core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001/public_profile_probe.py
++++ core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/public_profile_probe.py
+@@ -13,9 +13,9 @@
+ import urllib.request
+ 
+ import sys
+-sys.path.insert(0, '/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle/tools')
++sys.path.insert(0, '/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/tools')
+ from initialize import ROOT
+-HERE = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001')
++HERE = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001')
+ 
+ BINS = ROOT / ".cache/d07-runtime-amount-product-target/release"
+ label = sys.argv[1] if len(sys.argv) > 1 else "001"
+@@ -84,7 +84,7 @@
+ assert original[0]["source_receipt"] == selected[0]["source_receipt"]
+ 
+ # The predecessor scenario is unchanged and already exercises real public APIs.
+-fixture = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001/inputs') / "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06"
++fixture = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/inputs') / "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/evidence/cli_predecessor_current_001/r06"
+ explain = OUT / "explain.json"
+ explain.write_text(json.dumps({"query": "definition", "key": {"kind": "Skill", "id": "fragment_freischutz_black_round"}}))
+ for operation in ("validate", "describe", "explain", "simulate"):
+--- core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001/public_trace_probe.py
++++ core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/public_trace_probe.py
+@@ -1,8 +1,8 @@
+ import sys
+ from pathlib import Path
+-sys.path.insert(0, '/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle/tools')
++sys.path.insert(0, '/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/tools')
+ import run
+-run.HERE = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001')
++run.HERE = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001')
+ """Check each corrected public cancellation input with diagnostic tracing enabled."""
+ from pathlib import Path
+ import json
+--- core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001/regressions.py
++++ core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/regressions.py
+@@ -3,7 +3,7 @@
+ import subprocess
+ import sys
+ C = Path(__file__).resolve().parent
+-D = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle')
++D = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics')
+ R = D.parents[3]
+ E = C / 'evidence'
+ def run(name, command, allowed=(0,)):
+--- core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001/summarize_r05.py
++++ core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/summarize_r05.py
+@@ -5,10 +5,10 @@
+ 
+ ROOT = Path('/mnt/f/work/simulator')
+ HERE = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001')
+-E = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001') / 'evidence'
++E = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001') / 'evidence'
+ raw_path = E / 'r05_raw_current_002.json'
+ raw = json.loads(raw_path.read_text())
+-receipt = json.loads((Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle/evidence') / 'compat_r05_003.json').read_text())
++receipt = json.loads((Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/evidence') / 'compat_r05_003.json').read_text())
+ baseline_path = HERE.parents[1] / 'evidence/P01_LOG_V32_BASELINE_001.json'
+ baseline = json.loads(baseline_path.read_text())
+ prior = json.loads((ROOT / 'core_enhanced/docs/goals/content_authoring_fragment_copies/execution/single_goal/evidence/r05_raw_integrated_003.json').read_text())
+@@ -63,7 +63,7 @@
+ concurrent = summaries['concurrent_sessions']
+ assert concurrent['caps']['peak'] == 9_030_188
+ excess = max(0, concurrent['max_peak_bytes'] - concurrent['caps']['peak'])
+-log = (Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle/evidence') / 'compat_r05_003.log').read_text()
++log = (Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/evidence') / 'compat_r05_003.log').read_text()
+ if receipt['exit_code'] == 101:
+     assert excess > 0 and not failures
+     assert log.count("thread 'main'") == 1
+--- core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001/summarize_r05_current.py
++++ core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/summarize_r05_current.py
+@@ -5,10 +5,10 @@
+ 
+ ROOT = Path('/mnt/f/work/simulator')
+ HERE = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/corrections/f01_action_flow_20261004_001')
+-E = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001') / 'evidence'
++E = Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001') / 'evidence'
+ raw_path = E / 'r05_raw_current_002.json'
+ raw = json.loads(raw_path.read_text())
+-receipt = json.loads((Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle/evidence') / 'compat_r05_002.json').read_text())
++receipt = json.loads((Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/evidence') / 'compat_r05_002.json').read_text())
+ baseline_path = HERE.parents[1] / 'evidence/P01_LOG_V32_BASELINE_001.json'
+ baseline = json.loads(baseline_path.read_text())
+ prior = json.loads((ROOT / 'core_enhanced/docs/goals/content_authoring_fragment_copies/execution/single_goal/evidence/r05_raw_integrated_003.json').read_text())
+@@ -63,7 +63,7 @@
+ concurrent = summaries['concurrent_sessions']
+ assert concurrent['caps']['peak'] == 9_030_188
+ excess = max(0, concurrent['max_peak_bytes'] - concurrent['caps']['peak'])
+-log = (Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_resonance_lifecycle/evidence') / 'compat_r05_002.log').read_text()
++log = (Path('/mnt/f/work/simulator/core_enhanced/docs/goals/core_battle_starter_tactics/evidence') / 'compat_r05_002.log').read_text()
+ if receipt['exit_code'] == 101:
+     assert excess > 0 and not failures
+     assert log.count("thread 'main'") == 1
+--- /dev/null
++++ core_enhanced/docs/goals/core_battle_starter_tactics/execution/single_goal/compatibility/current_001/compare_pc_cost_u06.py
+@@ -0,0 +1,77 @@
++"""Compare all 576 U05/U06 rows after the explicit inline action storage costs.
++
++Damage is omitted from canonical serialization, so its clone-shape visits and
++native accounting are unchanged. Allocation bytes retain the new inline enum.
++No workload, typed error, numeric ceiling or allocation count is normalized.
++"""
++import copy,hashlib,json,re,tarfile
++from pathlib import Path
++ROOT=Path('/mnt/f/work/simulator')
++C=Path(__file__).resolve().parent
++BEFORE=ROOT/'core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/compatibility/current_001/evidence/pc_raw_current_003.json'
++AFTER=C/'evidence/pc_raw_current_001.json'
++LOG=ROOT/'core_enhanced/docs/goals/core_battle_starter_tactics/evidence/compat_pc_001.log'
++OUTPUT=C/'evidence/PC_IMMEDIATE_ACCOUNTED_U06.json'
++sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
++layout_lines=re.findall(r'U06_LAYOUT (\{[^\n]+\})',LOG.read_text())
++assert len(layout_lines)==1
++layout=json.loads(layout_lines[0]);assert layout['basic_action_bytes']==40,layout
++archive=ROOT/'core_enhanced/docs/goals/core_resonance_lifecycle/execution/single_goal/target/u05_002/SOURCE_AFTER.tar.gz'
++def declaration(text,name):
++ return text.split('pub struct '+name+' {',1)[1].split('\n}',1)[0]
++with tarfile.open(archive) as old_source:
++ unit_path='core_enhanced/src/game/battle/core/types.rs'
++ basic_path='core_enhanced/src/game/data/abnormality_data.rs'
++ old_unit=old_source.extractfile(unit_path).read().decode()
++ old_basic=old_source.extractfile(basic_path).read().decode()
++ assert declaration(old_unit,'RuntimeUnit')==declaration((ROOT/unit_path).read_text(),'RuntimeUnit')
++ current_basic=declaration((ROOT/basic_path).read_text(),'BasicAttackDef')
++ action_field='\n    #[serde(default, skip_serializing_if = "BasicAttackAction::is_damage")]\n    pub action: BasicAttackAction,'
++ assert current_basic.count(action_field)==1
++ assert current_basic.replace(action_field,'')==declaration(old_basic,'BasicAttackDef')
++ weapon_path='core_enhanced/src/game/data/equipment_data.rs'
++ old_weapon=old_source.extractfile(weapon_path).read().decode()
++ current_weapon=declaration((ROOT/weapon_path).read_text(),'WeaponCombatProfile')
++ weapon_field='\n    #[serde(\n        default,\n        skip_serializing_if = "super::abnormality_data::BasicAttackAction::is_damage"\n    )]\n    pub action: super::abnormality_data::BasicAttackAction,'
++ assert current_weapon.count(weapon_field)==1
++ assert current_weapon.replace(weapon_field,'')==declaration(old_weapon,'WeaponCombatProfile')
++ for path,name in [('core_enhanced/src/game/battle/types.rs','UnitCombatProfile'),('core_enhanced/src/game/battle/scenario.rs','ScenarioUnitSpawn')]:
++  assert declaration(old_source.extractfile(path).read().decode(),name)==declaration((ROOT/path).read_text(),name)
++def without_time(path):
++ value=json.loads(path.read_text())
++ for row in value['rows']:
++  for stage in ('measurement','setup'):
++   if stage in row:del row[stage]['elapsed_ns']
++ return value
++before,after=map(without_time,(BEFORE,AFTER))
++assert before['schema']==after['schema']==1 and before['seed']==after['seed']==17
++assert len(before['rows'])==len(after['rows'])==576
++normalized=copy.deepcopy(after);costs=[]
++for index,(old,new) in enumerate(zip(before['rows'],normalized['rows'])):
++ family=old['family'];assert family==new['family'];changes=[]
++ if family in ('literal_battle_public_step','damage_burst_private_transaction'):
++  units=old['enemies']+old['allies'];assert units==old['units'] and old['allies']==12
++  capacity=4
++  while capacity*7//8<units:capacity*=2
++  slots=10 if family=='literal_battle_public_step' and old['chunk_ms']==100 else 1
++  assert len(new['native_usage'])==slots
++  # RuntimeUnit gains one40-byte action. Setup grows4+8+...+capacity;
++  # each measured transaction clones capacity buckets. No tactical states.
++  # spawn_scenario_group clones each group's Vec<ScenarioUnitSpawn> once.
++  # Its inline TestFixture UnitCombatProfile contains both BasicAttackDef
++  # and Option<WeaponCombatProfile>: two40-byte actions, including None's
++  # storage. Thus that existing setup allocation grows80 bytes/spawn.
++  for stage,delta in [('setup',40*(2*capacity-4)+80*units),('measurement',40*capacity*slots)]:
++   if new[stage]['allocation_observer']:
++    raw=new[stage]['requested_bytes_sum'];assert raw>=delta
++    new[stage]['requested_bytes_sum']-=delta
++    changes.append({'field':stage+'.requested_bytes_sum','before':raw-delta,'after':raw,'delta':delta})
++   else:assert new[stage]['requested_bytes_sum'] is None
++ else:assert family in ('live_adapter_repetition_synthetic','kernel_resolved_aggregate_synthetic')
++ assert old==new,(index,family,{k:(old.get(k),new.get(k)) for k in old.keys()|new.keys() if old.get(k)!=new.get(k)})
++ costs.append({'row':index,'family':family,'warmup':old['warmup'],'sample':old['sample'],'allocation_observer':old['measurement']['allocation_observer'],'changes':changes})
++assert before==normalized
++sources=['core_enhanced/src/game/battle/core/types.rs','core_enhanced/src/game/data/abnormality_data.rs','core_enhanced/src/game/data/equipment_data.rs','core_enhanced/src/game/battle/types.rs','core_enhanced/src/game/battle/scenario.rs','core_enhanced/src/game/battle/core/build.rs','core_enhanced/src/game/battle/core/mod.rs','core_enhanced/src/authoring/clone_shape.rs']
++result={'passed':True,'rows':576,'before':{'path':str(BEFORE.relative_to(ROOT)),'sha256':sha(BEFORE)},'after':{'path':str(AFTER.relative_to(ROOT)),'sha256':sha(AFTER)},'claim':'Every non-timing field equals immediate U05 after only declared inline action allocation-byte increases:40 bytes/runtime-unit bucket and80 bytes/initial spawn-vector element. Actual allocated bytes are larger; no unchanged-cost claim.','excluded':['setup.elapsed_ns','measurement.elapsed_ns'],'unchanged_gates':'Original gameplay and typed refusal oracle, native usage, allocation request counts, public guards and R05 ceilings remain unchanged.','source_basis':{p:sha(ROOT/p) for p in sources},'predecessor_source_archive':{'path':str(archive.relative_to(ROOT)),'sha256':sha(archive),'declaration_checks':['RuntimeUnit, UnitCombatProfile and ScenarioUnitSpawn fields are byte-identical','BasicAttackDef and WeaponCombatProfile fields are byte-identical after removing only their new inline action fields']},'compiler_layout':layout,'layout_log_sha256':sha(LOG),'per_row_cost_changes':costs}
++with OUTPUT.open('x') as f:json.dump(result,f,indent=2);f.write('\n')
++print('PASS 576 immediate U05 rows after explicit40-byte inline action storage cost; original gates unchanged')

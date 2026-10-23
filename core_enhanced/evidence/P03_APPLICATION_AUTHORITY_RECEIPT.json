@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "receipt_ref": "AAR-CRAR-C2-P03-GEX10-001",
+  "captured_date": "2026-08-23",
+  "handoff_ref": "HA-CRAR-P2G60-002",
+  "goal_set_ref": "GS-CRAR-P2G50-002",
+  "goal_id": "GOAL-CRAR-C2-P03-APPLICATION-AUTHORITY",
+  "phase_id": "PHASE-CRAR-C2-03-APPLICATION-AUTHORITY",
+  "execution_node": "AG-CRAR-C2-01-APPLICATION-AUTHORITY",
+  "work_packages": ["WP-CRAR-C2-02", "WP-CRAR-C2-03"],
+  "repository": {
+    "revision": "f318414fb0156a67e04c5479000c2a2683fc0c09",
+    "branch": "cleanup/simulator-dirty-worktree-20260803"
+  },
+  "application_authority": {
+    "action_kind_count": 58,
+    "production_non_behavior_route_count": 10,
+    "fixture_only_route_count": 1,
+    "application_owner_count_release": 11,
+    "public_root_wrapper_count": 12,
+    "live_root_commit_port_count": 1,
+    "old_broad_root_router_count": 0,
+    "old_battle_root_staging_wrapper_count": 0,
+    "parallel_game_state_field_count": 0,
+    "default_release_direct_root_or_fixture_access_count": 0,
+    "sequence": [
+      "validate_current_lifecycle",
+      "clone_complete_authority_draft",
+      "run_domain_validation_and_mutation",
+      "prepare_fallible_result",
+      "validate_staged_lifecycle",
+      "create_typed_commit_token",
+      "infallible_single_root_commit",
+      "infallible_publish"
+    ]
+  },
+  "atomicity_matrix": {
+    "ca003_commands": [
+      "PauseBattle",
+      "ResumeBattle",
+      "SetBattleSpeed",
+      "BeginSkillTargeting",
+      "CancelSkillTargeting",
+      "ActivateSkill"
+    ],
+    "ca003_failure": "future cursor u64::MAX after normal domain preconditions",
+    "ca003_assertion": "exact complete authority equality after first rejection and retry; identical typed error",
+    "ca004_command": "StartNewGame",
+    "ca004_failure": "missing RunStart visual novel trigger",
+    "ca004_assertion": "exact nonbattle roots/profile/run_seed equality after first rejection and retry; identical error",
+    "post_commit_outcome": "typed accepted/recovery-pending; never Err",
+    "incoherent_lifecycle": "pre-staging InvalidAction with authority unchanged"
+  },
+  "validation_dimensions": {
+    "success": "actual valid release publication to StartNewGame plus full Core suite",
+    "invalid_input": "invalid lifecycle, stale authority, missing trigger and payload matrices",
+    "failure_rollback": "CA003/004 plus existing late event/reward/reconciliation/advance rollback",
+    "retry_idempotency": "all six CA003 commands and CA004 identical retry from exact basis",
+    "ordering_concurrency": "one owner/commit port, elapsed-vs-bucket equivalence and deterministic ordering corpus",
+    "boundary_empty_max": "missing trigger, absent context, revision overflow and u64::MAX cursor",
+    "disconnect_restart_persistence": "disconnect auto-pause and active-run rollback/continue routed; V4 format unchanged",
+    "live_data": "inherited current P02 opaque publication; actual valid release probe",
+    "producer_consumer": "public GameCore entries to application owner to result/full projection",
+    "legacy_fallback_absence": "old broad router/staging wrapper/parallel phase field/public root fixture bypass all zero"
+  },
+  "validation": [
+    {"command": "cargo fmt --all -- --check", "result": "exit 0"},
+    {"command": "cargo check -p game_core --release", "result": "exit 0; warnings 0"},
+    {"command": "cargo test -p game_core --no-run", "result": "exit 0"},
+    {"command": "focused application registry/lifecycle/outcome", "result": "3 passed"},
+    {"command": "focused CA003 playback", "result": "1 passed; pause/resume/speed first+retry"},
+    {"command": "focused CA003 targeting", "result": "1 passed; begin/activate/cancel first+retry"},
+    {"command": "focused CA004 StartNewGame", "result": "1 passed; first+retry exact equality"},
+    {"command": "cargo test -p game_core", "result": "1136 passed; 0 failed; 0 ignored"},
+    {"command": "valid application authority release probe", "result": "exit 0"},
+    {"command": "invalid application authority release probe", "result": "expected exit 101; E0599/E0616/E0603"},
+    {"command": "P01 feature manifest verifier", "result": "57 features; 42 contents; composite 2547febe9ba788d82a4a1b282e2b26bed8edd3cb7af466217e3eb5ef634f4ff7; errors 0"},
+    {"command": "P02 valid/invalid probes", "result": "valid exit 0; invalid expected exit 101 E0432/E0603/E0277/E0599"}
+  ],
+  "currentness": {
+    "p01": "ATR-CRAR-C2-P01-GEX20-003 Complete / High",
+    "p02": "ATR-CRAR-C2-P02-GEX20-003 Complete / High"
+  },
+  "quality_limitations": [
+    "whole-library Clippy remains blocked by pre-existing boss_runtime_data.rs:1680 never_loop and 79 broad warnings; new application.rs emitted no warning",
+    "complete authority clone cost is non-blocking in P03; P08 owns like-for-like optimization and performance PASS",
+    "game_server, Unity, transports and external consumers were not inspected or claimed"
+  ]
+}

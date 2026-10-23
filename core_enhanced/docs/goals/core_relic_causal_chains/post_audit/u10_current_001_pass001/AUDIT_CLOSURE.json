@@ -1,0 +1,140 @@
+{
+  "schema": "U10_INDEPENDENT_AUDIT_CLOSURE_V1",
+  "closed_at_utc": "2026-10-09T13:35:49.705761+00:00",
+  "goal": "GOAL-CRCE-01",
+  "goal_set": "GS-CRCE-001",
+  "auditor": "/root/u09_independent_audit029",
+  "model": "previously confirmed gpt-6-astra/high",
+  "independence": "No U10 planning/design/product/test/execution participation. Prior U09 independent audit only. Root kept all input writers and runners at zero. This audit performed source/oracle/raw/provenance review and independent read-only hashes/data calculations, writing only its own eight artifacts.",
+  "audit_work_complete": true,
+  "whole_goal_review_complete": true,
+  "goal_complete": false,
+  "verdict": "Not Complete",
+  "confidence": "High",
+  "open_findings": 2,
+  "complete_high_open0": false,
+  "finding_ids": [
+    "U10-AUD-F01",
+    "U10-AUD-F02"
+  ],
+  "finding_class": "Missing actual combined execution evidence; neither establishes a product malfunction.",
+  "target_manifest": {
+    "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/target/u10_current_001/MANIFEST.json",
+    "bytes": 218265,
+    "sha256": "c24c6e90c48b81f432deeaf78258bb6b0e5110bd5b770d0851927c4b37961c95"
+  },
+  "runtime_source": {
+    "files": 532,
+    "sha256": "02e185fad4820f3366c465af9904284fc33394d5f6d59ec65e0dc33710d329ac",
+    "source_manifest": {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/finalization001/CURRENT_SOURCE.json",
+      "sha256": "dbd9bf0b77582290b9d0f4eae1e354a44944ab749fbeb8a6c424536a439e14ab",
+      "bytes": 101107
+    }
+  },
+  "restoration_source": {
+    "before_files": 497,
+    "after_files": 542,
+    "before_sha256": "4223935c6ec0dc1107dc39a05cf05b6fe562da6e06844e66e65a57d77d3d50d1",
+    "after_sha256": "881388914a7dd1f51277ea3daa9f9585f4c2ee132d36365b73370745198f7fc1",
+    "changed": 85,
+    "added": 45,
+    "deleted": 0,
+    "verification": {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/execution/single_goal/target/u10_current_001/RESTORE_VERIFICATION.json",
+      "bytes": 2316,
+      "sha256": "4537baf2bf9325222180f8e2364385efebac8245bc0391148fd9440abac6b29c"
+    },
+    "workspace_reverse": false
+  },
+  "outside_target_freeze_execution": [
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u10_freeze_20261009_002/EXECUTION_RECEIPT.json",
+      "bytes": 3618,
+      "sha256": "ac528c5ce96e12e6bda330bdcb5fc5da4981b331919fbc62b9392700dd3de578"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u10_freeze_20261009_002/stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "core_enhanced/docs/roadmaps/core_first/execution/u10_freeze_20261009_002/stdout.log",
+      "bytes": 261,
+      "sha256": "235eee8bcc947177a0555f95b20ff447bc6b8ebfc053f030effa1b58a23983ec"
+    }
+  ],
+  "prior_u09_closure_preserved": {
+    "path": "core_enhanced/docs/goals/core_relic_structural_activation/post_audit/u09_current_038_pass002/AUDIT_CLOSURE.json",
+    "sha256": "edb2b94bb4bf89ab1d372767320a888ef4125c1f3d609986cccccfb3839c7559",
+    "bytes": 8346
+  },
+  "scope": {
+    "policy_sentences": 28,
+    "integration_rows": 19,
+    "required_dimensions": 10,
+    "execution_nodes": 3,
+    "predecessor_rows": 288,
+    "policy_supported": 26,
+    "policy_open": 2,
+    "predecessor_scoped_supported": 260,
+    "predecessor_causal_suppression_qualified": 12,
+    "predecessor_current_completion_incomplete": 16
+  },
+  "currentness": {
+    "entry_checks": 2360,
+    "exit_checks": 2360,
+    "mismatches": 0,
+    "all_four_archives_exact_members_bytes_hash": true
+  },
+  "audit_artifacts": [
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_001_pass001/COMPLETION_AUDIT.md",
+      "bytes": 7518,
+      "sha256": "c773beb1469ab56ecfdc83a46821de38a49db6114bb1024f40e95f6bf8fcc102"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_001_pass001/CONDITION_REVIEW.json",
+      "bytes": 59228,
+      "sha256": "e44965ced5816a9f6ee98727a1f680710388b73d3a70759c592134983c453e3f"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_001_pass001/PREDECESSOR_REVIEW.json",
+      "bytes": 824733,
+      "sha256": "a60ff3b806e60cdccbcc6c0ca0c193bec308d8477a067061ae0f4701f8b3f6d6"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_001_pass001/EVIDENCE_REVIEW.json",
+      "bytes": 73590,
+      "sha256": "f3022f93d8ac867c25ffe9ede8caac8944314129aca519a7a52dc4409caded51"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_001_pass001/FINDINGS.json",
+      "bytes": 8031,
+      "sha256": "bfeba679448eac5551cb5c049a861f39b0af57d4b2764446353f7b6588469f84"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_001_pass001/ENTRY_CURRENTNESS.json",
+      "bytes": 719,
+      "sha256": "95f5219a1a731173cda76a7b83a7916b5d69aa8daed7eae13149201e03803fd6"
+    },
+    {
+      "path": "core_enhanced/docs/goals/core_relic_causal_chains/post_audit/u10_current_001_pass001/EXIT_CURRENTNESS.json",
+      "bytes": 1226,
+      "sha256": "efe285d72916a2c2cf9fda89e61686bef71e7df5bc0571298007938a328a1867"
+    }
+  ],
+  "next_owners": {
+    "Root": "Coordinate finding-specific independent test work and successor evidence/freeze; preserve this failed audit/target.",
+    "independent_test_Astra": "Author missing real basic+counter+subscriber and actual Corrosion+active-causal-owner comparison oracles without weakening frozen acceptance.",
+    "Sol": "Execute exact fixed-source selectors; return real raw/receipt/currentness. Change product only if actual failure warrants it.",
+    "independent_auditor": "Review successor full Goal with focused delta/currentness plus valid scoped reuse; do not close findings based on descriptions alone."
+  },
+  "limits": [
+    "Whole-suite freshness not claimed or required merely by absence.",
+    "Original PC strict failure and R05 existing peak-only warning preserved.",
+    "Current default16 authority and measured fixed empty-state cost accepted only within documented scope.",
+    "No exact source/raw hashes relabeled retroactively.",
+    "No product patch, test run or restore operation was performed by this auditor."
+  ]
+}

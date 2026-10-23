@@ -1,0 +1,304 @@
+{
+  "schema_version": "p2g40.phase_plan_validation_receipt/v1",
+  "phase_plan_validation_receipt_ref": "PVR-CEXL-001",
+  "evaluated_phase_plan": {
+    "ref": "PP-CEXL-001",
+    "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_40_PHASE_PLAN_001.json",
+    "sha256": "1d56c857e443925c9105ad74e2d4435bf2199c410b90e55b6465a54ab023e8f2"
+  },
+  "bound_final_policy_freeze": {
+    "ref": "FPF-CEXL-001",
+    "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_30_FREEZE_001.json",
+    "sha256": "fcd2b41a0a539adacdb3a148629358cfb3cc7dd5bcf0359150b9bd7e3dae0688"
+  },
+  "validator": {
+    "method_version": "p2g40-receipt-validator/1.2.0",
+    "invocation": "node core_enhanced/docs/tools/validate_p2g40_receipt.mjs --plan <plan> --freeze <freeze> --receipt <receipt>",
+    "methods": [
+      "sha256sum exact-input binding",
+      "stable selector set comparison",
+      "Tarjan SCC and atomic-group condensation audit",
+      "final-execution-node cardinality comparison",
+      "phase/audit/integration row cardinality comparison"
+    ]
+  },
+  "freeze_prerequisite_repair_basis_exact_match": {
+    "result": "passed",
+    "working_revision_ref": "WR-CEXL-008",
+    "review_batch_ref": "RB-CEXL-002",
+    "reviewed_source_basis_ref": "RSB-CEXL-002",
+    "code_review_binding_count": 15,
+    "bound_final_policy_freeze_ref": "FPF-CEXL-001",
+    "applicable_p2g40_obligation_key_count": 0,
+    "resolution_record_ref_count": 0,
+    "obligation_supersession_record_ref_count": 0
+  },
+  "selector_resolution": {
+    "result": "passed",
+    "resolved_unique_count": 15,
+    "missing_count": 0,
+    "ambiguous_count": 0,
+    "extra_count": 0,
+    "exact_resolution": [
+      {
+        "element_id": "PE-CEXL-01",
+        "policy_element_revision_ref": "PER-CEXL-01-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CEXL-02",
+        "policy_element_revision_ref": "PER-CEXL-02-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CEXL-03",
+        "policy_element_revision_ref": "PER-CEXL-03-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CEXL-04",
+        "policy_element_revision_ref": "PER-CEXL-04-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CEXL-05",
+        "policy_element_revision_ref": "PER-CEXL-05-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CEXL-06",
+        "policy_element_revision_ref": "PER-CEXL-06-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CEXL-07",
+        "policy_element_revision_ref": "PER-CEXL-07-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CEXL-08",
+        "policy_element_revision_ref": "PER-CEXL-08-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CEXL-09",
+        "policy_element_revision_ref": "PER-CEXL-09-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CEXL-10",
+        "policy_element_revision_ref": "PER-CEXL-10-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CEXL-11",
+        "policy_element_revision_ref": "PER-CEXL-11-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CEXL-12",
+        "policy_element_revision_ref": "PER-CEXL-12-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CEXL-13",
+        "policy_element_revision_ref": "PER-CEXL-13-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CEXL-PS01",
+        "policy_element_revision_ref": "PER-CEXL-PS01-REVIEWED-001"
+      },
+      {
+        "element_id": "PE-CEXL-PS02",
+        "policy_element_revision_ref": "PER-CEXL-PS02-REVIEWED-001"
+      }
+    ]
+  },
+  "primary_phase_coverage": {
+    "result": "passed",
+    "covered_count": 15,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0,
+    "assignments": [
+      {
+        "element_id": "PE-CEXL-PS01",
+        "phase_id": "PHASE-CEXL-01"
+      },
+      {
+        "element_id": "PE-CEXL-PS02",
+        "phase_id": "PHASE-CEXL-01"
+      },
+      {
+        "element_id": "PE-CEXL-01",
+        "phase_id": "PHASE-CEXL-01"
+      },
+      {
+        "element_id": "PE-CEXL-02",
+        "phase_id": "PHASE-CEXL-01"
+      },
+      {
+        "element_id": "PE-CEXL-03",
+        "phase_id": "PHASE-CEXL-01"
+      },
+      {
+        "element_id": "PE-CEXL-04",
+        "phase_id": "PHASE-CEXL-01"
+      },
+      {
+        "element_id": "PE-CEXL-05",
+        "phase_id": "PHASE-CEXL-01"
+      },
+      {
+        "element_id": "PE-CEXL-06",
+        "phase_id": "PHASE-CEXL-01"
+      },
+      {
+        "element_id": "PE-CEXL-07",
+        "phase_id": "PHASE-CEXL-01"
+      },
+      {
+        "element_id": "PE-CEXL-08",
+        "phase_id": "PHASE-CEXL-01"
+      },
+      {
+        "element_id": "PE-CEXL-09",
+        "phase_id": "PHASE-CEXL-01"
+      },
+      {
+        "element_id": "PE-CEXL-10",
+        "phase_id": "PHASE-CEXL-01"
+      },
+      {
+        "element_id": "PE-CEXL-11",
+        "phase_id": "PHASE-CEXL-01"
+      },
+      {
+        "element_id": "PE-CEXL-12",
+        "phase_id": "PHASE-CEXL-01"
+      },
+      {
+        "element_id": "PE-CEXL-13",
+        "phase_id": "PHASE-CEXL-01"
+      }
+    ]
+  },
+  "work_package_atomic_group_partition": {
+    "result": "passed",
+    "work_package_count": 6,
+    "atomic_group_count": 1,
+    "atomic_group_member_count": 4,
+    "standalone_work_package_count": 2,
+    "missing_count": 0,
+    "duplicate_or_overlap_count": 0,
+    "atomic_groups": {
+      "AG-CEXL-LIFECYCLE": [
+        "WP-CEXL-START",
+        "WP-CEXL-VAULT",
+        "WP-CEXL-FLOW",
+        "WP-CEXL-STORE"
+      ]
+    },
+    "standalone_work_packages": [
+      "WP-CEXL-PUBLIC",
+      "WP-CEXL-VERIFY"
+    ]
+  },
+  "dependency_graph": {
+    "result": "passed",
+    "work_package_node_count": 6,
+    "edge_count": 19,
+    "cyclic_scc_count": 1,
+    "cyclic_scc_disposition_count": 1,
+    "cyclic_sccs": [
+      [
+        "WP-CEXL-FLOW",
+        "WP-CEXL-START",
+        "WP-CEXL-STORE",
+        "WP-CEXL-VAULT"
+      ]
+    ],
+    "final_execution_node_count": 3,
+    "condensation_edge_count": 3,
+    "condensation_acyclic": true
+  },
+  "final_execution_node_to_phase_cardinality": {
+    "result": "passed",
+    "final_execution_node_count": 3,
+    "assigned_once_count": 3,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "ordered_phase_count": 1,
+    "assignment": {
+      "AG-CEXL-LIFECYCLE": "PHASE-CEXL-01",
+      "WP-CEXL-PUBLIC": "PHASE-CEXL-01",
+      "WP-CEXL-VERIFY": "PHASE-CEXL-01"
+    }
+  },
+  "intermediate_state_audit_row_completeness": {
+    "result": "passed",
+    "ordered_phase_count": 1,
+    "audit_row_count": 1,
+    "missing_count": 0,
+    "duplicate_count": 0,
+    "extra_count": 0
+  },
+  "parallelization_evidence_check": {
+    "result": "not_claimed",
+    "plan_disposition": "none approved",
+    "approved_pair_count": 0
+  },
+  "integration_validation_ownership_coverage": {
+    "result": "passed",
+    "required_acceptance_count": 19,
+    "mapped_count": 19,
+    "assigned_execution_node_count": 19,
+    "existing_read_only_count": 0,
+    "audit_local_read_only_count": 0,
+    "missing_owner_count": 0,
+    "invalid_seam_disposition_count": 0
+  },
+  "goal_structure_fact_check": {
+    "result": "passed",
+    "ordered_phase_count": 1,
+    "expected": "single_phase",
+    "actual": "single_phase"
+  },
+  "failure_summary": [],
+  "overall_result": "passed",
+  "structural_input_evidence": {
+    "scope": "references, coverage, graph, validation ownership; semantic review remains separate",
+    "exact_freeze_ref": {
+      "Artifact Type": "Final Policy Freeze",
+      "Artifact ID": "FPF-CEXL-001",
+      "Content Digest": "sha256:4a31856008428324110bf614154f44982e2758c32b3a7cff8fe08c13bbddb705"
+    },
+    "exact_plan_ref": {
+      "Artifact Type": "Phase Plan",
+      "Artifact ID": "PP-CEXL-001",
+      "Content Digest": "sha256:70669c818fcec1ccba714a22ad66106f5efbf063add00ef1e017e97c486d3aba"
+    },
+    "resolved_artifact_sources": [
+      {
+        "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_00_INITIAL_001.json",
+        "sha256": "f2b082ab38d94eb7da0480aa1527542f871befe205665c005a0bed176dc9eb3a"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_10_CORRECTION_001.json",
+        "sha256": "3cdb18cb9dc2b5a14d1d88017befb2514ce461a814747bcb1879a47a6690cffc"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_10_DECISION_001.json",
+        "sha256": "8e08504ef02bc406d241c7a04e6504a08bca0951c62b482bb9ab073b28fefdaf"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_10_OPEN_001.json",
+        "sha256": "f79d426f7db9564413329c0c9a72026a99ebdf65c2396bcf5325ce5cf0273a5c"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_10_POLICY_001.json",
+        "sha256": "5d6fae6b2449063fd99f39635a8c0f5d69d4bd38a7ad2b97d4249890fa4fb0cc"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_20_REVIEW_002.json",
+        "sha256": "20e95d035940313652dee57cad1fc2ef6d60d9af4da8704c72b425207c7b6174"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_20_SOURCE_PLAN_002.json",
+        "sha256": "96e0e0db4a314a5d8c2fee9cd5a0cb9e5607449e80685458e4f0c3548b62c405"
+      },
+      {
+        "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_30_FREEZE_001.json",
+        "sha256": "fcd2b41a0a539adacdb3a148629358cfb3cc7dd5bcf0359150b9bd7e3dae0688"
+      }
+    ]
+  }
+}

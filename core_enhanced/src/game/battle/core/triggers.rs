@@ -285,6 +285,10 @@ impl BattleCore {
             equipment: sourced.equipment_source,
             ..Default::default()
         };
+        source_snapshot.fact_source = source_snapshot
+            .fact_source
+            .inherit_causal_context(&self.runtime_fact_source)
+            .ok()?;
         Some(BattleCommand::ApplyDamage {
             target_id: counterpart_id,
             source_snapshot,
@@ -406,6 +410,7 @@ mod tests {
             })],
         );
         let equipment = EquipmentMetadata {
+            content_family: None,
             id: "trigger_item".to_string(),
             uuid: base_uuid,
             name: "Trigger Item".to_string(),
@@ -443,6 +448,7 @@ mod tests {
             core.items.insert(
                 instance_id,
                 RuntimeItem {
+            weapon_stage: Default::default(),
                     persistent_copy_uuid: Some(Uuid::from_u128(instance_id.as_u128() + 100)),
                     instance_id,
                     owner: Side::Player,

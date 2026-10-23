@@ -150,6 +150,9 @@ crate::authoring::clone_shape::struct_shape!(EffectHitHistory {
 });
 #[derive(Debug, Clone, PartialEq)]
 pub struct AreaRuntime {
+    pub(in crate::game::battle::core) mode: crate::game::ability::SkillTileAreaMode,
+    pub(in crate::game::battle::core) ground_status: Option<Box<super::skill_runtime::area::ground_status::GroundAreaState>>,
+    pub emission: Option<crate::game::ability::SkillAreaEmissionDef>,
     pub area_id: AreaInstanceId,
     pub cast_seq: u64,
     pub step_index: usize,
@@ -229,6 +232,7 @@ impl ActionLocks {
 /// 전투 중 사용되는 장비 런타임 표현
 #[derive(Debug, Clone)]
 pub(super) struct RuntimeItem {
+    pub(super) weapon_stage: crate::game::ability::weapon_marks::WeaponStage,
     pub(super) instance_id: Uuid,
     pub(super) owner: Side,
     pub(super) owner_unit_instance: UnitInstanceId,
@@ -256,6 +260,7 @@ pub(super) struct PendingSkillCast {
     pub(super) skill_id: SkillId,
     pub(super) cast_target: Option<SkillCastTarget>,
     pub(super) accepted_target_tile: Option<Position>,
+    pub(super) accepted_facing: Option<crate::game::battle::tile_range::FacingDirection>,
     pub(super) start_seq: u64,
 }
 
@@ -264,6 +269,7 @@ pub(super) struct ResonanceUse {
     pub action: crate::game::battle::runtime_facts::ActionHandle,
     pub skill_id: SkillId,
     pub consumed: u32,
+    pub full_payment: bool,
     pub unreleased_attacks: u32,
     pub control_cancelled: bool,
 }
@@ -271,6 +277,7 @@ crate::authoring::clone_shape::struct_shape!(ResonanceUse {
     action,
     skill_id,
     consumed,
+    full_payment,
     unreleased_attacks,
     control_cancelled
 });
@@ -280,6 +287,7 @@ pub(super) struct SkillStepResult {
     pub(super) actual_hp_loss: u64,
     pub(super) resolved_target_count: usize,
     pub(super) actual_damage_target_count: usize,
+    pub(super) effective_hit_count: usize,
     pub(super) killed_target_count: usize,
     pub(super) applied_effect_count: usize,
     pub(super) scheduled_attack_count: usize,
@@ -294,6 +302,7 @@ impl SkillStepResult {
         self.actual_damage_target_count = self
             .actual_damage_target_count
             .saturating_add(other.actual_damage_target_count);
+        self.effective_hit_count = self.effective_hit_count.saturating_add(other.effective_hit_count);
         self.killed_target_count = self
             .killed_target_count
             .saturating_add(other.killed_target_count);
@@ -335,8 +344,11 @@ pub(super) struct DeferredSkillStep {
 
 #[derive(Debug, Clone, Copy, Default)]
 pub(super) struct CommandExecutionSummary {
+    /// A valid direct contact, including zero damage; excludes deflection and invulnerability.
+    pub(super) accepted_hit_count: usize,
     pub(super) actual_hp_loss: u64,
     pub(super) actual_damage_target_count: usize,
+    pub(super) effective_hit_count: usize,
     pub(super) killed_target_count: usize,
 }
 
@@ -410,6 +422,7 @@ pub(super) struct ActiveSkillCast {
     pub(super) skill_id: SkillId,
     pub(super) caster_owner: Side,
     pub(super) anchor_position: Position,
+    pub(super) accepted_facing: Option<crate::game::battle::tile_range::FacingDirection>,
     pub(super) cast_target_anchor_position: Option<Position>,
     pub(super) cast_target_anchor_world_position: Option<WorldVec2>,
     pub(super) allow_dead_caster: bool,
@@ -417,10 +430,11 @@ pub(super) struct ActiveSkillCast {
     pub(super) step_progress: BTreeMap<usize, SkillStepProgress>,
     pub(super) deferred_steps: BTreeMap<usize, DeferredSkillStep>,
     pub(super) impact_contexts_by_step: BTreeMap<usize, SkillImpactContext>,
-    // Reserved for the spatial delivery runtime migration.
+    // Latest impact copy retained for storage accounting and debug projection.
+    // Prior-step anchors are selected from impact_contexts_by_step.
     #[allow(dead_code)]
     pub(super) last_impact_context: Option<SkillImpactContext>,
-    // Reserved for the spatial delivery runtime migration.
+    // Registered persistent areas keep the cast alive until their expiry cleanup.
     #[allow(dead_code)]
     pub(super) active_area_ids: Vec<AreaInstanceId>,
 }
@@ -873,6 +887,9 @@ crate::authoring::clone_shape::struct_shape!(SkillImpactContext {
     spawned_area_id,
 });
 crate::authoring::clone_shape::struct_shape!(AreaRuntime {
+    mode,
+    ground_status,
+    emission,
     area_id,
     cast_seq,
     step_index,
@@ -904,6 +921,7 @@ crate::authoring::clone_shape::struct_shape!(AreaRuntime {
     effective_history,
 });
 crate::authoring::clone_shape::struct_shape!(RuntimeItem {
+    weapon_stage,
     instance_id,
     owner,
     owner_unit_instance,
@@ -917,12 +935,14 @@ crate::authoring::clone_shape::struct_shape!(PendingSkillCast {
     skill_id,
     cast_target,
     accepted_target_tile,
+    accepted_facing,
     start_seq,
 });
 crate::authoring::clone_shape::struct_shape!(SkillStepResult {
     actual_hp_loss,
     resolved_target_count,
     actual_damage_target_count,
+    effective_hit_count,
     killed_target_count,
     applied_effect_count,
     scheduled_attack_count,
@@ -950,6 +970,7 @@ crate::authoring::clone_shape::struct_shape!(ActiveSkillCast {
     skill_id,
     caster_owner,
     anchor_position,
+    accepted_facing,
     cast_target_anchor_position,
     cast_target_anchor_world_position,
     allow_dead_caster,

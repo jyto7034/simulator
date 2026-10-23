@@ -167,6 +167,56 @@ pub(crate) fn apply_combat_reward_multiplier(
     Ok(())
 }
 
+pub(crate) fn apply_deterrence_quantity_multiplier(
+    effects: &mut [RewardEffect], multiplier: u32,
+) -> Result<(), GameError> {
+    for effect in effects {
+        match effect {
+            RewardEffect::GrantEnkephalin { amount }
+            | RewardEffect::GrantEquipmentDust { amount }
+            | RewardEffect::GrantEquipmentMaterial { amount, .. }
+            | RewardEffect::GrantExperience { amount, .. } => {
+                *amount = amount.checked_mul(multiplier).ok_or_else(||
+                    GameError::InvalidStaticData("unrestrained reward quantity overflow".into()))?;
+            }
+            _ => {}
+        }
+    }
+    Ok(())
+}
+
+/// Matches the retained definition using the same ordered transforms as combat.
+/// A completed battle may have refilled deterrence, so its entry multiplier
+/// cannot be inferred from the current run balance. Preserve both existing
+/// difficulty variants and admit only their supported entry quantity variants.
+pub(crate) fn matches_retained_combat_reward(
+    option: &RewardOption,
+    original: &RewardOption,
+    reward_multiplier_percent: u32,
+) -> bool {
+    for percent in [100, reward_multiplier_percent] {
+        let mut expected = original.clone();
+        // An overflowing alternative is not a possible producer value. It must
+        // not reject a different, representable variant of the same definition.
+        if apply_combat_reward_multiplier(std::slice::from_mut(&mut expected), percent).is_err() {
+            continue;
+        }
+        if option == &expected {
+            return true;
+        }
+        if apply_deterrence_quantity_multiplier(
+            &mut expected.effects,
+            crate::game::combat_preview::BattleDeterrenceSnapshot::quantity_multiplier(true),
+        )
+        .is_ok()
+            && option == &expected
+        {
+            return true;
+        }
+    }
+    false
+}
+
 fn scaled_reward_amount(amount: u32, multiplier_percent: u32) -> Result<u32, GameError> {
     if amount == 0 {
         return Ok(0);
@@ -327,6 +377,31 @@ mod tests {
     }
 
     #[test]
+    fn retained_combat_reward_uses_percent_rounding_before_entry_quantity() {
+        let original = reward(vec![
+            RewardEffect::GrantEnkephalin { amount: 17 },
+            RewardEffect::GrantEquipment { equipment_id: "weapon".into() },
+        ]);
+        for amount in [17, 21, 34, 42] {
+            let mut option = original.clone();
+            option.effects[0] = RewardEffect::GrantEnkephalin { amount };
+            assert!(matches_retained_combat_reward(&option, &original, 125));
+        }
+        let mut wrong_order = original.clone();
+        wrong_order.effects[0] = RewardEffect::GrantEnkephalin { amount: 43 };
+        assert!(!matches_retained_combat_reward(&wrong_order, &original, 125));
+    }
+
+    #[test]
+    fn retained_combat_reward_does_not_require_overflowing_alternatives() {
+        let original = reward(vec![RewardEffect::GrantEnkephalin { amount: u32::MAX }]);
+        assert!(matches_retained_combat_reward(&original, &original, 125));
+        let mut effects = original.effects.clone();
+        assert!(matches!(apply_deterrence_quantity_multiplier(&mut effects, 2),
+            Err(GameError::InvalidStaticData(_))));
+    }
+
+    #[test]
     fn standard_tutorial_pools_and_authored_combat_rewards_are_exact() {
         let game_data = crate::game::data::ValidatedGameData::load_live_embedded()
             .expect("live data must load");
@@ -438,3 +513,35 @@ crate::authoring::clone_shape::struct_shape!(ResolvedCombatOutcomePolicy {
     grant_node_bonus,
     advance_encounter_progression
 });
+
+#[cfg(test)]
+mod u14_tests {
+    use super::*;
+    #[test]
+    fn u14_unrestrained_whitelist_preserves_identity_targets_and_other_quantities() {
+        use crate::game::reward::ExperienceTargetPolicy::*;
+        let mut effects=vec![
+            RewardEffect::GrantEnkephalin{amount:7}, RewardEffect::GrantEquipmentDust{amount:3},
+            RewardEffect::GrantEquipmentMaterial{material_id:"parts".into(),amount:5},
+            RewardEffect::GrantExperience{amount:11,target:CombatParticipants},
+            RewardEffect::GrantExperience{amount:13,target:AliveRoster},
+            RewardEffect::GrantExperience{amount:17,target:SelectedEmployee},
+            RewardEffect::GrantFragmentDust{amount:19},
+            RewardEffect::GrantRelicCorruptionCatalyst{amount:23},
+            RewardEffect::GrantConsumable{consumable_id:"egg".into(),quantity:1},
+            RewardEffect::GrantEquipment{equipment_id:"weapon".into()},
+            RewardEffect::GrantRelic{relic_id:"relic".into()},
+            RewardEffect::GrantSkillFragment{fragment_id:"fragment".into()},
+        ];
+        let excluded=effects[6..].to_vec();
+        apply_deterrence_quantity_multiplier(&mut effects,2).unwrap();
+        assert_eq!(&effects[..6], &[
+            RewardEffect::GrantEnkephalin{amount:14}, RewardEffect::GrantEquipmentDust{amount:6},
+            RewardEffect::GrantEquipmentMaterial{material_id:"parts".into(),amount:10},
+            RewardEffect::GrantExperience{amount:22,target:CombatParticipants},
+            RewardEffect::GrantExperience{amount:26,target:AliveRoster},
+            RewardEffect::GrantExperience{amount:34,target:SelectedEmployee},
+        ]);
+        assert_eq!(effects[6..],excluded);
+    }
+}

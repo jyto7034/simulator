@@ -2,7 +2,7 @@ VisualNovelTriggerDatabase(
     triggers: [
         VisualNovelTrigger(
             id: "run_start_standard_hq_briefing",
-            source: RunStart(game_mode: Standard),
+            source: RunStart(game_mode: Tutorial),
             vn_id: "hq_briefing_standard_intro",
             repeat: OncePerRun,
             checkpoint_policy: PersistAcrossCheckpointLoad,
@@ -11,7 +11,7 @@ VisualNovelTriggerDatabase(
         ),
         VisualNovelTrigger(
             id: "run_start_endless_hq_briefing",
-            source: RunStart(game_mode: Endless),
+            source: RunStart(game_mode: Expedition),
             vn_id: "hq_briefing_endless_intro",
             repeat: OncePerRun,
             checkpoint_policy: PersistAcrossCheckpointLoad,

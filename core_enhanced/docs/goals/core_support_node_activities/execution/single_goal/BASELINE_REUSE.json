@@ -1,0 +1,35 @@
+{
+  "initial": "U15 independent001 Complete/High/open0 target u15_current_001, prior currentness and actual U16 preimage523 retained; not recertified by this pass.",
+  "full_invocation": {
+    "raw": "runs/core001.log",
+    "exit_code": 101,
+    "library_passed": 2108,
+    "library_failed": 6,
+    "ignored": 6,
+    "socket_filtered": 1,
+    "integration_not_run_after_library_failure": true
+  },
+  "closed_failures": [
+    "game::world::tests::combat::resource_lifetimes::actual_shop_and_reward_acquisitions_create_distinct_spendable_copy_owners",
+    "game::world::tests::equipment::dismantle_equipment_automatically_unequips_equipped_item",
+    "game::world::tests::u12_lifecycle::cost::u12_vault_entry_checkpoint_restore_preserves_profile_boundary",
+    "game::world::tests::u12_lifecycle::cost::u12_vault_prepare_import_budget_failures_preserve_roots",
+    "game::world::tests::u12_lifecycle::cost::u12_vault_prepared_discard_and_commit_keep_exact_profile",
+    "game::world::tests::u12_lifecycle::cost::u12_vault_profile_capture_charges_owned_graph"
+  ],
+  "closure": "focused00413PASS includes all6; integration00172PASS in8 targets; new expanded regression1PASS; final-focused00128PASS and restore-regression00144PASS; final-public00115PASS overlap prior coverage.",
+  "current_unique_default_core_pass_coverage": 2188,
+  "calculation": "2108 +6 corrected +72 integration +1 new expanded regression +1 unchanged socket =2188; overlaps excluded",
+  "existing_ignored": 6,
+  "known_current_failures": 0,
+  "full_green_single_invocation_claimed": false,
+  "socket_reuse": {
+    "source": "core_enhanced/src/game/data/content_pack/snapshot.rs",
+    "source_sha256": "1d8385801c044259777a51451749d7dfb71b01173304bc44bbcec9156b2b6259",
+    "raw": "core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/runs/socket002.log",
+    "basis": "same snapshot file; socket refusal precedes catalog/shop/Continue; actual permitted-environment pass retained"
+  },
+  "post_full_changes": "Three preparation/fixture corrections only, then continuation Value bound plus one expanded test. All affected U08 restore and public consumer paths, U04/current U16 and allocation scanner, actual approved normal/expanded hosts and shared cost were rerun. Other game runtime, schema/loading validation and server writers unchanged after the full/integration/server passes.",
+  "authoring_reuse": "authoring002 valid1 invalid9 and authoring003 additional3 ran before allocation-only fix. Shop/loader/validation unchanged since those accepted runs; final host loads the same catalog bytes.",
+  "predecessor_continuity": "U15 remains immutable historical Complete/High for its target. U16 adds typed shop goods/results and restore accounting; final U16 GEX20 reviews this delta and its U15/U08 continuity before any later bundle."
+}

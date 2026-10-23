@@ -1,0 +1,14 @@
+--- core_enhanced/src/game/relic/structural/storage.rs BEFORE
+
++++ core_enhanced/src/game/relic/structural/storage.rs CURRENT
+
+@@ -179,7 +179,7 @@
+
+ fields!(CausalProgramDef; [steps, flow]; []);
+ fields!(CausalStepDef; [id, delivery, effects]; [delay_ms, target]);
+ fields!(CausalEffectDef; [id, tags, op]; []);
+-fields!(super::causal::EffectiveCausalProgram; [id, contribution, execution, targets]; [event, retained_bytes]);
++fields!(super::causal::EffectiveCausalProgram; [id, contribution, execution, targets]; [site_kind, site_index, event, retained_bytes]);
+ fields!(super::causal::EffectiveCausalRule; [contribution, selector, condition, source, payload, programs]; [event, interval_ms, kind]);
+ fields!(super::causal::EffectiveWedgeRule; [contribution, selector, condition, effect_sites]; [increment_percent]);
+ impl Heap for RelicConditionDef {

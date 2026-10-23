@@ -1,0 +1,6995 @@
+{
+  "action_capabilities": [
+    {
+      "action": "UseConsumableItem",
+      "disabled_reason_code": "no_eligible_payload",
+      "enabled": false,
+      "scope": "gameplay"
+    },
+    {
+      "action": "EquipItem",
+      "enabled": true,
+      "scope": "gameplay"
+    },
+    {
+      "action": "UnEquipItem",
+      "enabled": true,
+      "scope": "gameplay"
+    },
+    {
+      "action": "EquipSkillFragment",
+      "enabled": true,
+      "scope": "gameplay"
+    },
+    {
+      "action": "UnequipSkillFragment",
+      "enabled": true,
+      "scope": "gameplay"
+    },
+    {
+      "action": "TransferSkillFragment",
+      "enabled": true,
+      "scope": "gameplay"
+    },
+    {
+      "action": "EquipRelic",
+      "disabled_reason_code": "no_eligible_payload",
+      "enabled": false,
+      "scope": "gameplay"
+    },
+    {
+      "action": "UnequipRelic",
+      "disabled_reason_code": "no_eligible_payload",
+      "enabled": false,
+      "scope": "gameplay"
+    },
+    {
+      "action": "RequestRelicState",
+      "enabled": true,
+      "scope": "query"
+    },
+    {
+      "action": "RequestRelicNumericPlan",
+      "enabled": true,
+      "scope": "query"
+    },
+    {
+      "action": "RequestRelicEffectivePlan",
+      "enabled": true,
+      "scope": "query"
+    },
+    {
+      "action": "PreviewRelicCorruption",
+      "disabled_reason_code": "no_eligible_payload",
+      "enabled": false,
+      "scope": "query"
+    },
+    {
+      "action": "CorruptRelic",
+      "disabled_reason_code": "no_eligible_payload",
+      "enabled": false,
+      "scope": "gameplay"
+    },
+    {
+      "action": "RequestMapData",
+      "enabled": true,
+      "scope": "query"
+    },
+    {
+      "action": "SelectMapNode",
+      "enabled": true,
+      "scope": "gameplay"
+    },
+    {
+      "action": "LoadRunCheckpoint",
+      "disabled_reason_code": "checkpoint_unavailable",
+      "enabled": false,
+      "scope": "recovery"
+    },
+    {
+      "action": "AbandonRun",
+      "enabled": true,
+      "scope": "gameplay"
+    }
+  ],
+  "current_node_session": null,
+  "encounter_compendium": {
+    "abnormalities": [
+      {
+        "abnormality_id": "o-01-04_queen_of_hatred",
+        "registered": false
+      },
+      {
+        "abnormality_id": "f-01-57_little_red",
+        "registered": false
+      },
+      {
+        "abnormality_id": "t-01-75_mountain",
+        "registered": false
+      },
+      {
+        "abnormality_id": "d-03-109_melting_love",
+        "registered": false
+      },
+      {
+        "abnormality_id": "o-06-20_nothing_there",
+        "registered": false
+      },
+      {
+        "abnormality_id": "o-01-45_white_night",
+        "registered": false
+      },
+      {
+        "abnormality_id": "t-02-43_freischutz",
+        "registered": false
+      },
+      {
+        "abnormality_id": "t-02-99_funeral_butterfly",
+        "registered": false
+      },
+      {
+        "abnormality_id": "o-01-67_laetitia",
+        "registered": false
+      },
+      {
+        "abnormality_id": "f-01-87_snow_queen",
+        "registered": false
+      },
+      {
+        "abnormality_id": "f-02-49_rudolta",
+        "registered": false
+      },
+      {
+        "abnormality_id": "t-01-31_silent_orchestra",
+        "registered": false
+      },
+      {
+        "abnormality_id": "o-03-89_censored",
+        "registered": false
+      },
+      {
+        "abnormality_id": "o-01-64_yin",
+        "registered": false
+      },
+      {
+        "abnormality_id": "o-05-102_yang",
+        "registered": false
+      },
+      {
+        "abnormality_id": "o-04-72_burrowing_heaven",
+        "registered": false
+      },
+      {
+        "abnormality_id": "d-04-108_parasite_tree",
+        "registered": false
+      },
+      {
+        "abnormality_id": "o-04-66_porcubbus",
+        "registered": false
+      },
+      {
+        "abnormality_id": "f-01-18_scarecrow",
+        "registered": false
+      },
+      {
+        "abnormality_id": "f-05-32_warm_hearted_woodsman",
+        "registered": false
+      },
+      {
+        "abnormality_id": "o-02-63_apocalypse_bird",
+        "registered": false
+      },
+      {
+        "abnormality_id": "o-01-73_knight_of_despair",
+        "registered": false
+      },
+      {
+        "abnormality_id": "o-01-64_king_of_greed",
+        "registered": false
+      },
+      {
+        "abnormality_id": "f-02-58_big_bad_wolf",
+        "registered": false
+      },
+      {
+        "abnormality_id": "t-06-27_moonlit_wail",
+        "registered": false
+      },
+      {
+        "abnormality_id": "t-04-50_queen_bee",
+        "registered": false
+      },
+      {
+        "abnormality_id": "o-01-15_nameless_fetus",
+        "registered": false
+      },
+      {
+        "abnormality_id": "f-02-70_black_swan",
+        "registered": false
+      },
+      {
+        "abnormality_id": "o-05-76_schadenfreude",
+        "registered": false
+      },
+      {
+        "abnormality_id": "d-01-110_clouded_monk",
+        "registered": false
+      },
+      {
+        "abnormality_id": "x-00-00_cwbs_reference_boss",
+        "registered": false
+      }
+    ],
+    "corrosion_profiles": [
+      {
+        "profile_id": "corroded_guard",
+        "registered": false
+      },
+      {
+        "profile_id": "corroded_rusher",
+        "registered": false
+      },
+      {
+        "profile_id": "corroded_marksman",
+        "registered": false
+      },
+      {
+        "profile_id": "corroded_bruiser",
+        "registered": false
+      },
+      {
+        "profile_id": "corroded_medic",
+        "registered": false
+      },
+      {
+        "profile_id": "corroded_veteran",
+        "registered": false
+      }
+    ]
+  },
+  "facility": {
+    "connections": [
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A1-01",
+        "to": "A1-02"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A1-02",
+        "to": "A1-03"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A1-01",
+        "to": "A1-03"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A2-01",
+        "to": "A2-02"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A2-02",
+        "to": "A2-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A2-01",
+        "to": "A2-03"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A2-03",
+        "to": "A2-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A3-01",
+        "to": "A3-02"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A3-02",
+        "to": "A3-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A3-01",
+        "to": "A3-03"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A3-03",
+        "to": "A3-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A4-01",
+        "to": "A4-02"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A4-02",
+        "to": "A4-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A4-01",
+        "to": "A4-03"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A4-03",
+        "to": "A4-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A4-03",
+        "to": "A4-05"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A5-01",
+        "to": "A5-02"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A5-02",
+        "to": "A5-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A5-01",
+        "to": "A5-03"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A5-03",
+        "to": "A5-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A6-01",
+        "to": "A6-02"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A6-02",
+        "to": "A6-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A6-01",
+        "to": "A6-03"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A6-03",
+        "to": "A6-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A6-03",
+        "to": "A6-05"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A7-01",
+        "to": "A7-02"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A7-02",
+        "to": "A7-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A7-01",
+        "to": "A7-03"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A7-03",
+        "to": "A7-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B1-01",
+        "to": "B1-02"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B1-02",
+        "to": "B1-03"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B1-01",
+        "to": "B1-03"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B2-01",
+        "to": "B2-02"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B2-02",
+        "to": "B2-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B2-01",
+        "to": "B2-03"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B2-03",
+        "to": "B2-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B3-01",
+        "to": "B3-02"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B3-02",
+        "to": "B3-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B3-01",
+        "to": "B3-03"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B3-03",
+        "to": "B3-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B4-01",
+        "to": "B4-02"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B4-02",
+        "to": "B4-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B4-01",
+        "to": "B4-03"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B4-03",
+        "to": "B4-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B5-01",
+        "to": "B5-02"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B5-02",
+        "to": "B5-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B5-01",
+        "to": "B5-03"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B5-03",
+        "to": "B5-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B5-03",
+        "to": "B5-05"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B6-01",
+        "to": "B6-02"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B6-02",
+        "to": "B6-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B6-01",
+        "to": "B6-03"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B6-03",
+        "to": "B6-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B7-01",
+        "to": "B7-02"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B7-02",
+        "to": "B7-03"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B7-01",
+        "to": "B7-03"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "C1-01",
+        "to": "C1-02"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "C1-02",
+        "to": "C1-03"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "C1-01",
+        "to": "C1-03"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "C2-01",
+        "to": "C2-02"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "C2-02",
+        "to": "C2-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "C2-01",
+        "to": "C2-03"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "C2-03",
+        "to": "C2-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "C3-01",
+        "to": "C3-02"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "C3-02",
+        "to": "C3-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "C3-01",
+        "to": "C3-03"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "C3-03",
+        "to": "C3-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "C4-01",
+        "to": "C4-02"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "C4-02",
+        "to": "C4-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "C4-01",
+        "to": "C4-03"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "C4-03",
+        "to": "C4-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "C5-01",
+        "to": "C5-02"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "C5-02",
+        "to": "C5-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "C5-01",
+        "to": "C5-03"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "C5-03",
+        "to": "C5-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "C6-01",
+        "to": "C6-02"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "C6-02",
+        "to": "C6-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "C6-01",
+        "to": "C6-03"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "C6-03",
+        "to": "C6-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "C6-03",
+        "to": "C6-05"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "C7-01",
+        "to": "C7-02"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "C7-02",
+        "to": "C7-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "C7-01",
+        "to": "C7-03"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "C7-03",
+        "to": "C7-04"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A1-03",
+        "to": "B1-01"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B1-03",
+        "to": "C1-01"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A2-04",
+        "to": "B2-01"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B2-04",
+        "to": "C2-01"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "A3-04",
+        "to": "B3-01"
+      },
+      {
+        "condition": null,
+        "direction": "Bidirectional",
+        "from": "B3-04",
+        "to": "C3-01"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "A1-01",
+        "to": "A2-01"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "A1-03",
+        "to": "A2-04"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "A2-01",
+        "to": "A3-01"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "A2-04",
+        "to": "A3-04"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "A3-01",
+        "to": "A4-01"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "A3-04",
+        "to": "A4-04"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "A4-01",
+        "to": "A5-01"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "A4-03",
+        "to": "A5-04"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "A5-01",
+        "to": "A6-01"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "A5-04",
+        "to": "A6-04"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "A6-01",
+        "to": "A7-01"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "A6-03",
+        "to": "A7-04"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "B1-01",
+        "to": "B2-01"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "B1-03",
+        "to": "B2-04"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "B2-01",
+        "to": "B3-01"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "B2-04",
+        "to": "B3-04"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "B3-01",
+        "to": "B4-01"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "B3-04",
+        "to": "B4-04"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "B4-01",
+        "to": "B5-01"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "B4-04",
+        "to": "B5-04"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "B5-01",
+        "to": "B6-01"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "B5-03",
+        "to": "B6-04"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "B6-01",
+        "to": "B7-01"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "B6-04",
+        "to": "B7-03"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "C1-01",
+        "to": "C2-01"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "C1-03",
+        "to": "C2-04"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "C2-01",
+        "to": "C3-01"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "C2-04",
+        "to": "C3-04"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "C3-01",
+        "to": "C4-01"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "C3-04",
+        "to": "C4-04"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "C4-01",
+        "to": "C5-01"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "C4-04",
+        "to": "C5-04"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "C5-01",
+        "to": "C6-01"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "C5-04",
+        "to": "C6-04"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "C6-01",
+        "to": "C7-01"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "C6-03",
+        "to": "C7-04"
+      },
+      {
+        "condition": null,
+        "direction": "ForwardOnly",
+        "from": "ENTRY",
+        "to": "B1-01"
+      }
+    ],
+    "current_room_id": "B1-01",
+    "gate_reached": false,
+    "layout_id": "official_facility_v1",
+    "rooms": [
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": "시설 입구",
+        "current_expedition_map": null,
+        "depth": 0,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/ENTRY",
+          "x": 1400,
+          "y": 215
+        },
+        "explored": false,
+        "id": "ENTRY",
+        "interior": null,
+        "known_reservations": [],
+        "name": "시설 입구",
+        "support": "Supported",
+        "visited_this_expedition": false,
+        "wing": null
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 1,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A1-01",
+          "x": 205,
+          "y": 450
+        },
+        "explored": false,
+        "id": "A1-01",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "A"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 1,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A1-02",
+          "x": 500,
+          "y": 378
+        },
+        "explored": false,
+        "id": "A1-02",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "A"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": "반출대기실 탐사 구역",
+        "current_expedition_map": null,
+        "depth": 1,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A1-03",
+          "x": 795,
+          "y": 450
+        },
+        "explored": false,
+        "id": "A1-03",
+        "interior": null,
+        "known_reservations": [],
+        "name": "반출대기실",
+        "support": "Supported",
+        "visited_this_expedition": false,
+        "wing": "A"
+      },
+      {
+        "access_condition": null,
+        "activities": [
+          {
+            "condition": null,
+            "deterrence_already_exhausted": false,
+            "display": {
+              "asset_id": "facility/slot/9B/G",
+              "x": 900,
+              "y": 1190
+            },
+            "exhausts_deterrence": false,
+            "first_entry_cost": 0,
+            "label": "Gate",
+            "node_id": "20455fda-46e5-4217-a520-ace4be1bd33b",
+            "reward_activity": null,
+            "support": "Supported"
+          },
+          {
+            "condition": null,
+            "deterrence_already_exhausted": false,
+            "display": {
+              "asset_id": "facility/slot/9B/1",
+              "x": 400,
+              "y": 445
+            },
+            "exhausts_deterrence": false,
+            "first_entry_cost": 1,
+            "label": "일반전",
+            "node_id": "20455fda-46e5-4217-9d79-9c277beb0655",
+            "reward_activity": null,
+            "support": "Supported"
+          },
+          {
+            "condition": null,
+            "deterrence_already_exhausted": false,
+            "display": {
+              "asset_id": "facility/slot/9B/2",
+              "x": 900,
+              "y": 445
+            },
+            "exhausts_deterrence": false,
+            "first_entry_cost": 1,
+            "label": "일반전",
+            "node_id": "20455fda-46e5-4217-9b44-8cd16337217c",
+            "reward_activity": null,
+            "support": "Supported"
+          },
+          {
+            "condition": null,
+            "deterrence_already_exhausted": false,
+            "display": {
+              "asset_id": "facility/slot/9B/3",
+              "x": 1400,
+              "y": 445
+            },
+            "exhausts_deterrence": false,
+            "first_entry_cost": 1,
+            "label": "일반전",
+            "node_id": "20455fda-46e5-4217-bd19-5701473cf03f",
+            "reward_activity": null,
+            "support": "Supported"
+          },
+          {
+            "condition": null,
+            "deterrence_already_exhausted": false,
+            "display": {
+              "asset_id": "facility/slot/9B/4",
+              "x": 400,
+              "y": 715
+            },
+            "exhausts_deterrence": false,
+            "first_entry_cost": 1,
+            "label": "일반전",
+            "node_id": "20455fda-46e5-4217-97fc-5a1f79b7510b",
+            "reward_activity": null,
+            "support": "Supported"
+          },
+          {
+            "condition": null,
+            "deterrence_already_exhausted": false,
+            "display": {
+              "asset_id": "facility/slot/9B/5",
+              "x": 900,
+              "y": 715
+            },
+            "exhausts_deterrence": false,
+            "first_entry_cost": 1,
+            "label": null,
+            "node_id": "20455fda-46e5-4217-a6e9-765906644187",
+            "reward_activity": null,
+            "support": {
+              "Unsupported": {
+                "reason": "미확인 고유 조우 실행 미지원"
+              }
+            }
+          },
+          {
+            "condition": null,
+            "deterrence_already_exhausted": false,
+            "display": {
+              "asset_id": "facility/slot/9B/6",
+              "x": 1400,
+              "y": 715
+            },
+            "exhausts_deterrence": false,
+            "first_entry_cost": 1,
+            "label": "유물 활동",
+            "node_id": "20455fda-46e5-4217-be40-a5fc5214b1f3",
+            "reward_activity": "RelicGacha",
+            "support": {
+              "Unsupported": {
+                "reason": "유물 보상 활동 실행은 U16에서 지원합니다"
+              }
+            }
+          },
+          {
+            "condition": null,
+            "deterrence_already_exhausted": false,
+            "display": {
+              "asset_id": "facility/slot/9B/7",
+              "x": 400,
+              "y": 985
+            },
+            "exhausts_deterrence": false,
+            "first_entry_cost": 1,
+            "label": "일반전",
+            "node_id": "20455fda-46e5-4217-a199-e168a0ca0955",
+            "reward_activity": null,
+            "support": "Supported"
+          },
+          {
+            "condition": null,
+            "deterrence_already_exhausted": false,
+            "display": {
+              "asset_id": "facility/slot/9B/8",
+              "x": 900,
+              "y": 985
+            },
+            "exhausts_deterrence": false,
+            "first_entry_cost": 1,
+            "label": "이벤트",
+            "node_id": "20455fda-46e5-4217-b52a-e679b945afbd",
+            "reward_activity": null,
+            "support": "Supported"
+          },
+          {
+            "condition": null,
+            "deterrence_already_exhausted": false,
+            "display": {
+              "asset_id": "facility/slot/9B/9",
+              "x": 1400,
+              "y": 985
+            },
+            "exhausts_deterrence": false,
+            "first_entry_cost": 1,
+            "label": "일반전",
+            "node_id": "20455fda-46e5-4217-a59e-5f58818e1603",
+            "reward_activity": null,
+            "support": "Supported"
+          }
+        ],
+        "concept": "용병대기실 탐사 구역",
+        "current_expedition_map": {
+          "facility_template_version": 1,
+          "map_template_id": "facility_9B",
+          "nodes": [
+            {
+              "category": "Combat",
+              "difficulty_band": "Easy",
+              "id": "20455fda-46e5-4217-9d79-9c277beb0655",
+              "kind_id": "combat_monster",
+              "payload": {
+                "Encounter": {
+                  "encounter_id": "normal_breach_response"
+                }
+              },
+              "slot_id": "1",
+              "state": "Available",
+              "visibility": "Revealed"
+            },
+            {
+              "category": "Combat",
+              "difficulty_band": "Hard",
+              "id": "20455fda-46e5-4217-9b44-8cd16337217c",
+              "kind_id": "combat_monster",
+              "payload": {
+                "Encounter": {
+                  "encounter_id": "normal_breach_response"
+                }
+              },
+              "slot_id": "2",
+              "state": "Unavailable",
+              "visibility": "Revealed"
+            },
+            {
+              "category": "Combat",
+              "difficulty_band": "Hard",
+              "id": "20455fda-46e5-4217-bd19-5701473cf03f",
+              "kind_id": "combat_monster",
+              "payload": {
+                "Encounter": {
+                  "encounter_id": "normal_black_box_pressure"
+                }
+              },
+              "slot_id": "3",
+              "state": "Available",
+              "visibility": "Revealed"
+            },
+            {
+              "category": "Combat",
+              "difficulty_band": "Standard",
+              "id": "20455fda-46e5-4217-97fc-5a1f79b7510b",
+              "kind_id": "combat_monster",
+              "payload": {
+                "Encounter": {
+                  "encounter_id": "normal_black_box_pressure"
+                }
+              },
+              "slot_id": "4",
+              "state": "Unavailable",
+              "visibility": "Revealed"
+            },
+            {
+              "category": "Boss",
+              "difficulty_band": "NormalBoss",
+              "id": "20455fda-46e5-4217-a6e9-765906644187",
+              "kind_id": "boss_abnormality",
+              "payload": {
+                "Encounter": {
+                  "encounter_id": null
+                }
+              },
+              "slot_id": "5",
+              "state": "Unavailable",
+              "visibility": "Revealed"
+            },
+            {
+              "category": "Reward",
+              "id": "20455fda-46e5-4217-be40-a5fc5214b1f3",
+              "kind_id": "reward_treasure",
+              "payload": {
+                "Reward": {
+                  "reward_pool_id": "default_treasures"
+                }
+              },
+              "slot_id": "6",
+              "state": "Unavailable",
+              "visibility": "Revealed"
+            },
+            {
+              "category": "Combat",
+              "difficulty_band": "Standard",
+              "id": "20455fda-46e5-4217-a199-e168a0ca0955",
+              "kind_id": "combat_monster",
+              "payload": {
+                "Encounter": {
+                  "encounter_id": "normal_breach_response"
+                }
+              },
+              "slot_id": "7",
+              "state": "Unavailable",
+              "visibility": "Revealed"
+            },
+            {
+              "category": "Event",
+              "id": "20455fda-46e5-4217-b52a-e679b945afbd",
+              "kind_id": "event_sealed_archive",
+              "payload": {
+                "Event": {
+                  "event_id": "sealed_archive_recovery_01"
+                }
+              },
+              "slot_id": "8",
+              "state": "Unavailable",
+              "visibility": "Revealed"
+            },
+            {
+              "category": "Combat",
+              "difficulty_band": "Standard",
+              "id": "20455fda-46e5-4217-a59e-5f58818e1603",
+              "kind_id": "combat_monster",
+              "payload": {
+                "Encounter": {
+                  "encounter_id": "normal_breach_response"
+                }
+              },
+              "slot_id": "9",
+              "state": "Unavailable",
+              "visibility": "Revealed"
+            },
+            {
+              "category": "Gate",
+              "id": "20455fda-46e5-4217-a520-ace4be1bd33b",
+              "kind_id": "gate_stairs",
+              "payload": "None",
+              "slot_id": "G",
+              "state": "Unavailable",
+              "visibility": "Revealed"
+            },
+            {
+              "category": "Start",
+              "id": "20455fda-46e5-4217-987d-d7c36b3f7355",
+              "kind_id": "start",
+              "payload": "None",
+              "slot_id": "S",
+              "state": "Completed",
+              "visibility": "Revealed"
+            }
+          ]
+        },
+        "depth": 1,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A2-02",
+          "x": 500,
+          "y": 699
+        },
+        "explored": false,
+        "id": "B1-01",
+        "interior": {
+          "connections": [
+            {
+              "direction": "Bidirectional",
+              "from_slot_id": "1",
+              "reveal_with_slot_id": null,
+              "to_slot_id": "2"
+            },
+            {
+              "direction": "Bidirectional",
+              "from_slot_id": "2",
+              "reveal_with_slot_id": null,
+              "to_slot_id": "3"
+            },
+            {
+              "direction": "Bidirectional",
+              "from_slot_id": "3",
+              "reveal_with_slot_id": null,
+              "to_slot_id": "6"
+            },
+            {
+              "direction": "Bidirectional",
+              "from_slot_id": "6",
+              "reveal_with_slot_id": null,
+              "to_slot_id": "9"
+            },
+            {
+              "direction": "Bidirectional",
+              "from_slot_id": "9",
+              "reveal_with_slot_id": null,
+              "to_slot_id": "8"
+            },
+            {
+              "direction": "Bidirectional",
+              "from_slot_id": "8",
+              "reveal_with_slot_id": null,
+              "to_slot_id": "7"
+            },
+            {
+              "direction": "Bidirectional",
+              "from_slot_id": "7",
+              "reveal_with_slot_id": null,
+              "to_slot_id": "4"
+            },
+            {
+              "direction": "Bidirectional",
+              "from_slot_id": "4",
+              "reveal_with_slot_id": null,
+              "to_slot_id": "1"
+            },
+            {
+              "direction": "Bidirectional",
+              "from_slot_id": "4",
+              "reveal_with_slot_id": null,
+              "to_slot_id": "5"
+            },
+            {
+              "direction": "Bidirectional",
+              "from_slot_id": "S",
+              "reveal_with_slot_id": null,
+              "to_slot_id": "1"
+            },
+            {
+              "direction": "Bidirectional",
+              "from_slot_id": "S",
+              "reveal_with_slot_id": null,
+              "to_slot_id": "3"
+            },
+            {
+              "direction": "ForwardOnly",
+              "from_slot_id": "7",
+              "reveal_with_slot_id": null,
+              "to_slot_id": "G"
+            },
+            {
+              "direction": "ForwardOnly",
+              "from_slot_id": "9",
+              "reveal_with_slot_id": null,
+              "to_slot_id": "G"
+            }
+          ],
+          "id": "facility_9B",
+          "kind": "Exploration",
+          "manifestation_rules": [],
+          "slots": [
+            {
+              "allowed_categories": [
+                "Start"
+              ],
+              "id": "S",
+              "role": "Start",
+              "tags": []
+            },
+            {
+              "allowed_categories": [
+                "Gate"
+              ],
+              "id": "G",
+              "role": {
+                "Terminal": "FloorGate"
+              },
+              "tags": []
+            },
+            {
+              "allowed_categories": [
+                "Combat",
+                "Boss",
+                "SavePoint",
+                "Maintenance",
+                "HeadquartersContact",
+                "Shop",
+                "Reward",
+                "Event"
+              ],
+              "id": "1",
+              "role": "Ordinary",
+              "tags": []
+            },
+            {
+              "allowed_categories": [
+                "Combat",
+                "Boss",
+                "SavePoint",
+                "Maintenance",
+                "HeadquartersContact",
+                "Shop",
+                "Reward",
+                "Event"
+              ],
+              "id": "2",
+              "role": "Ordinary",
+              "tags": []
+            },
+            {
+              "allowed_categories": [
+                "Combat",
+                "Boss",
+                "SavePoint",
+                "Maintenance",
+                "HeadquartersContact",
+                "Shop",
+                "Reward",
+                "Event"
+              ],
+              "id": "3",
+              "role": "Ordinary",
+              "tags": []
+            },
+            {
+              "allowed_categories": [
+                "Combat",
+                "Boss",
+                "SavePoint",
+                "Maintenance",
+                "HeadquartersContact",
+                "Shop",
+                "Reward",
+                "Event"
+              ],
+              "id": "4",
+              "role": "Ordinary",
+              "tags": []
+            },
+            {
+              "allowed_categories": [
+                "Combat",
+                "Boss",
+                "SavePoint",
+                "Maintenance",
+                "HeadquartersContact",
+                "Shop",
+                "Reward",
+                "Event"
+              ],
+              "id": "5",
+              "role": "Ordinary",
+              "tags": []
+            },
+            {
+              "allowed_categories": [
+                "Combat",
+                "Boss",
+                "SavePoint",
+                "Maintenance",
+                "HeadquartersContact",
+                "Shop",
+                "Reward",
+                "Event"
+              ],
+              "id": "6",
+              "role": "Ordinary",
+              "tags": []
+            },
+            {
+              "allowed_categories": [
+                "Combat",
+                "Boss",
+                "SavePoint",
+                "Maintenance",
+                "HeadquartersContact",
+                "Shop",
+                "Reward",
+                "Event"
+              ],
+              "id": "7",
+              "role": "Ordinary",
+              "tags": []
+            },
+            {
+              "allowed_categories": [
+                "Combat",
+                "Boss",
+                "SavePoint",
+                "Maintenance",
+                "HeadquartersContact",
+                "Shop",
+                "Reward",
+                "Event"
+              ],
+              "id": "8",
+              "role": "Ordinary",
+              "tags": []
+            },
+            {
+              "allowed_categories": [
+                "Combat",
+                "Boss",
+                "SavePoint",
+                "Maintenance",
+                "HeadquartersContact",
+                "Shop",
+                "Reward",
+                "Event"
+              ],
+              "id": "9",
+              "role": "Ordinary",
+              "tags": []
+            }
+          ],
+          "tags": [],
+          "version": 1
+        },
+        "known_reservations": [],
+        "name": "용병대기실",
+        "support": "Supported",
+        "visited_this_expedition": true,
+        "wing": "B"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": "본사연락실 탐사 구역",
+        "current_expedition_map": null,
+        "depth": 1,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/B1-02",
+          "x": 1400,
+          "y": 378
+        },
+        "explored": false,
+        "id": "B1-02",
+        "interior": null,
+        "known_reservations": [],
+        "name": "본사연락실",
+        "support": "Supported",
+        "visited_this_expedition": false,
+        "wing": "B"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": "배급대기실 탐사 구역",
+        "current_expedition_map": null,
+        "depth": 1,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/B1-03",
+          "x": 1695,
+          "y": 450
+        },
+        "explored": false,
+        "id": "B1-03",
+        "interior": null,
+        "known_reservations": [],
+        "name": "배급대기실",
+        "support": "Supported",
+        "visited_this_expedition": false,
+        "wing": "B"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 1,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/C1-01",
+          "x": 2005,
+          "y": 450
+        },
+        "explored": false,
+        "id": "C1-01",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "C"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 1,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/C1-02",
+          "x": 2300,
+          "y": 378
+        },
+        "explored": false,
+        "id": "C1-02",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "C"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 1,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/C1-03",
+          "x": 2595,
+          "y": 450
+        },
+        "explored": false,
+        "id": "C1-03",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "C"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 2,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A2-01",
+          "x": 205,
+          "y": 760
+        },
+        "explored": false,
+        "id": "A2-01",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "A"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 2,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A2-02",
+          "x": 500,
+          "y": 699
+        },
+        "explored": false,
+        "id": "A2-02",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "A"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 2,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A2-03",
+          "x": 500,
+          "y": 821
+        },
+        "explored": false,
+        "id": "A2-03",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "A"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 2,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A2-04",
+          "x": 795,
+          "y": 760
+        },
+        "explored": false,
+        "id": "A2-04",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "A"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": "중앙연결실 탐사 구역",
+        "current_expedition_map": null,
+        "depth": 2,
+        "descent_recovery": {
+          "employees": [
+            {
+              "eligibility": {
+                "disabled_reason": "NoTrauma",
+                "eligible": false
+              },
+              "employee_name": "강민재",
+              "employee_uuid": "3e23ea28-5af3-4b27-8bf5-b0c1549d0ca0",
+              "mental_state_after": "Stable",
+              "mental_state_before": "Stable",
+              "physical_damage": 0,
+              "trauma_after": 0,
+              "trauma_before": 0
+            },
+            {
+              "eligibility": {
+                "disabled_reason": "NoTrauma",
+                "eligible": false
+              },
+              "employee_name": "한유진",
+              "employee_uuid": "5ac65d59-bbbe-4c5d-923c-014ba08de54e",
+              "mental_state_after": "Stable",
+              "mental_state_before": "Stable",
+              "physical_damage": 0,
+              "trauma_after": 0,
+              "trauma_before": 0
+            },
+            {
+              "eligibility": {
+                "disabled_reason": "NoTrauma",
+                "eligible": false
+              },
+              "employee_name": "이서연",
+              "employee_uuid": "b0666088-1014-4ddf-8778-5a3354864502",
+              "mental_state_after": "Stable",
+              "mental_state_before": "Stable",
+              "physical_damage": 0,
+              "trauma_after": 0,
+              "trauma_before": 0
+            }
+          ],
+          "physical_damage_unchanged": true,
+          "recovery": {
+            "CurrentPercent": {
+              "percent": 10
+            }
+          },
+          "replaces_run_checkpoint": false
+        },
+        "display": {
+          "asset_id": "facility/room/B2-01",
+          "x": 1105,
+          "y": 760
+        },
+        "explored": false,
+        "id": "B2-01",
+        "interior": null,
+        "known_reservations": [],
+        "name": "중앙연결실",
+        "support": "Supported",
+        "visited_this_expedition": false,
+        "wing": "B"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 2,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/B2-02",
+          "x": 1400,
+          "y": 699
+        },
+        "explored": false,
+        "id": "B2-02",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "B"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 2,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/B2-03",
+          "x": 1400,
+          "y": 821
+        },
+        "explored": false,
+        "id": "B2-03",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "B"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 2,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/B2-04",
+          "x": 1695,
+          "y": 760
+        },
+        "explored": false,
+        "id": "B2-04",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "B"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 2,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/C2-01",
+          "x": 2005,
+          "y": 760
+        },
+        "explored": false,
+        "id": "C2-01",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "C"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 2,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/C2-02",
+          "x": 2300,
+          "y": 699
+        },
+        "explored": false,
+        "id": "C2-02",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "C"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 2,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/C2-03",
+          "x": 2300,
+          "y": 821
+        },
+        "explored": false,
+        "id": "C2-03",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "C"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 2,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/C2-04",
+          "x": 2595,
+          "y": 760
+        },
+        "explored": false,
+        "id": "C2-04",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "C"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 3,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A3-01",
+          "x": 205,
+          "y": 1070
+        },
+        "explored": false,
+        "id": "A3-01",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "A"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 3,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A3-02",
+          "x": 500,
+          "y": 1009
+        },
+        "explored": false,
+        "id": "A3-02",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "A"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 3,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A3-03",
+          "x": 500,
+          "y": 1131
+        },
+        "explored": false,
+        "id": "A3-03",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "A"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 3,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A3-04",
+          "x": 795,
+          "y": 1070
+        },
+        "explored": false,
+        "id": "A3-04",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "A"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 3,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/B3-01",
+          "x": 1105,
+          "y": 1070
+        },
+        "explored": false,
+        "id": "B3-01",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "B"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 3,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/B3-02",
+          "x": 1400,
+          "y": 1009
+        },
+        "explored": false,
+        "id": "B3-02",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "B"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 3,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/B3-03",
+          "x": 1400,
+          "y": 1131
+        },
+        "explored": false,
+        "id": "B3-03",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "B"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 3,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/B3-04",
+          "x": 1695,
+          "y": 1070
+        },
+        "explored": false,
+        "id": "B3-04",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "B"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 3,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/C3-01",
+          "x": 2005,
+          "y": 1070
+        },
+        "explored": false,
+        "id": "C3-01",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "C"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 3,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/C3-02",
+          "x": 2300,
+          "y": 1009
+        },
+        "explored": false,
+        "id": "C3-02",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "C"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 3,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/C3-03",
+          "x": 2300,
+          "y": 1131
+        },
+        "explored": false,
+        "id": "C3-03",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "C"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 3,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/C3-04",
+          "x": 2595,
+          "y": 1070
+        },
+        "explored": false,
+        "id": "C3-04",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "C"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 4,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A4-01",
+          "x": 205,
+          "y": 1430
+        },
+        "explored": false,
+        "id": "A4-01",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "A"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 4,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A4-02",
+          "x": 500,
+          "y": 1369
+        },
+        "explored": false,
+        "id": "A4-02",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "A"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 4,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A4-03",
+          "x": 500,
+          "y": 1491
+        },
+        "explored": false,
+        "id": "A4-03",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "A"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 4,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A4-04",
+          "x": 795,
+          "y": 1430
+        },
+        "explored": false,
+        "id": "A4-04",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "A"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 4,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A4-05",
+          "x": 795,
+          "y": 1558
+        },
+        "explored": false,
+        "id": "A4-05",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "A"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 4,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/B4-01",
+          "x": 1105,
+          "y": 1430
+        },
+        "explored": false,
+        "id": "B4-01",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "B"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 4,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/B4-02",
+          "x": 1400,
+          "y": 1369
+        },
+        "explored": false,
+        "id": "B4-02",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "B"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 4,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/B4-03",
+          "x": 1400,
+          "y": 1491
+        },
+        "explored": false,
+        "id": "B4-03",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "B"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 4,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/B4-04",
+          "x": 1695,
+          "y": 1430
+        },
+        "explored": false,
+        "id": "B4-04",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "B"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 4,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/C4-01",
+          "x": 2005,
+          "y": 1430
+        },
+        "explored": false,
+        "id": "C4-01",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "C"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 4,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/C4-02",
+          "x": 2300,
+          "y": 1369
+        },
+        "explored": false,
+        "id": "C4-02",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "C"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 4,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/C4-03",
+          "x": 2300,
+          "y": 1491
+        },
+        "explored": false,
+        "id": "C4-03",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "C"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 4,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/C4-04",
+          "x": 2595,
+          "y": 1430
+        },
+        "explored": false,
+        "id": "C4-04",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "C"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 5,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A5-01",
+          "x": 205,
+          "y": 1760
+        },
+        "explored": false,
+        "id": "A5-01",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "A"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 5,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A5-02",
+          "x": 500,
+          "y": 1699
+        },
+        "explored": false,
+        "id": "A5-02",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "A"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 5,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A5-03",
+          "x": 500,
+          "y": 1821
+        },
+        "explored": false,
+        "id": "A5-03",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "A"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 5,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A5-04",
+          "x": 795,
+          "y": 1760
+        },
+        "explored": false,
+        "id": "A5-04",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "A"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 5,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/B5-01",
+          "x": 1105,
+          "y": 1760
+        },
+        "explored": false,
+        "id": "B5-01",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "B"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 5,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/B5-02",
+          "x": 1400,
+          "y": 1699
+        },
+        "explored": false,
+        "id": "B5-02",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "B"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 5,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/B5-03",
+          "x": 1400,
+          "y": 1821
+        },
+        "explored": false,
+        "id": "B5-03",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "B"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 5,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/B5-04",
+          "x": 1695,
+          "y": 1760
+        },
+        "explored": false,
+        "id": "B5-04",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "B"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 5,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/B5-05",
+          "x": 1695,
+          "y": 1888
+        },
+        "explored": false,
+        "id": "B5-05",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "B"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 5,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/C5-01",
+          "x": 2005,
+          "y": 1760
+        },
+        "explored": false,
+        "id": "C5-01",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "C"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 5,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/C5-02",
+          "x": 2300,
+          "y": 1699
+        },
+        "explored": false,
+        "id": "C5-02",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "C"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 5,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/C5-03",
+          "x": 2300,
+          "y": 1821
+        },
+        "explored": false,
+        "id": "C5-03",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "C"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 5,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/C5-04",
+          "x": 2595,
+          "y": 1760
+        },
+        "explored": false,
+        "id": "C5-04",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "C"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 6,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A6-01",
+          "x": 205,
+          "y": 2090
+        },
+        "explored": false,
+        "id": "A6-01",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "A"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 6,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A6-02",
+          "x": 500,
+          "y": 2029
+        },
+        "explored": false,
+        "id": "A6-02",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "A"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 6,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A6-03",
+          "x": 500,
+          "y": 2151
+        },
+        "explored": false,
+        "id": "A6-03",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "A"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 6,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A6-04",
+          "x": 795,
+          "y": 2090
+        },
+        "explored": false,
+        "id": "A6-04",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "A"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 6,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A6-05",
+          "x": 795,
+          "y": 2218
+        },
+        "explored": false,
+        "id": "A6-05",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "A"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 6,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/B6-01",
+          "x": 1105,
+          "y": 2090
+        },
+        "explored": false,
+        "id": "B6-01",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "B"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 6,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/B6-02",
+          "x": 1400,
+          "y": 2029
+        },
+        "explored": false,
+        "id": "B6-02",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "B"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 6,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/B6-03",
+          "x": 1400,
+          "y": 2151
+        },
+        "explored": false,
+        "id": "B6-03",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "B"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 6,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/B6-04",
+          "x": 1695,
+          "y": 2090
+        },
+        "explored": false,
+        "id": "B6-04",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "B"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 6,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/C6-01",
+          "x": 2005,
+          "y": 2090
+        },
+        "explored": false,
+        "id": "C6-01",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "C"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 6,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/C6-02",
+          "x": 2300,
+          "y": 2029
+        },
+        "explored": false,
+        "id": "C6-02",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "C"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 6,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/C6-03",
+          "x": 2300,
+          "y": 2151
+        },
+        "explored": false,
+        "id": "C6-03",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "C"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 6,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/C6-04",
+          "x": 2595,
+          "y": 2090
+        },
+        "explored": false,
+        "id": "C6-04",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "C"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 6,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/C6-05",
+          "x": 2595,
+          "y": 2218
+        },
+        "explored": false,
+        "id": "C6-05",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "C"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 7,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A7-01",
+          "x": 205,
+          "y": 2470
+        },
+        "explored": false,
+        "id": "A7-01",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "A"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 7,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A7-02",
+          "x": 500,
+          "y": 2409
+        },
+        "explored": false,
+        "id": "A7-02",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "A"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 7,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A7-03",
+          "x": 500,
+          "y": 2531
+        },
+        "explored": false,
+        "id": "A7-03",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "A"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 7,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/A7-04",
+          "x": 795,
+          "y": 2470
+        },
+        "explored": false,
+        "id": "A7-04",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "A"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 7,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/B7-01",
+          "x": 1105,
+          "y": 2470
+        },
+        "explored": false,
+        "id": "B7-01",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "B"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 7,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/B7-02",
+          "x": 1400,
+          "y": 2398
+        },
+        "explored": false,
+        "id": "B7-02",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "B"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 7,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/B7-03",
+          "x": 1695,
+          "y": 2470
+        },
+        "explored": false,
+        "id": "B7-03",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "B"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 7,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/C7-01",
+          "x": 2005,
+          "y": 2470
+        },
+        "explored": false,
+        "id": "C7-01",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "C"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 7,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/C7-02",
+          "x": 2300,
+          "y": 2409
+        },
+        "explored": false,
+        "id": "C7-02",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "C"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 7,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/C7-03",
+          "x": 2300,
+          "y": 2531
+        },
+        "explored": false,
+        "id": "C7-03",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "C"
+      },
+      {
+        "access_condition": null,
+        "activities": [],
+        "concept": null,
+        "current_expedition_map": null,
+        "depth": 7,
+        "descent_recovery": null,
+        "display": {
+          "asset_id": "facility/room/C7-04",
+          "x": 2595,
+          "y": 2470
+        },
+        "explored": false,
+        "id": "C7-04",
+        "interior": null,
+        "known_reservations": [],
+        "name": null,
+        "support": null,
+        "visited_this_expedition": false,
+        "wing": "C"
+      }
+    ]
+  },
+  "game_state": "viewing_map",
+  "game_state_context": {
+    "type": "viewing_map"
+  },
+  "inventory": {
+    "consumables": [],
+    "equipment_materials": [],
+    "equipments": [
+      {
+        "equipped_to": "5ac65d59-bbbe-4c5d-923c-014ba08de54e",
+        "instance_uuid": "332cafa7-b288-4a3f-9081-95bd86169f1d",
+        "item": {
+          "bound": false,
+          "can_unequip": true,
+          "cannot_unequip_reason": null,
+          "definition_id": "standard_armor",
+          "enhancement_level": 0,
+          "equipment_type": "Armor",
+          "name": "Standard Training E.G.O Armor",
+          "price": 80,
+          "rarity": "TETH",
+          "uuid": "332cafa7-b288-4a3f-9081-95bd86169f1d",
+          "weapon_profile": null
+        }
+      },
+      {
+        "equipped_to": "b0666088-1014-4ddf-8778-5a3354864502",
+        "instance_uuid": "409d80f3-ea24-4504-aa31-d5aa90991794",
+        "item": {
+          "bound": false,
+          "can_unequip": true,
+          "cannot_unequip_reason": null,
+          "definition_id": "standard_training_healing_staff",
+          "enhancement_level": 0,
+          "equipment_type": "Weapon",
+          "name": "Company Training healing_staff",
+          "price": 0,
+          "rarity": "ZAYIN",
+          "uuid": "409d80f3-ea24-4504-aa31-d5aa90991794",
+          "weapon_profile": {
+            "action": {
+              "Heal": {
+                "flat": 8,
+                "footprint": null,
+                "spell_power_percent": 100
+              }
+            },
+            "air_capable": true,
+            "block_capacity": 0,
+            "damage_type": "Physical",
+            "defense_tile_range": {
+              "include_anchor_tile": true,
+              "rows": [
+                "XXXXX",
+                "XXXXX",
+                "XX@XX",
+                "XXXXX",
+                "XXXXX"
+              ]
+            },
+            "delivery": "Instant",
+            "deployment_affinity": "platform_only",
+            "ground_defense_focus": null,
+            "interval_ms": 1800,
+            "platform_rest": {
+              "hp_recovery_per_tick": 3
+            },
+            "range_role": "Ranged",
+            "ranged_reposition_ms": 1000,
+            "targeting_profile": "DefaultForward",
+            "weapon_archetype": "Staff",
+            "windup_ms": 200
+          }
+        }
+      },
+      {
+        "equipped_to": "3e23ea28-5af3-4b27-8bf5-b0c1549d0ca0",
+        "instance_uuid": "648567b3-8c9b-49bb-8189-0607333aac18",
+        "item": {
+          "bound": false,
+          "can_unequip": true,
+          "cannot_unequip_reason": null,
+          "definition_id": "standard_training_shield",
+          "enhancement_level": 0,
+          "equipment_type": "Weapon",
+          "name": "Company Training shield",
+          "price": 0,
+          "rarity": "ZAYIN",
+          "uuid": "648567b3-8c9b-49bb-8189-0607333aac18",
+          "weapon_profile": {
+            "air_capable": false,
+            "block_capacity": 3,
+            "damage_type": "Physical",
+            "defense_tile_range": {
+              "include_anchor_tile": false,
+              "rows": [
+                ".X.",
+                ".@.",
+                "..."
+              ]
+            },
+            "delivery": "Instant",
+            "deployment_affinity": "ground_only",
+            "ground_defense_focus": {
+              "block_capacity_bonus": 1,
+              "incoming_damage_reduction_percent": 10
+            },
+            "interval_ms": 1800,
+            "platform_rest": null,
+            "range_role": "Melee",
+            "ranged_reposition_ms": 1000,
+            "targeting_profile": "DefaultForward",
+            "weapon_archetype": "Shield",
+            "windup_ms": 250
+          }
+        }
+      },
+      {
+        "equipped_to": "b0666088-1014-4ddf-8778-5a3354864502",
+        "instance_uuid": "716a6aa1-c17b-4bcf-9e0d-b5239844439c",
+        "item": {
+          "bound": false,
+          "can_unequip": true,
+          "cannot_unequip_reason": null,
+          "definition_id": "standard_armor",
+          "enhancement_level": 0,
+          "equipment_type": "Armor",
+          "name": "Standard Training E.G.O Armor",
+          "price": 80,
+          "rarity": "TETH",
+          "uuid": "716a6aa1-c17b-4bcf-9e0d-b5239844439c",
+          "weapon_profile": null
+        }
+      },
+      {
+        "equipped_to": "3e23ea28-5af3-4b27-8bf5-b0c1549d0ca0",
+        "instance_uuid": "e3b84e85-f9c3-47a9-a907-96d370add318",
+        "item": {
+          "bound": false,
+          "can_unequip": true,
+          "cannot_unequip_reason": null,
+          "definition_id": "standard_armor",
+          "enhancement_level": 0,
+          "equipment_type": "Armor",
+          "name": "Standard Training E.G.O Armor",
+          "price": 80,
+          "rarity": "TETH",
+          "uuid": "e3b84e85-f9c3-47a9-a907-96d370add318",
+          "weapon_profile": null
+        }
+      },
+      {
+        "equipped_to": "5ac65d59-bbbe-4c5d-923c-014ba08de54e",
+        "instance_uuid": "fbcaea61-7e7e-443d-9375-0644b3da886d",
+        "item": {
+          "bound": false,
+          "can_unequip": true,
+          "cannot_unequip_reason": null,
+          "definition_id": "standard_training_sword",
+          "enhancement_level": 0,
+          "equipment_type": "Weapon",
+          "name": "Standard Training Sword",
+          "price": 0,
+          "rarity": "ZAYIN",
+          "uuid": "fbcaea61-7e7e-443d-9375-0644b3da886d",
+          "weapon_profile": {
+            "air_capable": false,
+            "block_capacity": 1,
+            "damage_type": "Physical",
+            "defense_tile_range": {
+              "include_anchor_tile": false,
+              "rows": [
+                ".X.",
+                ".@.",
+                "..."
+              ]
+            },
+            "delivery": "Instant",
+            "deployment_affinity": "ground_only",
+            "ground_defense_focus": {
+              "block_capacity_bonus": 1,
+              "incoming_damage_reduction_percent": 10
+            },
+            "interval_ms": 1500,
+            "platform_rest": null,
+            "range_role": "Melee",
+            "ranged_reposition_ms": 1000,
+            "targeting_profile": "DefaultForward",
+            "weapon_archetype": "Sword",
+            "windup_ms": 200
+          }
+        }
+      }
+    ],
+    "fragment_dust": 0,
+    "fragment_dust_usage": "reserved_legacy_asset_not_used_by_fragment_recipes",
+    "occupied_slot_count": 6,
+    "reserved_slot_count": 50,
+    "skill_fragments": [
+      {
+        "copy": {
+          "copy_uuid": "4261e90b-c798-44ba-9374-bda44ca3feb1",
+          "definition_id": "training_berserker",
+          "equipped_to": "5ac65d59-bbbe-4c5d-923c-014ba08de54e",
+          "selected_form": "base",
+          "unlocked_forms": [
+            "base"
+          ]
+        },
+        "definition_count": 1,
+        "dismantle_recipe": null,
+        "effect": "ActiveSkill",
+        "forms": [
+          {
+            "can_select": false,
+            "can_unlock": false,
+            "form_id": "base",
+            "recipe": null,
+            "resonance_max": 100,
+            "select_unavailable_reason": "maintenance_required",
+            "selected": true,
+            "skill_id": "training_berserker",
+            "unlock_unavailable_reason": "maintenance_required",
+            "unlocked": true
+          }
+        ],
+        "name": "Company Training berserker",
+        "unavailable_reason": null
+      },
+      {
+        "copy": {
+          "copy_uuid": "698f4d35-40f8-4144-a4db-b652b654cbd4",
+          "definition_id": "training_last_line",
+          "equipped_to": "3e23ea28-5af3-4b27-8bf5-b0c1549d0ca0",
+          "selected_form": "base",
+          "unlocked_forms": [
+            "base"
+          ]
+        },
+        "definition_count": 1,
+        "dismantle_recipe": null,
+        "effect": "ActiveSkill",
+        "forms": [
+          {
+            "can_select": false,
+            "can_unlock": false,
+            "form_id": "base",
+            "recipe": null,
+            "resonance_max": 100,
+            "select_unavailable_reason": "maintenance_required",
+            "selected": true,
+            "skill_id": "training_last_line",
+            "unlock_unavailable_reason": "maintenance_required",
+            "unlocked": true
+          }
+        ],
+        "name": "Company Training last_line",
+        "unavailable_reason": null
+      },
+      {
+        "copy": {
+          "copy_uuid": "ff2fd7c9-dd16-4fc3-9a51-137a5ed69e34",
+          "definition_id": "training_single_heal",
+          "equipped_to": "b0666088-1014-4ddf-8778-5a3354864502",
+          "selected_form": "base",
+          "unlocked_forms": [
+            "base"
+          ]
+        },
+        "definition_count": 1,
+        "dismantle_recipe": null,
+        "effect": "ActiveSkill",
+        "forms": [
+          {
+            "can_select": false,
+            "can_unlock": false,
+            "form_id": "base",
+            "recipe": null,
+            "resonance_max": 100,
+            "select_unavailable_reason": "maintenance_required",
+            "selected": true,
+            "skill_id": "training_single_heal",
+            "unlock_unavailable_reason": "maintenance_required",
+            "unlocked": true
+          }
+        ],
+        "name": "Company Training single_heal",
+        "unavailable_reason": null
+      }
+    ]
+  },
+  "map": {
+    "facility_template_version": 1,
+    "map_template_id": "facility_9B",
+    "nodes": [
+      {
+        "category": "Combat",
+        "difficulty_band": "Easy",
+        "id": "20455fda-46e5-4217-9d79-9c277beb0655",
+        "kind_id": "combat_monster",
+        "payload": {
+          "Encounter": {
+            "encounter_id": "normal_breach_response"
+          }
+        },
+        "relative_threat": "Equal",
+        "slot_id": "1",
+        "state": "Available",
+        "visibility": "Revealed"
+      },
+      {
+        "category": "Combat",
+        "difficulty_band": "Hard",
+        "id": "20455fda-46e5-4217-9b44-8cd16337217c",
+        "kind_id": "combat_monster",
+        "payload": {
+          "Encounter": {
+            "encounter_id": "normal_breach_response"
+          }
+        },
+        "relative_threat": "High",
+        "slot_id": "2",
+        "state": "Unavailable",
+        "visibility": "Revealed"
+      },
+      {
+        "category": "Combat",
+        "difficulty_band": "Hard",
+        "id": "20455fda-46e5-4217-bd19-5701473cf03f",
+        "kind_id": "combat_monster",
+        "payload": {
+          "Encounter": {
+            "encounter_id": "normal_black_box_pressure"
+          }
+        },
+        "relative_threat": "High",
+        "slot_id": "3",
+        "state": "Available",
+        "visibility": "Revealed"
+      },
+      {
+        "category": "Combat",
+        "difficulty_band": "Standard",
+        "id": "20455fda-46e5-4217-97fc-5a1f79b7510b",
+        "kind_id": "combat_monster",
+        "payload": {
+          "Encounter": {
+            "encounter_id": "normal_black_box_pressure"
+          }
+        },
+        "relative_threat": "Equal",
+        "slot_id": "4",
+        "state": "Unavailable",
+        "visibility": "Revealed"
+      },
+      {
+        "category": "Boss",
+        "difficulty_band": "NormalBoss",
+        "id": "20455fda-46e5-4217-a6e9-765906644187",
+        "kind_id": "boss_abnormality",
+        "payload": {
+          "Encounter": {
+            "encounter_id": "suppress_little_red"
+          }
+        },
+        "relative_threat": "VeryHigh",
+        "slot_id": "5",
+        "state": "Unavailable",
+        "visibility": "Revealed"
+      },
+      {
+        "category": "Reward",
+        "id": "20455fda-46e5-4217-be40-a5fc5214b1f3",
+        "kind_id": "reward_treasure",
+        "payload": {
+          "Reward": {
+            "reward_pool_id": "default_treasures"
+          }
+        },
+        "slot_id": "6",
+        "state": "Unavailable",
+        "visibility": "Revealed"
+      },
+      {
+        "category": "Combat",
+        "difficulty_band": "Standard",
+        "id": "20455fda-46e5-4217-a199-e168a0ca0955",
+        "kind_id": "combat_monster",
+        "payload": {
+          "Encounter": {
+            "encounter_id": "normal_breach_response"
+          }
+        },
+        "relative_threat": "Equal",
+        "slot_id": "7",
+        "state": "Unavailable",
+        "visibility": "Revealed"
+      },
+      {
+        "category": "Event",
+        "id": "20455fda-46e5-4217-b52a-e679b945afbd",
+        "kind_id": "event_sealed_archive",
+        "payload": {
+          "Event": {
+            "event_id": "sealed_archive_recovery_01"
+          }
+        },
+        "slot_id": "8",
+        "state": "Unavailable",
+        "visibility": "Revealed"
+      },
+      {
+        "category": "Combat",
+        "difficulty_band": "Standard",
+        "id": "20455fda-46e5-4217-a59e-5f58818e1603",
+        "kind_id": "combat_monster",
+        "payload": {
+          "Encounter": {
+            "encounter_id": "normal_breach_response"
+          }
+        },
+        "relative_threat": "Equal",
+        "slot_id": "9",
+        "state": "Unavailable",
+        "visibility": "Revealed"
+      },
+      {
+        "category": "Gate",
+        "id": "20455fda-46e5-4217-a520-ace4be1bd33b",
+        "kind_id": "gate_stairs",
+        "payload": "None",
+        "slot_id": "G",
+        "state": "Unavailable",
+        "visibility": "Revealed"
+      },
+      {
+        "category": "Start",
+        "id": "20455fda-46e5-4217-987d-d7c36b3f7355",
+        "kind_id": "start",
+        "payload": "None",
+        "slot_id": "S",
+        "state": "Completed",
+        "visibility": "Revealed"
+      }
+    ]
+  },
+  "map_navigation": {
+    "current_node_id": "20455fda-46e5-4217-987d-d7c36b3f7355",
+    "selectable_node_ids": [
+      "20455fda-46e5-4217-9d79-9c277beb0655",
+      "20455fda-46e5-4217-bd19-5701473cf03f"
+    ]
+  },
+  "monolith": {
+    "corrupted_monolith_acquired": false,
+    "elite_pool_exhausted": false,
+    "entries": [],
+    "exchange_shop_guarantee_issued": false,
+    "exchange_state": "unavailable",
+    "next_floor_shop_guarantee_pending": false,
+    "residual_exchange_threshold": 4,
+    "residuals": []
+  },
+  "player_profile": {
+    "all_live_final_bosses_defeated": false,
+    "highest_floor_reached": 1,
+    "lifecycle": {
+      "active_expedition": {
+        "player_id": "00000000-0000-0000-0000-0000000032e7",
+        "sequence": 1,
+        "uuid": "f27cce75-b6e3-4b5a-8b15-40fc5d05369b"
+      },
+      "expedition_sequence": 1,
+      "first_return_story": "Never",
+      "vault": {
+        "equipment": {},
+        "fragments": {}
+      }
+    },
+    "longest_deathless_floor_streak": 0
+  },
+  "resources": {
+    "enkephalin": 500
+  },
+  "roster": {
+    "combat_eligible_employee_ids": [
+      "3e23ea28-5af3-4b27-8bf5-b0c1549d0ca0",
+      "5ac65d59-bbbe-4c5d-923c-014ba08de54e",
+      "b0666088-1014-4ddf-8778-5a3354864502"
+    ],
+    "employees": [
+      {
+        "active_consumable_modifier": null,
+        "combat_profile": {
+          "base_stats": {
+            "attack": 10,
+            "attack_interval_ms": 1500,
+            "current_health": 100,
+            "defense": 0,
+            "magic_resist": 0,
+            "max_health": 100,
+            "move_speed_units_per_ms": 3000
+          },
+          "basic_attack": {
+            "air_capable": false,
+            "damage_type": "Physical",
+            "defense_tile_range": {
+              "include_anchor_tile": true,
+              "rows": [
+                ".X.",
+                ".@.",
+                "..."
+              ]
+            },
+            "delivery": "Instant",
+            "interval_ms": 1500,
+            "range_policy": "pattern",
+            "range_role": "Melee",
+            "ranged_reposition_ms": 1000,
+            "targeting_profile": "DefaultForward",
+            "windup_ms": 200
+          },
+          "battle_tier": "I",
+          "effective_basic_attack": {
+            "air_capable": false,
+            "damage_type": "Physical",
+            "defense_tile_range": {
+              "include_anchor_tile": false,
+              "rows": [
+                ".X.",
+                ".@.",
+                "..."
+              ]
+            },
+            "delivery": "Instant",
+            "interval_ms": 1800,
+            "range_policy": "pattern",
+            "range_role": "Melee",
+            "ranged_reposition_ms": 1000,
+            "targeting_profile": "DefaultForward",
+            "windup_ms": 250
+          },
+          "effective_deployment_affinity": "ground_only",
+          "effective_profile_error": null,
+          "effective_skill_id": "training_last_line",
+          "effective_stats": {
+            "attack": 10,
+            "attack_interval_ms": 1800,
+            "current_health": 100,
+            "defense": 0,
+            "magic_resist": 0,
+            "max_health": 100,
+            "move_speed_units_per_ms": 3000
+          },
+          "effective_weapon_profile": {
+            "air_capable": false,
+            "block_capacity": 3,
+            "damage_type": "Physical",
+            "defense_tile_range": {
+              "include_anchor_tile": false,
+              "rows": [
+                ".X.",
+                ".@.",
+                "..."
+              ]
+            },
+            "delivery": "Instant",
+            "deployment_affinity": "ground_only",
+            "ground_defense_focus": {
+              "block_capacity_bonus": 1,
+              "incoming_damage_reduction_percent": 10
+            },
+            "interval_ms": 1800,
+            "platform_rest": null,
+            "range_role": "Melee",
+            "ranged_reposition_ms": 1000,
+            "targeting_profile": "DefaultForward",
+            "weapon_archetype": "Shield",
+            "windup_ms": 250
+          }
+        },
+        "condition": {
+          "breakdown_remaining_nodes": null,
+          "mental_state": "Stable",
+          "physical_damage": 0,
+          "physical_state": "Normal",
+          "trauma": 0
+        },
+        "eligibility": {
+          "combat": {
+            "eligible": true
+          },
+          "consumable": {
+            "eligible": true
+          },
+          "event": {
+            "eligible": true
+          },
+          "high_risk": {
+            "eligible": true
+          },
+          "loadout": {
+            "eligible": true
+          },
+          "physical_treatment": {
+            "eligible": true
+          },
+          "trauma_recovery": {
+            "disabled_reason": "NoTrauma",
+            "eligible": false
+          }
+        },
+        "employee_definition_id": "breach_guard",
+        "equipped_items": [
+          {
+            "base_uuid": "650e8400-e29b-41d4-a716-446655449002",
+            "bound": false,
+            "can_unequip": true,
+            "cannot_unequip_reason": null,
+            "definition_id": "standard_training_shield",
+            "equipment_type": "Weapon",
+            "instance_uuid": "648567b3-8c9b-49bb-8189-0607333aac18",
+            "name": "Company Training shield",
+            "weapon_profile": {
+              "air_capable": false,
+              "block_capacity": 3,
+              "damage_type": "Physical",
+              "defense_tile_range": {
+                "include_anchor_tile": false,
+                "rows": [
+                  ".X.",
+                  ".@.",
+                  "..."
+                ]
+              },
+              "delivery": "Instant",
+              "deployment_affinity": "ground_only",
+              "ground_defense_focus": {
+                "block_capacity_bonus": 1,
+                "incoming_damage_reduction_percent": 10
+              },
+              "interval_ms": 1800,
+              "platform_rest": null,
+              "range_role": "Melee",
+              "ranged_reposition_ms": 1000,
+              "targeting_profile": "DefaultForward",
+              "weapon_archetype": "Shield",
+              "windup_ms": 250
+            }
+          },
+          {
+            "base_uuid": "650e8400-e29b-41d4-a716-446655440031",
+            "bound": false,
+            "can_unequip": true,
+            "cannot_unequip_reason": null,
+            "definition_id": "standard_armor",
+            "equipment_type": "Armor",
+            "instance_uuid": "e3b84e85-f9c3-47a9-a907-96d370add318",
+            "name": "Standard Training E.G.O Armor",
+            "weapon_profile": null
+          }
+        ],
+        "experience": 0,
+        "level": 1,
+        "name": "강민재",
+        "profile": {
+          "background": "브리칭 경보가 울릴 때 가장 먼저 문 앞으로 선 직원.",
+          "base_combat_stats": {
+            "attack": 10,
+            "defense": 0,
+            "magic_resist": 0,
+            "max_hp": 100
+          },
+          "basic_attack_speed_percent": 100,
+          "combat_aptitude": "Balanced",
+          "event_aptitude": "Security",
+          "personality": {
+            "risk": "Brave",
+            "social": "Obedient"
+          },
+          "role": "격리문 경비"
+        },
+        "role": "Tank",
+        "skill_fragments": {
+          "active_copy_uuid": "698f4d35-40f8-4144-a4db-b652b654cbd4",
+          "baseline_ids": [],
+          "compatibility": [
+            {
+              "copy_uuid": "4261e90b-c798-44ba-9374-bda44ca3feb1",
+              "definition_id": "training_berserker",
+              "failure_codes": [
+                "weapon_archetype_mismatch"
+              ],
+              "is_compatible": false,
+              "name": "Company Training berserker",
+              "requirements": {
+                "allowed_damage_types": [],
+                "allowed_range_roles": [],
+                "allowed_targeting_profiles": [],
+                "allowed_weapon_archetypes": [
+                  "Sword"
+                ],
+                "block_capacity_min": null,
+                "incompatible_capability_tags": [],
+                "required_capability_tags": [],
+                "requires_air_capable": null
+              },
+              "selected_form": "base",
+              "unavailable_reason": null
+            },
+            {
+              "copy_uuid": "698f4d35-40f8-4144-a4db-b652b654cbd4",
+              "definition_id": "training_last_line",
+              "failure_codes": [],
+              "is_compatible": true,
+              "name": "Company Training last_line",
+              "requirements": {
+                "allowed_damage_types": [],
+                "allowed_range_roles": [],
+                "allowed_targeting_profiles": [],
+                "allowed_weapon_archetypes": [
+                  "Shield"
+                ],
+                "block_capacity_min": null,
+                "incompatible_capability_tags": [],
+                "required_capability_tags": [],
+                "requires_air_capable": null
+              },
+              "selected_form": "base",
+              "unavailable_reason": null
+            },
+            {
+              "copy_uuid": "ff2fd7c9-dd16-4fc3-9a51-137a5ed69e34",
+              "definition_id": "training_single_heal",
+              "failure_codes": [
+                "weapon_archetype_mismatch"
+              ],
+              "is_compatible": false,
+              "name": "Company Training single_heal",
+              "requirements": {
+                "allowed_damage_types": [],
+                "allowed_range_roles": [],
+                "allowed_targeting_profiles": [],
+                "allowed_weapon_archetypes": [
+                  "Staff"
+                ],
+                "block_capacity_min": null,
+                "incompatible_capability_tags": [],
+                "required_capability_tags": [],
+                "requires_air_capable": null
+              },
+              "selected_form": "base",
+              "unavailable_reason": null
+            }
+          ],
+          "equipped": [
+            {
+              "effect": "ActiveSkill",
+              "id": "training_last_line",
+              "name": "Company Training last_line"
+            }
+          ]
+        },
+        "uuid": "3e23ea28-5af3-4b27-8bf5-b0c1549d0ca0"
+      },
+      {
+        "active_consumable_modifier": null,
+        "combat_profile": {
+          "base_stats": {
+            "attack": 10,
+            "attack_interval_ms": 1500,
+            "current_health": 100,
+            "defense": 0,
+            "magic_resist": 0,
+            "max_health": 100,
+            "move_speed_units_per_ms": 3000
+          },
+          "basic_attack": {
+            "air_capable": false,
+            "damage_type": "Physical",
+            "defense_tile_range": {
+              "include_anchor_tile": true,
+              "rows": [
+                ".X.",
+                ".@.",
+                "..."
+              ]
+            },
+            "delivery": "Instant",
+            "interval_ms": 1500,
+            "range_policy": "pattern",
+            "range_role": "Melee",
+            "ranged_reposition_ms": 1000,
+            "targeting_profile": "DefaultForward",
+            "windup_ms": 200
+          },
+          "battle_tier": "I",
+          "effective_basic_attack": {
+            "air_capable": false,
+            "damage_type": "Physical",
+            "defense_tile_range": {
+              "include_anchor_tile": false,
+              "rows": [
+                ".X.",
+                ".@.",
+                "..."
+              ]
+            },
+            "delivery": "Instant",
+            "interval_ms": 1500,
+            "range_policy": "pattern",
+            "range_role": "Melee",
+            "ranged_reposition_ms": 1000,
+            "targeting_profile": "DefaultForward",
+            "windup_ms": 200
+          },
+          "effective_deployment_affinity": "ground_only",
+          "effective_profile_error": null,
+          "effective_skill_id": "training_berserker",
+          "effective_stats": {
+            "attack": 10,
+            "attack_interval_ms": 1500,
+            "current_health": 100,
+            "defense": 0,
+            "magic_resist": 0,
+            "max_health": 100,
+            "move_speed_units_per_ms": 3000
+          },
+          "effective_weapon_profile": {
+            "air_capable": false,
+            "block_capacity": 1,
+            "damage_type": "Physical",
+            "defense_tile_range": {
+              "include_anchor_tile": false,
+              "rows": [
+                ".X.",
+                ".@.",
+                "..."
+              ]
+            },
+            "delivery": "Instant",
+            "deployment_affinity": "ground_only",
+            "ground_defense_focus": {
+              "block_capacity_bonus": 1,
+              "incoming_damage_reduction_percent": 10
+            },
+            "interval_ms": 1500,
+            "platform_rest": null,
+            "range_role": "Melee",
+            "ranged_reposition_ms": 1000,
+            "targeting_profile": "DefaultForward",
+            "weapon_archetype": "Sword",
+            "windup_ms": 200
+          }
+        },
+        "condition": {
+          "breakdown_remaining_nodes": null,
+          "mental_state": "Stable",
+          "physical_damage": 0,
+          "physical_state": "Normal",
+          "trauma": 0
+        },
+        "eligibility": {
+          "combat": {
+            "eligible": true
+          },
+          "consumable": {
+            "eligible": true
+          },
+          "event": {
+            "eligible": true
+          },
+          "high_risk": {
+            "eligible": true
+          },
+          "loadout": {
+            "eligible": true
+          },
+          "physical_treatment": {
+            "eligible": true
+          },
+          "trauma_recovery": {
+            "disabled_reason": "NoTrauma",
+            "eligible": false
+          }
+        },
+        "employee_definition_id": "records_clerk",
+        "equipped_items": [
+          {
+            "base_uuid": "650e8400-e29b-41d4-a716-446655440030",
+            "bound": false,
+            "can_unequip": true,
+            "cannot_unequip_reason": null,
+            "definition_id": "standard_training_sword",
+            "equipment_type": "Weapon",
+            "instance_uuid": "fbcaea61-7e7e-443d-9375-0644b3da886d",
+            "name": "Standard Training Sword",
+            "weapon_profile": {
+              "air_capable": false,
+              "block_capacity": 1,
+              "damage_type": "Physical",
+              "defense_tile_range": {
+                "include_anchor_tile": false,
+                "rows": [
+                  ".X.",
+                  ".@.",
+                  "..."
+                ]
+              },
+              "delivery": "Instant",
+              "deployment_affinity": "ground_only",
+              "ground_defense_focus": {
+                "block_capacity_bonus": 1,
+                "incoming_damage_reduction_percent": 10
+              },
+              "interval_ms": 1500,
+              "platform_rest": null,
+              "range_role": "Melee",
+              "ranged_reposition_ms": 1000,
+              "targeting_profile": "DefaultForward",
+              "weapon_archetype": "Sword",
+              "windup_ms": 200
+            }
+          },
+          {
+            "base_uuid": "650e8400-e29b-41d4-a716-446655440031",
+            "bound": false,
+            "can_unequip": true,
+            "cannot_unequip_reason": null,
+            "definition_id": "standard_armor",
+            "equipment_type": "Armor",
+            "instance_uuid": "332cafa7-b288-4a3f-9081-95bd86169f1d",
+            "name": "Standard Training E.G.O Armor",
+            "weapon_profile": null
+          }
+        ],
+        "experience": 0,
+        "level": 1,
+        "name": "한유진",
+        "profile": {
+          "background": "죽은 관리자의 명령 로그를 끝까지 복원하려 했다.",
+          "base_combat_stats": {
+            "attack": 10,
+            "defense": 0,
+            "magic_resist": 0,
+            "max_hp": 100
+          },
+          "basic_attack_speed_percent": 100,
+          "combat_aptitude": "Balanced",
+          "event_aptitude": "Analysis",
+          "personality": {
+            "risk": "Cautious",
+            "social": "Defiant"
+          },
+          "role": "기록 보조"
+        },
+        "role": "Dealer",
+        "skill_fragments": {
+          "active_copy_uuid": "4261e90b-c798-44ba-9374-bda44ca3feb1",
+          "baseline_ids": [],
+          "compatibility": [
+            {
+              "copy_uuid": "4261e90b-c798-44ba-9374-bda44ca3feb1",
+              "definition_id": "training_berserker",
+              "failure_codes": [],
+              "is_compatible": true,
+              "name": "Company Training berserker",
+              "requirements": {
+                "allowed_damage_types": [],
+                "allowed_range_roles": [],
+                "allowed_targeting_profiles": [],
+                "allowed_weapon_archetypes": [
+                  "Sword"
+                ],
+                "block_capacity_min": null,
+                "incompatible_capability_tags": [],
+                "required_capability_tags": [],
+                "requires_air_capable": null
+              },
+              "selected_form": "base",
+              "unavailable_reason": null
+            },
+            {
+              "copy_uuid": "698f4d35-40f8-4144-a4db-b652b654cbd4",
+              "definition_id": "training_last_line",
+              "failure_codes": [
+                "weapon_archetype_mismatch"
+              ],
+              "is_compatible": false,
+              "name": "Company Training last_line",
+              "requirements": {
+                "allowed_damage_types": [],
+                "allowed_range_roles": [],
+                "allowed_targeting_profiles": [],
+                "allowed_weapon_archetypes": [
+                  "Shield"
+                ],
+                "block_capacity_min": null,
+                "incompatible_capability_tags": [],
+                "required_capability_tags": [],
+                "requires_air_capable": null
+              },
+              "selected_form": "base",
+              "unavailable_reason": null
+            },
+            {
+              "copy_uuid": "ff2fd7c9-dd16-4fc3-9a51-137a5ed69e34",
+              "definition_id": "training_single_heal",
+              "failure_codes": [
+                "weapon_archetype_mismatch"
+              ],
+              "is_compatible": false,
+              "name": "Company Training single_heal",
+              "requirements": {
+                "allowed_damage_types": [],
+                "allowed_range_roles": [],
+                "allowed_targeting_profiles": [],
+                "allowed_weapon_archetypes": [
+                  "Staff"
+                ],
+                "block_capacity_min": null,
+                "incompatible_capability_tags": [],
+                "required_capability_tags": [],
+                "requires_air_capable": null
+              },
+              "selected_form": "base",
+              "unavailable_reason": null
+            }
+          ],
+          "equipped": [
+            {
+              "effect": "ActiveSkill",
+              "id": "training_berserker",
+              "name": "Company Training berserker"
+            }
+          ]
+        },
+        "uuid": "5ac65d59-bbbe-4c5d-923c-014ba08de54e"
+      },
+      {
+        "active_consumable_modifier": null,
+        "combat_profile": {
+          "base_stats": {
+            "attack": 10,
+            "attack_interval_ms": 1500,
+            "current_health": 100,
+            "defense": 0,
+            "magic_resist": 0,
+            "max_health": 100,
+            "move_speed_units_per_ms": 3000
+          },
+          "basic_attack": {
+            "air_capable": false,
+            "damage_type": "Physical",
+            "defense_tile_range": {
+              "include_anchor_tile": true,
+              "rows": [
+                ".X.",
+                ".@.",
+                "..."
+              ]
+            },
+            "delivery": "Instant",
+            "interval_ms": 1500,
+            "range_policy": "pattern",
+            "range_role": "Melee",
+            "ranged_reposition_ms": 1000,
+            "targeting_profile": "DefaultForward",
+            "windup_ms": 200
+          },
+          "battle_tier": "I",
+          "effective_basic_attack": {
+            "action": {
+              "Heal": {
+                "flat": 8,
+                "footprint": null,
+                "spell_power_percent": 100
+              }
+            },
+            "air_capable": true,
+            "damage_type": "Physical",
+            "defense_tile_range": {
+              "include_anchor_tile": true,
+              "rows": [
+                "XXXXX",
+                "XXXXX",
+                "XX@XX",
+                "XXXXX",
+                "XXXXX"
+              ]
+            },
+            "delivery": "Instant",
+            "interval_ms": 1800,
+            "range_policy": "pattern",
+            "range_role": "Ranged",
+            "ranged_reposition_ms": 1000,
+            "targeting_profile": "DefaultForward",
+            "windup_ms": 200
+          },
+          "effective_deployment_affinity": "platform_only",
+          "effective_profile_error": null,
+          "effective_skill_id": "training_single_heal",
+          "effective_stats": {
+            "attack": 10,
+            "attack_interval_ms": 1800,
+            "current_health": 100,
+            "defense": 0,
+            "magic_resist": 0,
+            "max_health": 100,
+            "move_speed_units_per_ms": 3000
+          },
+          "effective_weapon_profile": {
+            "action": {
+              "Heal": {
+                "flat": 8,
+                "footprint": null,
+                "spell_power_percent": 100
+              }
+            },
+            "air_capable": true,
+            "block_capacity": 0,
+            "damage_type": "Physical",
+            "defense_tile_range": {
+              "include_anchor_tile": true,
+              "rows": [
+                "XXXXX",
+                "XXXXX",
+                "XX@XX",
+                "XXXXX",
+                "XXXXX"
+              ]
+            },
+            "delivery": "Instant",
+            "deployment_affinity": "platform_only",
+            "ground_defense_focus": null,
+            "interval_ms": 1800,
+            "platform_rest": {
+              "hp_recovery_per_tick": 3
+            },
+            "range_role": "Ranged",
+            "ranged_reposition_ms": 1000,
+            "targeting_profile": "DefaultForward",
+            "weapon_archetype": "Staff",
+            "windup_ms": 200
+          }
+        },
+        "condition": {
+          "breakdown_remaining_nodes": null,
+          "mental_state": "Stable",
+          "physical_damage": 0,
+          "physical_state": "Normal",
+          "trauma": 0
+        },
+        "eligibility": {
+          "combat": {
+            "eligible": true
+          },
+          "consumable": {
+            "eligible": true
+          },
+          "event": {
+            "eligible": true
+          },
+          "high_risk": {
+            "eligible": true
+          },
+          "loadout": {
+            "eligible": true
+          },
+          "physical_treatment": {
+            "eligible": true
+          },
+          "trauma_recovery": {
+            "disabled_reason": "NoTrauma",
+            "eligible": false
+          }
+        },
+        "employee_definition_id": "field_medic",
+        "equipped_items": [
+          {
+            "base_uuid": "650e8400-e29b-41d4-a716-446655449004",
+            "bound": false,
+            "can_unequip": true,
+            "cannot_unequip_reason": null,
+            "definition_id": "standard_training_healing_staff",
+            "equipment_type": "Weapon",
+            "instance_uuid": "409d80f3-ea24-4504-aa31-d5aa90991794",
+            "name": "Company Training healing_staff",
+            "weapon_profile": {
+              "action": {
+                "Heal": {
+                  "flat": 8,
+                  "footprint": null,
+                  "spell_power_percent": 100
+                }
+              },
+              "air_capable": true,
+              "block_capacity": 0,
+              "damage_type": "Physical",
+              "defense_tile_range": {
+                "include_anchor_tile": true,
+                "rows": [
+                  "XXXXX",
+                  "XXXXX",
+                  "XX@XX",
+                  "XXXXX",
+                  "XXXXX"
+                ]
+              },
+              "delivery": "Instant",
+              "deployment_affinity": "platform_only",
+              "ground_defense_focus": null,
+              "interval_ms": 1800,
+              "platform_rest": {
+                "hp_recovery_per_tick": 3
+              },
+              "range_role": "Ranged",
+              "ranged_reposition_ms": 1000,
+              "targeting_profile": "DefaultForward",
+              "weapon_archetype": "Staff",
+              "windup_ms": 200
+            }
+          },
+          {
+            "base_uuid": "650e8400-e29b-41d4-a716-446655440031",
+            "bound": false,
+            "can_unequip": true,
+            "cannot_unequip_reason": null,
+            "definition_id": "standard_armor",
+            "equipment_type": "Armor",
+            "instance_uuid": "716a6aa1-c17b-4bcf-9e0d-b5239844439c",
+            "name": "Standard Training E.G.O Armor",
+            "weapon_profile": null
+          }
+        ],
+        "experience": 0,
+        "level": 1,
+        "name": "이서연",
+        "profile": {
+          "background": "붕괴 현장에서 끝까지 동료를 끌고 나온 기록이 있다.",
+          "base_combat_stats": {
+            "attack": 10,
+            "defense": 0,
+            "magic_resist": 0,
+            "max_hp": 100
+          },
+          "basic_attack_speed_percent": 100,
+          "combat_aptitude": "Balanced",
+          "event_aptitude": "Medical",
+          "personality": {
+            "risk": "Brave",
+            "social": "Comradely"
+          },
+          "role": "현장 의무 보조"
+        },
+        "role": "Healer",
+        "skill_fragments": {
+          "active_copy_uuid": "ff2fd7c9-dd16-4fc3-9a51-137a5ed69e34",
+          "baseline_ids": [],
+          "compatibility": [
+            {
+              "copy_uuid": "4261e90b-c798-44ba-9374-bda44ca3feb1",
+              "definition_id": "training_berserker",
+              "failure_codes": [
+                "weapon_archetype_mismatch"
+              ],
+              "is_compatible": false,
+              "name": "Company Training berserker",
+              "requirements": {
+                "allowed_damage_types": [],
+                "allowed_range_roles": [],
+                "allowed_targeting_profiles": [],
+                "allowed_weapon_archetypes": [
+                  "Sword"
+                ],
+                "block_capacity_min": null,
+                "incompatible_capability_tags": [],
+                "required_capability_tags": [],
+                "requires_air_capable": null
+              },
+              "selected_form": "base",
+              "unavailable_reason": null
+            },
+            {
+              "copy_uuid": "698f4d35-40f8-4144-a4db-b652b654cbd4",
+              "definition_id": "training_last_line",
+              "failure_codes": [
+                "weapon_archetype_mismatch"
+              ],
+              "is_compatible": false,
+              "name": "Company Training last_line",
+              "requirements": {
+                "allowed_damage_types": [],
+                "allowed_range_roles": [],
+                "allowed_targeting_profiles": [],
+                "allowed_weapon_archetypes": [
+                  "Shield"
+                ],
+                "block_capacity_min": null,
+                "incompatible_capability_tags": [],
+                "required_capability_tags": [],
+                "requires_air_capable": null
+              },
+              "selected_form": "base",
+              "unavailable_reason": null
+            },
+            {
+              "copy_uuid": "ff2fd7c9-dd16-4fc3-9a51-137a5ed69e34",
+              "definition_id": "training_single_heal",
+              "failure_codes": [],
+              "is_compatible": true,
+              "name": "Company Training single_heal",
+              "requirements": {
+                "allowed_damage_types": [],
+                "allowed_range_roles": [],
+                "allowed_targeting_profiles": [],
+                "allowed_weapon_archetypes": [
+                  "Staff"
+                ],
+                "block_capacity_min": null,
+                "incompatible_capability_tags": [],
+                "required_capability_tags": [],
+                "requires_air_capable": null
+              },
+              "selected_form": "base",
+              "unavailable_reason": null
+            }
+          ],
+          "equipped": [
+            {
+              "effect": "ActiveSkill",
+              "id": "training_single_heal",
+              "name": "Company Training single_heal"
+            }
+          ]
+        },
+        "uuid": "b0666088-1014-4ddf-8778-5a3354864502"
+      }
+    ]
+  },
+  "run_checkpoint": {
+    "exists": false,
+    "loadable": false,
+    "loads_used": 0,
+    "max_loads": 3,
+    "remaining_loads": 3
+  },
+  "run_progression": {
+    "current_floor_seed": 13331255332207159859,
+    "deterrence": 12,
+    "expedition_instance": {
+      "player_id": "00000000-0000-0000-0000-0000000032e7",
+      "sequence": 1,
+      "uuid": "f27cce75-b6e3-4b5a-8b15-40fc5d05369b"
+    },
+    "floor_index": 0,
+    "game_mode": "Expedition",
+    "instance_namespace": "f27cce75-b6e3-4b5a-8b15-40fc5d05369b",
+    "pending_continuation": null,
+    "run_seed": 13031
+  },
+  "selected_event": null,
+  "skill_catalog": {
+    "range_source_of_truth": "range_previews.final_cells",
+    "skills": [
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "automatic_unit",
+          "target_policy": {
+            "EnemySingle": {
+              "rule": "CurrentTarget"
+            }
+          },
+          "target_range": {
+            "include_anchor_tile": false,
+            "rows": [
+              ".XXX.",
+              ".XXX.",
+              "..@..",
+              ".....",
+              "....."
+            ]
+          }
+        },
+        "display_name": "Gaze Punishment",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 480,
+        "kind": "Targeted",
+        "skill_id": "burrowing_heaven_gaze_punishment",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "projectile",
+            "effects_count": 2,
+            "presentation": {},
+            "step_id": "root_watch",
+            "target_policy": {
+              "EnemySingle": {
+                "rule": "CurrentTarget"
+              }
+            },
+            "tile_area": null
+          },
+          {
+            "delay_ms": 160,
+            "delivery": "tile_area",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "heaven_burrows",
+            "target_policy": "CastTarget",
+            "tile_area": {
+              "anchor": "ImpactContextStart",
+              "duration_ms": 0,
+              "footprint": {
+                "include_anchor_tile": true,
+                "rows": [
+                  "XXX",
+                  "X@X",
+                  "XXX"
+                ]
+              },
+              "hit_targets": "Enemies",
+              "include_caster": false,
+              "tick_interval_ms": null,
+              "tick_policy": "EveryTick",
+              "tile_origin": "Anchor",
+              "tracking": "GroundFixed"
+            }
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "automatic_unit",
+          "target_policy": {
+            "EnemySingle": {
+              "rule": "CurrentTarget"
+            }
+          },
+          "target_range": {
+            "include_anchor_tile": false,
+            "rows": [
+              ".XXX.",
+              ".XXX.",
+              "..@..",
+              ".....",
+              "....."
+            ]
+          }
+        },
+        "display_name": "Mind Break",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 520,
+        "kind": "Targeted",
+        "skill_id": "censored_mind_break",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "instant",
+            "effects_count": 2,
+            "presentation": {},
+            "step_id": "redacted_presence",
+            "target_policy": {
+              "EnemySingle": {
+                "rule": "CurrentTarget"
+              }
+            },
+            "tile_area": null
+          },
+          {
+            "delay_ms": 40,
+            "delivery": "instant",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "panic_feedback",
+            "target_policy": "SelfUnit",
+            "tile_area": null
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "player_tile",
+          "target_policy": "CastTarget",
+          "target_range": {
+            "include_anchor_tile": true,
+            "rows": [
+              "XXXXXXX",
+              "XXXXXXX",
+              "XXXXXXX",
+              "XXX@XXX",
+              "XXXXXXX",
+              "XXXXXXX",
+              "XXXXXXX"
+            ]
+          }
+        },
+        "display_name": "common_place_ice_wall",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 500,
+        "kind": "Targeted",
+        "skill_id": "common_place_ice_wall",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "instant",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "place",
+            "target_policy": "CastTarget",
+            "tile_area": null
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "player_unit",
+          "target_policy": {
+            "EnemySingle": {
+              "rule": "LowestHealthEnemy"
+            }
+          },
+          "target_range": {
+            "include_anchor_tile": false,
+            "rows": [
+              ".XXX.",
+              ".XXX.",
+              "..@..",
+              ".....",
+              "....."
+            ]
+          }
+        },
+        "display_name": "Black Round Fragment",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 320,
+        "kind": "Targeted",
+        "skill_id": "fragment_freischutz_black_round",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "projectile",
+            "effects_count": 1,
+            "presentation": {
+              "cast_state": "Cast",
+              "impact_vfx_id": "fragment_freischutz_black_round_hit",
+              "projectile_vfx_id": "fragment_freischutz_black_round",
+              "target_anchor": "Head"
+            },
+            "step_id": "fragment_black_round",
+            "target_policy": {
+              "EnemySingle": {
+                "rule": "LowestHealthEnemy"
+              }
+            },
+            "tile_area": null
+          },
+          {
+            "delay_ms": 100,
+            "delivery": "instant",
+            "effects_count": 1,
+            "presentation": {
+              "cast_state": "Cast",
+              "impact_vfx_id": "fragment_freischutz_smoke_focus",
+              "target_anchor": "Body"
+            },
+            "step_id": "fragment_smoke_focus",
+            "target_policy": "SelfUnit",
+            "tile_area": null
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "automatic_unit",
+          "target_policy": {
+            "EnemySingle": {
+              "rule": "CurrentTarget"
+            }
+          },
+          "target_range": {
+            "include_anchor_tile": false,
+            "rows": [
+              ".XXX.",
+              ".XXX.",
+              "..@..",
+              ".....",
+              "....."
+            ]
+          }
+        },
+        "display_name": "Eulogy Volley",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 380,
+        "kind": "Targeted",
+        "skill_id": "fragment_funeral_awakened_eulogy",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "projectile",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "mourning_shot",
+            "target_policy": {
+              "EnemySingle": {
+                "rule": "CurrentTarget"
+              }
+            },
+            "tile_area": null
+          },
+          {
+            "delay_ms": 120,
+            "delivery": "instant",
+            "effects_count": 2,
+            "presentation": {},
+            "step_id": "black_funeral",
+            "target_policy": {
+              "EnemySingle": {
+                "rule": "LowestHealthEnemy"
+              }
+            },
+            "tile_area": null
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "automatic_unit",
+          "target_policy": {
+            "EnemySingle": {
+              "rule": "LowestHealthEnemy"
+            }
+          },
+          "target_range": {
+            "include_anchor_tile": false,
+            "rows": [
+              ".XXX.",
+              ".XXX.",
+              "..@..",
+              ".....",
+              "....."
+            ]
+          }
+        },
+        "display_name": "Butterfly Eulogy Fragment",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 300,
+        "kind": "Targeted",
+        "skill_id": "fragment_funeral_butterfly_eulogy",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "projectile",
+            "effects_count": 1,
+            "presentation": {
+              "cast_state": "Cast",
+              "impact_vfx_id": "fragment_funeral_butterfly_hit",
+              "projectile_vfx_id": "fragment_funeral_butterfly_shot",
+              "target_anchor": "Head"
+            },
+            "step_id": "fragment_pale_shot",
+            "target_policy": {
+              "EnemySingle": {
+                "rule": "LowestHealthEnemy"
+              }
+            },
+            "tile_area": null
+          },
+          {
+            "delay_ms": 120,
+            "delivery": "instant",
+            "effects_count": 1,
+            "presentation": {
+              "cast_state": "Cast",
+              "impact_vfx_id": "fragment_funeral_butterfly_lament",
+              "target_anchor": "Body"
+            },
+            "step_id": "fragment_quiet_lament",
+            "target_policy": {
+              "EnemySingle": {
+                "rule": "LowestHealthEnemy"
+              }
+            },
+            "tile_area": null
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "player_unit",
+          "target_policy": {
+            "EnemySingle": {
+              "rule": "LowestHealthEnemy"
+            }
+          },
+          "target_range": {
+            "include_anchor_tile": false,
+            "rows": [
+              ".XXX.",
+              ".XXX.",
+              "..@..",
+              ".....",
+              "....."
+            ]
+          }
+        },
+        "display_name": "Magic Bullet",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 360,
+        "kind": "Targeted",
+        "skill_id": "freischutz_magic_bullet",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "projectile",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "seventh_bullet",
+            "target_policy": {
+              "EnemySingle": {
+                "rule": "LowestHealthEnemy"
+              }
+            },
+            "tile_area": null
+          },
+          {
+            "delay_ms": 90,
+            "delivery": "instant",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "smoke_recoil",
+            "target_policy": "SelfUnit",
+            "tile_area": null
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "automatic_unit",
+          "target_policy": {
+            "EnemySingle": {
+              "rule": "CurrentTarget"
+            }
+          },
+          "target_range": {
+            "include_anchor_tile": false,
+            "rows": [
+              ".XXX.",
+              ".XXX.",
+              "..@..",
+              ".....",
+              "....."
+            ]
+          }
+        },
+        "display_name": "Eulogy Volley",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 380,
+        "kind": "Targeted",
+        "skill_id": "funeral_butterfly_eulogy_volley",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "projectile",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "mourning_shot",
+            "target_policy": {
+              "EnemySingle": {
+                "rule": "CurrentTarget"
+              }
+            },
+            "tile_area": null
+          },
+          {
+            "delay_ms": 120,
+            "delivery": "instant",
+            "effects_count": 2,
+            "presentation": {},
+            "step_id": "black_funeral",
+            "target_policy": {
+              "EnemySingle": {
+                "rule": "LowestHealthEnemy"
+              }
+            },
+            "tile_area": null
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "player_tile",
+          "target_policy": "CastTarget",
+          "target_range": {
+            "include_anchor_tile": true,
+            "rows": [
+              "XXXXXXX",
+              "XXXXXXX",
+              "XXXXXXX",
+              "XXX@XXX",
+              "XXXXXXX",
+              "XXXXXXX",
+              "XXXXXXX"
+            ]
+          }
+        },
+        "display_name": "laetitia_place_friend",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 500,
+        "kind": "Targeted",
+        "skill_id": "laetitia_place_friend",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "instant",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "place",
+            "target_policy": "CastTarget",
+            "tile_area": null
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "player_tile",
+          "target_policy": "CastTarget",
+          "target_range": {
+            "include_anchor_tile": true,
+            "rows": [
+              "XXXXXXX",
+              "XXXXXXX",
+              "XXXXXXX",
+              "XXX@XXX",
+              "XXXXXXX",
+              "XXXXXXX",
+              "XXXXXXX"
+            ]
+          }
+        },
+        "display_name": "laetitia_place_great_friend",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 500,
+        "kind": "Targeted",
+        "skill_id": "laetitia_place_great_friend",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "instant",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "place",
+            "target_policy": "CastTarget",
+            "tile_area": null
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "automatic_unit",
+          "target_policy": {
+            "EnemySingle": {
+              "rule": "Nearest"
+            }
+          },
+          "target_range": {
+            "include_anchor_tile": false,
+            "rows": [
+              ".XXX.",
+              ".XXX.",
+              "..@..",
+              ".....",
+              "....."
+            ]
+          }
+        },
+        "display_name": "Surprise Gift",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 300,
+        "kind": "Targeted",
+        "skill_id": "laetitia_surprise_gift",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "projectile",
+            "effects_count": 2,
+            "presentation": {},
+            "step_id": "gift_box",
+            "target_policy": {
+              "EnemySingle": {
+                "rule": "Nearest"
+              }
+            },
+            "tile_area": null
+          },
+          {
+            "delay_ms": 180,
+            "delivery": "tile_area",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "gift_pop",
+            "target_policy": "CastTarget",
+            "tile_area": {
+              "anchor": "ImpactContext",
+              "duration_ms": 0,
+              "footprint": {
+                "include_anchor_tile": true,
+                "rows": [
+                  "XXX",
+                  "X@X",
+                  "XXX"
+                ]
+              },
+              "hit_targets": "Enemies",
+              "include_caster": false,
+              "tick_interval_ms": null,
+              "tick_policy": "EveryTick",
+              "tile_origin": "Anchor",
+              "tracking": "GroundFixed"
+            }
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "automatic_unit",
+          "target_policy": {
+            "EnemySingle": {
+              "rule": "CurrentTarget"
+            }
+          },
+          "target_range": {
+            "include_anchor_tile": false,
+            "rows": [
+              ".XXX.",
+              ".XXX.",
+              "..@..",
+              ".....",
+              "....."
+            ]
+          }
+        },
+        "display_name": "Hunt the Prey",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 300,
+        "kind": "Targeted",
+        "skill_id": "little_red_hunt_the_prey",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "projectile",
+            "effects_count": 1,
+            "presentation": {
+              "cast_state": "Attack",
+              "impact_vfx_id": "little_red_hunt_the_prey_shot_hit",
+              "projectile_vfx_id": "little_red_hunt_the_prey_shot",
+              "target_anchor": "Body"
+            },
+            "step_id": "marked_shot",
+            "target_policy": {
+              "EnemySingle": {
+                "rule": "CurrentTarget"
+              }
+            },
+            "tile_area": null
+          },
+          {
+            "delay_ms": 160,
+            "delivery": "instant",
+            "effects_count": 1,
+            "presentation": {
+              "cast_state": "Attack",
+              "impact_vfx_id": "little_red_hunt_the_prey_finish",
+              "target_anchor": "Body"
+            },
+            "step_id": "hunt_finish",
+            "target_policy": {
+              "EnemySingle": {
+                "rule": "CurrentTarget"
+              }
+            },
+            "tile_area": null
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "player_tile",
+          "target_policy": "CastTarget",
+          "target_range": {
+            "include_anchor_tile": true,
+            "rows": [
+              "XXXXXXX",
+              "XXXXXXX",
+              "XXXXXXX",
+              "XXX@XXX",
+              "XXXXXXX",
+              "XXXXXXX",
+              "XXXXXXX"
+            ]
+          }
+        },
+        "display_name": "melting_love_place_meat_wall",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 500,
+        "kind": "Targeted",
+        "skill_id": "melting_love_place_meat_wall",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "instant",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "place",
+            "target_policy": "CastTarget",
+            "tile_area": null
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "automatic_unit",
+          "target_policy": {
+            "EnemySingle": {
+              "rule": "LowestHealthEnemy"
+            }
+          },
+          "target_range": {
+            "include_anchor_tile": false,
+            "rows": [
+              ".XXX.",
+              ".XXX.",
+              "..@..",
+              ".....",
+              "....."
+            ]
+          }
+        },
+        "display_name": "Slime Infection",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 420,
+        "kind": "Targeted",
+        "skill_id": "melting_love_slime_infection",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "projectile",
+            "effects_count": 2,
+            "presentation": {
+              "cast_state": "Cast",
+              "impact_vfx_id": "melting_love_slime_orb_hit",
+              "projectile_vfx_id": "melting_love_slime_orb",
+              "target_anchor": "Body"
+            },
+            "step_id": "slime_orb",
+            "target_policy": {
+              "EnemySingle": {
+                "rule": "LowestHealthEnemy"
+              }
+            },
+            "tile_area": null
+          },
+          {
+            "delay_ms": 220,
+            "delivery": "tile_area",
+            "effects_count": 2,
+            "presentation": {
+              "cast_state": "Cast",
+              "impact_vfx_id": "melting_love_slime_spread",
+              "target_anchor": "Body"
+            },
+            "step_id": "slime_spread",
+            "target_policy": "CastTarget",
+            "tile_area": {
+              "anchor": "ImpactContext",
+              "duration_ms": 0,
+              "footprint": {
+                "include_anchor_tile": true,
+                "rows": [
+                  "XXX",
+                  "X@X",
+                  "XXX"
+                ]
+              },
+              "hit_targets": "Enemies",
+              "include_caster": false,
+              "tick_interval_ms": null,
+              "tick_policy": "EveryTick",
+              "tile_origin": "Anchor",
+              "tracking": "GroundFixed"
+            }
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "automatic_unit",
+          "target_policy": {
+            "EnemySingle": {
+              "rule": "Nearest"
+            }
+          },
+          "target_range": {
+            "include_anchor_tile": false,
+            "rows": [
+              ".XXX.",
+              ".XXX.",
+              "..@..",
+              ".....",
+              "....."
+            ]
+          }
+        },
+        "display_name": "Mass Consumption",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 500,
+        "kind": "Untargeted",
+        "skill_id": "mountain_mass_consumption",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "tile_area",
+            "effects_count": 1,
+            "presentation": {
+              "cast_state": "Attack",
+              "impact_vfx_id": "mountain_mass_consumption_burst",
+              "target_anchor": "Body"
+            },
+            "step_id": "consume_burst",
+            "target_policy": {
+              "EnemySingle": {
+                "rule": "Nearest"
+              }
+            },
+            "tile_area": {
+              "anchor": "CastTarget",
+              "duration_ms": 0,
+              "footprint": {
+                "include_anchor_tile": true,
+                "rows": [
+                  "XXX",
+                  "X@X",
+                  "XXX"
+                ]
+              },
+              "hit_targets": "Enemies",
+              "include_caster": false,
+              "tick_interval_ms": null,
+              "tick_policy": "EveryTick",
+              "tile_origin": "Anchor",
+              "tracking": "GroundFixed"
+            }
+          },
+          {
+            "delay_ms": 20,
+            "delivery": "instant",
+            "effects_count": 1,
+            "presentation": {
+              "cast_state": "Cast",
+              "impact_vfx_id": "mountain_mass_consumption_growth",
+              "target_anchor": "Body"
+            },
+            "step_id": "consume_growth",
+            "target_policy": "SelfUnit",
+            "tile_area": null
+          },
+          {
+            "delay_ms": 60,
+            "delivery": "instant",
+            "effects_count": 1,
+            "presentation": {
+              "cast_state": "Cast",
+              "impact_vfx_id": "mountain_mass_consumption_heal",
+              "target_anchor": "Body"
+            },
+            "step_id": "consume_heal",
+            "target_policy": "SelfUnit",
+            "tile_area": null
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "automatic_unit",
+          "target_policy": {
+            "EnemySingle": {
+              "rule": "CurrentTarget"
+            }
+          },
+          "target_range": {
+            "include_anchor_tile": false,
+            "rows": [
+              ".XXX.",
+              ".XXX.",
+              "..@..",
+              ".....",
+              "....."
+            ]
+          }
+        },
+        "display_name": "Goodbye",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 500,
+        "kind": "Targeted",
+        "skill_id": "nothing_there_goodbye",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "instant",
+            "effects_count": 1,
+            "presentation": {
+              "cast_state": "Attack",
+              "impact_vfx_id": "nothing_there_goodbye_tear_open",
+              "target_anchor": "Body"
+            },
+            "step_id": "tear_open",
+            "target_policy": {
+              "EnemySingle": {
+                "rule": "CurrentTarget"
+              }
+            },
+            "tile_area": null
+          },
+          {
+            "delay_ms": 20,
+            "delivery": "instant",
+            "effects_count": 1,
+            "presentation": {
+              "cast_state": "Cast",
+              "impact_vfx_id": "nothing_there_goodbye_mimic",
+              "target_anchor": "Body"
+            },
+            "step_id": "mimic_adaptation",
+            "target_policy": "SelfUnit",
+            "tile_area": null
+          },
+          {
+            "delay_ms": 100,
+            "delivery": "instant",
+            "effects_count": 1,
+            "presentation": {
+              "cast_state": "Attack",
+              "impact_vfx_id": "nothing_there_goodbye_finish",
+              "target_anchor": "Body"
+            },
+            "step_id": "goodbye_finish",
+            "target_policy": {
+              "EnemySingle": {
+                "rule": "CurrentTarget"
+              }
+            },
+            "tile_area": null
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "automatic_unit",
+          "target_policy": {
+            "EnemySingle": {
+              "rule": "CurrentTarget"
+            }
+          },
+          "target_range": {
+            "include_anchor_tile": false,
+            "rows": [
+              ".XXX.",
+              ".XXX.",
+              "..@..",
+              ".....",
+              "....."
+            ]
+          }
+        },
+        "display_name": "Paradise Lost Judgement",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 0,
+        "kind": "Targeted",
+        "skill_id": "paradise_lost_judgement",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "instant",
+            "effects_count": 2,
+            "presentation": {},
+            "step_id": "judgement_strike",
+            "target_policy": {
+              "EnemySingle": {
+                "rule": "CurrentTarget"
+              }
+            },
+            "tile_area": null
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "self",
+          "target_policy": "SelfUnit",
+          "target_range": {
+            "include_anchor_tile": false,
+            "rows": [
+              ".XXX.",
+              ".XXX.",
+              "..@..",
+              ".....",
+              "....."
+            ]
+          }
+        },
+        "display_name": "Root Blessing",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 520,
+        "kind": "Untargeted",
+        "skill_id": "parasite_tree_root_blessing",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "tile_area",
+            "effects_count": 2,
+            "presentation": {},
+            "step_id": "false_blessing",
+            "target_policy": "SelfUnit",
+            "tile_area": {
+              "anchor": "Caster",
+              "duration_ms": 0,
+              "footprint": {
+                "include_anchor_tile": true,
+                "rows": [
+                  "XXX",
+                  "X@X",
+                  "XXX"
+                ]
+              },
+              "hit_targets": "Allies",
+              "include_caster": true,
+              "tick_interval_ms": null,
+              "tick_policy": "EveryTick",
+              "tile_origin": "Caster",
+              "tracking": "GroundFixed"
+            }
+          },
+          {
+            "delay_ms": 120,
+            "delivery": "tile_area",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "root_tax",
+            "target_policy": "CastTarget",
+            "tile_area": {
+              "anchor": "CastTarget",
+              "duration_ms": 0,
+              "footprint": {
+                "include_anchor_tile": true,
+                "rows": [
+                  "XXX",
+                  "X@X",
+                  "XXX"
+                ]
+              },
+              "hit_targets": "Enemies",
+              "include_caster": false,
+              "tick_interval_ms": null,
+              "tick_policy": "EveryTick",
+              "tile_origin": "Anchor",
+              "tracking": "GroundFixed"
+            }
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "automatic_unit",
+          "target_policy": {
+            "EnemySingle": {
+              "rule": "Nearest"
+            }
+          },
+          "target_range": {
+            "include_anchor_tile": false,
+            "rows": [
+              ".XXX.",
+              ".XXX.",
+              "..@..",
+              ".....",
+              "....."
+            ]
+          }
+        },
+        "display_name": "Spore Bloom",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 340,
+        "kind": "Untargeted",
+        "skill_id": "porcubbus_spore_bloom",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "tile_area",
+            "effects_count": 2,
+            "presentation": {},
+            "step_id": "laughing_spores",
+            "target_policy": {
+              "EnemySingle": {
+                "rule": "Nearest"
+              }
+            },
+            "tile_area": {
+              "anchor": "CastTarget",
+              "duration_ms": 0,
+              "footprint": {
+                "include_anchor_tile": true,
+                "rows": [
+                  "XXX",
+                  "X@X",
+                  "XXX"
+                ]
+              },
+              "hit_targets": "Enemies",
+              "include_caster": false,
+              "tick_interval_ms": null,
+              "tick_policy": "EveryTick",
+              "tile_origin": "Anchor",
+              "tracking": "GroundFixed"
+            }
+          },
+          {
+            "delay_ms": 100,
+            "delivery": "tile_area",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "toxic_laughter",
+            "target_policy": "CastTarget",
+            "tile_area": {
+              "anchor": "CastTarget",
+              "duration_ms": 0,
+              "footprint": {
+                "include_anchor_tile": true,
+                "rows": [
+                  "XXX",
+                  "X@X",
+                  "XXX"
+                ]
+              },
+              "hit_targets": "Enemies",
+              "include_caster": false,
+              "tick_interval_ms": null,
+              "tick_policy": "EveryTick",
+              "tile_origin": "Anchor",
+              "tracking": "GroundFixed"
+            }
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "automatic_unit",
+          "target_policy": {
+            "EnemySingle": {
+              "rule": "Nearest"
+            }
+          },
+          "target_range": {
+            "include_anchor_tile": false,
+            "rows": [
+              ".XXX.",
+              ".XXX.",
+              "..@..",
+              ".....",
+              "....."
+            ]
+          }
+        },
+        "display_name": "Magical Beam",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 650,
+        "kind": "Untargeted",
+        "skill_id": "queen_of_hatred_magical_beam",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "tile_area",
+            "effects_count": 1,
+            "presentation": {
+              "cast_state": "CastPrep",
+              "impact_vfx_id": "queen_of_hatred_magical_beam_trace",
+              "target_anchor": "Body"
+            },
+            "step_id": "beam_trace",
+            "target_policy": {
+              "EnemySingle": {
+                "rule": "Nearest"
+              }
+            },
+            "tile_area": {
+              "anchor": "CastTarget",
+              "duration_ms": 0,
+              "footprint": {
+                "include_anchor_tile": true,
+                "rows": [
+                  "XXX",
+                  "X@X",
+                  "XXX"
+                ]
+              },
+              "hit_targets": "Enemies",
+              "include_caster": false,
+              "tick_interval_ms": null,
+              "tick_policy": "EveryTick",
+              "tile_origin": "Anchor",
+              "tracking": "GroundFixed"
+            }
+          },
+          {
+            "delay_ms": 80,
+            "delivery": "tile_area",
+            "effects_count": 1,
+            "presentation": {
+              "cast_state": "Cast",
+              "impact_vfx_id": "queen_of_hatred_magical_beam_overdrive",
+              "target_anchor": "Body"
+            },
+            "step_id": "beam_overdrive",
+            "target_policy": "CastTarget",
+            "tile_area": {
+              "anchor": "CastTarget",
+              "duration_ms": 0,
+              "footprint": {
+                "include_anchor_tile": true,
+                "rows": [
+                  "XXX",
+                  "X@X",
+                  "XXX"
+                ]
+              },
+              "hit_targets": "Enemies",
+              "include_caster": false,
+              "tick_interval_ms": null,
+              "tick_policy": "EveryTick",
+              "tile_origin": "Anchor",
+              "tracking": "GroundFixed"
+            }
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "self",
+          "target_policy": "SelfUnit",
+          "target_range": null
+        },
+        "display_name": "Opening Focus",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 0,
+        "kind": "Untargeted",
+        "skill_id": "resonance_pendant_opening_focus",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "instant",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "focus_charge",
+            "target_policy": "SelfUnit",
+            "tile_area": null
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "automatic_unit",
+          "target_policy": {
+            "EnemySingle": {
+              "rule": "Nearest"
+            }
+          },
+          "target_range": {
+            "include_anchor_tile": false,
+            "rows": [
+              ".XXX.",
+              ".XXX.",
+              "..@..",
+              ".....",
+              "....."
+            ]
+          }
+        },
+        "display_name": "Sleigh Charge",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 360,
+        "kind": "Untargeted",
+        "skill_id": "rudolta_sleigh_charge",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "tile_area",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "bells_line",
+            "target_policy": {
+              "EnemySingle": {
+                "rule": "Nearest"
+              }
+            },
+            "tile_area": {
+              "anchor": "CastTarget",
+              "duration_ms": 0,
+              "footprint": {
+                "include_anchor_tile": true,
+                "rows": [
+                  "XXX",
+                  "X@X",
+                  "XXX"
+                ]
+              },
+              "hit_targets": "Enemies",
+              "include_caster": false,
+              "tick_interval_ms": null,
+              "tick_policy": "EveryTick",
+              "tile_origin": "Anchor",
+              "tracking": "GroundFixed"
+            }
+          },
+          {
+            "delay_ms": 80,
+            "delivery": "tile_area",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "holiday_crash",
+            "target_policy": "CastTarget",
+            "tile_area": {
+              "anchor": "CastTarget",
+              "duration_ms": 0,
+              "footprint": {
+                "include_anchor_tile": true,
+                "rows": [
+                  "XXX",
+                  "X@X",
+                  "XXX"
+                ]
+              },
+              "hit_targets": "Enemies",
+              "include_caster": false,
+              "tick_interval_ms": null,
+              "tick_policy": "EveryTick",
+              "tile_origin": "Anchor",
+              "tracking": "GroundFixed"
+            }
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "automatic_unit",
+          "target_policy": {
+            "EnemySingle": {
+              "rule": "LowestHealthEnemy"
+            }
+          },
+          "target_range": {
+            "include_anchor_tile": false,
+            "rows": [
+              ".XXX.",
+              ".XXX.",
+              "..@..",
+              ".....",
+              "....."
+            ]
+          }
+        },
+        "display_name": "Wisdom Reap",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 310,
+        "kind": "Targeted",
+        "skill_id": "scarecrow_wisdom_reap",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "instant",
+            "effects_count": 2,
+            "presentation": {},
+            "step_id": "brain_pick",
+            "target_policy": {
+              "EnemySingle": {
+                "rule": "LowestHealthEnemy"
+              }
+            },
+            "tile_area": null
+          },
+          {
+            "delay_ms": 30,
+            "delivery": "instant",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "stolen_wisdom",
+            "target_policy": "SelfUnit",
+            "tile_area": null
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "automatic_unit",
+          "target_policy": {
+            "EnemySingle": {
+              "rule": "Nearest"
+            }
+          },
+          "target_range": {
+            "include_anchor_tile": false,
+            "rows": [
+              ".XXX.",
+              ".XXX.",
+              "..@..",
+              ".....",
+              "....."
+            ]
+          }
+        },
+        "display_name": "Silent Finale",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 900,
+        "kind": "Untargeted",
+        "skill_id": "silent_orchestra_finale",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "tile_area",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "first_movement",
+            "target_policy": {
+              "EnemySingle": {
+                "rule": "Nearest"
+              }
+            },
+            "tile_area": {
+              "anchor": "CastTarget",
+              "duration_ms": 0,
+              "footprint": {
+                "include_anchor_tile": true,
+                "rows": [
+                  "XXX",
+                  "X@X",
+                  "XXX"
+                ]
+              },
+              "hit_targets": "Enemies",
+              "include_caster": false,
+              "tick_interval_ms": null,
+              "tick_policy": "EveryTick",
+              "tile_origin": "Anchor",
+              "tracking": "GroundFixed"
+            }
+          },
+          {
+            "delay_ms": 120,
+            "delivery": "tile_area",
+            "effects_count": 2,
+            "presentation": {},
+            "step_id": "crescendo",
+            "target_policy": "CastTarget",
+            "tile_area": {
+              "anchor": "CastTarget",
+              "duration_ms": 0,
+              "footprint": {
+                "include_anchor_tile": true,
+                "rows": [
+                  "XXX",
+                  "X@X",
+                  "XXX"
+                ]
+              },
+              "hit_targets": "Enemies",
+              "include_caster": false,
+              "tick_interval_ms": null,
+              "tick_policy": "EveryTick",
+              "tile_origin": "Anchor",
+              "tracking": "GroundFixed"
+            }
+          },
+          {
+            "delay_ms": 240,
+            "delivery": "tile_area",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "grand_finale",
+            "target_policy": "CastTarget",
+            "tile_area": {
+              "anchor": "CastTarget",
+              "duration_ms": 0,
+              "footprint": {
+                "include_anchor_tile": true,
+                "rows": [
+                  "XXX",
+                  "X@X",
+                  "XXX"
+                ]
+              },
+              "hit_targets": "Enemies",
+              "include_caster": false,
+              "tick_interval_ms": null,
+              "tick_policy": "EveryTick",
+              "tile_origin": "Anchor",
+              "tracking": "GroundFixed"
+            }
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "automatic_unit",
+          "target_policy": {
+            "EnemySingle": {
+              "rule": "CurrentTarget"
+            }
+          },
+          "target_range": {
+            "include_anchor_tile": false,
+            "rows": [
+              ".XXX.",
+              ".XXX.",
+              "..@..",
+              ".....",
+              "....."
+            ]
+          }
+        },
+        "display_name": "Crystal Prison",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 460,
+        "kind": "Targeted",
+        "skill_id": "snow_queen_crystal_prison",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "projectile",
+            "effects_count": 2,
+            "presentation": {},
+            "step_id": "frost_brand",
+            "target_policy": {
+              "EnemySingle": {
+                "rule": "CurrentTarget"
+              }
+            },
+            "tile_area": null
+          },
+          {
+            "delay_ms": 160,
+            "delivery": "instant",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "ice_shatter",
+            "target_policy": {
+              "EnemySingle": {
+                "rule": "CurrentTarget"
+              }
+            },
+            "tile_area": null
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": true,
+          "reach": "pattern",
+          "selection": "self",
+          "target_policy": "SelfUnit",
+          "target_range": null
+        },
+        "display_name": "Company Training adrenaline",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 0,
+        "kind": "Targeted",
+        "skill_id": "training_adrenaline",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "instant",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "boost",
+            "target_policy": "SelfUnit",
+            "tile_area": null
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": true,
+          "reach": "pattern",
+          "selection": "player_tile",
+          "target_policy": "CastTarget",
+          "target_range": {
+            "include_anchor_tile": true,
+            "rows": [
+              "XXXXX",
+              "XXXXX",
+              "XX@XX",
+              "XXXXX",
+              "XXXXX"
+            ]
+          }
+        },
+        "display_name": "Company Training area_heal",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 0,
+        "kind": "Targeted",
+        "skill_id": "training_area_heal",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "tile_area",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "heal",
+            "target_policy": "CastTarget",
+            "tile_area": {
+              "anchor": "CastTarget",
+              "duration_ms": 0,
+              "footprint": {
+                "include_anchor_tile": true,
+                "rows": [
+                  "XXX",
+                  "X@X",
+                  "XXX"
+                ]
+              },
+              "hit_targets": "Allies",
+              "include_caster": true,
+              "tick_interval_ms": null,
+              "tick_policy": "EveryTick",
+              "tile_origin": "Anchor",
+              "tracking": "GroundFixed"
+            }
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": true,
+          "reach": "pattern",
+          "selection": "self",
+          "target_policy": "SelfUnit",
+          "target_range": null
+        },
+        "display_name": "Company Training berserker",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 0,
+        "kind": "Targeted",
+        "skill_id": "training_berserker",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "instant",
+            "effects_count": 2,
+            "presentation": {},
+            "step_id": "boost",
+            "target_policy": "SelfUnit",
+            "tile_area": null
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": true,
+          "reach": "pattern",
+          "selection": "self",
+          "target_policy": "SelfUnit",
+          "target_range": null
+        },
+        "display_name": "Company Training breakthrough",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 0,
+        "kind": "Targeted",
+        "skill_id": "training_breakthrough",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "tile_area",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "strike",
+            "target_policy": "SelfUnit",
+            "tile_area": {
+              "anchor": "Caster",
+              "duration_ms": 0,
+              "footprint": {
+                "include_anchor_tile": false,
+                "rows": [
+                  "XXX",
+                  ".@.",
+                  "..."
+                ]
+              },
+              "hit_targets": "Enemies",
+              "include_caster": false,
+              "tick_interval_ms": null,
+              "tick_policy": "EveryTick",
+              "tile_origin": "Caster",
+              "tracking": "GroundFixed"
+            }
+          },
+          {
+            "delay_ms": 0,
+            "delivery": "instant",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "guard",
+            "target_policy": "SelfUnit",
+            "tile_area": null
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": true,
+          "reach": "pattern",
+          "selection": "self",
+          "target_policy": "SelfUnit",
+          "target_range": null
+        },
+        "display_name": "Company Training last_line",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 0,
+        "kind": "Targeted",
+        "skill_id": "training_last_line",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "instant",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "guard",
+            "target_policy": "SelfUnit",
+            "tile_area": null
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": true,
+          "reach": "pattern",
+          "selection": "player_unit",
+          "target_policy": "AllySingle",
+          "target_range": {
+            "include_anchor_tile": true,
+            "rows": [
+              "XXXXX",
+              "XXXXX",
+              "XX@XX",
+              "XXXXX",
+              "XXXXX"
+            ]
+          }
+        },
+        "display_name": "Company Training single_heal",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 0,
+        "kind": "Targeted",
+        "skill_id": "training_single_heal",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "instant",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "heal",
+            "target_policy": "AllySingle",
+            "tile_area": null
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "automatic_unit",
+          "target_policy": {
+            "EnemySingle": {
+              "rule": "Nearest"
+            }
+          },
+          "target_range": {
+            "include_anchor_tile": false,
+            "rows": [
+              ".XXX.",
+              ".XXX.",
+              "..@..",
+              ".....",
+              "....."
+            ]
+          }
+        },
+        "display_name": "Unknown Distortion Strike",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 350,
+        "kind": "Targeted",
+        "skill_id": "unknown_distortion_strike",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "instant",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "strike",
+            "target_policy": {
+              "EnemySingle": {
+                "rule": "Nearest"
+              }
+            },
+            "tile_area": null
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "self",
+          "target_policy": "SelfUnit",
+          "target_range": {
+            "include_anchor_tile": true,
+            "rows": [
+              ".XXX.",
+              ".XXX.",
+              "..@..",
+              ".....",
+              "....."
+            ]
+          }
+        },
+        "display_name": "Pale Benediction",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 700,
+        "kind": "Untargeted",
+        "skill_id": "white_night_pale_benediction",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "tile_area",
+            "effects_count": 1,
+            "presentation": {
+              "cast_state": "CastPrep",
+              "impact_vfx_id": "white_night_pale_benediction_salvation",
+              "target_anchor": "Body"
+            },
+            "step_id": "ally_salvation",
+            "target_policy": "SelfUnit",
+            "tile_area": {
+              "anchor": "CastTarget",
+              "duration_ms": 0,
+              "footprint": {
+                "include_anchor_tile": true,
+                "rows": [
+                  "XXXXX",
+                  "XXXXX",
+                  "XX@XX",
+                  "XXXXX",
+                  "XXXXX"
+                ]
+              },
+              "hit_targets": "Allies",
+              "include_caster": true,
+              "tick_interval_ms": null,
+              "tick_policy": "EveryTick",
+              "tile_origin": "Anchor",
+              "tracking": "GroundFixed"
+            }
+          },
+          {
+            "delay_ms": 40,
+            "delivery": "tile_area",
+            "effects_count": 1,
+            "presentation": {
+              "cast_state": "Cast",
+              "impact_vfx_id": "white_night_pale_benediction_blessing",
+              "target_anchor": "Head"
+            },
+            "step_id": "ally_blessing",
+            "target_policy": "CastTarget",
+            "tile_area": {
+              "anchor": "CastTarget",
+              "duration_ms": 0,
+              "footprint": {
+                "include_anchor_tile": true,
+                "rows": [
+                  "XXXXX",
+                  "XXXXX",
+                  "XX@XX",
+                  "XXXXX",
+                  "XXXXX"
+                ]
+              },
+              "hit_targets": "Allies",
+              "include_caster": true,
+              "tick_interval_ms": null,
+              "tick_policy": "EveryTick",
+              "tile_origin": "Anchor",
+              "tracking": "GroundFixed"
+            }
+          },
+          {
+            "delay_ms": 140,
+            "delivery": "tile_area",
+            "effects_count": 1,
+            "presentation": {
+              "cast_state": "Cast",
+              "impact_vfx_id": "white_night_pale_benediction_judgement",
+              "target_anchor": "Head"
+            },
+            "step_id": "enemy_judgement",
+            "target_policy": "CastTarget",
+            "tile_area": {
+              "anchor": "CastTarget",
+              "duration_ms": 0,
+              "footprint": {
+                "include_anchor_tile": true,
+                "rows": [
+                  "XXXXX",
+                  "XXXXX",
+                  "XX@XX",
+                  "XXXXX",
+                  "XXXXX"
+                ]
+              },
+              "hit_targets": "Enemies",
+              "include_caster": false,
+              "tick_interval_ms": null,
+              "tick_policy": "EveryTick",
+              "tile_origin": "Anchor",
+              "tracking": "GroundFixed"
+            }
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "automatic_unit",
+          "target_policy": {
+            "EnemySingle": {
+              "rule": "CurrentTarget"
+            }
+          },
+          "target_range": {
+            "include_anchor_tile": false,
+            "rows": [
+              ".XXX.",
+              ".XXX.",
+              "..@..",
+              ".....",
+              "....."
+            ]
+          }
+        },
+        "display_name": "Heart Rip",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 390,
+        "kind": "Targeted",
+        "skill_id": "woodsman_heart_rip",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "instant",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "axe_cleave",
+            "target_policy": {
+              "EnemySingle": {
+                "rule": "CurrentTarget"
+              }
+            },
+            "tile_area": null
+          },
+          {
+            "delay_ms": 60,
+            "delivery": "instant",
+            "effects_count": 2,
+            "presentation": {},
+            "step_id": "borrowed_heart",
+            "target_policy": "SelfUnit",
+            "tile_area": null
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "self",
+          "target_policy": "SelfUnit",
+          "target_range": {
+            "include_anchor_tile": false,
+            "rows": [
+              ".XXX.",
+              ".XXX.",
+              "..@..",
+              ".....",
+              "....."
+            ]
+          }
+        },
+        "display_name": "White Resonance",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 430,
+        "kind": "Untargeted",
+        "skill_id": "yang_white_resonance",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "tile_area",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "white_wave",
+            "target_policy": "SelfUnit",
+            "tile_area": {
+              "anchor": "Caster",
+              "duration_ms": 0,
+              "footprint": {
+                "include_anchor_tile": true,
+                "rows": [
+                  "XXX",
+                  "X@X",
+                  "XXX"
+                ]
+              },
+              "hit_targets": "Allies",
+              "include_caster": true,
+              "tick_interval_ms": null,
+              "tick_policy": "EveryTick",
+              "tile_origin": "Caster",
+              "tracking": "GroundFixed"
+            }
+          },
+          {
+            "delay_ms": 100,
+            "delivery": "tile_area",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "white_judgement",
+            "target_policy": "CastTarget",
+            "tile_area": {
+              "anchor": "CastTarget",
+              "duration_ms": 0,
+              "footprint": {
+                "include_anchor_tile": true,
+                "rows": [
+                  "XXX",
+                  "X@X",
+                  "XXX"
+                ]
+              },
+              "hit_targets": "Enemies",
+              "include_caster": false,
+              "tick_interval_ms": null,
+              "tick_policy": "EveryTick",
+              "tile_origin": "Anchor",
+              "tracking": "GroundFixed"
+            }
+          }
+        ]
+      },
+      {
+        "cast_target": {
+          "air_capable": false,
+          "reach": "pattern",
+          "selection": "automatic_unit",
+          "target_policy": {
+            "EnemySingle": {
+              "rule": "Nearest"
+            }
+          },
+          "target_range": {
+            "include_anchor_tile": false,
+            "rows": [
+              ".XXX.",
+              ".XXX.",
+              "..@..",
+              ".....",
+              "....."
+            ]
+          }
+        },
+        "display_name": "Black Pulse",
+        "focus_permissions": {
+          "allows_basic_attack": false,
+          "allows_move": false
+        },
+        "focus_time_ms": 430,
+        "kind": "Untargeted",
+        "skill_id": "yin_black_pulse",
+        "steps": [
+          {
+            "delay_ms": 0,
+            "delivery": "tile_area",
+            "effects_count": 2,
+            "presentation": {},
+            "step_id": "dark_wave",
+            "target_policy": {
+              "EnemySingle": {
+                "rule": "Nearest"
+              }
+            },
+            "tile_area": {
+              "anchor": "CastTarget",
+              "duration_ms": 0,
+              "footprint": {
+                "include_anchor_tile": true,
+                "rows": [
+                  "XXX",
+                  "X@X",
+                  "XXX"
+                ]
+              },
+              "hit_targets": "Enemies",
+              "include_caster": false,
+              "tick_interval_ms": null,
+              "tick_policy": "EveryTick",
+              "tile_origin": "Anchor",
+              "tracking": "GroundFixed"
+            }
+          },
+          {
+            "delay_ms": 80,
+            "delivery": "instant",
+            "effects_count": 1,
+            "presentation": {},
+            "step_id": "balance_return",
+            "target_policy": "SelfUnit",
+            "tile_area": null
+          }
+        ]
+      }
+    ],
+    "version": 3
+  },
+  "visual_novel": null
+}

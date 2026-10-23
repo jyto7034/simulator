@@ -1,0 +1,20 @@
+{
+  "target": "u14_current_002",
+  "open_completion_blocking": 0,
+  "closed": [
+    {
+      "id": "F-U14-001",
+      "classification": "범위 안 — 지원 제작 및 공개 방이동",
+      "verdict": "closed",
+      "basis": "Explicit room/node predicate; public3cases and both DTOs, 180/170 vs150/150 vs100/100, same-slot isolation, return/Continue."
+    },
+    {
+      "id": "C-U14-002",
+      "classification": "범위 안 — 정상 승리 보충 및 저장/Continue/SavePoint",
+      "verdict": "closed",
+      "basis": "Snapshot-local supply bound; actual12->18 refill, current16/13, SavePoint11/uncollected0 and15/collected1 plus re-Continue."
+    }
+  ],
+  "new_findings": [],
+  "out_of_scope": "No forged save/checksum/memory-only scenario used as completion requirement."
+}

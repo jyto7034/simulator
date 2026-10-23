@@ -1,0 +1,12 @@
+{
+  "stage": "P2G-30",
+  "status": "complete",
+  "final_policy_freeze_ref": {
+    "Artifact Type": "Final Policy Freeze",
+    "Artifact ID": "FPF-CDMG-001",
+    "Content Digest": "sha256:6de8c97c086079da0fdaaee33c87680266224d5049306b335eb6c736855238d8"
+  },
+  "acceptance": 21,
+  "policy_source": "RULES.ko.md",
+  "checks": "exact sorted current reviewed members, preserved acceptance, same working basis bindings; no open policy"
+}

@@ -1,0 +1,437 @@
+{
+  "artifacts": [
+    {
+      "ref": {
+        "Artifact Type": "Final Policy Freeze",
+        "Artifact ID": "FPF-CMVA-001",
+        "Content Digest": "sha256:e4009fb88d9916523324a97434900a9efcd7e81f4ffc5378831153e9400c2aa6"
+      },
+      "payload": {
+        "Working Revision Ref": {
+          "Artifact Type": "Working Revision",
+          "Artifact ID": "WR-CMVA-003",
+          "Content Digest": "sha256:b366ad2b16b9fa3dd912d69f14b5712eae056ec8b4e2cfedc4c2b93c87cfebaa"
+        },
+        "Review Batch Ref": {
+          "Artifact Type": "Review Batch",
+          "Artifact ID": "RB-CMVA-001",
+          "Content Digest": "sha256:b165af04759d6fe96f39f8c36730ddf5f454fb9e760a99065965a472dcf9bf4b"
+        },
+        "Predecessor Freeze": null,
+        "Ordered code_reviewed Policy Element Revision Ref Set": [
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMVA-01-REVIEWED-001",
+            "Content Digest": "sha256:69e3c8bff2dd0589f69651acbae95abead9bc14b7b1bfae043d1c02267883b4c"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMVA-02-REVIEWED-001",
+            "Content Digest": "sha256:dcb9dba0c5d58f1b72e2ee66d4b3e93a52784c66e3ce7392e6927703d2df3750"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMVA-03-REVIEWED-001",
+            "Content Digest": "sha256:e196823ad6789b2064fbffe196817cea6e934fdae02444b5d0f87c1c22cdd932"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMVA-04-REVIEWED-001",
+            "Content Digest": "sha256:71efdaa9cb1c085b479258b3b74c19f2dd0f6cf1a4676e2385578646e26c10f8"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMVA-05-REVIEWED-001",
+            "Content Digest": "sha256:6427709a6336e75db3691ed82d31f24f7f18130992a43173f018bf03375d105d"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMVA-06-REVIEWED-001",
+            "Content Digest": "sha256:bb686774d9bbeae97b483bd60854a5eff89fb18c62e54ad5d96956ef30bae341"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMVA-07-REVIEWED-001",
+            "Content Digest": "sha256:998947ab3607875c40386ec0c12565403793fb0c11bad8553cfa2a64ccee9cd4"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMVA-08-REVIEWED-001",
+            "Content Digest": "sha256:cbb8129fbbf9d152754d2a106a8fb96705a3d63af0e097d848b894e512610a7e"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMVA-09-REVIEWED-001",
+            "Content Digest": "sha256:813a8ac74013337cc6a554f02e3a2fa8982442dca09c472121f62143af7279a2"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMVA-10-REVIEWED-001",
+            "Content Digest": "sha256:666c1bfbf257444b7451557e2f20dde3d9fca573465cb3d69a45954f7d8ad98f"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMVA-11-REVIEWED-001",
+            "Content Digest": "sha256:2f5e194a0d0975ccf84acc3b1bd74041de696679df756d2edd2cb3b32e103722"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMVA-12-REVIEWED-001",
+            "Content Digest": "sha256:2edd7cc6e10aad42a9b253ee25b50b5ea864492a1c148884bb20b19f2c3f36a8"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMVA-13-REVIEWED-001",
+            "Content Digest": "sha256:55fa022fb8b512c51cb54e6f3459bb49abe8d958b27d6d08ab892abcef0fe743"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMVA-14-REVIEWED-001",
+            "Content Digest": "sha256:603c0181fb2b840b03d5e47c175f521d46de4a995af2da80fcc08fc282e48d92"
+          },
+          {
+            "Artifact Type": "Policy Element Revision",
+            "Artifact ID": "PER-CMVA-15-REVIEWED-001",
+            "Content Digest": "sha256:ca0b37543e62a88cad8cc2f8a47afcae16d21fc6e31203889e7efe6987514632"
+          }
+        ],
+        "Decision Revision Ref Set": [
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMVA-01-001",
+            "Content Digest": "sha256:c8956bc4dbac0f0c06841a46c6a3ea713b59366ed5d1e0cf235be7eda4ae36d7"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMVA-02-001",
+            "Content Digest": "sha256:11700b204250e16177ed76b56ea8f40167b17fea5fda5baa86d12138060ecaaa"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMVA-03-001",
+            "Content Digest": "sha256:e68ae7c523aca40c5f7871f2786ae0c20ee43203eb141c82eb9a82e1483f156d"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMVA-04-001",
+            "Content Digest": "sha256:e6a186038e000cfb47e7a75b22fabcbadba89f4505842bf17786651d98dc045e"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMVA-05-001",
+            "Content Digest": "sha256:bf57159c42c1fd35185a2a16469a326a0a1ed41e9995c75b4d99e930ffdf0bcc"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMVA-06-001",
+            "Content Digest": "sha256:9e32c5e2352d06f355ed19d65052bdeb91ef2dd97a0fff6a19729511212be425"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMVA-07-001",
+            "Content Digest": "sha256:3a7d178893461e0d4dce3b8db88d08c3d12e9baaf9d2e146d27e6bdaa07bd718"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMVA-08-001",
+            "Content Digest": "sha256:71e6fa9edfbbbf38fc34c67a6bfdc359ce7f52197e0f555ec3e7bc4fd1e83b39"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMVA-09-001",
+            "Content Digest": "sha256:4cc952cdc450bf932f9c5e4d69e2df8932339f9cca653192b0af6dada0589e8e"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMVA-10-001",
+            "Content Digest": "sha256:2d37297a224e0713ade31b53b125c099a8b8cf97a529fa69bed1929e5831fb95"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMVA-11-001",
+            "Content Digest": "sha256:d952bf7f9bda299c3e3cdcf12bed725390220776e9b9eb5232ef4c2082952077"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMVA-12-001",
+            "Content Digest": "sha256:ad9df837b5ed9558b075aa45ead14db1f13145a406c4762bafc542f5b49d39ad"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMVA-13-001",
+            "Content Digest": "sha256:6b87fe89ca232891e97f20de1652405c04c093d851c8b8276ed5c7e7b7db59c0"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMVA-14-001",
+            "Content Digest": "sha256:28d702f98068c6ade8dbc71a8a79f7a761b3491c4c8ff801af2ec2408262272f"
+          },
+          {
+            "Artifact Type": "Decision Revision",
+            "Artifact ID": "DR-CMVA-15-001",
+            "Content Digest": "sha256:7dd8d18444944b715eb848365219af0940917dfab5e933d6fd6a7071aed11ed2"
+          }
+        ],
+        "Observable Policy Acceptance Set": [
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CMVA-01-REVIEWED-001",
+              "Content Digest": "sha256:69e3c8bff2dd0589f69651acbae95abead9bc14b7b1bfae043d1c02267883b4c"
+            },
+            "Observable Policy Acceptance": [
+              "한 모드의 여러 pack과 의존 모드가 정상 해석되고 실제 선택 결과에 모두 나타나며, 같은 파일 수라도 선언된 모드 경계가 판정을 소유한다.",
+              "한 구성원의 검증 실패·누락·중복 소유·dependency cycle은 그 모드의 부분 적용을 만들지 않고 원래 선택과 다른 정상 모드의 기록을 보존한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CMVA-02-REVIEWED-001",
+              "Content Digest": "sha256:dcb9dba0c5d58f1b72e2ee66d4b3e93a52784c66e3ce7392e6927703d2df3750"
+            },
+            "Observable Policy Acceptance": [
+              "새 외부 RON의 정상 validate→trial 준비→실제 명령 실행이 같은 content/profile identity를 보존하고 아직 승인하지 않은 후보는 host Apply에서 거절된다.",
+              "파싱·지원 capability·참조·compile·준비 실패 및 취소는 새 세대/승인/실게임 변경을 남기지 않으며 private fixture 없이 default-release 공개 경로에서 확인된다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CMVA-03-REVIEWED-001",
+              "Content Digest": "sha256:e196823ad6789b2064fbffe196817cea6e934fdae02444b5d0f87c1c22cdd932"
+            },
+            "Observable Policy Acceptance": [
+              "정상 및 실제 확장 부하에서 선택한 스킬/유물/생성물·연쇄의 실제 발동·소비·종료를 관찰하고 workload 규모/seed/경로 coverage를 결과에 결속한다.",
+              "대상이 없거나 trigger가 실행되지 않은 경우, 필수 scenario 누락 및 setup 자체의 한도 실패가 구별되어 승인되지 않으며 콘텐츠가 아직 실행되지 않은 setup 실패를 스킬 결함으로 표시하지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CMVA-04-REVIEWED-001",
+              "Content Digest": "sha256:71efdaa9cb1c085b479258b3b74c19f2dd0f6cf1a4676e2385578646e26c10f8"
+            },
+            "Observable Policy Acceptance": [
+              "실제 대표 정상/확장 원시 측정과 근거 있는 구체 기준을 가진 profile로 정상 공개 Lab→Apply가 완료되며 profile/config/측정·기준 identity를 조회할 수 있다.",
+              "유효 측정의 정확한 합격선과 초과 사례에서 의도한 허용/거부가 갈리고, 기준 미정·근거 부재·위조 profile·다른 profile 증거·저사양 완화 시도는 승인되지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CMVA-05-REVIEWED-001",
+              "Content Digest": "sha256:6427709a6336e75db3691ed82d31f24f7f18130992a43173f018bf03375d105d"
+            },
+            "Observable Policy Acceptance": [
+              "동일 입력/seed/profile의 반복은 정해진 gameplay 결과를 유지하고 실제 sample 수·분포·peak·종료 후 회수 및 각 지표·계측 모드의 범위가 원시 결과와 맞는다.",
+              "수집 중단·한도·missing/drop·관측 미지원·미완료를 PASS 또는 콘텐츠 오동작으로 바꾸지 않고 원인/진행 지점을 보존하며 관측 on/off가 gameplay 결과를 바꾸지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CMVA-06-REVIEWED-001",
+              "Content Digest": "sha256:bb686774d9bbeae97b483bd60854a5eff89fb18c62e54ad5d96956ef30bae341"
+            },
+            "Observable Policy Acceptance": [
+              "첫 적용의 실제 검증 후 같은 주체·동일 입력은 유효 캐시를 재사용하고, 내용/의존/조합/engine/profile/suite 변경은 해당 승인을 무효화하여 새 검증 없이는 Apply하지 않는다.",
+              "복사한 다른 주체 기록·PASS 문자열·변조/손상/부분 캐시·선택 후 입력 변경과 stale 결과는 거절되며 기존 유효 기록과 실게임 상태를 오염시키지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CMVA-07-REVIEWED-001",
+              "Content Digest": "sha256:998947ab3607875c40386ec0c12565403793fb0c11bad8553cfa2a64ccee9cd4"
+            },
+            "Observable Policy Acceptance": [
+              "실패 mod·의존 mod·독립 정상 mod가 섞인 선택에서 각각 실패/보류/유효 기록이 구별되고 승인 가능한 별도 선택을 실제 검증하여 적용할 수 있다.",
+              "개별 PASS 두 mod가 함께 실행될 때만 실제 충돌·기준 초과가 나는 조합은 그 조합만 막고 개별 기록을 보존하며, 재선택의 Replace/Remove·winner 결과가 제외된 mod의 잔여 효과 없이 다시 계산된다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CMVA-08-REVIEWED-001",
+              "Content Digest": "sha256:cbb8129fbbf9d152754d2a106a8fb96705a3d63af0e097d848b894e512610a7e"
+            },
+            "Observable Policy Acceptance": [
+              "정상 Lab 승인→host Apply→실제 새 run의 명령/조회가 승인한 새 content를 소비하고 기존 run은 자기 이전 generation의 동작을 유지한다.",
+              "승인 없는/낡은/변조된 후보와 마지막 게시 전 검증 실패를 거절해 기존 상태·seed·generation·저장을 보존한다. 검증 후 원본 파일이 바뀌어도 승인받은 immutable 세대만 적용하거나 재검증으로 거부하며 failed B를 A 적용 성공으로 보고하지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CMVA-09-REVIEWED-001",
+              "Content Digest": "sha256:813a8ac74013337cc6a554f02e3a2fa8982442dca09c472121f62143af7279a2"
+            },
+            "Observable Policy Acceptance": [
+              "실제 취소·선택 변경과 늦은 검증 완료, 같은 결과 재전달에서 승인/Apply 수명과 정확 한 번의 게시가 유지된다.",
+              "캐시 쓰기 중단·부분 기록·읽기 손상·재시작과 retry를 통해 잘못된 승인 부활이 없고 원래 유효 cache/현재 generation과 개인 저장을 보존한다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CMVA-10-REVIEWED-001",
+              "Content Digest": "sha256:666c1bfbf257444b7451557e2f20dde3d9fca573465cb3d69a45954f7d8ad98f"
+            },
+            "Observable Policy Acceptance": [
+              "정상 승인 구성의 새 게임/저장/fresh Continue는 동일 content와 진행을 복원하며 다른 호환 저장과 독립 세션은 계속 사용할 수 있다.",
+              "필수 mod 누락/불합격/승인 stale 또는 content 불일치 load를 거절해 원본·backup·profile/active 저장을 보존하고 필요한 mod/구성 이유를 안내한다. 필요한 승인 구성을 복구하면 같은 원본 save가 정상 복원된다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CMVA-11-REVIEWED-001",
+              "Content Digest": "sha256:2f5e194a0d0975ccf84acc3b1bd74041de696679df756d2edd2cb3b32e103722"
+            },
+            "Observable Policy Acceptance": [
+              "승인 구성의 실제 live battle에 safety fault를 유발하면 원래 U03 fault query/gate와 결과·저장 차단·다른 actor 독립성이 유지된다.",
+              "일반 입력 거절·Lab 준비 실패·수집 실패와 live battle terminal fault를 구분하며 진단 실패/재접속/늦은 callback도 기존 fault를 정상 완료로 바꾸지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CMVA-12-REVIEWED-001",
+              "Content Digest": "sha256:2edd7cc6e10aad42a9b253ee25b50b5ea864492a1c148884bb20b19f2c3f36a8"
+            },
+            "Observable Policy Acceptance": [
+              "default-release 외부 입력으로 로컬 Core/CLI와 실제 서버 bootstrap 또는 공개 관리 경계에서 승인된 조합을 생성·적용하고 실제 gameplay/query에 도달한다.",
+              "권한 없는 요청·잘못된 입력·미완료/실패/정상 상태가 typed 진단으로 구별되고 서버와 로컬의 approval/설정 소유가 서로 혼동되지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CMVA-13-REVIEWED-001",
+              "Content Digest": "sha256:55fa022fb8b512c51cb54e6f3459bb49abe8d958b27d6d08ab892abcef0fe743"
+            },
+            "Observable Policy Acceptance": [
+              "현재 지원 기능의 실제 profile/coverage와 한계를 조회하고 새 capability 또는 규칙 revision이 필요한 검증을 빠뜨리면 Apply가 보류된다.",
+              "같은 유효 입력의 evidence는 근거대로 재사용하되 영향받는 변경과 default/development 차이는 정확히 invalidate되어 이전 FAIL을 새 PASS로 소급 변경하지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CMVA-14-REVIEWED-001",
+              "Content Digest": "sha256:603c0181fb2b840b03d5e47c175f521d46de4a995af2da80fcc08fc282e48d92"
+            },
+            "Observable Policy Acceptance": [
+              "반복 및 독립 두 검증/게임 세션에서 성공·취소·실패·clone 이후 각 결과와 profile이 분리되고 actual peak 및 종료 후 회수 근거가 남는다.",
+              "수집/캐시/작업 상한·진단 포화에서도 메모리와 출력이 유한하며 live generation 수명·기존 결과 및 다른 세션의 진행을 바꾸지 않는다."
+            ]
+          },
+          {
+            "Policy Element Revision Ref": {
+              "Artifact Type": "Policy Element Revision",
+              "Artifact ID": "PER-CMVA-15-REVIEWED-001",
+              "Content Digest": "sha256:ca0b37543e62a88cad8cc2f8a47afcae16d21fc6e31203889e7efe6987514632"
+            },
+            "Observable Policy Acceptance": [
+              "현재 수용 조건·필수차원·영향받는 선행 조건에 실제 nonzero 실행 또는 명시 current 재사용과 실패 원본이 연결되고 calibration/Apply의 실제 정상 종단 근거가 있다.",
+              "역할을 분리한 전체 독립 Complete/High/open0와 격리 복원/현재성 근거가 존재하며 전체 suite 미실행 자체나 기능 일부 PASS를 전체 판정으로 대체하지 않는다."
+            ]
+          }
+        ],
+        "Current Code Review Binding Ref Set": [
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CMVA-01-001",
+            "Content Digest": "sha256:77e8f783c9eec8f1825a0375161575c9e68c6c32aee9143b16302821fafd8cb3"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CMVA-02-001",
+            "Content Digest": "sha256:f3b075f0a3d7076e8fed449700c1ae76be47389b54d96df5717c62b1dee0e1ee"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CMVA-03-001",
+            "Content Digest": "sha256:379360f0331353b1941f9bce29a10280f1cec0d138c1efa2852847791d2edc56"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CMVA-04-001",
+            "Content Digest": "sha256:ef057c3abd6d4655f74c9efc70d67e8d67e7953ac2123c3e910382c5e96ed357"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CMVA-05-001",
+            "Content Digest": "sha256:6d0e800af56a6d2daf066240d251d97b037a9c13c48f8bf45c63300ee9e8f10a"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CMVA-06-001",
+            "Content Digest": "sha256:0abb71df24d12b37507eb7125328eac28be6b132454801acb01b23cc9b5c570c"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CMVA-07-001",
+            "Content Digest": "sha256:a99dd4c69049efe4c9730759ce22d8b1dc95d69a5830282a1f5aaa13b5f16e94"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CMVA-08-001",
+            "Content Digest": "sha256:11d20614696311cf1453a87125aeed44f1f1089dd853c61dffb2c81428f58fbf"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CMVA-09-001",
+            "Content Digest": "sha256:058879b8157d8eb260471e8729870a76c810573d95c5a7f2eefd0fd3d804ab2e"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CMVA-10-001",
+            "Content Digest": "sha256:1a4e06f8a0598d1e01e1a2d1a91c6bfdeb5f745657aae7a12db423ceeb5e73e5"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CMVA-11-001",
+            "Content Digest": "sha256:4d18c7a485496f7970dd4cfc364979e5aebea398f934cb206a18f049f277d91e"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CMVA-12-001",
+            "Content Digest": "sha256:c04e082e169e9a1390860e2e7080738fb1ee93eeec8cbef55bf191d0edbe5b34"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CMVA-13-001",
+            "Content Digest": "sha256:48153ae81dd8e4d52a0c8bb51ddc54a704fb7ce176cce00ad876b07d974cfe78"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CMVA-14-001",
+            "Content Digest": "sha256:21cf8a9ec5d471c12eb82f2fdfc343282f5ffe09e542da4223a8e4e2719fb8bb"
+          },
+          {
+            "Artifact Type": "Code Review Binding",
+            "Artifact ID": "CRB-CMVA-15-001",
+            "Content Digest": "sha256:9ec109239e3ed579dfe26c918123afe523b2f77f6d5ad7a797aec3806ab775a3"
+          }
+        ],
+        "Reviewed Source Basis Ref": {
+          "Artifact Type": "Reviewed Source Basis",
+          "Artifact ID": "RSB-CMVA-001",
+          "Content Digest": "sha256:54baa319a69e5932199f7cbf158df46d3562ab189aaf0e391cf540759aa9c33c"
+        },
+        "Binding Completeness Evidence": {
+          "Artifact Type": "Code Review Artifact",
+          "Artifact ID": "CRA-CMVA-001",
+          "Content Digest": "sha256:cfbc19726dee9e4bd85894478e4a7da6e6caa387a3b79cadf087d6a519f63ae4"
+        },
+        "Applicable Change/Obligation Basis": [],
+        "Resolved Prerequisite Evidence": [],
+        "Known Unknowns": "No unresolved material policy or current-source gap. CODE_REVIEW T01–T07 are unimplemented mandatory GEX scope. Sol owns bounded concrete API/metadata/cryptographic primitive/build identity details subject to Root review of public, authority and persistence semantics. Real normal/expanded/pathological calibration, distributions/peaks/reclaim, Root adoption of concrete versioned criteria, boundary tests and normal Lab→Apply are REQUIRED before completion; no numeric criterion or workload feasibility is currently claimed. 500/1000 are measurement candidates, not gameplay caps. Independent test Astra owns oracles; Sol owns sole execution. Future Unity/full roster/final-boss work remains out.",
+        "Compatibility/Migration Disposition": "Preserve existing static validation and trusted low-level Core embedding as diagnostic/runtime foundation while normal mod launcher/server consumes approved facade. Preserve U03 fault gates, U04 paired intent and accepted recovery_pending, immutable active A/future B and independent safety identity. Add required-mod read-only preflight before writer-capable snapshot/backup repair/pending-intent recovery/profile merge/run overwrite. Incompatible originals/current/backup/profile remain unchanged and the same save restores after required approved configuration returns. Metadata/version changes must explicitly preserve V11 continuation/V12 SavePoint strict unsupported-original handling; no implicit migration/removal or automatic multi-slot fallback. Compatible new sessions use explicitly selected independent existing persistence roots. Issuer cache is authenticated local, atomic, restart-bound identity only; it is not player save or live battle ownership.",
+        "Lifecycle Disposition": "current"
+      }
+    }
+  ]
+}

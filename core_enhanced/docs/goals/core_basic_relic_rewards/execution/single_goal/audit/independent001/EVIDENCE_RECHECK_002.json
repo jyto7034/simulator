@@ -1,0 +1,430 @@
+{
+  "archive": {
+    "source_members": 953,
+    "before_members": 586,
+    "delta_members": 390,
+    "archive_delta_equality": true,
+    "guarded_restore_reused": {
+      "passed": true,
+      "isolated_root": "/tmp/u162-isolated-restore-0llhfwqk",
+      "method": "guarded exact-byte add/replace/delete from fixed archived snapshots; full membership and byte equality forward and reverse",
+      "forward_members": 953,
+      "reverse_members": 586,
+      "operations": 390,
+      "working_tree_mutations": 0
+    }
+  },
+  "rust": {
+    "unique_core_passed": 2196,
+    "suites": {
+      "core005": 2114,
+      "focused007": 22,
+      "restore008": 4,
+      "default_restore010": 4,
+      "integration009": 72
+    },
+    "closed_original_failures": [
+      "application::tests::command_kind_is_exactly_bijective_with_all_domain_actions",
+      "game::behavior::tests::every_action_kind_has_one_characterized_route_scope_and_authority_contract",
+      "game::data::content_pack::snapshot::tests::unix::socket_inputs_return_errors",
+      "game::world::application::tests::every_behavior_kind_has_exactly_one_application_owner",
+      "game::world::tests::combat::resource_lifetimes::actual_shop_and_reward_acquisitions_create_distinct_spendable_copy_owners",
+      "game::world::tests::content_generation::valid_external_remove_updates_namespaced_lookup_registry_recipe_and_reward_acquisition",
+      "game::world::tests::u12_lifecycle::cost::u12_vault_entry_checkpoint_restore_preserves_profile_boundary",
+      "game::world::tests::u12_lifecycle::cost::u12_vault_prepare_import_budget_failures_preserve_roots",
+      "game::world::tests::u12_lifecycle::cost::u12_vault_prepared_discard_and_commit_keep_exact_profile",
+      "game::world::tests::u12_lifecycle::cost::u12_vault_profile_capture_charges_owned_graph"
+    ],
+    "existing_ignored": 6,
+    "native_reused": 4,
+    "server_reused": 31,
+    "single_green_invocation": false,
+    "coverage_selector_checks": [
+      {
+        "condition": "A01",
+        "selector": "u13_",
+        "matched": [
+          "game::world::tests::u13_facility::u13_allocation_roles_reject_semantic_mismatches_and_allow_activity_aliases",
+          "game::world::tests::u13_facility::u13_authored_category_and_missing_reference_fail_before_runtime",
+          "game::world::tests::u13_facility::u13_descent_only_recovery_savepoint_keeps_permanent_exploration_and_gate_return",
+          "game::world::tests::u13_facility::u13_fixed_encounter_disclosure_tracks_real_room_completion_and_continue",
+          "game::world::tests::u13_facility::u13_official_public_disclosure_and_unsupported_approach_are_read_only",
+          "game::world::tests::u13_facility::u13_reachable_unsupported_room_rejects_retries_and_continue_without_cost",
+          "game::world::tests::u13_facility::u13_real_gate_roundtrip_preserves_assignments_receipts_and_continue",
+          "game::world::tests::u13_facility::u13_recovery_gate_refreshes_destination_witness_and_descent_clears_restriction",
+          "game::world::tests::u13_facility::u13_room_move_budget_refusal_cancel_and_retry_preserve_all_roots"
+        ]
+      },
+      {
+        "condition": "A01",
+        "selector": "u162_choice",
+        "matched": [
+          "game::world::tests::u162_relic_rewards::u162_choice_distinct_shortage_zero_skip_and_once"
+        ]
+      },
+      {
+        "condition": "A02",
+        "selector": "u162_choice",
+        "matched": [
+          "game::world::tests::u162_relic_rewards::u162_choice_distinct_shortage_zero_skip_and_once"
+        ]
+      },
+      {
+        "condition": "A02",
+        "selector": "u162_two_distinct",
+        "matched": [
+          "game::world::tests::u162_relic_rewards::u162_two_distinct_copies_of_same_kind_are_valid_inputs"
+        ]
+      },
+      {
+        "condition": "A03",
+        "selector": "u162_choice",
+        "matched": [
+          "game::world::tests::u162_relic_rewards::u162_choice_distinct_shortage_zero_skip_and_once"
+        ]
+      },
+      {
+        "condition": "A03",
+        "selector": "u162_exit_before",
+        "matched": [
+          "game::world::tests::u162_relic_rewards::u162_exit_before_use_and_after_investment_preserves_exact_paid_cost"
+        ]
+      },
+      {
+        "condition": "A04",
+        "selector": "u162_investment_threshold",
+        "matched": [
+          "game::world::tests::u162_relic_rewards::u162_investment_threshold_replacement_and_final_single_grant"
+        ]
+      },
+      {
+        "condition": "A04",
+        "selector": "u162_investment_shortage",
+        "matched": [
+          "game::world::tests::u162_relic_rewards::u162_investment_shortage_empty_upgrade_and_unfinished_rewind"
+        ]
+      },
+      {
+        "condition": "A05",
+        "selector": "u162_investment_shortage",
+        "matched": [
+          "game::world::tests::u162_relic_rewards::u162_investment_shortage_empty_upgrade_and_unfinished_rewind"
+        ]
+      },
+      {
+        "condition": "A06",
+        "selector": "u162_investment_threshold",
+        "matched": [
+          "game::world::tests::u162_relic_rewards::u162_investment_threshold_replacement_and_final_single_grant"
+        ]
+      },
+      {
+        "condition": "A06",
+        "selector": "u162_exit_before",
+        "matched": [
+          "game::world::tests::u162_relic_rewards::u162_exit_before_use_and_after_investment_preserves_exact_paid_cost"
+        ]
+      },
+      {
+        "condition": "A07",
+        "selector": "u162_fusion_input",
+        "matched": [
+          "game::world::tests::u162_relic_rewards::u162_fusion_input_eligibility_corrupt_normal_and_owned_kind_allowed"
+        ]
+      },
+      {
+        "condition": "A07",
+        "selector": "u162_two_distinct",
+        "matched": [
+          "game::world::tests::u162_relic_rewards::u162_two_distinct_copies_of_same_kind_are_valid_inputs"
+        ]
+      },
+      {
+        "condition": "A08",
+        "selector": "u162_fusion_six_probability",
+        "matched": [
+          "game::world::tests::u162_relic_rewards::u162_fusion_six_probability_rows_input_order_and_atomic_result"
+        ]
+      },
+      {
+        "condition": "A09",
+        "selector": "u162_fusion_missing_positive",
+        "matched": [
+          "game::world::tests::u162_relic_rewards::u162_fusion_missing_positive_grade_blocks_without_redistribution_or_loss"
+        ]
+      },
+      {
+        "condition": "A10",
+        "selector": "u162_fusion_six_probability",
+        "matched": [
+          "game::world::tests::u162_relic_rewards::u162_fusion_six_probability_rows_input_order_and_atomic_result"
+        ]
+      },
+      {
+        "condition": "A11",
+        "selector": "u162_fusion_six_probability",
+        "matched": [
+          "game::world::tests::u162_relic_rewards::u162_fusion_six_probability_rows_input_order_and_atomic_result"
+        ]
+      },
+      {
+        "condition": "A11",
+        "selector": "u162_investment_shortage",
+        "matched": [
+          "game::world::tests::u162_relic_rewards::u162_investment_shortage_empty_upgrade_and_unfinished_rewind"
+        ]
+      },
+      {
+        "condition": "A14",
+        "selector": "u162_choice",
+        "matched": [
+          "game::world::tests::u162_relic_rewards::u162_choice_distinct_shortage_zero_skip_and_once"
+        ]
+      },
+      {
+        "condition": "A14",
+        "selector": "u162_investment_shortage",
+        "matched": [
+          "game::world::tests::u162_relic_rewards::u162_investment_shortage_empty_upgrade_and_unfinished_rewind"
+        ]
+      },
+      {
+        "condition": "A15",
+        "selector": "u13_",
+        "matched": [
+          "game::world::tests::u13_facility::u13_allocation_roles_reject_semantic_mismatches_and_allow_activity_aliases",
+          "game::world::tests::u13_facility::u13_authored_category_and_missing_reference_fail_before_runtime",
+          "game::world::tests::u13_facility::u13_descent_only_recovery_savepoint_keeps_permanent_exploration_and_gate_return",
+          "game::world::tests::u13_facility::u13_fixed_encounter_disclosure_tracks_real_room_completion_and_continue",
+          "game::world::tests::u13_facility::u13_official_public_disclosure_and_unsupported_approach_are_read_only",
+          "game::world::tests::u13_facility::u13_reachable_unsupported_room_rejects_retries_and_continue_without_cost",
+          "game::world::tests::u13_facility::u13_real_gate_roundtrip_preserves_assignments_receipts_and_continue",
+          "game::world::tests::u13_facility::u13_recovery_gate_refreshes_destination_witness_and_descent_clears_restriction",
+          "game::world::tests::u13_facility::u13_room_move_budget_refusal_cancel_and_retry_preserve_all_roots"
+        ]
+      },
+      {
+        "condition": "A15",
+        "selector": "u14_",
+        "matched": [
+          "game::battle::core::commands::tests::u14_decisive_damage_observes_actual_single_strikes_not_ticks_or_requested_overkill",
+          "game::battle::stat_pipeline::u14_scaling_tests::u14_revival_times_unrestrained_and_exact_stats_keep_non_targets",
+          "game::combat_setup::rewards::u14_tests::u14_unrestrained_whitelist_preserves_identity_targets_and_other_quantities",
+          "game::employee::breakdown_tests::u14_breakdown_regulated_cost_recovery_reentry_and_serialization",
+          "game::world::state::tests::u14_run_power_anchor_ignores_previous_rise_and_certified_peak",
+          "game::world::tests::r07_copies::u14_entry_cost_collapse_recovers_assets_and_bypasses_death_prevent_once",
+          "game::world::tests::r07_copies::u14_entry_cost_death_precedes_savepoint_recovery",
+          "game::world::tests::u14_deterrence::u14_actual_late_spawns_scale_only_hp_attack_and_ignore_roster_power",
+          "game::world::tests::u14_deterrence::u14_actual_time_boundary_and_defeat_survival_xp",
+          "game::world::tests::u14_deterrence::u14_authored_entry_preview_cost_short_balance_zero_and_continue",
+          "game::world::tests::u14_deterrence::u14_authored_invalid_tuning_objective_and_bough_plans_reject",
+          "game::world::tests::u14_deterrence::u14_official_bough_plan_discloses_only_markers_and_is_stable_across_continue",
+          "game::world::tests::u14_deterrence::u14_public_breakdown_order_and_abandoned_branch_reachability",
+          "game::world::tests::u14_deterrence::u14_seal_retreat_continue_then_actual_victory_refill_and_bonus_once",
+          "game::world::tests::u14_deterrence::u14_sealed_actual_defeat_never_collects_bough_or_bonus_and_xp_stays_ten",
+          "game::world::tests::u14_deterrence::u14_snapshot_uses_after_cost_and_cached_preview_refreshes_without_compounding",
+          "game::world::tests::u14_deterrence::u14_visited_room_preview_preserves_seal_scale_identity_and_continue"
+        ]
+      },
+      {
+        "condition": "A15",
+        "selector": "u16_support",
+        "matched": [
+          "game::world::tests::u16_support::u16_basic_revival_offer_is_guaranteed_and_nonrepeatable_after_purchase",
+          "game::world::tests::u16_support::u16_completed_shop_continue_keeps_goods_unfinished_continue_rewinds_all_goods",
+          "game::world::tests::u16_support::u16_expanded_carried_equipment_and_shop_goods_continue_with_default_budget",
+          "game::world::tests::u16_support::u16_hq_terms_match_price_loadout_and_remaining_hires",
+          "game::world::tests::u16_support::u16_immediate_treatment_replaces_modifier_and_consumes_exactly_one",
+          "game::world::tests::u16_support::u16_inventory_display_size_does_not_limit_relic_purchase",
+          "game::world::tests::u16_support::u16_new_goods_query_and_atomic_purchase_publish_exact_distinct_assets",
+          "game::world::tests::u16_support::u16_shortage_overflow_and_unavailable_sale_preserve_all_roots"
+        ]
+      }
+    ]
+  },
+  "hosts": [
+    {
+      "group": "host001",
+      "processes": 18,
+      "commands": 67,
+      "io": [
+        {
+          "name": "choice_complete",
+          "command": {
+            "type": "claim_reward"
+          },
+          "successful_retry": true
+        },
+        {
+          "name": "choice_checkpoint",
+          "command": {
+            "type": "load_run_checkpoint"
+          },
+          "successful_retry": true
+        },
+        {
+          "name": "dust_complete002",
+          "command": {
+            "type": "claim_reward"
+          },
+          "successful_retry": true
+        },
+        {
+          "name": "dust_claim_io",
+          "command": {
+            "type": "claim_reward"
+          },
+          "successful_retry": true
+        },
+        {
+          "name": "fusion_complete",
+          "command": {
+            "type": "confirm_relic_fusion"
+          },
+          "successful_retry": true
+        },
+        {
+          "name": "dust_skip",
+          "command": {
+            "type": "exit_reward"
+          },
+          "successful_retry": true
+        }
+      ]
+    },
+    {
+      "group": "host_edges001",
+      "processes": 2,
+      "commands": 11,
+      "io": []
+    },
+    {
+      "group": "expanded_host001",
+      "processes": 3,
+      "commands": 29,
+      "io": [
+        {
+          "name": "complete",
+          "command": {
+            "type": "claim_reward"
+          },
+          "successful_retry": true
+        },
+        {
+          "name": "checkpoint",
+          "command": {
+            "type": "load_run_checkpoint"
+          },
+          "successful_retry": true
+        }
+      ]
+    }
+  ],
+  "host_domain_oracles": {
+    "unfinished_reentry_completed_continue_savepoint": true,
+    "corrupt_reversed_input_same_normal_result": true,
+    "cost_result_copy_count_and_consumption_checked": true
+  },
+  "authoring": {
+    "valid": 1,
+    "rejected": 10,
+    "cases": [
+      "valid",
+      "missing_id",
+      "duplicate_id",
+      "zero_weight",
+      "weight_overflow",
+      "zero_threshold",
+      "equal_threshold",
+      "decreasing_threshold",
+      "threshold_shape",
+      "unsupported_grade",
+      "wrong_activity_category"
+    ]
+  },
+  "cost": {
+    "activity_samples": [
+      {
+        "case": "normal",
+        "repeat": 0,
+        "windows": 52,
+        "exact_release": true
+      },
+      {
+        "case": "normal",
+        "repeat": 1,
+        "windows": 52,
+        "exact_release": true
+      },
+      {
+        "case": "normal",
+        "repeat": 2,
+        "windows": 52,
+        "exact_release": true
+      },
+      {
+        "case": "expanded",
+        "repeat": 0,
+        "windows": 52,
+        "exact_release": true
+      },
+      {
+        "case": "expanded",
+        "repeat": 1,
+        "windows": 52,
+        "exact_release": true
+      },
+      {
+        "case": "expanded",
+        "repeat": 2,
+        "windows": 52,
+        "exact_release": true
+      }
+    ],
+    "shared_exact_release_summary_rechecked": true,
+    "default_stress_authoring_rejected": {
+      "accepted": false,
+      "workload": "unchanged300candidates+64additionalcopies",
+      "raw": "runs/expanded_calibration001.stderr.log",
+      "phase": "GeneratedSetup",
+      "site": "queued_fact_source",
+      "requested": 10000014,
+      "limit": 10000000,
+      "disposition": "bounded admission rejection; not treated as normal-profile acceptance"
+    },
+    "production_limits_changed": false,
+    "shared_raw_processes": 6,
+    "shared_raw_operations": 72
+  },
+  "predecessor_continuity": {
+    "actual_baseline_members": 524,
+    "product_predecessor_mismatches": [],
+    "server_source_unchanged": true,
+    "prepared_binary_cfg_test_only_delta_verified": true,
+    "historical_verdict": {
+      "at_utc": "2026-10-15T01:27:16.316032+00:00",
+      "stage": "GEX-20",
+      "mode": "stage-run",
+      "goal_set": "GS-CSNA-001",
+      "goal": "GOAL-CSNA-01",
+      "phase": "PHASE-CSNA-01",
+      "target": "u16_1_current_001",
+      "verdict": "Complete",
+      "confidence": "High",
+      "open_completion_blockers": 0,
+      "confirmed_product_defects": 0,
+      "acceptance_pass": 18,
+      "dimensions_pass": 10,
+      "integration_pass": 5,
+      "execution_nodes_reviewed": 4,
+      "currentness": "current / unchanged",
+      "product_suites_rerun": false,
+      "new_audit_execution": "One public Core diagnostic process, 12 setup commands + purchase + query; exit0",
+      "reused_evidence": "EVIDENCE_RECHECK.json",
+      "report": "../../COMPLETION_AUDIT.md",
+      "scope": "U16-1 only; U16-2/3/4 not started"
+    }
+  },
+  "fixed_binary_receipts_verified": 4,
+  "passed": true
+}

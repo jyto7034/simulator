@@ -173,6 +173,7 @@ pub(super) fn document(
             .templates
             .iter()
             .find(|v| v.id.as_str() == id)),
+        FacilityLayout => emit!(db.facility_templates().layouts.iter().find(|v| v.id == id)),
         FacilityPool => emit!(db.facility_templates().pools.iter().find(|v| v.id == id)),
         NodeAssignmentProfile => emit!(db
             .node_assignment_profiles()

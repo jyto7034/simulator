@@ -1,0 +1,513 @@
+{
+  "schema_version": "u12.document_validator_execution/v1",
+  "cwd": "/mnt/f/work/simulator",
+  "runner_role": "product and sole prepared-command executor",
+  "scope": "P2G40 document validation only; no product/test/fixture/tool/acceptance edits",
+  "started_utc": "2026-10-12T10:53:36.698314+00:00",
+  "commands": [
+    {
+      "index": 1,
+      "argv": [
+        "node",
+        "core_enhanced/docs/tools/validate_p2g40_receipt.mjs",
+        "--write-receipt",
+        "--plan",
+        "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_40_PHASE_PLAN_001.json",
+        "--freeze",
+        "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_30_FREEZE_001.json",
+        "--receipt",
+        "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_40_VALIDATION_RECEIPT_001.json"
+      ],
+      "command": "node core_enhanced/docs/tools/validate_p2g40_receipt.mjs --write-receipt --plan core_enhanced/docs/goals/core_expedition_lifecycle/P2G_40_PHASE_PLAN_001.json --freeze core_enhanced/docs/goals/core_expedition_lifecycle/P2G_30_FREEZE_001.json --receipt core_enhanced/docs/goals/core_expedition_lifecycle/P2G_40_VALIDATION_RECEIPT_001.json",
+      "started_utc": "2026-10-12T10:53:36.749648+00:00",
+      "elapsed_seconds": 2.8856100440002592,
+      "exit_code": 0,
+      "stdout": "{\n  \"generator\": \"p2g40-receipt-generator/1.2.0\",\n  \"status\": \"created\",\n  \"receipt\": \"core_enhanced/docs/goals/core_expedition_lifecycle/P2G_40_VALIDATION_RECEIPT_001.json\",\n  \"validation\": {\n    \"validator\": \"p2g40-receipt-validator/1.2.0\",\n    \"result\": \"passed\",\n    \"counts\": {\n      \"freeze_members\": 15,\n      \"work_packages\": 6,\n      \"dependency_edges\": 19,\n      \"cyclic_sccs\": 1,\n      \"atomic_groups\": 1,\n      \"final_execution_nodes\": 3,\n      \"phases\": 1,\n      \"audit_rows\": 1,\n      \"integration_rows\": 19\n    },\n    \"failures\": []\n  }\n}\n",
+      "stderr": "",
+      "raw_output_files": [
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_40_VALIDATION_001.command_1.stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_40_VALIDATION_001.command_1.stdout.log",
+          "bytes": 554,
+          "sha256": "9c5504646ac124525807f2b105b7e12131cb36e739a4a4acb17efb6ef46bd457"
+        }
+      ],
+      "source_hashes_before": [
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/MAIN_SOURCE_REVIEW_001.json",
+          "bytes": 6584,
+          "sha256": "71d1556fc4583357141fa5c877c52bc6156eed82ad8235e0758e2ac760beb9f9"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_00_INITIAL_001.json",
+          "bytes": 35386,
+          "sha256": "f2b082ab38d94eb7da0480aa1527542f871befe205665c005a0bed176dc9eb3a"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_00_RESULT_001.json",
+          "bytes": 1551,
+          "sha256": "5bd67f51850df84d22a4d1c67ee31b4416d02aaeb9f8dbb23e5793cfbb706fd8"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_10_CORRECTION_001.json",
+          "bytes": 44448,
+          "sha256": "3cdb18cb9dc2b5a14d1d88017befb2514ce461a814747bcb1879a47a6690cffc"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_10_DECISION_001.json",
+          "bytes": 71648,
+          "sha256": "8e08504ef02bc406d241c7a04e6504a08bca0951c62b482bb9ab073b28fefdaf"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_10_OPEN_001.json",
+          "bytes": 23885,
+          "sha256": "f79d426f7db9564413329c0c9a72026a99ebdf65c2396bcf5325ce5cf0273a5c"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_10_POLICY_001.json",
+          "bytes": 124849,
+          "sha256": "5d6fae6b2449063fd99f39635a8c0f5d69d4bd38a7ad2b97d4249890fa4fb0cc"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_10_RESULT_001.json",
+          "bytes": 26522,
+          "sha256": "3b47ee2b003f58510fb1cef2e76ba1b09e6f2c539cef367cf7e0aedf71c6639c"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_10_RESULT_002.json",
+          "bytes": 11257,
+          "sha256": "a153fec31cbdb99a7f7eaed96c7b17d08b33d341ac7f46eac88a5d33bd4ca5d3"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_20_ABORTED_001.json",
+          "bytes": 2317,
+          "sha256": "63fe6f2c02afc7db25f606fe4d3b43555f1f2942f129e2da24377387733b1cf5"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_20_RESULT_002.json",
+          "bytes": 9559,
+          "sha256": "af99a19bf1e299524246d34941c52792b732b571df3bf1a6f5b6f1fb0c64b353"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_20_REVIEW_002.json",
+          "bytes": 620949,
+          "sha256": "20e95d035940313652dee57cad1fc2ef6d60d9af4da8704c72b425207c7b6174"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_20_SOURCE_PLAN_001.json",
+          "bytes": 44577,
+          "sha256": "466ebe831d98d1356817c78e664b638e5485af75a376046ec97545fd349fdb5e"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_20_SOURCE_PLAN_002.json",
+          "bytes": 45015,
+          "sha256": "96e0e0db4a314a5d8c2fee9cd5a0cb9e5607449e80685458e4f0c3548b62c405"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_30_FREEZE_001.json",
+          "bytes": 27292,
+          "sha256": "fcd2b41a0a539adacdb3a148629358cfb3cc7dd5bcf0359150b9bd7e3dae0688"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_30_RESULT_001.json",
+          "bytes": 8675,
+          "sha256": "1dacd21ecac339837820a303558534c965f3e9006ebb040c59dc8ea342ef250c"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_40_PHASE_PLAN_001.json",
+          "bytes": 38475,
+          "sha256": "1d56c857e443925c9105ad74e2d4435bf2199c410b90e55b6465a54ab023e8f2"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/RESUME_20261012_001.json",
+          "bytes": 1141,
+          "sha256": "62c364576288b2bbb838f28e079a2c1ae6aa14e15528ed6380627040dad82f34"
+        },
+        {
+          "path": "core_enhanced/docs/tools/p2g_inputs.mjs",
+          "bytes": 13196,
+          "sha256": "39078cdc1b147b705b896f0a4379f25f80c7ef1e39a60b6345d9f4e99c01c62f"
+        },
+        {
+          "path": "core_enhanced/docs/tools/validate_p2g40_receipt.mjs",
+          "bytes": 18772,
+          "sha256": "7e7d8b1526a4bd0afb03f43cabd437fee16eb4944c67c380d157baaf22b114e9"
+        }
+      ],
+      "source_hashes_after": [
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/MAIN_SOURCE_REVIEW_001.json",
+          "bytes": 6584,
+          "sha256": "71d1556fc4583357141fa5c877c52bc6156eed82ad8235e0758e2ac760beb9f9"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_00_INITIAL_001.json",
+          "bytes": 35386,
+          "sha256": "f2b082ab38d94eb7da0480aa1527542f871befe205665c005a0bed176dc9eb3a"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_00_RESULT_001.json",
+          "bytes": 1551,
+          "sha256": "5bd67f51850df84d22a4d1c67ee31b4416d02aaeb9f8dbb23e5793cfbb706fd8"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_10_CORRECTION_001.json",
+          "bytes": 44448,
+          "sha256": "3cdb18cb9dc2b5a14d1d88017befb2514ce461a814747bcb1879a47a6690cffc"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_10_DECISION_001.json",
+          "bytes": 71648,
+          "sha256": "8e08504ef02bc406d241c7a04e6504a08bca0951c62b482bb9ab073b28fefdaf"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_10_OPEN_001.json",
+          "bytes": 23885,
+          "sha256": "f79d426f7db9564413329c0c9a72026a99ebdf65c2396bcf5325ce5cf0273a5c"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_10_POLICY_001.json",
+          "bytes": 124849,
+          "sha256": "5d6fae6b2449063fd99f39635a8c0f5d69d4bd38a7ad2b97d4249890fa4fb0cc"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_10_RESULT_001.json",
+          "bytes": 26522,
+          "sha256": "3b47ee2b003f58510fb1cef2e76ba1b09e6f2c539cef367cf7e0aedf71c6639c"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_10_RESULT_002.json",
+          "bytes": 11257,
+          "sha256": "a153fec31cbdb99a7f7eaed96c7b17d08b33d341ac7f46eac88a5d33bd4ca5d3"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_20_ABORTED_001.json",
+          "bytes": 2317,
+          "sha256": "63fe6f2c02afc7db25f606fe4d3b43555f1f2942f129e2da24377387733b1cf5"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_20_RESULT_002.json",
+          "bytes": 9559,
+          "sha256": "af99a19bf1e299524246d34941c52792b732b571df3bf1a6f5b6f1fb0c64b353"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_20_REVIEW_002.json",
+          "bytes": 620949,
+          "sha256": "20e95d035940313652dee57cad1fc2ef6d60d9af4da8704c72b425207c7b6174"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_20_SOURCE_PLAN_001.json",
+          "bytes": 44577,
+          "sha256": "466ebe831d98d1356817c78e664b638e5485af75a376046ec97545fd349fdb5e"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_20_SOURCE_PLAN_002.json",
+          "bytes": 45015,
+          "sha256": "96e0e0db4a314a5d8c2fee9cd5a0cb9e5607449e80685458e4f0c3548b62c405"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_30_FREEZE_001.json",
+          "bytes": 27292,
+          "sha256": "fcd2b41a0a539adacdb3a148629358cfb3cc7dd5bcf0359150b9bd7e3dae0688"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_30_RESULT_001.json",
+          "bytes": 8675,
+          "sha256": "1dacd21ecac339837820a303558534c965f3e9006ebb040c59dc8ea342ef250c"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_40_PHASE_PLAN_001.json",
+          "bytes": 38475,
+          "sha256": "1d56c857e443925c9105ad74e2d4435bf2199c410b90e55b6465a54ab023e8f2"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_40_VALIDATION_RECEIPT_001.json",
+          "bytes": 9367,
+          "sha256": "13051fcb2e818c92704a4e7aa6fd410aff722e00be8ece4296f1779dd514aedf"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/RESUME_20261012_001.json",
+          "bytes": 1141,
+          "sha256": "62c364576288b2bbb838f28e079a2c1ae6aa14e15528ed6380627040dad82f34"
+        },
+        {
+          "path": "core_enhanced/docs/tools/p2g_inputs.mjs",
+          "bytes": 13196,
+          "sha256": "39078cdc1b147b705b896f0a4379f25f80c7ef1e39a60b6345d9f4e99c01c62f"
+        },
+        {
+          "path": "core_enhanced/docs/tools/validate_p2g40_receipt.mjs",
+          "bytes": 18772,
+          "sha256": "7e7d8b1526a4bd0afb03f43cabd437fee16eb4944c67c380d157baaf22b114e9"
+        }
+      ],
+      "preexisting_source_changes": [],
+      "created_json_paths": [
+        "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_40_VALIDATION_RECEIPT_001.json"
+      ]
+    },
+    {
+      "index": 2,
+      "argv": [
+        "node",
+        "core_enhanced/docs/tools/validate_p2g40_receipt.mjs",
+        "--plan",
+        "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_40_PHASE_PLAN_001.json",
+        "--freeze",
+        "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_30_FREEZE_001.json",
+        "--receipt",
+        "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_40_VALIDATION_RECEIPT_001.json"
+      ],
+      "command": "node core_enhanced/docs/tools/validate_p2g40_receipt.mjs --plan core_enhanced/docs/goals/core_expedition_lifecycle/P2G_40_PHASE_PLAN_001.json --freeze core_enhanced/docs/goals/core_expedition_lifecycle/P2G_30_FREEZE_001.json --receipt core_enhanced/docs/goals/core_expedition_lifecycle/P2G_40_VALIDATION_RECEIPT_001.json",
+      "started_utc": "2026-10-12T10:53:39.749292+00:00",
+      "elapsed_seconds": 3.5493932790000144,
+      "exit_code": 0,
+      "stdout": "{\n  \"validator\": \"p2g40-receipt-validator/1.2.0\",\n  \"result\": \"passed\",\n  \"counts\": {\n    \"freeze_members\": 15,\n    \"work_packages\": 6,\n    \"dependency_edges\": 19,\n    \"cyclic_sccs\": 1,\n    \"atomic_groups\": 1,\n    \"final_execution_nodes\": 3,\n    \"phases\": 1,\n    \"audit_rows\": 1,\n    \"integration_rows\": 19\n  },\n  \"failures\": []\n}\n",
+      "stderr": "",
+      "raw_output_files": [
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_40_VALIDATION_001.command_2.stderr.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_40_VALIDATION_001.command_2.stdout.log",
+          "bytes": 331,
+          "sha256": "5b9c300ced687e1b4c5f600726f84d7bc78664b03763b663a178d543397c8062"
+        }
+      ],
+      "source_hashes_before": [
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/MAIN_SOURCE_REVIEW_001.json",
+          "bytes": 6584,
+          "sha256": "71d1556fc4583357141fa5c877c52bc6156eed82ad8235e0758e2ac760beb9f9"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_00_INITIAL_001.json",
+          "bytes": 35386,
+          "sha256": "f2b082ab38d94eb7da0480aa1527542f871befe205665c005a0bed176dc9eb3a"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_00_RESULT_001.json",
+          "bytes": 1551,
+          "sha256": "5bd67f51850df84d22a4d1c67ee31b4416d02aaeb9f8dbb23e5793cfbb706fd8"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_10_CORRECTION_001.json",
+          "bytes": 44448,
+          "sha256": "3cdb18cb9dc2b5a14d1d88017befb2514ce461a814747bcb1879a47a6690cffc"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_10_DECISION_001.json",
+          "bytes": 71648,
+          "sha256": "8e08504ef02bc406d241c7a04e6504a08bca0951c62b482bb9ab073b28fefdaf"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_10_OPEN_001.json",
+          "bytes": 23885,
+          "sha256": "f79d426f7db9564413329c0c9a72026a99ebdf65c2396bcf5325ce5cf0273a5c"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_10_POLICY_001.json",
+          "bytes": 124849,
+          "sha256": "5d6fae6b2449063fd99f39635a8c0f5d69d4bd38a7ad2b97d4249890fa4fb0cc"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_10_RESULT_001.json",
+          "bytes": 26522,
+          "sha256": "3b47ee2b003f58510fb1cef2e76ba1b09e6f2c539cef367cf7e0aedf71c6639c"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_10_RESULT_002.json",
+          "bytes": 11257,
+          "sha256": "a153fec31cbdb99a7f7eaed96c7b17d08b33d341ac7f46eac88a5d33bd4ca5d3"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_20_ABORTED_001.json",
+          "bytes": 2317,
+          "sha256": "63fe6f2c02afc7db25f606fe4d3b43555f1f2942f129e2da24377387733b1cf5"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_20_RESULT_002.json",
+          "bytes": 9559,
+          "sha256": "af99a19bf1e299524246d34941c52792b732b571df3bf1a6f5b6f1fb0c64b353"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_20_REVIEW_002.json",
+          "bytes": 620949,
+          "sha256": "20e95d035940313652dee57cad1fc2ef6d60d9af4da8704c72b425207c7b6174"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_20_SOURCE_PLAN_001.json",
+          "bytes": 44577,
+          "sha256": "466ebe831d98d1356817c78e664b638e5485af75a376046ec97545fd349fdb5e"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_20_SOURCE_PLAN_002.json",
+          "bytes": 45015,
+          "sha256": "96e0e0db4a314a5d8c2fee9cd5a0cb9e5607449e80685458e4f0c3548b62c405"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_30_FREEZE_001.json",
+          "bytes": 27292,
+          "sha256": "fcd2b41a0a539adacdb3a148629358cfb3cc7dd5bcf0359150b9bd7e3dae0688"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_30_RESULT_001.json",
+          "bytes": 8675,
+          "sha256": "1dacd21ecac339837820a303558534c965f3e9006ebb040c59dc8ea342ef250c"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_40_PHASE_PLAN_001.json",
+          "bytes": 38475,
+          "sha256": "1d56c857e443925c9105ad74e2d4435bf2199c410b90e55b6465a54ab023e8f2"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_40_VALIDATION_RECEIPT_001.json",
+          "bytes": 9367,
+          "sha256": "13051fcb2e818c92704a4e7aa6fd410aff722e00be8ece4296f1779dd514aedf"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/RESUME_20261012_001.json",
+          "bytes": 1141,
+          "sha256": "62c364576288b2bbb838f28e079a2c1ae6aa14e15528ed6380627040dad82f34"
+        },
+        {
+          "path": "core_enhanced/docs/tools/p2g_inputs.mjs",
+          "bytes": 13196,
+          "sha256": "39078cdc1b147b705b896f0a4379f25f80c7ef1e39a60b6345d9f4e99c01c62f"
+        },
+        {
+          "path": "core_enhanced/docs/tools/validate_p2g40_receipt.mjs",
+          "bytes": 18772,
+          "sha256": "7e7d8b1526a4bd0afb03f43cabd437fee16eb4944c67c380d157baaf22b114e9"
+        }
+      ],
+      "source_hashes_after": [
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/MAIN_SOURCE_REVIEW_001.json",
+          "bytes": 6584,
+          "sha256": "71d1556fc4583357141fa5c877c52bc6156eed82ad8235e0758e2ac760beb9f9"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_00_INITIAL_001.json",
+          "bytes": 35386,
+          "sha256": "f2b082ab38d94eb7da0480aa1527542f871befe205665c005a0bed176dc9eb3a"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_00_RESULT_001.json",
+          "bytes": 1551,
+          "sha256": "5bd67f51850df84d22a4d1c67ee31b4416d02aaeb9f8dbb23e5793cfbb706fd8"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_10_CORRECTION_001.json",
+          "bytes": 44448,
+          "sha256": "3cdb18cb9dc2b5a14d1d88017befb2514ce461a814747bcb1879a47a6690cffc"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_10_DECISION_001.json",
+          "bytes": 71648,
+          "sha256": "8e08504ef02bc406d241c7a04e6504a08bca0951c62b482bb9ab073b28fefdaf"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_10_OPEN_001.json",
+          "bytes": 23885,
+          "sha256": "f79d426f7db9564413329c0c9a72026a99ebdf65c2396bcf5325ce5cf0273a5c"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_10_POLICY_001.json",
+          "bytes": 124849,
+          "sha256": "5d6fae6b2449063fd99f39635a8c0f5d69d4bd38a7ad2b97d4249890fa4fb0cc"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_10_RESULT_001.json",
+          "bytes": 26522,
+          "sha256": "3b47ee2b003f58510fb1cef2e76ba1b09e6f2c539cef367cf7e0aedf71c6639c"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_10_RESULT_002.json",
+          "bytes": 11257,
+          "sha256": "a153fec31cbdb99a7f7eaed96c7b17d08b33d341ac7f46eac88a5d33bd4ca5d3"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_20_ABORTED_001.json",
+          "bytes": 2317,
+          "sha256": "63fe6f2c02afc7db25f606fe4d3b43555f1f2942f129e2da24377387733b1cf5"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_20_RESULT_002.json",
+          "bytes": 9559,
+          "sha256": "af99a19bf1e299524246d34941c52792b732b571df3bf1a6f5b6f1fb0c64b353"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_20_REVIEW_002.json",
+          "bytes": 620949,
+          "sha256": "20e95d035940313652dee57cad1fc2ef6d60d9af4da8704c72b425207c7b6174"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_20_SOURCE_PLAN_001.json",
+          "bytes": 44577,
+          "sha256": "466ebe831d98d1356817c78e664b638e5485af75a376046ec97545fd349fdb5e"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_20_SOURCE_PLAN_002.json",
+          "bytes": 45015,
+          "sha256": "96e0e0db4a314a5d8c2fee9cd5a0cb9e5607449e80685458e4f0c3548b62c405"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_30_FREEZE_001.json",
+          "bytes": 27292,
+          "sha256": "fcd2b41a0a539adacdb3a148629358cfb3cc7dd5bcf0359150b9bd7e3dae0688"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_30_RESULT_001.json",
+          "bytes": 8675,
+          "sha256": "1dacd21ecac339837820a303558534c965f3e9006ebb040c59dc8ea342ef250c"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_40_PHASE_PLAN_001.json",
+          "bytes": 38475,
+          "sha256": "1d56c857e443925c9105ad74e2d4435bf2199c410b90e55b6465a54ab023e8f2"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_40_VALIDATION_RECEIPT_001.json",
+          "bytes": 9367,
+          "sha256": "13051fcb2e818c92704a4e7aa6fd410aff722e00be8ece4296f1779dd514aedf"
+        },
+        {
+          "path": "core_enhanced/docs/goals/core_expedition_lifecycle/RESUME_20261012_001.json",
+          "bytes": 1141,
+          "sha256": "62c364576288b2bbb838f28e079a2c1ae6aa14e15528ed6380627040dad82f34"
+        },
+        {
+          "path": "core_enhanced/docs/tools/p2g_inputs.mjs",
+          "bytes": 13196,
+          "sha256": "39078cdc1b147b705b896f0a4379f25f80c7ef1e39a60b6345d9f4e99c01c62f"
+        },
+        {
+          "path": "core_enhanced/docs/tools/validate_p2g40_receipt.mjs",
+          "bytes": 18772,
+          "sha256": "7e7d8b1526a4bd0afb03f43cabd437fee16eb4944c67c380d157baaf22b114e9"
+        }
+      ],
+      "preexisting_source_changes": [],
+      "created_json_paths": []
+    }
+  ],
+  "completed_utc": "2026-10-12T10:53:43.395300+00:00",
+  "overall_exit_codes": [
+    0,
+    0
+  ],
+  "receipt_hash": [
+    {
+      "path": "core_enhanced/docs/goals/core_expedition_lifecycle/P2G_40_VALIDATION_RECEIPT_001.json",
+      "bytes": 9367,
+      "sha256": "13051fcb2e818c92704a4e7aa6fd410aff722e00be8ece4296f1779dd514aedf"
+    }
+  ]
+}

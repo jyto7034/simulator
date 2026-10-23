@@ -1,0 +1,14 @@
+{
+  "ref": {
+    "Artifact Type": "Goal Set",
+    "Artifact ID": "GS-CRCE-001",
+    "Content Digest": "sha256:d961559b64edda77def96878677b0058238feac0e698933ff04551c0f6f9c1b8"
+  },
+  "canonical_digest_method": "SHA256 UTF8 LF Markdown excluding the entire - Goal Set Ref: envelope line, preserving remaining newlines",
+  "source": {
+    "path": "core_enhanced/docs/goals/core_relic_causal_chains/P2G_50_GOAL_SET.ko.md",
+    "bytes": 24818,
+    "sha256": "1fa0eb1165ec0bc05516d8db7afc91d391ade526a86f6316aef1c69ab07b1620"
+  },
+  "status": "current"
+}

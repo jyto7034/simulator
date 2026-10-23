@@ -1,0 +1,11 @@
+{
+  "command": [
+    "core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/artifacts/public_consumer002/u14_deterrence_consumer",
+    "sealed",
+    "core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/sealed_public002"
+  ],
+  "exit_code": 1,
+  "seconds": 241.93646481399628,
+  "stdout": "sealed_public002.stdout.log",
+  "stderr": "sealed_public002.stderr.log"
+}

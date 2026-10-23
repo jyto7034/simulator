@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/mnt/f/work/simulator/.cache/u12-vault-cost-target/debug/author_content",
+    "simulate",
+    "/mnt/f/work/simulator/core_enhanced/docs/testing/core_baseline_failure_correction_20261014_001/cli_inputs_016/r12/hello/content",
+    "/mnt/f/work/simulator/core_enhanced/docs/testing/core_baseline_failure_correction_20261014_001/cli_inputs_016/r12/hello/selection.json",
+    "/mnt/f/work/simulator/core_enhanced/docs/testing/core_baseline_failure_correction_20261014_001/cli_inputs_016/r12/hello/scenario.json",
+    "--amount-observation",
+    "--trace-output",
+    "/mnt/f/work/simulator/core_enhanced/docs/testing/core_baseline_failure_correction_20261014_001/cli_020_04.trace.json"
+  ],
+  "exit_code": 0,
+  "seconds": 5.282001533007133,
+  "stdout": "cli_020_04.stdout.log",
+  "stderr": "cli_020_04.stderr.log"
+}

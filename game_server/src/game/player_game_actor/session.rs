@@ -126,7 +126,7 @@ impl PlayerGameSession {
                 .load_balance_addr
                 .send(GetOrCreatePlayerActor {
                     player_id,
-                    game_data: app_state.game_data.clone(),
+                    game_data: app_state.approved_host.future_generation().map_err(|e| PlayerGameActorError::new("approved_selection_unavailable", e.to_string()))?.0,
                     run_seed: derive_run_seed(player_id, app_state.current_run_id),
                 })
                 .await

@@ -170,6 +170,18 @@ fn encode_record(
     let mut replayed = evaluate_compiled_amount(record.plan.as_ref(), record.kind(), &record.frame)
         .map_err(|_| invariant("The retained amount frame could not be replayed."))?;
     let narrowed_base_amount = replayed.amount;
+    if let Some(binding) = record.source.relic_effective() {
+        binding
+            .validate(content_identity, &record.source)
+            .map_err(|_| {
+                invariant("The retained structural binding differs from its original source.")
+            })?;
+        replayed.amount = binding
+            .compose_amount(&record.plan.source().site, record.kind(), replayed.amount)
+            .map_err(|_| {
+                invariant("The retained structural contribution could not be replayed.")
+            })?;
+    }
     if let Some(binding) = record.source.relic_numeric() {
         binding
             .validate_skill(content_identity, &record.plan, &record.source)
@@ -245,7 +257,9 @@ fn encode_record(
         amount_semantics: "base_amount_before_mitigation",
         typed_base_amount: &replayed.evaluated.value,
         narrowed_base_amount,
-        effective_relic_amount: record.source.relic_numeric().map(|_| record.amount),
+        effective_relic_amount: (record.source.relic_effective().is_some()
+            || record.source.relic_numeric().is_some())
+        .then_some(record.amount),
         relic_numeric: record.source.relic_numeric().map(AsRef::as_ref),
         trace: &replayed.evaluated.trace,
         runtime_expr_usage: record.runtime_usage,
