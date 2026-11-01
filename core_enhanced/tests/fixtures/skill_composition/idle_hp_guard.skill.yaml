@@ -1,0 +1,15 @@
+# Technical test values, not release balance. World binds an actual armor copy.
+version: 1
+id: idle-hp-guard-fixture
+values:
+  - name: idle-protection
+    value:
+      DefenseProgram:
+        IdleHpGuard:
+          recharge_ms: 2000
+          reduction_percent: 50
+equipment_defenses:
+  - equipment: r11_weapon
+    program: { Shared: idle-protection }
+definitions: []
+skills: []

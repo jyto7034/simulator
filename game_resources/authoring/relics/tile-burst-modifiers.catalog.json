@@ -1,0 +1,67 @@
+{
+  "relics": [
+    {
+      "id": "overlapping-explosions",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a120",
+      "name": "중첩된폭발",
+      "description": "파편의 명시적인 provider modifier가 적용 대상과 변경을 소유한다.",
+      "rarity": {
+        "Unresolved": "relic-rarity"
+      },
+      "allow_duplicates": {
+        "Unresolved": "relic-allow-duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": {
+        "Unresolved": "relic-incompatible-with"
+      },
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "relic-dismantle-dust"
+      }
+    },
+    {
+      "id": "explosion-vulnerability",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a121",
+      "name": "압축 화약",
+      "description": "파편의 명시적인 provider modifier가 적용 대상과 변경을 소유한다.",
+      "rarity": {
+        "Unresolved": "relic-rarity"
+      },
+      "allow_duplicates": {
+        "Unresolved": "relic-allow-duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": {
+        "Unresolved": "relic-incompatible-with"
+      },
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "relic-dismantle-dust"
+      }
+    },
+    {
+      "id": "funeral-butterfly-orb",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a122",
+      "name": "검은 고치",
+      "description": "파편의 명시적인 provider modifier가 적용 대상과 변경을 소유한다.",
+      "rarity": {
+        "Unresolved": "relic-rarity"
+      },
+      "allow_duplicates": {
+        "Unresolved": "relic-allow-duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": {
+        "Unresolved": "relic-incompatible-with"
+      },
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "relic-dismantle-dust"
+      }
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+# Prototype values, not final release balance. The actual catalog armor is bound by World trials.
+version: 1
+id: channel-opening-guard-fixture
+values:
+  - name: opening-protection
+    value:
+      DefenseProgram:
+        ChannelOpeningGuard:
+          duration_ms: 2000
+          reduction_percent: 50
+equipment_defenses:
+  - equipment: r11_weapon
+    program: { Shared: opening-protection }
+definitions: []
+skills: []

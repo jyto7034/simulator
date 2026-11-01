@@ -12,10 +12,16 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Melee,
                 weapon_archetype: Sword,
+                block_capacity: 1,
+                deployment_affinity: ground_only,
+                ground_defense_focus: Some((
+                    block_capacity_bonus: 1,
+                    incoming_damage_reduction_percent: 10,
+                )),
+                platform_rest: None,
                 damage_type: Physical,
                 targeting_profile: DefaultForward,
                 air_capable: false,
-                range_units: 1.0,
                 defense_tile_range: (
                     include_anchor_tile: false,
                     rows: [".X.", ".@.", "..."],
@@ -56,10 +62,15 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
+                deployment_affinity: platform_only,
+                ground_defense_focus: None,
+                platform_rest: Some((
+                    hp_recovery_per_tick: 3,
+                )),
                 damage_type: Magic,
                 targeting_profile: LowMagicResistFirst,
                 air_capable: true,
-                range_units: 6.0,
                 defense_tile_range: (
                     include_anchor_tile: false,
                     rows: [
@@ -104,6 +115,38 @@ EquipmentDatabase(
                     ),
                 ),
             ],
+        ),
+
+        // Starter 전용. 일반 equipment reward pool에서는 명시적으로 제외한다.
+        EquipmentMetadata(
+            id: "standard_training_sword",
+            uuid: "650e8400-e29b-41d4-a716-446655440030",
+            name: "Standard Training Sword",
+            equipment_type: Weapon,
+            rarity: ZAYIN,
+            price: 0,
+            allow_duplicate_equip: true,
+            weapon_profile: Some((
+                range_role: Melee,
+                weapon_archetype: Sword,
+                block_capacity: 1,
+                deployment_affinity: ground_only,
+                ground_defense_focus: Some((
+                    block_capacity_bonus: 1,
+                    incoming_damage_reduction_percent: 10,
+                )),
+                platform_rest: None,
+                damage_type: Physical,
+                targeting_profile: DefaultForward,
+                air_capable: false,
+                defense_tile_range: (
+                    include_anchor_tile: false,
+                    rows: [".X.", ".@.", "..."],
+                ),
+                interval_ms: 1500,
+                windup_ms: 200,
+                delivery: Instant,
+            )),
         ),
 
         // 방어구 상인 벤자민의 상품
@@ -253,6 +296,20 @@ EquipmentDatabase(
                 ],
             },
         ),
+        EquipmentMetadata(
+            id: "archive_scanner",
+            uuid: "650e8400-e29b-41d4-a716-446655440044",
+            name: "Archive Scanner",
+            equipment_type: Accessory,
+            rarity: HE,
+            price: 140,
+            allow_duplicate_equip: true,
+            event_check_modifiers: [(
+                aptitude: Analysis,
+                amount: 2,
+            )],
+            event_choice_keys: ["sealed_archive_access"],
+        ),
 
         // 추가 E.G.O 무기
         EquipmentMetadata(
@@ -266,10 +323,16 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Gun,
+                block_capacity: 0,
+                deployment_affinity: ground_only,
+                ground_defense_focus: Some((
+                    block_capacity_bonus: 0,
+                    incoming_damage_reduction_percent: 10,
+                )),
+                platform_rest: None,
                 damage_type: Magic,
                 targeting_profile: LowDefenseFirst,
                 air_capable: true,
-                range_units: 6.5,
                 defense_tile_range: (
                     include_anchor_tile: false,
                     rows: [
@@ -314,10 +377,16 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Melee,
                 weapon_archetype: Shield,
+                block_capacity: 3,
+                deployment_affinity: ground_only,
+                ground_defense_focus: Some((
+                    block_capacity_bonus: 1,
+                    incoming_damage_reduction_percent: 10,
+                )),
+                platform_rest: None,
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: false,
-                range_units: 1.0,
                 defense_tile_range: (
                     include_anchor_tile: false,
                     rows: [".X.", "X@X", ".X."],
@@ -364,10 +433,16 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Bow,
+                block_capacity: 0,
+                deployment_affinity: ground_only,
+                ground_defense_focus: Some((
+                    block_capacity_bonus: 0,
+                    incoming_damage_reduction_percent: 10,
+                )),
+                platform_rest: None,
                 damage_type: Physical,
                 targeting_profile: AirFirst,
                 air_capable: true,
-                range_units: 7.0,
                 defense_tile_range: (
                     include_anchor_tile: false,
                     rows: [
@@ -417,20 +492,21 @@ EquipmentDatabase(
             rarity: WAW,
             price: 280,
             allow_duplicate_equip: true,
+            // E04 technical profile: remote magic sword; landed counter is authored separately.
             weapon_profile: Some((
-                range_role: Melee,
-                weapon_archetype: Spear,
-                damage_type: Physical,
-                targeting_profile: DefaultForward,
-                air_capable: false,
-                range_units: 1.4,
+                action: DamageArea(footprint:(include_anchor_tile:true,rows:["XXX","X@X","XXX"]),secondary_percent:100),
+                range_role: Ranged,
+                weapon_archetype: Sword,
+                block_capacity: 0,
+                deployment_affinity: platform_only,
+                ground_defense_focus: None,
+                platform_rest: Some((hp_recovery_per_tick: 3)),
+                damage_type: Magic,
+                targeting_profile: HighestRouteProgress,
+                air_capable: true,
                 defense_tile_range: (
                     include_anchor_tile: false,
-                    rows: [
-                        ".X.",
-                        ".X.",
-                        ".@.",
-                    ],
+                    rows: ["XXXXX", "XXXXX", "XX@XX", "XXXXX", "XXXXX"],
                 ),
                 interval_ms: 1600,
                 windup_ms: 230,
@@ -447,12 +523,6 @@ EquipmentDatabase(
                         )),
                     ),
                 ],
-                OnAttack: [
-                    (
-                        target: CounterpartUnit,
-                        effect: ApplyBuff(buff_id: "freeze", duration_ms: 450),
-                    ),
-                ],
             },
         ),
         EquipmentMetadata(
@@ -466,10 +536,16 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Melee,
                 weapon_archetype: Sword,
+                block_capacity: 1,
+                deployment_affinity: ground_only,
+                ground_defense_focus: Some((
+                    block_capacity_bonus: 1,
+                    incoming_damage_reduction_percent: 10,
+                )),
+                platform_rest: None,
                 damage_type: Physical,
                 targeting_profile: DefaultForward,
                 air_capable: false,
-                range_units: 1.1,
                 defense_tile_range: (
                     include_anchor_tile: false,
                     rows: [
@@ -540,12 +616,6 @@ EquipmentDatabase(
                             kind: Flat,
                             value: 18,
                         )),
-                    ),
-                ],
-                OnHit: [
-                    (
-                        target: CounterpartUnit,
-                        effect: ApplyBuff(buff_id: "freeze", duration_ms: 350),
                     ),
                 ],
             },
@@ -619,6 +689,132 @@ EquipmentDatabase(
                     ),
                 ],
             },
+        ),
+
+        // Technical accessory; the two recipient rules are supplied by authored input.
+        EquipmentMetadata(
+            id: "black_swan_memory_brooch",
+            uuid: "e0000000-0000-0000-0000-000000000309",
+            name: "Black Swan Memory Brooch",
+            equipment_type: Accessory,
+            rarity: WAW,
+            price: 220,
+            allow_duplicate_equip: true,
+            triggered_effects: {},
+        ),
+        // Technical catalog entry; behavior is supplied by the authored equipment program.
+        EquipmentMetadata(
+            id: "black_swan_nettle_coat",
+            uuid: "e0000000-0000-0000-0000-000000000308",
+            name: "Black Swan Nettle Coat",
+            equipment_type: Armor,
+            rarity: WAW,
+            price: 260,
+            allow_duplicate_equip: true,
+            // Technical stats; the DEF-derived fixed allowance is authored separately.
+            triggered_effects: { Permanent: [
+                (target:SelfUnit,effect:Modifier(StatModifier(stat:MaxHealth,kind:Flat,value:120))),
+                (target:SelfUnit,effect:Modifier(StatModifier(stat:Defense,kind:Flat,value:20))),
+                (target:SelfUnit,effect:Modifier(StatModifier(stat:MagicResist,kind:Flat,value:-5))),
+            ] },
+        ),
+        // E07 accessory. Damage support is authored, with no shield capacity modifier.
+        EquipmentMetadata(
+            id: "porccubus_pleasure_ring",
+            uuid: "e0000000-0000-0000-0000-000000000312",
+            name: "Pleasure Ring",
+            equipment_type: Accessory,
+            rarity: WAW,
+            price: 180,
+            allow_duplicate_equip: true,
+            triggered_effects: {},
+        ),
+        // E07 technical stats; current-distance reduction is authored separately.
+        EquipmentMetadata(
+            id: "porccubus_ecstasy_coat",
+            uuid: "e0000000-0000-0000-0000-000000000311",
+            name: "Ecstasy Coat",
+            equipment_type: Armor,
+            rarity: WAW,
+            price: 260,
+            allow_duplicate_equip: true,
+            triggered_effects: { Permanent: [
+                (target:SelfUnit,effect:Modifier(StatModifier(stat:MaxHealth,kind:Flat,value:200))),
+                (target:SelfUnit,effect:Modifier(StatModifier(stat:Defense,kind:Flat,value:15))),
+                (target:SelfUnit,effect:Modifier(StatModifier(stat:MagicResist,kind:Flat,value:30))),
+            ] },
+        ),
+        EquipmentMetadata(
+            id: "porccubus_pleasure",
+            uuid: "e0000000-0000-0000-0000-000000000310",
+            name: "Pleasure",
+            equipment_type: Weapon,
+            rarity: WAW,
+            price: 280,
+            allow_duplicate_equip: true,
+            // E07 technical values; finite nonstack weakness is authored separately.
+            weapon_profile: Some((
+                action: DamageArea(footprint:(include_anchor_tile:true,rows:["XXX","X@X","XXX"]),secondary_percent:100),
+                range_role: Melee,
+                weapon_archetype: Shield,
+                block_capacity: 3,
+                deployment_affinity: ground_only,
+                ground_defense_focus: Some((block_capacity_bonus:0,incoming_damage_reduction_percent:0)),
+                platform_rest: None,
+                damage_type: Magic,
+                targeting_profile: DefaultForward,
+                air_capable: false,
+                defense_tile_range: (include_anchor_tile:true,rows:["XXX",".@."]),
+                interval_ms: 1000,
+                windup_ms: 180,
+                delivery: Instant,
+            )),
+            triggered_effects: {
+                Permanent: [
+                    (target:SelfUnit,effect:Modifier(StatModifier(stat:Attack,kind:Flat,value:20))),
+                ],
+            },
+        ),
+        EquipmentMetadata(
+            id: "black_swan_umbrella",
+            uuid: "e0000000-0000-0000-0000-000000000307",
+            name: "Black Swan Umbrella",
+            equipment_type: Weapon,
+            rarity: WAW,
+            price: 280,
+            allow_duplicate_equip: true,
+            // E06 technical values; the finite basic-rate penalty is authored separately.
+            weapon_profile: Some((
+                action: DamageArea(footprint:(include_anchor_tile:true,rows:["XXX","X@X","XXX"]),secondary_percent:100),
+                range_role: Melee,
+                weapon_archetype: Shield,
+                block_capacity: 3,
+                deployment_affinity: ground_only,
+                ground_defense_focus: Some((block_capacity_bonus:0,incoming_damage_reduction_percent:0)),
+                platform_rest: None,
+                damage_type: Magic,
+                targeting_profile: DefaultForward,
+                air_capable: false,
+                defense_tile_range: (include_anchor_tile:true,rows:["XXX",".@."]),
+                interval_ms: 1000,
+                windup_ms: 180,
+                delivery: Instant,
+            )),
+            triggered_effects: {
+                Permanent: [
+                    (target:SelfUnit,effect:Modifier(StatModifier(stat:Attack,kind:Flat,value:20))),
+                ],
+            },
+        ),
+        EquipmentMetadata(
+            id: "ice_crown",
+            uuid: "e0000000-0000-0000-0000-000000000306",
+            name: "Ice Crown",
+            equipment_type: Accessory,
+            rarity: WAW,
+            price: 230,
+            allow_duplicate_equip: true,
+            triggered_effects: {},
         ),
 
         // 추가 E.G.O 악세서리
@@ -773,10 +969,15 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
+                deployment_affinity: platform_only,
+                ground_defense_focus: None,
+                platform_rest: Some((
+                    hp_recovery_per_tick: 3,
+                )),
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: true,
-                range_units: 5.0,
                 defense_tile_range: (
                     include_anchor_tile: false,
                     rows: ["..X..", ".XXX.", "..X..", "..@..", "....."],
@@ -815,10 +1016,15 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
+                deployment_affinity: platform_only,
+                ground_defense_focus: None,
+                platform_rest: Some((
+                    hp_recovery_per_tick: 3,
+                )),
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: true,
-                range_units: 5.0,
                 defense_tile_range: (
                     include_anchor_tile: false,
                     rows: ["..X..", ".XXX.", "..X..", "..@..", "....."],
@@ -857,10 +1063,16 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Melee,
                 weapon_archetype: Sword,
+                block_capacity: 1,
+                deployment_affinity: ground_only,
+                ground_defense_focus: Some((
+                    block_capacity_bonus: 1,
+                    incoming_damage_reduction_percent: 10,
+                )),
+                platform_rest: None,
                 damage_type: Physical,
                 targeting_profile: DefaultForward,
                 air_capable: false,
-                range_units: 1.0,
                 defense_tile_range: (
                     include_anchor_tile: false,
                     rows: [".X.", ".@.", "..."],
@@ -896,20 +1108,28 @@ EquipmentDatabase(
             rarity: ALEPH,
             price: 0,
             allow_duplicate_equip: true,
+            // Technical placeholder: block1, Physical and timing are not release balance.
+            // N07 has no weapon-owned infection or other special effect.
             weapon_profile: Some((
-                range_role: Ranged,
-                weapon_archetype: Staff,
-                damage_type: Magic,
+                range_role: Melee,
+                weapon_archetype: Shield,
+                block_capacity: 1,
+                deployment_affinity: ground_only,
+                ground_defense_focus: Some((
+                    block_capacity_bonus: 0,
+                    incoming_damage_reduction_percent: 0,
+                )),
+                platform_rest: None,
+                damage_type: Physical,
                 targeting_profile: DefaultForward,
-                air_capable: true,
-                range_units: 5.0,
+                air_capable: false,
                 defense_tile_range: (
                     include_anchor_tile: false,
-                    rows: ["..X..", ".XXX.", "..X..", "..@..", "....."],
+                    rows: [".X.", ".@.", "..."],
                 ),
                 interval_ms: 1800,
                 windup_ms: 280,
-                delivery: Projectile(speed_units_per_ms: 6000),
+                delivery: Instant,
             )),
         ),
         EquipmentMetadata(
@@ -941,10 +1161,16 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Melee,
                 weapon_archetype: Sword,
+                block_capacity: 1,
+                deployment_affinity: ground_only,
+                ground_defense_focus: Some((
+                    block_capacity_bonus: 1,
+                    incoming_damage_reduction_percent: 10,
+                )),
+                platform_rest: None,
                 damage_type: Physical,
                 targeting_profile: DefaultForward,
                 air_capable: false,
-                range_units: 1.0,
                 defense_tile_range: (
                     include_anchor_tile: false,
                     rows: [".X.", ".@.", "..."],
@@ -983,10 +1209,15 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
+                deployment_affinity: platform_only,
+                ground_defense_focus: None,
+                platform_rest: Some((
+                    hp_recovery_per_tick: 3,
+                )),
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: true,
-                range_units: 5.0,
                 defense_tile_range: (
                     include_anchor_tile: false,
                     rows: ["..X..", ".XXX.", "..X..", "..@..", "....."],
@@ -1025,10 +1256,15 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
+                deployment_affinity: platform_only,
+                ground_defense_focus: None,
+                platform_rest: Some((
+                    hp_recovery_per_tick: 3,
+                )),
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: true,
-                range_units: 5.0,
                 defense_tile_range: (
                     include_anchor_tile: false,
                     rows: ["..X..", ".XXX.", "..X..", "..@..", "....."],
@@ -1067,10 +1303,15 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
+                deployment_affinity: platform_only,
+                ground_defense_focus: None,
+                platform_rest: Some((
+                    hp_recovery_per_tick: 3,
+                )),
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: true,
-                range_units: 5.0,
                 defense_tile_range: (
                     include_anchor_tile: false,
                     rows: ["..X..", ".XXX.", "..X..", "..@..", "....."],
@@ -1107,12 +1348,18 @@ EquipmentDatabase(
             price: 0,
             allow_duplicate_equip: true,
             weapon_profile: Some((
+                action: DamageTargets(max_targets: 3),
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
+                deployment_affinity: platform_only,
+                ground_defense_focus: None,
+                platform_rest: Some((
+                    hp_recovery_per_tick: 3,
+                )),
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: true,
-                range_units: 5.0,
                 defense_tile_range: (
                     include_anchor_tile: false,
                     rows: ["..X..", ".XXX.", "..X..", "..@..", "....."],
@@ -1151,10 +1398,15 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
+                deployment_affinity: platform_only,
+                ground_defense_focus: None,
+                platform_rest: Some((
+                    hp_recovery_per_tick: 3,
+                )),
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: true,
-                range_units: 5.0,
                 defense_tile_range: (
                     include_anchor_tile: false,
                     rows: ["..X..", ".XXX.", "..X..", "..@..", "....."],
@@ -1193,10 +1445,16 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Melee,
                 weapon_archetype: Sword,
+                block_capacity: 1,
+                deployment_affinity: ground_only,
+                ground_defense_focus: Some((
+                    block_capacity_bonus: 1,
+                    incoming_damage_reduction_percent: 10,
+                )),
+                platform_rest: None,
                 damage_type: Physical,
                 targeting_profile: DefaultForward,
                 air_capable: false,
-                range_units: 1.0,
                 defense_tile_range: (
                     include_anchor_tile: false,
                     rows: [".X.", ".@.", "..."],
@@ -1235,10 +1493,15 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
+                deployment_affinity: platform_only,
+                ground_defense_focus: None,
+                platform_rest: Some((
+                    hp_recovery_per_tick: 3,
+                )),
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: true,
-                range_units: 5.0,
                 defense_tile_range: (
                     include_anchor_tile: false,
                     rows: ["..X..", ".XXX.", "..X..", "..@..", "....."],
@@ -1277,10 +1540,15 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
+                deployment_affinity: platform_only,
+                ground_defense_focus: None,
+                platform_rest: Some((
+                    hp_recovery_per_tick: 3,
+                )),
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: true,
-                range_units: 5.0,
                 defense_tile_range: (
                     include_anchor_tile: false,
                     rows: ["..X..", ".XXX.", "..X..", "..@..", "....."],
@@ -1317,19 +1585,26 @@ EquipmentDatabase(
             price: 0,
             allow_duplicate_equip: true,
             weapon_profile: Some((
+                // Existing prototype values remain tuning inputs, not release balance.
+                action: DamageOccupiedTiles,
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
+                deployment_affinity: platform_only,
+                ground_defense_focus: None,
+                platform_rest: Some((
+                    hp_recovery_per_tick: 3,
+                )),
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: true,
-                range_units: 5.0,
                 defense_tile_range: (
                     include_anchor_tile: false,
                     rows: ["..X..", ".XXX.", "..X..", "..@..", "....."],
                 ),
                 interval_ms: 1800,
                 windup_ms: 280,
-                delivery: Projectile(speed_units_per_ms: 6000),
+                delivery: Instant,
             )),
         ),
         EquipmentMetadata(
@@ -1358,19 +1633,29 @@ EquipmentDatabase(
             rarity: HE,
             price: 0,
             allow_duplicate_equip: true,
+            // Initial integration values; final balance remains authored separately.
+            triggered_effects: { Permanent: [
+                (target: SelfUnit, effect: Modifier(StatModifier(stat: Attack, kind: Flat, value: 30))),
+            ] },
             weapon_profile: Some((
                 range_role: Melee,
                 weapon_archetype: Sword,
+                block_capacity: 2,
+                deployment_affinity: ground_only,
+                ground_defense_focus: Some((
+                    block_capacity_bonus: 0,
+                    incoming_damage_reduction_percent: 10,
+                )),
+                platform_rest: None,
                 damage_type: Physical,
                 targeting_profile: DefaultForward,
                 air_capable: false,
-                range_units: 1.0,
                 defense_tile_range: (
                     include_anchor_tile: false,
                     rows: [".X.", ".@.", "..."],
                 ),
-                interval_ms: 1500,
-                windup_ms: 200,
+                interval_ms: 2200,
+                windup_ms: 350,
                 delivery: Instant,
             )),
         ),
@@ -1382,6 +1667,11 @@ EquipmentDatabase(
             rarity: HE,
             price: 0,
             allow_duplicate_equip: true,
+            // Initial integration values; not release balance.
+            triggered_effects: { Permanent: [
+                (target: SelfUnit, effect: Modifier(StatModifier(stat: Defense, kind: Flat, value: 20))),
+                (target: SelfUnit, effect: Modifier(StatModifier(stat: MaxHealth, kind: Flat, value: 100))),
+            ] },
         ),
         EquipmentMetadata(
             id: "placeholder_warm_hearted_woodsman_accessory",
@@ -1405,10 +1695,15 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
+                deployment_affinity: platform_only,
+                ground_defense_focus: None,
+                platform_rest: Some((
+                    hp_recovery_per_tick: 3,
+                )),
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: true,
-                range_units: 5.0,
                 defense_tile_range: (
                     include_anchor_tile: false,
                     rows: ["..X..", ".XXX.", "..X..", "..@..", "....."],
@@ -1444,19 +1739,24 @@ EquipmentDatabase(
             rarity: WAW,
             price: 0,
             allow_duplicate_equip: true,
+            // Provisional native profile: fixed release tile, one hit per occupant.
             weapon_profile: Some((
-                range_role: Melee,
-                weapon_archetype: Sword,
+                action: DamageTileAfterDelay(delay_ms: 400),
+                range_role: Ranged,
+                weapon_archetype: Bow,
+                block_capacity: 0,
+                deployment_affinity: platform_only,
+                ground_defense_focus: None,
+                platform_rest: Some((hp_recovery_per_tick: 3)),
                 damage_type: Physical,
-                targeting_profile: DefaultForward,
-                air_capable: false,
-                range_units: 1.0,
+                targeting_profile: HighestRouteProgress,
+                air_capable: true,
                 defense_tile_range: (
                     include_anchor_tile: false,
-                    rows: [".X.", ".@.", "..."],
+                    rows: ["..XXX..", ".XXXXX.", ".XXXXX.", ".XXXXX.", ".XXXXX.", "...@..."],
                 ),
-                interval_ms: 1500,
-                windup_ms: 200,
+                interval_ms: 2000,
+                windup_ms: 600,
                 delivery: Instant,
             )),
         ),
@@ -1489,10 +1789,15 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
+                deployment_affinity: platform_only,
+                ground_defense_focus: None,
+                platform_rest: Some((
+                    hp_recovery_per_tick: 3,
+                )),
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: true,
-                range_units: 5.0,
                 defense_tile_range: (
                     include_anchor_tile: false,
                     rows: ["..X..", ".XXX.", "..X..", "..@..", "....."],
@@ -1531,10 +1836,16 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Melee,
                 weapon_archetype: Sword,
+                block_capacity: 1,
+                deployment_affinity: ground_only,
+                ground_defense_focus: Some((
+                    block_capacity_bonus: 1,
+                    incoming_damage_reduction_percent: 10,
+                )),
+                platform_rest: None,
                 damage_type: Physical,
                 targeting_profile: DefaultForward,
                 air_capable: false,
-                range_units: 1.0,
                 defense_tile_range: (
                     include_anchor_tile: false,
                     rows: [".X.", ".@.", "..."],
@@ -1570,20 +1881,16 @@ EquipmentDatabase(
             rarity: WAW,
             price: 0,
             allow_duplicate_equip: true,
+            // H79 provisional integration values, not release balance.
             weapon_profile: Some((
-                range_role: Ranged,
-                weapon_archetype: Staff,
-                damage_type: Magic,
-                targeting_profile: DefaultForward,
-                air_capable: true,
-                range_units: 5.0,
-                defense_tile_range: (
-                    include_anchor_tile: false,
-                    rows: ["..X..", ".XXX.", "..X..", "..@..", "....."],
-                ),
-                interval_ms: 1800,
-                windup_ms: 280,
-                delivery: Projectile(speed_units_per_ms: 6000),
+                action: HealLowestHealth(flat: 4, spell_power_percent: 50, max_targets: 3),
+                attack: 0, spell_power: 20,
+                range_role: Ranged, weapon_archetype: Staff, block_capacity: 0,
+                deployment_affinity: platform_only,
+                ground_defense_focus: None, platform_rest: Some((hp_recovery_per_tick: 3)),
+                damage_type: Magic, targeting_profile: DefaultForward, air_capable: true,
+                defense_tile_range: (include_anchor_tile: true, rows: ["XXXXX", "XXXXX", "XX@XX", "XXXXX", "XXXXX"]),
+                interval_ms: 1800, windup_ms: 200, delivery: Instant,
             )),
         ),
         EquipmentMetadata(
@@ -1615,10 +1922,15 @@ EquipmentDatabase(
             weapon_profile: Some((
                 range_role: Ranged,
                 weapon_archetype: Staff,
+                block_capacity: 0,
+                deployment_affinity: platform_only,
+                ground_defense_focus: None,
+                platform_rest: Some((
+                    hp_recovery_per_tick: 3,
+                )),
                 damage_type: Magic,
                 targeting_profile: DefaultForward,
                 air_capable: true,
-                range_units: 5.0,
                 defense_tile_range: (
                     include_anchor_tile: false,
                     rows: ["..X..", ".XXX.", "..X..", "..@..", "....."],
@@ -1655,18 +1967,26 @@ EquipmentDatabase(
             price: 0,
             allow_duplicate_equip: true,
             weapon_profile: Some((
+                // E08 technical cadence; release balance and display name remain open.
+                action: DamageOccupiedTiles,
                 range_role: Melee,
                 weapon_archetype: Sword,
+                block_capacity: 2,
+                deployment_affinity: ground_only,
+                ground_defense_focus: Some((
+                    block_capacity_bonus: 0,
+                    incoming_damage_reduction_percent: 0,
+                )),
+                platform_rest: None,
                 damage_type: Physical,
                 targeting_profile: DefaultForward,
                 air_capable: false,
-                range_units: 1.0,
                 defense_tile_range: (
                     include_anchor_tile: false,
                     rows: [".X.", ".@.", "..."],
                 ),
-                interval_ms: 1500,
-                windup_ms: 200,
+                interval_ms: 750,
+                windup_ms: 120,
                 delivery: Instant,
             )),
         ),
@@ -1678,6 +1998,11 @@ EquipmentDatabase(
             rarity: HE,
             price: 0,
             allow_duplicate_equip: true,
+            // E08 technical stats; the current-HP curve is authored separately.
+            triggered_effects: { Permanent: [
+                (target:SelfUnit,effect:Modifier(StatModifier(stat:Defense,kind:Flat,value:20))),
+                (target:SelfUnit,effect:Modifier(StatModifier(stat:MaxHealth,kind:Flat,value:100))),
+            ] },
         ),
         EquipmentMetadata(
             id: "placeholder_schadenfreude_accessory",
@@ -1688,35 +2013,214 @@ EquipmentDatabase(
             price: 0,
             allow_duplicate_equip: true,
         ),
+    
+        EquipmentMetadata(
+            id: "placeholder_clouded_monk_weapon",
+            uuid: "e3000000-0000-0000-0000-000000000014",
+            name: "Clouded Monk Placeholder Weapon",
+            equipment_type: Weapon,
+            rarity: HE,
+            price: 0,
+            allow_duplicate_equip: true,
+            weapon_profile: Some((
+                // E09 technical values; release balance remains unresolved.
+                action: DamageArea(
+                    footprint: (include_anchor_tile: true, rows: ["XXX", "X@X", "XXX"]),
+                    secondary_percent: 100,
+                ),
+                range_role: Ranged, weapon_archetype: Staff, block_capacity: 0,
+                deployment_affinity: platform_only, ground_defense_focus: None,
+                platform_rest: Some((hp_recovery_per_tick: 0)),
+                damage_type: Physical, targeting_profile: DefaultForward, air_capable: false,
+                defense_tile_range: (
+                    include_anchor_tile: false,
+                    rows: ["XXXXX", "XXXXX", "XXXXX", "XX@XX", "....."],
+                ),
+                interval_ms: 2200, windup_ms: 400, delivery: Instant,
+            )),
+        ),
+
+        EquipmentMetadata(
+            id: "placeholder_clouded_monk_armor",
+            uuid: "e3000000-0000-0000-0000-000000000114",
+            name: "Clouded Monk Placeholder Armor",
+            equipment_type: Armor, rarity: HE, price: 0, allow_duplicate_equip: true,
+            // Technical base stats; high-HP damage is authored separately.
+            triggered_effects: { Permanent: [
+                (target: SelfUnit, effect: Modifier(StatModifier(stat: Defense, kind: Flat, value: 20))),
+                (target: SelfUnit, effect: Modifier(StatModifier(stat: MaxHealth, kind: Flat, value: 100))),
+            ] },
+        ),
+
+        EquipmentMetadata(
+            id: "placeholder_clouded_monk_accessory",
+            uuid: "e3000000-0000-0000-0000-000000000214",
+            name: "Clouded Monk Placeholder Accessory",
+            equipment_type: Accessory, rarity: HE, price: 0, allow_duplicate_equip: true,
+            triggered_effects: {},
+        ),
+
+        EquipmentMetadata(
+            id: "standard_training_gun", uuid: "650e8400-e29b-41d4-a716-446655449001",
+            name: "Company Training gun", equipment_type: Weapon, rarity: ZAYIN,
+            price: 0, allow_duplicate_equip: true,
+            weapon_profile: Some((
+                range_role: Ranged, weapon_archetype: Gun, block_capacity: 0,
+                deployment_affinity: ground_only,
+                ground_defense_focus: Some((block_capacity_bonus: 0, incoming_damage_reduction_percent: 10)), platform_rest: None,
+                action: Damage, damage_type: Physical, targeting_profile: DefaultForward,
+                air_capable: true,
+                defense_tile_range: (include_anchor_tile: false, rows: ["..X..", "..X..", "..X..", "..@..", "....."]),
+                interval_ms: 1500, windup_ms: 200, delivery: Projectile(speed_units_per_ms: 6000),
+            )),
+            triggered_effects: {},
+        ),
+        EquipmentMetadata(
+            id: "standard_training_shield", uuid: "650e8400-e29b-41d4-a716-446655449002",
+            name: "Company Training shield", equipment_type: Weapon, rarity: ZAYIN,
+            price: 0, allow_duplicate_equip: true,
+            weapon_profile: Some((
+                range_role: Melee, weapon_archetype: Shield, block_capacity: 3,
+                deployment_affinity: ground_only,
+                ground_defense_focus: Some((block_capacity_bonus: 1, incoming_damage_reduction_percent: 10)), platform_rest: None,
+                action: Damage, damage_type: Physical, targeting_profile: DefaultForward,
+                air_capable: false,
+                defense_tile_range: (include_anchor_tile: false, rows: [".X.", ".@.", "..."]),
+                interval_ms: 1800, windup_ms: 250, delivery: Instant,
+            )),
+            triggered_effects: {},
+        ),
+        EquipmentMetadata(
+            id: "standard_training_greatsword", uuid: "650e8400-e29b-41d4-a716-446655449003",
+            name: "Company Training greatsword", equipment_type: Weapon, rarity: ZAYIN,
+            price: 0, allow_duplicate_equip: true,
+            weapon_profile: Some((
+                range_role: Melee, weapon_archetype: Sword, block_capacity: 1,
+                deployment_affinity: ground_only,
+                ground_defense_focus: Some((block_capacity_bonus: 1, incoming_damage_reduction_percent: 10)), platform_rest: None,
+                action: Damage, damage_type: Physical, targeting_profile: DefaultForward,
+                air_capable: false,
+                defense_tile_range: (include_anchor_tile: false, rows: ["XXX", ".@.", "..."]),
+                interval_ms: 2000, windup_ms: 300, delivery: Instant,
+            )),
+            triggered_effects: {},
+        ),
+        EquipmentMetadata(
+            id: "standard_training_healing_staff", uuid: "650e8400-e29b-41d4-a716-446655449004",
+            name: "Company Training healing_staff", equipment_type: Weapon, rarity: ZAYIN,
+            price: 0, allow_duplicate_equip: true,
+            weapon_profile: Some((
+                range_role: Ranged, weapon_archetype: Staff, block_capacity: 0,
+                deployment_affinity: platform_only,
+                ground_defense_focus: None, platform_rest: Some((hp_recovery_per_tick: 3)),
+                action: Heal(flat: 8, spell_power_percent: 100, footprint: None), damage_type: Physical, targeting_profile: DefaultForward,
+                air_capable: true,
+                defense_tile_range: (include_anchor_tile: true, rows: ["XXXXX", "XXXXX", "XX@XX", "XXXXX", "XXXXX"]),
+                interval_ms: 1800, windup_ms: 200, delivery: Instant,
+            )),
+            triggered_effects: {Permanent: [(target: SelfUnit, effect: Modifier((stat: SpellPower, kind: Flat, value: 10)))]},
+        ),
+        EquipmentMetadata(
+            id: "standard_training_area_healing_staff", uuid: "650e8400-e29b-41d4-a716-446655449005",
+            name: "Company Training area_healing_staff", equipment_type: Weapon, rarity: ZAYIN,
+            price: 0, allow_duplicate_equip: true,
+            weapon_profile: Some((
+                range_role: Ranged, weapon_archetype: Staff, block_capacity: 0,
+                deployment_affinity: platform_only,
+                ground_defense_focus: None, platform_rest: Some((hp_recovery_per_tick: 3)),
+                action: Heal(flat: 4, spell_power_percent: 50, footprint: Some((include_anchor_tile: true, rows: ["XXX", "X@X", "XXX"]))), damage_type: Physical, targeting_profile: DefaultForward,
+                air_capable: true,
+                defense_tile_range: (include_anchor_tile: true, rows: ["XXXXX", "XXXXX", "XX@XX", "XXXXX", "XXXXX"]),
+                interval_ms: 2200, windup_ms: 250, delivery: Instant,
+            )),
+            triggered_effects: {Permanent: [(target: SelfUnit, effect: Modifier((stat: SpellPower, kind: Flat, value: 10)))]},
+        ),
     ],
     materials: [
+        EquipmentMaterialMetadata(
+            id: "part_big_bad_wolf", uuid: "c0fd7dd5-942f-5eaf-b98a-0aa854bc1ff9",
+            name: "big_bad_wolf 파츠", description: "big_bad_wolf 부활 조우에서 얻는 개화 재료입니다.",
+            material_type: AbnormalityPart, rarity: WAW, equipment_type: None,
+        ),
+        EquipmentMaterialMetadata(
+            id: "part_burrowing_heaven", uuid: "d333d604-8598-5e81-bcb2-f1c9766f9ba3",
+            name: "burrowing_heaven 파츠", description: "burrowing_heaven 부활 조우에서 얻는 개화 재료입니다.",
+            material_type: AbnormalityPart, rarity: WAW, equipment_type: None,
+        ),
+        EquipmentMaterialMetadata(
+            id: "part_funeral_butterfly", uuid: "42b25257-c131-557b-acb3-a600189c7f00",
+            name: "funeral_butterfly 파츠", description: "funeral_butterfly 부활 조우에서 얻는 개화 재료입니다.",
+            material_type: AbnormalityPart, rarity: WAW, equipment_type: None,
+        ),
+        EquipmentMaterialMetadata(
+            id: "part_king_of_greed", uuid: "3d48ea68-22db-5cc6-917e-069e993d1214",
+            name: "king_of_greed 파츠", description: "king_of_greed 부활 조우에서 얻는 개화 재료입니다.",
+            material_type: AbnormalityPart, rarity: WAW, equipment_type: None,
+        ),
+        EquipmentMaterialMetadata(
+            id: "part_knight_of_despair", uuid: "97557e8d-0cdc-5c0d-b82c-2ceaf8e0346b",
+            name: "knight_of_despair 파츠", description: "knight_of_despair 부활 조우에서 얻는 개화 재료입니다.",
+            material_type: AbnormalityPart, rarity: WAW, equipment_type: None,
+        ),
+        EquipmentMaterialMetadata(
+            id: "part_little_red", uuid: "1c3b29c8-e19c-579c-91f8-b50998e539d3",
+            name: "little_red 파츠", description: "little_red 부활 조우에서 얻는 개화 재료입니다.",
+            material_type: AbnormalityPart, rarity: WAW, equipment_type: None,
+        ),
+        EquipmentMaterialMetadata(
+            id: "part_melting_love", uuid: "40fbd3a5-6eab-5e11-a0bd-8f665e73e990",
+            name: "melting_love 파츠", description: "melting_love 부활 조우에서 얻는 개화 재료입니다.",
+            material_type: AbnormalityPart, rarity: WAW, equipment_type: None,
+        ),
+        EquipmentMaterialMetadata(
+            id: "part_mountain_smiling_bodies", uuid: "8ebab00b-b839-5d85-99d7-2e781e53cbf8",
+            name: "mountain_smiling_bodies 파츠", description: "mountain_smiling_bodies 부활 조우에서 얻는 개화 재료입니다.",
+            material_type: AbnormalityPart, rarity: WAW, equipment_type: None,
+        ),
+        EquipmentMaterialMetadata(
+            id: "part_nothing_there", uuid: "d37882b0-2b76-5214-bc12-c8b01fceb8f7",
+            name: "nothing_there 파츠", description: "nothing_there 부활 조우에서 얻는 개화 재료입니다.",
+            material_type: AbnormalityPart, rarity: WAW, equipment_type: None,
+        ),
+        EquipmentMaterialMetadata(
+            id: "part_queen_of_hatred", uuid: "e66d3518-38a4-5f75-bb70-9bd6bd3abd62",
+            name: "queen_of_hatred 파츠", description: "queen_of_hatred 부활 조우에서 얻는 개화 재료입니다.",
+            material_type: AbnormalityPart, rarity: WAW, equipment_type: None,
+        ),
+        EquipmentMaterialMetadata(
+            id: "part_yang", uuid: "6b267ac5-5b8e-546d-bcee-0aec5d2f80a0",
+            name: "yang 파츠", description: "yang 부활 조우에서 얻는 개화 재료입니다.",
+            material_type: AbnormalityPart, rarity: WAW, equipment_type: None,
+        ),
+        EquipmentMaterialMetadata(
+            id: "part_yin", uuid: "a0290fe3-df52-56f1-8d87-65b200820281",
+            name: "yin 파츠", description: "yin 부활 조우에서 얻는 개화 재료입니다.",
+            material_type: AbnormalityPart, rarity: WAW, equipment_type: None,
+        ),
+        EquipmentMaterialMetadata(
+            id: "revival_catalyst", uuid: "e1000000-0000-0000-0000-000000000002",
+            name: "부활 촉매제", description: "환상체 알 부화용 공용 촉매제. 침식용 촉매제와 별개입니다.",
+            material_type: RevivalCatalyst, rarity: ZAYIN, equipment_type: None,
+        ),
+
         EquipmentMaterialMetadata(
             id: "equipment_dust",
             uuid: "e1000000-0000-0000-0000-000000000001",
             name: "장비 가루",
             description: "불필요한 장비나 전장 잔해를 분쇄해 얻는 공통 장비 강화 재료입니다.",
-            material_type: Generic,
+            material_type: EquipmentDust,
             rarity: ZAYIN,
             equipment_type: None,
         ),
             ],
-    recipes: [
-                                EquipmentRecipeMetadata(
-            ingredients: [
-                "650e8400-e29b-41d4-a716-446655440031", // Standard Training E.G.O Armor
-                "650e8400-e29b-41d4-a716-446655440041", // Crimson Goggles
-            ],
-            result: "e0000000-0000-0000-0000-000000000205", // Thorned Lantern Guard
-        ),
-        EquipmentRecipeMetadata(
-            ingredients: [
-                "650e8400-e29b-41d4-a716-446655440042", // Resonance Pendant
-                "650e8400-e29b-41d4-a716-446655440043", // Time Dial
-            ],
-            result: "e0000000-0000-0000-0000-000000000305", // Silent Baton
-        ),
-    ],
     dismantle_recipes: [
+        EquipmentDismantleRecipeMetadata(equipment_id: "standard_training_sword", yields: [EquipmentMaterialCost(material_id: "equipment_dust", amount: 1)]),
+        EquipmentDismantleRecipeMetadata(equipment_id: "standard_training_gun", yields: [EquipmentMaterialCost(material_id: "equipment_dust", amount: 1)]),
+        EquipmentDismantleRecipeMetadata(equipment_id: "standard_training_shield", yields: [EquipmentMaterialCost(material_id: "equipment_dust", amount: 1)]),
+        EquipmentDismantleRecipeMetadata(equipment_id: "standard_training_greatsword", yields: [EquipmentMaterialCost(material_id: "equipment_dust", amount: 1)]),
+        EquipmentDismantleRecipeMetadata(equipment_id: "standard_training_healing_staff", yields: [EquipmentMaterialCost(material_id: "equipment_dust", amount: 1)]),
+        EquipmentDismantleRecipeMetadata(equipment_id: "standard_training_area_healing_staff", yields: [EquipmentMaterialCost(material_id: "equipment_dust", amount: 1)]),
+
         EquipmentDismantleRecipeMetadata(
             equipment_id: "standard_armor",
             yields: [
@@ -1729,26 +2233,34 @@ EquipmentDatabase(
             ],
     enhancement_recipes: [
         EquipmentEnhancementRecipeMetadata(
-            equipment_id: "standard_armor",
-            max_level: 5,
-            costs_per_level: [
-                EquipmentMaterialCost(
-                    material_id: "equipment_dust",
-                    amount: 2,
-                ),
-            ],
-            modifiers_per_level: [
-                StatModifier(
-                    stat: MaxHealth,
-                    kind: Flat,
-                    value: 12,
-                ),
-                StatModifier(
-                    stat: Defense,
-                    kind: Flat,
-                    value: 1,
-                ),
-            ],
+            equipment_id: "standard_training_sword", max_level: 5,
+            costs_per_level: [EquipmentMaterialCost(material_id: "equipment_dust", amount: 2)],
+            modifiers_per_level: [StatModifier(stat: Attack, kind: Flat, value: 2), StatModifier(stat: SpellPower, kind: Flat, value: 2)],
         ),
-            ],
+        EquipmentEnhancementRecipeMetadata(
+            equipment_id: "standard_training_gun", max_level: 5,
+            costs_per_level: [EquipmentMaterialCost(material_id: "equipment_dust", amount: 2)],
+            modifiers_per_level: [StatModifier(stat: Attack, kind: Flat, value: 2), StatModifier(stat: SpellPower, kind: Flat, value: 2)],
+        ),
+        EquipmentEnhancementRecipeMetadata(
+            equipment_id: "standard_training_shield", max_level: 5,
+            costs_per_level: [EquipmentMaterialCost(material_id: "equipment_dust", amount: 2)],
+            modifiers_per_level: [StatModifier(stat: Attack, kind: Flat, value: 2), StatModifier(stat: SpellPower, kind: Flat, value: 2)],
+        ),
+        EquipmentEnhancementRecipeMetadata(
+            equipment_id: "standard_training_greatsword", max_level: 5,
+            costs_per_level: [EquipmentMaterialCost(material_id: "equipment_dust", amount: 2)],
+            modifiers_per_level: [StatModifier(stat: Attack, kind: Flat, value: 2), StatModifier(stat: SpellPower, kind: Flat, value: 2)],
+        ),
+        EquipmentEnhancementRecipeMetadata(
+            equipment_id: "standard_training_healing_staff", max_level: 5,
+            costs_per_level: [EquipmentMaterialCost(material_id: "equipment_dust", amount: 2)],
+            modifiers_per_level: [StatModifier(stat: Attack, kind: Flat, value: 2), StatModifier(stat: SpellPower, kind: Flat, value: 2)],
+        ),
+        EquipmentEnhancementRecipeMetadata(
+            equipment_id: "standard_training_area_healing_staff", max_level: 5,
+            costs_per_level: [EquipmentMaterialCost(material_id: "equipment_dust", amount: 2)],
+            modifiers_per_level: [StatModifier(stat: Attack, kind: Flat, value: 2), StatModifier(stat: SpellPower, kind: Flat, value: 2)],
+        ),
+    ],
 )

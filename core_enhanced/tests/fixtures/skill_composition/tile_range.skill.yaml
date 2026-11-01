@@ -1,0 +1,85 @@
+# N10-a range composition fixture. Masks and timing are explicit test values.
+version: 1
+id: tile-range-fixture
+values:
+  - name: approach-control
+    value:
+      Effects:
+        - id: control
+          op:
+            Sustained:
+              definition:
+                Control:
+                  duration_ms: 1501
+                  kind:
+                    ApproachTaunt:
+                      profile:
+                        speed_percent: 100
+                        attack_range_units: 1000000
+  - name: enlarged-mask
+    value:
+      TilePattern:
+        include_anchor_tile: true
+        rows: [XXX, X@X, XXX]
+definitions:
+  - name: apply-control
+    parameters:
+      - name: effects
+        value_type: Effects
+      - name: mask
+        value_type: TilePattern
+    body:
+      Action:
+        id: apply
+        target: { Literal: { Target: SelfUnit } }
+        delivery:
+          Literal:
+            Delivery:
+              TileArea:
+                footprint:
+                  include_anchor_tile: true
+                  rows: ["@"]
+                area:
+                  mode: ReleaseQuery
+                  anchor: Caster
+                  tile_origin: Caster
+                  hit_targets: Enemies
+                  include_caster: false
+        effects:
+          - Append:
+              effects: { Parameter: effects }
+        modifiers:
+          - id: expand-range
+            relic_definition: widened-horizon
+            variant: Normal
+            change:
+              Range:
+                pattern: { Parameter: mask }
+        wait: Released
+skills:
+  - id: authored-tile-range
+    name: 조건부 타일 범위 검사
+    kind: Untargeted
+    cast_targeting:
+      Explicit:
+        selection: self
+        target: SelfUnit
+        reach: pattern
+        air_capable: true
+    prepare_ms: 0
+    focus_permissions:
+      allows_move: true
+      allows_basic_attack: true
+    admission:
+      capacity: 100
+      requirement: Full
+      cost: All
+    body:
+      Call:
+        id: control
+        definition: apply-control
+        arguments:
+          - name: effects
+            value: { Shared: approach-control }
+          - name: mask
+            value: { Shared: enlarged-mask }

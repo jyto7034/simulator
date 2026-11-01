@@ -21,7 +21,7 @@ RewardDatabase(
             id: "experience_reward",
             uuid: "650e8400-e29b-41d4-a716-446655440102",
             name: "작업 경험",
-            description: "직원의 경험치를 획득합니다. 레벨이 오르면 능력치가 향상됩니다.",
+            description: "직원의 경험치를 획득합니다. 명시된 경험치는 각 대상 직원에게 전액 지급되며, 누적 기준에 따라 레벨과 전투 등급이 오릅니다.",
             icon: "icons/experience.png",
             effects: [
                 GrantExperience(amount: 200, target: AliveRoster),
@@ -67,16 +67,6 @@ RewardDatabase(
                 GrantEnkephalin(amount: 140),
             ],
         ),
-                                RewardMetadata(
-            id: "freischutz_black_round_fragment_reward",
-            uuid: "650e8400-e29b-41d4-a716-446655440112",
-            name: "검은 탄환 파편",
-            description: "Der Freischutz에서 파생된 독립 모방 스킬 파편을 획득합니다.",
-            icon: "icons/skill_fragment_freischutz.png",
-            effects: [
-                GrantSkillFragment(fragment_id: "fragment_freischutz_black_round"),
-            ],
-        ),
                 RewardMetadata(
             id: "equipment_dust_reward",
             uuid: "650e8400-e29b-41d4-a716-446655440114",
@@ -97,51 +87,6 @@ RewardDatabase(
                 GrantEquipmentMaterial(material_id: "equipment_dust", amount: 4),
             ],
         ),
-                RewardMetadata(
-            id: "early_abnormality_research_reward",
-            uuid: "650e8400-e29b-41d4-a716-446655440118",
-            name: "초기 환상체 분석 기록",
-            description: "낮은 위험도의 환상체 접촉 기록입니다. 초반 스킬 파편 연구도를 조금씩 올립니다.",
-            icon: "icons/research_basic.png",
-            effects: [
-                GrantSkillFragmentResearch(fragment_id: "fragment_freischutz_black_round", amount: 1),
-                GrantSkillFragmentResearch(fragment_id: "fragment_funeral_butterfly_eulogy", amount: 1),
-            ],
-        ),
-        RewardMetadata(
-            id: "high_risk_abnormality_research_reward",
-            uuid: "650e8400-e29b-41d4-a716-446655440119",
-            name: "고위험 환상체 분석 기록",
-            description: "상위 환상체 조우에서 확보한 분석 기록입니다. 고가치 스킬 파편 연구도를 올립니다.",
-            icon: "icons/research_high_risk.png",
-            effects: [
-                GrantSkillFragmentResearch(fragment_id: "fragment_melting_love_trace", amount: 2),
-                GrantSkillFragmentResearch(fragment_id: "fragment_silent_orchestra_trace", amount: 2),
-            ],
-        ),
-                RewardMetadata(
-            id: "funeral_butterfly_eulogy_fragment_reward",
-            uuid: "650e8400-e29b-41d4-a716-446655440121",
-            name: "나비 장례 파편",
-            description: "Funeral of the Dead Butterflies에서 파생된 독립 모방 스킬 파편을 획득합니다.",
-            icon: "icons/skill_fragment_funeral_butterfly.png",
-            effects: [
-                GrantSkillFragment(fragment_id: "fragment_funeral_butterfly_eulogy"),
-            ],
-        ),
-                        RewardMetadata(
-            id: "a_rank_abnormality_research_reward",
-            uuid: "650e8400-e29b-41d4-a716-446655440124",
-            name: "A랭크 환상체 모방 연구 기록",
-            description: "A랭크 구현 후보 환상체들의 파편 연구 진행도를 조금씩 올립니다.",
-            icon: "icons/research_a_rank_fragments.png",
-            effects: [
-                GrantSkillFragmentResearch(fragment_id: "fragment_freischutz_black_round", amount: 1),
-                GrantSkillFragmentResearch(fragment_id: "fragment_funeral_butterfly_eulogy", amount: 1),
-                GrantSkillFragmentResearch(fragment_id: "fragment_laetitia_trace", amount: 1),
-                GrantSkillFragmentResearch(fragment_id: "fragment_queen_bee_trace", amount: 1),
-            ],
-        ),
     ],
     equipment_pools: [
         (
@@ -151,6 +96,7 @@ RewardDatabase(
                 rarity_max: Some(ALEPH),
                 equipment_type_in: [Weapon, Armor, Accessory],
                 exclude_bound: true,
+                exclude_equipment_ids: ["standard_training_sword", "standard_training_gun", "standard_training_shield", "standard_training_greatsword", "standard_training_healing_staff", "standard_training_area_healing_staff"],
             ),
             entries: [],
         ),
@@ -164,14 +110,12 @@ RewardDatabase(
                 "large_enkephalin_reward",
                 "double_ego_gift_reward",
                 "training_budget_reward",
-                "freischutz_black_round_fragment_reward",
-                "funeral_butterfly_eulogy_fragment_reward",
                 "equipment_dust_reward",
                 "field_equipment_salvage_reward",
-                "early_abnormality_research_reward",
-                "high_risk_abnormality_research_reward",
-                "a_rank_abnormality_research_reward",
             ],
         ),
+        (id: "tutorial_f1_training_budget", reward_ids: ["training_budget_reward"]),
+        (id: "tutorial_f3_salvage", reward_ids: ["field_equipment_salvage_reward"]),
+        (id: "tutorial_f3_budget", reward_ids: ["large_enkephalin_reward"]),
     ],
 )

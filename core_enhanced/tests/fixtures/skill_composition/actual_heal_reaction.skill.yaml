@@ -1,0 +1,31 @@
+# E03 치유 반응: 같은 작성 입력을 공유하는 방어구·장신구 기술 예시.
+version: 1
+id: actual-heal-reaction-fixture
+values:
+  - name: heal-shield
+    value:
+      SupportProgram:
+        heal_percent: 0
+        shield_percent: 0
+        actual_heal_reaction:
+          self_shield:
+            actual_heal_percent: 25
+            max_hp_cap_percent: 20
+            duration_ms: 5000
+            priority: 0
+  - name: heal-haste
+    value:
+      SupportProgram:
+        heal_percent: 0
+        shield_percent: 0
+        actual_heal_reaction:
+          target_haste:
+            attack_speed_points: 30
+            duration_ms: 3000
+equipment_supports:
+  - equipment: placeholder_queen_bee_armor
+    program: { Shared: heal-shield }
+  - equipment: placeholder_queen_bee_accessory
+    program: { Shared: heal-haste }
+definitions: []
+skills: []

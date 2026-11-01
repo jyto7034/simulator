@@ -1,0 +1,55 @@
+# 현행 의미의 작성 원본. 출시 미정과 별도 시험 완성값을 구분합니다.
+version: 2
+id: nothing-there-equipment
+resources:
+- id: revival_total
+  owner: Employee
+  lifetime: Run
+  initial: 0
+  cap: 3
+- id: revival_used
+  owner: Employee
+  lifetime: Attempt
+  initial: 0
+  cap: 1
+values:
+- name: mimicry-lifesteal
+  value:
+    AttackProgram:
+      reactions: []
+      basic_lifesteal:
+        percent: 25
+        max_heal:
+          Unresolved: lifesteal-max-heal
+- name: adaptive-defense
+  value:
+    DefenseProgram:
+      AdaptiveBasicShield:
+        max_hp_percent: 20
+        duration_ms: 5000
+        cooldown_ms: 15000
+        priority: 0
+- name: mimicry-revival
+  value:
+    DefenseProgram:
+      EmployeeRevival:
+        cumulative: revival_total
+        battle_used: revival_used
+        max_revivals: 2
+        restore_percent: 50
+        invulnerable_ms: 1000
+        transform_into:
+          Unresolved: transformation-definition
+equipment_attacks:
+- equipment: placeholder_nothing_there_weapon
+  program:
+    Shared: mimicry-lifesteal
+equipment_defenses:
+- equipment: placeholder_nothing_there_armor
+  program:
+    Shared: adaptive-defense
+- equipment: placeholder_nothing_there_accessory
+  program:
+    Shared: mimicry-revival
+definitions: []
+skills: []

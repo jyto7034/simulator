@@ -18,15 +18,16 @@ pub enum RewardGrantKind {
     Currency,
     Experience,
     Equipment,
-    Artifact,
     Consumable,
     SkillFragment,
     FragmentDust,
-    ResearchProgress,
     Narrative,
+    Relic,
+    RelicCorruptionCatalyst,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct RewardMetadata {
     pub id: String,
     pub uuid: Uuid,
@@ -52,13 +53,14 @@ impl RewardGrantKind {
                 RewardEffect::GrantEquipment { .. }
                 | RewardEffect::GrantEquipmentFromPool { .. }
                 | RewardEffect::GrantEquipmentMaterial { .. } => kinds.push(Self::Equipment),
-                RewardEffect::GrantArtifact { .. } => kinds.push(Self::Artifact),
                 RewardEffect::GrantConsumable { .. } => kinds.push(Self::Consumable),
                 RewardEffect::GrantSkillFragment { .. } => kinds.push(Self::SkillFragment),
                 RewardEffect::GrantFragmentDust { .. } => kinds.push(Self::FragmentDust),
-                RewardEffect::GrantSkillFragmentResearch { .. } => {
-                    kinds.push(Self::ResearchProgress)
+                RewardEffect::GrantRelic { .. } => kinds.push(Self::Relic),
+                RewardEffect::GrantRelicCorruptionCatalyst { .. } => {
+                    kinds.push(Self::RelicCorruptionCatalyst)
                 }
+                RewardEffect::GrantEquipmentDust { .. } => kinds.push(Self::Equipment),
             }
         }
         normalized_grant_kinds(kinds)
@@ -72,11 +74,10 @@ fn normalized_grant_kinds(mut kinds: Vec<RewardGrantKind>) -> Vec<RewardGrantKin
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct RewardDatabase {
     pub rewards: Vec<RewardMetadata>,
-    #[serde(default)]
     pub pools: Vec<RewardPoolMetadata>,
-    #[serde(default)]
     pub equipment_pools: Vec<EquipmentRewardPoolMetadata>,
     #[serde(skip)]
     by_id: OnceLock<HashMap<String, usize>>,
@@ -85,6 +86,7 @@ pub struct RewardDatabase {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct RewardPoolMetadata {
     pub id: String,
     pub reward_ids: Vec<String>,
@@ -94,9 +96,7 @@ pub struct RewardPoolMetadata {
 #[serde(deny_unknown_fields)]
 pub struct EquipmentRewardPoolMetadata {
     pub id: String,
-    #[serde(default)]
     pub filter: EquipmentRewardPoolFilter,
-    #[serde(default)]
     pub entries: Vec<EquipmentRewardPoolEntry>,
 }
 
@@ -105,10 +105,10 @@ pub struct EquipmentRewardPoolMetadata {
 pub struct EquipmentRewardPoolFilter {
     pub rarity_min: Option<RiskLevel>,
     pub rarity_max: Option<RiskLevel>,
-    #[serde(default)]
     pub equipment_type_in: Vec<EquipmentType>,
-    #[serde(default)]
     pub exclude_bound: bool,
+    #[serde(default)]
+    pub exclude_equipment_ids: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -150,6 +150,13 @@ impl EquipmentRewardPoolFilter {
         if self.exclude_bound && equipment.bound {
             return false;
         }
+        if self
+            .exclude_equipment_ids
+            .iter()
+            .any(|id| id == &equipment.id)
+        {
+            return false;
+        }
         if let Some(min) = self.rarity_min {
             if risk_rank(equipment.rarity) < risk_rank(min) {
                 return false;
@@ -180,6 +187,21 @@ fn risk_rank(risk: RiskLevel) -> u8 {
 }
 
 impl RewardDatabase {
+    // Only assemble here: final cross-catalog validation must precede indexes.
+    pub(crate) fn from_raw_parts(
+        rewards: Vec<RewardMetadata>,
+        pools: Vec<RewardPoolMetadata>,
+        equipment_pools: Vec<EquipmentRewardPoolMetadata>,
+    ) -> Self {
+        Self {
+            rewards,
+            pools,
+            equipment_pools,
+            by_id: OnceLock::new(),
+            by_uuid: OnceLock::new(),
+        }
+    }
+
     pub fn new(rewards: Vec<RewardMetadata>) -> Self {
         Self::new_with_pools(rewards, vec![])
     }
@@ -207,27 +229,42 @@ impl RewardDatabase {
             .get_or_init(|| build_uuid_index(&self.rewards, "reward uuid", |item| item.uuid))
     }
 
-    pub(crate) fn validate_indexes(&self) {
-        let _ = self.by_id();
-        let _ = self.by_uuid();
-        for reward in &self.rewards {
-            assert!(
-                !reward.grant_kinds().is_empty(),
-                "reward '{}' must resolve at least one grant kind",
-                reward.id
-            );
-        }
-        for pool in &self.pools {
-            assert!(!pool.id.is_empty(), "reward pool id must not be empty");
-            for reward_id in &pool.reward_ids {
-                assert!(
-                    self.get_by_id(reward_id).is_some(),
-                    "reward pool '{}' references missing reward '{}'",
-                    pool.id,
-                    reward_id
-                );
+    pub(crate) fn validate_contract(&self) -> Result<(), crate::game::data::DataValidationError> {
+        for (reward_index, reward) in self.rewards.iter().enumerate() {
+            if reward.grant_kinds().is_empty() {
+                return Err(crate::game::data::DataValidationError::at(
+                    &reward.id,
+                    format!("rewards[{reward_index}].effects"),
+                    "Reward must resolve at least one grant kind",
+                ));
             }
         }
+        for (pool_index, pool) in self.pools.iter().enumerate() {
+            if pool.id.trim().is_empty() {
+                return Err(crate::game::data::DataValidationError::at(
+                    &pool.id,
+                    format!("pools[{pool_index}].id"),
+                    "Reward pool id must not be empty",
+                ));
+            }
+            for (reward_index, reward_id) in pool.reward_ids.iter().enumerate() {
+                if !self.rewards.iter().any(|reward| reward.id == *reward_id) {
+                    return Err(crate::game::data::DataValidationError::at(
+                        &pool.id,
+                        format!("pools[{pool_index}].reward_ids[{reward_index}]"),
+                        format!("references missing Reward '{reward_id}'"),
+                    ));
+                }
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn validate_indexes(&self) {
+        self.validate_contract()
+            .unwrap_or_else(|error| panic!("invalid Reward data: {error:?}"));
+        let _ = self.by_id();
+        let _ = self.by_uuid();
     }
 
     pub fn get_by_id(&self, id: &str) -> Option<&RewardMetadata> {
@@ -275,26 +312,6 @@ mod tests {
         assert_eq!(
             reward.grant_kinds(),
             vec![RewardGrantKind::Currency, RewardGrantKind::SkillFragment]
-        );
-    }
-
-    #[test]
-    fn skill_fragment_research_effect_infers_research_progress_tag() {
-        let reward = RewardMetadata {
-            id: "fragment_research_reward".to_string(),
-            uuid: Uuid::from_u128(3),
-            name: "Fragment Research".to_string(),
-            description: "Fragment research reward".to_string(),
-            icon: "icons/research.png".to_string(),
-            effects: vec![RewardEffect::GrantSkillFragmentResearch {
-                fragment_id: SkillFragmentId::from("fragment_test"),
-                amount: 3,
-            }],
-        };
-
-        assert_eq!(
-            reward.grant_kinds(),
-            vec![RewardGrantKind::ResearchProgress]
         );
     }
 

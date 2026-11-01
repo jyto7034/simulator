@@ -1,0 +1,46 @@
+{
+  "id": "fragment_scarecrow_trace",
+  "uuid": "730e8400-e29b-41d4-a716-446655440047",
+  "name": "지혜 수확",
+  "description": "다음 무기 기본 공격을 강화하고 그 공격 본체의 직접 처치로 공명을 일부 회복한다. 배율과 회복량 등 미정 값을 보존한 작성 원본.",
+  "rarity": {
+    "Unresolved": "rarity open design"
+  },
+  "equip_limit": {
+    "Unresolved": "equip_limit open design"
+  },
+  "origin": {
+    "Abnormality": {
+      "abnormality_id": "f-01-18_scarecrow"
+    }
+  },
+  "sources": [
+    {
+      "AbnormalityContainment": {
+        "abnormality_id": "f-01-18_scarecrow"
+      }
+    }
+  ],
+  "dependencies": [
+    {
+      "SourceAbnormality": {
+        "abnormality_id": "f-01-18_scarecrow"
+      }
+    }
+  ],
+  "compatibility": {
+    "Unresolved": "무기 호환 목록 미정"
+  },
+  "effect": {
+    "ActiveSkill": {
+      "forms": {
+        "base": {
+          "skill_id": "fragment_scarecrow_wisdom_harvest",
+          "resonance_max": {
+            "Unresolved": "작성 스킬 admission.capacity와 같은 미정 공명 최대치"
+          }
+        }
+      }
+    }
+  }
+}

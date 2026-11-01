@@ -1,0 +1,89 @@
+{
+  "purpose": "Explicit technical acceptance completion only; the 5x5 expanded mask is a test shape, not a released widening rule.",
+  "values": {
+    "capacity": 100,
+    "rarity": "Common",
+    "equip_limit": "OwnedCopies",
+    "compatibility": {},
+    "relic-rarity": "Common",
+    "relic-allow-duplicates": false,
+    "relic-incompatible-with": [],
+    "relic-dismantle-dust": 1,
+    "selection-range": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXXXX",
+        "XXXXXXX",
+        "XXXXXXX",
+        "XXX@XXX",
+        "XXXXXXX",
+        "XXXXXXX",
+        "XXXXXXX"
+      ]
+    },
+    "first": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXX",
+        "X@X",
+        "XXX"
+      ]
+    },
+    "second": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXX",
+        "X@X",
+        "XXX"
+      ]
+    },
+    "duration_ms": 3000,
+    "interval_ms": 1000,
+    "healing": 100,
+    "transfer_percent": {
+      "denominator": 1,
+      "numerator": 50
+    },
+    "intersection-speed": 20,
+    "heal-buff-duration": 2000,
+    "heal-buff-profile": {
+      "active_skill_locked": false,
+      "attack_percent": 10,
+      "attack_speed_points": 0,
+      "basic_attack_locked": false,
+      "damage_invulnerable": false,
+      "defense_percent": 0,
+      "definition": "f737765d-dc26-4782-a08b-9c8a41ee939b:f0821794-fb38-4442-921d-5f712f548790",
+      "end_on_source_exit": false,
+      "hp_floor_one": false,
+      "received_heal_percent": 0
+    },
+    "dragon-delay": 1000,
+    "dragon-pattern": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXX",
+        "X@X",
+        "XXX"
+      ]
+    },
+    "buff-percent": {
+      "denominator": 1,
+      "numerator": 50
+    },
+    "expanded-area-pattern": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "healing-percent": {
+      "denominator": 1,
+      "numerator": 50
+    }
+  }
+}

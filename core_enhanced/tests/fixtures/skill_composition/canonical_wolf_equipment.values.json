@@ -1,0 +1,25 @@
+{
+  "description": "Explicit H118 acceptance completion only; not release balance, final narrative or art.",
+  "values": {
+    "form-0-name": "양의 탈",
+    "form-0-description": "아직 누구도 해치고 싶지 않은 늑대. 최대 HP 증가.",
+    "form-0-appearance": "sheep-mask-smiling",
+    "form-0-effect": 100,
+    "form-1-name": "흐려진 미소",
+    "form-1-description": "웃음에 그늘이 생긴다. 공격력 증가.",
+    "form-1-appearance": "sheep-mask-clouded",
+    "form-1-effect": 10,
+    "form-2-name": "금이 간 탈",
+    "form-2-description": "미소가 사라지고 탈에 금이 간다. 받는 피해 증가.",
+    "form-2-appearance": "sheep-mask-cracked",
+    "form-2-effect": 25,
+    "form-3-name": "나쁜 늑대",
+    "form-3-description": "이빨을 드러낸 늑대. 공격력 대폭 증가.",
+    "form-3-appearance": "sheep-mask-wolf",
+    "form-3-effect": 40,
+    "equipment-name": "양의 탈",
+    "equipment-rarity": "WAW",
+    "equipment-price": 0,
+    "equipment-allow_duplicate_equip": true
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "format": "graph-groups",
+  "version": 1,
+  "groups": [
+    {
+      "id": "resonance-examples",
+      "name": "공명 소비 예제",
+      "files": [
+        "resonance-all.node-graph.json",
+        "resonance-count.node-graph.json",
+        "resonance-current-percent.node-graph.json",
+        "resonance-fixed.node-graph.json",
+        "resonance-max-percent.node-graph.json",
+        "resonance-periodic.node-graph.json",
+        "resonance-selected.node-graph.json",
+        "resonance-stage.node-graph.json",
+        "resonance-zero.node-graph.json"
+      ]
+    }
+  ]
+}

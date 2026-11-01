@@ -1,0 +1,88 @@
+# E05 corrupt conversion: agreed support and delegated 10%/second upkeep.
+# Duration and tile masks are test-only values, not release balance.
+version: 1
+id: corrupt-channel-support-fixture
+values:
+  - name: regular-support
+    value:
+      Effects:
+        - id: support
+          op:
+            Sustained:
+              definition:
+                ChannelAura:
+                  duration_ms: 3500
+                  aura:
+                    family: authored-support
+                    priority: 0
+                    prefer_strongest: true
+                    radius_units: 0
+                    basic_damage_percent: 20
+                    basic_speed_points: 15
+                    basic_scope: RegularOnly
+                    support:
+                      range:
+                        include_anchor_tile: true
+                        rows: [XXX, X@X, XXX]
+                      conversion:
+                        relic_definition: single-target-conversion
+                        variant: Normal
+                        selection_range:
+                          include_anchor_tile: true
+                          rows: [XXXXX, XXXXX, XX@XX, XXXXX, XXXXX]
+                        replacement:
+                          RegularBasic:
+                            damage_percent: 40
+                            speed_points: 20
+                      conversions:
+                        - relic_definition: single-target-conversion
+                          variant: Corrupt
+                          selection_range:
+                            include_anchor_tile: true
+                            rows: [XXXXX, XXXXX, XX@XX, XXXXX, XXXXX]
+                          replacement:
+                            RegularBasic:
+                              damage_percent: 80
+                              speed_points: 30
+                              health_upkeep:
+                                interval_ms: 1000
+                                max_health_percent: 10
+definitions:
+  - name: maintain-support
+    parameters:
+      - name: effects
+        value_type: Effects
+    body:
+      Action:
+        id: maintain
+        target: { Literal: { Target: SelfUnit } }
+        delivery: { Literal: { Delivery: Instant } }
+        effects:
+          - Append:
+              effects: { Parameter: effects }
+        wait: EffectsSettled
+skills:
+  - id: authored-channel-support
+    name: 집중 지원 검사
+    kind: Untargeted
+    cast_targeting:
+      Explicit:
+        selection: self
+        target: SelfUnit
+        reach: pattern
+        air_capable: true
+    prepare_ms: 0
+    focus_permissions:
+      allows_move: false
+      allows_basic_attack: false
+    admission:
+      capacity: 100
+      requirement: Full
+      cost: All
+    body:
+      Call:
+        id: support
+        definition: maintain-support
+        arguments:
+          - name: effects
+            value: { Shared: regular-support }

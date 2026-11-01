@@ -48,6 +48,8 @@ pub enum TriggerEffectTarget {
 /// 트리거 발동 시 적용되는 효과
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Effect {
+    /// Release-owned basic attack healing; sum actual HP loss, then cap once.
+    BasicLifesteal { percent: u32, max_heal: u32 },
     /// 스탯 변경
     Modifier(StatModifier),
     /// 추가 데미지 (현재 공격에)
@@ -62,6 +64,73 @@ pub enum Effect {
     Heal { flat: i32, percent: i32 },
     /// 버프 적용
     ApplyBuff { buff_id: String, duration_ms: u64 },
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum TriggeredEffectExecutionKind {
+    PermanentModifier,
+    TargetedCommand,
+    CurrentHitDamage,
+    RetaliationDamage,
+    BasicLifesteal,
+}
+
+pub(crate) fn classify_triggered_effect_execution(
+    trigger: TriggerType,
+    target: TriggerEffectTarget,
+    effect: &Effect,
+) -> Option<TriggeredEffectExecutionKind> {
+    use TriggerEffectTarget::{AllAllies, AllEnemies, CounterpartUnit, SelfUnit};
+    use TriggerType::{OnAllyDeath, OnAttack, OnBattleStart, OnDeath, OnHit, OnKill, Permanent};
+    use TriggeredEffectExecutionKind::{
+        CurrentHitDamage, PermanentModifier, RetaliationDamage, TargetedCommand,
+    };
+
+    match (trigger, target, effect) {
+        (OnAttack, SelfUnit, Effect::BasicLifesteal { .. }) => {
+            Some(TriggeredEffectExecutionKind::BasicLifesteal)
+        }
+        (Permanent, SelfUnit | AllAllies, Effect::Modifier(_)) => Some(PermanentModifier),
+        (
+            OnBattleStart,
+            SelfUnit | AllAllies | AllEnemies,
+            Effect::Modifier(_) | Effect::Heal { .. } | Effect::ApplyBuff { .. },
+        ) => Some(TargetedCommand),
+        (OnAttack, CounterpartUnit, Effect::BonusDamage { .. } | Effect::ModifyDamage(_)) => {
+            Some(CurrentHitDamage)
+        }
+        (
+            OnAttack | OnHit,
+            _,
+            Effect::Modifier(_) | Effect::Heal { .. } | Effect::ApplyBuff { .. },
+        ) => Some(TargetedCommand),
+        (OnHit, SelfUnit, Effect::BonusDamage { .. } | Effect::ModifyDamage(_)) => {
+            Some(CurrentHitDamage)
+        }
+        (OnHit, CounterpartUnit, Effect::BonusDamage { .. }) => Some(RetaliationDamage),
+        (
+            OnDeath,
+            CounterpartUnit | AllAllies | AllEnemies,
+            Effect::Modifier(_) | Effect::Heal { .. } | Effect::ApplyBuff { .. },
+        ) => Some(TargetedCommand),
+        (
+            OnKill | OnAllyDeath,
+            SelfUnit | AllAllies | AllEnemies,
+            Effect::Modifier(_) | Effect::Heal { .. } | Effect::ApplyBuff { .. },
+        ) => Some(TargetedCommand),
+        _ => None,
+    }
+}
+
+pub(crate) fn triggered_effect_kind_name(effect: &Effect) -> &'static str {
+    match effect {
+        Effect::BasicLifesteal { .. } => "BasicLifesteal",
+        Effect::Modifier(_) => "Modifier",
+        Effect::BonusDamage { .. } => "BonusDamage",
+        Effect::ModifyDamage(_) => "ModifyDamage",
+        Effect::Heal { .. } => "Heal",
+        Effect::ApplyBuff { .. } => "ApplyBuff",
+    }
 }
 
 /// 트리거 효과 정의.
@@ -110,6 +179,7 @@ pub enum StatId {
     MaxHealth,
     /// 기본 공격력
     Attack,
+    SpellPower,
     /// 기본 방어력
     Defense,
     /// 마법 저항력
@@ -131,6 +201,7 @@ pub enum StatModifierKind {
 
 /// 하나의 스탯 변경을 표현
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct StatModifier {
     pub stat: StatId,
     pub kind: StatModifierKind,
@@ -148,6 +219,8 @@ pub struct UnitStats {
     pub current_health: u32,
     /// 기본 공격력
     pub attack: u32,
+    #[serde(default, skip_serializing_if = "is_zero_u32")]
+    pub spell_power: u32,
     /// 기본 방어력 (감쇠 계수에 쓸 값). 음수면 받는 물리 피해가 증가한다.
     pub defense: i32,
     /// 마법 저항력. 음수면 받는 마법 피해가 증가한다.
@@ -167,6 +240,7 @@ impl UnitStats {
         Self {
             max_health: 0,
             attack: 0,
+            spell_power: 0,
             defense: 0,
             magic_resist: 0,
             attack_interval_ms: 0,
@@ -187,6 +261,7 @@ impl UnitStats {
         Self {
             max_health,
             attack,
+            spell_power: 0,
             defense,
             magic_resist: 0,
             attack_interval_ms,
@@ -212,6 +287,11 @@ impl UnitStats {
         }
     }
 
+    pub(crate) fn set_max_health(&mut self, max_health: u32) {
+        self.max_health = max_health.min(Self::MAX_HEALTH);
+        self.current_health = self.current_health.min(self.max_health);
+    }
+
     /// 공격력에 델타를 더한다 (음수면 감소, 0 이하로 떨어지지 않도록 보정).
     pub fn add_attack(&mut self, delta: i32) {
         if delta >= 0 {
@@ -220,6 +300,14 @@ impl UnitStats {
             let dec = delta.unsigned_abs().min(self.attack);
             self.attack = self.attack.saturating_sub(dec);
         }
+    }
+
+    pub fn add_spell_power(&mut self, delta: i32) {
+        self.spell_power = if delta >= 0 {
+            self.spell_power.saturating_add(delta as u32)
+        } else {
+            self.spell_power.saturating_sub(delta.unsigned_abs())
+        };
     }
 
     /// 방어력에 델타를 더한다. 방어력은 음수가 될 수 있다.
@@ -245,6 +333,12 @@ impl UnitStats {
         if self.attack_interval_ms == 0 {
             self.attack_interval_ms = 1;
         }
+    }
+
+    fn apply_attack_interval_percent(&mut self, percent: i32) {
+        let base = i128::from(self.attack_interval_ms);
+        let delta = base.saturating_mul(i128::from(percent)) / 100;
+        self.attack_interval_ms = base.saturating_add(delta).clamp(1, i128::from(u64::MAX)) as u64;
     }
 
     pub fn add_move_speed_units_per_ms(&mut self, delta: i32) {
@@ -279,6 +373,15 @@ impl UnitStats {
                     self.add_attack(delta);
                 }
             },
+            SpellPower => match modifier.kind {
+                StatModifierKind::Flat => self.add_spell_power(modifier.value),
+                StatModifierKind::Percent => {
+                    let delta = i64::from(self.spell_power) * i64::from(modifier.value) / 100;
+                    self.add_spell_power(
+                        delta.clamp(i64::from(i32::MIN), i64::from(i32::MAX)) as i32
+                    );
+                }
+            },
             Defense => match modifier.kind {
                 StatModifierKind::Flat => self.add_defense(modifier.value),
                 StatModifierKind::Percent => {
@@ -299,11 +402,7 @@ impl UnitStats {
             },
             AttackIntervalMs => match modifier.kind {
                 StatModifierKind::Flat => self.add_attack_interval_ms(modifier.value as i64),
-                StatModifierKind::Percent => {
-                    let base = self.attack_interval_ms as i64;
-                    let delta = base * (modifier.value as i64) / 100;
-                    self.add_attack_interval_ms(delta);
-                }
+                StatModifierKind::Percent => self.apply_attack_interval_percent(modifier.value),
             },
             MoveSpeedUnitsPerMs => match modifier.kind {
                 StatModifierKind::Flat => self.add_move_speed_units_per_ms(modifier.value),
@@ -334,23 +433,28 @@ impl UnitStats {
     pub fn apply_permanent_effects(&mut self, effects: &TriggeredEffects) -> Result<(), GameError> {
         if let Some(permanent_effects) = effects.get(&TriggerType::Permanent) {
             for effect in permanent_effects {
-                match (effect.target(), effect.effect()) {
-                    (
-                        TriggerEffectTarget::SelfUnit | TriggerEffectTarget::AllAllies,
-                        Effect::Modifier(modifier),
-                    ) => {
+                match classify_triggered_effect_execution(
+                    TriggerType::Permanent,
+                    effect.target(),
+                    effect.effect(),
+                ) {
+                    Some(TriggeredEffectExecutionKind::PermanentModifier) => {
+                        let Effect::Modifier(modifier) = effect.effect() else {
+                            unreachable!("PermanentModifier classification requires Modifier")
+                        };
                         self.apply_modifier(*modifier);
                     }
-                    (target, Effect::Modifier(_)) => {
+                    _ if matches!(effect.effect(), Effect::Modifier(_)) => {
                         return Err(GameError::InvalidStaticData(format!(
                             "Permanent triggered effect does not support target {:?}",
-                            target
+                            effect.target()
                         )));
                     }
-                    (target, other) => {
+                    _ => {
                         return Err(GameError::InvalidStaticData(format!(
                             "Permanent triggered effect must be Modifier on SelfUnit/AllAllies, got target={:?} effect={:?}",
-                            target, other
+                            effect.target(),
+                            effect.effect()
                         )));
                     }
                 }
@@ -388,6 +492,35 @@ mod tests {
     }
 
     #[test]
+    fn attack_interval_percent_modifiers_preserve_the_full_u64_domain() {
+        for (base, percent) in [
+            (0, 0),
+            (1, 0),
+            (1, -100),
+            (1_000, -25),
+            (i64::MAX as u64, i32::MAX),
+            (i64::MAX as u64 + 1, 1),
+            (u64::MAX, 1),
+            (u64::MAX, i32::MAX),
+            (u64::MAX, i32::MIN),
+        ] {
+            let mut stats = UnitStats::with_values(10, 10, 1, 0, base);
+            stats.apply_modifier(StatModifier {
+                stat: StatId::AttackIntervalMs,
+                kind: StatModifierKind::Percent,
+                value: percent,
+            });
+
+            let expected = (i128::from(base) + i128::from(base) * i128::from(percent) / 100)
+                .clamp(1, i128::from(u64::MAX)) as u64;
+            assert_eq!(
+                stats.attack_interval_ms, expected,
+                "base={base} percent={percent}"
+            );
+        }
+    }
+
+    #[test]
     fn attack_interval_never_reaches_zero() {
         let mut stats = UnitStats::with_values(10, 10, 1, 0, 1);
         stats.add_attack_interval_ms(-1000);
@@ -417,4 +550,8 @@ impl Default for UnitStats {
     fn default() -> Self {
         Self::new()
     }
+}
+
+pub(crate) fn is_zero_u32(value: &u32) -> bool {
+    *value == 0
 }

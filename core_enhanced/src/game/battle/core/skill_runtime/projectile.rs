@@ -1,3 +1,5 @@
+use crate::authoring::control;
+use crate::game::behavior::GameError;
 use std::collections::HashSet;
 
 use uuid::Uuid;
@@ -10,8 +12,11 @@ use crate::game::{
     battle::{
         core::{
             movement::types::{WorldVec2, DATA_UNITS_PER_WORLD, WORLD_UNITS_PER_TILE},
-            projectile_math::projectile_flight_ms,
-            spatial::{data_units_to_world, moving_circle_sweep_hit_fraction},
+            projectile_math::{
+                projectile_flight_ms_between_world_points, ProjectileCollisionCandidate,
+                ProjectileCollisionImpact, ProjectileMotionResult, ProjectileMotionWindow,
+            },
+            spatial::data_units_to_world,
             types::{ActiveProjectileRuntime, ProjectileGuidance, SkillImpactContext},
             BattleCore,
         },
@@ -26,7 +31,18 @@ use crate::game::{
 };
 
 const SKILL_DELIVERY_NS: u64 = 0x534B_494C_4C44_4C56u64; // "SKILLDLV"
-const SKILL_PROJECTILE_REEVALUATION_TICK_MS: u64 = 1;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum SkillProjectileStopOutcome {
+    Continue,
+    Terminal,
+}
+
+impl SkillProjectileStopOutcome {
+    fn is_terminal(self) -> bool {
+        matches!(self, Self::Terminal)
+    }
+}
 
 #[derive(Debug, Clone)]
 pub(in crate::game::battle::core) struct SkillProjectileImpactLaunch {
@@ -51,31 +67,8 @@ pub(in crate::game::battle::core) struct SkillProjectileImpactLaunch {
     pub(in crate::game::battle::core) cause: BattleEventCause,
 }
 
-fn sample_projectile_position_at(
-    start: WorldVec2,
-    aim: WorldVec2,
-    elapsed_ms: u64,
-    total_ms: u64,
-) -> WorldVec2 {
-    if total_ms == 0 || elapsed_ms >= total_ms {
-        return aim;
-    }
-
-    let t = elapsed_ms as f32 / total_ms.max(1) as f32;
-    start + (aim - start) * t
-}
-
 fn projectile_travel_ms(start: WorldVec2, aim: WorldVec2, speed_units_per_ms: u32) -> u64 {
-    let distance_units = (start.distance(aim) * DATA_UNITS_PER_WORLD).ceil() as u64;
-    projectile_flight_ms(distance_units, speed_units_per_ms)
-}
-
-fn projectile_impact_position_at_hit_fraction(
-    window_start: WorldVec2,
-    window_end: WorldVec2,
-    hit_fraction: f32,
-) -> WorldVec2 {
-    window_start + (window_end - window_start) * hit_fraction.clamp(0.0, 1.0)
+    projectile_flight_ms_between_world_points(start, aim, speed_units_per_ms)
 }
 
 fn event_log_projectile_guidance(guidance: ProjectileGuidance) -> BattleProjectileGuidance {
@@ -141,9 +134,40 @@ impl BattleCore {
         &mut self,
         time_ms: u64,
         delivery_id: Uuid,
-    ) {
+    ) -> Result<(), crate::game::behavior::GameError> {
+        let Some(source) = self
+            .active_projectiles
+            .get(&delivery_id)
+            .map(|runtime| runtime.source_snapshot.fact_source.clone())
+        else {
+            return Ok(());
+        };
+        let ticket = source.delivery.clone();
+        let prior = std::mem::replace(&mut self.runtime_fact_source, source);
+        let result = self.advance_skill_projectile_inner(time_ms, delivery_id);
+        self.runtime_fact_source = prior;
+        let close_result = if !self.active_projectiles.contains_key(&delivery_id) {
+            if let Some(ticket) = ticket {
+                self.runtime_facts.close_delivery(&ticket, time_ms)
+            } else {
+                Ok(())
+            }
+        } else {
+            Ok(())
+        };
+        result?;
+        close_result?;
+        Ok(())
+    }
+
+    fn advance_skill_projectile_inner(
+        &mut self,
+        time_ms: u64,
+        delivery_id: Uuid,
+    ) -> Result<(), crate::game::behavior::GameError> {
+        control::charge(1, "skill_projectile_advance")?;
         let Some(mut runtime) = self.active_projectiles.remove(&delivery_id) else {
-            return;
+            return Ok(());
         };
 
         let reevaluation_time_ms = time_ms
@@ -155,33 +179,30 @@ impl BattleCore {
             .is_some_and(|last| reevaluation_time_ms <= last)
         {
             self.active_projectiles.insert(delivery_id, runtime);
-            return;
+            #[cfg(feature = "runtime-observation")]
+            self.observe_projectile_peak();
+            return Ok(());
         }
 
         if runtime.guidance == ProjectileGuidance::Homing {
-            self.advance_homing_skill_projectile_runtime(runtime, reevaluation_time_ms);
-            return;
+            return self.advance_homing_skill_projectile_runtime(runtime, reevaluation_time_ms);
         }
 
         let from_elapsed_ms = runtime.last_reevaluation_ms.map_or(0, |last| {
             last.saturating_sub(runtime.spawned_at_ms).saturating_add(1)
         });
         let to_elapsed_ms = reevaluation_time_ms.saturating_sub(runtime.spawned_at_ms);
-        let mut impacts = self.collect_fixed_skill_projectile_hits_in_window(
-            &runtime,
-            from_elapsed_ms,
-            to_elapsed_ms,
-        );
+        let ProjectileMotionResult {
+            end_position,
+            next_reevaluation_ms,
+            ordered_impacts,
+        } = self.resolve_fixed_skill_projectile_motion(&runtime, from_elapsed_ms, to_elapsed_ms)?;
+        let mut impacts = Self::accept_fixed_skill_projectile_impacts(&runtime, ordered_impacts)?;
         if runtime.max_kills.is_some() && impacts.len() > 1 {
             impacts.truncate(1);
         }
 
-        runtime.current_position = sample_projectile_position_at(
-            runtime.start,
-            runtime.aim,
-            to_elapsed_ms,
-            runtime.max_travel_ms,
-        );
+        runtime.current_position = end_position;
         runtime.last_reevaluation_ms = Some(reevaluation_time_ms);
 
         let piercing = Self::skill_projectile_pierces(runtime.collision);
@@ -193,6 +214,11 @@ impl BattleCore {
         for (impact_index, (impact_time_ms, hit_unit_id, impact_position)) in
             impacts.iter().enumerate()
         {
+            control::charge(1, "projectile_impact_release")?;
+            self.admit_authoring_runtime_growth(
+                runtime.hit_unit_ids.len().saturating_add(2),
+                "projectile_hit_history",
+            )?;
             runtime.hit_unit_ids.push(*hit_unit_id);
             self.enqueue_skill_projectile_impact(
                 *impact_time_ms,
@@ -202,13 +228,14 @@ impl BattleCore {
                 runtime.skill_id.clone(),
                 runtime.step_id.clone(),
                 runtime.caster_instance_id,
-                runtime.source_snapshot.clone(),
+                runtime.source_snapshot.try_clone_fact_source()?,
                 *impact_position,
                 Some(*hit_unit_id),
                 runtime.impact_vfx_id.clone(),
                 should_terminate && impact_index + 1 == impacts.len(),
                 runtime.cause.clone(),
-            );
+            )?;
+            control::poll("projectile_impact_enqueued")?;
         }
 
         let had_new_hit = !impacts.is_empty();
@@ -222,35 +249,43 @@ impl BattleCore {
                 runtime.skill_id,
                 runtime.step_id,
                 runtime.caster_instance_id,
-                runtime.source_snapshot.clone(),
+                runtime.source_snapshot.try_clone_fact_source()?,
                 runtime.current_position,
                 None,
                 runtime.impact_vfx_id,
                 true,
                 runtime.cause,
-            );
-            return;
+            )?;
+            return Ok(());
         }
 
         if hit_limit_reached || (!piercing && had_new_hit) || expired {
-            return;
+            if expired && !had_new_hit {
+                // Prior hits already consumed their effects. An empty expiry
+                // only closes this delivery; it must not fabricate an impact.
+                self.finish_skill_step_delivery(runtime.cast_seq, runtime.step_index, time_ms);
+                control::poll("skill_projectile_empty_expiry")?;
+            }
+            return Ok(());
         }
 
-        runtime.next_reevaluation_ms =
-            reevaluation_time_ms.saturating_add(SKILL_PROJECTILE_REEVALUATION_TICK_MS);
+        runtime.next_reevaluation_ms = next_reevaluation_ms;
         self.event_queue.push(BattleEvent::SkillProjectileAdvance {
             time_ms: runtime.next_reevaluation_ms,
             delivery_id: runtime.delivery_id,
             cause: runtime.cause.clone(),
         });
         self.active_projectiles.insert(delivery_id, runtime);
+        #[cfg(feature = "runtime-observation")]
+        self.observe_projectile_peak();
+        Ok(())
     }
 
     fn advance_homing_skill_projectile_runtime(
         &mut self,
         mut runtime: ActiveProjectileRuntime,
         reevaluation_time_ms: u64,
-    ) {
+    ) -> Result<(), crate::game::behavior::GameError> {
         let Some(target_unit_id) = runtime.target_unit_id else {
             self.enqueue_skill_projectile_impact(
                 reevaluation_time_ms,
@@ -260,14 +295,14 @@ impl BattleCore {
                 runtime.skill_id,
                 runtime.step_id,
                 runtime.caster_instance_id,
-                runtime.source_snapshot.clone(),
+                runtime.source_snapshot.try_clone_fact_source()?,
                 runtime.current_position,
                 None,
                 runtime.impact_vfx_id,
                 true,
                 runtime.cause,
-            );
-            return;
+            )?;
+            return Ok(());
         };
 
         let target_alive = self.units.get(&target_unit_id).is_some_and(|unit| {
@@ -295,14 +330,14 @@ impl BattleCore {
                 runtime.skill_id,
                 runtime.step_id,
                 runtime.caster_instance_id,
-                runtime.source_snapshot.clone(),
+                runtime.source_snapshot.try_clone_fact_source()?,
                 runtime.current_position,
                 None,
                 runtime.impact_vfx_id,
                 true,
                 runtime.cause,
-            );
-            return;
+            )?;
+            return Ok(());
         };
         let Some(target_body_end) = target_alive
             .then(|| self.sample_unit_body_at(target_unit_id, reevaluation_time_ms))
@@ -316,66 +351,56 @@ impl BattleCore {
                 runtime.skill_id,
                 runtime.step_id,
                 runtime.caster_instance_id,
-                runtime.source_snapshot.clone(),
+                runtime.source_snapshot.try_clone_fact_source()?,
                 runtime.current_position,
                 None,
                 runtime.impact_vfx_id,
                 true,
                 runtime.cause,
-            );
-            return;
+            )?;
+            return Ok(());
         };
 
-        let window_duration_ms = reevaluation_time_ms.saturating_sub(from_time_ms);
         let aim = target_body_end.position;
-        let direction = aim - runtime.current_position;
-        let distance = direction.length();
-        let speed_world_per_ms = runtime.speed_units_per_ms as f32 / DATA_UNITS_PER_WORLD;
-        let max_step = speed_world_per_ms * window_duration_ms as f32;
-        let next_position = if distance <= f32::EPSILON
-            || runtime.speed_units_per_ms == 0
-            || max_step >= distance
-        {
-            aim
-        } else {
-            runtime.current_position + direction * (max_step / distance)
-        };
         let reach = data_units_to_world(i64::from(runtime.collision.radius_units))
             + target_body_start
                 .radius
                 .max(target_body_end.radius)
                 .max(0.0);
 
-        if let Some(hit_fraction) = moving_circle_sweep_hit_fraction(
+        let motion = ProjectileMotionWindow::speed_limited(
+            from_time_ms,
+            reevaluation_time_ms,
             runtime.current_position,
-            next_position,
+            aim,
+            runtime.speed_units_per_ms,
+        )
+        .resolve([ProjectileCollisionCandidate {
+            id: target_unit_id,
+            target_start: target_body_start.position,
+            target_end: target_body_end.position,
             reach,
-            target_body_start.position,
-            target_body_end.position,
-        ) {
-            let elapsed_delta = ((window_duration_ms as f32) * hit_fraction).ceil() as u64;
-            let impact_time_ms = from_time_ms.saturating_add(elapsed_delta.min(window_duration_ms));
-            let impact_position = projectile_impact_position_at_hit_fraction(
-                runtime.current_position,
-                next_position,
-                hit_fraction,
-            );
+        }]);
+        let next_position = motion.end_position;
+        let next_reevaluation_ms = motion.next_reevaluation_ms;
+
+        if let Some(impact) = motion.ordered_impacts.into_iter().next() {
             self.enqueue_skill_projectile_impact(
-                impact_time_ms,
+                impact.time_ms,
                 runtime.delivery_id,
                 runtime.cast_seq,
                 runtime.step_index,
                 runtime.skill_id,
                 runtime.step_id,
                 runtime.caster_instance_id,
-                runtime.source_snapshot.clone(),
-                impact_position,
-                Some(target_unit_id),
+                runtime.source_snapshot.try_clone_fact_source()?,
+                impact.position,
+                Some(impact.id),
                 runtime.impact_vfx_id,
                 true,
                 runtime.cause,
-            );
-            return;
+            )?;
+            return Ok(());
         }
 
         let expired =
@@ -393,24 +418,26 @@ impl BattleCore {
                 runtime.skill_id,
                 runtime.step_id,
                 runtime.caster_instance_id,
-                runtime.source_snapshot.clone(),
+                runtime.source_snapshot.try_clone_fact_source()?,
                 runtime.current_position,
                 None,
                 runtime.impact_vfx_id,
                 true,
                 runtime.cause,
-            );
-            return;
+            )?;
+            return Ok(());
         }
 
-        runtime.next_reevaluation_ms =
-            reevaluation_time_ms.saturating_add(SKILL_PROJECTILE_REEVALUATION_TICK_MS);
+        runtime.next_reevaluation_ms = next_reevaluation_ms;
         self.event_queue.push(BattleEvent::SkillProjectileAdvance {
             time_ms: runtime.next_reevaluation_ms,
             delivery_id: runtime.delivery_id,
             cause: runtime.cause.clone(),
         });
         self.active_projectiles.insert(runtime.delivery_id, runtime);
+        #[cfg(feature = "runtime-observation")]
+        self.observe_projectile_peak();
+        Ok(())
     }
 
     fn skill_projectile_pierces(collision: SkillProjectileCollisionDef) -> bool {
@@ -422,37 +449,43 @@ impl BattleCore {
         collision.max_hits.map(|hits| hits as usize)
     }
 
-    fn collect_fixed_skill_projectile_hits_in_window(
+    fn resolve_fixed_skill_projectile_motion(
         &self,
         runtime: &ActiveProjectileRuntime,
         from_elapsed_ms: u64,
         to_elapsed_ms: u64,
-    ) -> Vec<(u64, UnitInstanceId, WorldVec2)> {
-        if from_elapsed_ms > to_elapsed_ms {
-            return Vec::new();
-        }
-
-        let projectile_radius = data_units_to_world(i64::from(runtime.collision.radius_units));
-        let piercing = Self::skill_projectile_pierces(runtime.collision);
-        let max_hits = Self::skill_projectile_hit_limit(runtime.collision);
-        let mut seen_hits: HashSet<UnitInstanceId> = runtime.hit_unit_ids.iter().copied().collect();
-        let mut impacts = Vec::new();
-
-        let window_duration_ms = to_elapsed_ms.saturating_sub(from_elapsed_ms);
-        let window_start = sample_projectile_position_at(
+    ) -> Result<ProjectileMotionResult<UnitInstanceId>, GameError> {
+        // The advancing runtime is temporarily removed from active_projectiles.
+        self.admit_authoring_runtime_growth(
+            runtime.hit_unit_ids.len().saturating_add(1),
+            "detached_projectile_motion",
+        )?;
+        control::charge(
+            runtime.hit_unit_ids.len() as u64 + 1,
+            "projectile_prior_hits",
+        )?;
+        let units = self.units.len() as u64;
+        let comparisons = u64::from(usize::BITS - self.units.len().leading_zeros());
+        control::charge(
+            units.saturating_mul(comparisons.saturating_add(4)),
+            "projectile_candidates_and_sort",
+        )?;
+        let window = ProjectileMotionWindow::fixed_trajectory(
+            runtime.spawned_at_ms.saturating_add(from_elapsed_ms),
+            runtime.spawned_at_ms.saturating_add(to_elapsed_ms),
             runtime.start,
             runtime.aim,
             from_elapsed_ms,
-            runtime.max_travel_ms,
-        );
-        let window_end = sample_projectile_position_at(
-            runtime.start,
-            runtime.aim,
             to_elapsed_ms,
             runtime.max_travel_ms,
         );
+        if from_elapsed_ms > to_elapsed_ms {
+            return Ok(window.resolve(std::iter::empty()));
+        }
 
-        let mut hits: Vec<(u64, f32, UnitInstanceId, WorldVec2)> = self
+        let projectile_radius = data_units_to_world(i64::from(runtime.collision.radius_units));
+        let prior_hits: HashSet<UnitInstanceId> = runtime.hit_unit_ids.iter().copied().collect();
+        let candidates = self
             .units
             .values()
             .filter(|unit| {
@@ -462,89 +495,64 @@ impl BattleCore {
                     unit.instance_id,
                     runtime.collision.hit_targets,
                     false,
-                ) && !seen_hits.contains(&unit.instance_id)
+                ) && !prior_hits.contains(&unit.instance_id)
             })
             .filter_map(|unit| {
-                let target_body_start = self.sample_unit_body_at(
-                    unit.instance_id,
-                    runtime.spawned_at_ms.saturating_add(from_elapsed_ms),
-                )?;
-                let target_body_end = self.sample_unit_body_at(
-                    unit.instance_id,
-                    runtime.spawned_at_ms.saturating_add(to_elapsed_ms),
-                )?;
+                let target_body_start =
+                    self.sample_unit_body_at(unit.instance_id, window.start_time_ms)?;
+                let target_body_end =
+                    self.sample_unit_body_at(unit.instance_id, window.end_time_ms)?;
                 let reach = projectile_radius
                     + target_body_start
                         .radius
                         .max(target_body_end.radius)
                         .max(0.0);
-                let hit_fraction = moving_circle_sweep_hit_fraction(
-                    window_start,
-                    window_end,
+                Some(ProjectileCollisionCandidate {
+                    id: unit.instance_id,
+                    target_start: target_body_start.position,
+                    target_end: target_body_end.position,
                     reach,
-                    target_body_start.position,
-                    target_body_end.position,
-                )?;
-                let elapsed_delta = ((window_duration_ms as f32) * hit_fraction).ceil() as u64;
-                let hit_elapsed_ms =
-                    from_elapsed_ms.saturating_add(elapsed_delta.min(window_duration_ms));
-                let projectile_pos = projectile_impact_position_at_hit_fraction(
-                    window_start,
-                    window_end,
-                    hit_fraction,
-                );
-                let target_pos = projectile_impact_position_at_hit_fraction(
-                    target_body_start.position,
-                    target_body_end.position,
-                    hit_fraction,
-                );
-                Some((
-                    hit_elapsed_ms,
-                    projectile_pos.distance_squared(target_pos),
-                    unit.instance_id,
-                    projectile_pos,
-                ))
+                })
             })
-            .collect();
+            .collect::<Vec<_>>();
 
-        hits.sort_by(|a, b| {
-            a.0.cmp(&b.0)
-                .then_with(|| a.1.total_cmp(&b.1))
-                .then_with(|| a.2.as_bytes().cmp(b.2.as_bytes()))
-        });
+        let result = window.resolve(candidates);
+        control::poll("projectile_motion_resolved")?;
+        Ok(result)
+    }
 
-        for (hit_elapsed_ms, _, hit_unit_id, projectile_pos) in hits {
-            if seen_hits.insert(hit_unit_id) {
-                impacts.push((
-                    runtime.spawned_at_ms.saturating_add(hit_elapsed_ms),
-                    hit_unit_id,
-                    projectile_pos,
-                ));
+    fn accept_fixed_skill_projectile_impacts(
+        runtime: &ActiveProjectileRuntime,
+        ordered_impacts: Vec<ProjectileCollisionImpact<UnitInstanceId>>,
+    ) -> Result<Vec<(u64, UnitInstanceId, WorldVec2)>, GameError> {
+        control::charge(
+            runtime.hit_unit_ids.len() as u64 + 1,
+            "projectile_seen_hits",
+        )?;
+        control::charge(ordered_impacts.len() as u64, "projectile_impact_candidates")?;
+        let piercing = Self::skill_projectile_pierces(runtime.collision);
+        let max_hits = Self::skill_projectile_hit_limit(runtime.collision);
+        let mut seen_hits: HashSet<UnitInstanceId> = runtime.hit_unit_ids.iter().copied().collect();
+        let mut impacts = Vec::new();
+
+        for impact in ordered_impacts {
+            control::poll("projectile_impact_candidate")?;
+            if seen_hits.insert(impact.id) {
+                impacts.push((impact.time_ms, impact.id, impact.position));
             }
             if max_hits.is_some_and(|limit| seen_hits.len() >= limit) {
-                return impacts;
+                return Ok(impacts);
             }
             if !piercing {
-                return impacts;
+                return Ok(impacts);
             }
         }
 
-        impacts
+        Ok(impacts)
     }
 
-    fn next_skill_delivery_id(
-        &mut self,
-        fired_at_ms: u64,
-        caster_instance_id: UnitInstanceId,
-    ) -> Uuid {
-        let seed = self
-            .recording_cause()
-            .and_then(|cause| cause.parent_seq())
-            .unwrap_or_else(|| {
-                let mut bytes = [0u8; 8];
-                bytes.copy_from_slice(&caster_instance_id.as_bytes()[..8]);
-                fired_at_ms ^ u64::from_be_bytes(bytes)
-            });
+    fn next_skill_delivery_id(&mut self, cast_seq: u64) -> Uuid {
+        let seed = determinism::seed_with_namespace(self.seed, cast_seq);
         let delivery_seq = self.projectile_seq;
         self.projectile_seq = self.projectile_seq.wrapping_add(1);
         determinism::uuid_v4_from_seed(seed, SKILL_DELIVERY_NS, delivery_seq)
@@ -559,50 +567,69 @@ impl BattleCore {
         skill_id: SkillId,
         step_id: String,
         caster_instance_id: UnitInstanceId,
-        source_snapshot: DamageSourceSnapshot,
+        mut source_snapshot: DamageSourceSnapshot,
         impact_position: WorldVec2,
         first_hit_unit_id: Option<UnitInstanceId>,
         impact_vfx_id: Option<String>,
         terminal: bool,
         cause: BattleEventCause,
-    ) {
-        self.event_queue.push(BattleEvent::SkillProjectileImpact {
-            time_ms,
-            delivery_id,
-            cast_seq,
-            step_index,
-            skill_id,
-            step_id,
-            caster_instance_id,
-            source_snapshot,
-            impact_position,
-            first_hit_unit_id,
-            impact_vfx_id,
-            terminal,
-            cause,
-        });
+    ) -> Result<(), crate::game::behavior::GameError> {
+        source_snapshot.fact_source =
+            self.reserve_carrier_completion_source(source_snapshot.fact_source)?;
+        if let Some(capture) = &source_snapshot.value_expr_capture {
+            source_snapshot.value_expr_capture =
+                Some(capture.rebind_consumption_source(&source_snapshot.fact_source)?);
+        }
+        let fact_source = source_snapshot.fact_source.clone();
+        self.event_queue.push_completion(
+            BattleEvent::SkillProjectileImpact {
+                time_ms,
+                delivery_id,
+                cast_seq,
+                step_index,
+                skill_id,
+                step_id,
+                caster_instance_id,
+                source_snapshot,
+                impact_position,
+                first_hit_unit_id,
+                impact_vfx_id,
+                terminal,
+                cause,
+            },
+            None,
+            fact_source,
+        );
+        Ok(())
     }
 
     fn apply_skill_projectile_kill_stop_policy(
         &mut self,
         delivery_id: Uuid,
         killed_target_count: usize,
-    ) {
+        time_ms: u64,
+    ) -> SkillProjectileStopOutcome {
         if killed_target_count == 0 {
-            return;
+            return SkillProjectileStopOutcome::Continue;
         }
         let Some(runtime) = self.active_projectiles.get_mut(&delivery_id) else {
-            return;
+            return SkillProjectileStopOutcome::Continue;
         };
         let Some(max_kills) = runtime.max_kills else {
-            return;
+            return SkillProjectileStopOutcome::Continue;
         };
         runtime.killed_unit_count = runtime
             .killed_unit_count
             .saturating_add(killed_target_count as u32);
         if runtime.killed_unit_count >= max_kills {
-            self.active_projectiles.remove(&delivery_id);
+            if let Some(runtime) = self.active_projectiles.remove(&delivery_id) {
+                if let Some(ticket) = runtime.source_snapshot.fact_source.delivery {
+                    let _ = self.runtime_facts.close_delivery(&ticket, time_ms);
+                }
+            }
+            return SkillProjectileStopOutcome::Terminal;
         }
+        SkillProjectileStopOutcome::Continue
     }
 
     fn record_skill_projectile_launched(
@@ -632,10 +659,13 @@ impl BattleCore {
         });
     }
 
-    fn spawn_homing_skill_projectile(&mut self, launch: SkillProjectileImpactLaunch) {
+    fn spawn_homing_skill_projectile(
+        &mut self,
+        launch: SkillProjectileImpactLaunch,
+    ) -> Result<(), crate::game::behavior::GameError> {
+        self.admit_authoring_runtime_growth(1, "homing_projectile_spawn")?;
         launch.collision.validate_homing_runtime_contract();
-        let delivery_id =
-            self.next_skill_delivery_id(launch.fired_at_ms, launch.caster_instance_id);
+        let delivery_id = self.next_skill_delivery_id(launch.cast_seq);
         let max_travel_ms = launch.travel_time_ms.unwrap_or_else(|| {
             projectile_travel_ms(launch.start, launch.aim, launch.speed_units_per_ms)
         });
@@ -653,7 +683,7 @@ impl BattleCore {
             step_id: launch.step_id,
             caster_instance_id: launch.caster_instance_id,
             caster_owner: launch.caster_owner,
-            source_snapshot: launch.source_snapshot.clone(),
+            source_snapshot: launch.source_snapshot.try_clone_fact_source()?,
             spawned_at_ms: launch.fired_at_ms,
             start: launch.start,
             current_position: launch.start,
@@ -672,17 +702,23 @@ impl BattleCore {
             cause: launch.cause.clone(),
         };
         self.active_projectiles.insert(delivery_id, runtime);
+        #[cfg(feature = "runtime-observation")]
+        self.observe_projectile_peak();
         self.event_queue.push(BattleEvent::SkillProjectileAdvance {
             time_ms: launch.fired_at_ms,
             delivery_id,
             cause: launch.cause,
         });
+        Ok(())
     }
 
-    fn spawn_fixed_skill_projectile(&mut self, launch: SkillProjectileImpactLaunch) {
+    fn spawn_fixed_skill_projectile(
+        &mut self,
+        launch: SkillProjectileImpactLaunch,
+    ) -> Result<(), crate::game::behavior::GameError> {
+        self.admit_authoring_runtime_growth(1, "fixed_projectile_spawn")?;
         launch.collision.validate_runtime_contract();
-        let delivery_id =
-            self.next_skill_delivery_id(launch.fired_at_ms, launch.caster_instance_id);
+        let delivery_id = self.next_skill_delivery_id(launch.cast_seq);
         let max_travel_ms =
             projectile_travel_ms(launch.start, launch.aim, launch.speed_units_per_ms);
         self.record_skill_projectile_launched(
@@ -699,7 +735,7 @@ impl BattleCore {
             step_id: launch.step_id,
             caster_instance_id: launch.caster_instance_id,
             caster_owner: launch.caster_owner,
-            source_snapshot: launch.source_snapshot.clone(),
+            source_snapshot: launch.source_snapshot.try_clone_fact_source()?,
             spawned_at_ms: launch.fired_at_ms,
             start: launch.start,
             current_position: launch.start,
@@ -718,11 +754,14 @@ impl BattleCore {
             cause: launch.cause.clone(),
         };
         self.active_projectiles.insert(delivery_id, runtime);
+        #[cfg(feature = "runtime-observation")]
+        self.observe_projectile_peak();
         self.event_queue.push(BattleEvent::SkillProjectileAdvance {
             time_ms: launch.fired_at_ms,
             delivery_id,
             cause: launch.cause,
         });
+        Ok(())
     }
 
     pub(in crate::game::battle::core) fn dispatch_skill_projectile_delivery(
@@ -736,7 +775,7 @@ impl BattleCore {
         cast_target: Option<SkillCastTarget>,
         delivery: &DeliveryDef,
         repeat_count: usize,
-    ) -> usize {
+    ) -> Result<usize, crate::game::behavior::GameError> {
         let DeliveryDef::Projectile {
             speed_units_per_ms,
             hit_policy,
@@ -748,22 +787,41 @@ impl BattleCore {
             collision,
         } = delivery
         else {
-            return 0;
+            return Ok(0);
         };
 
         let mut launched_count = 0usize;
         for _ in 0..repeat_count {
-            let iteration_target =
-                self.resolve_skill_step_context(cast_seq, caster_instance_id, step, cast_target);
+            control::charge(1, "projectile_repeat")?;
+            let iteration_target = self.resolve_skill_step_context(
+                time_ms,
+                cast_seq,
+                step_index,
+                caster_instance_id,
+                skill,
+                step,
+                cast_target,
+            );
+            if Self::skill_step_requires_hostile_usefulness(step)
+                && !self.skill_step_has_useful_actual_delivery_target(
+                    time_ms,
+                    step_index,
+                    caster_instance_id,
+                    step,
+                    iteration_target,
+                )
+            {
+                continue;
+            }
             let Some((caster_owner, caster_pos)) =
                 self.resolve_cast_origin_context(Some(cast_seq), caster_instance_id, false)
             else {
-                return launched_count;
+                return Ok(launched_count);
             };
             let caster_origin = self
                 .unit_world_position_or_tile_center(caster_instance_id)
                 .unwrap_or_else(|| WorldVec2::from_tile_center(caster_pos));
-            let Some(source_snapshot) = self.damage_source_snapshot_template_for_unit(
+            let Some(mut source_snapshot) = self.damage_source_snapshot_template_for_unit(
                 caster_instance_id,
                 DamageSource::Ability,
                 DamageType::default(),
@@ -775,6 +833,12 @@ impl BattleCore {
             ) else {
                 continue;
             };
+
+            source_snapshot.skill_cast_source = self
+                .active_skill_casts
+                .get(&cast_seq)
+                .and_then(|cast| cast.execution_source.clone());
+            source_snapshot.fact_source.cast = source_snapshot.skill_cast_source.clone();
 
             let mut projectile_collision =
                 apply_projectile_stop_policy_to_collision(*collision, *max_pierces);
@@ -789,8 +853,9 @@ impl BattleCore {
                     let target_aim = self
                         .unit_world_position_or_tile_center(unit_instance_id)
                         .unwrap_or_else(|| WorldVec2::from_tile_center(target_pos));
-                    let travel_time_ms = projectile_flight_ms(
-                        (caster_origin.distance(target_aim) * DATA_UNITS_PER_WORLD).ceil() as u64,
+                    let travel_time_ms = projectile_flight_ms_between_world_points(
+                        caster_origin,
+                        target_aim,
                         *speed_units_per_ms,
                     );
                     (
@@ -837,6 +902,19 @@ impl BattleCore {
             if !Self::skill_projectile_pierces(projectile_collision) && max_pierces.is_some() {
                 projectile_collision.piercing = true;
             }
+            source_snapshot.fact_source =
+                self.reserve_finite_source(source_snapshot.fact_source)?;
+            let release_targets = target_unit_id
+                .as_ref()
+                .map(std::slice::from_ref)
+                .unwrap_or(&[]);
+            source_snapshot.value_expr_capture = self.build_value_expr_delivery_capture(
+                step,
+                &source_snapshot.fact_source,
+                target_unit_id.as_ref().map(|_| release_targets),
+                time_ms,
+                max_lifetime_ms.map(|lifetime| time_ms.saturating_add(lifetime)),
+            )?;
             let launch = SkillProjectileImpactLaunch {
                 fired_at_ms: time_ms,
                 cast_seq,
@@ -859,12 +937,13 @@ impl BattleCore {
                 cause: self.recording_cause().unwrap_or_default(),
             };
             match guidance {
-                ProjectileGuidance::Fixed => self.spawn_fixed_skill_projectile(launch),
-                ProjectileGuidance::Homing => self.spawn_homing_skill_projectile(launch),
+                ProjectileGuidance::Fixed => self.spawn_fixed_skill_projectile(launch)?,
+                ProjectileGuidance::Homing => self.spawn_homing_skill_projectile(launch)?,
             }
+            control::poll("projectile_spawned")?;
             launched_count = launched_count.saturating_add(1);
         }
-        launched_count
+        Ok(launched_count)
     }
 
     pub(in crate::game::battle::core) fn apply_skill_projectile_impact(
@@ -881,12 +960,13 @@ impl BattleCore {
         first_hit_unit_id: Option<UnitInstanceId>,
         impact_vfx_id: Option<String>,
         terminal: bool,
-    ) {
-        let Some(skill) = self.game_data.skill_data.get_by_id(&skill_id).cloned() else {
-            return;
+    ) -> Result<(), crate::game::behavior::GameError> {
+        let Some(skill) = self.cloned_skill_for_source(&skill_id, &source_snapshot.fact_source)?
+        else {
+            return Ok(());
         };
         let Some(step) = Self::resolve_skill_step(&skill, step_index, &step_id) else {
-            return;
+            return Ok(());
         };
 
         let targets: Vec<UnitInstanceId> = first_hit_unit_id
@@ -922,61 +1002,65 @@ impl BattleCore {
             },
         );
 
-        let (commands, result) = self.build_skill_step_commands(
+        let resolved_result = self.execute_ordered_skill_effects(
             caster_instance_id,
+            &skill_id,
             step,
             &targets,
+            time_ms,
             source_snapshot.committed_at_ms,
             Some(&source_snapshot),
-        );
-        let signal_result =
-            self.record_skill_step_live_signals(caster_instance_id, &skill_id, step, &targets);
-        let mut resolved_result = result;
-        resolved_result.merge(&signal_result);
-        if !commands.is_empty() {
-            let summary = self.process_commands(commands, time_ms);
-            resolved_result.actual_damage_target_count = resolved_result
-                .actual_damage_target_count
-                .saturating_add(summary.actual_damage_target_count);
-            self.apply_skill_projectile_kill_stop_policy(delivery_id, summary.killed_target_count);
-            self.resolve_skill_step_delivery(
-                cast_seq,
-                step_index,
-                resolved_result,
-                terminal,
+            source_snapshot.skill_cast_source.clone(),
+        )?;
+        let stop_outcome = if resolved_result.killed_target_count != 0 {
+            self.apply_skill_projectile_kill_stop_policy(
+                delivery_id,
+                resolved_result.killed_target_count,
                 time_ms,
-            );
+            )
         } else {
-            self.resolve_skill_step_delivery(
-                cast_seq,
-                step_index,
-                resolved_result,
-                terminal,
-                time_ms,
-            );
-        }
+            SkillProjectileStopOutcome::Continue
+        };
+        self.resolve_skill_step_delivery(
+            cast_seq,
+            step_index,
+            resolved_result,
+            terminal || stop_outcome.is_terminal(),
+            time_ms,
+        );
         self.schedule_pending_autocasts(time_ms);
+        Ok(())
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::game::battle::core::projectile_math::sample_projectile_position_at;
 
     #[test]
     fn fixed_projectile_impact_position_uses_hit_fraction_not_quantized_event_time() {
         let window_start = WorldVec2::new(0.0, 0.0);
         let window_end = WorldVec2::new(10.0, 0.0);
-        let hit_fraction = 0.21;
-
-        let event_elapsed_ms = ((10_u64 as f32) * hit_fraction).ceil() as u64;
+        let result =
+            ProjectileMotionWindow::fixed_trajectory(0, 10, window_start, window_end, 0, 10, 10)
+                .resolve([ProjectileCollisionCandidate {
+                    id: 1_u8,
+                    target_start: WorldVec2::new(2.1, 0.0),
+                    target_end: WorldVec2::new(2.1, 0.0),
+                    reach: 0.0,
+                }]);
+        let impact = result.ordered_impacts.first().expect("impact");
         let quantized_event_position =
-            sample_projectile_position_at(window_start, window_end, event_elapsed_ms, 10);
-        let impact_position =
-            projectile_impact_position_at_hit_fraction(window_start, window_end, hit_fraction);
+            sample_projectile_position_at(window_start, window_end, impact.time_ms, 10);
 
-        assert_eq!(event_elapsed_ms, 3);
+        assert_eq!(impact.time_ms, 3);
         assert_eq!(quantized_event_position, WorldVec2::new(3.0, 0.0));
-        assert_eq!(impact_position, WorldVec2::new(2.1, 0.0));
+        assert!((impact.position.x - 2.1).abs() < 0.01);
+        assert_eq!(impact.position.y, 0.0);
+        assert_ne!(
+            impact.position.quantized_milli(),
+            quantized_event_position.quantized_milli()
+        );
     }
 }

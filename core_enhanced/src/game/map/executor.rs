@@ -7,7 +7,7 @@ use crate::game::map::types::{MapNode, MapNodeCategory, MapNodeId, MapNodeKindId
 ///
 /// Map progression only knows graph rules. This executor owns the first
 /// interpretation step for a node definition and is the future home for
-/// routing nodes into combat, shop, support, event, or reward sessions.
+/// routing nodes into combat, shop, facility, event, or reward sessions.
 pub struct MapNodeExecutor;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -35,37 +35,30 @@ impl MapNodeExecutor {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::game::map::types::{
-        MapNodeState, MapNodeVisibility, MapSlotId, SupportNodeMode, SupportNodeType,
-    };
+    use crate::game::map::types::{MapNodeState, MapNodeVisibility, MapSlotId};
     use uuid::Uuid;
 
     #[test]
     fn enter_creates_a_session_without_interpreting_map_progression() {
         let node = MapNode {
             id: MapNodeId::new(Uuid::from_u128(77)),
-            depth: 2,
-            lane: 1,
-            slot_id: MapSlotId::for_grid_position(2, 1),
-            kind_id: MapNodeKindId::new("support_choice"),
-            category: MapNodeCategory::Support,
+            slot_id: MapSlotId::new("save_archive"),
+            kind_id: MapNodeKindId::new("save_point"),
+            category: MapNodeCategory::SavePoint,
             state: MapNodeState::Available,
             visibility: MapNodeVisibility::Revealed,
-            payload: MapNodePayload::Support {
-                support_type: SupportNodeType::Rest,
-                support_mode: SupportNodeMode::LimitedChoice,
-                choices: vec![SupportNodeType::SavePoint, SupportNodeType::Rest],
-            },
+            payload: MapNodePayload::SavePoint,
             omen: None,
+            combat_difficulty: None,
         };
 
         let result = MapNodeExecutor::enter(&node);
 
         assert_eq!(result.node_id, node.id);
         assert_eq!(result.kind_id, node.kind_id);
-        assert_eq!(result.category, MapNodeCategory::Support);
+        assert_eq!(result.category, MapNodeCategory::SavePoint);
         assert_eq!(result.payload, node.payload);
         assert_eq!(result.session.node_id, node.id);
-        assert_eq!(result.session.category, MapNodeCategory::Support);
+        assert_eq!(result.session.category, MapNodeCategory::SavePoint);
     }
 }

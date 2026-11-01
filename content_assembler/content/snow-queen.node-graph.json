@@ -1,0 +1,1288 @@
+{
+  "format": "node-graph",
+  "version": 1,
+  "id": "457ef0f1-efef-4419-abb7-39dbdb8a3170",
+  "name": "눈의 여왕 · 빙설의 파도",
+  "nodes": [
+    {
+      "id": "03307be9-7b63-4602-9988-fbff20e25e5b",
+      "kind": "skill-target-selection",
+      "title": "입력 대상 선택",
+      "position": {
+        "x": 40,
+        "y": 3311.7
+      },
+      "values": {
+        "mode": "player-direction"
+      },
+      "note": "",
+      "frame": "0556d231-f039-4ede-90e3-b2d0e3581415"
+    },
+    {
+      "id": "075c0704-7d7a-4062-8862-1a17a721dc04",
+      "kind": "skill-resonance-settings",
+      "title": "사본 공명 저장 설정",
+      "position": {
+        "x": 480,
+        "y": 2766.4380952380952
+      },
+      "values": {},
+      "note": "",
+      "frame": "0556d231-f039-4ede-90e3-b2d0e3581415"
+    },
+    {
+      "id": "09a8b85a-1de0-4e77-af2d-39b99c86b84f",
+      "kind": "skill-convert-status-plan",
+      "title": "타격 직전 냉기만 소비 → 혹한",
+      "position": {
+        "x": 1360,
+        "y": 166.5
+      },
+      "values": {},
+      "note": "",
+      "frame": "12a7aa0d-1274-43ea-9ff9-0ab15e637f64"
+    },
+    {
+      "id": "16bcf898-ea47-4f91-a553-90d0f2662da3",
+      "kind": "skill-resonance-admit",
+      "title": "원자적 접수·비용 확정",
+      "position": {
+        "x": 2240,
+        "y": 2518
+      },
+      "values": {},
+      "note": "",
+      "frame": "0556d231-f039-4ede-90e3-b2d0e3581415"
+    },
+    {
+      "id": "266f4c5c-e5d3-4016-871e-18d1c35966b2",
+      "kind": "skill-resonance-cost",
+      "title": "수동 · 공명 전량 소비",
+      "position": {
+        "x": 1360,
+        "y": 2420.7
+      },
+      "values": {
+        "minimumCost": "",
+        "mode": "all",
+        "percent": ""
+      },
+      "note": "",
+      "frame": "0556d231-f039-4ede-90e3-b2d0e3581415"
+    },
+    {
+      "id": "2857c2ac-4bcd-41f2-af2d-3c531b1a095a",
+      "kind": "skill-seconds",
+      "title": "약화의 독립 수명",
+      "position": {
+        "x": 840,
+        "y": 4055.7
+      },
+      "values": {
+        "value": 5
+      },
+      "note": "",
+      "frame": "c5885a36-6344-4f67-9449-2b9ee538d9b4"
+    },
+    {
+      "id": "2b59b8de-da1d-4bf9-9455-7e9fbd782104",
+      "kind": "skill-range",
+      "title": "정확한 T자 타일 마스크",
+      "position": {
+        "x": 480,
+        "y": 691.5
+      },
+      "values": {
+        "includeAnchor": false,
+        "pattern": ""
+      },
+      "note": "",
+      "frame": "12a7aa0d-1274-43ea-9ff9-0ab15e637f64"
+    },
+    {
+      "id": "2c2d23ca-34d4-4763-b7e7-daf55526c966",
+      "kind": "skill-status-death-mobile",
+      "title": "유물이 있을 때만 사망 위치 잔영",
+      "position": {
+        "x": 40,
+        "y": 3641.7
+      },
+      "values": {
+        "relic": "snow-queen-remnant"
+      },
+      "note": "",
+      "frame": "37c233be-aab1-422e-9d9e-e76c9580e81f"
+    },
+    {
+      "id": "2c50a2e6-6bbd-4857-8c09-a8aca8105a25",
+      "kind": "skill-run-action",
+      "title": "접수한 행동 실행·종료",
+      "position": {
+        "x": 2680,
+        "y": 2339.5
+      },
+      "values": {},
+      "note": "",
+      "frame": "0556d231-f039-4ede-90e3-b2d0e3581415"
+    },
+    {
+      "id": "2ffff399-042a-4e5d-8e26-7939a1bbaa9f",
+      "kind": "skill-resonance-requirement",
+      "title": "수동 · 공명 만충",
+      "position": {
+        "x": 1360,
+        "y": 3236.7
+      },
+      "values": {
+        "mode": "full"
+      },
+      "note": "",
+      "frame": "0556d231-f039-4ede-90e3-b2d0e3581415"
+    },
+    {
+      "id": "35847810-fa57-456d-b600-1b14bd7a773c",
+      "kind": "skill-range",
+      "title": "이 형상의 확대 타일",
+      "position": {
+        "x": 40,
+        "y": 5031.7
+      },
+      "values": {
+        "includeAnchor": false,
+        "pattern": ""
+      },
+      "note": "",
+      "frame": "c5885a36-6344-4f67-9449-2b9ee538d9b4"
+    },
+    {
+      "id": "3d393aa9-5a8d-497f-a2ae-ea772379c4e3",
+      "kind": "skill-equipment-condition",
+      "title": "사냥의 낙인 · 장착 여부",
+      "position": {
+        "x": 40,
+        "y": 4757.7
+      },
+      "values": {
+        "copies": "once",
+        "definition": "summon-vulnerability",
+        "slot": "relic",
+        "variant": "normal"
+      },
+      "note": "",
+      "frame": "c5885a36-6344-4f67-9449-2b9ee538d9b4"
+    },
+    {
+      "id": "471ef8f6-87a6-4bf0-a275-b596c183d8a9",
+      "kind": "skill-resonance-amount",
+      "title": "최대 공명",
+      "position": {
+        "x": 40,
+        "y": 2748.4380952380952
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "0556d231-f039-4ede-90e3-b2d0e3581415"
+    },
+    {
+      "id": "48210d45-f7d9-45ed-807e-60d96ef9cc97",
+      "kind": "skill-modifier-mobile-vulnerability",
+      "title": "사냥의 낙인 → 빙결 잔영 · 자기 계보 추가 생성 금지",
+      "position": {
+        "x": 480,
+        "y": 4555.2
+      },
+      "values": {
+        "percent": ""
+      },
+      "note": "",
+      "frame": "c5885a36-6344-4f67-9449-2b9ee538d9b4"
+    },
+    {
+      "id": "50940375-7df0-4e66-9b97-dcbaf5536117",
+      "kind": "skill-modifier-control-vulnerability",
+      "title": "깨진 균형 → 혹한 · 빙결 · 시간 유지",
+      "position": {
+        "x": 1280,
+        "y": 4081.7
+      },
+      "values": {
+        "percent": ""
+      },
+      "note": "",
+      "frame": "c5885a36-6344-4f67-9449-2b9ee538d9b4"
+    },
+    {
+      "id": "555523d8-ca62-48e6-a37e-46b0fe396dd5",
+      "kind": "skill-modifier-range",
+      "title": "넓어진 지평 → 정확한 T자 타일 마스크",
+      "position": {
+        "x": 480,
+        "y": 5218.2
+      },
+      "values": {
+        "mode": "replace"
+      },
+      "note": "",
+      "frame": "c5885a36-6344-4f67-9449-2b9ee538d9b4"
+    },
+    {
+      "id": "57a3ae14-6934-4d71-b46c-592434de9526",
+      "kind": "skill-weapon-power",
+      "title": "잔영 폭발 계수",
+      "position": {
+        "x": 40,
+        "y": 1497.5
+      },
+      "values": {
+        "coefficient": ""
+      },
+      "note": "",
+      "frame": "5e5e7206-2653-46bb-8bef-7676ce82d286"
+    },
+    {
+      "id": "585d1361-b79a-4485-ad56-9ffdea839d47",
+      "kind": "skill-equipment-condition",
+      "title": "넓어진 지평 · 장착 여부",
+      "position": {
+        "x": 40,
+        "y": 5289.7
+      },
+      "values": {
+        "copies": "once",
+        "definition": "widened-horizon",
+        "slot": "relic",
+        "variant": "normal"
+      },
+      "note": "",
+      "frame": "c5885a36-6344-4f67-9449-2b9ee538d9b4"
+    },
+    {
+      "id": "651c9714-3ab5-4486-913e-06fb582b98a8",
+      "kind": "skill-spawn-mobile-plan",
+      "title": "액티브 유효 적중 뒤 시전당 잔영 1개",
+      "position": {
+        "x": 920,
+        "y": 1635.5
+      },
+      "values": {},
+      "note": "",
+      "frame": "5e5e7206-2653-46bb-8bef-7676ce82d286"
+    },
+    {
+      "id": "6bc71aed-11e9-43c5-bb81-7bb498b2c502",
+      "kind": "skill-equipment-condition",
+      "title": "깨진 균형 · 장착 여부",
+      "position": {
+        "x": 840,
+        "y": 4277.7
+      },
+      "values": {
+        "copies": "once",
+        "definition": "broken-balance",
+        "slot": "relic",
+        "variant": "normal"
+      },
+      "note": "",
+      "frame": "c5885a36-6344-4f67-9449-2b9ee538d9b4"
+    },
+    {
+      "id": "6bf85645-e073-4d16-97fd-af806a7aa0f9",
+      "kind": "skill-modifier-mobile-power",
+      "title": "압축 화약 → 빙결 잔영 · 자기 계보 추가 생성 금지",
+      "position": {
+        "x": 480,
+        "y": 4055.7
+      },
+      "values": {
+        "percent": ""
+      },
+      "note": "",
+      "frame": "c5885a36-6344-4f67-9449-2b9ee538d9b4"
+    },
+    {
+      "id": "79972924-ce2d-4931-84e0-0b4242e3e726",
+      "kind": "skill-mobile-effect",
+      "title": "빙결 잔영 · 자기 계보 추가 생성 금지",
+      "position": {
+        "x": 480,
+        "y": 1544.5
+      },
+      "values": {
+        "damageType": "magic",
+        "motion": "chase-delay",
+        "speed": ""
+      },
+      "note": "",
+      "frame": "5e5e7206-2653-46bb-8bef-7676ce82d286"
+    },
+    {
+      "id": "7a1f6610-9e76-4915-8f2d-fbb3eba005a0",
+      "kind": "skill-weapon-power",
+      "title": "T자 공격 계수",
+      "position": {
+        "x": 480,
+        "y": 949.5
+      },
+      "values": {
+        "coefficient": ""
+      },
+      "note": "",
+      "frame": "12a7aa0d-1274-43ea-9ff9-0ab15e637f64"
+    },
+    {
+      "id": "7e2aa47d-fade-42d7-8090-8c0783b6f081",
+      "kind": "skill-count-positive",
+      "title": "기본·유물 잔영의 공통 동시 상한",
+      "position": {
+        "x": 480,
+        "y": 1322.5
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "5e5e7206-2653-46bb-8bef-7676ce82d286"
+    },
+    {
+      "id": "8a80cee7-4210-47e5-b12e-01afdff8cbff",
+      "kind": "skill-resonance-qualify",
+      "title": "대상·공명·자원 자격 검사",
+      "position": {
+        "x": 1800,
+        "y": 2601.5
+      },
+      "values": {},
+      "note": "",
+      "frame": "0556d231-f039-4ede-90e3-b2d0e3581415"
+    },
+    {
+      "id": "8bcb02bd-14d4-4504-8f4a-aa6a1afa259f",
+      "kind": "skill-equipment-condition",
+      "title": "압축 화약 · 장착 여부",
+      "position": {
+        "x": 40,
+        "y": 4076.7
+      },
+      "values": {
+        "copies": "once",
+        "definition": "explosion-vulnerability",
+        "slot": "relic",
+        "variant": "normal"
+      },
+      "note": "",
+      "frame": "c5885a36-6344-4f67-9449-2b9ee538d9b4"
+    },
+    {
+      "id": "8d7476bc-b0d3-4df7-87db-4da9a270d2ee",
+      "kind": "skill-owned-damage-status",
+      "title": "자기 소유 피해 뒤 냉기 · 혹한 중 제외",
+      "position": {
+        "x": 1360,
+        "y": 440.49999999999994
+      },
+      "values": {},
+      "note": "",
+      "frame": "12a7aa0d-1274-43ea-9ff9-0ab15e637f64"
+    },
+    {
+      "id": "903970b4-494f-44b2-8073-c10bacb63fa4",
+      "kind": "skill-reactive-status",
+      "title": "냉기 · 이동 둔화 · 시간 갱신",
+      "position": {
+        "x": 920,
+        "y": 364.49999999999994
+      },
+      "values": {
+        "effect": "slow",
+        "percent": 30,
+        "refresh": "refresh"
+      },
+      "note": "",
+      "frame": "12a7aa0d-1274-43ea-9ff9-0ab15e637f64"
+    },
+    {
+      "id": "a01a948e-a786-425c-ae80-40d5dfbd0e1b",
+      "kind": "skill-request",
+      "title": "파편 시전 입력",
+      "position": {
+        "x": 480,
+        "y": 3307.7
+      },
+      "values": {},
+      "note": "",
+      "frame": "0556d231-f039-4ede-90e3-b2d0e3581415"
+    },
+    {
+      "id": "a14d56c2-be45-4fad-b955-04b3304cc4c0",
+      "kind": "skill-modifier-range",
+      "title": "넓어진 지평 → 잔영 폭발 범위",
+      "position": {
+        "x": 480,
+        "y": 5621.2
+      },
+      "values": {
+        "mode": "replace"
+      },
+      "note": "",
+      "frame": "c5885a36-6344-4f67-9449-2b9ee538d9b4"
+    },
+    {
+      "id": "a1d2b08e-0d58-4933-bddb-5be7bb6f414f",
+      "kind": "skill-seconds",
+      "title": "혹한 시간",
+      "position": {
+        "x": 40,
+        "y": 185
+      },
+      "values": {
+        "value": 2
+      },
+      "note": "",
+      "frame": "12a7aa0d-1274-43ea-9ff9-0ab15e637f64"
+    },
+    {
+      "id": "ae7c0109-506d-4b82-8b60-53131e07d08a",
+      "kind": "skill-range",
+      "title": "잔영 폭발 범위",
+      "position": {
+        "x": 40,
+        "y": 1719.5
+      },
+      "values": {
+        "includeAnchor": false,
+        "pattern": ""
+      },
+      "note": "",
+      "frame": "5e5e7206-2653-46bb-8bef-7676ce82d286"
+    },
+    {
+      "id": "b255527b-ec98-4345-8614-f0fc784599a1",
+      "kind": "skill-on-hit-plan",
+      "title": "변환 타격 완료 뒤 잔영 생성",
+      "position": {
+        "x": 1360,
+        "y": 1664.5
+      },
+      "values": {},
+      "note": "",
+      "frame": "5e5e7206-2653-46bb-8bef-7676ce82d286"
+    },
+    {
+      "id": "ba2a79b6-ed32-4af1-9f1c-e6ba6f3c30c4",
+      "kind": "skill-modifier-duration",
+      "title": "긴 호흡 → 혹한 시간",
+      "position": {
+        "x": 1280,
+        "y": 4535.7
+      },
+      "values": {
+        "percent": 25
+      },
+      "note": "",
+      "frame": "c5885a36-6344-4f67-9449-2b9ee538d9b4"
+    },
+    {
+      "id": "bbd8176c-7a58-4024-9681-5c08e09ffe42",
+      "kind": "skill-seconds",
+      "title": "잔영 폭발 지연",
+      "position": {
+        "x": 40,
+        "y": 1275.5
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "5e5e7206-2653-46bb-8bef-7676ce82d286"
+    },
+    {
+      "id": "c6438519-addd-462a-bfa8-85710d44cdcb",
+      "kind": "skill-action-entry",
+      "title": "접수할 행동 정의",
+      "position": {
+        "x": 1360,
+        "y": 2934.7
+      },
+      "values": {
+        "interruption": "standard",
+        "start": "immediate"
+      },
+      "note": "",
+      "frame": "0556d231-f039-4ede-90e3-b2d0e3581415"
+    },
+    {
+      "id": "caa63458-55b5-45ad-b8e4-88a29e02adce",
+      "kind": "skill-range",
+      "title": "이 형상의 확대 타일",
+      "position": {
+        "x": 40,
+        "y": 5583.7
+      },
+      "values": {
+        "includeAnchor": false,
+        "pattern": ""
+      },
+      "note": "",
+      "frame": "c5885a36-6344-4f67-9449-2b9ee538d9b4"
+    },
+    {
+      "id": "d7b5501f-f18e-48b7-8a7c-f84a3b029044",
+      "kind": "skill-strike-plan",
+      "title": "지정 방향 T자 타일의 Magic 피해",
+      "position": {
+        "x": 920,
+        "y": 765.3
+      },
+      "values": {
+        "damageType": "magic",
+        "target": "selected-direction-area"
+      },
+      "note": "",
+      "frame": "12a7aa0d-1274-43ea-9ff9-0ab15e637f64"
+    },
+    {
+      "id": "dda079e2-d0c1-4ab4-84c3-eda4cb7cb440",
+      "kind": "skill-seconds",
+      "title": "소환 피해 약화의 독립 수명",
+      "position": {
+        "x": 40,
+        "y": 4535.7
+      },
+      "values": {
+        "value": 5
+      },
+      "note": "",
+      "frame": "c5885a36-6344-4f67-9449-2b9ee538d9b4"
+    },
+    {
+      "id": "e14ee3d5-0dfd-4c75-9a77-dee04463233d",
+      "kind": "skill-seconds",
+      "title": "냉기 시간",
+      "position": {
+        "x": 480,
+        "y": 469.49999999999994
+      },
+      "values": {
+        "value": 3
+      },
+      "note": "",
+      "frame": "12a7aa0d-1274-43ea-9ff9-0ab15e637f64"
+    },
+    {
+      "id": "e18dd066-1bfa-4093-a02e-a26604fe41f7",
+      "kind": "skill-equipment-condition",
+      "title": "긴 호흡 · 장착 여부",
+      "position": {
+        "x": 840,
+        "y": 4556.7
+      },
+      "values": {
+        "copies": "once",
+        "definition": "long-breath",
+        "slot": "relic",
+        "variant": "normal"
+      },
+      "note": "",
+      "frame": "c5885a36-6344-4f67-9449-2b9ee538d9b4"
+    },
+    {
+      "id": "e21723c7-3153-4b39-a3ea-b45ddaff9295",
+      "kind": "skill-range",
+      "title": "잔영 탐색 범위",
+      "position": {
+        "x": 40,
+        "y": 1977.5
+      },
+      "values": {
+        "includeAnchor": false,
+        "pattern": ""
+      },
+      "note": "",
+      "frame": "5e5e7206-2653-46bb-8bef-7676ce82d286"
+    },
+    {
+      "id": "f8671376-6206-4be3-9302-00401ec36bda",
+      "kind": "skill-resonance-read",
+      "title": "이번 요청의 공명 조회",
+      "position": {
+        "x": 920,
+        "y": 2758.7714285714287
+      },
+      "values": {},
+      "note": "",
+      "frame": "0556d231-f039-4ede-90e3-b2d0e3581415"
+    },
+    {
+      "id": "fb762f76-3211-4944-bda2-9e051d0db7bd",
+      "kind": "skill-reactive-status",
+      "title": "혹한 · 빙결 · 시간 유지",
+      "position": {
+        "x": 480,
+        "y": 80
+      },
+      "values": {
+        "effect": "freeze",
+        "percent": "",
+        "refresh": "preserve"
+      },
+      "note": "",
+      "frame": "12a7aa0d-1274-43ea-9ff9-0ab15e637f64"
+    },
+    {
+      "id": "feb04e8c-d4b6-43a7-9550-bec8e56669a4",
+      "kind": "skill-modifier-duration",
+      "title": "긴 호흡 → 냉기 시간",
+      "position": {
+        "x": 1280,
+        "y": 4801.7
+      },
+      "values": {
+        "percent": 25
+      },
+      "note": "",
+      "frame": "c5885a36-6344-4f67-9449-2b9ee538d9b4"
+    }
+  ],
+  "edges": [
+    {
+      "id": "04bbd36a-466e-4584-8719-81d29d363089",
+      "source": {
+        "node": "a01a948e-a786-425c-ae80-40d5dfbd0e1b",
+        "port": "request"
+      },
+      "target": {
+        "node": "f8671376-6206-4be3-9302-00401ec36bda",
+        "port": "request"
+      }
+    },
+    {
+      "id": "0e4d49e2-24b1-42c7-a5e5-1e9b3e976f91",
+      "source": {
+        "node": "79972924-ce2d-4931-84e0-0b4242e3e726",
+        "port": "profile"
+      },
+      "target": {
+        "node": "6bf85645-e073-4d16-97fd-af806a7aa0f9",
+        "port": "target"
+      }
+    },
+    {
+      "id": "10ff6747-fc1b-410c-a288-9a544fee0540",
+      "source": {
+        "node": "266f4c5c-e5d3-4016-871e-18d1c35966b2",
+        "port": "cost"
+      },
+      "target": {
+        "node": "8a80cee7-4210-47e5-b12e-01afdff8cbff",
+        "port": "cost"
+      }
+    },
+    {
+      "id": "15c656b9-8ee9-4183-bba6-3ab4eabc7026",
+      "source": {
+        "node": "a01a948e-a786-425c-ae80-40d5dfbd0e1b",
+        "port": "request"
+      },
+      "target": {
+        "node": "8a80cee7-4210-47e5-b12e-01afdff8cbff",
+        "port": "request"
+      }
+    },
+    {
+      "id": "171a9578-ae1f-431e-b48b-377e7ad7f8a8",
+      "source": {
+        "node": "8a80cee7-4210-47e5-b12e-01afdff8cbff",
+        "port": "permit"
+      },
+      "target": {
+        "node": "16bcf898-ea47-4f91-a553-90d0f2662da3",
+        "port": "permit"
+      }
+    },
+    {
+      "id": "18ff5ce5-132f-4a2b-81e4-0d01504f3e9a",
+      "source": {
+        "node": "7e2aa47d-fade-42d7-8090-8c0783b6f081",
+        "port": "count"
+      },
+      "target": {
+        "node": "2c2d23ca-34d4-4763-b7e7-daf55526c966",
+        "port": "limit"
+      }
+    },
+    {
+      "id": "1ac72976-d7f3-468b-8574-2f4a31aa1ebf",
+      "source": {
+        "node": "35847810-fa57-456d-b600-1b14bd7a773c",
+        "port": "range"
+      },
+      "target": {
+        "node": "555523d8-ca62-48e6-a37e-46b0fe396dd5",
+        "port": "replacement"
+      }
+    },
+    {
+      "id": "1b80d4ea-0532-41ef-a377-5d13579e8969",
+      "source": {
+        "node": "471ef8f6-87a6-4bf0-a275-b596c183d8a9",
+        "port": "value"
+      },
+      "target": {
+        "node": "075c0704-7d7a-4062-8862-1a17a721dc04",
+        "port": "capacity"
+      }
+    },
+    {
+      "id": "24a05f34-f672-49cb-b307-d085e022ff05",
+      "source": {
+        "node": "fb762f76-3211-4944-bda2-9e051d0db7bd",
+        "port": "status"
+      },
+      "target": {
+        "node": "50940375-7df0-4e66-9b97-dcbaf5536117",
+        "port": "reactive"
+      }
+    },
+    {
+      "id": "2502f2a7-017e-47c7-8f4e-ee1c2019f0f2",
+      "source": {
+        "node": "8a80cee7-4210-47e5-b12e-01afdff8cbff",
+        "port": "out"
+      },
+      "target": {
+        "node": "16bcf898-ea47-4f91-a553-90d0f2662da3",
+        "port": "in"
+      }
+    },
+    {
+      "id": "268f46f6-3e41-47a0-bc74-a66dd26873e3",
+      "source": {
+        "node": "79972924-ce2d-4931-84e0-0b4242e3e726",
+        "port": "profile"
+      },
+      "target": {
+        "node": "2c2d23ca-34d4-4763-b7e7-daf55526c966",
+        "port": "profile"
+      }
+    },
+    {
+      "id": "2794fdcd-ceb5-4493-a5df-6422030fa39f",
+      "source": {
+        "node": "7e2aa47d-fade-42d7-8090-8c0783b6f081",
+        "port": "count"
+      },
+      "target": {
+        "node": "651c9714-3ab5-4486-913e-06fb582b98a8",
+        "port": "limit"
+      }
+    },
+    {
+      "id": "4422deb9-1db1-4f6a-9bf7-83ffad7fd810",
+      "source": {
+        "node": "16bcf898-ea47-4f91-a553-90d0f2662da3",
+        "port": "use"
+      },
+      "target": {
+        "node": "2c50a2e6-6bbd-4857-8c09-a8aca8105a25",
+        "port": "use"
+      }
+    },
+    {
+      "id": "45c07504-b53e-4665-b431-6057cc075a7e",
+      "source": {
+        "node": "e14ee3d5-0dfd-4c75-9a77-dee04463233d",
+        "port": "value"
+      },
+      "target": {
+        "node": "feb04e8c-d4b6-43a7-9550-bec8e56669a4",
+        "port": "target"
+      }
+    },
+    {
+      "id": "47ff789d-9eb5-411c-b58d-a1a675f98bec",
+      "source": {
+        "node": "e14ee3d5-0dfd-4c75-9a77-dee04463233d",
+        "port": "value"
+      },
+      "target": {
+        "node": "903970b4-494f-44b2-8073-c10bacb63fa4",
+        "port": "duration"
+      }
+    },
+    {
+      "id": "4c933a19-ad12-45a5-9163-a35cef5aa470",
+      "source": {
+        "node": "ae7c0109-506d-4b82-8b60-53131e07d08a",
+        "port": "range"
+      },
+      "target": {
+        "node": "79972924-ce2d-4931-84e0-0b4242e3e726",
+        "port": "range"
+      }
+    },
+    {
+      "id": "516d59ef-1189-4a89-82e5-25d3b9a31ed7",
+      "source": {
+        "node": "2b59b8de-da1d-4bf9-9455-7e9fbd782104",
+        "port": "range"
+      },
+      "target": {
+        "node": "555523d8-ca62-48e6-a37e-46b0fe396dd5",
+        "port": "target"
+      }
+    },
+    {
+      "id": "52bff84a-f331-4192-9970-fe67b22eacf4",
+      "source": {
+        "node": "c6438519-addd-462a-bfa8-85710d44cdcb",
+        "port": "program"
+      },
+      "target": {
+        "node": "8a80cee7-4210-47e5-b12e-01afdff8cbff",
+        "port": "program"
+      }
+    },
+    {
+      "id": "54bd1fc5-2e79-4ed0-8229-a797528458a5",
+      "source": {
+        "node": "dda079e2-d0c1-4ab4-84c3-eda4cb7cb440",
+        "port": "value"
+      },
+      "target": {
+        "node": "48210d45-f7d9-45ed-807e-60d96ef9cc97",
+        "port": "duration"
+      }
+    },
+    {
+      "id": "55648820-036a-45da-8427-16546c266296",
+      "source": {
+        "node": "585d1361-b79a-4485-ad56-9ffdea839d47",
+        "port": "condition"
+      },
+      "target": {
+        "node": "555523d8-ca62-48e6-a37e-46b0fe396dd5",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "57c44fed-b193-4a29-bd49-993563f9a261",
+      "source": {
+        "node": "d7b5501f-f18e-48b7-8a7c-f84a3b029044",
+        "port": "plan"
+      },
+      "target": {
+        "node": "09a8b85a-1de0-4e77-af2d-39b99c86b84f",
+        "port": "body"
+      }
+    },
+    {
+      "id": "5b3443ce-74f6-433a-bbcd-31f31965713e",
+      "source": {
+        "node": "6bc71aed-11e9-43c5-bb81-7bb498b2c502",
+        "port": "condition"
+      },
+      "target": {
+        "node": "50940375-7df0-4e66-9b97-dcbaf5536117",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "5e9e9032-a522-4014-bce5-cf551e060dac",
+      "source": {
+        "node": "e21723c7-3153-4b39-a3ea-b45ddaff9295",
+        "port": "range"
+      },
+      "target": {
+        "node": "79972924-ce2d-4931-84e0-0b4242e3e726",
+        "port": "detection"
+      }
+    },
+    {
+      "id": "619ae0f4-8b69-4389-b350-642aa3592bf1",
+      "source": {
+        "node": "09a8b85a-1de0-4e77-af2d-39b99c86b84f",
+        "port": "plan"
+      },
+      "target": {
+        "node": "b255527b-ec98-4345-8614-f0fc784599a1",
+        "port": "body"
+      }
+    },
+    {
+      "id": "69407ad9-be66-4a76-9f62-496f4fc27eef",
+      "source": {
+        "node": "a1d2b08e-0d58-4933-bddb-5be7bb6f414f",
+        "port": "value"
+      },
+      "target": {
+        "node": "ba2a79b6-ed32-4af1-9f1c-e6ba6f3c30c4",
+        "port": "target"
+      }
+    },
+    {
+      "id": "699d4520-9055-43a9-87b9-7c7fb6714ea2",
+      "source": {
+        "node": "2857c2ac-4bcd-41f2-af2d-3c531b1a095a",
+        "port": "value"
+      },
+      "target": {
+        "node": "50940375-7df0-4e66-9b97-dcbaf5536117",
+        "port": "duration"
+      }
+    },
+    {
+      "id": "6a401c0f-b114-4c21-9ee6-0d7b46b5fb60",
+      "source": {
+        "node": "57a3ae14-6934-4d71-b46c-592434de9526",
+        "port": "power"
+      },
+      "target": {
+        "node": "79972924-ce2d-4931-84e0-0b4242e3e726",
+        "port": "power"
+      }
+    },
+    {
+      "id": "70a34403-3156-4277-9c2f-920294456804",
+      "source": {
+        "node": "caa63458-55b5-45ad-b8e4-88a29e02adce",
+        "port": "range"
+      },
+      "target": {
+        "node": "a14d56c2-be45-4fad-b955-04b3304cc4c0",
+        "port": "replacement"
+      }
+    },
+    {
+      "id": "73fe76c2-2feb-4184-8878-c89ac85402eb",
+      "source": {
+        "node": "651c9714-3ab5-4486-913e-06fb582b98a8",
+        "port": "plan"
+      },
+      "target": {
+        "node": "b255527b-ec98-4345-8614-f0fc784599a1",
+        "port": "after"
+      }
+    },
+    {
+      "id": "7e24d940-f676-48a5-bafd-574ac6a953b0",
+      "source": {
+        "node": "e18dd066-1bfa-4093-a02e-a26604fe41f7",
+        "port": "condition"
+      },
+      "target": {
+        "node": "feb04e8c-d4b6-43a7-9550-bec8e56669a4",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "80d3aa39-aeab-4adc-8cf4-e6534e09cf7c",
+      "source": {
+        "node": "b255527b-ec98-4345-8614-f0fc784599a1",
+        "port": "plan"
+      },
+      "target": {
+        "node": "c6438519-addd-462a-bfa8-85710d44cdcb",
+        "port": "plan"
+      }
+    },
+    {
+      "id": "846052c3-ab7d-4421-9bae-cbfd07059ac5",
+      "source": {
+        "node": "2ffff399-042a-4e5d-8e26-7939a1bbaa9f",
+        "port": "requirement"
+      },
+      "target": {
+        "node": "8a80cee7-4210-47e5-b12e-01afdff8cbff",
+        "port": "requirement"
+      }
+    },
+    {
+      "id": "8aca53e9-d14d-4f9e-bd78-dfd3dabd3821",
+      "source": {
+        "node": "075c0704-7d7a-4062-8862-1a17a721dc04",
+        "port": "settings"
+      },
+      "target": {
+        "node": "f8671376-6206-4be3-9302-00401ec36bda",
+        "port": "settings"
+      }
+    },
+    {
+      "id": "8e064a32-ebfa-4a14-8a9e-f73b0ea71f9b",
+      "source": {
+        "node": "a01a948e-a786-425c-ae80-40d5dfbd0e1b",
+        "port": "out"
+      },
+      "target": {
+        "node": "8a80cee7-4210-47e5-b12e-01afdff8cbff",
+        "port": "in"
+      }
+    },
+    {
+      "id": "912f54df-5d4e-4bf8-81b9-10b2011b4d2b",
+      "source": {
+        "node": "79972924-ce2d-4931-84e0-0b4242e3e726",
+        "port": "profile"
+      },
+      "target": {
+        "node": "651c9714-3ab5-4486-913e-06fb582b98a8",
+        "port": "profile"
+      }
+    },
+    {
+      "id": "9224cc51-abca-4261-afbe-566459c0ed4b",
+      "source": {
+        "node": "3d393aa9-5a8d-497f-a2ae-ea772379c4e3",
+        "port": "condition"
+      },
+      "target": {
+        "node": "48210d45-f7d9-45ed-807e-60d96ef9cc97",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "9357e565-ac0f-44a0-b63f-f4c1629acaba",
+      "source": {
+        "node": "fb762f76-3211-4944-bda2-9e051d0db7bd",
+        "port": "status"
+      },
+      "target": {
+        "node": "2c2d23ca-34d4-4763-b7e7-daf55526c966",
+        "port": "states"
+      }
+    },
+    {
+      "id": "97f2be36-5fed-4b8b-827e-0aeece3fb291",
+      "source": {
+        "node": "f8671376-6206-4be3-9302-00401ec36bda",
+        "port": "snapshot"
+      },
+      "target": {
+        "node": "8a80cee7-4210-47e5-b12e-01afdff8cbff",
+        "port": "snapshot"
+      }
+    },
+    {
+      "id": "98e61db5-5e86-4c8d-a56d-7c215734ea0a",
+      "source": {
+        "node": "03307be9-7b63-4602-9988-fbff20e25e5b",
+        "port": "selection"
+      },
+      "target": {
+        "node": "a01a948e-a786-425c-ae80-40d5dfbd0e1b",
+        "port": "selection"
+      }
+    },
+    {
+      "id": "9b6e6d94-851c-4176-a7c6-cb87ea0d720b",
+      "source": {
+        "node": "903970b4-494f-44b2-8073-c10bacb63fa4",
+        "port": "status"
+      },
+      "target": {
+        "node": "2c2d23ca-34d4-4763-b7e7-daf55526c966",
+        "port": "states"
+      }
+    },
+    {
+      "id": "9de375a8-19d1-4111-909b-3de1073b1320",
+      "source": {
+        "node": "16bcf898-ea47-4f91-a553-90d0f2662da3",
+        "port": "out"
+      },
+      "target": {
+        "node": "2c50a2e6-6bbd-4857-8c09-a8aca8105a25",
+        "port": "in"
+      }
+    },
+    {
+      "id": "9e62850c-6e1a-4f99-84c0-f8d2a0390071",
+      "source": {
+        "node": "bbd8176c-7a58-4024-9681-5c08e09ffe42",
+        "port": "value"
+      },
+      "target": {
+        "node": "79972924-ce2d-4931-84e0-0b4242e3e726",
+        "port": "delay"
+      }
+    },
+    {
+      "id": "9f70894e-c231-4114-9f73-1768a8f19425",
+      "source": {
+        "node": "903970b4-494f-44b2-8073-c10bacb63fa4",
+        "port": "status"
+      },
+      "target": {
+        "node": "8d7476bc-b0d3-4df7-87db-4da9a270d2ee",
+        "port": "status"
+      }
+    },
+    {
+      "id": "a74b01c7-0a11-4c6b-b986-8bdd150dc2db",
+      "source": {
+        "node": "c6438519-addd-462a-bfa8-85710d44cdcb",
+        "port": "program"
+      },
+      "target": {
+        "node": "2c50a2e6-6bbd-4857-8c09-a8aca8105a25",
+        "port": "program"
+      }
+    },
+    {
+      "id": "abc45723-4991-48b6-8366-359df9b07fe0",
+      "source": {
+        "node": "ae7c0109-506d-4b82-8b60-53131e07d08a",
+        "port": "range"
+      },
+      "target": {
+        "node": "a14d56c2-be45-4fad-b955-04b3304cc4c0",
+        "port": "target"
+      }
+    },
+    {
+      "id": "ad926c2c-2938-4eaa-b089-4654422a2779",
+      "source": {
+        "node": "fb762f76-3211-4944-bda2-9e051d0db7bd",
+        "port": "status"
+      },
+      "target": {
+        "node": "903970b4-494f-44b2-8073-c10bacb63fa4",
+        "port": "blockedBy"
+      }
+    },
+    {
+      "id": "bb39af29-f53c-4f3f-97e1-1eaabe294f14",
+      "source": {
+        "node": "f8671376-6206-4be3-9302-00401ec36bda",
+        "port": "snapshot"
+      },
+      "target": {
+        "node": "266f4c5c-e5d3-4016-871e-18d1c35966b2",
+        "port": "snapshot"
+      }
+    },
+    {
+      "id": "c5486b2c-c227-44d6-bfc3-32ad2bd67d92",
+      "source": {
+        "node": "fb762f76-3211-4944-bda2-9e051d0db7bd",
+        "port": "status"
+      },
+      "target": {
+        "node": "09a8b85a-1de0-4e77-af2d-39b99c86b84f",
+        "port": "to"
+      }
+    },
+    {
+      "id": "c57f306e-7953-4cdb-81d2-2adf02c81013",
+      "source": {
+        "node": "e18dd066-1bfa-4093-a02e-a26604fe41f7",
+        "port": "condition"
+      },
+      "target": {
+        "node": "ba2a79b6-ed32-4af1-9f1c-e6ba6f3c30c4",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "c6b4250b-a86b-470f-9c1c-35adee2465bc",
+      "source": {
+        "node": "a1d2b08e-0d58-4933-bddb-5be7bb6f414f",
+        "port": "value"
+      },
+      "target": {
+        "node": "fb762f76-3211-4944-bda2-9e051d0db7bd",
+        "port": "duration"
+      }
+    },
+    {
+      "id": "cbebf37d-d3ce-4cd7-8209-4e21dd03deb1",
+      "source": {
+        "node": "79972924-ce2d-4931-84e0-0b4242e3e726",
+        "port": "profile"
+      },
+      "target": {
+        "node": "48210d45-f7d9-45ed-807e-60d96ef9cc97",
+        "port": "target"
+      }
+    },
+    {
+      "id": "d1071a72-31e3-417a-bf2a-abddb0978a5a",
+      "source": {
+        "node": "903970b4-494f-44b2-8073-c10bacb63fa4",
+        "port": "status"
+      },
+      "target": {
+        "node": "09a8b85a-1de0-4e77-af2d-39b99c86b84f",
+        "port": "from"
+      }
+    },
+    {
+      "id": "d79637b5-7864-4137-bcfb-026ccac02816",
+      "source": {
+        "node": "585d1361-b79a-4485-ad56-9ffdea839d47",
+        "port": "condition"
+      },
+      "target": {
+        "node": "a14d56c2-be45-4fad-b955-04b3304cc4c0",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "d7b8faf8-6085-4c79-b974-4cb1fe400786",
+      "source": {
+        "node": "2b59b8de-da1d-4bf9-9455-7e9fbd782104",
+        "port": "range"
+      },
+      "target": {
+        "node": "d7b5501f-f18e-48b7-8a7c-f84a3b029044",
+        "port": "range"
+      }
+    },
+    {
+      "id": "e881dcfb-be98-44a4-91a2-42666daaf241",
+      "source": {
+        "node": "8bcb02bd-14d4-4504-8f4a-aa6a1afa259f",
+        "port": "condition"
+      },
+      "target": {
+        "node": "6bf85645-e073-4d16-97fd-af806a7aa0f9",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "f06339a2-caa4-4f3c-998c-1385a5321ae4",
+      "source": {
+        "node": "7a1f6610-9e76-4915-8f2d-fbb3eba005a0",
+        "port": "power"
+      },
+      "target": {
+        "node": "d7b5501f-f18e-48b7-8a7c-f84a3b029044",
+        "port": "power"
+      }
+    }
+  ],
+  "frames": [
+    {
+      "id": "0556d231-f039-4ede-90e3-b2d0e3581415",
+      "title": "시작 → 대상·공명 자격 → 비용 확정 → 행동 → 종료"
+    },
+    {
+      "id": "12a7aa0d-1274-43ea-9ff9-0ab15e637f64",
+      "title": "자기 피해의 냉기 / 혹한 중 억제 / 타격 전 상태 변환"
+    },
+    {
+      "id": "37c233be-aab1-422e-9d9e-e76c9580e81f",
+      "title": "겨울의 유언 장착 조건 · 자기 상태 사망 1회 · 잔영 계보 제외"
+    },
+    {
+      "id": "5e5e7206-2653-46bb-8bef-7676ce82d286",
+      "title": "비저지 잔영 · 가까운 적 추격 · 지연 뒤 현재 위치 폭발"
+    },
+    {
+      "id": "c5885a36-6344-4f67-9449-2b9ee538d9b4",
+      "title": "장착 유물 → 냉기/혹한과 직접/잔영 효과 분리"
+    }
+  ]
+}

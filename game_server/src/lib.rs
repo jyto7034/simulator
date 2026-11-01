@@ -1,6 +1,6 @@
 use actix::{Addr, Message};
 use backoff::ExponentialBackoff;
-use game_core::game::data::GameDataBase;
+use game_core::game::data::ValidatedGameData;
 use std::io;
 use std::sync::Arc;
 use std::time::Duration;
@@ -17,10 +17,17 @@ lazy_static::lazy_static! {
     pub static ref RETRY_CONFIG: TokioRwLock<Option<ExponentialBackoff>> = TokioRwLock::new(None);
 }
 
+pub mod bootstrap;
 pub mod env;
+pub mod mod_admission;
+#[cfg(feature = "runtime-observation")]
+pub mod observability;
+#[cfg(any(feature = "runtime-measurement", feature = "cmva-lab-measurement"))]
+pub mod runtime_measurement;
 
 // Module groups
 pub mod game;
+pub mod persistence;
 pub mod shared; // Shared infrastructure modules
 
 pub struct LoggerManager {
@@ -118,5 +125,8 @@ pub struct AppState {
     pub load_balance_addr: Addr<LoadBalanceActor>,
     pub logger_manager: Arc<LoggerManager>,
     pub current_run_id: Uuid,
-    pub game_data: Arc<GameDataBase>,
+    pub approved_host: Arc<game_core::mod_validation::ApprovedHost>,
 }
+
+#[cfg(test)]
+mod test_support;

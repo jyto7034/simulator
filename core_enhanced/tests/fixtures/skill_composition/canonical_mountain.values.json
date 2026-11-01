@@ -1,0 +1,87 @@
+{
+  "purpose": "Explicit test completion only; not release balance.",
+  "values": {
+    "prepare-ms": 0,
+    "capacity": 100,
+    "control-duration-ms": 2001,
+    "speed-percent": 100,
+    "taken-reduction": 20,
+    "basic-bonus": 30,
+    "enlarged-mask": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXX",
+        "X@XX",
+        "XXXX",
+        "XXXX"
+      ]
+    },
+    "control-footprint": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXX",
+        "X@X",
+        "XXX"
+      ]
+    },
+    "fragment-rarity": "Common",
+    "fragment-equip-limit": "OwnedCopies",
+    "mass-gain-normal": 2,
+    "mass-gain-elite": 5,
+    "mass-gain-boss": 9,
+    "mass-damage": 10,
+    "shockwave-percent": 40,
+    "armor-range": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXX",
+        "X@X",
+        "XXX"
+      ]
+    },
+    "armor-per_enemy": 10,
+    "armor-max_bonus": 25,
+    "missing-hp-coefficient": 100,
+    "missing-hp-cap": 50,
+    "weapon-rarity": "ALEPH",
+    "weapon-price": 0,
+    "weapon-duplicate": true,
+    "shockwave-footprint": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXX",
+        "X@X",
+        "XXX"
+      ]
+    },
+    "weapon-attack": 10,
+    "weapon-block": 2,
+    "weapon-defense-focus": {
+      "block_capacity_bonus": 0,
+      "incoming_damage_reduction_percent": 0
+    },
+    "weapon-damage-type": "Physical",
+    "weapon-footprint": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXX",
+        "X@X",
+        "XXX"
+      ]
+    },
+    "weapon-interval-ms": 1500,
+    "weapon-windup-ms": 200,
+    "armor-rarity": "ALEPH",
+    "armor-price": 0,
+    "armor-duplicate": true,
+    "armor-MaxHealth": 0,
+    "armor-Defense": 0,
+    "armor-MagicResist": 0,
+    "accessory-rarity": "ALEPH",
+    "accessory-price": 0,
+    "accessory-duplicate": true,
+    "fragment-compatible-weapons": [
+      "Shield"
+    ]
+  }
+}

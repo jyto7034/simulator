@@ -135,15 +135,14 @@ pub fn focused_event_log_for_cast(event_log: &BattleEventLog, cast_seq: u64) -> 
         .max()
         .unwrap_or_default();
 
-    BattleEventLog {
-        version: event_log.version,
-        entries: event_log
+    BattleEventLog::from_entries(
+        event_log
             .entries
             .iter()
             .filter(|entry| entry.time_ms <= max_relevant_time_ms)
             .cloned()
             .collect(),
-    }
+    )
 }
 
 pub fn hp_changes_for_unit(

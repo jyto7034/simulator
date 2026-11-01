@@ -1,0 +1,943 @@
+.ng-shell {
+  height: calc(100dvh - 36px);
+  display: flex;
+  flex-direction: column;
+  color: var(--foreground);
+  background: var(--background);
+  font-size: 12px;
+}
+.ng-tile-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin: 10px 0;
+}
+.ng-tile-pan {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.ng-tile-pan button {
+  height: 26px;
+  padding: 0 7px;
+  font-size: 11px;
+}
+.ng-tile-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 28px);
+  gap: 2px;
+  padding: 3px;
+  align-self: flex-start;
+}
+.ng-tile-grid button {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--background);
+  color: var(--foreground);
+  cursor: pointer;
+}
+.ng-tile-grid button[aria-pressed="true"] {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+.ng-tile-grid .ng-tile-anchor {
+  border: 2px solid var(--foreground);
+}
+.ng-shell button:focus-visible,
+.ng-card:focus-visible,
+.ng-frame-title:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+.ng-header {
+  height: 58px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--border);
+}
+.ng-header > svg {
+  color: var(--primary);
+  flex: none;
+}
+.ng-document-title {
+  min-width: 60px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.ng-document-title strong {
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ng-document-title span {
+  color: var(--muted-foreground);
+  font-size: 10px;
+}
+.ng-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.ng-toolbar {
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 8px;
+  border-bottom: 1px solid var(--border);
+  background: var(--muted);
+  flex: none;
+}
+.ng-toolbar-separator {
+  height: 18px;
+  border-left: 1px solid var(--border);
+  margin: 0 4px;
+}
+.ng-toolbar button[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--accent-foreground);
+  box-shadow: inset 0 -2px var(--primary);
+}
+.ng-toolbar-count {
+  margin-left: auto;
+  white-space: nowrap;
+  font-size: 11px;
+  color: var(--foreground);
+}
+.ng-diagnostics-toggle {
+  padding: 5px 8px;
+  margin-left: 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+}
+.ng-body {
+  min-height: 0;
+  flex: 1;
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr) 252px;
+}
+.ng-palette,
+.ng-inspector {
+  min-height: 0;
+  overflow-y: auto;
+  background: var(--sidebar);
+  padding: 10px;
+}
+.ng-palette {
+  border-right: 1px solid var(--border);
+}
+.ng-navigator {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+  font-size: 11px;
+}
+.ng-navigator select {
+  width: 100%;
+  min-width: 0;
+  padding: 6px;
+  border: 1px solid var(--input);
+  border-radius: 4px;
+  background: var(--background);
+  color: var(--foreground);
+  text-overflow: ellipsis;
+}
+.ng-inspector {
+  border-left: 1px solid var(--border);
+}
+.ng-panel-heading {
+  min-height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  margin-bottom: 8px;
+}
+.ng-panel-heading small {
+  font-size: 10px;
+  color: var(--muted-foreground);
+}
+.ng-search {
+  position: relative;
+}
+.ng-search > svg {
+  position: absolute;
+  top: 8px;
+  left: 7px;
+  color: var(--muted-foreground);
+}
+.ng-search input {
+  height: 29px;
+  font-size: 11px;
+  padding-left: 24px;
+}
+.ng-palette section {
+  margin-top: 14px;
+}
+.ng-palette h3,
+.ng-related h3 {
+  font-size: 11px;
+  color: var(--muted-foreground);
+  margin: 0 0 6px;
+  font-weight: 600;
+}
+.ng-palette section > button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  width: 100%;
+  padding: 6px 7px;
+  margin: 3px 0;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--ng-category, var(--primary));
+  border-radius: 4px;
+  text-align: left;
+  background: var(--background);
+  cursor: pointer;
+}
+.ng-palette section > button:hover,
+.ng-picker-list button:hover {
+  background: var(--accent);
+}
+.ng-shell button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+[data-category="값"] {
+  --ng-category: #5e799e;
+}
+[data-category="계산"] {
+  --ng-category: #8d759e;
+}
+[data-category="실행"] {
+  --ng-category: #a87f40;
+}
+[data-category="정리"] {
+  --ng-category: #658c7a;
+}
+[data-category="스킬 상태"] {
+  --ng-category: #658c7a;
+}
+[data-category="스킬 값"] {
+  --ng-category: #5e799e;
+}
+[data-category="스킬 사건"],
+[data-category="스킬 동작"] {
+  --ng-category: #a87f40;
+}
+[data-category="연출"] {
+  --ng-category: #8d759e;
+}
+.ng-type-skill-state,
+.ng-type-skill-activation {
+  --ng-port: #65a086;
+}
+.ng-type-seconds,
+.ng-type-attack-profile,
+.ng-type-area-profile,
+.ng-type-damage-power {
+  --ng-port: #6e86a7;
+}
+.ng-type-presentation-event {
+  --ng-port: #a8789c;
+}
+.ng-type-presentation-event .react-flow__edge-path {
+  stroke-dasharray: 6 4;
+}
+.ng-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+.ng-canvas {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  background: var(--muted);
+}
+.ng-canvas .react-flow {
+  --xy-background-color: var(--muted);
+  --xy-background-pattern-dots-color: var(--border);
+  --xy-controls-button-background-color: var(--background);
+  --xy-controls-button-background-color-hover: var(--accent);
+  --xy-controls-button-color: var(--foreground);
+  --xy-controls-button-border-color: var(--border);
+  --xy-attribution-background-color: var(--background);
+}
+.ng-canvas .react-flow__attribution {
+  font-size: 9px;
+  padding: 1px 4px;
+}
+.ng-canvas .react-flow__attribution a {
+  color: var(--muted-foreground);
+}
+.ng-card {
+  height: 100%;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--foreground);
+  box-shadow: 0 2px 4px #0000000a;
+}
+.ng-card[data-selected="true"] {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+.ng-card[data-entry="true"] {
+  border-left: 3px solid var(--primary);
+}
+.ng-role-label {
+  height: 24px;
+  display: flex;
+  align-items: center;
+  padding: 0 9px;
+  color: var(--foreground);
+  background: var(--muted);
+  border-top: 3px solid var(--ng-category, var(--primary));
+  border-radius: 4px 4px 0 0;
+  font-size: 11px;
+  font-weight: 600;
+}
+.ng-card[data-entry="true"] .ng-role-label {
+  color: var(--primary-foreground);
+  background: var(--primary);
+  border-top: 0;
+}
+.ng-card[data-role] .ng-drag-handle {
+  border-top: 0;
+  border-radius: 0;
+}
+.ng-drag-handle {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  border-radius: 5px 5px 0 0;
+  border-top: 3px solid var(--ng-category, var(--primary));
+  border-bottom: 1px solid var(--border);
+  background: var(--muted);
+  cursor: grab;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+  gap: 4px;
+}
+.ng-drag-handle span {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow-wrap: anywhere;
+}
+.ng-drag-handle small {
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 0 4px;
+  font-size: 10px;
+}
+.ng-ports {
+  padding: 4px 0;
+}
+.ng-port-row {
+  height: 44px;
+  display: flex;
+  justify-content: space-between;
+}
+.ng-port-row > div {
+  position: relative;
+  width: 50%;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+.ng-output {
+  align-items: flex-end !important;
+}
+.ng-port-row button {
+  font-size: 12px;
+  cursor: crosshair;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--foreground);
+}
+.ng-handle {
+  width: 11px;
+  height: 11px;
+  min-width: 11px;
+  min-height: 11px;
+  border: 2px solid var(--background);
+  background: var(--ng-port, #788da7);
+}
+.ng-type-number {
+  --ng-port: #6e86a7;
+}
+.ng-type-boolean {
+  --ng-port: #a8789c;
+}
+.ng-type-text {
+  --ng-port: #65a086;
+}
+.ng-type-flow {
+  --ng-port: #be9355;
+}
+.ng-type-flow.ng-handle {
+  border-radius: 2px;
+}
+.ng-edge .react-flow__edge-path {
+  stroke: var(--ng-port, var(--muted-foreground));
+  stroke-width: 2;
+}
+.ng-edge.selected .react-flow__edge-path,
+.ng-edge-connected .react-flow__edge-path {
+  stroke: var(--primary);
+  stroke-width: 3;
+}
+.ng-node-values {
+  padding: 0 10px;
+}
+.ng-node-values > div {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+}
+.ng-node-values span {
+  color: var(--muted-foreground);
+  flex: none;
+}
+.ng-node-values .ng-field-value {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: right;
+  border-radius: 3px;
+  padding: 2px 5px;
+  cursor: pointer;
+}
+.ng-frame {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: color-mix(in oklch, var(--primary) 5%, transparent);
+}
+.ng-frame.selected {
+  border-color: var(--primary);
+}
+.ng-frame-title .ng-drag-handle {
+  width: 100%;
+  height: 30px;
+  border-top: 0;
+  background: transparent;
+}
+.ng-frame-title {
+  color: var(--muted-foreground);
+}
+.ng-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  pointer-events: none;
+  color: var(--muted-foreground);
+}
+.ng-empty strong {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--foreground);
+}
+.ng-inspector label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 12px;
+  font-size: 11px;
+}
+.ng-inspector input,
+.ng-inspector select,
+.ng-inspector textarea,
+.ng-target-select {
+  width: 100%;
+  border: 1px solid var(--input);
+  background: var(--background);
+  border-radius: 4px;
+  min-height: 30px;
+  padding: 5px 7px;
+  color: var(--foreground);
+  font-size: 12px;
+}
+.ng-inspector textarea {
+  resize: vertical;
+  max-height: 180px;
+}
+.ng-inspector select {
+  text-overflow: ellipsis;
+}
+.ng-coordinate-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.ng-form-actions {
+  display: flex;
+  gap: 6px;
+}
+.ng-node-kind {
+  font-size: 11px;
+  color: var(--muted-foreground);
+  margin-bottom: 12px;
+}
+.ng-muted {
+  color: var(--muted-foreground);
+  font-size: 11px;
+  line-height: 1.8;
+  margin: 8px 0;
+  overflow-wrap: anywhere;
+}
+.ng-draft-hint {
+  font-size: 11px;
+  color: var(--primary);
+  margin-top: 8px;
+}
+.ng-state-connections {
+  margin: 12px 0 18px;
+  padding: 12px 0;
+  border-block: 1px solid var(--border);
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+.ng-state-connections h3 {
+  margin: 12px 0 5px;
+  font-weight: 600;
+}
+.ng-state-connections button {
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  padding: 4px 0;
+  max-width: 100%;
+}
+.ng-state-connections button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.ng-state-application + .ng-state-application {
+  border-top: 1px solid var(--border);
+  margin-top: 8px;
+}
+.ng-state-connections dl {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  align-items: baseline;
+  gap: 3px 8px;
+}
+.ng-state-connections dt {
+  color: var(--muted-foreground);
+}
+.ng-state-value {
+  display: block;
+}
+.ng-state-connections ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.ng-related {
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.ng-related > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  border-bottom: 1px solid var(--border);
+  padding: 7px 0;
+  font-size: 11px;
+}
+.ng-related > div > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ng-related small {
+  color: var(--muted-foreground);
+}
+.ng-related button {
+  padding: 3px 6px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  cursor: pointer;
+  flex: none;
+}
+.ng-diagnostics {
+  flex: none;
+  max-height: 145px;
+  overflow: auto;
+  padding: 9px 12px;
+  border-top: 1px solid var(--border);
+  background: var(--background);
+}
+.ng-diagnostics > strong {
+  display: block;
+  font-size: 11px;
+  margin-bottom: 5px;
+}
+.ng-diagnostics p {
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+.ng-diagnostics button {
+  display: block;
+  padding: 5px 0;
+  text-align: left;
+  font-size: 11px;
+  cursor: pointer;
+}
+.ng-status {
+  min-height: 29px;
+  flex: none;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 5px 10px;
+  border-top: 1px solid var(--border);
+  font-size: 10px;
+}
+.ng-status > span {
+  min-width: 0;
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+.ng-status [data-error="true"] {
+  color: var(--destructive);
+}
+.ng-status small {
+  flex: none;
+  color: var(--muted-foreground);
+  font-size: 10px;
+}
+.ng-status button {
+  text-decoration: underline;
+  cursor: pointer;
+}
+.ng-loading {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 14px;
+}
+.ng-picker-dialog {
+  max-width: 420px;
+}
+
+.ng-content-dialog {
+  width: min(620px, calc(100vw - 32px));
+  max-width: 620px;
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+}
+.ng-content-path {
+  overflow-wrap: anywhere;
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+.ng-content-list {
+  max-height: min(320px, 40dvh);
+  overflow-y: auto;
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+}
+.ng-content-list button {
+  padding: 10px;
+  text-align: left;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+.ng-content-list button:hover {
+  background: var(--accent);
+}
+.ng-content-list button:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+}
+.ng-content-filename {
+  display: grid;
+  gap: 8px;
+  font-size: 13px;
+}
+.ng-content-error {
+  color: var(--destructive);
+  overflow-wrap: anywhere;
+  font-size: 13px;
+}
+.ng-picker-list {
+  max-height: 310px;
+  overflow: auto;
+}
+.ng-picker-list button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 7px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.ng-picker-list small {
+  color: var(--muted-foreground);
+  font-size: 10px;
+}
+@media (max-width: 1100px) {
+  .ng-body {
+    grid-template-columns: 150px minmax(0, 1fr) 228px;
+  }
+  .ng-toolbar {
+    gap: 0;
+  }
+  .ng-header {
+    padding: 0 9px;
+    gap: 7px;
+  }
+  .ng-toolbar-count {
+    font-size: 10px;
+  }
+}
+
+.ng-group-toolbar,
+.ng-group-name-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.ng-content-hint {
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+.ng-group-editor {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.ng-group-editor > button {
+  justify-self: start;
+}
+.ng-group-edit-scroll {
+  max-height: min(290px, 34dvh);
+  overflow-y: auto;
+  display: grid;
+  gap: 8px;
+}
+.ng-group-name-row input {
+  min-width: 0;
+}
+.ng-group-name-row button {
+  flex-shrink: 0;
+}
+.ng-group-assignments {
+  display: grid;
+  gap: 4px;
+}
+.ng-group-assignment {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 160px;
+  gap: 12px;
+  align-items: center;
+  border-top: 1px solid var(--border);
+  padding: 8px 0;
+  font-size: 12px;
+}
+.ng-group-assignment span {
+  overflow-wrap: anywhere;
+}
+.ng-group-assignment select {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 6px;
+  background: var(--background);
+  color: var(--foreground);
+}
+.ng-group-assignment select:focus-visible,
+.ng-content-group summary:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+}
+.ng-content-group {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+.ng-content-group summary {
+  cursor: pointer;
+  padding: 10px;
+  overflow-wrap: anywhere;
+}
+.ng-content-group summary small {
+  margin-left: 8px;
+  color: var(--muted-foreground);
+}
+.ng-content-group-files,
+.ng-content-ungrouped {
+  display: grid;
+  gap: 4px;
+}
+.ng-content-group-files {
+  padding: 0 8px 8px;
+}
+.ng-content-group-files p {
+  padding: 8px;
+  color: var(--muted-foreground);
+}
+
+.ng-input-source {
+  color: var(--muted-foreground) !important;
+  cursor: pointer !important;
+  font-size: 11px !important;
+  text-align: left;
+}
+.ng-input-source:hover,
+.ng-field-value:hover {
+  background: var(--accent);
+  color: var(--accent-foreground) !important;
+}
+.ng-field-value:focus-visible,
+.ng-input-source:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+.ng-edge.ng-type-flow .react-flow__edge-path {
+  stroke-width: 3;
+}
+.ng-field-dialog {
+  display: grid;
+  gap: 16px;
+}
+.ng-field-dialog label {
+  display: grid;
+  gap: 8px;
+}
+.ng-field-dialog select,
+.ng-field-dialog textarea {
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px;
+}
+.ng-field-dialog [role="alert"] {
+  color: var(--destructive);
+  font-size: 13px;
+}
+
+.ng-optional-inputs {
+  display: block;
+  width: 100%;
+  height: 32px;
+  border-top: 1px solid var(--border);
+  color: var(--muted-foreground);
+  text-align: left;
+  padding: 0 12px;
+  font-size: 12px;
+}
+.ng-optional-inputs:hover {
+  color: var(--foreground);
+  background: var(--muted);
+}
+
+.ng-compiler-dialog {
+  width: min(600px, calc(100vw - 32px));
+  max-width: min(600px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+}
+.ng-compiler-document {
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.ng-compiler-status {
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--muted);
+}
+.ng-compiler-message {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.ng-compiler-diagnostics {
+  max-height: 38vh;
+  overflow: auto;
+  display: grid;
+  gap: 8px;
+}
+.ng-compiler-diagnostics > div {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+.ng-compiler-diagnostics button {
+  height: auto;
+  min-height: 40px;
+  width: 100%;
+  justify-content: flex-start;
+  white-space: normal;
+  text-align: left;
+}
+.ng-compiler-diagnostics small {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted-foreground);
+  overflow-wrap: anywhere;
+}
+.ng-compiler-diagnostics details {
+  margin: 4px 12px;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.ng-compiler-diagnostics summary {
+  cursor: pointer;
+  color: var(--muted-foreground);
+}
+.ng-compiler-dialog button[data-variant="default"]:hover {
+  background: var(--primary);
+}
+.ng-compiler-diagnostics button:hover small,
+.ng-compiler-diagnostics button:focus-visible small {
+  color: var(--foreground);
+}

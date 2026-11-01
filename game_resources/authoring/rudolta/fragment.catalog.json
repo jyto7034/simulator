@@ -1,0 +1,46 @@
+{
+  "id": "fragment_rudolta_trace",
+  "uuid": "730e8400-e29b-41d4-a716-446655440044",
+  "name": "악의의 선물",
+  "description": "현행 작성 원본. 미정 출시 값은 명시적 시험 사본과 구분한다.",
+  "rarity": {
+    "Unresolved": "rarity"
+  },
+  "equip_limit": {
+    "Unresolved": "equip_limit"
+  },
+  "origin": {
+    "Abnormality": {
+      "abnormality_id": "f-02-49_rudolta"
+    }
+  },
+  "sources": [
+    {
+      "AbnormalityContainment": {
+        "abnormality_id": "f-02-49_rudolta"
+      }
+    }
+  ],
+  "dependencies": [
+    {
+      "SourceAbnormality": {
+        "abnormality_id": "f-02-49_rudolta"
+      }
+    }
+  ],
+  "compatibility": {
+    "Unresolved": "compatibility"
+  },
+  "effect": {
+    "ActiveSkill": {
+      "forms": {
+        "base": {
+          "skill_id": "fragment_rudolta_malicious_gifts",
+          "resonance_max": {
+            "Unresolved": "capacity"
+          }
+        }
+      }
+    }
+  }
+}

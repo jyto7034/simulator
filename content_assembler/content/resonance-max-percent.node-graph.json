@@ -1,0 +1,309 @@
+{
+  "format": "node-graph",
+  "version": 1,
+  "id": "a59a2fde-82e8-4f39-b58d-72d7de9c3a87",
+  "name": "검증 예제 · 공명 최대량 비율",
+  "nodes": [
+    {
+      "id": "14b0a523-78c7-45c5-93a0-7a69bf536e00",
+      "kind": "skill-resonance-end",
+      "title": "사용 완료",
+      "position": {
+        "x": 3120,
+        "y": 80
+      },
+      "values": {},
+      "note": "",
+      "frame": "45ea9028-c786-4745-ae45-aeb4b3e52259"
+    },
+    {
+      "id": "2fbe548a-9c25-469a-a6b4-708e8379d7af",
+      "kind": "skill-resonance-result",
+      "title": "첫 지불 결과",
+      "position": {
+        "x": 2680,
+        "y": 149
+      },
+      "values": {},
+      "note": "",
+      "frame": "45ea9028-c786-4745-ae45-aeb4b3e52259"
+    },
+    {
+      "id": "39c3df31-7a70-460b-90ff-acbe18af3c1d",
+      "kind": "skill-resonance-settings",
+      "title": "공명 저장 설정",
+      "position": {
+        "x": 480,
+        "y": 491.7714285714286
+      },
+      "values": {},
+      "note": "",
+      "frame": "45ea9028-c786-4745-ae45-aeb4b3e52259"
+    },
+    {
+      "id": "411e6c96-d893-4172-83a5-c4956f84710c",
+      "kind": "skill-resonance-admit",
+      "title": "접수와 첫 지불",
+      "position": {
+        "x": 2240,
+        "y": 243.33333333333331
+      },
+      "values": {},
+      "note": "",
+      "frame": "45ea9028-c786-4745-ae45-aeb4b3e52259"
+    },
+    {
+      "id": "43bf4174-485e-4e9b-affb-48b12168ac78",
+      "kind": "skill-resonance-requirement",
+      "title": "사용 공명 조건",
+      "position": {
+        "x": 1360,
+        "y": 660.0333333333333
+      },
+      "values": {
+        "mode": "payable"
+      },
+      "note": "",
+      "frame": "45ea9028-c786-4745-ae45-aeb4b3e52259"
+    },
+    {
+      "id": "6590a47e-d5e3-4805-ad5f-4ab1056d75ec",
+      "kind": "skill-resonance-amount",
+      "title": "검증 저장 상한",
+      "position": {
+        "x": 40,
+        "y": 473.7714285714286
+      },
+      "values": {
+        "value": 100
+      },
+      "note": "",
+      "frame": "45ea9028-c786-4745-ae45-aeb4b3e52259"
+    },
+    {
+      "id": "69006578-fc70-4f5d-9089-2f0438cc36e2",
+      "kind": "skill-resonance-read",
+      "title": "요청의 공명 조회",
+      "position": {
+        "x": 920,
+        "y": 484.1047619047619
+      },
+      "values": {},
+      "note": "",
+      "frame": "45ea9028-c786-4745-ae45-aeb4b3e52259"
+    },
+    {
+      "id": "6cb57f6e-9955-468d-ac28-7292d8f28463",
+      "kind": "skill-resonance-cost",
+      "title": "첫 지불 비용",
+      "position": {
+        "x": 1360,
+        "y": 146.0333333333333
+      },
+      "values": {
+        "minimumCost": 0,
+        "mode": "max-percent",
+        "percent": 25
+      },
+      "note": "",
+      "frame": "45ea9028-c786-4745-ae45-aeb4b3e52259"
+    },
+    {
+      "id": "d3bb04f0-d51a-4e85-89d7-3065070766a3",
+      "kind": "skill-resonance-qualify",
+      "title": "사용 자격 검사",
+      "position": {
+        "x": 1800,
+        "y": 326.8333333333333
+      },
+      "values": {},
+      "note": "",
+      "frame": "45ea9028-c786-4745-ae45-aeb4b3e52259"
+    },
+    {
+      "id": "dff0f6f2-c14f-406f-a5e6-30f1c02cda67",
+      "kind": "skill-request",
+      "title": "검증 사용 요청",
+      "position": {
+        "x": 480,
+        "y": 731.0333333333333
+      },
+      "values": {},
+      "note": "",
+      "frame": "45ea9028-c786-4745-ae45-aeb4b3e52259"
+    }
+  ],
+  "edges": [
+    {
+      "id": "34164cc3-edd3-406e-8be1-54dc0b8f0c28",
+      "source": {
+        "node": "411e6c96-d893-4172-83a5-c4956f84710c",
+        "port": "use"
+      },
+      "target": {
+        "node": "14b0a523-78c7-45c5-93a0-7a69bf536e00",
+        "port": "use"
+      }
+    },
+    {
+      "id": "3531dcac-5a11-4957-8b31-52c62bc8a984",
+      "source": {
+        "node": "d3bb04f0-d51a-4e85-89d7-3065070766a3",
+        "port": "permit"
+      },
+      "target": {
+        "node": "411e6c96-d893-4172-83a5-c4956f84710c",
+        "port": "permit"
+      }
+    },
+    {
+      "id": "5c2d8fa3-df63-481b-8daa-e582f39e6606",
+      "source": {
+        "node": "dff0f6f2-c14f-406f-a5e6-30f1c02cda67",
+        "port": "out"
+      },
+      "target": {
+        "node": "d3bb04f0-d51a-4e85-89d7-3065070766a3",
+        "port": "in"
+      }
+    },
+    {
+      "id": "726161d9-85c3-408f-9947-c8b0e88ff3cf",
+      "source": {
+        "node": "dff0f6f2-c14f-406f-a5e6-30f1c02cda67",
+        "port": "request"
+      },
+      "target": {
+        "node": "69006578-fc70-4f5d-9089-2f0438cc36e2",
+        "port": "request"
+      }
+    },
+    {
+      "id": "7966644c-5e7d-4888-babb-14c324a728aa",
+      "source": {
+        "node": "dff0f6f2-c14f-406f-a5e6-30f1c02cda67",
+        "port": "request"
+      },
+      "target": {
+        "node": "d3bb04f0-d51a-4e85-89d7-3065070766a3",
+        "port": "request"
+      }
+    },
+    {
+      "id": "97d77b45-b293-482d-abe2-ac4210dc6de6",
+      "source": {
+        "node": "411e6c96-d893-4172-83a5-c4956f84710c",
+        "port": "out"
+      },
+      "target": {
+        "node": "2fbe548a-9c25-469a-a6b4-708e8379d7af",
+        "port": "in"
+      }
+    },
+    {
+      "id": "b8076837-a0c2-4f89-882a-ad05d8eca687",
+      "source": {
+        "node": "d3bb04f0-d51a-4e85-89d7-3065070766a3",
+        "port": "out"
+      },
+      "target": {
+        "node": "411e6c96-d893-4172-83a5-c4956f84710c",
+        "port": "in"
+      }
+    },
+    {
+      "id": "cddfa330-9642-4889-ba5e-998816953bc1",
+      "source": {
+        "node": "6cb57f6e-9955-468d-ac28-7292d8f28463",
+        "port": "cost"
+      },
+      "target": {
+        "node": "d3bb04f0-d51a-4e85-89d7-3065070766a3",
+        "port": "cost"
+      }
+    },
+    {
+      "id": "e2f557c7-1338-4b07-bf7a-be70fcc1d24d",
+      "source": {
+        "node": "6590a47e-d5e3-4805-ad5f-4ab1056d75ec",
+        "port": "value"
+      },
+      "target": {
+        "node": "39c3df31-7a70-460b-90ff-acbe18af3c1d",
+        "port": "capacity"
+      }
+    },
+    {
+      "id": "f076b5a0-9920-4c8d-9e0c-799f52b8f71b",
+      "source": {
+        "node": "411e6c96-d893-4172-83a5-c4956f84710c",
+        "port": "receipt"
+      },
+      "target": {
+        "node": "2fbe548a-9c25-469a-a6b4-708e8379d7af",
+        "port": "receipt"
+      }
+    },
+    {
+      "id": "f4cedd97-955a-443c-afb1-9cceb105030d",
+      "source": {
+        "node": "69006578-fc70-4f5d-9089-2f0438cc36e2",
+        "port": "snapshot"
+      },
+      "target": {
+        "node": "6cb57f6e-9955-468d-ac28-7292d8f28463",
+        "port": "snapshot"
+      }
+    },
+    {
+      "id": "f5e506fe-191e-49ae-8716-e64418356d59",
+      "source": {
+        "node": "39c3df31-7a70-460b-90ff-acbe18af3c1d",
+        "port": "settings"
+      },
+      "target": {
+        "node": "69006578-fc70-4f5d-9089-2f0438cc36e2",
+        "port": "settings"
+      }
+    },
+    {
+      "id": "f84906e9-59d2-487a-a0ce-62b5f188ee14",
+      "source": {
+        "node": "69006578-fc70-4f5d-9089-2f0438cc36e2",
+        "port": "snapshot"
+      },
+      "target": {
+        "node": "d3bb04f0-d51a-4e85-89d7-3065070766a3",
+        "port": "snapshot"
+      }
+    },
+    {
+      "id": "f8c9adc6-5eef-4eed-a850-cbab1a47c8ac",
+      "source": {
+        "node": "43bf4174-485e-4e9b-affb-48b12168ac78",
+        "port": "requirement"
+      },
+      "target": {
+        "node": "d3bb04f0-d51a-4e85-89d7-3065070766a3",
+        "port": "requirement"
+      }
+    },
+    {
+      "id": "fdf2c8d0-f71f-4642-b391-68d52bb0d84c",
+      "source": {
+        "node": "2fbe548a-9c25-469a-a6b4-708e8379d7af",
+        "port": "out"
+      },
+      "target": {
+        "node": "14b0a523-78c7-45c5-93a0-7a69bf536e00",
+        "port": "in"
+      }
+    }
+  ],
+  "frames": [
+    {
+      "id": "45ea9028-c786-4745-ae45-aeb4b3e52259",
+      "title": "검증 전용 수치 · 게임 콘텐츠에 적용하지 않음"
+    }
+  ]
+}

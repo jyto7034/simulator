@@ -1,0 +1,105 @@
+# Current content structure; unresolved values are not release defaults.
+definitions: []
+id: funeral-bloom
+skills:
+- admission:
+    capacity:
+      Unresolved: capacity
+    cost: All
+    requirement: Full
+  body:
+    Action:
+      delivery:
+        Literal:
+          Delivery: Instant
+      effects:
+      - Append:
+          effects:
+            Shared: tile-burst
+      id: entry
+      target:
+        Literal:
+          Target: SelfUnit
+      wait: Released
+  cast_targeting:
+    Explicit:
+      air_capable: false
+      reach: pattern
+      selection: self
+      target: SelfUnit
+      target_range: null
+  focus_permissions:
+    allows_basic_attack: false
+    allows_move: false
+  id: fragment_funeral_butterfly_bloom
+  kind: Untargeted
+  name:
+    Unresolved: bloom-name
+  prepare_ms: 0
+values:
+- name: tile-burst
+  value:
+    Effects:
+    - id: burst
+      op:
+        TileBurst:
+          program:
+            bonus_percent:
+              denominator: 1
+              numerator: 0
+            damage_type:
+              Unresolved: burst-damage_type
+            dedup: Wave
+            delay_ms:
+              Unresolved: burst-delay_ms
+            modifiers:
+            - change:
+                ExplosionPower:
+                  percent:
+                    Unresolved: explosion-percent
+              id: funeral-power
+              relic_definition: explosion-vulnerability
+            - change: ExplosionOverlap
+              id: funeral-overlap
+              relic_definition: overlapping-explosions
+            - change:
+                Range:
+                  pattern:
+                    include_anchor_tile: true
+                    rows:
+                    - XXX
+                    - X@X
+                    - XXX
+              id: funeral-range
+              relic_definition: widened-horizon
+            power:
+              Unresolved: burst-power
+            range:
+              include_anchor_tile: true
+              rows:
+              - '@'
+            source:
+              WeaponStacks:
+                conversion:
+                  base_power:
+                    Unresolved: orb-base_power
+                  power_per_stack:
+                    Unresolved: orb-power_per_stack
+                  presentation_ms:
+                    Unresolved: orb-presentation_ms
+                  range:
+                    Unresolved: orb-range
+                  relic_definition: funeral-butterfly-orb
+                  threshold:
+                    Unresolved: orb-threshold
+                divisor:
+                  Unresolved: stack-divisor
+                interval_ms:
+                  Unresolved: stack-interval_ms
+                key: butterflies
+                rank_bonus_percent:
+                  Unresolved: stack-rank_bonus_percent
+                weapon: placeholder_funeral_butterfly_weapon
+      origin: Original
+      tags: []
+version: 1

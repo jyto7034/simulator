@@ -1,0 +1,36 @@
+# E05 울대 수신기 기능 시험. 증가량과 상한은 출시 밸런스가 아닙니다.
+# 1000 HP 기준: 1000→0, 750→50, 500 이하→100 공속 포인트.
+version: 1
+id: equipment-speed-fixture
+values:
+  - name: hp-speed
+    value:
+      AttackProgram:
+        reactions: []
+        basic_speed_points:
+          moment: Live
+          root:
+            Clamp:
+              value:
+                Ratio:
+                  numerator:
+                    Mul:
+                      value: { Const: { value: 200, unit: AttackSpeedPoints } }
+                      scalar:
+                        Ratio:
+                          numerator: { Read: { HitPoints: { subject: Source, field: Missing } } }
+                          denominator: { Const: { value: 1, unit: Magnitude } }
+                          rounding: Floor
+                  denominator:
+                    Ratio:
+                      numerator: { Read: { HitPoints: { subject: Source, field: Max } } }
+                      denominator: { Const: { value: 1, unit: Magnitude } }
+                      rounding: Floor
+                  rounding: Floor
+              min: { Const: { value: 0, unit: AttackSpeedPoints } }
+              max: { Const: { value: 100, unit: AttackSpeedPoints } }
+equipment_attacks:
+  - equipment: r11_weapon
+    program: { Shared: hp-speed }
+definitions: []
+skills: []

@@ -1,0 +1,273 @@
+# Current Knight of Despair design; unresolved values require explicit author decisions.
+# Known ownership, action ordering, stock and relic contracts follow fragment.md / synergies.md.
+# Strike.power is native base damage, not an implicit attack percentage.
+definitions: []
+id: knight-blessing-bloom
+skills:
+- admission:
+    capacity:
+      Unresolved: capacity
+    cost: All
+    requirement: Full
+  body:
+    Action:
+      delivery:
+        Literal:
+          Delivery: Instant
+      effects:
+      - Append:
+          effects:
+            Shared: blessing-program
+      id: entry
+      target:
+        Literal:
+          Target: SelfUnit
+      wait: Released
+  cast_targeting:
+    Explicit:
+      air_capable: false
+      reach: pattern
+      selection: player_tile
+      target: CastTarget
+      target_range:
+        Unresolved: bloom-selection
+  focus_permissions:
+    allows_basic_attack: true
+    allows_move: true
+  id: fragment_knight_blessing_bloom
+  kind: Targeted
+  name: 절망의 기사 · 개화
+  prepare_ms: 0
+values:
+- name: blessing-program
+  value:
+    Effects:
+    - id: action
+      op:
+        RelationAction:
+          program:
+            active:
+              definition: 6d8569b3-f397-43b2-afbe-c70f5909c6f1
+              interrupt_on_silence: true
+              manual_stop: true
+              next_basic: false
+              plan: 8
+              protected: false
+              selector: null
+              self_damage:
+              - 1000
+              - denominator: 1
+                numerator: 10
+              - Physical
+            admission:
+              capacity:
+                Unresolved: capacity
+              cost: All
+              requirement: Full
+            definition: 45f3fb57-4b79-4342-b2a8-32d565eae71d
+            initial_stock: 0
+            menu_entry: blessing
+            mode_damage_percent:
+              denominator: 1
+              numerator: 5
+            mode_definition: db5c129a-0f37-45f4-b6be-1e06f54d8687
+            modifiers:
+            - change: Protection
+              id: 00ad259e-d674-468c-a116-540e75c7c4b3
+              relic_definition: unbroken-trance
+            - change:
+                Range:
+                  definition: f7140439-6656-41b3-ae98-9b87550aa065
+                  pattern:
+                    Unresolved: bloom-widened-f7140439-6656-41b3-ae98-9b87550aa065
+              id: 1386dfbb-d02d-4226-a43e-6980533b7659
+              relic_definition: widened-horizon
+            - change:
+                Range:
+                  definition: 7e86d685-a4ea-4b56-9b21-3d5679bdaf9b
+                  pattern:
+                    Unresolved: bloom-widened-7e86d685-a4ea-4b56-9b21-3d5679bdaf9b
+              id: 3e8092f9-ce37-4e52-8bdd-ecf0d26129b6
+              relic_definition: widened-horizon
+            - change:
+                Gain:
+                  factor:
+                    denominator: 1
+                    numerator: 2
+              id: 526fe300-7875-4e7a-9943-971ce559bb44
+              relic_definition: double-harvest
+            - change:
+                Multihit:
+                  cap:
+                    denominator: 1
+                    numerator: 20
+                  entry: b05dbfd8-c7cc-4ca0-8b5c-4e324bc1e693
+                  step:
+                    denominator: 1
+                    numerator: 2
+              id: 5276d845-d743-4abf-ae35-44e8a37afc3b
+              relic_definition: deep-wedge
+            - change: UnlimitedStock
+              id: 8b29207b-0ffd-425a-bff2-045ec0fedde0
+              relic_definition: bottomless-cup
+            - change:
+                StatusCount:
+                  definition: 15a186cb-6e56-4c31-9656-c2fee9768bf9
+                  factor:
+                    denominator: 1
+                    numerator: 2
+              id: 98cdf099-a611-4e1b-b397-02f632bae998
+              relic_definition: deep-imprint
+            - change:
+                ControlVulnerability:
+                  definition: e809ee48-8e83-4019-ac81-d206fedc4b9a
+                  duration_ms: 5000
+                  percent:
+                    Unresolved: control-vulnerability-percent
+              id: 9a11c37a-2c74-45c3-b8f7-ffadc6555cb0
+              relic_definition: broken-balance
+            - change:
+                Period:
+                  definition: 98b8951a-e65c-423f-96a8-2d7c63253f48
+                  negative: true
+                  percent:
+                    Unresolved: cooldown-reduction-percent
+              id: a5491578-8b22-4389-a736-a324c17a8dd7
+              relic_definition: hasty-second-hand
+            - change:
+                Shield:
+                  percent:
+                    Unresolved: shield-increase-percent
+              id: f0a12189-3129-46b9-826d-864a831cde5e
+              relic_definition: layered-shell
+            normal:
+              definition: b05dbfd8-c7cc-4ca0-8b5c-4e324bc1e693
+              interrupt_on_silence: false
+              manual_stop: false
+              next_basic: false
+              plan: 6
+              protected: false
+              selector: null
+              self_damage: null
+            period_ms:
+              Unresolved: blessing-period-ms
+            periodic_gain: 1
+            plans:
+            - definition: 1d0719dc-d1a1-4424-b33b-1fb21d355eb0
+              op:
+                Wait:
+                  duration_ms:
+                    Unresolved: bloom-large-wait-ms
+            - definition: e80814d1-cb11-47f3-8058-962bf5b2e1bd
+              op:
+                Strike:
+                  after:
+                  - count:
+                      Constant: 1
+                    definition: e809ee48-8e83-4019-ac81-d206fedc4b9a
+                    duration_ms: 2000
+                    kind: Stun
+                    percent:
+                      denominator: 1
+                      numerator: 0
+                  damage_type: Physical
+                  power:
+                    Unresolved: bloom-large-power
+                  ramp:
+                    denominator: 1
+                    numerator: 0
+                  range:
+                    definition: 7e86d685-a4ea-4b56-9b21-3d5679bdaf9b
+                    pattern:
+                      Unresolved: bloom-normal-area
+                  target: SelectedArea
+            - definition: a05934f9-8739-42a3-9ac7-fccf228201d5
+              op:
+                Strike:
+                  after: []
+                  damage_type: Physical
+                  power:
+                    Unresolved: bloom-small-power
+                  ramp:
+                    denominator: 1
+                    numerator: 0
+                  range:
+                    definition: 7e86d685-a4ea-4b56-9b21-3d5679bdaf9b
+                    pattern:
+                      Unresolved: bloom-normal-area
+                  target: SelectedArea
+            - definition: 29d8bc65-46c0-45cf-9976-3541d19cf781
+              op:
+                Repeat:
+                  body: 2
+                  count: Paid
+                  time_ms:
+                    Unresolved: bloom-small-interval-ms
+                  timing:
+                    Interval:
+                      delayed_first: true
+            - definition: 02471aa5-e3a1-4b06-9dfd-25c058f6a6f8
+              op:
+                Sequence:
+                  first: 1
+                  next: 3
+            - definition: faa32816-63f5-4d76-855e-71c4dae12e16
+              op:
+                Spend:
+                  after: null
+                  amount: null
+                  body: 4
+            - definition: 7defb921-6fd6-436d-a223-ac01db569bcb
+              op:
+                Sequence:
+                  first: 0
+                  next: 5
+            - definition: d1b15191-c752-4c49-bd01-04d90bc54d7b
+              op:
+                Strike:
+                  after:
+                  - count:
+                      Constant: 1
+                    definition: 15a186cb-6e56-4c31-9656-c2fee9768bf9
+                    duration_ms: 5000
+                    kind: Vulnerability
+                    percent:
+                      denominator: 1
+                      numerator: 5
+                  damage_type: Physical
+                  power:
+                    Unresolved: bloom-despair-power
+                  ramp:
+                    denominator: 1
+                    numerator: 0
+                  range:
+                    definition: f7140439-6656-41b3-ae98-9b87550aa065
+                    pattern:
+                      Unresolved: bloom-despair-area
+                  target: SelectedArea
+            - definition: a2996cbb-48c1-44f2-9d70-4b33285339e5
+              op:
+                Timed:
+                  base_ms:
+                    Unresolved: bloom-base-duration-ms
+                  body: 7
+                  count: StartStock
+                  delayed_first: true
+                  interval_ms: 500
+                  per_count_ms:
+                    Unresolved: bloom-per-stock-duration-ms
+            reduction:
+              Unresolved: blessing-reduction-percent
+            relation_definition: 8fd2a7ff-a6f7-4b7a-9b6e-4dea5a5f3229
+            selection_range:
+              Unresolved: bloom-selection
+            shield_duration_ms: 15000
+            shield_percent:
+              denominator: 1
+              numerator: 50
+            shield_threshold: 10
+            stock_capacity: 4
+            stock_definition: 02611748-ae48-40f5-8e8e-5d34a21f07c7
+      origin: Original
+      tags: []
+version: 1

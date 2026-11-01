@@ -1,0 +1,17 @@
+SkillDatabase(skills: [SkillDef(
+ id: "r08_strike", name: "R10 finite public flow", kind: Targeted, focus_time_ms: 100,
+ use_lifetime: Action,
+ cast_targeting: Explicit(selection: automatic_unit, target: EnemySingle(rule: Nearest), reach: global, air_capable: true),
+ flow: Some(Sequence(id: "root", children: [
+   Repeat(id: "strikes", count: 3, interval_ms: 100, body: Action(id: "strike", step_id: "hit", wait: EffectsSettled)),
+   Branch(id: "decision", condition: Compare(node_id: "strikes", metric: HpLost, comparison: AtLeast, value: Hp(300)),
+     then_node: Action(id: "recovery", step_id: "heal", wait: EffectsSettled),
+     else_node: Wait(id: "miss", duration_ms: 0)),
+ ])),
+ steps: [
+  SkillStepDef(id: "hit", delay_ms: 0, target: CastTarget, delivery: Instant,
+    effects: [(id: "damage", op: Damage(amount: 100, damage_type: True))]),
+  SkillStepDef(id: "heal", delay_ms: 0, target: SelfUnit, delivery: Instant,
+    effects: [(id: "recover", op: Heal(amount: 15))]),
+ ]
+)])

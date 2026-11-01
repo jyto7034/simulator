@@ -1,0 +1,42 @@
+{
+  "relics": [
+    {
+      "id": "king-of-greed-stunning-treasures",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a160",
+      "name": "왕의 위압",
+      "description": "보구 범위 피해에 적중한 적에게 기절을 부여한다.",
+      "rarity": {
+        "Unresolved": "rarity"
+      },
+      "allow_duplicates": {
+        "Unresolved": "allow_duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": [],
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "dismantle_equipment_dust"
+      }
+    },
+    {
+      "id": "king-of-greed-endless-treasury",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a161",
+      "name": "끝없는 금고",
+      "description": "최대 HP의5%를 매초 직접 지불하며 재고 소비 없는 집중 사격으로 전환한다.",
+      "rarity": {
+        "Unresolved": "rarity"
+      },
+      "allow_duplicates": {
+        "Unresolved": "allow_duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": [],
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "dismantle_equipment_dust"
+      }
+    }
+  ]
+}

@@ -8,6 +8,7 @@ use crate::game::map::types::{MapNode, MapNodeCategory, MapNodeId, MapNodeKindId
 /// selected node identity/routing category plus the authored payload needed to
 /// resume or confirm the current node; it is not a hidden runtime-only state bag.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct NodeSession {
     pub node_id: MapNodeId,
     pub kind_id: MapNodeKindId,
@@ -29,33 +30,26 @@ impl From<&MapNode> for NodeSession {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::game::map::types::{
-        MapNodeState, MapNodeVisibility, MapSlotId, SupportNodeMode, SupportNodeType,
-    };
+    use crate::game::map::types::{MapNodeState, MapNodeVisibility, MapSlotId};
     use uuid::Uuid;
 
-    fn support_node() -> MapNode {
+    fn save_point_node() -> MapNode {
         MapNode {
             id: MapNodeId::new(Uuid::from_u128(42)),
-            depth: 1,
-            lane: 2,
-            slot_id: MapSlotId::for_grid_position(1, 2),
-            kind_id: MapNodeKindId::new("support_rest"),
-            category: MapNodeCategory::Support,
+            slot_id: MapSlotId::new("save_archive"),
+            kind_id: MapNodeKindId::new("save_point"),
+            category: MapNodeCategory::SavePoint,
             state: MapNodeState::Available,
             visibility: MapNodeVisibility::Revealed,
-            payload: MapNodePayload::Support {
-                support_type: SupportNodeType::Rest,
-                support_mode: SupportNodeMode::Known,
-                choices: vec![],
-            },
+            payload: MapNodePayload::SavePoint,
             omen: None,
+            combat_difficulty: None,
         }
     }
 
     #[test]
     fn node_session_preserves_identity_routing_category_and_payload() {
-        let node = support_node();
+        let node = save_point_node();
 
         let session = NodeSession::from(&node);
 

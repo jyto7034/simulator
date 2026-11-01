@@ -1,0 +1,97 @@
+{
+  "relics": [
+    {
+      "id": "deep-wedge",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a100",
+      "name": "깊은 쐐기",
+      "description": "장착한 파편의 명시적인 provider modifier가 적용 대상과 변경을 소유한다.",
+      "rarity": "Rare",
+      "allow_duplicates": {
+        "Unresolved": "allow_duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": [],
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "dismantle_equipment_dust"
+      }
+    },
+    {
+      "id": "widened-horizon",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a101",
+      "name": "넓어진 지평",
+      "description": "장착한 파편의 명시적인 provider modifier가 적용 대상과 변경을 소유한다.",
+      "rarity": {
+        "Unresolved": "rarity"
+      },
+      "allow_duplicates": {
+        "Unresolved": "allow_duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": [],
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "dismantle_equipment_dust"
+      }
+    },
+    {
+      "id": "unbroken-trance",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a102",
+      "name": "무아지경",
+      "description": "장착한 파편의 명시적인 provider modifier가 적용 대상과 변경을 소유한다.",
+      "rarity": {
+        "Unresolved": "rarity"
+      },
+      "allow_duplicates": {
+        "Unresolved": "allow_duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": [],
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "dismantle_equipment_dust"
+      }
+    },
+    {
+      "id": "broken-balance",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a103",
+      "name": "깨진 균형",
+      "description": "장착한 파편의 명시적인 provider modifier가 적용 대상과 변경을 소유한다.",
+      "rarity": {
+        "Unresolved": "rarity"
+      },
+      "allow_duplicates": {
+        "Unresolved": "allow_duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": [],
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "dismantle_equipment_dust"
+      }
+    },
+    {
+      "id": "long-breath",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a104",
+      "name": "긴 호흡",
+      "description": "장착한 파편의 명시적인 provider modifier가 적용 대상과 변경을 소유한다.",
+      "rarity": {
+        "Unresolved": "rarity"
+      },
+      "allow_duplicates": {
+        "Unresolved": "allow_duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": [],
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "dismantle_equipment_dust"
+      }
+    }
+  ]
+}

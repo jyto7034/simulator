@@ -1,0 +1,35 @@
+# N07 액세서리 기술 fixture. 처치당 공명 7은 출시 수치가 아닙니다.
+version: 2
+id: equipment-dot-kill-fixture
+predicates:
+  - name: owned-dot-victim
+    context: State
+    parameters: []
+    body: EventVictimHadOwnerDot
+values:
+  - name: dot-kill
+    value:
+      StateProgram:
+        id: dot-kill
+        owns_use: false
+        end_on_source_exit: true
+        replacement: ReplaceSameSource
+        fields: []
+        handlers:
+          - id: killed
+            event: OwnerKill
+            body:
+              - If:
+                  condition:
+                    Predicate: { name: owned-dot-victim, arguments: [] }
+                  then_ops:
+                    - GrantOwnerResonance:
+                        amount:
+                          moment: Live
+                          root: { Const: { value: 7, unit: Magnitude } }
+                  else_ops: []
+equipment_states:
+  - equipment: r11_weapon
+    program: { Shared: dot-kill }
+definitions: []
+skills: []

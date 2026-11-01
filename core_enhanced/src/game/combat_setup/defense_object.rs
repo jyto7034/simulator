@@ -9,8 +9,8 @@ use crate::game::{
     ability::SkillActivationMode,
     battle::{
         scenario::{
-            EnemyMovementPlan, ScenarioGroupId, ScenarioSpawnGroup, ScenarioUnitSpawn,
-            TacticalPlan, WinCondition,
+            BattleObjective, EnemyMovementPlan, ScenarioGroupId, ScenarioSpawnGroup,
+            ScenarioUnitSpawn, TacticalPlan,
         },
         types::{
             BattleUnitDraft, BattleUnitSource, BattleUnitThreatClass, DeploymentAffinity,
@@ -29,13 +29,11 @@ const DEFAULT_DEFENSE_OBJECT_OWNED_UUID: u128 = 0xDEF0_0000_0000_0000_0000_0000_
 const DEFAULT_DEFENSE_OBJECT_BASE_UUID: u128 = 0xDEF0_0000_0000_0000_0000_0000_0000_0002;
 const DEFAULT_DEFENSE_OBJECT_HP: u32 = 350;
 
-pub fn defense_object_group_for_win_condition(
-    win_condition: &WinCondition,
+pub fn defense_object_group_for_tactical_plan(
     tactical_plan: &TacticalPlan,
 ) -> Option<ScenarioSpawnGroup> {
-    let unit_ref = match win_condition {
-        WinCondition::ProtectUnit { unit_ref }
-        | WinCondition::ProtectUnitUntil { unit_ref, .. } => unit_ref,
+    let unit_ref = match &tactical_plan.objective {
+        BattleObjective::ProtectUnit { unit_ref } => unit_ref,
         _ => return None,
     };
     let position = defense_object_position(tactical_plan);
@@ -57,8 +55,10 @@ pub fn defense_object_group_for_win_condition(
                 level: Tier::I,
                 stat_scale: Default::default(),
                 growth_stacks: GrowthStack::new(),
+                equipment_layout: None,
                 equipped_items: vec![],
                 equipped_item_enhancements: vec![],
+                employee_start_condition: None,
             },
             position,
             instance_salt: 0,
@@ -84,7 +84,6 @@ fn defense_object_position(tactical_plan: &TacticalPlan) -> Position {
 
 fn default_defense_object_profile() -> UnitCombatProfile {
     let basic_attack = BasicAttackDef {
-        range_units: 0.0,
         defense_tile_range: None,
         interval_ms: 1500,
         windup_ms: 0,
@@ -108,10 +107,12 @@ fn default_defense_object_profile() -> UnitCombatProfile {
     UnitCombatProfile {
         stats,
         basic_attack,
+        basic_attack_speed_percent: 100,
         weapon_profile: None,
         movement,
         resonance: ResonanceDef::default(),
         skill_id: None,
+        fragment_source: None,
         skill_activation_mode: SkillActivationMode::Auto,
         deployment_affinity: DeploymentAffinity::Any,
         block_capacity: 0,

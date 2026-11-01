@@ -1,48 +1,52 @@
+use crate::owned_collections::OwnedHashMap as HashMap;
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, fs::File, io::BufWriter, path::PathBuf};
+use std::collections::HashSet;
+use std::sync::Arc;
 use uuid::Uuid;
 
-use crate::game::abnormality_research::{
-    RunAbnormalityEncounterHistory, RunAbnormalityResearchState,
-};
 use crate::game::battle::{
     core::{
         sim::{BattleDeployCurrentHpPolicy, BattleExecutionState, BattleLiveSignal},
-        BattleCore,
+        BattleCore, FieldWorkObjectStatus, TacticalTileEffect, UnitTacticalSnapshot,
     },
-    event_log::{BattleEventLog, BattleEventLogEntry},
+    event_log::BattleEventLogEntry,
     ids::UnitInstanceId,
-    result_stats::BattleResultStatsDto,
     tile_range::FacingDirection,
-    types::{BattleUnitRole, BattleWinner, ParticipantBattleResult},
+    types::BattleUnitRole,
 };
 use crate::game::behavior::{
-    AbnormalityAttemptDto, ActionKind, BattlePlaybackState, GameError, LiveBattleDeployedUnitDto,
-    LiveBattleDeploymentDto, LiveBattleEventDeltaDto, LiveBattleHudBarMode,
-    LiveBattlePresentationEventDto, LiveBattleRedeployUnitDto, LiveBattleSetupBattlefieldDto,
-    LiveBattleSetupCatalogRefsDto, LiveBattleSetupSnapshotDto, LiveBattleSetupSnapshotMessageType,
-    LiveBattleSetupTacticalPointDto, LiveBattleSetupTacticalPointType,
-    LiveBattleStateCheckpointDto, LiveBattleUnitCheckpointDto, LiveBattleUnitDeployCostDto,
-    LiveBattleUnitHudDto, LiveBattleUpdateDto, LiveBattleUpdateMessageType,
+    AbnormalityAttemptDto, ActionDisabledReasonCode, BattlePayloadEligibilityDto,
+    BattlePlaybackState, GameError, LiveBattleDeployedUnitDto, LiveBattleDeploymentDto,
+    LiveBattleEventDeltaDto, LiveBattleFieldWorkCellStateDto,
+    LiveBattleFieldWorkCompletionEffectDto, LiveBattleFieldWorkObjectStateDto,
+    LiveBattleFieldWorkObjectStatusDto, LiveBattleFieldWorkPresentationKindDto,
+    LiveBattleHudBarMode, LiveBattlePlaybackEligibilityDto, LiveBattlePresentationEventDto,
+    LiveBattleRedeployUnitDto, LiveBattleSetupBattlefieldDto, LiveBattleSetupCatalogRefsDto,
+    LiveBattleSetupFieldWorkCellDto, LiveBattleSetupFieldWorkObjectDto, LiveBattleSetupSnapshotDto,
+    LiveBattleSetupSnapshotMessageType, LiveBattleSetupTacticalPointDto,
+    LiveBattleSetupTacticalPointType, LiveBattleStanceEligibilityDto, LiveBattleStateCheckpointDto,
+    LiveBattleTacticalResourceDto, LiveBattleTileEffectDto, LiveBattleUnitCheckpointDto,
+    LiveBattleUnitControlStateDto, LiveBattleUnitDeployCostDto, LiveBattleUnitHudDto,
+    LiveBattleUnitTacticalStateDto, LiveBattleUpdateDto, LiveBattleUpdateMessageType,
     RunCheckpointSnapshotDto,
 };
-use crate::game::boss_omen::BossOmenRunState;
 use crate::game::combat_preview::{CombatMissionVariant, CombatNodeType, CombatPreview};
-use crate::game::data::run_policy_data::LiveBattleDeploymentPolicy;
-use crate::game::employee::{EmployeeRoster, StarterEmployeeCandidate};
-use crate::game::employee_trust::EmployeeTrustPolicy;
-use crate::game::enums::RewardMode;
-use crate::game::managers::action_scheduler::ActionScheduler;
+use crate::game::combat_setup::rewards::ResolvedCombatOutcomePolicy;
+use crate::game::data::run_policy_data::{LiveBattleDeploymentPolicy, TacticalResourcePolicy};
+use crate::game::employee::{EmployeeDefinition, EmployeeRoster};
+use crate::game::encounter_compendium::PlayerProfileState;
+use crate::game::encounter_progression::EncounterProgressionState;
 use crate::game::managers::uuid_manager::UuidManager;
-use crate::game::map::{GameMode, MapProgression, NodeSession, RunMap, RunProgression};
-use crate::game::range_preview::range_previews_for_runtime_unit;
-use crate::game::resources::{
-    ActionValidator, ActiveNodeContent, CombatBattleState, Enkephalin, EventSessionState,
-    GameState, Inventory, RosterOrder,
+use crate::game::map::{
+    FacilityRunState, GameMode, MapNodeId, MapProgression, NodeSession, RunMap, RunProgression,
 };
-use crate::game::reward::RewardOption;
-use crate::game::skill_fragment::{
-    ResearchDeliveryPolicy, SkillFragmentInventory, SkillFragmentPolicy,
+use crate::game::recruitment::RecruitmentState;
+use crate::game::resources::{
+    ActiveNodeContent, Enkephalin, EventSessionState, GameState, Inventory, ShopSessionState,
+};
+use crate::game::skill_fragment::{SkillFragmentInventory, SkillFragmentPolicy};
+use crate::game::visual_novel::{
+    VisualNovelRuntimeState, VisualNovelTriggerConsumedKey, VisualNovelTriggerRuntimeState,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -60,12 +64,16 @@ impl PlayerInfo {
     }
 }
 
+crate::authoring::clone_shape::struct_shape!(PlayerInfo { id, name });
+
 pub const ABNORMALITY_MAX_ATTEMPTS: u8 = 3;
+pub const BATTLE_MAX_RETREATS: u8 = 2;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AbnormalityAttemptState {
     pub max_attempts: u8,
     pub attempts_started: u8,
+    pub retreats_used: u8,
 }
 
 impl AbnormalityAttemptState {
@@ -73,6 +81,7 @@ impl AbnormalityAttemptState {
         Self {
             max_attempts,
             attempts_started: 0,
+            retreats_used: 0,
         }
     }
 
@@ -81,15 +90,17 @@ impl AbnormalityAttemptState {
     }
 
     pub fn start_next_attempt(&mut self) -> bool {
-        if self.remaining_attempts() == 0 {
+        if self.retreats_used >= self.max_attempts {
             return false;
         }
-        self.attempts_started = self.attempts_started.saturating_add(1);
+        // Process-exit recovery may repeat the current challenge; only a
+        // successful manual retreat advances the normal challenge ordinal.
+        self.attempts_started = self.retreats_used + 1;
         true
     }
 
-    pub fn is_exhausted(self) -> bool {
-        self.remaining_attempts() == 0
+    pub fn can_retreat(self) -> bool {
+        self.retreats_used < BATTLE_MAX_RETREATS
     }
 
     pub fn to_dto(self, node_id: crate::game::map::MapNodeId) -> AbnormalityAttemptDto {
@@ -98,129 +109,979 @@ impl AbnormalityAttemptState {
             max_attempts: self.max_attempts,
             attempts_started: self.attempts_started,
             remaining_attempts: self.remaining_attempts(),
+            retreats_used: self.retreats_used,
+            max_retreats: BATTLE_MAX_RETREATS,
+            remaining_retreats: BATTLE_MAX_RETREATS.saturating_sub(self.retreats_used),
         }
     }
 }
 
+/// Private owner of the closed application lifecycle phase. Domain resources may be
+/// assembled while a command is staged, but only a coherent context can cross the
+/// application commit port.
+#[derive(Debug, Clone)]
+pub(super) struct LifecycleContext {
+    phase: GameState,
+}
+
+crate::authoring::clone_shape::struct_shape!(LifecycleContext { phase });
+
+impl LifecycleContext {
+    fn not_started() -> Self {
+        Self {
+            phase: GameState::NotStarted,
+        }
+    }
+
+    pub(super) fn phase(&self) -> &GameState {
+        &self.phase
+    }
+
+    pub(super) fn snapshot(&self) -> GameState {
+        self.phase.clone()
+    }
+
+    pub(super) fn transition_to(&mut self, phase: GameState) {
+        self.phase = phase;
+    }
+}
+
+/// Presentation of one already-settled battle. No live runtime or event history
+/// is retained in the durable receipt, and acknowledging it cannot grant again.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct ConfirmedCombatResult {
+    pub battle_uuid: Uuid,
+    pub summary: crate::game::behavior::SelectedEventSnapshotDto,
+    pub acknowledgement: Arc<crate::game::behavior::BehaviorResult>,
+    pub continuation_phase: GameState,
+    /// Bounded live-process observation; it is never a Continue input.
+    #[serde(skip)]
+    pub runtime_facts: Option<Arc<crate::game::battle::runtime_facts::RuntimeFactSnapshot>>,
+}
+
+/// The ordinary reward session remains the candidate/selection owner. This
+/// continuation retains only the original battle grant context and next phase.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct CombatRewardContinuation {
+    pub battle_uuid: Uuid,
+    pub context: crate::game::reward::GrantExecutionContext,
+    pub return_phase: GameState,
+}
+
+crate::authoring::clone_shape::struct_shape!(CombatRewardContinuation {
+    battle_uuid,
+    context,
+    return_phase
+});
+
+#[derive(Clone)]
 pub struct GameCoreState {
     pub player: Option<PlayerInfo>,
-    pub game_state: GameState,
-    pub action_validator: ActionValidator,
+    pub lifecycle: LifecycleContext,
     pub active_node_content: Option<ActiveNodeContent>,
     pub node_session: Option<NodeSession>,
     pub run: Option<RunState>,
+    pub visual_novel: VisualNovelRuntimeState,
+    pub visual_novel_triggers: VisualNovelTriggerRuntimeState,
     pub uuid_manager: UuidManager,
     pub enkephalin: Enkephalin,
     pub inventory: Inventory,
-    pub roster_order: RosterOrder,
     pub roster: EmployeeRoster,
-    pub starter_candidates: Vec<StarterEmployeeCandidate>,
+    pub starter_candidates: Vec<EmployeeDefinition>,
     pub pending_game_mode: Option<GameMode>,
     pub skill_fragments: SkillFragmentInventory,
+    pub relics: crate::game::relic::RelicInventory,
+    pub crafting_resources: crate::game::relic::RunCraftingResources,
     pub skill_fragment_policy: SkillFragmentPolicy,
-    pub research_delivery_policy: ResearchDeliveryPolicy,
-    pub employee_trust_policy: EmployeeTrustPolicy,
+    pub player_profile: PlayerProfileState,
     pub active_battle: Option<ActiveBattleSession>,
+    pub(crate) confirmed_combat_result: Option<Arc<ConfirmedCombatResult>>,
+    pub(crate) combat_reward_continuation: Option<CombatRewardContinuation>,
     pub run_checkpoint: RunCheckpointState,
+    pub(super) continue_state: super::active_run::ContinueState,
+    pub run_power_authority: RunPowerAuthorityState,
+}
+
+// These are independent owned resource graphs in a World clone. The active
+// battle store is separately admitted by BattleCore's existing preflight.
+fn preflight_resource_fields(
+    run: &Option<RunState>,
+    checkpoint: &RunCheckpointState,
+    content: &Option<ActiveNodeContent>,
+) -> Result<(), GameError> {
+    use crate::game::resource::store::{preflight_resource_clone, ResourceError};
+    if let Some(run) = run {
+        run.credit_ledgers.preflight()?;
+        preflight_resource_clone(&run.typed_resources).map_err(ResourceError::into_game_error)?;
+        crate::game::resources::selection::preflight_relic_event_histories(&run.event_sessions)?;
+    }
+    if let Some(checkpoint) = &checkpoint.payload {
+        checkpoint.credit_ledgers.preflight()?;
+        preflight_resource_clone(&checkpoint.typed_resources)
+            .map_err(ResourceError::into_game_error)?;
+        checkpoint.preflight_relic_history_clone()?;
+    }
+    if let Some(ActiveNodeContent::Event(session)) = content {
+        if session.has_relic_history() {
+            session.preflight_relic_clone()?;
+        }
+    }
+    if let Some(ActiveNodeContent::Reward(reward)) = content {
+        reward.preflight_relic_activity_clone()?;
+    }
+    if let Some(ActiveNodeContent::CombatBattle(battle)) = content {
+        if let Some(result) = &battle.typed_resource_result {
+            result.preflight_native_clone()?;
+        }
+    }
+    Ok(())
+}
+
+fn relic_extent_add(a: usize, b: usize) -> Result<usize, GameError> {
+    a.checked_add(b)
+        .ok_or_else(|| GameError::InvalidStaticData("relic retained extent overflow".into()))
+}
+
+impl GameCoreState {
+    pub(super) fn has_relic_owner(&self) -> bool {
+        !self.relics.is_empty()
+            || !self.crafting_resources.is_empty()
+            || self.uuid_manager.has_relic_stream()
+            || self.run_checkpoint.payload.as_ref().is_some_and(|p| {
+                !p.relics.is_empty()
+                    || !p.crafting_resources.is_empty()
+                    || p.uuid_manager.has_relic_stream()
+                    || crate::game::resources::selection::has_relic_event_histories(
+                        &p.event_sessions,
+                    )
+            })
+            || self
+                .active_battle
+                .as_ref()
+                .and_then(|a| a.entry_snapshot.as_ref())
+                .is_some_and(|e| e.has_relic_owner())
+            || self.continue_state.has_relic_owner()
+            || self.run.as_ref().is_some_and(|run| {
+                crate::game::resources::selection::has_relic_event_histories(&run.event_sessions)
+            })
+            || crate::game::resources::selection::has_active_relic_history(
+                &self.active_node_content,
+            )
+    }
+    pub(super) fn relic_owned_extent(&self) -> Result<usize, GameError> {
+        let mut bytes = relic_extent_add(
+            self.relics.retained_extent()?,
+            self.uuid_manager.relic_stream_extent()?,
+        )?;
+        if let Some(run) = &self.run {
+            bytes = relic_extent_add(
+                bytes,
+                crate::game::resources::selection::relic_event_histories_extent(
+                    &run.event_sessions,
+                )?,
+            )?;
+        }
+        bytes = relic_extent_add(
+            bytes,
+            crate::game::resources::selection::active_relic_history_extent(
+                &self.active_node_content,
+            )?,
+        )?;
+        if let Some(p) = &self.run_checkpoint.payload {
+            bytes = relic_extent_add(bytes, p.relic_owned_extent()?)?;
+        }
+        if let Some(e) = self
+            .active_battle
+            .as_ref()
+            .and_then(|a| a.entry_snapshot.as_ref())
+        {
+            bytes = relic_extent_add(bytes, e.relic_owned_extent()?)?;
+        }
+        let bytes = relic_extent_add(bytes, self.continue_state.relic_owned_extent()?)?;
+        #[cfg(feature = "runtime-observation")]
+        crate::runtime_observation::relic_extent(bytes);
+        Ok(bytes)
+    }
+    pub(super) fn preflight_resource_clone(&self) -> Result<(), GameError> {
+        preflight_resource_fields(&self.run, &self.run_checkpoint, &self.active_node_content)?;
+        crate::game::resource::store::preflight_resource_clone(&self.player_profile)
+            .map_err(crate::game::resource::store::ResourceError::into_game_error)?;
+        // The active battle's immutable entry snapshot is retained by an Arc
+        // handle. Its owned roots are admitted only when restoration copies them.
+        Ok(())
+    }
+
+    pub(super) fn clone_non_battle_transaction_state(&self) -> Result<Option<Self>, GameError> {
+        if self.active_battle.is_some() {
+            return Ok(None);
+        }
+        self.preflight_resource_clone()?;
+        let candidate = crate::authoring::clone_shape::capture_shape!(Self {
+            player: &self.player,
+            lifecycle: &self.lifecycle,
+            active_node_content: &self.active_node_content,
+            node_session: &self.node_session,
+            run: &self.run,
+            visual_novel: &self.visual_novel,
+            visual_novel_triggers: &self.visual_novel_triggers,
+            uuid_manager: &self.uuid_manager,
+            enkephalin: &self.enkephalin,
+            inventory: &self.inventory,
+            roster: &self.roster,
+            starter_candidates: &self.starter_candidates,
+            pending_game_mode: &self.pending_game_mode,
+            skill_fragments: &self.skill_fragments,
+            relics: &self.relics,
+            crafting_resources: &self.crafting_resources,
+            skill_fragment_policy: &self.skill_fragment_policy,
+            run_checkpoint: &self.run_checkpoint,
+            continue_state: &self.continue_state,
+            run_power_authority: &self.run_power_authority,
+            confirmed_combat_result: &self.confirmed_combat_result,
+            combat_reward_continuation: &self.combat_reward_continuation,
+        } sets {} fresh {
+            // The transaction token separately captures lifecycle assets.
+            player_profile: PlayerProfileState::default(), active_battle: None
+        } fresh_sets {})?;
+        Ok(Some(candidate))
+    }
+
+    /// Rejects a staged impossible lifecycle before it can become authoritative.
+    /// The checks bind the closed phase to the identity-bearing optional context;
+    /// domain-specific payload validation remains owned by the domain handlers.
+    pub(super) fn validate_application_context(&self) -> Result<(), GameError> {
+        let phase = self.lifecycle.phase();
+
+        match phase {
+            GameState::NotStarted => {
+                if self.run.is_some()
+                    || self.node_session.is_some()
+                    || self.active_node_content.is_some()
+                    || self.active_battle.is_some()
+                    || self.pending_game_mode.is_some()
+                {
+                    return Err(crate::game::battle::runtime_control::invariant("application_context"));
+                }
+            }
+            GameState::PreRunBriefing { game_mode } => {
+                if self.run.is_some()
+                    || self.node_session.is_some()
+                    || self.active_node_content.is_some()
+                    || self.active_battle.is_some()
+                    || self.pending_game_mode != Some(*game_mode)
+                {
+                    return Err(crate::game::battle::runtime_control::invariant("application_context"));
+                }
+            }
+            GameState::SelectingStarterEmployees => {
+                if self.run.is_some()
+                    || self.node_session.is_some()
+                    || self.active_node_content.is_some()
+                    || self.active_battle.is_some()
+                    || self.pending_game_mode.is_none()
+                {
+                    return Err(crate::game::battle::runtime_control::invariant("application_context"));
+                }
+            }
+            GameState::ViewingMap => {
+                if self.run.is_none()
+                    || self.node_session.is_some()
+                    || self.active_node_content.is_some()
+                    || self.active_battle.is_some()
+                {
+                    return Err(crate::game::battle::runtime_control::invariant("application_context"));
+                }
+            }
+            GameState::NodeConfirm {
+                node_id,
+                kind_id,
+                category,
+            }
+            | GameState::InNode {
+                node_id,
+                kind_id,
+                category,
+            } => {
+                let Some(session) = self.node_session.as_ref() else {
+                    return Err(crate::game::battle::runtime_control::invariant("application_context"));
+                };
+                if self.run.is_none()
+                    || self.active_battle.is_some()
+                    || session.node_id != *node_id
+                    || session.kind_id != *kind_id
+                    || session.category != *category
+                {
+                    return Err(crate::game::battle::runtime_control::invariant("application_context"));
+                }
+            }
+            GameState::InBattle { battle_uuid } => {
+                let Some(active) = self.active_battle.as_ref() else {
+                    return Err(crate::game::battle::runtime_control::invariant("application_context"));
+                };
+                if active.battle_uuid != *battle_uuid || self.run.is_none() {
+                    return Err(crate::game::battle::runtime_control::invariant("application_context"));
+                }
+                if let Some(deployment) = &active.live_deployment {
+                    crate::authoring::control::charge(
+                        deployment.deployed_units.len() as u64,
+                        "application_deployed_context",
+                    )?;
+                    for deployed in deployment.deployed_units.values() {
+                        if !active.battle.units.contains_key(&deployed.unit_instance_id) {
+                            return Err(crate::game::battle::runtime_control::invariant(
+                                "application_deployed_unit",
+                            ));
+                        }
+                    }
+                }
+            }
+            GameState::CombatResult { battle_uuid } => {
+                if self.active_battle.is_some()
+                    || self.confirmed_combat_result.as_ref()
+                        .is_none_or(|receipt| receipt.battle_uuid != *battle_uuid)
+                {
+                    return Err(crate::game::battle::runtime_control::invariant("application_context"));
+                }
+            }
+            GameState::MasteredEliteSweepResult { .. } => {
+                return Err(crate::game::battle::runtime_control::invariant("retired_sweep_state"));
+            }
+            GameState::InShop { shop_uuid } => {
+                if self.active_battle.is_some()
+                    || self.active_node_content.as_ref().is_none_or(|content| {
+                        !matches!(content, ActiveNodeContent::Shop(shop) if shop.uuid == *shop_uuid)
+                    })
+                {
+                    return Err(crate::game::battle::runtime_control::invariant("application_context"));
+                }
+            }
+            GameState::InReward { reward_uuid }
+            | GameState::InRewardClaimed { reward_uuid } => {
+                if self.active_battle.is_some()
+                    || self.active_node_content.as_ref().is_none_or(|content| {
+                        !matches!(content, ActiveNodeContent::Reward(reward) if reward.stage_uuid == *reward_uuid)
+                    })
+                {
+                    return Err(crate::game::battle::runtime_control::invariant("application_context"));
+                }
+            }
+            GameState::AwaitingRunFailureDecision { .. }
+            | GameState::GameOver
+            | GameState::RunComplete
+            | GameState::RunFailed { .. } => {
+                if self.active_battle.is_some() {
+                    return Err(crate::game::battle::runtime_control::invariant("application_context"));
+                }
+            }
+        }
+        Ok(())
+    }
 }
 
 pub const RUN_CHECKPOINT_MAX_LOADS: u8 = 3;
 
-#[derive(Clone, Default)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct RunPowerAuthorityState {
+    pub power_model_version: u32,
+    pub run_peak_certified_power: u64,
+    pub current_floor_power_anchor: u64,
+}
+
+crate::authoring::clone_shape::copy_shape!(RunPowerAuthorityState, AbnormalityAttemptState);
+
+impl RunPowerAuthorityState {
+    pub fn initialize_run(&mut self, power_model_version: u32, certified_power: u64) {
+        self.power_model_version = power_model_version;
+        self.run_peak_certified_power = certified_power;
+        self.current_floor_power_anchor = 0;
+    }
+
+    pub fn record_combat_entry(&mut self, power_model_version: u32, certified_power: u64) {
+        if self.power_model_version == 0 {
+            self.power_model_version = power_model_version;
+        }
+        debug_assert_eq!(self.power_model_version, power_model_version);
+        self.run_peak_certified_power = self.run_peak_certified_power.max(certified_power);
+    }
+
+    pub fn manifest_floor(
+        &mut self,
+        policy: crate::game::data::run_policy_data::ResolvedFloorPowerAnchorPolicy,
+    ) -> u64 {
+        // Enemy selection follows the authored floor only. Certified power and
+        // historical peaks remain available for readiness diagnostics.
+        self.current_floor_power_anchor = policy.authored_minimum_power;
+        self.current_floor_power_anchor
+    }
+
+    pub fn merge_run_peak_monotonic(&mut self, other: Self) {
+        if self.power_model_version == other.power_model_version {
+            self.run_peak_certified_power = self
+                .run_peak_certified_power
+                .max(other.run_peak_certified_power);
+        }
+    }
+}
+
+#[derive(Clone, Default, Serialize, Deserialize)]
 pub struct RunCheckpointState {
     pub payload: Option<RunCheckpointPayload>,
     pub loads_used: u8,
 }
 
-#[derive(Clone)]
-pub struct RunCheckpointPayload {
-    pub map: RunMap,
-    pub map_progression: MapProgression,
-    pub run_progression: RunProgression,
-    pub abnormality_research: RunAbnormalityResearchState,
-    pub abnormality_encounter_history: RunAbnormalityEncounterHistory,
-    pub boss_omen: BossOmenRunState,
-    pub event_sessions: HashMap<crate::game::map::MapNodeId, EventSessionState>,
-    pub combat_previews: HashMap<crate::game::map::MapNodeId, CombatPreview>,
-    pub abnormality_attempts: HashMap<crate::game::map::MapNodeId, AbnormalityAttemptState>,
-    pub enkephalin: Enkephalin,
-    pub inventory: Inventory,
-    pub roster_order: RosterOrder,
-    pub roster: EmployeeRoster,
-    pub skill_fragments: SkillFragmentInventory,
-    pub uuid_manager: UuidManager,
+macro_rules! define_run_checkpoint_payload {
+    ($( $run_field:ident: $run_field_type:ty ),+ $(,)?) => {
+        #[derive(Clone, Serialize, Deserialize)]
+        #[serde(deny_unknown_fields)]
+        pub struct RunCheckpointPayload {
+            pub content_identity: crate::game::data::content_pack::ContentIdentity,
+            pub power_model_version: u32,
+            pub current_floor_power_anchor: u64,
+            $(pub $run_field: $run_field_type,)+
+            pub visual_novel_trigger_checkpoint_consumed:
+                std::collections::HashSet<VisualNovelTriggerConsumedKey>,
+            pub enkephalin: Enkephalin,
+            pub inventory: Inventory,
+            pub roster: EmployeeRoster,
+            pub skill_fragments: SkillFragmentInventory,
+            #[serde(default, skip_serializing_if = "crate::game::relic::RelicInventory::is_empty")]
+            pub relics: crate::game::relic::RelicInventory,
+            #[serde(default, skip_serializing_if = "crate::game::relic::RunCraftingResources::is_empty")]
+            pub crafting_resources: crate::game::relic::RunCraftingResources,
+            pub uuid_manager: UuidManager,
+        }
+
+        // The checkpoint owns independent copies of every captured root; its
+        // consumed set has the same closed fresh/insert-only provenance as VN.
+        crate::authoring::clone_shape::struct_shape_with_sets!(RunCheckpointPayload {
+            content_identity, power_model_version, current_floor_power_anchor,
+            $($run_field,)+
+            enkephalin, inventory, roster, skill_fragments, relics, crafting_resources, uuid_manager
+        } sets { visual_novel_trigger_checkpoint_consumed });
+
+        impl RunCheckpointPayload {
+            /// All independent checkpoint copies use the same native-owner
+            /// admission, whether they come from SavePoint, Continue or serde.
+            pub(super) fn preflight_copy(&self) -> Result<(), GameError> {
+                self.credit_ledgers.preflight()?;
+                crate::game::resource::store::preflight_resource_clone(&self.typed_resources)
+                    .map_err(crate::game::resource::store::ResourceError::into_game_error)?;
+                self.relics.preflight_clone()?;
+                self.uuid_manager.preflight_relic_stream_clone()?;
+                self.preflight_relic_history_clone()
+            }
+
+            pub(super) fn copy_owned(&self) -> Result<Self, GameError> {
+                self.preflight_copy()?;
+                crate::authoring::clone_shape::controlled_clone(self)
+            }
+
+            /// Install an independent gameplay owner. A sole owner can move;
+            /// a SavePoint retained by the Continue cache needs a checked copy,
+            /// including when the wire uses the `current` alias.
+            pub(super) fn from_shared(snapshot: Arc<Self>) -> Result<Self, GameError> {
+                match Arc::try_unwrap(snapshot) {
+                    Ok(owned) => Ok(owned),
+                    Err(shared) => shared.copy_owned(),
+                }
+            }
+
+            pub(super) fn has_relic_owner(&self) -> bool {
+                !self.relics.is_empty() || !self.crafting_resources.is_empty() || self.uuid_manager.has_relic_stream()
+                    || crate::game::resources::selection::has_relic_event_histories(&self.event_sessions)
+            }
+            pub(super) fn relic_owned_extent(&self) -> Result<usize, GameError> {
+                relic_extent_add(relic_extent_add(self.relics.retained_extent()?, self.uuid_manager.relic_stream_extent()?)?,
+                    crate::game::resources::selection::relic_event_histories_extent(&self.event_sessions)?)
+            }
+            pub(super) fn preflight_relic_history_clone(&self) -> Result<(), GameError> {
+                crate::game::resources::selection::preflight_relic_event_histories(&self.event_sessions)
+            }
+            pub(super) fn capture(
+                state: &GameCoreState,
+                run: &RunState,
+                content_identity: &crate::game::data::content_pack::ContentIdentity,
+            ) -> Result<Self, GameError> {
+                run.credit_ledgers.preflight()?;
+                crate::game::resource::store::preflight_resource_clone(&run.typed_resources)
+                    .map_err(crate::game::resource::store::ResourceError::into_game_error)?;
+                state.relics.preflight_clone()?;
+                state.uuid_manager.preflight_relic_stream_clone()?;
+                crate::game::resources::selection::preflight_relic_event_histories(&run.event_sessions)?;
+                crate::authoring::clone_shape::capture_shape!(Self {
+                    content_identity: content_identity,
+                    power_model_version: &state.run_power_authority.power_model_version,
+                    current_floor_power_anchor: &state.run_power_authority.current_floor_power_anchor,
+                    $($run_field: &run.$run_field,)+
+                    enkephalin: &state.enkephalin,
+                    inventory: &state.inventory,
+                    roster: &state.roster,
+                    skill_fragments: &state.skill_fragments,
+            relics: &state.relics,
+            crafting_resources: &state.crafting_resources,
+                    uuid_manager: &state.uuid_manager,
+                } sets {
+                    visual_novel_trigger_checkpoint_consumed:
+                        &state.visual_novel_triggers.checkpoint_rewind_consumed
+                } fresh {} fresh_sets {})
+            }
+
+            pub(super) fn restore_into_state(self, state: &mut GameCoreState) -> Result<(), GameError> {
+                if self.run_progression.game_mode == crate::game::map::GameMode::Expedition {
+                    let lifecycle = &mut state.player_profile.lifecycle;
+                    let next = crate::game::material_economy::reconcile_warehouse(&lifecycle.vault.materials, &lifecycle.warehouse_debits, &self.run_progression.warehouse_debits)?;
+                    lifecycle.vault.materials = next;
+                    lifecycle.warehouse_debits = self.run_progression.warehouse_debits.clone();
+                }
+                let Self {
+                    content_identity: _,
+                    power_model_version,
+                    current_floor_power_anchor,
+                    $($run_field,)+
+                    visual_novel_trigger_checkpoint_consumed,
+                    enkephalin,
+                    inventory,
+                    roster,
+                    skill_fragments,
+    relics,
+    crafting_resources,
+                    uuid_manager,
+                } = self;
+                state.run_power_authority.power_model_version = power_model_version;
+                state.run_power_authority.current_floor_power_anchor =
+                    current_floor_power_anchor;
+                state.run = Some(RunState {
+                    $($run_field,)+
+                    combat_recovery_restriction: None,
+                });
+                state.enkephalin = enkephalin;
+                state.inventory = inventory;
+                state.roster = roster;
+                state.skill_fragments = skill_fragments;
+                state.relics = relics;
+                state.crafting_resources = crafting_resources;
+                state.uuid_manager.restore_checkpoint_preserving_counters(
+                    uuid_manager,
+                    &[UuidManager::NS_VISUAL_NOVEL_SESSION],
+                );
+                state.visual_novel_triggers.checkpoint_rewind_consumed =
+                    visual_novel_trigger_checkpoint_consumed;
+                state.node_session = None;
+                state.active_node_content = None;
+                state.active_battle = None;
+                state.confirmed_combat_result = None;
+                state.combat_reward_continuation = None;
+                Ok(())
+            }
+        }
+    };
+}
+
+define_run_checkpoint_payload! {
+    typed_resources: crate::game::resource::durable::RunResourceState,
+    credit_ledgers: crate::game::credit_ledger::CreditLedgers,
+    map: RunMap,
+    map_progression: MapProgression,
+    run_progression: RunProgression,
+    facility_run_state: FacilityRunState,
+    encounter_progression: EncounterProgressionState,
+    event_sessions: HashMap<crate::game::map::MapNodeId, EventSessionState>,
+    shop_sessions: HashMap<crate::game::map::MapNodeId, ShopSessionState>,
+    combat_previews: HashMap<crate::game::map::MapNodeId, CombatPreview>,
+    abnormality_attempts: HashMap<crate::game::map::MapNodeId, AbnormalityAttemptState>,
+    recruitment: RecruitmentState,
+    record_progress: RunRecordProgress,
 }
 
 impl RunCheckpointState {
+    #[cfg(test)]
     pub fn can_load(&self) -> bool {
         self.payload.is_some() && self.loads_used < RUN_CHECKPOINT_MAX_LOADS
     }
 
-    pub fn to_dto(&self) -> RunCheckpointSnapshotDto {
+    pub fn to_dto(&self, loadable: bool) -> RunCheckpointSnapshotDto {
         let remaining_loads = RUN_CHECKPOINT_MAX_LOADS.saturating_sub(self.loads_used);
+        let location = self.payload.as_ref().and_then(|payload| {
+            let node_id = payload.map_progression.current_node_id?;
+            let node = payload.map.node(node_id)?;
+            Some(crate::game::behavior::RunCheckpointLocationDto {
+                floor_index: payload.run_progression.floor_index(),
+                node_id,
+                slot_id: node.slot_id.clone(),
+                kind_id: node.kind_id.clone(),
+                room_display_name: node.kind_id.as_str().to_string(),
+            })
+        });
         RunCheckpointSnapshotDto {
             exists: self.payload.is_some(),
+            loadable,
             loads_used: self.loads_used,
             max_loads: RUN_CHECKPOINT_MAX_LOADS,
             remaining_loads,
-            can_load: self.can_load(),
+            location,
         }
     }
 }
 
+#[derive(Clone)]
 pub struct ActiveBattleSession {
+    pub node_id: MapNodeId,
     pub battle_uuid: Uuid,
+    pub battle_state_revision: u64,
     pub primary_abnormality_id: Option<String>,
     pub encounter_id: String,
     pub node_type: CombatNodeType,
     pub mission_variant: CombatMissionVariant,
-    pub reward_mode: RewardMode,
-    pub rewards: Vec<RewardOption>,
+    pub outcome_policies: Vec<ResolvedCombatOutcomePolicy>,
+    pub stress_combat: Option<crate::game::stress_combat::StressCombatPolicy>,
     pub combat_preview: CombatPreview,
     pub battle: BattleCore,
     pub execution: BattleExecutionState,
-    pub last_pushed_event_log_seq: Option<u64>,
+    pub entry_snapshot: Option<Arc<BattleEntrySnapshot>>,
+    pub employee_attempt: BattleEmployeeAttemptState,
+    pub tactical_resource: TacticalResourceState,
     pub live_deployment: Option<LiveBattleDeploymentState>,
     pub playback: BattlePlaybackState,
     pub playback_delta_remainder: u64,
+    pub tactical_focus: Option<SkillTargetingFocus>,
+    pub interaction: BattleInteractionState,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SkillTargetingFocus {
+    pub purpose: crate::game::behavior::LiveBattleTacticalFocusPurposeDto,
+    pub caster_unit_instance_id: UnitInstanceId,
+    pub skill_id: crate::game::ability::SkillId,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct BattleInteractionState {
+    pub focused_unit_instance_id: Option<UnitInstanceId>,
+    pub deployment_employee_uuid: Option<Uuid>,
+    pub restore_playback: Option<BattlePlaybackState>,
+    pub settings_restore_playback: Option<BattlePlaybackState>,
+    pub input_plan_restore_playback: Option<BattlePlaybackState>,
+}
+
+crate::authoring::clone_shape::copy_shape!(
+    crate::game::behavior::LiveBattleTacticalFocusPurposeDto
+);
+crate::authoring::clone_shape::struct_shape!(SkillTargetingFocus {
+    purpose,
+    caster_unit_instance_id,
+    skill_id
+});
+crate::authoring::clone_shape::struct_shape!(BattleInteractionState {
+    focused_unit_instance_id,
+    deployment_employee_uuid,
+    restore_playback,
+    settings_restore_playback,
+    input_plan_restore_playback
+});
+
+#[derive(Clone)]
+pub struct BattleEntrySnapshot {
+    game_state: GameState,
+    active_node_content: Option<ActiveNodeContent>,
+    node_session: Option<NodeSession>,
+    run: Option<RunState>,
+    visual_novel: VisualNovelRuntimeState,
+    visual_novel_triggers: VisualNovelTriggerRuntimeState,
+    uuid_manager: UuidManager,
+    enkephalin: Enkephalin,
+    inventory: Inventory,
+    roster: EmployeeRoster,
+    starter_candidates: Vec<EmployeeDefinition>,
+    pending_game_mode: Option<GameMode>,
+    skill_fragments: SkillFragmentInventory,
+    relics: crate::game::relic::RelicInventory,
+    crafting_resources: crate::game::relic::RunCraftingResources,
+    run_checkpoint: RunCheckpointState,
+}
+
+impl BattleEntrySnapshot {
+    fn has_relic_owner(&self) -> bool {
+        !self.relics.is_empty()
+            || !self.crafting_resources.is_empty()
+            || self.uuid_manager.has_relic_stream()
+            || self.run_checkpoint.payload.as_ref().is_some_and(|p| {
+                !p.relics.is_empty()
+                    || !p.crafting_resources.is_empty()
+                    || p.uuid_manager.has_relic_stream()
+                    || crate::game::resources::selection::has_relic_event_histories(
+                        &p.event_sessions,
+                    )
+            })
+            || self.run.as_ref().is_some_and(|run| {
+                crate::game::resources::selection::has_relic_event_histories(&run.event_sessions)
+            })
+            || crate::game::resources::selection::has_active_relic_history(
+                &self.active_node_content,
+            )
+    }
+    fn relic_owned_extent(&self) -> Result<usize, GameError> {
+        let mut bytes = relic_extent_add(
+            self.relics.retained_extent()?,
+            self.uuid_manager.relic_stream_extent()?,
+        )?;
+        if let Some(run) = &self.run {
+            bytes = relic_extent_add(
+                bytes,
+                crate::game::resources::selection::relic_event_histories_extent(
+                    &run.event_sessions,
+                )?,
+            )?;
+        }
+        bytes = relic_extent_add(
+            bytes,
+            crate::game::resources::selection::active_relic_history_extent(
+                &self.active_node_content,
+            )?,
+        )?;
+        if let Some(p) = &self.run_checkpoint.payload {
+            bytes = relic_extent_add(bytes, p.relic_owned_extent()?)?;
+        }
+        Ok(bytes)
+    }
+    pub fn capture(state: &GameCoreState) -> Result<Self, GameError> {
+        state.preflight_resource_clone()?;
+        state.relics.preflight_clone()?;
+        state.uuid_manager.preflight_relic_stream_clone()?;
+        if let Some(p) = &state.run_checkpoint.payload {
+            p.relics.preflight_clone()?;
+            p.uuid_manager.preflight_relic_stream_clone()?;
+        }
+        crate::authoring::clone_shape::capture_shape!(Self {
+            game_state: state.lifecycle.phase(),
+            active_node_content: &state.active_node_content,
+            node_session: &state.node_session,
+            run: &state.run,
+            visual_novel: &state.visual_novel,
+            visual_novel_triggers: &state.visual_novel_triggers,
+            uuid_manager: &state.uuid_manager,
+            enkephalin: &state.enkephalin,
+            inventory: &state.inventory,
+            roster: &state.roster,
+            starter_candidates: &state.starter_candidates,
+            pending_game_mode: &state.pending_game_mode,
+            skill_fragments: &state.skill_fragments,
+            relics: &state.relics,
+            crafting_resources: &state.crafting_resources,
+            run_checkpoint: &state.run_checkpoint,
+        } sets {} fresh {} fresh_sets {})
+    }
+
+    /// Freeze the completed owned capture, including any event reentry edits.
+    /// Its children were already captured; only the new Arc allocation and the
+    /// fixed body move are additional work. Use the existing conservative Arc
+    /// header allowance, without claiming an allocator byte measurement.
+    pub(super) fn freeze(self) -> Result<Arc<Self>, GameError> {
+        crate::game::battle::runtime_control::admit_retained_growth(
+            0,
+            std::mem::size_of::<Self>().checked_add(64),
+            "battle_entry_snapshot_owner",
+        )?;
+        Ok(Arc::new(self))
+    }
+
+    /// Materialize shared captured roots before changing any destination field.
+    /// A sole owner can transfer them directly; a shared owner pays the same
+    /// resource/relic admission and actual owned-copy cost as a fresh capture.
+    pub(super) fn restore_shared(
+        snapshot: Arc<Self>,
+        state: &mut GameCoreState,
+    ) -> Result<(), GameError> {
+        let owned = match Arc::try_unwrap(snapshot) {
+            Ok(owned) => owned,
+            Err(shared) => {
+                preflight_resource_fields(
+                    &shared.run,
+                    &shared.run_checkpoint,
+                    &shared.active_node_content,
+                )?;
+                shared.relics.preflight_clone()?;
+                shared.uuid_manager.preflight_relic_stream_clone()?;
+                if let Some(checkpoint) = &shared.run_checkpoint.payload {
+                    checkpoint.relics.preflight_clone()?;
+                    checkpoint.uuid_manager.preflight_relic_stream_clone()?;
+                }
+                crate::authoring::clone_shape::controlled_clone(shared.as_ref())?
+            }
+        };
+        owned.restore(state);
+        Ok(())
+    }
+
+    pub fn restore(self, state: &mut GameCoreState) {
+        state.lifecycle.transition_to(self.game_state);
+        state.active_node_content = self.active_node_content;
+        state.node_session = self.node_session;
+        state.run = self.run;
+        state.visual_novel = self.visual_novel;
+        state.visual_novel_triggers = self.visual_novel_triggers;
+        state.uuid_manager = self.uuid_manager;
+        state.enkephalin = self.enkephalin;
+        state.inventory = self.inventory;
+        state.roster = self.roster;
+        state.starter_candidates = self.starter_candidates;
+        state.pending_game_mode = self.pending_game_mode;
+        state.skill_fragments = self.skill_fragments;
+        state.relics = self.relics;
+        state.crafting_resources = self.crafting_resources;
+        state.run_checkpoint = self.run_checkpoint;
+        state.active_battle = None;
+    }
+
+    pub fn as_event_combat_reentry(
+        mut self,
+        node_id: crate::game::map::MapNodeId,
+        kind_id: crate::game::map::MapNodeKindId,
+        category: crate::game::map::MapNodeCategory,
+        session: NodeSession,
+    ) -> Self {
+        self.game_state = GameState::NodeConfirm {
+            node_id,
+            kind_id,
+            category,
+        };
+        self.active_node_content = None;
+        self.node_session = Some(session);
+        self
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct BattleEmployeeAttemptState {
+    pub roster: EmployeeRoster,
+    pub processed_incapacitations: HashSet<UnitInstanceId>,
+}
+
+impl BattleEmployeeAttemptState {
+    pub fn new(entry_roster: &EmployeeRoster) -> Result<Self, GameError> {
+        crate::authoring::clone_shape::capture_shape!(Self {
+            roster: entry_roster
+        } sets {} fresh {} fresh_sets { processed_incapacitations: HashSet::new() })
+    }
+}
+
+#[derive(Debug, Clone)]
 pub struct LiveBattleDeploymentState {
-    pub current_cost: u32,
-    pub max_cost: u32,
-    pub cost_per_second: u32,
-    pub last_cost_update_ms: u64,
-    pub base_deploy_cost: u32,
     pub withdraw_redeploy_cooldown_ms: u64,
     pub defeat_redeploy_cooldown_ms: u64,
-    pub redeploy_cost_multiplier_pct: u32,
     pub next_instance_salt: u32,
     pub deployed_units: HashMap<Uuid, LiveBattleDeployedUnitState>,
     pub redeploy_locks: HashMap<Uuid, LiveBattleRedeployState>,
 }
 
+#[derive(Debug, Clone)]
 pub struct LiveBattleRedeployState {
     pub ready_at_ms: u64,
     pub deploy_cost: u32,
-    pub current_hp_policy: BattleDeployCurrentHpPolicy,
+    pub current_hp_policy: Option<BattleDeployCurrentHpPolicy>,
 }
 
+#[derive(Debug, Clone)]
 pub struct LiveBattleDeployedUnitState {
     pub unit_instance_id: UnitInstanceId,
     pub facing: FacingDirection,
 }
 
+#[derive(Debug, Clone)]
+pub struct TacticalResourceState {
+    current: u32,
+    maximum: u32,
+    recovery_per_second: u32,
+    last_recovery_at_ms: u64,
+    base_deploy_cost: u32,
+    redeploy_cost: u32,
+}
+
+impl TacticalResourceState {
+    pub fn new(policy: TacticalResourcePolicy) -> Self {
+        Self {
+            current: policy.initial.min(policy.maximum),
+            maximum: policy.maximum,
+            recovery_per_second: policy.recovery_per_second,
+            last_recovery_at_ms: 0,
+            base_deploy_cost: policy.base_deploy_cost,
+            redeploy_cost: policy.redeploy_cost(),
+        }
+    }
+
+    pub fn current(&self) -> u32 {
+        self.current
+    }
+
+    pub fn base_deploy_cost(&self) -> u32 {
+        self.base_deploy_cost
+    }
+
+    pub fn redeploy_cost(&self) -> u32 {
+        self.redeploy_cost
+    }
+
+    pub fn can_pay(&self, amount: u32) -> bool {
+        self.current >= amount
+    }
+
+    pub fn pay(&mut self, amount: u32) -> bool {
+        if !self.can_pay(amount) {
+            return false;
+        }
+        self.current -= amount;
+        true
+    }
+
+    pub fn recover_until(&mut self, now_ms: u64) {
+        if now_ms <= self.last_recovery_at_ms {
+            return;
+        }
+        if self.recovery_per_second == 0 {
+            self.last_recovery_at_ms = now_ms;
+            return;
+        }
+        let elapsed_seconds = (now_ms - self.last_recovery_at_ms) / 1_000;
+        if elapsed_seconds == 0 {
+            return;
+        }
+        self.last_recovery_at_ms = self
+            .last_recovery_at_ms
+            .saturating_add(elapsed_seconds.saturating_mul(1_000));
+        let recovered = elapsed_seconds.saturating_mul(u64::from(self.recovery_per_second));
+        let recovered = u32::try_from(recovered).unwrap_or(u32::MAX);
+        self.current = self.maximum.min(self.current.saturating_add(recovered));
+    }
+
+    pub fn apply_delta(&mut self, amount: i32) {
+        if amount > 0 {
+            self.current = self.maximum.min(self.current.saturating_add(amount as u32));
+        } else if amount < 0 {
+            self.current = self.current.saturating_sub(amount.unsigned_abs());
+        }
+    }
+
+    pub fn to_dto(&self) -> LiveBattleTacticalResourceDto {
+        LiveBattleTacticalResourceDto {
+            current: self.current,
+            maximum: self.maximum,
+            recovery_per_second: self.recovery_per_second,
+        }
+    }
+
+    #[cfg(test)]
+    pub fn set_current_for_test(&mut self, current: u32) {
+        self.current = current.min(self.maximum);
+    }
+}
+
 impl LiveBattleDeploymentState {
     pub fn new(policy: LiveBattleDeploymentPolicy) -> Self {
         Self {
-            current_cost: policy.initial_cost.min(policy.max_cost),
-            max_cost: policy.max_cost,
-            cost_per_second: policy.cost_per_second,
-            last_cost_update_ms: 0,
-            base_deploy_cost: policy.base_deploy_cost,
             withdraw_redeploy_cooldown_ms: policy.withdraw_redeploy_cooldown_ms,
             defeat_redeploy_cooldown_ms: policy.defeat_redeploy_cooldown_ms,
-            redeploy_cost_multiplier_pct: policy.redeploy_cost_multiplier_pct,
             next_instance_salt: policy.first_instance_salt,
             deployed_units: HashMap::new(),
             redeploy_locks: HashMap::new(),
@@ -229,8 +1090,118 @@ impl LiveBattleDeploymentState {
 }
 
 impl ActiveBattleSession {
+    pub fn employee_roster(&self) -> &EmployeeRoster {
+        &self.employee_attempt.roster
+    }
+
+    pub fn unprocessed_deployed_employee_incapacitations(&self) -> Vec<(Uuid, UnitInstanceId)> {
+        let Some(deployment) = self.live_deployment.as_ref() else {
+            return Vec::new();
+        };
+        let mut incapacitations = deployment
+            .deployed_units
+            .iter()
+            .filter_map(|(employee_uuid, deployed)| {
+                let unit = self.battle.units.get(&deployed.unit_instance_id)?;
+                (unit.lifecycle.is_dead()
+                    && unit.source_owned_uuid == *employee_uuid
+                    && matches!(
+                        unit.source_identity,
+                        crate::game::battle::types::BattleUnitSourceIdentity::Employee { .. }
+                    )
+                    && !self
+                        .employee_attempt
+                        .processed_incapacitations
+                        .contains(&deployed.unit_instance_id))
+                .then_some((*employee_uuid, deployed.unit_instance_id))
+            })
+            .collect::<Vec<_>>();
+        incapacitations.sort_by(|left, right| left.1.cmp(&right.1));
+        incapacitations
+    }
+
     pub fn playback_state(&self) -> BattlePlaybackState {
         self.playback
+    }
+
+    pub fn deployment_candidate_eligibility(
+        &self,
+        employee_uuid: Uuid,
+        effective_deploy_cost: u32,
+        employee_disabled_reason: Option<ActionDisabledReasonCode>,
+    ) -> BattlePayloadEligibilityDto {
+        if let Some(reason) = employee_disabled_reason {
+            return BattlePayloadEligibilityDto::disabled(reason);
+        }
+        let Some(deployment) = self.live_deployment.as_ref() else {
+            return BattlePayloadEligibilityDto::disabled(
+                ActionDisabledReasonCode::UnitUnavailable,
+            );
+        };
+        if deployment.deployed_units.contains_key(&employee_uuid) {
+            return BattlePayloadEligibilityDto::disabled(
+                ActionDisabledReasonCode::UnitUnavailable,
+            );
+        }
+        if deployment
+            .redeploy_locks
+            .get(&employee_uuid)
+            .is_some_and(|lock| self.execution.last_event_time_ms() < lock.ready_at_ms)
+        {
+            return BattlePayloadEligibilityDto::disabled(
+                ActionDisabledReasonCode::RedeployCooldown,
+            );
+        }
+        if deployment.deployed_units.len() >= 8 {
+            return BattlePayloadEligibilityDto::disabled(
+                ActionDisabledReasonCode::DeploymentLimit,
+            );
+        }
+        if !self.tactical_resource.can_pay(effective_deploy_cost) {
+            return BattlePayloadEligibilityDto::disabled(
+                ActionDisabledReasonCode::InsufficientResources,
+            );
+        }
+        BattlePayloadEligibilityDto::enabled()
+    }
+
+    fn playback_eligibility_dto(&self) -> LiveBattlePlaybackEligibilityDto {
+        let mut result = LiveBattlePlaybackEligibilityDto::for_state(self.playback);
+        result.forced_pause_remaining_ms = self.battle.forced_pause_remaining_ms();
+        if result.forced_pause_remaining_ms.is_some() {
+            result.pause = BattlePayloadEligibilityDto::disabled(
+                self.battle.forced_pause_reason(),
+            );
+            result.resume = BattlePayloadEligibilityDto::disabled(
+                self.battle.forced_pause_reason(),
+            );
+            for speed in &mut result.speeds {
+                speed.eligibility = BattlePayloadEligibilityDto::disabled(
+                    self.battle.forced_pause_reason(),
+                );
+            }
+        }
+        if result.forced_pause_remaining_ms.is_none() {
+            let speed_reason = if self.settings_open() {
+                Some(ActionDisabledReasonCode::SettingsOpen)
+            } else if self.has_selection() {
+                Some(ActionDisabledReasonCode::SelectionActive)
+            } else {
+                None
+            };
+            if let Some(reason) = speed_reason {
+                for speed in &mut result.speeds {
+                    speed.eligibility = BattlePayloadEligibilityDto::disabled(reason);
+                }
+            }
+            if self.settings_open() {
+                result.pause =
+                    BattlePayloadEligibilityDto::disabled(ActionDisabledReasonCode::SettingsOpen);
+                result.resume =
+                    BattlePayloadEligibilityDto::disabled(ActionDisabledReasonCode::SettingsOpen);
+            }
+        }
+        result
     }
 
     pub fn simulation_delta_for_tick(&mut self, raw_delta_ms: u64) -> Option<u64> {
@@ -249,50 +1220,37 @@ impl ActiveBattleSession {
         Some(delta_ms)
     }
 
-    pub fn refresh_live_deployment_cost(&mut self) {
-        let Some(deployment) = self.live_deployment.as_mut() else {
-            return;
-        };
+    pub fn refresh_tactical_resource(&mut self) {
         let now_ms = self.execution.last_event_time_ms();
-        if now_ms <= deployment.last_cost_update_ms {
-            return;
-        }
-        if deployment.cost_per_second == 0 {
-            deployment.last_cost_update_ms = now_ms;
-            return;
-        }
-        let elapsed_ms = now_ms - deployment.last_cost_update_ms;
-        let gained = (elapsed_ms / 1_000).saturating_mul(deployment.cost_per_second as u64) as u32;
-        if gained > 0 {
-            deployment.current_cost = deployment
-                .max_cost
-                .min(deployment.current_cost.saturating_add(gained));
-            deployment.last_cost_update_ms += (gained / deployment.cost_per_second) as u64 * 1_000;
-        }
+        self.tactical_resource.recover_until(now_ms);
     }
 
-    pub fn apply_live_signals_to_deployment(&mut self) {
+    pub fn apply_live_signals_to_tactical_resource(&mut self) {
         let signals = self.battle.drain_live_signals();
-        if signals.is_empty() {
-            return;
-        }
-        let Some(deployment) = self.live_deployment.as_mut() else {
-            return;
-        };
-
         for signal in signals {
             match signal {
-                BattleLiveSignal::StabilizationDelta { amount, .. } if amount > 0 => {
-                    deployment.current_cost = deployment
-                        .max_cost
-                        .min(deployment.current_cost.saturating_add(amount as u32));
+                BattleLiveSignal::TacticalResourceDelta {
+                    amount,
+                    fact_source,
+                    time_ms,
+                    ..
+                } => {
+                    let before = self.tactical_resource.current();
+                    self.tactical_resource.apply_delta(amount);
+                    if self
+                        .battle
+                        .record_tactical_resource_signal(
+                            fact_source,
+                            amount,
+                            before,
+                            self.tactical_resource.current(),
+                            time_ms,
+                        )
+                        .is_err()
+                    {
+                        return;
+                    }
                 }
-                BattleLiveSignal::StabilizationDelta { amount, .. } if amount < 0 => {
-                    deployment.current_cost = deployment
-                        .current_cost
-                        .saturating_sub(amount.unsigned_abs());
-                }
-                BattleLiveSignal::StabilizationDelta { .. } => {}
             }
         }
     }
@@ -302,10 +1260,7 @@ impl ActiveBattleSession {
             return;
         };
         let now_ms = self.execution.last_event_time_ms();
-        let redeploy_cost = deployment
-            .base_deploy_cost
-            .saturating_mul(deployment.redeploy_cost_multiplier_pct)
-            / 100;
+        let redeploy_cost = self.tactical_resource.redeploy_cost();
         let stale_deployments = deployment
             .deployed_units
             .iter()
@@ -318,12 +1273,12 @@ impl ActiveBattleSession {
                             crate::game::battle::core::types::RuntimeUnitLifecycle::Withdrawn
                         ) =>
                     {
-                        BattleDeployCurrentHpPolicy::withdraw_redeploy(
+                        Some(BattleDeployCurrentHpPolicy::withdraw_redeploy(
                             unit.stats.current_health,
                             unit.stats.max_health,
-                        )
+                        ))
                     }
-                    Some(_) | None => BattleDeployCurrentHpPolicy::death_redeploy(),
+                    Some(_) | None => None,
                 };
                 Some((*employee_uuid, current_hp_policy))
             })
@@ -368,15 +1323,29 @@ impl ActiveBattleSession {
         }
         tactical_points.sort_by(|left, right| left.id.cmp(&right.id));
 
+        let is_actual_abnormality_catalog_id = |id: &str| {
+            !id.trim().is_empty()
+                && self
+                    .battle
+                    .game_data
+                    .abnormality_data
+                    .get_by_id(id)
+                    .is_some()
+        };
         let mut abnormality_ids = self
             .primary_abnormality_id
             .iter()
+            .filter(|id| is_actual_abnormality_catalog_id(id))
             .cloned()
             .collect::<Vec<_>>();
         abnormality_ids.extend(
             self.combat_preview
                 .enemy_briefing
                 .iter()
+                .filter(|briefing| {
+                    briefing.kind == crate::game::combat_preview::EnemyKind::Abnormality
+                        && is_actual_abnormality_catalog_id(&briefing.abnormality_id)
+                })
                 .map(|briefing| briefing.abnormality_id.clone()),
         );
         abnormality_ids.extend(
@@ -386,7 +1355,7 @@ impl ActiveBattleSession {
                 .flat_map(|wave| wave.enemy_entries.iter())
                 .filter(|entry| {
                     entry.kind == crate::game::combat_preview::EnemyKind::Abnormality
-                        && !entry.abnormality_id.trim().is_empty()
+                        && is_actual_abnormality_catalog_id(&entry.abnormality_id)
                 })
                 .map(|entry| entry.abnormality_id.clone()),
         );
@@ -414,6 +1383,47 @@ impl ActiveBattleSession {
             spawn_zones: self.combat_preview.spawn_zones.clone(),
             tactical_points,
             static_objects: Vec::new(),
+            field_work_objects: {
+                let mut objects = scenario
+                    .tactical_plan
+                    .field_work_objects
+                    .iter()
+                    .map(|object| {
+                        let mut work_cells = object
+                            .work_cells
+                            .iter()
+                            .map(|cell| LiveBattleSetupFieldWorkCellDto {
+                                id: cell.id.0.clone(),
+                                position: cell.position,
+                                tile_kind: cell.tile_kind,
+                            })
+                            .collect::<Vec<_>>();
+                        work_cells.sort_by(|left, right| left.id.cmp(&right.id));
+                        LiveBattleSetupFieldWorkObjectDto {
+                            id: object.id.0.clone(),
+                            presentation_kind: match object.presentation_kind {
+                                crate::game::battle::scenario::FieldWorkPresentationKind::EmergencyRepairTerminal => {
+                                    LiveBattleFieldWorkPresentationKindDto::EmergencyRepairTerminal
+                                }
+                            },
+                            position: object.position,
+                            work_cells,
+                            required_work_ms: object.required_work_ms,
+                            completion_effect: match &object.completion_effect {
+                                crate::game::battle::scenario::FieldWorkCompletionEffect::RepairProtectedUnit {
+                                    unit_ref,
+                                    flat_hp,
+                                } => LiveBattleFieldWorkCompletionEffectDto::RepairProtectedUnit {
+                                    unit_ref: unit_ref.0.clone(),
+                                    flat_hp: *flat_hp,
+                                },
+                            },
+                        }
+                    })
+                    .collect::<Vec<_>>();
+                objects.sort_by(|left, right| left.id.cmp(&right.id));
+                objects
+            },
             initial_units: Vec::new(),
             catalog_refs: LiveBattleSetupCatalogRefsDto {
                 battlefield_template_id: self.combat_preview.battlefield_template_id.clone(),
@@ -442,10 +1452,39 @@ impl ActiveBattleSession {
                     unit_instance_id: deployed.unit_instance_id,
                     position,
                     facing: deployed.facing,
-                    skill_readiness: self.battle.live_skill_readiness(
-                        self.execution.last_event_time_ms(),
-                        deployed.unit_instance_id,
-                    ),
+                    withdraw_eligibility: BattlePayloadEligibilityDto::enabled(),
+                    tactical_state: self
+                        .battle
+                        .unit_tactical_snapshot(
+                            deployed.unit_instance_id,
+                            self.execution.last_event_time_ms(),
+                        )
+                        .map(|snapshot| {
+                            live_unit_tactical_state_dto(
+                                snapshot,
+                                self.tactical_resource.can_pay(
+                                    self.battle.game_data.run_policy.tactical_relocation.cost,
+                                ),
+                            )
+                        })
+                        .unwrap_or_else(|| {
+                            panic!(
+                                "live deployment references unit without tactical state: {:?}",
+                                deployed.unit_instance_id
+                            )
+                        }),
+                    skill_readiness: self
+                        .battle
+                        .live_skill_readiness(
+                            self.execution.last_event_time_ms(),
+                            deployed.unit_instance_id,
+                        )
+                        .unwrap_or_else(|| {
+                            panic!(
+                                "live deployment references unit without skill readiness: {:?}",
+                                deployed.unit_instance_id
+                            )
+                        }),
                 }
             })
             .collect::<Vec<_>>();
@@ -454,6 +1493,7 @@ impl ActiveBattleSession {
         let mut redeploying_units = deployment
             .redeploy_locks
             .iter()
+            .filter(|(employee_uuid, _)| roster.contains(employee_uuid))
             .map(|(employee_uuid, state)| LiveBattleRedeployUnitDto {
                 employee_uuid: *employee_uuid,
                 ready_at_ms: state.ready_at_ms,
@@ -464,19 +1504,24 @@ impl ActiveBattleSession {
 
         let mut unit_deploy_costs = roster
             .iter()
-            .filter(|employee| employee.is_available_for_combat())
             .filter(|employee| !deployment.deployed_units.contains_key(&employee.uuid))
             .map(|employee| {
                 let base_deploy_cost = deployment
                     .redeploy_locks
                     .get(&employee.uuid)
                     .map(|lock| lock.deploy_cost)
-                    .unwrap_or(deployment.base_deploy_cost);
+                    .unwrap_or_else(|| self.tactical_resource.base_deploy_cost());
+                let effective_deploy_cost =
+                    employee.deployment_cost_after_consumable(base_deploy_cost);
                 LiveBattleUnitDeployCostDto {
                     employee_uuid: employee.uuid,
                     base_deploy_cost,
-                    effective_deploy_cost: employee
-                        .deployment_cost_after_consumable(base_deploy_cost),
+                    effective_deploy_cost,
+                    eligibility: self.deployment_candidate_eligibility(
+                        employee.uuid,
+                        effective_deploy_cost,
+                        employee.battle_deployment_disabled_reason(),
+                    ),
                 }
             })
             .collect::<Vec<_>>();
@@ -484,64 +1529,127 @@ impl ActiveBattleSession {
 
         Some(LiveBattleDeploymentDto {
             battle_time_ms: self.execution.last_event_time_ms(),
-            current_cost: deployment.current_cost,
-            max_cost: deployment.max_cost,
-            base_deploy_cost: deployment.base_deploy_cost,
-            cost_per_second: deployment.cost_per_second,
             unit_deploy_costs,
             deployed_units,
             redeploying_units,
         })
     }
 
-    pub fn drain_battle_update_dto(&mut self, roster: &EmployeeRoster) -> LiveBattleUpdateDto {
-        self.reconcile_live_deployment_with_battle_state();
-        let after_seq = self.last_pushed_event_log_seq.unwrap_or(0);
-        let events = self.battle.event_log_entries_after_seq(after_seq);
-        let to_seq = events.last().map(|entry| entry.seq).unwrap_or(after_seq);
-        if !events.is_empty() {
-            self.last_pushed_event_log_seq = Some(to_seq);
-        }
-        self.battle_update_dto_from_events(after_seq, to_seq, events, roster)
+    pub fn commit_battle_projection(&mut self) -> Result<u64, GameError> {
+        self.battle_state_revision = self.next_battle_projection_revision()?;
+        Ok(self.battle_state_revision)
     }
 
+    pub fn ensure_battle_projection_commit_available(&self) -> Result<(), GameError> {
+        self.next_battle_projection_revision().map(|_| ())
+    }
+
+    fn next_battle_projection_revision(&self) -> Result<u64, GameError> {
+        self.battle_state_revision
+            .checked_add(1)
+            .ok_or(GameError::BattleStateRevisionOverflow)
+    }
+
+    #[cfg(test)]
     pub fn latest_event_log_seq(&self) -> u64 {
-        self.battle
-            .event_log
-            .entries
-            .last()
-            .map(|entry| entry.seq)
-            .unwrap_or(0)
+        self.battle.event_log.latest_seq()
     }
 
     pub fn battle_update_dto_after(
         &self,
-        last_seen_seq: Option<u64>,
+        after_seq: u64,
         roster: &EmployeeRoster,
     ) -> Result<LiveBattleUpdateDto, GameError> {
-        let after_seq = last_seen_seq.unwrap_or(0);
-        let latest_seq = self.latest_event_log_seq();
-        if after_seq > latest_seq {
-            return Err(GameError::InvalidBattleResyncSeq {
-                requested: after_seq,
-                latest: latest_seq,
-            });
-        }
+        self.ensure_battle_update_cursor_valid(after_seq)?;
         let events = self.battle.event_log_entries_after_seq(after_seq);
         let to_seq = events.last().map(|entry| entry.seq).unwrap_or(after_seq);
-        Ok(self.battle_update_dto_from_events(after_seq, to_seq, events, roster))
+        self.battle_update_dto_from_events(
+            LiveBattleUpdateMessageType::BattleUpdate,
+            after_seq,
+            to_seq,
+            events,
+            roster,
+        )
+    }
+
+    pub fn battle_update_dto_after_or_resync(
+        &self,
+        after_seq: u64,
+        roster: &EmployeeRoster,
+    ) -> Result<LiveBattleUpdateDto, GameError> {
+        let (message_type, effective_after_seq) = match self
+            .battle
+            .event_log
+            .validate_cursor(after_seq)
+        {
+            Ok(()) => (LiveBattleUpdateMessageType::BattleUpdate, after_seq),
+            Err(crate::game::battle::event_log::BattleHistoryCursorError::InvalidFuture {
+                requested,
+                latest,
+            }) => {
+                return Err(GameError::InvalidBattleResyncSeq { requested, latest });
+            }
+            Err(
+                crate::game::battle::event_log::BattleHistoryCursorError::SnapshotResyncRequired {
+                    oldest_available_after_seq,
+                    ..
+                },
+            ) => (
+                LiveBattleUpdateMessageType::SnapshotResyncRequired,
+                oldest_available_after_seq,
+            ),
+        };
+        let events = self.battle.event_log_entries_after_seq(effective_after_seq);
+        let to_seq = events
+            .last()
+            .map(|entry| entry.seq)
+            .unwrap_or(effective_after_seq);
+        self.battle_update_dto_from_events(
+            message_type,
+            effective_after_seq,
+            to_seq,
+            events,
+            roster,
+        )
+    }
+
+    pub fn ensure_battle_update_cursor_valid(&self, after_seq: u64) -> Result<(), GameError> {
+        match self.battle.event_log.validate_cursor(after_seq) {
+            Ok(()) => Ok(()),
+            Err(crate::game::battle::event_log::BattleHistoryCursorError::InvalidFuture {
+                requested: after_seq,
+                latest,
+            }) => Err(GameError::InvalidBattleResyncSeq {
+                requested: after_seq,
+                latest,
+            }),
+            Err(
+                crate::game::battle::event_log::BattleHistoryCursorError::SnapshotResyncRequired {
+                    requested,
+                    oldest_available_after_seq,
+                    latest,
+                },
+            ) => Err(GameError::BattleSnapshotResyncRequired {
+                requested,
+                oldest_available_after_seq,
+                latest,
+            }),
+        }
     }
 
     fn battle_update_dto_from_events(
         &self,
+        message_type: LiveBattleUpdateMessageType,
         after_seq: u64,
         to_seq: u64,
         events: Vec<BattleEventLogEntry>,
         roster: &EmployeeRoster,
-    ) -> LiveBattleUpdateDto {
-        LiveBattleUpdateDto {
-            message_type: LiveBattleUpdateMessageType::BattleUpdate,
+    ) -> Result<LiveBattleUpdateDto, GameError> {
+        Ok(LiveBattleUpdateDto {
+            message_type,
             battle_uuid: self.battle_uuid,
+            battle_state_revision: self.battle_state_revision,
+            action_capabilities: Vec::new(),
             server_battle_time_ms: self.execution.last_event_time_ms(),
             events_delta: LiveBattleEventDeltaDto {
                 after_seq,
@@ -551,50 +1659,166 @@ impl ActiveBattleSession {
                     .map(LiveBattlePresentationEventDto::from)
                     .collect(),
             },
-            checkpoint: self.live_checkpoint_dto(to_seq, roster),
-        }
+            checkpoint: self.live_checkpoint_dto(to_seq, roster)?,
+            visual_novel: None,
+        })
     }
 
     fn live_checkpoint_dto(
         &self,
         at_seq: u64,
         roster: &EmployeeRoster,
-    ) -> LiveBattleStateCheckpointDto {
+    ) -> Result<LiveBattleStateCheckpointDto, GameError> {
+        let battle_time_ms = self.execution.last_event_time_ms();
         let mut units = self
             .battle
             .units
             .values()
             .filter(|unit| unit.is_active())
-            .map(|unit| {
+            .map(|unit| -> Result<LiveBattleUnitCheckpointDto, GameError> {
                 let position = unit.body.projected_tile();
-                LiveBattleUnitCheckpointDto {
+                let control_state = self
+                    .battle
+                    .unit_control_state(unit.instance_id, battle_time_ms)
+                    .unwrap_or_default();
+                let skill_start_disabled_reason = self
+                    .battle
+                    .skill_start_disabled_reason(unit.instance_id, battle_time_ms);
+                Ok(LiveBattleUnitCheckpointDto {
+                    basic_action: self.battle.basic_action_snapshot(
+                        unit.instance_id,
+                        self.interaction.focused_unit_instance_id == Some(unit.instance_id)
+                            || self.tactical_focus.as_ref().is_some_and(|focus| {
+                                focus.caster_unit_instance_id == unit.instance_id
+                            }),
+                    )?,
                     unit_instance_id: unit.instance_id,
                     owner: unit.owner,
                     role: unit.role,
                     hud: live_unit_hud_dto(unit),
-                    range_previews: range_previews_for_runtime_unit(
-                        unit,
-                        self.battle.game_data.as_ref(),
-                        &self.battle.battlefield,
-                        position,
-                    ),
+                    control: LiveBattleUnitControlStateDto {
+                        hard_cc_active: control_state.hard_cc_active(),
+                        hard_cc_release_time_ms: control_state.hard_cc_release_time_ms,
+                        silenced: control_state.silenced,
+                        skill_start_disabled_reason,
+                    },
+                    tactical_state: self
+                        .battle
+                        .unit_tactical_snapshot(unit.instance_id, battle_time_ms)
+                        .map(|snapshot| {
+                            live_unit_tactical_state_dto(
+                                snapshot,
+                                self.tactical_resource.can_pay(
+                                    self.battle.game_data.run_policy.tactical_relocation.cost,
+                                ),
+                            )
+                        }),
+                    range_previews: if unit.owner == crate::game::enums::Side::Player
+                        || self.interaction.focused_unit_instance_id == Some(unit.instance_id)
+                    {
+                        Some(self.battle.runtime_range_previews(
+                            unit.instance_id,
+                            position,
+                            unit.facing_direction,
+                        )?)
+                    } else {
+                        None
+                    },
                     mobility_kind: unit.mobility_kind,
                     unit_source: unit.source_identity.clone(),
                     position,
                     world_position: unit.world_position(),
                     stats: unit.stats,
-                }
+                })
             })
-            .collect::<Vec<_>>();
+            .collect::<Result<Vec<_>, GameError>>()?;
         units.sort_by(|left, right| left.unit_instance_id.cmp(&right.unit_instance_id));
 
-        LiveBattleStateCheckpointDto {
+        Ok(LiveBattleStateCheckpointDto {
+            presence_marks: self.battle.presence_marks_snapshot(battle_time_ms)?,
+            weapon_marks: self.battle.weapon_marks_snapshot()?,
+            tile_bursts: self.battle.tile_bursts_snapshot()?,
+            counter_channels: self.battle.counter_channels_snapshot()?,
+            relation_actions: self.battle.relation_actions_snapshot()?,
+            input_plans: self.battle.input_plans_snapshot()?,
+            shared_cohorts: self.battle.shared_cohorts_snapshot()?,
+            prepared_volleys: self.battle.prepared_volleys_snapshot()?,
+            mobile_effects: self.battle.mobile_effects_snapshot()?,
+            paired_areas: self.battle.paired_areas_snapshot()?,
+            sustained_effects: self.battle.sustained_effect_snapshot()?,
+            independent_objects: self.battle.independent_objects_snapshot(battle_time_ms)?,
             at_seq,
-            battle_time_ms: self.execution.last_event_time_ms(),
+            battle_time_ms,
             playback: self.playback_state(),
+            playback_eligibility: self.playback_eligibility_dto(),
+            tactical_focus: self.tactical_focus_dto(),
+            interaction: self.interaction_dto(),
+            field_work_objects: self
+                .battle
+                .field_work_object_snapshots()
+                .into_iter()
+                .map(|object| LiveBattleFieldWorkObjectStateDto {
+                    id: object.id.0,
+                    status: match object.status {
+                        FieldWorkObjectStatus::Active => LiveBattleFieldWorkObjectStatusDto::Active,
+                        FieldWorkObjectStatus::Completed => {
+                            LiveBattleFieldWorkObjectStatusDto::Completed
+                        }
+                    },
+                    accumulated_work_ms: object.accumulated_work_ms,
+                    required_work_ms: object.required_work_ms,
+                    work_cells: object
+                        .work_cells
+                        .into_iter()
+                        .map(|cell| LiveBattleFieldWorkCellStateDto {
+                            id: cell.id.0,
+                            position: cell.position,
+                            tile_kind: cell.tile_kind,
+                            worker_unit_instance_id: cell.worker_unit_id,
+                        })
+                        .collect(),
+                })
+                .collect(),
             units,
+            tactical_resource: self.tactical_resource.to_dto(),
             deployment: self.live_deployment_dto(roster),
-        }
+        })
+    }
+}
+
+fn live_unit_tactical_state_dto(
+    snapshot: UnitTacticalSnapshot,
+    relocation_resource_available: bool,
+) -> LiveBattleUnitTacticalStateDto {
+    let eligibility = |disabled_reason| match disabled_reason {
+        Some(reason) => BattlePayloadEligibilityDto::disabled(reason),
+        None => BattlePayloadEligibilityDto::enabled(),
+    };
+    LiveBattleUnitTacticalStateDto {
+        stance: snapshot.stance,
+        tile_kind: snapshot.tile_kind,
+        tile_effect: match snapshot.tile_effect {
+            TacticalTileEffect::None => LiveBattleTileEffectDto::None,
+            TacticalTileEffect::DefenseFocus => LiveBattleTileEffectDto::DefenseFocus,
+            TacticalTileEffect::Rest => LiveBattleTileEffectDto::Rest,
+        },
+        stance_cooldown_until_ms: snapshot.stance_cooldown_until_ms,
+        relocation_cooldown_until_ms: snapshot.relocation_cooldown_until_ms,
+        forced_defense_until_ms: snapshot.forced_defense_until_ms,
+        forced_defense_remaining_ms: snapshot.forced_defense_remaining_ms,
+        relocation_eligibility: eligibility(snapshot.relocation_disabled_reason.or_else(|| {
+            (!relocation_resource_available)
+                .then_some(ActionDisabledReasonCode::InsufficientResources)
+        })),
+        stance_eligibility: LiveBattleStanceEligibilityDto {
+            attack: eligibility(snapshot.attack_disabled_reason),
+            defense: eligibility(snapshot.defense_disabled_reason),
+        },
+        base_block_capacity: snapshot.base_block_capacity,
+        effective_block_capacity: snapshot.effective_block_capacity,
+        defense_focus_damage_reduction_percent: snapshot.defense_focus_damage_reduction_percent,
+        next_rest_tick_ms: snapshot.next_rest_tick_ms,
+        activity: snapshot.activity,
     }
 }
 
@@ -616,192 +1840,155 @@ fn live_unit_hud_dto(unit: &crate::game::battle::core::types::RuntimeUnit) -> Li
     }
 }
 
+#[derive(Clone)]
 pub struct RunState {
+    pub typed_resources: crate::game::resource::durable::RunResourceState,
+    pub credit_ledgers: crate::game::credit_ledger::CreditLedgers,
     pub map: RunMap,
     pub map_progression: MapProgression,
     pub run_progression: RunProgression,
-    pub abnormality_research: RunAbnormalityResearchState,
-    pub abnormality_encounter_history: RunAbnormalityEncounterHistory,
-    pub boss_omen: BossOmenRunState,
+    pub facility_run_state: FacilityRunState,
+    pub encounter_progression: EncounterProgressionState,
     pub event_sessions: HashMap<crate::game::map::MapNodeId, EventSessionState>,
+    pub shop_sessions: HashMap<crate::game::map::MapNodeId, ShopSessionState>,
     pub combat_previews: HashMap<crate::game::map::MapNodeId, CombatPreview>,
     pub abnormality_attempts: HashMap<crate::game::map::MapNodeId, AbnormalityAttemptState>,
-    /// Run-local abnormality codex/observation records.
-    ///
-    /// This intentionally stores one representative combat record per
-    /// `abnormality_uuid`. It is not a per-battle timeline archive; individual
-    /// timeline exports must use a separate battle-uuid keyed store.
-    pub battle_records: Vec<CombatBattleState>,
+    pub recruitment: RecruitmentState,
+    pub record_progress: RunRecordProgress,
+    pub combat_recovery_restriction: Option<CombatRecoveryRestriction>,
 }
 
-#[derive(Debug, Serialize)]
-struct AbnormalityBattleRecordDebugExport<'a> {
-    version: u32,
-    run_seed: u64,
-    abnormality_uuid: Uuid,
-    primary_abnormality_id: Option<&'a str>,
-    encounter_id: &'a str,
-    node_type: CombatNodeType,
-    mission_variant: CombatMissionVariant,
-    winner: BattleWinner,
-    participant_results: &'a [ParticipantBattleResult],
-    result_stats: &'a BattleResultStatsDto,
-    bonus_objectives: &'a [crate::game::pve_bonus_objectives::PveBonusObjectiveOutcomeDto],
-    event_log: &'a BattleEventLog,
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct RunRecordProgress {
+    pub current_deathless_floor_streak: u32,
+    pub employee_death_on_current_floor: bool,
+}
+
+impl RunRecordProgress {
+    pub fn record_employee_death(&mut self) {
+        self.employee_death_on_current_floor = true;
+    }
+
+    pub fn complete_floor(&mut self) -> u32 {
+        if self.employee_death_on_current_floor {
+            self.current_deathless_floor_streak = 0;
+        } else {
+            self.current_deathless_floor_streak =
+                self.current_deathless_floor_streak.saturating_add(1);
+        }
+        self.employee_death_on_current_floor = false;
+        self.current_deathless_floor_streak
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct CombatRecoveryRestriction {
+    pub allowed_node_ids: Vec<crate::game::map::MapNodeId>,
 }
 
 impl RunState {
+    /// Retire completed node setup only. Committed results and pending rewards
+    /// have separate owners; relic Event receipts remain durable for dismantle.
+    /// Unfinished nodes never cross this boundary, so their RNG/choices survive.
+    pub(super) fn retire_completed_node_setup(&mut self, node_id: MapNodeId) {
+        self.clear_abnormality_attempt(node_id);
+        self.combat_previews.remove(&node_id);
+        if !self.event_sessions.get(&node_id).is_some_and(|session| session.has_relic_history()) {
+            self.event_sessions.remove(&node_id);
+        }
+    }
+
     pub fn new(
         map: RunMap,
         map_progression: MapProgression,
         run_progression: RunProgression,
     ) -> Self {
         Self {
+            typed_resources: Default::default(),
+            credit_ledgers: Default::default(),
             map,
             map_progression,
             run_progression,
-            abnormality_research: RunAbnormalityResearchState::default(),
-            abnormality_encounter_history: RunAbnormalityEncounterHistory::default(),
-            boss_omen: BossOmenRunState::default(),
+            facility_run_state: FacilityRunState::default(),
+            encounter_progression: EncounterProgressionState::default(),
             event_sessions: HashMap::new(),
+            shop_sessions: HashMap::new(),
             combat_previews: HashMap::new(),
             abnormality_attempts: HashMap::new(),
-            battle_records: Vec::new(),
+            recruitment: RecruitmentState::default(),
+            record_progress: RunRecordProgress::default(),
+            combat_recovery_restriction: None,
         }
     }
 
     /// Build the next floor's run state from an existing run.
     ///
-    /// Floor-local caches start empty, while run-scoped codex/research history
-    /// is preserved.
+    /// Floor-local caches start empty, while run-scoped encounter progression is preserved.
     pub fn for_next_floor_from(
         previous: &Self,
         map: RunMap,
         map_progression: MapProgression,
         run_progression: RunProgression,
-        boss_omen: BossOmenRunState,
-    ) -> Self {
-        Self::new(map, map_progression, run_progression)
-            .with_persistent_run_state_from(previous)
-            .with_boss_omen(boss_omen)
+        encounter_progression: EncounterProgressionState,
+    ) -> Result<Self, GameError> {
+        let mut next = Self::new(map, map_progression, run_progression)
+            .with_persistent_run_state_from(previous)?
+            .with_encounter_progression(encounter_progression);
+        next.revival.leave_floor();
+        Ok(next)
     }
 
-    /// Build the terminal run state from an existing run while preserving
-    /// run-scoped records for the final snapshot/result surfaces.
+    /// Build the terminal run state from an existing run while preserving run-scoped progression.
     pub fn for_run_complete_from(
         previous: &Self,
         map: RunMap,
         map_progression: MapProgression,
         run_progression: RunProgression,
-    ) -> Self {
+    ) -> Result<Self, GameError> {
         Self::new(map, map_progression, run_progression).with_persistent_run_state_from(previous)
     }
 
-    fn with_persistent_run_state_from(mut self, previous: &Self) -> Self {
-        self.abnormality_research = previous.abnormality_research.clone();
-        self.abnormality_encounter_history = previous.abnormality_encounter_history.clone();
-        self.battle_records = previous.battle_records.clone();
+    fn with_persistent_run_state_from(mut self, previous: &Self) -> Result<Self, GameError> {
+        self.typed_resources =
+            crate::game::resource::store::clone_resource_value(&previous.typed_resources)
+                .map_err(crate::game::resource::store::ResourceError::into_game_error)?;
+        self.credit_ledgers=crate::authoring::clone_shape::controlled_clone(&previous.credit_ledgers)?;
+        self.facility_run_state = previous.facility_run_state.clone();
+        self.encounter_progression = previous.encounter_progression.clone();
+        self.recruitment = previous.recruitment.clone();
+        self.record_progress = previous.record_progress.clone();
+        Ok(self)
+    }
+
+    pub fn with_recruitment(mut self, recruitment: RecruitmentState) -> Self {
+        self.recruitment = recruitment;
         self
     }
 
-    pub fn with_abnormality_research(
+    pub fn with_encounter_progression(
         mut self,
-        abnormality_research: RunAbnormalityResearchState,
+        encounter_progression: EncounterProgressionState,
     ) -> Self {
-        self.abnormality_research = abnormality_research;
+        self.encounter_progression = encounter_progression;
         self
     }
 
-    pub fn with_abnormality_encounter_history(
-        mut self,
-        abnormality_encounter_history: RunAbnormalityEncounterHistory,
-    ) -> Self {
-        self.abnormality_encounter_history = abnormality_encounter_history;
+    pub fn with_facility_run_state(mut self, facility_run_state: FacilityRunState) -> Self {
+        self.facility_run_state = facility_run_state;
         self
-    }
-
-    pub fn with_boss_omen(mut self, boss_omen: BossOmenRunState) -> Self {
-        self.boss_omen = boss_omen;
-        self
-    }
-
-    pub fn battle_record_debug_export_root_dir(&self) -> PathBuf {
-        PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .join("target")
-            .join("battle_records")
-            .join(format!("run_{:016x}", self.run_progression.run_seed))
-    }
-
-    pub fn battle_record_debug_export_path(&self, abnormality_uuid: Uuid) -> PathBuf {
-        self.battle_record_debug_export_root_dir()
-            .join(format!("{abnormality_uuid}.json"))
-    }
-
-    pub fn store_abnormality_battle_record(&mut self, battle: &CombatBattleState) -> bool {
-        // Codex records are keyed by abnormality, not by battle UUID. Repeated
-        // fights against the same abnormality keep the first representative
-        // observation record.
-        if self
-            .battle_records
-            .iter()
-            .any(|record| record.abnormality_uuid == battle.abnormality_uuid)
-        {
-            return false;
-        }
-        self.battle_records.push(battle.clone());
-        true
-    }
-
-    pub fn export_abnormality_battle_record_debug_json(
-        &self,
-        battle: &CombatBattleState,
-    ) -> Result<PathBuf, GameError> {
-        let out_dir = self.battle_record_debug_export_root_dir();
-        std::fs::create_dir_all(&out_dir).map_err(|error| {
-            GameError::InvalidStaticData(format!(
-                "failed to create battle record debug export directory '{}': {error}",
-                out_dir.display()
-            ))
-        })?;
-        let out_path = self.battle_record_debug_export_path(battle.abnormality_uuid);
-        let file = File::create(&out_path).map_err(|error| {
-            GameError::InvalidStaticData(format!(
-                "failed to create battle record debug export file '{}': {error}",
-                out_path.display()
-            ))
-        })?;
-        let writer = BufWriter::new(file);
-        let export = AbnormalityBattleRecordDebugExport {
-            version: 1,
-            run_seed: self.run_progression.run_seed,
-            abnormality_uuid: battle.abnormality_uuid,
-            primary_abnormality_id: battle.primary_abnormality_id.as_deref(),
-            encounter_id: &battle.encounter_id,
-            node_type: battle.node_type,
-            mission_variant: battle.mission_variant,
-            winner: battle.winner,
-            participant_results: &battle.participant_results,
-            result_stats: &battle.result_stats,
-            bonus_objectives: &battle.bonus_objectives,
-            event_log: &battle.event_log,
-        };
-        serde_json::to_writer_pretty(writer, &export).map_err(|error| {
-            GameError::InvalidStaticData(format!(
-                "failed to write battle record debug export file '{}': {error}",
-                out_path.display()
-            ))
-        })?;
-        Ok(out_path)
     }
 
     pub fn abnormality_attempt_state(
         &self,
         node_id: crate::game::map::MapNodeId,
     ) -> AbnormalityAttemptState {
+        let max_attempts = ABNORMALITY_MAX_ATTEMPTS;
         self.abnormality_attempts
             .get(&node_id)
             .copied()
-            .unwrap_or_else(|| AbnormalityAttemptState::new(ABNORMALITY_MAX_ATTEMPTS))
+            .unwrap_or_else(|| AbnormalityAttemptState::new(max_attempts))
     }
 
     pub fn abnormality_attempt_dto(
@@ -815,10 +2002,11 @@ impl RunState {
         &mut self,
         node_id: crate::game::map::MapNodeId,
     ) -> Option<AbnormalityAttemptState> {
+        let max_attempts = ABNORMALITY_MAX_ATTEMPTS;
         let state = self
             .abnormality_attempts
             .entry(node_id)
-            .or_insert_with(|| AbnormalityAttemptState::new(ABNORMALITY_MAX_ATTEMPTS));
+            .or_insert_with(|| AbnormalityAttemptState::new(max_attempts));
         state.start_next_attempt().then_some(*state)
     }
 
@@ -827,67 +2015,163 @@ impl RunState {
     }
 }
 
+impl std::ops::Deref for RunState {
+    type Target = EncounterProgressionState;
+
+    fn deref(&self) -> &Self::Target {
+        &self.encounter_progression
+    }
+}
+
+impl std::ops::DerefMut for RunState {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.encounter_progression
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::game::{
-        abnormality_research::RunAbnormalityResearchEntry,
-        battle::{result_stats::BattleResultBattleStatsDto, types::BattleWinner},
         data::event_data::{EventId, EventSceneId},
-        map::{MapGenerationConfig, MapGenerator, MapNodeId},
+        employee::{EmployeeDefinition, EmployeeInitialLoadout, EmployeeProfile},
+        map::{test_facility_map, MapNodeId},
+        recruitment::RecruitmentState,
     };
 
+    fn test_recruitment_state() -> RecruitmentState {
+        let definitions = vec![EmployeeDefinition {
+            employee_definition_id: "floor_candidate".to_string(),
+            name: "Floor Candidate".to_string(),
+            role: crate::game::employee::EmployeeRole::Dealer,
+            starter_eligible: false,
+            initial_loadout: EmployeeInitialLoadout::default(),
+            profile: EmployeeProfile::default(),
+        }];
+        RecruitmentState::initialize(41, &definitions, &[]).unwrap()
+    }
+
     fn generated_run_state(seed: u64, run_progression: RunProgression) -> RunState {
-        let map = MapGenerator::generate(seed, MapGenerationConfig::default());
+        let map = test_facility_map(seed);
         let progression = MapProgression::from_map(&map);
         RunState::new(map, progression, run_progression)
     }
 
-    fn test_battle_record(abnormality_uuid: Uuid) -> CombatBattleState {
-        CombatBattleState {
-            primary_abnormality_id: Some("test_abnormality".to_string()),
-            encounter_id: "test_encounter".to_string(),
-            node_type: CombatNodeType::Defense,
-            mission_variant: CombatMissionVariant::Defense,
-            abnormality_uuid,
-            winner: BattleWinner::Player,
-            event_log: BattleEventLog::default(),
-            result_stats: BattleResultStatsDto {
-                battle: BattleResultBattleStatsDto {
-                    duration_ms: 0,
-                    winner: BattleWinner::Player,
-                    killed_enemy_count: 0,
-                },
-                employees: vec![],
-                mvp: None,
-            },
-            bonus_objectives: vec![],
-            reward_mode: RewardMode::ClaimAll,
-            rewards: vec![],
-            participant_results: vec![],
-        }
+    #[test]
+    fn tactical_resource_redeploy_cost_uses_ceiling_for_odd_base_and_saturates() {
+        let state = TacticalResourceState::new(TacticalResourcePolicy {
+            initial: 0,
+            maximum: 100,
+            recovery_per_second: 0,
+            base_deploy_cost: 3,
+            redeploy_cost_multiplier_pct: 150,
+        });
+        assert_eq!(state.redeploy_cost(), 5);
+
+        let overflow = TacticalResourceState::new(TacticalResourcePolicy {
+            initial: 0,
+            maximum: u32::MAX,
+            recovery_per_second: 0,
+            base_deploy_cost: u32::MAX,
+            redeploy_cost_multiplier_pct: u32::MAX,
+        });
+        assert_eq!(overflow.redeploy_cost(), u32::MAX);
     }
 
     #[test]
-    fn next_floor_run_state_preserves_run_scoped_records_and_resets_node_scoped_state() {
-        let mut previous =
-            generated_run_state(0xA11CE, RunProgression::new(0xBEEF, GameMode::Standard, 3));
-        previous.abnormality_research.entries.insert(
-            "test_abnormality".to_string(),
-            RunAbnormalityResearchEntry {
-                research_points: 20,
-                research_required: 100,
-                response_complete: false,
-                suppression_wins: 1,
-                last_encountered_floor: Some(0),
-                completed_at_floor: None,
-                unique_fragment_granted: false,
-            },
+    fn tactical_resource_recovery_payment_and_signed_delta_are_clamped_and_atomic() {
+        let mut state = TacticalResourceState::new(TacticalResourcePolicy {
+            initial: 20,
+            maximum: 99,
+            recovery_per_second: 1,
+            base_deploy_cost: 10,
+            redeploy_cost_multiplier_pct: 150,
+        });
+
+        state.recover_until(999);
+        assert_eq!(state.current(), 20);
+        state.recover_until(1_000);
+        assert_eq!(state.current(), 21);
+        state.recover_until(1_999);
+        assert_eq!(state.current(), 21);
+        state.recover_until(2_000);
+        assert_eq!(state.current(), 22);
+
+        assert!(!state.pay(23));
+        assert_eq!(state.current(), 22, "failed full payment must not mutate");
+        assert!(state.pay(10));
+        assert_eq!(state.current(), 12);
+
+        state.apply_delta(i32::MAX);
+        assert_eq!(state.current(), 99);
+        state.recover_until(12_000);
+        state.apply_delta(-1);
+        state.recover_until(12_000);
+        assert_eq!(state.current(), 98, "capped recovery must not be banked");
+        state.recover_until(13_000);
+        assert_eq!(state.current(), 99);
+        state.apply_delta(i32::MIN);
+        assert_eq!(state.current(), 0);
+    }
+
+    #[test]
+    fn tactical_resource_recovery_saturates_large_elapsed_products_without_wrapping() {
+        let mut state = TacticalResourceState::new(TacticalResourcePolicy {
+            initial: 0,
+            maximum: u32::MAX,
+            recovery_per_second: u32::MAX,
+            base_deploy_cost: 0,
+            redeploy_cost_multiplier_pct: 100,
+        });
+
+        state.recover_until(u64::MAX);
+        assert_eq!(state.current(), u32::MAX);
+    }
+
+    #[test]
+    fn u14_run_power_anchor_ignores_previous_rise_and_certified_peak() {
+        use crate::game::data::run_policy_data::ResolvedFloorPowerAnchorPolicy;
+
+        let mut authority = RunPowerAuthorityState::default();
+        authority.initialize_run(1, 80);
+        assert_eq!(
+            authority.manifest_floor(ResolvedFloorPowerAnchorPolicy {
+                authored_minimum_power: 100,
+                minimum_rise: 0,
+            }),
+            100
         );
+        authority.record_combat_entry(1, 130);
+        assert_eq!(
+            authority.manifest_floor(ResolvedFloorPowerAnchorPolicy {
+                authored_minimum_power: 110,
+                minimum_rise: 25,
+            }),
+            110
+        );
+        authority.record_combat_entry(1, 120);
+        assert_eq!(authority.run_peak_certified_power, 130);
+        assert_eq!(
+            authority.manifest_floor(ResolvedFloorPowerAnchorPolicy {
+                authored_minimum_power: 140,
+                minimum_rise: 25,
+            }),
+            140,
+            "only authored floor power affects enemies"
+        );
+    }
+
+    #[test]
+    fn next_floor_run_state_preserves_encounter_progression_and_resets_node_scoped_state() {
+        let mut previous =
+            generated_run_state(0xA11CE, RunProgression::new(0xBEEF, GameMode::Tutorial, 3));
         previous
-            .abnormality_encounter_history
-            .last_appeared_floor_by_abnormality
-            .insert("test_abnormality".to_string(), 0);
+            .completed_reward_source_ids
+            .insert("test_source".to_string());
+        previous
+            .normal_boss_cycle
+            .remaining_source_ids
+            .push("test_boss".to_string());
         let node_id = MapNodeId::new(Uuid::from_u128(0xF100));
         previous.event_sessions.insert(
             node_id,
@@ -902,102 +2186,100 @@ mod tests {
             AbnormalityAttemptState {
                 max_attempts: 3,
                 attempts_started: 2,
+                retreats_used: 1,
             },
         );
-        previous
-            .battle_records
-            .push(test_battle_record(Uuid::from_u128(0xB4771E)));
-
+        previous.recruitment = test_recruitment_state();
         let mut run_progression = previous.run_progression.clone();
         assert!(run_progression.advance_floor());
-        let next_map = MapGenerator::generate(0xF100, MapGenerationConfig::default());
+        let next_map = test_facility_map(0xF100);
         let next_progression = MapProgression::from_map(&next_map);
+        let encounter_progression = previous.encounter_progression.clone();
         let next = RunState::for_next_floor_from(
             &previous,
             next_map,
             next_progression,
             run_progression,
-            BossOmenRunState::default(),
-        );
+            encounter_progression,
+        )
+        .unwrap();
 
-        assert_eq!(next.abnormality_research, previous.abnormality_research);
-        assert_eq!(
-            next.abnormality_encounter_history,
-            previous.abnormality_encounter_history
-        );
-        assert_eq!(next.battle_records.len(), 1);
-        assert_eq!(
-            next.battle_records[0].abnormality_uuid,
-            Uuid::from_u128(0xB4771E)
-        );
+        assert_eq!(next.encounter_progression, previous.encounter_progression);
         assert!(next.event_sessions.is_empty());
         assert!(next.combat_previews.is_empty());
         assert!(next.abnormality_attempts.is_empty());
+        assert_eq!(next.recruitment, previous.recruitment);
     }
 
     #[test]
-    fn run_complete_state_preserves_run_scoped_records() {
+    fn run_complete_state_preserves_run_scoped_encounter_progression() {
         let mut previous =
-            generated_run_state(0xC0DE, RunProgression::new(0xCAFE, GameMode::Standard, 1));
+            generated_run_state(0xC0DE, RunProgression::new(0xCAFE, GameMode::Tutorial, 1));
         previous
-            .battle_records
-            .push(test_battle_record(Uuid::from_u128(0xC0DEC0DE)));
-        previous
-            .abnormality_encounter_history
-            .last_appeared_floor_by_abnormality
-            .insert("test_abnormality".to_string(), 0);
+            .completed_reward_source_ids
+            .insert("test_source".to_string());
+        previous.recruitment = test_recruitment_state();
 
         let completed = RunState::for_run_complete_from(
             &previous,
             previous.map.clone(),
             previous.map_progression.clone(),
             previous.run_progression.clone(),
-        );
+        )
+        .unwrap();
 
         assert_eq!(
-            completed.abnormality_encounter_history,
-            previous.abnormality_encounter_history
+            completed.encounter_progression,
+            previous.encounter_progression
         );
-        assert_eq!(completed.battle_records.len(), 1);
-        assert_eq!(
-            completed.battle_records[0].abnormality_uuid,
-            Uuid::from_u128(0xC0DEC0DE)
-        );
+        assert_eq!(completed.recruitment, previous.recruitment);
+    }
+
+    #[test]
+    fn deathless_floor_streak_counts_completed_floors_and_resets_after_any_employee_death() {
+        let mut progress = RunRecordProgress::default();
+        assert_eq!(progress.complete_floor(), 1);
+        assert_eq!(progress.complete_floor(), 2);
+        progress.record_employee_death();
+        progress.record_employee_death();
+        assert_eq!(progress.complete_floor(), 0);
+        assert!(!progress.employee_death_on_current_floor);
+        assert_eq!(progress.complete_floor(), 1);
     }
 }
 
 impl GameCoreState {
     pub fn new(run_seed: u64) -> Self {
-        let game_state = GameState::NotStarted;
-        let initial_actions = ActionScheduler::get_allowed_actions(&game_state);
-        let mut action_validator = ActionValidator::new();
-        action_validator.set_allowed_actions(initial_actions);
         Self {
             player: None,
-            game_state,
-            action_validator,
+            lifecycle: LifecycleContext::not_started(),
             active_node_content: None,
             node_session: None,
             run: None,
+            visual_novel: VisualNovelRuntimeState::default(),
+            visual_novel_triggers: VisualNovelTriggerRuntimeState::default(),
             uuid_manager: UuidManager::new(run_seed),
             enkephalin: Enkephalin::new(0),
             inventory: Inventory::new(),
-            roster_order: RosterOrder::new(super::ROSTER_ORDER_SLOTS),
             roster: EmployeeRoster::new(),
             starter_candidates: Vec::new(),
             pending_game_mode: None,
             skill_fragments: SkillFragmentInventory::new(),
+            relics: Default::default(),
+            crafting_resources: Default::default(),
             skill_fragment_policy: SkillFragmentPolicy::default_run_policy(),
-            research_delivery_policy: ResearchDeliveryPolicy::default(),
-            employee_trust_policy: EmployeeTrustPolicy::narrative_only(),
+            player_profile: PlayerProfileState::default(),
             active_battle: None,
+            confirmed_combat_result: None,
+            combat_reward_continuation: None,
             run_checkpoint: RunCheckpointState::default(),
+            continue_state: Default::default(),
+            run_power_authority: RunPowerAuthorityState::default(),
         }
     }
 
-    pub fn transition_to(&mut self, new_state: GameState, allowed_actions: Vec<ActionKind>) {
-        self.game_state = new_state;
-        self.action_validator.set_allowed_actions(allowed_actions);
+    pub fn transition_to(&mut self, new_state: GameState) {
+        self.lifecycle.transition_to(new_state);
     }
 
     pub fn initialize_player(&mut self, player_id: Uuid) -> bool {
@@ -1013,3 +2295,134 @@ impl GameCoreState {
         true
     }
 }
+
+crate::authoring::clone_shape::struct_shape!(GameCoreState {
+    player,
+    lifecycle,
+    active_node_content,
+    node_session,
+    run,
+    visual_novel,
+    visual_novel_triggers,
+    uuid_manager,
+    enkephalin,
+    inventory,
+    roster,
+    starter_candidates,
+    pending_game_mode,
+    skill_fragments,
+    relics,
+    crafting_resources,
+    skill_fragment_policy,
+    player_profile,
+    active_battle,
+    confirmed_combat_result,
+    combat_reward_continuation,
+    run_checkpoint,
+    continue_state,
+    run_power_authority
+});
+
+crate::authoring::clone_shape::struct_shape!(RunCheckpointState {
+    payload,
+    loads_used
+});
+
+crate::authoring::clone_shape::struct_shape!(ActiveBattleSession {
+    node_id,
+    battle_uuid,
+    battle_state_revision,
+    primary_abnormality_id,
+    encounter_id,
+    node_type,
+    mission_variant,
+    outcome_policies,
+    stress_combat,
+    combat_preview,
+    battle,
+    execution,
+    entry_snapshot,
+    employee_attempt,
+    tactical_resource,
+    live_deployment,
+    playback,
+    playback_delta_remainder,
+    tactical_focus,
+    interaction
+});
+
+crate::authoring::clone_shape::struct_shape!(BattleEntrySnapshot {
+    game_state,
+    active_node_content,
+    node_session,
+    run,
+    visual_novel,
+    visual_novel_triggers,
+    uuid_manager,
+    enkephalin,
+    inventory,
+    roster,
+    starter_candidates,
+    pending_game_mode,
+    skill_fragments,
+    relics,
+    crafting_resources,
+    run_checkpoint
+});
+
+crate::authoring::clone_shape::struct_shape!(LiveBattleDeploymentState {
+    withdraw_redeploy_cooldown_ms,
+    defeat_redeploy_cooldown_ms,
+    next_instance_salt,
+    deployed_units,
+    redeploy_locks
+});
+
+crate::authoring::clone_shape::struct_shape!(LiveBattleRedeployState {
+    ready_at_ms,
+    deploy_cost,
+    current_hp_policy
+});
+
+crate::authoring::clone_shape::struct_shape!(LiveBattleDeployedUnitState {
+    unit_instance_id,
+    facing
+});
+
+crate::authoring::clone_shape::struct_shape!(TacticalResourceState {
+    current,
+    maximum,
+    recovery_per_second,
+    last_recovery_at_ms,
+    base_deploy_cost,
+    redeploy_cost
+});
+
+crate::authoring::clone_shape::struct_shape!(RunState {
+    typed_resources,
+    credit_ledgers,
+    map,
+    map_progression,
+    run_progression,
+    facility_run_state,
+    encounter_progression,
+    event_sessions,
+    shop_sessions,
+    combat_previews,
+    abnormality_attempts,
+    recruitment,
+    record_progress,
+    combat_recovery_restriction
+});
+
+crate::authoring::clone_shape::struct_shape!(RunRecordProgress {
+    current_deathless_floor_streak,
+    employee_death_on_current_floor
+});
+
+crate::authoring::clone_shape::struct_shape!(CombatRecoveryRestriction { allowed_node_ids });
+
+// Fresh attempt + insertion-only incapacitation keys; restores replace whole sets.
+crate::authoring::clone_shape::struct_shape_with_sets!(BattleEmployeeAttemptState {
+    roster
+} sets { processed_incapacitations });

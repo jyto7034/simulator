@@ -1,0 +1,48 @@
+{
+  "id": "fragment_nothing_there_trace",
+  "uuid": "730e8400-e29b-41d4-a716-446655440003",
+  "name": "Hello / Goodbye (가칭)",
+  "description": "한시적인 관통 기본 공격 교체와 잔여 시간을 포기하는 추가 공명 없는 수동 마무리. 자연 만료는 마무리를 만들지 않는다.",
+  "rarity": {
+    "Unresolved": "fragment-rarity"
+  },
+  "equip_limit": {
+    "Unresolved": "fragment-equip-limit"
+  },
+  "origin": {
+    "Abnormality": {
+      "abnormality_id": "o-06-20_nothing_there"
+    }
+  },
+  "sources": [
+    {
+      "AbnormalityContainment": {
+        "abnormality_id": "o-06-20_nothing_there"
+      }
+    }
+  ],
+  "dependencies": [
+    {
+      "SourceAbnormality": {
+        "abnormality_id": "o-06-20_nothing_there"
+      }
+    }
+  ],
+  "compatibility": {
+    "allowed_weapon_archetypes": {
+      "Unresolved": "fragment-compatible-weapons"
+    }
+  },
+  "effect": {
+    "ActiveSkill": {
+      "forms": {
+        "base": {
+          "skill_id": "fragment_nothing_there_hello",
+          "resonance_max": {
+            "Unresolved": "capacity"
+          }
+        }
+      }
+    }
+  }
+}

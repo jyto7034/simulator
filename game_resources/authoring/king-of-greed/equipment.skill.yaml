@@ -1,0 +1,68 @@
+# Weapon uses the common DamageTileAfterDelay profile; it owns no stock or active skill.
+version: 2
+id: king-of-greed-equipment
+values:
+- name: ready-wait-damage
+  value:
+    DefenseProgram:
+      ReadyWaitDamage:
+        per_second_percent:
+          Unresolved: armor-per_second_percent
+        max_percent:
+          Unresolved: armor-max_percent
+        duration_ms: 15000
+- name: area-batch
+  value:
+    AttackProgram:
+      reactions: []
+      area_damage_percent:
+        moment: Live
+        root:
+          Clamp:
+            value:
+              Ratio:
+                numerator:
+                  Mul:
+                    value:
+                      Add:
+                      - Aggregate:
+                          source: ResolvedTargets
+                          grouping: WholeSet
+                          reduction: Count
+                          outer_reduction: null
+                          member:
+                            Const:
+                              value: 0
+                              unit: Scalar
+                      - Const:
+                          value: -1
+                          unit: Count
+                    scalar:
+                      Const:
+                        value:
+                          Unresolved: area-per-extra-target
+                        unit: Scalar
+                denominator:
+                  Const:
+                    value: 1
+                    unit: Count
+                rounding: Floor
+            min:
+              Const:
+                value: 0
+                unit: Scalar
+            max:
+              Const:
+                value:
+                  Unresolved: area-cap
+                unit: Scalar
+definitions: []
+skills: []
+equipment_defenses:
+- equipment: placeholder_king_of_greed_armor
+  program:
+    Shared: ready-wait-damage
+equipment_attacks:
+- equipment: placeholder_king_of_greed_accessory
+  program:
+    Shared: area-batch

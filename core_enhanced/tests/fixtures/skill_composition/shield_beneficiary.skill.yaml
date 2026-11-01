@@ -1,0 +1,15 @@
+# E07 pleasure ring. Percent is a technical test value, not release balance.
+version: 2
+id: shield-beneficiary-fixture
+values:
+  - name: shield-beneficiary-support
+    value:
+      SupportProgram:
+        heal_percent: 0
+        shield_percent: 0
+        shield_beneficiary_damage_percent: 20
+equipment_supports:
+  - equipment: porccubus_pleasure_ring
+    program: { Shared: shield-beneficiary-support }
+definitions: []
+skills: []

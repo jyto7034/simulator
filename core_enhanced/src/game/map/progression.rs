@@ -3,8 +3,10 @@ use std::collections::{HashSet, VecDeque};
 
 use crate::game::determinism;
 use crate::game::map::types::{
-    MapNodeCategory, MapNodeDto, MapNodeId, MapNodeState, MapNodeVisibility, MapViewDto, RunMap,
+    MapNode, MapNodeCategory, MapNodeDto, MapNodeId, MapNodeState, MapNodeVisibility, MapViewDto,
+    RunMap,
 };
+use crate::game::map::{FacilityTemplate, FacilityTerminalResolution};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum MapProgressionError {
@@ -21,22 +23,36 @@ pub struct MapProgression {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct RunProgression {
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub dealer_introduced: bool,
+    pub warehouse_debits: std::collections::BTreeMap<String, u32>,
     pub run_seed: u64,
+    pub instance_namespace: uuid::Uuid,
+    pub expedition_instance: Option<crate::game::expedition_lifecycle::ExpeditionInstance>,
     pub game_mode: GameMode,
+    pub deterrence: u32,
+    pub entry_receipts: std::collections::BTreeSet<MapNodeId>,
+    pub pending_continuation: Option<crate::game::expedition_lifecycle::PendingExpeditionContinuation>,
     pub mode_state: RunProgressionModeState,
 }
 
+crate::authoring::clone_shape::struct_shape!(RunProgression {
+    dealer_introduced, warehouse_debits, run_seed, instance_namespace, expedition_instance, game_mode,
+    deterrence, entry_receipts, pending_continuation, mode_state
+});
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum RunProgressionModeState {
-    Standard { floor_index: u8, max_floors: u8 },
-    Endless { floor_index: u32 },
+    Tutorial { floor_index: u8, max_floors: u8 },
+    Expedition { floor_index: u32 },
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum GameMode {
-    Standard,
-    Endless,
+    Tutorial,
+    Expedition,
 }
 
 impl RunProgression {
@@ -46,30 +62,54 @@ impl RunProgression {
             "standard run must have at least one floor"
         );
         let mode_state = match game_mode {
-            GameMode::Standard => RunProgressionModeState::Standard {
+            GameMode::Tutorial => RunProgressionModeState::Tutorial {
                 floor_index: 0,
                 max_floors: standard_floor_count,
             },
-            GameMode::Endless => RunProgressionModeState::Endless { floor_index: 0 },
+            GameMode::Expedition => RunProgressionModeState::Expedition { floor_index: 0 },
         };
         Self {
+            dealer_introduced: false,
             run_seed,
+            instance_namespace: uuid::Uuid::nil(),
+            expedition_instance: None,
             game_mode,
+            deterrence: 0,
+            entry_receipts: Default::default(),
+            warehouse_debits: Default::default(),
+            pending_continuation: None,
             mode_state,
         }
     }
 
+    pub fn with_expedition_instance(
+        mut self,
+        instance: crate::game::expedition_lifecycle::ExpeditionInstance,
+    ) -> Self {
+        self.instance_namespace = instance.uuid;
+        self.expedition_instance = Some(instance);
+        self
+    }
+
+    pub fn with_tutorial_identity(mut self, player: uuid::Uuid) -> Self {
+        self.instance_namespace = determinism::uuid_v4_from_seed(
+            self.run_seed, 0x5455_544f_5249_414c,
+            u64::from_le_bytes(player.as_bytes()[..8].try_into().expect("UUID prefix")),
+        );
+        self
+    }
+
     pub fn floor_index(&self) -> u32 {
         match self.mode_state {
-            RunProgressionModeState::Standard { floor_index, .. } => u32::from(floor_index),
-            RunProgressionModeState::Endless { floor_index } => floor_index,
+            RunProgressionModeState::Tutorial { floor_index, .. } => u32::from(floor_index),
+            RunProgressionModeState::Expedition { floor_index } => floor_index,
         }
     }
 
     pub fn max_floors(&self) -> Option<u8> {
         match self.mode_state {
-            RunProgressionModeState::Standard { max_floors, .. } => Some(max_floors),
-            RunProgressionModeState::Endless { .. } => None,
+            RunProgressionModeState::Tutorial { max_floors, .. } => Some(max_floors),
+            RunProgressionModeState::Expedition { .. } => None,
         }
     }
 
@@ -84,7 +124,7 @@ impl RunProgression {
     pub fn is_final_standard_floor(&self) -> bool {
         matches!(
             self.mode_state,
-            RunProgressionModeState::Standard {
+            RunProgressionModeState::Tutorial {
                 floor_index,
                 max_floors
             } if floor_index + 1 >= max_floors
@@ -93,21 +133,23 @@ impl RunProgression {
 
     pub fn terminal_node_category(&self) -> MapNodeCategory {
         match self.game_mode {
-            GameMode::Standard if self.is_final_standard_floor() => MapNodeCategory::Boss,
-            GameMode::Standard | GameMode::Endless => MapNodeCategory::Gate,
+            GameMode::Tutorial if self.is_final_standard_floor() => MapNodeCategory::Boss,
+            GameMode::Tutorial | GameMode::Expedition => MapNodeCategory::Gate,
         }
     }
 
     pub fn standard_gate_pre_terminal_kind_id(&self) -> Option<&'static str> {
         match self.game_mode {
-            GameMode::Standard if !self.is_final_standard_floor() => Some("combat_elite"),
-            GameMode::Standard | GameMode::Endless => None,
+            GameMode::Tutorial if !self.is_final_standard_floor() => Some("combat_elite"),
+            GameMode::Tutorial | GameMode::Expedition => None,
         }
     }
 
     pub fn advance_floor(&mut self) -> bool {
+        self.entry_receipts.clear();
+        self.pending_continuation = None;
         match &mut self.mode_state {
-            RunProgressionModeState::Standard {
+            RunProgressionModeState::Tutorial {
                 floor_index,
                 max_floors,
             } => {
@@ -117,12 +159,39 @@ impl RunProgression {
                 *floor_index += 1;
                 true
             }
-            RunProgressionModeState::Endless { floor_index } => {
+            RunProgressionModeState::Expedition { floor_index } => {
                 *floor_index = floor_index
                     .checked_add(1)
                     .expect("endless floor_index overflowed u32");
                 true
             }
+        }
+    }
+
+    pub(crate) fn validate_checkpoint_state(&self, standard_floor_count: u8) -> bool {
+        if self.instance_namespace.is_nil() { return false; }
+        match self.game_mode {
+            GameMode::Tutorial if self.expedition_instance.is_some() || self.deterrence != 0 || !self.entry_receipts.is_empty() || self.pending_continuation.is_some() => return false,
+            GameMode::Expedition => {
+                let Some(instance) = self.expedition_instance else { return false; };
+                if instance.validate().is_err() || instance.uuid != self.instance_namespace { return false; }
+            }
+            _ => {},
+        }
+        match (self.game_mode, &self.mode_state) {
+            (
+                GameMode::Tutorial,
+                RunProgressionModeState::Tutorial {
+                    floor_index,
+                    max_floors,
+                },
+            ) => {
+                standard_floor_count > 0
+                    && *max_floors == standard_floor_count
+                    && *floor_index < *max_floors
+            }
+            (GameMode::Expedition, RunProgressionModeState::Expedition { .. }) => true,
+            _ => false,
         }
     }
 }
@@ -143,11 +212,79 @@ impl MapProgression {
         }
     }
 
-    pub fn is_node_selectable(&self, map: &RunMap, node_id: MapNodeId) -> bool {
-        self.selectable_node_ids(map).contains(&node_id)
+    pub(crate) fn reenter_room(&mut self, map: &mut RunMap, template: &FacilityTemplate) -> Result<(),MapProgressionError> {
+        let start = map.nodes.iter().find(|n|n.category == MapNodeCategory::Start).ok_or(MapProgressionError::MissingNode)?.id;
+        self.current_node_id = Some(start);
+        self.complete_current_node(map,template)?;
+        Ok(())
     }
 
-    pub fn selectable_node_ids(&self, map: &RunMap) -> Vec<MapNodeId> {
+    pub fn is_node_selectable(
+        &self,
+        map: &RunMap,
+        template: &FacilityTemplate,
+        node_id: MapNodeId,
+    ) -> bool {
+        self.selectable_node_ids(map, template).contains(&node_id)
+    }
+
+    pub(crate) fn validate_checkpoint_state(
+        &self,
+        map: &RunMap,
+        template: &FacilityTemplate,
+    ) -> bool {
+        let mut completed_from_map = map
+            .nodes
+            .iter()
+            .filter(|node| node.state == MapNodeState::Completed)
+            .map(|node| node.id)
+            .collect::<Vec<_>>();
+        completed_from_map.sort_by_key(|id| id.0.as_u128());
+        completed_from_map.dedup();
+        if self.completed_node_ids != completed_from_map {
+            return false;
+        }
+
+        let mut available = self.available_node_ids.clone();
+        available.sort_by_key(|id| id.0.as_u128());
+        available.dedup();
+        if available != self.available_node_ids
+            || available.iter().any(|node_id| {
+                !map.node(*node_id).is_some_and(|node| {
+                    node.state == MapNodeState::Available
+                        && node.visibility != MapNodeVisibility::Concealed
+                })
+            })
+        {
+            return false;
+        }
+
+        match self.current_node_id {
+            None => {
+                self.completed_node_ids.is_empty()
+                    && self.available_node_ids == self.selectable_node_ids(map, template)
+            }
+            Some(current_node_id) => {
+                let Some(current_node) = map.node(current_node_id) else {
+                    return false;
+                };
+                match current_node.state {
+                    MapNodeState::Completed => {
+                        self.completed_node_ids.contains(&current_node_id)
+                            && self.available_node_ids == self.selectable_node_ids(map, template)
+                    }
+                    MapNodeState::Unavailable => {
+                        current_node.visibility == MapNodeVisibility::Revealed
+                            && !self.completed_node_ids.contains(&current_node_id)
+                            && self.available_node_ids.is_empty()
+                    }
+                    MapNodeState::Available | MapNodeState::Locked => false,
+                }
+            }
+        }
+    }
+
+    pub fn selectable_node_ids(&self, map: &RunMap, template: &FacilityTemplate) -> Vec<MapNodeId> {
         let Some(start) = self.current_node_id else {
             let mut selectable = map
                 .start_node_ids
@@ -180,7 +317,7 @@ impl MapProgression {
                 continue;
             }
 
-            for neighbor_id in map.bidirectional_neighbors(node_id) {
+            for neighbor_id in map.neighbor_node_ids(template, node_id) {
                 let Some(neighbor) = map.node(neighbor_id) else {
                     continue;
                 };
@@ -204,6 +341,7 @@ impl MapProgression {
     pub fn enter_node(
         &mut self,
         map: &mut RunMap,
+        template: &FacilityTemplate,
         node_id: MapNodeId,
     ) -> Result<(), MapProgressionError> {
         if self.current_node_id == Some(node_id)
@@ -215,7 +353,7 @@ impl MapProgression {
             return Ok(());
         }
 
-        if !self.is_node_selectable(map, node_id) {
+        if !self.is_node_selectable(map, template, node_id) {
             return Err(MapProgressionError::NodeUnavailable);
         }
 
@@ -229,14 +367,18 @@ impl MapProgression {
         Ok(())
     }
 
-    pub fn complete_current_node(&mut self, map: &mut RunMap) -> Result<bool, MapProgressionError> {
+    pub fn complete_current_node(
+        &mut self,
+        map: &mut RunMap,
+        template: &FacilityTemplate,
+    ) -> Result<Option<FacilityTerminalResolution>, MapProgressionError> {
         let node_id = self
             .current_node_id
             .ok_or(MapProgressionError::NoCurrentNode)?;
         if map.node(node_id).is_none() {
             return Err(MapProgressionError::MissingNode);
         }
-        let adjacent_node_ids = map.bidirectional_neighbors(node_id);
+        let adjacent_node_ids = map.neighbor_node_ids(template, node_id);
         {
             let node = map
                 .node_mut(node_id)
@@ -251,8 +393,18 @@ impl MapProgression {
         self.completed_node_ids.sort_by_key(|id| id.0.as_u128());
         self.available_node_ids.clear();
 
-        if node_id == map.terminal_node_id {
-            return Ok(true);
+        if let Some(resolution) = map.terminal_resolution(node_id) {
+            let other_terminal_ids = map
+                .terminal_node_ids()
+                .into_iter()
+                .filter(|terminal_id| *terminal_id != node_id)
+                .collect::<Vec<_>>();
+            for terminal_id in other_terminal_ids {
+                if let Some(terminal) = map.node_mut(terminal_id) {
+                    terminal.state = MapNodeState::Locked;
+                }
+            }
+            return Ok(Some(resolution));
         }
 
         for next_id in adjacent_node_ids {
@@ -264,7 +416,7 @@ impl MapProgression {
             }
         }
 
-        self.available_node_ids = Self::reachable_available_node_ids(map, node_id);
+        self.available_node_ids = Self::reachable_available_node_ids(map, template, node_id);
         for next_id in self.available_node_ids.iter().copied() {
             if let Some(node) = map.node_mut(next_id) {
                 node.state = MapNodeState::Available;
@@ -275,10 +427,74 @@ impl MapProgression {
         }
         self.available_node_ids.sort_by_key(|id| id.0.as_u128());
         self.available_node_ids.dedup();
-        Ok(false)
+        Ok(None)
     }
 
-    fn reachable_available_node_ids(map: &RunMap, start: MapNodeId) -> Vec<MapNodeId> {
+    pub(crate) fn reveal_terminal_nodes(
+        &mut self,
+        map: &mut RunMap,
+        resolution: FacilityTerminalResolution,
+    ) -> Result<bool, MapProgressionError> {
+        let terminal_node_ids = map
+            .terminals
+            .iter()
+            .filter(|terminal| terminal.resolution == resolution)
+            .map(|terminal| terminal.node_id)
+            .collect::<Vec<_>>();
+        if terminal_node_ids.is_empty() {
+            return Ok(false);
+        }
+        if terminal_node_ids
+            .iter()
+            .any(|node_id| map.node(*node_id).is_none())
+        {
+            return Err(MapProgressionError::MissingNode);
+        }
+
+        for terminal_node_id in terminal_node_ids.iter().copied() {
+            let terminal = map
+                .node_mut(terminal_node_id)
+                .ok_or(MapProgressionError::MissingNode)?;
+            terminal.state = MapNodeState::Available;
+            terminal.visibility = MapNodeVisibility::Revealed;
+        }
+        self.available_node_ids = terminal_node_ids;
+        self.available_node_ids
+            .sort_by_key(|node_id| node_id.0.as_u128());
+        Ok(true)
+    }
+
+    pub(crate) fn activate_detached_fixture_node(&mut self, map: &mut RunMap, mut node: MapNode) {
+        node.state = MapNodeState::Unavailable;
+        node.visibility = MapNodeVisibility::Revealed;
+        let node_id = node.id;
+        map.nodes.push(node);
+        self.current_node_id = Some(node_id);
+        self.available_node_ids = vec![node_id];
+    }
+
+    pub(crate) fn activate_authored_fixture_node(
+        &mut self,
+        map: &mut RunMap,
+        node_id: MapNodeId,
+    ) -> Result<(), MapProgressionError> {
+        let node = map
+            .node_mut(node_id)
+            .ok_or(MapProgressionError::MissingNode)?;
+        node.state = MapNodeState::Unavailable;
+        node.visibility = MapNodeVisibility::Revealed;
+        self.current_node_id = Some(node_id);
+        self.available_node_ids.clear();
+        self.completed_node_ids
+            .retain(|completed| *completed != node_id);
+        Ok(())
+    }
+
+    fn reachable_available_node_ids(
+        map: &RunMap,
+        template: &FacilityTemplate,
+        start: MapNodeId,
+    ) -> Vec<MapNodeId> {
         let mut visited = HashSet::new();
         let mut queue = VecDeque::from([start]);
         let mut available = Vec::new();
@@ -294,7 +510,7 @@ impl MapProgression {
                 continue;
             }
 
-            for neighbor_id in map.bidirectional_neighbors(node_id) {
+            for neighbor_id in map.neighbor_node_ids(template, node_id) {
                 let Some(neighbor) = map.node(neighbor_id) else {
                     continue;
                 };
@@ -318,12 +534,50 @@ impl MapProgression {
         available
     }
 
-    pub fn view(&self, map: &RunMap) -> MapViewDto {
+    pub(crate) fn refresh_available_nodes(
+        &mut self,
+        map: &mut RunMap,
+        template: &FacilityTemplate,
+    ) {
+        for node in &mut map.nodes {
+            if node.state == MapNodeState::Available {
+                node.state = MapNodeState::Unavailable;
+            }
+        }
+        self.available_node_ids.clear();
+        let Some(current_node_id) = self.current_node_id else {
+            return;
+        };
+        self.available_node_ids =
+            Self::reachable_available_node_ids(map, template, current_node_id);
+        for node_id in self.available_node_ids.iter().copied() {
+            if let Some(node) = map.node_mut(node_id) {
+                node.state = MapNodeState::Available;
+            }
+        }
+    }
+
+    pub fn view(&self, map: &RunMap, template: &FacilityTemplate) -> MapViewDto {
         let mut nodes = map.nodes.iter().map(MapNodeDto::from).collect::<Vec<_>>();
-        nodes.sort_by_key(|node| (node.depth, node.lane, node.id.0.as_u128()));
+        let selectable = self
+            .selectable_node_ids(map, template)
+            .into_iter()
+            .collect::<HashSet<_>>();
+        for node in &mut nodes {
+            if node.state == MapNodeState::Available && !selectable.contains(&node.id) {
+                node.state = MapNodeState::Unavailable;
+            }
+        }
+        nodes.sort_by(|left, right| {
+            left.slot_id
+                .as_str()
+                .cmp(right.slot_id.as_str())
+                .then_with(|| left.id.0.as_u128().cmp(&right.id.0.as_u128()))
+        });
 
         MapViewDto {
             map_template_id: map.map_template_id.clone(),
+            facility_template_version: map.facility_template_version,
             nodes,
         }
     }
@@ -332,59 +586,100 @@ impl MapProgression {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::game::map::types::{
-        MapEdgeDirection, MapEdgeDto, MapNode, MapNodeCategory, MapNodeId, MapNodeKindId,
-        MapNodePayload, MapSlotId, MapTemplateId, RunMap, DEFAULT_MAP_TEMPLATE_ID,
+    use crate::game::map::{
+        FacilityConnection, FacilityRoomSlot, FacilitySlotRole, FacilityTemplate,
+        FacilityTemplateKind, MapEdgeDirection, MapNode, MapNodeCategory, MapNodeId, MapNodeKindId,
+        MapNodePayload, MapSlotId, MapTemplateId, RunMap,
     };
     use uuid::Uuid;
 
-    fn node(id: u128, depth: u8) -> MapNode {
+    fn node(id: u128, slot_id: &str) -> MapNode {
         MapNode {
             id: MapNodeId::new(Uuid::from_u128(id)),
-            depth,
-            lane: 0,
-            slot_id: MapSlotId::for_grid_position(depth, 0),
+            slot_id: MapSlotId::new(slot_id),
             kind_id: MapNodeKindId::new(format!("node_{id}")),
             category: MapNodeCategory::Combat,
             state: MapNodeState::Unavailable,
             visibility: MapNodeVisibility::Revealed,
             payload: MapNodePayload::None,
             omen: None,
+            combat_difficulty: None,
         }
     }
 
-    fn edge(from_node_id: MapNodeId, to_node_id: MapNodeId) -> MapEdgeDto {
-        MapEdgeDto {
-            from_node_id,
-            to_node_id,
-            direction: MapEdgeDirection::Bidirectional,
+    fn forked_template() -> FacilityTemplate {
+        FacilityTemplate {
+            id: MapTemplateId::new("test_fork"),
+            version: crate::game::map::FACILITY_TEMPLATE_VERSION,
+            kind: FacilityTemplateKind::Exploration,
+            tags: vec![],
+            slots: vec![
+                FacilityRoomSlot {
+                    id: MapSlotId::new("start"),
+                    role: FacilitySlotRole::Entry,
+                    allowed_categories: vec![MapNodeCategory::Combat],
+                    tags: vec![],
+                },
+                FacilityRoomSlot {
+                    id: MapSlotId::new("left"),
+                    role: FacilitySlotRole::Ordinary,
+                    allowed_categories: vec![MapNodeCategory::Combat],
+                    tags: vec![],
+                },
+                FacilityRoomSlot {
+                    id: MapSlotId::new("right"),
+                    role: FacilitySlotRole::Ordinary,
+                    allowed_categories: vec![MapNodeCategory::Combat],
+                    tags: vec![],
+                },
+                FacilityRoomSlot {
+                    id: MapSlotId::new("boss"),
+                    role: FacilitySlotRole::Terminal(FacilityTerminalResolution::RunFinalBoss),
+                    allowed_categories: vec![MapNodeCategory::Boss],
+                    tags: vec![],
+                },
+            ],
+            connections: [
+                ("start", "left"),
+                ("start", "right"),
+                ("left", "boss"),
+                ("right", "boss"),
+            ]
+            .into_iter()
+            .map(|(from, to)| FacilityConnection {
+                from_slot_id: MapSlotId::new(from),
+                to_slot_id: MapSlotId::new(to),
+                direction: MapEdgeDirection::Bidirectional,
+                reveal_with_slot_id: None,
+            })
+            .collect(),
+            manifestation_rules: vec![],
         }
     }
 
     fn forked_map() -> RunMap {
         let start = MapNodeId::new(Uuid::from_u128(1));
-        let left = MapNodeId::new(Uuid::from_u128(2));
-        let right = MapNodeId::new(Uuid::from_u128(3));
         let boss = MapNodeId::new(Uuid::from_u128(4));
 
         let mut map = RunMap {
-            map_template_id: MapTemplateId::new(DEFAULT_MAP_TEMPLATE_ID),
-            edges: vec![
-                edge(start, left),
-                edge(start, right),
-                edge(left, boss),
-                edge(right, boss),
+            map_template_id: MapTemplateId::new("test_fork"),
+            facility_template_version: crate::game::map::FACILITY_TEMPLATE_VERSION,
+            nodes: vec![
+                node(1, "start"),
+                node(2, "left"),
+                node(3, "right"),
+                node(4, "boss"),
             ],
-            nodes: vec![node(1, 0), node(2, 1), node(3, 1), node(4, 2)],
             start_node_ids: vec![start],
-            terminal_node_id: boss,
+            terminals: vec![crate::game::map::MapTerminalNode {
+                node_id: boss,
+                resolution: FacilityTerminalResolution::RunFinalBoss,
+            }],
         };
         let start_node = map.node_mut(start).unwrap();
         start_node.state = MapNodeState::Available;
         start_node.visibility = MapNodeVisibility::Revealed;
-        let right_node = map.node_mut(right).unwrap();
-        right_node.lane = 1;
-        right_node.slot_id = MapSlotId::for_grid_position(1, 1);
+        map.node_mut(boss).unwrap().category = MapNodeCategory::Boss;
         map
     }
 
@@ -411,7 +706,9 @@ mod tests {
         let start = map.start_node_ids[0];
         let mut progression = MapProgression::from_map(&map);
 
-        progression.enter_node(&mut map, start).unwrap();
+        progression
+            .enter_node(&mut map, &forked_template(), start)
+            .unwrap();
 
         assert_eq!(progression.current_node_id, Some(start));
         assert!(progression.available_node_ids.is_empty());
@@ -421,17 +718,32 @@ mod tests {
             MapNodeVisibility::Revealed
         );
 
-        let completed_boss = progression.complete_current_node(&mut map).unwrap();
+        let terminal_resolution = progression
+            .complete_current_node(&mut map, &forked_template())
+            .unwrap();
 
-        assert!(!completed_boss);
+        assert_eq!(terminal_resolution, None);
         assert_eq!(progression.current_node_id, Some(start));
         assert_eq!(progression.completed_node_ids, vec![start]);
-        assert_eq!(progression.available_node_ids.len(), 2);
-        assert!(progression
-            .available_node_ids
-            .iter()
-            .all(|id| map.node(*id).unwrap().state == MapNodeState::Available));
+        assert_eq!(
+            progression.available_node_ids,
+            vec![
+                MapNodeId::new(Uuid::from_u128(2)),
+                MapNodeId::new(Uuid::from_u128(3)),
+            ]
+        );
+        assert_eq!(
+            progression.available_node_ids,
+            progression.selectable_node_ids(&map, &forked_template())
+        );
+        assert!(progression.available_node_ids.iter().all(|id| {
+            map.node(*id).is_some_and(|node| {
+                node.state == MapNodeState::Available
+                    && node.visibility == MapNodeVisibility::Revealed
+            })
+        }));
         assert_eq!(map.node(start).unwrap().state, MapNodeState::Completed);
+        assert!(progression.validate_checkpoint_state(&map, &forked_template()));
     }
 
     #[test]
@@ -440,19 +752,25 @@ mod tests {
         let start = map.start_node_ids[0];
         let mut progression = MapProgression::from_map(&map);
 
-        progression.enter_node(&mut map, start).unwrap();
-        progression.complete_current_node(&mut map).unwrap();
+        progression
+            .enter_node(&mut map, &forked_template(), start)
+            .unwrap();
+        progression
+            .complete_current_node(&mut map, &forked_template())
+            .unwrap();
 
-        assert!(!progression.is_node_selectable(&map, start));
+        assert!(!progression.is_node_selectable(&map, &forked_template(), start));
         assert_eq!(
-            progression.enter_node(&mut map, start),
+            progression.enter_node(&mut map, &forked_template(), start),
             Err(MapProgressionError::NodeUnavailable)
         );
         assert!(progression
-            .selectable_node_ids(&map)
+            .selectable_node_ids(&map, &forked_template())
             .iter()
             .all(|node_id| *node_id != start));
-        assert!(!progression.selectable_node_ids(&map).is_empty());
+        assert!(!progression
+            .selectable_node_ids(&map, &forked_template())
+            .is_empty());
     }
 
     #[test]
@@ -461,35 +779,71 @@ mod tests {
         let mut progression = MapProgression::from_map(&map);
         let unavailable = MapNodeId::new(Uuid::from_u128(2));
         let missing = MapNodeId::new(Uuid::from_u128(999));
+        let map_before = map.clone();
+        let progression_before = progression.clone();
 
         assert_eq!(
-            progression.enter_node(&mut map, unavailable),
+            progression.enter_node(&mut map, &forked_template(), unavailable),
             Err(MapProgressionError::NodeUnavailable)
         );
         assert_eq!(
-            progression.enter_node(&mut map, missing),
+            progression.enter_node(&mut map, &forked_template(), missing),
             Err(MapProgressionError::NodeUnavailable)
         );
 
-        assert_eq!(progression.current_node_id, None);
-        assert_eq!(progression.available_node_ids, map.start_node_ids);
-        assert!(progression.completed_node_ids.is_empty());
+        assert_eq!(map, map_before);
+        assert_eq!(progression, progression_before);
+    }
+
+    #[test]
+    fn forced_terminal_reveal_rejects_missing_nodes_without_partial_mutation() {
+        let mut map = forked_map();
+        let gate = MapNodeId::new(Uuid::from_u128(2));
+        let missing = MapNodeId::new(Uuid::from_u128(999));
+        map.terminals = vec![
+            crate::game::map::MapTerminalNode {
+                node_id: gate,
+                resolution: FacilityTerminalResolution::BossOmenExitGate,
+            },
+            crate::game::map::MapTerminalNode {
+                node_id: missing,
+                resolution: FacilityTerminalResolution::BossOmenExitGate,
+            },
+        ];
+        let mut progression = MapProgression::from_map(&map);
+        let map_before = map.clone();
+        let progression_before = progression.clone();
+
+        assert_eq!(
+            progression
+                .reveal_terminal_nodes(&mut map, FacilityTerminalResolution::BossOmenExitGate,),
+            Err(MapProgressionError::MissingNode)
+        );
+        assert_eq!(map, map_before);
+        assert_eq!(progression, progression_before);
     }
 
     #[test]
     fn completing_terminal_boss_reports_boundary_and_keeps_no_available_nodes() {
         let mut map = forked_map();
-        let boss = map.terminal_node_id;
+        let boss = map.terminals[0].node_id;
         map.start_node_ids = vec![boss];
         let boss_node = map.node_mut(boss).unwrap();
         boss_node.state = MapNodeState::Available;
         boss_node.visibility = MapNodeVisibility::Revealed;
         let mut progression = MapProgression::from_map(&map);
 
-        progression.enter_node(&mut map, boss).unwrap();
-        let completed_boss = progression.complete_current_node(&mut map).unwrap();
+        progression
+            .enter_node(&mut map, &forked_template(), boss)
+            .unwrap();
+        let terminal_resolution = progression
+            .complete_current_node(&mut map, &forked_template())
+            .unwrap();
 
-        assert!(completed_boss);
+        assert_eq!(
+            terminal_resolution,
+            Some(FacilityTerminalResolution::RunFinalBoss)
+        );
         assert_eq!(progression.completed_node_ids, vec![boss]);
         assert!(progression.available_node_ids.is_empty());
         assert_eq!(map.node(boss).unwrap().state, MapNodeState::Completed);
@@ -501,14 +855,14 @@ mod tests {
         let start = map.start_node_ids[0];
         let progression = MapProgression::from_map(&map);
 
-        assert!(progression.is_node_selectable(&map, start));
+        assert!(progression.is_node_selectable(&map, &forked_template(), start));
 
         map.node_mut(start).unwrap().visibility = MapNodeVisibility::Concealed;
-        assert!(!progression.is_node_selectable(&map, start));
+        assert!(!progression.is_node_selectable(&map, &forked_template(), start));
 
         map.node_mut(start).unwrap().visibility = MapNodeVisibility::Obscured;
         map.node_mut(start).unwrap().state = MapNodeState::Locked;
-        assert!(!progression.is_node_selectable(&map, start));
+        assert!(!progression.is_node_selectable(&map, &forked_template(), start));
     }
 
     #[test]
@@ -517,8 +871,12 @@ mod tests {
         let start = map.start_node_ids[0];
         let mut progression = MapProgression::from_map(&map);
 
-        progression.enter_node(&mut map, start).unwrap();
-        progression.enter_node(&mut map, start).unwrap();
+        progression
+            .enter_node(&mut map, &forked_template(), start)
+            .unwrap();
+        progression
+            .enter_node(&mut map, &forked_template(), start)
+            .unwrap();
 
         assert_eq!(progression.current_node_id, Some(start));
         assert_eq!(map.node(start).unwrap().state, MapNodeState::Unavailable);
@@ -531,62 +889,66 @@ mod tests {
     #[test]
     fn forward_only_edges_do_not_allow_reverse_completed_transit() {
         let mut map = forked_map();
+        let mut template = forked_template();
         let start = map.start_node_ids[0];
         let left = MapNodeId::new(Uuid::from_u128(2));
         let right = MapNodeId::new(Uuid::from_u128(3));
 
-        let edge = map
-            .edges
+        let connection = template
+            .connections
             .iter_mut()
-            .find(|edge| edge.from_node_id == start && edge.to_node_id == left)
-            .expect("start to left edge");
-        edge.direction = MapEdgeDirection::ForwardOnly;
+            .find(|connection| {
+                connection.from_slot_id.as_str() == "start"
+                    && connection.to_slot_id.as_str() == "left"
+            })
+            .expect("start to left connection");
+        connection.direction = MapEdgeDirection::ForwardOnly;
 
         let mut progression = MapProgression::from_map(&map);
-        progression.enter_node(&mut map, start).unwrap();
-        progression.complete_current_node(&mut map).unwrap();
-        progression.enter_node(&mut map, left).unwrap();
-        progression.complete_current_node(&mut map).unwrap();
+        progression.enter_node(&mut map, &template, start).unwrap();
+        progression
+            .complete_current_node(&mut map, &template)
+            .unwrap();
+        progression.enter_node(&mut map, &template, left).unwrap();
+        progression
+            .complete_current_node(&mut map, &template)
+            .unwrap();
 
         assert!(!progression.available_node_ids.contains(&right));
     }
 
     #[test]
-    fn facility_contract_rejects_duplicate_or_mismatched_slots() {
+    fn facility_contract_rejects_duplicate_and_accepts_semantic_slots() {
         let mut duplicate = forked_map();
         let first_slot = duplicate.nodes[0].slot_id.clone();
         duplicate.nodes[1].slot_id = first_slot;
         assert!(duplicate
-            .validate_facility_template_contract()
+            .validate_facility_template_contract(&forked_template())
             .unwrap_err()
             .contains("duplicate map slot_id"));
 
         let mut mismatched = forked_map();
         mismatched.nodes[0].slot_id = MapSlotId::new("archive_room");
         assert!(mismatched
-            .validate_facility_template_contract()
+            .validate_facility_template_contract(&forked_template())
             .unwrap_err()
-            .contains("depth/lane require"));
+            .contains("outside facility template"));
     }
 
     #[test]
-    fn facility_contract_rejects_missing_edge_targets_and_locked_children() {
-        let mut missing_edge = forked_map();
-        missing_edge.edges.push(MapEdgeDto {
-            from_node_id: missing_edge.nodes[0].id,
-            to_node_id: MapNodeId::new(Uuid::from_u128(999)),
-            direction: MapEdgeDirection::Bidirectional,
-        });
-        assert!(missing_edge
-            .validate_facility_template_contract()
+    fn facility_contract_rejects_missing_terminal_and_allows_locked_nodes() {
+        let mut missing_terminal = forked_map();
+        missing_terminal.terminals[0].node_id = MapNodeId::new(Uuid::from_u128(999));
+        assert!(missing_terminal
+            .validate_facility_template_contract(&forked_template())
             .unwrap_err()
-            .contains("references missing endpoint"));
+            .contains("references missing node"));
 
         let mut locked_parent = forked_map();
         locked_parent.nodes[0].state = MapNodeState::Locked;
-        assert!(locked_parent
-            .validate_facility_template_contract()
-            .unwrap_err()
-            .contains("must be a leaf room"));
+        assert_eq!(
+            locked_parent.validate_facility_template_contract(&forked_template()),
+            Ok(())
+        );
     }
 }

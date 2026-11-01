@@ -1,0 +1,19 @@
+# E07 technical values, not release balance.
+version: 1
+id: pleasure-weakness-fixture
+values:
+  - name: pleasure-weakness
+    value:
+      AttackProgram:
+        reactions: []
+        on_hit_status:
+          duration_ms: 2000
+          profile:
+            definition: pleasure-weakness
+            kind:
+              DamageTaken: { percent: 20 }
+equipment_attacks:
+  - equipment: porccubus_pleasure
+    program: { Shared: pleasure-weakness }
+definitions: []
+skills: []

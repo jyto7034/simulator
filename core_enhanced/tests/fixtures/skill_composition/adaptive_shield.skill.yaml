@@ -1,0 +1,17 @@
+# N09 방어구 초기값. 실제 World에서는 별도 방어구 사본에 연결한다.
+version: 1
+id: adaptive-shield-fixture
+values:
+  - name: adaptive-defense
+    value:
+      DefenseProgram:
+        AdaptiveBasicShield:
+          max_hp_percent: 20
+          duration_ms: 5000
+          cooldown_ms: 15000
+          priority: 0
+equipment_defenses:
+  - equipment: r11_weapon
+    program: { Shared: adaptive-defense }
+definitions: []
+skills: []

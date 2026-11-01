@@ -1,0 +1,17 @@
+# E10 technical fixture, not release balance. Six rounds and 2s reload are agreed.
+version: 1
+id: plain-magazine-fixture
+values:
+  - name: grenade_magazine
+    value:
+      AttackProgram:
+        reactions: []
+        magazine:
+          capacity: 6
+          reload_ms: 2000
+          normal_percent: 100
+equipment_attacks:
+  - equipment: r11_weapon
+    program: { Shared: grenade_magazine }
+definitions: []
+skills: []

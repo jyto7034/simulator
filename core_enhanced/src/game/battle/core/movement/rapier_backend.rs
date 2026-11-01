@@ -8,11 +8,11 @@ use rapier2d::prelude::{
 };
 
 use crate::game::battle::ids::UnitInstanceId;
+use crate::{authoring::control, game::behavior::GameError};
 
 use super::engine::{
-    run_continuous_movement_tick, ContinuousMovementResolver, DirectContinuousMovement,
-    MovementEngine, MovementStaticObstacle, MovementTickInput, MovementTickResult,
-    MovementUnitInput,
+    clamp_to_board, run_continuous_movement_tick, ContinuousMovementResolver, MovementEngine,
+    MovementStaticObstacle, MovementTickInput, MovementTickResult, MovementUnitInput,
 };
 use super::types::WorldVec2;
 
@@ -21,80 +21,164 @@ use super::types::WorldVec2;
 /// `RuntimeUnit` keeps gameplay body state. Rapier handles stay inside this
 /// backend so physics internals do not leak into combat rules.
 #[derive(Debug, Clone, Copy)]
-pub struct RapierUnitHandles {
-    pub rigid_body: RigidBodyHandle,
-    pub collider: ColliderHandle,
-    pub radius: f32,
-}
-
-#[derive(Debug, Clone)]
-pub struct RapierBoardBounds {
-    pub width_units: f32,
-    pub height_units: f32,
-    pub rigid_body: RigidBodyHandle,
-    pub colliders: Vec<ColliderHandle>,
+struct RapierUnitHandles {
+    rigid_body: RigidBodyHandle,
+    collider: ColliderHandle,
+    radius: f32,
 }
 
 #[derive(Debug, Clone, Copy)]
-pub struct RapierStaticObstacleHandles {
-    pub rigid_body: RigidBodyHandle,
-    pub collider: ColliderHandle,
-    pub center: WorldVec2,
-    pub half_extents: WorldVec2,
+struct RapierStaticObstacleHandles {
+    rigid_body: RigidBodyHandle,
+    center: WorldVec2,
+    half_extents: WorldVec2,
 }
 
-pub struct RapierMovementWorld {
+/// Captures retained native history from construction, including ordinary calls
+/// before a later authoring fork. Counters never drive physics or gameplay IDs.
+#[derive(Clone, Copy, Default, Debug, PartialEq, Eq)]
+struct CloneHistory {
+    body_peak: usize,
+    collider_peak: usize,
+    body_insertions: usize,
+    collider_insertions: usize,
+    collider_removals: usize,
+    pair_events: usize,
+}
+
+// Both pinned hashbrown table versions can resize to at most twice the insertion
+// count, then round for load factor and buckets. Unlike capacity(), this bound
+// remains valid after tombstone churn and retained-table clear.
+fn insertion_bucket_bound(insertions: usize) -> Option<usize> {
+    if insertions == 0 {
+        return Some(0);
+    }
+    Some(
+        (insertions.checked_mul(2)?.checked_mul(8)? / 7)
+            .checked_next_power_of_two()?
+            .max(16),
+    )
+}
+
+impl CloneHistory {
+    fn inserted(&mut self, bodies: usize, colliders: usize) {
+        self.body_peak = self.body_peak.max(bodies);
+        self.collider_peak = self.collider_peak.max(colliders);
+        self.body_insertions = self.body_insertions.saturating_add(1);
+        self.collider_insertions = self.collider_insertions.saturating_add(1);
+    }
+    fn removed_colliders(&mut self, count: usize) {
+        self.collider_removals = self.collider_removals.saturating_add(count);
+    }
+    fn storage_slots(&self) -> Option<usize> {
+        // Pinned Rapier Arena initializes four slots, doubles on exhaustion and
+        // keeps freed slots. BroadPhase's pinned hashbrown table retains buckets.
+        let body_arena = self.body_peak.checked_next_power_of_two()?.max(4);
+        let collider_arena = self.collider_peak.checked_next_power_of_two()?.max(4);
+        let pair_buckets = insertion_bucket_bound(self.pair_events)?;
+        // Nodes+parents <=2H, retained refit_tmp <=2H, rebuild_leaves <=H,
+        // and the indexed leaf map <= collider arena's initialized slots.
+        let bvh = self
+            .collider_peak
+            .checked_mul(5)?
+            .checked_add(collider_arena)?;
+        [
+            body_arena,
+            collider_arena,
+            8,
+            self.body_insertions,
+            self.collider_insertions,
+            self.collider_removals,
+            bvh,
+            pair_buckets,
+        ]
+        .into_iter()
+        .try_fold(0_usize, usize::checked_add)
+    }
+}
+
+#[derive(Clone)]
+pub(in crate::game::battle::core) struct RapierMovementWorld {
     islands: IslandManager,
     broad_phase: BroadPhaseBvh,
     narrow_phase: NarrowPhase,
     rigid_bodies: RigidBodySet,
     colliders: ColliderSet,
-    impulse_joints: ImpulseJointSet,
-    multibody_joints: MultibodyJointSet,
+    // This backend never creates joints. Rapier only needs these empty
+    // collections when removing a body; defer their reserved graph storage.
+    impulse_joints: Option<ImpulseJointSet>,
+    multibody_joints: Option<MultibodyJointSet>,
     controller: KinematicCharacterController,
     unit_handles: HashMap<UnitInstanceId, RapierUnitHandles>,
-    board_bounds: Option<RapierBoardBounds>,
     static_obstacles: HashMap<u64, RapierStaticObstacleHandles>,
+    clone_history: CloneHistory,
+    // These maps retain their tables when clear() replaces the Rapier owners.
+    unit_map_insertions: usize,
+    obstacle_map_insertions: usize,
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
-pub struct RapierSyncReport {
-    pub created: usize,
-    pub updated: usize,
-    pub removed: usize,
+struct RapierSyncReport {
+    created: usize,
+    updated: usize,
+    removed: usize,
+}
+
+impl crate::authoring::clone_shape::CloneShape for RapierMovementWorld {
+    fn visit_clone_shape(&self, meter: &mut control::CloneMeter) -> Result<(), GameError> {
+        // The pinned storage model is O(1); no backend traversal or clone is used
+        // to measure it. The enclosing whole-owner finish pays its native copy.
+        meter.scan_storage(Some(1))?;
+        self.visit_authoring_clone_storage(meter);
+        meter.admit_storage("owned_clone_storage")
+    }
 }
 
 impl RapierMovementWorld {
-    pub fn new() -> Self {
+    /// Structural admission, not exact native allocation bytes. This accounts
+    /// only for this backend; the enclosing complete clone owns other fields.
+    pub(in crate::game::battle::core) fn preflight_authoring_clone(&self) -> Result<(), GameError> {
+        if !control::is_active() {
+            return Ok(());
+        }
+        control::poll("rapier_clone_entry")?;
+        let mut meter = control::CloneMeter::default();
+        self.visit_authoring_clone_storage(&mut meter);
+        meter.finish("rapier_clone_storage", "rapier_clone_storage")
+    }
+
+    pub(in crate::game::battle::core) fn visit_authoring_clone_storage(
+        &self,
+        meter: &mut control::CloneMeter,
+    ) {
+        let Self {
+            islands: _,
+            broad_phase: _,
+            narrow_phase: _,
+            rigid_bodies: _,
+            colliders: _,
+            impulse_joints: _,
+            multibody_joints: _,
+            controller: _,
+            unit_handles: _,
+            static_obstacles: _,
+            clone_history,
+            unit_map_insertions,
+            obstacle_map_insertions,
+        } = self;
+        meter.add_storage(
+            clone_history
+                .storage_slots()
+                .and_then(|n| n.checked_add(insertion_bucket_bound(*unit_map_insertions)?))
+                .and_then(|n| n.checked_add(insertion_bucket_bound(*obstacle_map_insertions)?)),
+        );
+    }
+    #[cfg(test)]
+    fn new() -> Self {
         Self::default()
     }
 
-    pub fn is_empty(&self) -> bool {
-        self.unit_handles.is_empty()
-    }
-
-    pub fn len(&self) -> usize {
-        self.unit_handles.len()
-    }
-
-    pub fn rigid_bodies(&self) -> &RigidBodySet {
-        &self.rigid_bodies
-    }
-
-    pub fn colliders(&self) -> &ColliderSet {
-        &self.colliders
-    }
-
-    #[cfg(test)]
-    pub fn board_bounds(&self) -> Option<&RapierBoardBounds> {
-        self.board_bounds.as_ref()
-    }
-
-    pub fn static_obstacle_count(&self) -> usize {
-        self.static_obstacles.len()
-    }
-
-    pub fn corrected_ground_static_obstacle_translation_for(
+    fn corrected_ground_static_obstacle_translation_for(
         &mut self,
         unit_id: UnitInstanceId,
         desired_translation: WorldVec2,
@@ -105,14 +189,11 @@ impl RapierMovementWorld {
         let handles = self.handles_for(unit_id)?;
         let collider = self.colliders.get(handles.collider)?;
         let body = self.rigid_bodies.get(handles.rigid_body)?;
-        let mut ignored_colliders = self
+        let ignored_colliders = self
             .unit_handles
             .values()
             .map(|handles| handles.collider)
             .collect::<HashSet<_>>();
-        if let Some(bounds) = &self.board_bounds {
-            ignored_colliders.extend(bounds.colliders.iter().copied());
-        }
         let include_ground_static_obstacle_colliders =
             |collider_handle: ColliderHandle, _collider: &Collider| {
                 !ignored_colliders.contains(&collider_handle)
@@ -139,32 +220,36 @@ impl RapierMovementWorld {
         Some(from_rapier_vector(movement.translation))
     }
 
-    pub fn rapier_position_for(&self, unit_id: UnitInstanceId) -> Option<WorldVec2> {
+    #[cfg(test)]
+    fn rapier_position_for(&self, unit_id: UnitInstanceId) -> Option<WorldVec2> {
         let handles = self.handles_for(unit_id)?;
         let body = self.rigid_bodies.get(handles.rigid_body)?;
         Some(from_rapier_vector(body.translation()))
     }
 
-    pub fn handles_for(&self, unit_id: UnitInstanceId) -> Option<RapierUnitHandles> {
+    fn handles_for(&self, unit_id: UnitInstanceId) -> Option<RapierUnitHandles> {
         self.unit_handles.get(&unit_id).copied()
     }
 
-    pub fn forget_unit(&mut self, unit_id: UnitInstanceId) -> Option<RapierUnitHandles> {
+    fn forget_unit(&mut self, unit_id: UnitInstanceId) -> Option<RapierUnitHandles> {
         let handles = self.unit_handles.remove(&unit_id)?;
+        let previous_colliders = self.colliders.len();
         self.rigid_bodies.remove(
             handles.rigid_body,
             &mut self.islands,
             &mut self.colliders,
-            &mut self.impulse_joints,
-            &mut self.multibody_joints,
+            self.impulse_joints.get_or_insert_with(ImpulseJointSet::new),
+            self.multibody_joints
+                .get_or_insert_with(MultibodyJointSet::new),
             true,
         );
+        self.clone_history
+            .removed_colliders(previous_colliders - self.colliders.len());
         Some(handles)
     }
 
-    pub fn sync_units(&mut self, units: &[MovementUnitInput]) -> RapierSyncReport {
+    fn sync_units(&mut self, units: &[MovementUnitInput]) -> RapierSyncReport {
         let mut report = RapierSyncReport::default();
-        let mut present_unit_ids = Vec::new();
 
         for unit in units {
             if unit.is_dead {
@@ -174,7 +259,6 @@ impl RapierMovementWorld {
                 continue;
             }
 
-            present_unit_ids.push(unit.unit_id);
             if self.handles_for(unit.unit_id).is_some() {
                 self.sync_existing_unit(unit);
                 report.updated += 1;
@@ -188,7 +272,11 @@ impl RapierMovementWorld {
             .unit_handles
             .keys()
             .copied()
-            .filter(|unit_id| !present_unit_ids.contains(unit_id))
+            .filter(|unit_id| {
+                !units
+                    .iter()
+                    .any(|unit| !unit.is_dead && unit.unit_id == *unit_id)
+            })
             .collect();
         for unit_id in stale_unit_ids {
             if self.forget_unit(unit_id).is_some() {
@@ -199,20 +287,23 @@ impl RapierMovementWorld {
         report
     }
 
-    pub fn clear(&mut self) {
+    pub(in crate::game::battle::core) fn clear(&mut self) {
         self.islands = IslandManager::new();
         self.broad_phase = BroadPhaseBvh::new();
         self.narrow_phase = NarrowPhase::new();
         self.rigid_bodies = RigidBodySet::new();
         self.colliders = ColliderSet::new();
-        self.impulse_joints = ImpulseJointSet::new();
-        self.multibody_joints = MultibodyJointSet::new();
+        self.impulse_joints = None;
+        self.multibody_joints = None;
         self.unit_handles.clear();
-        self.board_bounds = None;
         self.static_obstacles.clear();
+        self.clone_history = CloneHistory::default();
     }
 
-    pub fn sync_static_obstacles(&mut self, obstacles: &[MovementStaticObstacle]) {
+    fn sync_static_obstacles(&mut self, obstacles: &[MovementStaticObstacle]) {
+        if obstacles.is_empty() && self.static_obstacles.is_empty() {
+            return;
+        }
         let mut present = HashSet::new();
 
         for obstacle in obstacles {
@@ -241,58 +332,6 @@ impl RapierMovementWorld {
         }
     }
 
-    #[cfg(test)]
-    pub fn sync_board_bounds(&mut self, width_units: f32, height_units: f32) {
-        let width_units = width_units.max(0.0);
-        let height_units = height_units.max(0.0);
-
-        if self.board_bounds.as_ref().is_some_and(|bounds| {
-            (bounds.width_units - width_units).abs() <= f32::EPSILON
-                && (bounds.height_units - height_units).abs() <= f32::EPSILON
-        }) {
-            return;
-        }
-
-        self.remove_board_bounds();
-        let rigid_body = self.rigid_bodies.insert(RigidBodyBuilder::fixed().build());
-        let wall_thickness = 1.0;
-        let horizontal_half_width = width_units * 0.5 + wall_thickness;
-        let vertical_half_height = height_units * 0.5 + wall_thickness;
-        let colliders = vec![
-            self.insert_wall_collider(
-                rigid_body,
-                horizontal_half_width,
-                wall_thickness * 0.5,
-                WorldVec2::new(width_units * 0.5, -wall_thickness * 0.5),
-            ),
-            self.insert_wall_collider(
-                rigid_body,
-                horizontal_half_width,
-                wall_thickness * 0.5,
-                WorldVec2::new(width_units * 0.5, height_units + wall_thickness * 0.5),
-            ),
-            self.insert_wall_collider(
-                rigid_body,
-                wall_thickness * 0.5,
-                vertical_half_height,
-                WorldVec2::new(-wall_thickness * 0.5, height_units * 0.5),
-            ),
-            self.insert_wall_collider(
-                rigid_body,
-                wall_thickness * 0.5,
-                vertical_half_height,
-                WorldVec2::new(width_units + wall_thickness * 0.5, height_units * 0.5),
-            ),
-        ];
-
-        self.board_bounds = Some(RapierBoardBounds {
-            width_units,
-            height_units,
-            rigid_body,
-            colliders,
-        });
-    }
-
     fn insert_unit(&mut self, unit: &MovementUnitInput) {
         let body = RigidBodyBuilder::kinematic_position_based()
             .translation(to_rapier_vector(unit.body.position))
@@ -302,6 +341,8 @@ impl RapierMovementWorld {
         let collider =
             self.colliders
                 .insert_with_parent(collider, rigid_body, &mut self.rigid_bodies);
+        self.clone_history
+            .inserted(self.rigid_bodies.len(), self.colliders.len());
 
         self.unit_handles.insert(
             unit.unit_id,
@@ -311,21 +352,7 @@ impl RapierMovementWorld {
                 radius: unit.body.radius,
             },
         );
-    }
-
-    #[cfg(test)]
-    fn insert_wall_collider(
-        &mut self,
-        rigid_body: RigidBodyHandle,
-        half_width: f32,
-        half_height: f32,
-        position: WorldVec2,
-    ) -> ColliderHandle {
-        let collider = ColliderBuilder::cuboid(half_width, half_height)
-            .translation(to_rapier_vector(position))
-            .build();
-        self.colliders
-            .insert_with_parent(collider, rigid_body, &mut self.rigid_bodies)
+        self.unit_map_insertions = self.unit_map_insertions.saturating_add(1);
     }
 
     fn insert_static_obstacle(&mut self, obstacle: MovementStaticObstacle) {
@@ -339,47 +366,37 @@ impl RapierMovementWorld {
             obstacle.half_extents.y.max(0.0),
         )
         .build();
-        let collider =
-            self.colliders
-                .insert_with_parent(collider, rigid_body, &mut self.rigid_bodies);
+        self.colliders
+            .insert_with_parent(collider, rigid_body, &mut self.rigid_bodies);
+        self.clone_history
+            .inserted(self.rigid_bodies.len(), self.colliders.len());
         self.static_obstacles.insert(
             obstacle.obstacle_id,
             RapierStaticObstacleHandles {
                 rigid_body,
-                collider,
                 center: obstacle.center,
                 half_extents: obstacle.half_extents,
             },
         );
+        self.obstacle_map_insertions = self.obstacle_map_insertions.saturating_add(1);
     }
 
     fn remove_static_obstacle(&mut self, obstacle_id: u64) {
         let Some(handles) = self.static_obstacles.remove(&obstacle_id) else {
             return;
         };
+        let previous_colliders = self.colliders.len();
         self.rigid_bodies.remove(
             handles.rigid_body,
             &mut self.islands,
             &mut self.colliders,
-            &mut self.impulse_joints,
-            &mut self.multibody_joints,
+            self.impulse_joints.get_or_insert_with(ImpulseJointSet::new),
+            self.multibody_joints
+                .get_or_insert_with(MultibodyJointSet::new),
             true,
         );
-    }
-
-    #[cfg(test)]
-    fn remove_board_bounds(&mut self) {
-        let Some(bounds) = self.board_bounds.take() else {
-            return;
-        };
-        self.rigid_bodies.remove(
-            bounds.rigid_body,
-            &mut self.islands,
-            &mut self.colliders,
-            &mut self.impulse_joints,
-            &mut self.multibody_joints,
-            true,
-        );
+        self.clone_history
+            .removed_colliders(previous_colliders - self.colliders.len());
     }
 
     fn sync_existing_unit(&mut self, unit: &MovementUnitInput) {
@@ -394,6 +411,11 @@ impl RapierMovementWorld {
         }
 
         if let Some(body) = self.rigid_bodies.get_mut(handles.rigid_body) {
+            if body.translation().x == unit.body.position.x
+                && body.translation().y == unit.body.position.y
+            {
+                return;
+            }
             body.set_translation(to_rapier_vector(unit.body.position), true);
             body.set_next_kinematic_translation(to_rapier_vector(unit.body.position));
         }
@@ -413,6 +435,8 @@ impl RapierMovementWorld {
             &removed,
             &mut events,
         );
+        self.clone_history.pair_events =
+            self.clone_history.pair_events.saturating_add(events.len());
     }
 
     fn apply_unit_translation(
@@ -422,6 +446,9 @@ impl RapierMovementWorld {
     ) -> Option<()> {
         let handles = self.handles_for(unit_id)?;
         let body = self.rigid_bodies.get_mut(handles.rigid_body)?;
+        if body.translation().x == position.x && body.translation().y == position.y {
+            return Some(());
+        }
         body.set_translation(to_rapier_vector(position), true);
         body.set_next_kinematic_translation(to_rapier_vector(position));
         Some(())
@@ -436,8 +463,8 @@ impl Default for RapierMovementWorld {
             narrow_phase: NarrowPhase::new(),
             rigid_bodies: RigidBodySet::new(),
             colliders: ColliderSet::new(),
-            impulse_joints: ImpulseJointSet::new(),
-            multibody_joints: MultibodyJointSet::new(),
+            impulse_joints: None,
+            multibody_joints: None,
             controller: KinematicCharacterController {
                 offset: CharacterLength::Absolute(0.001),
                 slide: false,
@@ -446,8 +473,10 @@ impl Default for RapierMovementWorld {
                 ..KinematicCharacterController::default()
             },
             unit_handles: HashMap::new(),
-            board_bounds: None,
             static_obstacles: HashMap::new(),
+            clone_history: CloneHistory::default(),
+            unit_map_insertions: 0,
+            obstacle_map_insertions: 0,
         }
     }
 }
@@ -474,21 +503,22 @@ impl ContinuousMovementResolver for RapierMovementWorld {
         desired_to: WorldVec2,
         board_width_units: f32,
         board_height_units: f32,
-        _static_obstacles: &[MovementStaticObstacle],
+        static_obstacles: &[MovementStaticObstacle],
         dt_seconds: f32,
     ) -> WorldVec2 {
         let desired_translation = desired_to - unit.body.position;
-        let corrected_translation = if unit.terrain_policy.applies_static_obstacles() {
-            self.corrected_ground_static_obstacle_translation_for(
-                unit.unit_id,
-                desired_translation,
-                dt_seconds,
-            )
-            .unwrap_or(desired_translation)
-        } else {
-            desired_translation
-        };
-        DirectContinuousMovement::clamp_to_board(
+        let corrected_translation =
+            if unit.terrain_policy.applies_static_obstacles() && !static_obstacles.is_empty() {
+                self.corrected_ground_static_obstacle_translation_for(
+                    unit.unit_id,
+                    desired_translation,
+                    dt_seconds,
+                )
+                .unwrap_or(desired_translation)
+            } else {
+                desired_translation
+            };
+        clamp_to_board(
             unit.body.position + corrected_translation,
             unit.body.radius,
             board_width_units,
@@ -521,15 +551,12 @@ fn from_rapier_vector(position: Vector) -> WorldVec2 {
 mod tests {
     use uuid::Uuid;
 
-    use crate::game::{
-        battle::core::movement::{
-            engine::{
-                MovementEngine, MovementOutput, MovementStaticObstacle, MovementTerrainPolicy,
-                MovementTickInput, MovementUnitInput,
-            },
-            types::{MovementGoal, MovementMode, UnitBody, WorldVec2},
+    use crate::game::battle::core::movement::{
+        engine::{
+            MovementEngine, MovementOutput, MovementStaticObstacle, MovementTerrainPolicy,
+            MovementTickInput, MovementUnitInput,
         },
-        enums::Side,
+        types::{MovementGoal, UnitBody, WorldVec2},
     };
 
     use super::*;
@@ -537,19 +564,9 @@ mod tests {
     fn unit(unit_id: u128, position: WorldVec2) -> MovementUnitInput {
         MovementUnitInput {
             unit_id: Uuid::from_u128(unit_id).into(),
-            owner: Side::Player,
-            body: UnitBody {
-                position,
-                previous_position: position,
-                velocity: WorldVec2::ZERO,
-                radius: 0.35,
-                move_speed: 1.0,
-                mode: MovementMode::Moving,
-                goal: None,
-                physics_handle: None,
-            },
+            body: UnitBody::new_at(position, 0.35, 1.0),
+            goal: None,
             terrain_policy: MovementTerrainPolicy::Ground,
-            current_target: None,
             can_move: true,
             is_dead: false,
         }
@@ -557,7 +574,6 @@ mod tests {
 
     fn movement_input(dt_ms: u64, units: Vec<MovementUnitInput>) -> MovementTickInput {
         MovementTickInput {
-            now_ms: 0,
             dt_ms,
             board_width_units: 10.0,
             board_height_units: 10.0,
@@ -573,13 +589,66 @@ mod tests {
         units: Vec<MovementUnitInput>,
     ) -> MovementTickInput {
         MovementTickInput {
-            now_ms: 0,
             dt_ms,
             board_width_units,
             board_height_units,
             units,
             static_obstacles: Vec::new(),
         }
+    }
+
+    #[test]
+    fn rapier_engine_canonicalizes_unit_order_before_resolution() {
+        let first_id = Uuid::from_u128(1).into();
+        let mut first = unit(1, WorldVec2::new(1.0, 1.0));
+        let mut second = unit(2, WorldVec2::new(3.0, 1.0));
+        first.goal = Some(MovementGoal::MoveToPoint {
+            point: WorldVec2::new(2.0, 1.0),
+            stop_radius: 0.1,
+        });
+        second.goal = Some(MovementGoal::MoveToPoint {
+            point: WorldVec2::new(4.0, 1.0),
+            stop_radius: 0.1,
+        });
+
+        let mut reversed_world = RapierMovementWorld::new();
+        let reversed =
+            reversed_world.tick(movement_input(500, vec![second.clone(), first.clone()]));
+        let mut canonical_world = RapierMovementWorld::new();
+        let canonical = canonical_world.tick(movement_input(500, vec![first, second]));
+
+        assert_eq!(reversed, canonical);
+        assert!(matches!(
+            reversed.outputs.first(),
+            Some(MovementOutput::BodyMoved { unit_id, .. }) if *unit_id == first_id
+        ));
+    }
+
+    #[test]
+    fn native_empty_joint_sets_are_lazy_and_clone_removal_is_independent() {
+        let mut world = RapierMovementWorld::new();
+        let sample = unit(71, WorldVec2::new(1.0, 1.0));
+        world.sync_units(&[sample.clone()]);
+        assert!(world.impulse_joints.is_none());
+        assert!(world.multibody_joints.is_none());
+        let mut branch = world.clone();
+        branch.forget_unit(sample.unit_id).unwrap();
+        assert!(branch.impulse_joints.as_ref().unwrap().is_empty());
+        assert!(branch
+            .multibody_joints
+            .as_ref()
+            .unwrap()
+            .iter()
+            .next()
+            .is_none());
+        assert!(world.handles_for(sample.unit_id).is_some());
+        assert!(world.impulse_joints.is_none());
+        assert!(world.multibody_joints.is_none());
+        branch.clear();
+        assert!(branch.impulse_joints.is_none());
+        assert!(branch.multibody_joints.is_none());
+        branch.sync_units(&[sample]);
+        assert_eq!(branch.rigid_bodies.len(), 1);
     }
 
     #[test]
@@ -598,14 +667,14 @@ mod tests {
                 removed: 0,
             }
         );
-        assert_eq!(world.len(), 1);
+        assert_eq!(world.unit_handles.len(), 1);
         assert_eq!(
             world.rapier_position_for(unit_id),
             Some(WorldVec2::new(1.25, 2.5))
         );
         let handles = world.handles_for(unit_id).expect("missing handles");
-        assert!(world.rigid_bodies().contains(handles.rigid_body));
-        assert!(world.colliders().contains(handles.collider));
+        assert!(world.rigid_bodies.contains(handles.rigid_body));
+        assert!(world.colliders.contains(handles.collider));
     }
 
     #[test]
@@ -640,54 +709,7 @@ mod tests {
         assert_eq!(report.removed, 2);
         assert!(world.handles_for(first_id).is_none());
         assert!(world.handles_for(second_id).is_none());
-        assert!(world.is_empty());
-    }
-
-    #[test]
-    fn sync_board_bounds_creates_four_static_wall_colliders() {
-        let mut world = RapierMovementWorld::new();
-
-        world.sync_board_bounds(4.0, 3.0);
-
-        let bounds = world.board_bounds().expect("missing board bounds");
-        assert_eq!(bounds.width_units, 4.0);
-        assert_eq!(bounds.height_units, 3.0);
-        assert_eq!(bounds.colliders.len(), 4);
-        assert!(world.rigid_bodies().contains(bounds.rigid_body));
-        for collider in &bounds.colliders {
-            assert!(world.colliders().contains(*collider));
-        }
-    }
-
-    #[test]
-    fn rapier_ground_correction_ignores_board_wall_colliders() {
-        let mover_id = Uuid::from_u128(90).into();
-        let mut mover = unit(90, WorldVec2::new(1.0, 1.0));
-        mover.body.goal = Some(MovementGoal::MoveToPoint {
-            point: WorldVec2::new(10.0, 1.0),
-            stop_radius: 0.1,
-        });
-
-        let mut world = RapierMovementWorld::new();
-        world.sync_board_bounds(2.0, 2.0);
-        let result = world.tick(movement_input(2_000, vec![mover]));
-
-        let moved_to = result
-            .outputs
-            .iter()
-            .find_map(|output| match output {
-                MovementOutput::BodyMoved {
-                    unit_id: moved, to, ..
-                } if *moved == mover_id => Some(*to),
-                _ => None,
-            })
-            .expect("missing BodyMoved output");
-
-        assert_eq!(
-            moved_to,
-            WorldVec2::new(3.0, 1.0),
-            "runtime movement should ignore stale/test board wall colliders and use core clamp"
-        );
+        assert!(world.unit_handles.is_empty());
     }
 
     #[test]
@@ -701,23 +723,23 @@ mod tests {
 
         world.sync_static_obstacles(&[obstacle]);
 
-        assert_eq!(world.static_obstacle_count(), 1);
+        assert_eq!(world.static_obstacles.len(), 1);
 
         obstacle.center = WorldVec2::new(3.0, 2.0);
         world.sync_static_obstacles(&[obstacle]);
 
-        assert_eq!(world.static_obstacle_count(), 1);
+        assert_eq!(world.static_obstacles.len(), 1);
 
         world.sync_static_obstacles(&[]);
 
-        assert_eq!(world.static_obstacle_count(), 0);
+        assert_eq!(world.static_obstacles.len(), 0);
     }
 
     #[test]
     fn rapier_engine_moves_toward_point_goal() {
         let unit_id = Uuid::from_u128(5).into();
         let mut mover = unit(5, WorldVec2::new(1.0, 1.0));
-        mover.body.goal = Some(MovementGoal::MoveToPoint {
+        mover.goal = Some(MovementGoal::MoveToPoint {
             point: WorldVec2::new(10.0, 1.0),
             stop_radius: 0.1,
         });
@@ -727,8 +749,12 @@ mod tests {
 
         assert!(result.outputs.iter().any(|output| matches!(
             output,
-            MovementOutput::BodyMoved { unit_id: moved, to, .. }
-                if *moved == unit_id && *to == WorldVec2::new(1.5, 1.0)
+            MovementOutput::BodyMoved {
+                unit_id: moved,
+                to,
+                ..
+            } if *moved == unit_id
+                && *to == WorldVec2::new(1.5, 1.0)
         )));
         assert_eq!(
             world.rapier_position_for(unit_id),
@@ -737,11 +763,58 @@ mod tests {
     }
 
     #[test]
+    fn rapier_engine_reports_attack_target_reached() {
+        let mover_id = Uuid::from_u128(50).into();
+        let target_id = Uuid::from_u128(51).into();
+        let mut mover = unit(50, WorldVec2::new(0.0, 0.0));
+        mover.goal = Some(MovementGoal::AttackUnit { target_id });
+        let target = unit(51, WorldVec2::new(1.6, 0.0));
+
+        let mut world = RapierMovementWorld::new();
+        let result = world.tick(movement_input(50, vec![mover, target]));
+
+        assert!(result.outputs.iter().any(|output| matches!(
+            output,
+            MovementOutput::TargetReached {
+                unit_id,
+                target_id: reached,
+            } if *unit_id == mover_id && *reached == target_id
+        )));
+    }
+
+    #[test]
+    fn rapier_engine_allows_moving_candidates_to_overlap() {
+        let first_id = Uuid::from_u128(52).into();
+        let second_id = Uuid::from_u128(53).into();
+        let mut first = unit(52, WorldVec2::new(1.0, 1.0));
+        let mut second = unit(53, WorldVec2::new(1.0, 1.0));
+        first.goal = Some(MovementGoal::MoveToPoint {
+            point: WorldVec2::new(10.0, 1.0),
+            stop_radius: 0.1,
+        });
+        second.goal = first.goal;
+
+        let mut world = RapierMovementWorld::new();
+        let result = world.tick(movement_input(500, vec![first, second]));
+        let moved_to = |unit_id| {
+            result.outputs.iter().find_map(|output| match output {
+                MovementOutput::BodyMoved {
+                    unit_id: moved, to, ..
+                } if *moved == unit_id => Some(*to),
+                _ => None,
+            })
+        };
+
+        assert_eq!(moved_to(first_id), Some(WorldVec2::new(1.5, 1.0)));
+        assert_eq!(moved_to(second_id), Some(WorldVec2::new(1.5, 1.0)));
+    }
+
+    #[test]
     fn rapier_engine_ignores_unit_colliders_when_correcting_translation() {
         let mover_id = Uuid::from_u128(6).into();
         let blocker_id = Uuid::from_u128(7).into();
         let mut mover = unit(6, WorldVec2::new(1.0, 1.0));
-        mover.body.goal = Some(MovementGoal::MoveToPoint {
+        mover.goal = Some(MovementGoal::MoveToPoint {
             point: WorldVec2::new(10.0, 1.0),
             stop_radius: 0.1,
         });
@@ -771,7 +844,7 @@ mod tests {
     fn rapier_engine_static_obstacle_blocks_corrected_translation() {
         let mover_id = Uuid::from_u128(70).into();
         let mut mover = unit(70, WorldVec2::new(1.0, 1.0));
-        mover.body.goal = Some(MovementGoal::MoveToPoint {
+        mover.goal = Some(MovementGoal::MoveToPoint {
             point: WorldVec2::new(10.0, 1.0),
             stop_radius: 0.1,
         });
@@ -801,14 +874,14 @@ mod tests {
             moved_to.x < 1.75,
             "expected static obstacle to block movement before its left edge: moved_to={moved_to:?}"
         );
-        assert_eq!(world.static_obstacle_count(), 1);
+        assert_eq!(world.static_obstacles.len(), 1);
     }
 
     #[test]
     fn rapier_ground_static_obstacle_does_not_slide_along_blocking_wall() {
         let mover_id = Uuid::from_u128(73).into();
         let mut mover = unit(73, WorldVec2::new(1.0, 1.0));
-        mover.body.goal = Some(MovementGoal::MoveToPoint {
+        mover.goal = Some(MovementGoal::MoveToPoint {
             point: WorldVec2::new(5.0, 3.0),
             stop_radius: 0.1,
         });
@@ -845,7 +918,7 @@ mod tests {
         let mover_id = Uuid::from_u128(71).into();
         let mut mover = unit(71, WorldVec2::new(1.0, 1.0));
         mover.terrain_policy = MovementTerrainPolicy::Airborne;
-        mover.body.goal = Some(MovementGoal::MoveToPoint {
+        mover.goal = Some(MovementGoal::MoveToPoint {
             point: WorldVec2::new(10.0, 1.0),
             stop_radius: 0.1,
         });
@@ -879,7 +952,7 @@ mod tests {
         let mover_id = Uuid::from_u128(72).into();
         let mut mover = unit(72, WorldVec2::new(1.5, 1.5));
         mover.terrain_policy = MovementTerrainPolicy::Airborne;
-        mover.body.goal = Some(MovementGoal::MoveToPoint {
+        mover.goal = Some(MovementGoal::MoveToPoint {
             point: WorldVec2::new(-10.0, -10.0),
             stop_radius: 0.1,
         });
@@ -931,6 +1004,32 @@ mod tests {
     }
 
     #[test]
+    fn rapier_engine_allows_overlapping_units_at_board_bounds() {
+        let first_id = Uuid::from_u128(64).into();
+        let second_id = Uuid::from_u128(65).into();
+        let mut first = unit(64, WorldVec2::new(0.35, 0.35));
+        let mut second = unit(65, WorldVec2::new(0.35, 0.35));
+        first.goal = Some(MovementGoal::MoveToPoint {
+            point: WorldVec2::new(-10.0, 0.35),
+            stop_radius: 0.1,
+        });
+        second.goal = first.goal;
+
+        let mut world = RapierMovementWorld::new();
+        let result = world.tick(bounded_movement_input(500, 2.0, 2.0, vec![first, second]));
+
+        assert!(result.outputs.is_empty());
+        assert_eq!(
+            world.rapier_position_for(first_id),
+            Some(WorldVec2::new(0.35, 0.35))
+        );
+        assert_eq!(
+            world.rapier_position_for(second_id),
+            Some(WorldVec2::new(0.35, 0.35))
+        );
+    }
+
+    #[test]
     fn rapier_engine_does_not_push_movable_unit_out_of_locked_body_overlap() {
         let mover_id = Uuid::from_u128(62).into();
         let blocker_id = Uuid::from_u128(63).into();
@@ -953,10 +1052,142 @@ mod tests {
     }
 
     #[test]
+    fn authoring_clone_admits_retained_history_before_native_copy_and_preserves_continuation() {
+        use crate::authoring::{CancellationToken, ExecutionLimits, ExecutionPhase};
+        let mut world = RapierMovementWorld::new();
+        let sample = unit(1, WorldVec2::new(1.0, 1.0));
+        for _ in 0..64 {
+            world.insert_unit(&sample);
+            world.forget_unit(sample.unit_id).unwrap();
+        }
+        assert_eq!(world.rigid_bodies.len(), 0);
+        assert_eq!(world.clone_history.body_peak, 1);
+        assert_eq!(world.clone_history.body_insertions, 64);
+        assert_eq!(world.clone_history.collider_removals, 64);
+        world.insert_unit(&sample);
+        let (result, usage) = control::run(
+            &ExecutionLimits::default(),
+            &CancellationToken::default(),
+            ExecutionPhase::TrialExecution,
+            || {
+                world.preflight_authoring_clone()?;
+                Ok::<_, GameError>(world.clone())
+            },
+        )
+        .unwrap();
+        let mut controlled_clone = result.unwrap();
+        assert!(usage.clone_slots_peak > 64 * 3);
+        assert_eq!(controlled_clone.clone_history, world.clone_history);
+        let exact = ExecutionLimits {
+            max_clone_slots: usage.clone_slots_peak,
+            ..Default::default()
+        };
+        control::run(
+            &exact,
+            &CancellationToken::default(),
+            ExecutionPhase::TrialExecution,
+            || world.preflight_authoring_clone(),
+        )
+        .unwrap()
+        .0
+        .unwrap();
+        let did_copy = std::cell::Cell::new(false);
+        let failure = control::run(
+            &ExecutionLimits {
+                max_clone_slots: usage.clone_slots_peak - 1,
+                ..exact
+            },
+            &CancellationToken::default(),
+            ExecutionPhase::TrialExecution,
+            || {
+                world.preflight_authoring_clone()?;
+                let copy = world.clone();
+                did_copy.set(true);
+                Ok::<_, GameError>(copy)
+            },
+        );
+        assert_eq!(failure.err().unwrap().code, "authoring_clone_limit");
+        assert!(!did_copy.get());
+        let mut mover = sample;
+        mover.goal = Some(MovementGoal::MoveToPoint {
+            point: WorldVec2::new(3.0, 1.0),
+            stop_radius: 0.1,
+        });
+        assert_eq!(
+            world.tick(movement_input(300, vec![mover.clone()])),
+            controlled_clone.tick(movement_input(300, vec![mover]))
+        );
+    }
+
+    #[test]
+    fn clone_history_includes_removed_population_and_pair_growth_and_resets_only_with_native_owners(
+    ) {
+        let mut world = RapierMovementWorld::new();
+        let units: Vec<_> = (1..=33)
+            .map(|id| unit(id, WorldVec2::new(1.0, 1.0)))
+            .collect();
+        world.sync_units(&units);
+        world.refresh_broad_phase();
+        assert_eq!(world.clone_history.collider_peak, 33);
+        assert!(world.clone_history.pair_events > 0);
+        let pair_events = world.clone_history.pair_events;
+        world.sync_units(&[]);
+        world.refresh_broad_phase();
+        assert_eq!(world.colliders.len(), 0);
+        assert_eq!(world.clone_history.collider_peak, 33);
+        assert!(world.clone_history.pair_events >= pair_events);
+        assert!(world.clone_history.storage_slots().unwrap() > 33);
+        let map_capacity = world.unit_handles.capacity();
+        assert!(map_capacity >= 33);
+        world.clear();
+        assert_eq!(world.clone_history, CloneHistory::default());
+        assert_eq!(world.unit_handles.capacity(), map_capacity);
+        assert_eq!(world.unit_map_insertions, 33);
+        let map_slots = insertion_bucket_bound(world.unit_map_insertions).unwrap();
+        assert!(map_slots > map_capacity);
+        let limits = crate::authoring::ExecutionLimits {
+            max_clone_slots: CloneHistory::default().storage_slots().unwrap() + map_capacity,
+            ..Default::default()
+        };
+        let failure = control::run(
+            &limits,
+            &crate::authoring::CancellationToken::default(),
+            crate::authoring::ExecutionPhase::TrialExecution,
+            || world.preflight_authoring_clone(),
+        )
+        .unwrap_err();
+        assert_eq!(failure.code, "authoring_clone_limit");
+    }
+
+    #[test]
+    fn clone_history_overflow_is_rejected_in_control_without_changing_ordinary_gameplay() {
+        use crate::authoring::{CancellationToken, ExecutionLimits, ExecutionPhase};
+        let mut world = RapierMovementWorld::new();
+        world.clone_history.body_insertions = usize::MAX;
+        let sample = unit(1, WorldVec2::new(1.0, 1.0));
+        world.insert_unit(&sample);
+        assert_eq!(world.rigid_bodies.len(), 1);
+        assert_eq!(world.clone_history.body_insertions, usize::MAX);
+        world.preflight_authoring_clone().unwrap();
+        let failure = control::run(
+            &ExecutionLimits::default(),
+            &CancellationToken::default(),
+            ExecutionPhase::TrialExecution,
+            || world.preflight_authoring_clone(),
+        )
+        .unwrap_err();
+        assert_eq!(failure.code, "authoring_clone_limit");
+        assert_eq!(
+            world.rapier_position_for(sample.unit_id),
+            Some(sample.body.position)
+        );
+    }
+
+    #[test]
     fn rapier_engine_keeps_movement_inside_board_bounds() {
         let mover_id = Uuid::from_u128(8).into();
         let mut mover = unit(8, WorldVec2::new(1.5, 1.5));
-        mover.body.goal = Some(MovementGoal::MoveToPoint {
+        mover.goal = Some(MovementGoal::MoveToPoint {
             point: WorldVec2::new(-10.0, -10.0),
             stop_radius: 0.1,
         });
@@ -975,11 +1206,9 @@ mod tests {
             })
             .expect("missing BodyMoved output");
 
-        assert!(moved_to.x >= 0.35 && moved_to.x <= 1.65);
-        assert!(moved_to.y >= 0.35 && moved_to.y <= 1.65);
         assert!(
-            world.board_bounds().is_none(),
-            "runtime movement should use core clamp as the board-bound source of truth"
+            moved_to.distance(WorldVec2::new(0.35, 0.35)) <= f32::EPSILON,
+            "expected exact manual board clamp endpoint, got {moved_to:?}"
         );
     }
 }

@@ -1,4 +1,6 @@
-use serde::{Deserialize, Serialize};
+use std::fmt;
+
+use serde::{de, Deserialize, Deserializer, Serialize};
 
 use crate::{game::battle::ids::UnitInstanceId, game::resources::Position};
 
@@ -22,17 +24,142 @@ pub const DATA_UNITS_PER_WORLD: f32 = 1_000_000.0;
 /// Conservative starting body radius. Final tuning should live in unit data.
 pub const DEFAULT_UNIT_RADIUS: f32 = 0.35;
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum FiniteBattleValueKind {
+    PositionX,
+    PositionY,
+    Radius,
+    Speed,
+    TimeSeconds,
+}
+
+impl fmt::Display for FiniteBattleValueKind {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let name = match self {
+            Self::PositionX => "position.x",
+            Self::PositionY => "position.y",
+            Self::Radius => "radius",
+            Self::Speed => "speed",
+            Self::TimeSeconds => "time_seconds",
+        };
+        formatter.write_str(name)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum FiniteBattleValueError {
+    NonFinite { kind: FiniteBattleValueKind },
+    Negative { kind: FiniteBattleValueKind },
+}
+
+impl fmt::Display for FiniteBattleValueError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::NonFinite { kind } => write!(formatter, "{kind} must be finite"),
+            Self::Negative { kind } => write!(formatter, "{kind} must be non-negative"),
+        }
+    }
+}
+
+impl std::error::Error for FiniteBattleValueError {}
+
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+pub struct FiniteWorldRadius(f32);
+
+impl FiniteWorldRadius {
+    pub fn try_new(value: f32) -> Result<Self, FiniteBattleValueError> {
+        checked_non_negative(value, FiniteBattleValueKind::Radius).map(Self)
+    }
+
+    pub const fn get(self) -> f32 {
+        self.0
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+pub struct FiniteWorldSpeed(f32);
+
+impl FiniteWorldSpeed {
+    pub fn try_new(value: f32) -> Result<Self, FiniteBattleValueError> {
+        checked_non_negative(value, FiniteBattleValueKind::Speed).map(Self)
+    }
+
+    pub const fn get(self) -> f32 {
+        self.0
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+pub struct FiniteBattleSeconds(f32);
+
+impl FiniteBattleSeconds {
+    #[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
+    pub fn try_new(value: f32) -> Result<Self, FiniteBattleValueError> {
+        checked_non_negative(value, FiniteBattleValueKind::TimeSeconds).map(Self)
+    }
+
+    pub fn from_millis(milliseconds: u64) -> Self {
+        // Every u64 converts to a finite f32, and division by this non-zero
+        // finite constant remains finite.
+        Self(milliseconds as f32 / 1_000.0)
+    }
+
+    pub const fn get(self) -> f32 {
+        self.0
+    }
+}
+
+fn checked_non_negative(
+    value: f32,
+    kind: FiniteBattleValueKind,
+) -> Result<f32, FiniteBattleValueError> {
+    if !value.is_finite() {
+        return Err(FiniteBattleValueError::NonFinite { kind });
+    }
+    if value < 0.0 {
+        return Err(FiniteBattleValueError::Negative { kind });
+    }
+    Ok(value)
+}
+
+/// Finite continuous-space position owned by the private battle kernel.
+///
+/// Raw coordinates are crate-private. External test capability can construct a
+/// value from floats only through [`WorldVec2::try_new`], and deserialization
+/// applies the same rejection rule.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Serialize)]
 pub struct WorldVec2 {
-    pub x: f32,
-    pub y: f32,
+    pub(crate) x: f32,
+    pub(crate) y: f32,
 }
 
 impl WorldVec2 {
     pub const ZERO: Self = Self { x: 0.0, y: 0.0 };
 
-    pub const fn new(x: f32, y: f32) -> Self {
+    pub fn try_new(x: f32, y: f32) -> Result<Self, FiniteBattleValueError> {
+        if !x.is_finite() {
+            return Err(FiniteBattleValueError::NonFinite {
+                kind: FiniteBattleValueKind::PositionX,
+            });
+        }
+        if !y.is_finite() {
+            return Err(FiniteBattleValueError::NonFinite {
+                kind: FiniteBattleValueKind::PositionY,
+            });
+        }
+        Ok(Self { x, y })
+    }
+
+    pub(crate) const fn new(x: f32, y: f32) -> Self {
         Self { x, y }
+    }
+
+    pub const fn x(self) -> f32 {
+        self.x
+    }
+
+    pub const fn y(self) -> f32 {
+        self.y
     }
 
     pub fn from_tile_center(tile: Position) -> Self {
@@ -112,6 +239,22 @@ impl WorldVec2 {
     }
 }
 
+impl<'de> Deserialize<'de> for WorldVec2 {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        #[derive(Deserialize)]
+        struct RawWorldVec2 {
+            x: f32,
+            y: f32,
+        }
+
+        let raw = RawWorldVec2::deserialize(deserializer)?;
+        Self::try_new(raw.x, raw.y).map_err(de::Error::custom)
+    }
+}
+
 impl std::ops::Add for WorldVec2 {
     type Output = Self;
 
@@ -151,6 +294,8 @@ pub(in crate::game::battle::core) struct ActiveMovementSegment {
     pub(in crate::game::battle::core) ends_at_ms: u64,
 }
 
+crate::authoring::clone_shape::copy_shape!(ActiveMovementSegment);
+
 impl ActiveMovementSegment {
     pub(in crate::game::battle::core) fn sample_position_at(&self, time_ms: u64) -> WorldVec2 {
         if time_ms <= self.started_at_ms {
@@ -186,85 +331,66 @@ impl EventLogVec2 {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum MovementMode {
-    Idle,
-    Moving,
-    MovementLocked { until_ms: u64 },
-    Dead,
-}
-
-impl Default for MovementMode {
-    fn default() -> Self {
-        Self::Idle
-    }
-}
-
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub enum MovementGoal {
     AttackUnit { target_id: UnitInstanceId },
     MoveToPoint { point: WorldVec2, stop_radius: f32 },
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub struct UnitPhysicsHandle {
-    pub raw: u64,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 pub struct UnitBody {
-    pub position: WorldVec2,
-    pub previous_position: WorldVec2,
-    pub velocity: WorldVec2,
-    pub radius: f32,
-    pub move_speed: f32,
-    pub mode: MovementMode,
-    pub goal: Option<MovementGoal>,
-    pub physics_handle: Option<UnitPhysicsHandle>,
+    pub(crate) position: WorldVec2,
+    pub(crate) radius: f32,
+    pub(crate) move_speed: f32,
 }
 
 impl Default for UnitBody {
     fn default() -> Self {
-        Self::new_at(WorldVec2::ZERO, DEFAULT_UNIT_RADIUS, 0.0)
+        Self {
+            position: WorldVec2::ZERO,
+            radius: DEFAULT_UNIT_RADIUS,
+            move_speed: 0.0,
+        }
     }
 }
 
 impl UnitBody {
-    pub fn new_at(position: WorldVec2, radius: f32, move_speed: f32) -> Self {
+    #[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
+    pub fn try_new_at(
+        position: WorldVec2,
+        radius: f32,
+        move_speed: f32,
+    ) -> Result<Self, FiniteBattleValueError> {
+        let radius = FiniteWorldRadius::try_new(radius)?;
+        let move_speed = FiniteWorldSpeed::try_new(move_speed)?;
+        Ok(Self::from_finite(position, radius, move_speed))
+    }
+
+    pub(crate) const fn from_finite(
+        position: WorldVec2,
+        radius: FiniteWorldRadius,
+        move_speed: FiniteWorldSpeed,
+    ) -> Self {
         Self {
             position,
-            previous_position: position,
-            velocity: WorldVec2::ZERO,
-            radius,
-            move_speed,
-            mode: MovementMode::Idle,
-            goal: None,
-            physics_handle: None,
+            radius: radius.get(),
+            move_speed: move_speed.get(),
         }
     }
 
-    pub fn from_tile_center(tile: Position, radius: f32, move_speed: f32) -> Self {
-        Self::new_at(WorldVec2::from_tile_center(tile), radius, move_speed)
-    }
-
-    pub fn from_data_units(x_units: i64, y_units: i64, radius: f32, move_speed: f32) -> Self {
-        Self::new_at(
-            WorldVec2::from_data_units(x_units, y_units),
-            radius,
-            move_speed,
-        )
+    #[cfg(test)]
+    pub(crate) fn new_at(position: WorldVec2, radius: f32, move_speed: f32) -> Self {
+        Self::try_new_at(position, radius, move_speed)
+            .expect("internal unit body inputs must be finite and non-negative")
     }
 
     pub fn projected_tile(&self) -> Position {
         self.position.project_to_tile()
     }
 
+    #[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
     pub fn distance_to(&self, other: &Self) -> f32 {
         self.position.distance(other.position)
-    }
-
-    pub fn can_reach(&self, other: &Self, range_units: f32) -> bool {
-        self.distance_to(other) <= range_units + self.radius + other.radius
     }
 }
 
@@ -277,15 +403,6 @@ mod tests {
         let pos = WorldVec2::from_tile_center(Position::new(2, 3));
         assert_eq!(pos, WorldVec2::new(2.5, 3.5));
         assert_eq!(pos.project_to_tile(), Position::new(2, 3));
-    }
-
-    #[test]
-    fn unit_body_reach_includes_both_radii() {
-        let a = UnitBody::new_at(WorldVec2::new(0.0, 0.0), 0.3, 1.0);
-        let b = UnitBody::new_at(WorldVec2::new(1.5, 0.0), 0.3, 1.0);
-
-        assert!(a.can_reach(&b, 0.9));
-        assert!(!a.can_reach(&b, 0.8));
     }
 
     #[test]

@@ -1,7 +1,6 @@
 use actix::Actor;
 use actix_web::{get, web, App, Error, HttpRequest, HttpResponse, HttpServer};
 use actix_web_actors::ws;
-use game_core::game::data::GameDataBase;
 use game_server::{
     env::Settings,
     game::{load_balance_actor::LoadBalanceActor, player_game_actor::session::PlayerGameSession},
@@ -10,6 +9,11 @@ use game_server::{
 use std::{sync::Arc, time::Duration};
 use tracing::{error, info};
 use uuid::Uuid;
+
+#[cfg(any(feature = "runtime-measurement", feature = "cmva-lab-measurement"))]
+#[global_allocator]
+static ALLOCATOR: game_server::runtime_measurement::CountingAllocator<'static, std::alloc::System> =
+    game_server::runtime_measurement::process_allocator();
 
 #[get("/game")]
 async fn player_game_ws_route(
@@ -28,6 +32,20 @@ async fn player_game_ws_route(
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    let args = std::env::args().skip(1).collect::<Vec<_>>();
+    if game_server::mod_admission::worker::entry(&args)
+        .map_err(|e| std::io::Error::other(e.to_string()))?
+    {
+        return Ok(());
+    }
+    if let Some(value) =
+        game_server::mod_admission::administration(&args).map_err(std::io::Error::other)?
+    {
+        println!("{value}");
+        return Ok(());
+    }
+    #[cfg(feature = "runtime-measurement")]
+    let measurement_window = game_server::runtime_measurement::begin_process_window().ok();
     // 1. 환경변수 로드
     dotenv::dotenv().ok();
 
@@ -42,11 +60,30 @@ async fn main() -> std::io::Result<()> {
     init_retry_config(&settings.retry).await;
     info!("Retry config initialized");
 
-    let game_data = load_game_data_from_ron();
-    info!("Game data loaded for meta-game sessions");
-
-    // 10. LoadBalanceActor 시작
-    let load_balance_addr = LoadBalanceActor::new().start();
+    let admission = game_server::bootstrap::load_approved_host(&settings)?;
+    let approved_host = admission.host;
+    let active_run_directory = settings
+        .persistence
+        .active_run_directory()
+        .map_err(std::io::Error::other)?;
+    let player_profile_directory = settings
+        .persistence
+        .player_profile_directory()
+        .map_err(std::io::Error::other)?;
+    let persistence = game_server::mod_admission::ApprovedPersistence::open_roots(
+        active_run_directory,
+        player_profile_directory,
+        Arc::clone(&approved_host),
+    )
+    .map_err(std::io::Error::other)?;
+    #[cfg(feature = "runtime-observation")]
+    let observation = game_server::observability::from_environment();
+    let load_balance =
+        LoadBalanceActor::with_approved_persistence(Arc::clone(&approved_host), persistence);
+    #[cfg(feature = "runtime-observation")]
+    let load_balance =
+        load_balance.with_observation(observation.as_ref().map(|(handle, _guard)| handle.clone()));
+    let load_balance_addr = load_balance.start();
     info!("LoadBalanceActor started");
 
     let current_run_id = Uuid::new_v4();
@@ -57,7 +94,7 @@ async fn main() -> std::io::Result<()> {
         load_balance_addr,
         logger_manager,
         current_run_id,
-        game_data,
+        approved_host,
     };
 
     // 16. HTTP 서버 시작
@@ -82,10 +119,10 @@ async fn main() -> std::io::Result<()> {
 
     // 17. 종료 신호 대기
     let server_handle = server.handle();
-    tokio::select! {
+    let shutdown_result = tokio::select! {
         res = server => {
             error!("Server exited unexpectedly");
-            return res;
+            res
         },
 
         _ = tokio::signal::ctrl_c() => {
@@ -94,12 +131,18 @@ async fn main() -> std::io::Result<()> {
             // Graceful shutdown
             server_handle.stop(true).await;
             info!("System has shut down gracefully");
+            Ok(())
         },
+    };
+
+    #[cfg(feature = "runtime-measurement")]
+    drop(observation);
+    #[cfg(feature = "runtime-measurement")]
+    if let Some(window) = measurement_window {
+        println!(
+            "{}",
+            serde_json::json!({"process_measurement_window": window.finish()})
+        );
     }
-
-    Ok(())
-}
-
-fn load_game_data_from_ron() -> Arc<GameDataBase> {
-    GameDataBase::load_live_embedded()
+    shutdown_result
 }

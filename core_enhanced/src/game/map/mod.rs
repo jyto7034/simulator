@@ -1,18 +1,40 @@
 pub mod executor;
-pub mod generator;
+pub mod facility;
+pub mod facility_generator;
+pub mod facility_layout;
+mod golden_bough;
+pub use golden_bough::*;
 pub mod progression;
 pub mod session;
 pub mod types;
 
 pub use executor::{MapNodeEnterResult, MapNodeExecutor};
-pub use generator::{MapGenerationConfig, MapGenerationPolicyData, MapGenerator};
+pub use facility::{
+    EndlessFacilityScheduleStage, FacilityCategoryConstraint, FacilityCategoryWeight,
+    FacilityConnection, FacilityManifestationRule, FacilityPoolRunState, FacilityRoomSlot,
+    FacilityRunState, FacilityScheduleCycleEntry, FacilitySlotRole, FacilityTemplate,
+    FacilityTemplateDatabase, FacilityTemplateKind, FacilityTemplatePool,
+    FacilityTerminalResolution, FixedSlotAssignment, NodeAssignmentProfile,
+    NodeAssignmentProfileDatabase, ResolvedFacilitySchedule, StandardFacilityScheduleEntry,
+    TaggedSlotAssignment, FACILITY_TEMPLATE_VERSION,
+};
+pub use facility_layout::*;
+#[cfg(test)]
+pub(crate) use facility_generator::test_facility_map;
+pub(crate) use facility_generator::{
+    FacilityCapstoneEntryInput, FacilityCapstoneRequest, FacilityGenerationRequirements,
+    FacilityMapGenerator,
+};
 pub use progression::{
     GameMode, MapProgression, MapProgressionError, RunProgression, RunProgressionModeState,
 };
 pub use session::NodeSession;
 pub use types::{
-    HeadquartersContactOption, MapEdgeDirection, MapEdgeDto, MapNode, MapNodeCategory,
-    MapNodeDefinition, MapNodeDefinitionDatabase, MapNodeDto, MapNodeId, MapNodeKindId,
+    AuthoredCombatNodePolicy, AuthoredCombatOutcomePolicy, AuthoredEncounterActorStatOverride,
+    CombatReadinessWarningDto, HeadquartersContactOption, MapEdgeDirection, MapNode,
+    MapNodeCategory, MapNodeCombatDifficulty, MapNodeCombatDifficultyClass, MapNodeDefinition,
+    MapNodeDefinitionDatabase, MapNodeDifficultyBandDto, MapNodeDto, MapNodeId, MapNodeKindId,
     MapNodeOmenOverlayDto, MapNodePayload, MapNodeState, MapNodeVisibility, MapSlotId,
-    MapTemplateId, MapViewDto, RunMap, SupportNodeMode, SupportNodeType, DEFAULT_MAP_TEMPLATE_ID,
+    MapTemplateId, MapTerminalNode, MapViewDto, RevivalStage,
+    RelativeThreatBandDto, RunMap, NodeEntryPreviewDto, BreakdownEntryPreviewDto,
 };

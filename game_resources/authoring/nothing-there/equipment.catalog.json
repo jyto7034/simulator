@@ -1,0 +1,127 @@
+[
+  {
+    "id": "placeholder_nothing_there_weapon",
+    "uuid": "e2000000-0000-0000-0000-000000000015",
+    "content_family": "o-06-20_nothing_there",
+    "name": "미미크리",
+    "equipment_type": "Weapon",
+    "rarity": {
+      "Unresolved": "weapon-rarity"
+    },
+    "price": {
+      "Unresolved": "weapon-price"
+    },
+    "allow_duplicate_equip": {
+      "Unresolved": "weapon-duplicate"
+    },
+    "triggered_effects": {},
+    "ability_activations": [],
+    "weapon_profile": {
+      "action": {
+        "Unresolved": "weapon-area-action"
+      },
+      "attack": {
+        "Unresolved": "weapon-attack"
+      },
+      "spell_power": 0,
+      "range_role": "Melee",
+      "weapon_archetype": "Sword",
+      "block_capacity": 1,
+      "deployment_affinity": "ground_only",
+      "ground_defense_focus": {
+        "Unresolved": "weapon-defense-focus"
+      },
+      "platform_rest": null,
+      "damage_type": "Physical",
+      "targeting_profile": {
+        "Unresolved": "weapon-targeting"
+      },
+      "air_capable": false,
+      "defense_tile_range": {
+        "Unresolved": "weapon-footprint"
+      },
+      "interval_ms": {
+        "Unresolved": "weapon-interval-ms"
+      },
+      "windup_ms": {
+        "Unresolved": "weapon-windup-ms"
+      },
+      "delivery": "Instant"
+    }
+  },
+  {
+    "id": "placeholder_nothing_there_armor",
+    "uuid": "e2000000-0000-0000-0000-000000000115",
+    "content_family": "o-06-20_nothing_there",
+    "name": "미미크리",
+    "equipment_type": "Armor",
+    "rarity": {
+      "Unresolved": "armor-rarity"
+    },
+    "price": {
+      "Unresolved": "armor-price"
+    },
+    "allow_duplicate_equip": {
+      "Unresolved": "armor-duplicate"
+    },
+    "triggered_effects": {
+      "Permanent": [
+        {
+          "target": "SelfUnit",
+          "effect": {
+            "Modifier": {
+              "stat": "MaxHealth",
+              "kind": "Flat",
+              "value": {
+                "Unresolved": "armor-MaxHealth"
+              }
+            }
+          }
+        },
+        {
+          "target": "SelfUnit",
+          "effect": {
+            "Modifier": {
+              "stat": "Defense",
+              "kind": "Flat",
+              "value": {
+                "Unresolved": "armor-Defense"
+              }
+            }
+          }
+        },
+        {
+          "target": "SelfUnit",
+          "effect": {
+            "Modifier": {
+              "stat": "MagicResist",
+              "kind": "Flat",
+              "value": {
+                "Unresolved": "armor-MagicResist"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ability_activations": []
+  },
+  {
+    "id": "placeholder_nothing_there_accessory",
+    "uuid": "e2000000-0000-0000-0000-000000000215",
+    "content_family": "o-06-20_nothing_there",
+    "name": "미미크리",
+    "equipment_type": "Accessory",
+    "rarity": {
+      "Unresolved": "accessory-rarity"
+    },
+    "price": {
+      "Unresolved": "accessory-price"
+    },
+    "allow_duplicate_equip": {
+      "Unresolved": "accessory-duplicate"
+    },
+    "triggered_effects": {},
+    "ability_activations": []
+  }
+]

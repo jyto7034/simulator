@@ -1,0 +1,26 @@
+# N08 액세서리 기술 fixture. 속박 1000ms는 출시 수치가 아닙니다.
+version: 2
+id: equipment-stun-end-fixture
+values:
+  - name: lingering-gaze
+    value:
+      StateProgram:
+        id: lingering-gaze
+        owns_use: false
+        end_on_source_exit: true
+        replacement: ReplaceSameSource
+        fields: []
+        handlers:
+          - id: stun-ended
+            event: OwnerStunEnded
+            body:
+              - ApplyEventTargetStatus:
+                  duration:
+                    moment: Live
+                    root: { Const: { value: 1000, unit: Milliseconds } }
+                  profile: { definition: lingering-root, kind: Root }
+equipment_states:
+  - equipment: r11_weapon
+    program: { Shared: lingering-gaze }
+definitions: []
+skills: []

@@ -1,0 +1,128 @@
+# 현행 의미의 작성 원본. Unresolved는 출시 미정이며 시험 완성값이 아닙니다.
+definitions: []
+id: melting-love-infection
+skills:
+- admission:
+    capacity:
+      Unresolved: capacity
+    cost: All
+    requirement: Full
+  body:
+    Action:
+      delivery:
+        Literal:
+          Delivery: Instant
+      effects:
+      - Append:
+          effects:
+            Shared: spore-burst
+      id: entry
+      target:
+        Literal:
+          Target: SelfUnit
+      wait: Released
+  cast_targeting:
+    Explicit:
+      air_capable: false
+      reach: pattern
+      selection: self
+      target: SelfUnit
+      target_range: null
+  focus_permissions:
+    allows_basic_attack: false
+    allows_move: false
+  id: fragment_melting_love_spore_burst
+  kind: Untargeted
+  name: 포자 감염 · 일제 기폭 (가칭)
+  prepare_ms: 0
+values:
+- name: spore-burst
+  value:
+    Effects:
+    - id: burst
+      op:
+        PresenceBurst:
+          program:
+            explosion:
+              bonus_percent:
+                denominator: 1
+                numerator: 0
+              coefficient:
+                Unresolved: burst-coefficient
+              damage_type: Magic
+              dedup: Wave
+              host_multiplier:
+                denominator: 1
+                numerator: 3
+              range:
+                include_anchor_tile: true
+                rows:
+                - '@'
+            marks:
+              chance_percent:
+                Unresolved: infection-chance
+              definition: melting-love-spores
+              filter:
+                abnormality: true
+                air: false
+                boss: true
+                summon: false
+                temporary: false
+              periodic_coefficient:
+                Unresolved: periodic-coefficient
+              periodic_damage_type: Magic
+              periodic_interval_ms:
+                Unresolved: periodic_interval_ms
+              power:
+                cap:
+                  Unresolved: power-cap
+                decay_per_second:
+                  Unresolved: power-decay_per_second
+                grace_ms:
+                  Unresolved: power-grace_ms
+                growth_per_second:
+                  Unresolved: power-growth_per_second
+                prevent_decay: false
+              spread_limit:
+                Unresolved: spread_limit
+              spread_radius_units:
+                Unresolved: spread_radius_units
+            modifiers:
+            - change:
+                Period:
+                  decrease: true
+                  percent:
+                    Unresolved: modifier-hastened-pulse
+              id: spore-hastened-pulse
+              relic_definition: hastened-pulse
+            - change:
+                Range:
+                  pattern:
+                    include_anchor_tile: true
+                    rows:
+                    - XXX
+                    - X@X
+                    - XXX
+              id: spore-widened-horizon
+              relic_definition: widened-horizon
+            - change:
+                ExplosionPower:
+                  percent:
+                    Unresolved: modifier-explosion-vulnerability
+              id: spore-explosion-vulnerability
+              relic_definition: explosion-vulnerability
+            - change: ExplosionOverlap
+              id: spore-overlapping-explosions
+              relic_definition: overlapping-explosions
+            - change:
+                Growth:
+                  percent:
+                    Unresolved: modifier-growth-medium
+              id: spore-growth-medium
+              relic_definition: growth-medium
+            - change: PreservePower
+              id: spore-sealed-culture
+              relic_definition: sealed-culture
+      origin: Original
+      tags: []
+version: 2

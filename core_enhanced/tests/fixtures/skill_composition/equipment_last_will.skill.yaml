@@ -1,0 +1,17 @@
+# Explicit prototype values; release balance and presentation are separate.
+version: 1
+id: last-will-fixture
+resources: []
+values:
+  - name: farewell
+    value:
+      DefenseProgram:
+        LastWill:
+          range: { include_anchor_tile: false, rows: [XXX, XXX, .@.] }
+          attack_percent: 300
+          damage_type: Magic
+equipment_defenses:
+  - equipment: last_will_fixture_armor
+    program: { Shared: farewell }
+definitions: []
+skills: []

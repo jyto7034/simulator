@@ -1,0 +1,155 @@
+# Current base fragment and seven agreed modifiers; values marked Unresolved are not release defaults.
+definitions: []
+id: king-of-greed-prepared-volley
+skills:
+- admission:
+    capacity:
+      Unresolved: capacity
+    cost: All
+    requirement: Full
+  body:
+    Action:
+      delivery:
+        Literal:
+          Delivery: Instant
+      effects:
+      - Append:
+          effects:
+            Shared: prepared-volley
+      id: entry
+      target:
+        Literal:
+          Target: SelfUnit
+      wait: Released
+  cast_targeting:
+    Explicit:
+      air_capable: false
+      reach: pattern
+      selection: self
+      target: SelfUnit
+      target_range: null
+  focus_permissions:
+    allows_basic_attack: false
+    allows_move: false
+  id: fragment_king_of_greed_horizon
+  kind: Untargeted
+  name: 황금의 지평선 (가칭)
+  prepare_ms: 0
+values:
+- name: prepared-volley
+  value:
+    Effects:
+    - id: volley
+      op:
+        PreparedVolley:
+          program:
+            admission:
+              capacity:
+                Unresolved: capacity
+              cost: All
+              requirement: Full
+            definition: ff55db2e-1ebb-4d9b-bc42-0106f2c4273e
+            ledger:
+              credit_limit: 20
+              definition: 6fcdba2d-8201-4735-901f-83ec7e231cba
+              grant: 10
+            mark_definition: a3c6eabe-b353-4fe7-911b-fdce1fdd2d5e
+            mark_duration_ms:
+              Unresolved: mark-duration-ms
+            modifiers:
+            - change: Protection
+              id: 443ddc96-66e5-4c99-8368-5a351ca43450
+              relic_definition: unbroken-trance
+            - change:
+                Multihit:
+                  cap:
+                    denominator: 1
+                    numerator: 20
+                  step:
+                    denominator: 1
+                    numerator: 2
+              id: 487bb688-d8e1-4bfe-bc46-d986bd845164
+              relic_definition: deep-wedge
+            - change:
+                Recovery:
+                  factor:
+                    denominator: 1
+                    numerator: 2
+              id: 53edc9f9-08b8-4331-b678-d37413ee9a2a
+              relic_definition: double-harvest
+            - change:
+                Continuous:
+                  cost_interval_ms: 1000
+                  interval_ms:
+                    Unresolved: continuous-interval-ms
+                  percent:
+                    denominator: 1
+                    numerator: 5
+              id: 5a217836-a652-420d-9348-7dbde0ef56ca
+              relic_definition: king-of-greed-endless-treasury
+            - change:
+                Area:
+                  pattern:
+                    Unresolved: expanded-area
+              id: 5a24746d-212b-40db-8e7b-cf9226ff4b48
+              relic_definition: widened-horizon
+            - change:
+                MarkDuration:
+                  negative: false
+                  percent:
+                    denominator: 1
+                    numerator: 25
+              id: 826f23e9-bce3-4a44-ade7-df7147c33459
+              relic_definition: long-breath
+            - change:
+                Status:
+                  status:
+                    count:
+                      Constant: 1
+                    definition: 351b6e06-49db-47d0-97c2-36eba7adf6d5
+                    duration_ms:
+                      Unresolved: stun-duration-ms
+                    kind: Stun
+                    percent:
+                      denominator: 1
+                      numerator: 0
+              id: fc289506-7189-4208-b3ef-308ea51b9844
+              relic_definition: king-of-greed-stunning-treasures
+            policy:
+              deadline_ms:
+                Unresolved: preparation-deadline_ms
+              decay_ms:
+                Unresolved: preparation-decay_ms
+              first_ms:
+                Unresolved: preparation-first_ms
+              hold_ms:
+                Unresolved: preparation-hold_ms
+              last_ms:
+                Unresolved: preparation-last_ms
+              maximum:
+                Unresolved: preparation-maximum
+            projectile:
+              after: []
+              air: true
+              area:
+                Unresolved: projectile-area
+              damage_type: Physical
+              definition: d6e4fffd-73b3-4872-b93f-acd527979d31
+              lifetime_ms:
+                Unresolved: projectile-lifetime_ms
+              obstacle_stop: true
+              power:
+                Unresolved: projectile-power
+              range:
+                Unresolved: projectile-range
+              speed:
+                Unresolved: projectile-speed
+              width:
+                Unresolved: projectile-width
+            recovery: 1
+            selection_air: true
+            selection_range:
+              Unresolved: selection-range
+      origin: Original
+      tags: []
+version: 1

@@ -3,16 +3,19 @@ use serde_json::{json, Value};
 use uuid::Uuid;
 
 use crate::{
-    game::employee::ActiveConsumableModifier,
+    game::employee::{
+        ActiveConsumableModifier, EmployeeCondition, EmployeeEligibility, MentalConditionState,
+        PhysicalDamageState,
+    },
     game::resources::{
-        ArtifactItemDto, ConsumableItemDto, EquipItemResultDto, EquipmentItemDto, InventoryDiffDto,
-        Position, RunFailureReason, UnequipItemResultDto,
+        ConsumableItemDto, EquipItemResultDto, EquipmentItemDto, InventoryDiffDto, Position,
+        RunFailureReason, UnequipItemResultDto,
     },
     game::{
         ability::{
             FocusPermissions, SkillActivationMode, SkillAreaAnchorSource, SkillAreaTickPolicy,
-            SkillAreaTracking, SkillHitTargetFilter, SkillId, SkillKind, SkillPresentationDef,
-            SkillTarget, SkillTileAreaOrigin,
+            SkillAreaTracking, SkillCastSelection, SkillHitTargetFilter, SkillId, SkillKind,
+            SkillPresentationDef, SkillTarget, SkillTargetReach, SkillTileAreaOrigin,
         },
         battle::{
             buffs::BuffId,
@@ -23,16 +26,17 @@ use crate::{
             },
             damage::{DamageBreakdown, DamageFeedbackTag, DamageSource, DamageType},
             event_log::{
-                AttackDelivery, AttackKind, BattleEventCause, BattleEventLog, BattleEventLogEntry,
-                BattleLogEvent, BattleProjectileGuidance, BattleSkillAreaShape, BuffExpireReason,
-                HpChangeReason, MovementStopReason, SkillCastCancelReason, SkillCastTarget,
+                AttackDelivery, AttackKind, BattleEventCause, BattleEventLogEntry, BattleLogEvent,
+                BattleProjectileGuidance, BattleSkillAreaShape, BuffExpireReason, HpChangeReason,
+                MovementStopReason, SkillCastCancelReason, SkillCastTarget,
             },
             ids::UnitInstanceId,
             result_stats::BattleResultStatsDto,
-            tile_range::{FacingDirection, TileRangePattern, TileRangePolicy},
+            tile_range::{FacingDirection, TileRangePattern},
             types::{
                 BattleUnitRole, BattleUnitSourceIdentity, BattleUnitThreatClass, BattleWinner,
-                DeploymentAffinity, MobilityKind,
+                DeploymentAffinity, EngagementStance, MobilityKind, TacticalTileKind,
+                UnitExclusiveActivity,
             },
         },
         combat_preview::{
@@ -46,25 +50,27 @@ use crate::{
             },
             equipment_data::{EquipmentType, WeaponCombatProfile},
             reward_data::RewardGrantKind,
-            shop_data::ShopType,
+            run_policy_data::TraumaRecovery,
+            shop_data::{ShopContext, ShopMerchandise},
             skill_fragment_data::{
                 SkillFragmentCompatibilityFailureCode, SkillFragmentCompatibilityRequirements,
                 SkillFragmentId,
             },
         },
-        employee::StarterEmployeeCandidate,
+        employee::{EmployeeDefinition, EmployeeProfile},
         enums::{RewardMode, RiskLevel, ShopEventOption, Side},
         map::{
             GameMode, HeadquartersContactOption, MapNodeCategory, MapNodeId, MapNodeKindId,
-            MapNodePayload, MapViewDto, NodeSession, SupportNodeMode, SupportNodeType,
+            MapNodePayload, MapViewDto, NodeSession,
         },
-        reward::{
-            RewardEffect, RewardOption, SkillFragmentGrantDiffDto, SkillFragmentResearchDiffDto,
-        },
-        skill_fragment::{SkillFragmentProgress, SkillFragmentResearchDelivery},
+        reward::{RewardEffect, RewardOption, SkillFragmentGrantDiffDto},
+        skill_fragment::OwnedFragment,
         stats::{StatModifier, UnitStats},
     },
 };
+
+#[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
+use crate::game::battle::event_log::BattleEventLog;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct NodeOutcomeSummary {
@@ -75,13 +81,14 @@ pub struct NodeOutcomeSummary {
     pub combat: Option<CombatOutcomeSummary>,
     pub employee_changes: Vec<NodeOutcomeEmployeeChange>,
     pub inventory_diff: InventoryDiffDto,
-    pub research_deliveries: Vec<SkillFragmentResearchDelivery>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CombatOutcomeSummary {
     pub node_type: CombatNodeType,
     pub mission_variant: CombatMissionVariant,
+    pub outcome_id: crate::game::battle::types::BattleOutcomeId,
+    pub verdict: crate::game::battle::types::BattleVerdict,
     pub winner: BattleWinner,
     pub retreated: bool,
 }
@@ -92,6 +99,9 @@ pub struct AbnormalityAttemptDto {
     pub max_attempts: u8,
     pub attempts_started: u8,
     pub remaining_attempts: u8,
+    pub retreats_used: u8,
+    pub max_retreats: u8,
+    pub remaining_retreats: u8,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -99,8 +109,8 @@ pub struct NodeOutcomeEmployeeChange {
     pub employee_uuid: Uuid,
     pub survived: bool,
     pub became_incapacitated: bool,
-    pub run_hp_before: u32,
-    pub run_hp_after: u32,
+    pub physical_damage_before: u8,
+    pub physical_damage_after: u8,
     pub trauma_before: u32,
     pub trauma_after: u32,
     pub experience_before: u32,
@@ -110,25 +120,37 @@ pub struct NodeOutcomeEmployeeChange {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct RosterSlotDto {
-    pub slot: usize,
-    pub unit_uuid: Option<Uuid>,
+pub struct SkillFragmentBloomPreviewDto {
+    pub weapon_copy_uuid: Option<Uuid>,
+    pub copy_uuid: Uuid,
+    pub form_id: String,
+    pub enkephalin: u32,
+    pub can_execute: bool,
+    pub disabled_reason: Option<String>,
+    pub payment: crate::game::material_economy::MaterialPaymentPreview,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MaintenanceOptionsDto {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub selected_bloom_payment: Option<SkillFragmentBloomPreviewDto>,
+    pub warehouse_materials: Vec<MaintenanceMaterialAmountDto>,
     pub items: Vec<MaintenanceItemPreviewDto>,
     pub materials: Vec<MaintenanceMaterialAmountDto>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MaintenanceItemPreviewDto {
+    pub investment: crate::game::material_economy::MaterialInvestment,
+    pub investment_refund: Vec<MaintenanceMaterialAmountDto>,
     pub target_id: String,
     pub target_kind: MaintenanceTargetKind,
     pub equipment_type: Option<EquipmentType>,
     pub display_name: String,
     pub source: MaintenanceSourceDto,
     pub operations: MaintenanceOperationsDto,
+    #[serde(default)]
+    pub fragment_forms: Vec<FragmentFormSnapshotDto>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
@@ -191,10 +213,10 @@ pub struct MaintenanceMaterialAmountDto {
 pub struct MaintenanceTargetStatePreviewDto {
     pub stack_count: Option<u32>,
     pub enhancement_level: Option<u8>,
-    pub upgrade_level: Option<u8>,
-    pub awakening_progress: Option<u32>,
-    pub awakening_available: Option<bool>,
-    pub awakened: Option<bool>,
+    pub fragment_copy_uuid: Option<Uuid>,
+    pub selected_form: Option<String>,
+    pub unlocked_forms: Vec<String>,
+    pub owner: Option<Uuid>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -237,57 +259,508 @@ impl Default for BattlePlaybackState {
     }
 }
 
-/// 상태 게이트에서 사용하는 payload-less 액션 capability
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
-pub enum ActionKind {
+macro_rules! define_action_kinds {
+    ($($variant:ident),+ $(,)?) => {
+        /// Stable command-family identity. This is not an authorization token.
+        #[derive(
+            Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize,
+        )]
+        pub enum ActionKind {
+            $($variant),+
+        }
+
+        impl ActionKind {
+            pub(crate) const ALL: &'static [Self] = &[$(Self::$variant),+];
+        }
+    };
+}
+
+define_action_kinds!(
     StartNewGame,
+    SkipTutorial,
+    AcknowledgeFirstReturnStory,
+    ChooseExpeditionContinuation,
+    ContinueRun,
+    ResetActiveRun,
+    RetryPlayerProfile,
+    ResetPlayerProfile,
     SelectStarterEmployees,
     UnEquipItem,
     EquipItem,
     UseConsumableItem,
     EquipSkillFragment,
     UnequipSkillFragment,
-    UpgradeSkillFragment,
+    SelectSkillFragmentForm,
+    TransferSkillFragment,
     AwakenSkillFragment,
     DismantleSkillFragment,
     DismantleEquipment,
     EnhanceEquipment,
-    MoveRosterUnit,
+    EquipRelic,
+    UnequipRelic,
+    RequestRelicState,
+    RequestRelicNumericPlan,
+    RequestRelicEffectivePlan,
+    PreviewRelicCorruption,
+    CorruptRelic,
+    PreviewSkillFragmentBloom,
+    PreviewRelicDismantle,
+    DismantleRelic,
     RequestMapData,
+    MoveToFacilityRoom,
     SelectMapNode,
+    ConvertMapNodeWithMonolith,
+    HatchEncounter,
     ConfirmEnterNode,
     CancelSelectedNode,
     CompleteNode,
-    ChooseSupport,
     LoadRunCheckpoint,
+    ConfirmRunFailure,
+    AbandonRun,
     RecruitEmployee,
     RequestEmergencySupplies,
     OpenHeadquartersShop,
     SelectReward,
+    InvestRelicReward,
+    SelectRelicFusionInputs,
+    ConfirmRelicFusion,
+    DealerAct,
+    StressCombatAct,
     PurchaseItem,
     SellItem,
-    RerollShop,
+    RefreshShop,
     ExitShop,
     ClaimReward,
     ExitReward,
     AdvanceEventScene,
-    SelectEventChoice,
+    ResolveEventChoiceCheck,
+    ChooseRelicCorruption,
+    AdvanceVisualNovel,
+    SelectVisualNovelChoice,
+    SweepMasteredElite,
+    CompleteMasteredEliteSweep,
     CompleteCombatResult,
     RequestBattleState,
     RecoverBattleSetupLoss,
     RequestDeploymentRangePreview,
     DeployUnit,
     WithdrawUnit,
+    SetEngagementStance,
+    TacticalRelocateUnit,
+    TacticalSwapUnits,
+    FocusBattleUnit,
+    ClearBattleFocus,
+    BeginDeploymentSelection,
+    CancelDeploymentSelection,
+    OpenBattleSettings,
+    CloseBattleSettings,
+    BeginSkillTargeting,
+    CancelSkillTargeting,
+    PreviewSkillTarget,
+    PreviewTacticalCommand,
     ActivateSkill,
+    SelectSkillRelation,
     RetreatBattle,
     PauseBattle,
     ResumeBattle,
     SetBattleSpeed,
+);
+
+/// Typed command routing fact. Availability and payload validation remain domain-owned.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum ActionRoute {
+    /// Shared root-capability preflight owns admission.
+    CoreCommon,
+    /// Root capability is projected, but the concrete domain owns admission.
+    CoreDomain,
+    /// Revisioned battle capability preflight owns admission.
+    CoreBattle,
+    /// Visual Novel admission is common outside battle and battle-owned inside battle.
+    CoreContextual,
+    /// The server host owns persistence/recovery execution.
+    HostRecovery(HostRecoveryAction),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum HostRecoveryAction {
+    ContinueRun,
+    ResetActiveRun,
+    RetryPlayerProfile,
+    ResetPlayerProfile,
+}
+
+impl ActionRoute {
+    pub(crate) const fn projects_common_capability(self) -> bool {
+        matches!(
+            self,
+            Self::CoreCommon | Self::CoreDomain | Self::CoreContextual
+        )
+    }
+
+    pub(crate) const fn uses_common_preflight(self) -> bool {
+        matches!(self, Self::CoreCommon | Self::CoreContextual)
+    }
+
+    pub(crate) const fn uses_battle_preflight(self) -> bool {
+        matches!(self, Self::CoreBattle | Self::CoreContextual)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct ActionDescriptor {
+    route: ActionRoute,
+    scope: ActionScope,
+    requires_battle_authority: bool,
+}
+
+impl ActionDescriptor {
+    const fn new(route: ActionRoute, scope: ActionScope, requires_battle_authority: bool) -> Self {
+        Self {
+            route,
+            scope,
+            requires_battle_authority,
+        }
+    }
+}
+
+impl ActionKind {
+    const fn descriptor(self) -> ActionDescriptor {
+        use ActionRoute::{CoreBattle, CoreCommon, CoreContextual, CoreDomain, HostRecovery};
+        use ActionScope::{Gameplay, Query, Recovery};
+        use HostRecoveryAction::{
+            ContinueRun as HostContinueRun, ResetActiveRun as HostResetActiveRun,
+            ResetPlayerProfile as HostResetPlayerProfile,
+            RetryPlayerProfile as HostRetryPlayerProfile,
+        };
+
+        match self {
+            Self::ContinueRun => {
+                ActionDescriptor::new(HostRecovery(HostContinueRun), Recovery, false)
+            }
+            Self::ResetActiveRun => {
+                ActionDescriptor::new(HostRecovery(HostResetActiveRun), Recovery, false)
+            }
+            Self::RetryPlayerProfile => {
+                ActionDescriptor::new(HostRecovery(HostRetryPlayerProfile), Recovery, false)
+            }
+            Self::ResetPlayerProfile => {
+                ActionDescriptor::new(HostRecovery(HostResetPlayerProfile), Recovery, false)
+            }
+
+            Self::UnEquipItem
+            | Self::EquipItem
+            | Self::UseConsumableItem
+            | Self::EquipSkillFragment
+            | Self::UnequipSkillFragment
+            | Self::TransferSkillFragment
+            | Self::EquipRelic
+            | Self::UnequipRelic
+            | Self::CorruptRelic
+            | Self::DismantleRelic
+            | Self::ConvertMapNodeWithMonolith
+            | Self::HatchEncounter
+            | Self::PurchaseItem
+            | Self::SellItem
+            | Self::RefreshShop
+            | Self::ExitShop => ActionDescriptor::new(CoreDomain, Gameplay, false),
+
+            Self::AdvanceVisualNovel | Self::SelectVisualNovelChoice => {
+                ActionDescriptor::new(CoreContextual, Gameplay, true)
+            }
+
+            Self::RequestBattleState
+            | Self::RequestDeploymentRangePreview
+            | Self::PreviewSkillTarget
+            | Self::PreviewTacticalCommand => ActionDescriptor::new(CoreBattle, Query, false),
+            Self::RecoverBattleSetupLoss => ActionDescriptor::new(CoreBattle, Recovery, false),
+            Self::DeployUnit
+            | Self::WithdrawUnit
+            | Self::SetEngagementStance
+            | Self::TacticalRelocateUnit
+            | Self::TacticalSwapUnits
+            | Self::FocusBattleUnit
+            | Self::ClearBattleFocus
+            | Self::BeginDeploymentSelection
+            | Self::CancelDeploymentSelection
+            | Self::OpenBattleSettings
+            | Self::CloseBattleSettings
+            | Self::BeginSkillTargeting
+            | Self::CancelSkillTargeting
+            | Self::ActivateSkill
+            | Self::SelectSkillRelation
+            | Self::StressCombatAct
+            | Self::RetreatBattle
+            | Self::PauseBattle
+            | Self::ResumeBattle
+            | Self::SetBattleSpeed => ActionDescriptor::new(CoreBattle, Gameplay, true),
+
+            Self::RequestMapData
+            | Self::RequestRelicState
+            | Self::RequestRelicNumericPlan
+            | Self::RequestRelicEffectivePlan
+            | Self::PreviewRelicCorruption
+            | Self::PreviewSkillFragmentBloom
+            | Self::PreviewRelicDismantle => ActionDescriptor::new(CoreCommon, Query, false),
+            Self::LoadRunCheckpoint => ActionDescriptor::new(CoreCommon, Recovery, false),
+            Self::StartNewGame
+            | Self::SkipTutorial
+            | Self::AcknowledgeFirstReturnStory
+            | Self::ChooseExpeditionContinuation
+            | Self::SelectStarterEmployees
+            | Self::SelectSkillFragmentForm
+            | Self::AwakenSkillFragment
+            | Self::DismantleSkillFragment
+            | Self::DismantleEquipment
+            | Self::EnhanceEquipment
+            | Self::MoveToFacilityRoom
+            | Self::SelectMapNode
+            | Self::ConfirmEnterNode
+            | Self::CancelSelectedNode
+            | Self::CompleteNode
+            | Self::ConfirmRunFailure
+            | Self::AbandonRun
+            | Self::RecruitEmployee
+            | Self::RequestEmergencySupplies
+            | Self::OpenHeadquartersShop
+            | Self::SelectReward
+            | Self::InvestRelicReward
+            | Self::SelectRelicFusionInputs
+            | Self::ConfirmRelicFusion
+            | Self::DealerAct
+            | Self::ClaimReward
+            | Self::ExitReward
+            | Self::AdvanceEventScene
+            | Self::ResolveEventChoiceCheck
+            | Self::ChooseRelicCorruption
+            | Self::SweepMasteredElite
+            | Self::CompleteMasteredEliteSweep
+            | Self::CompleteCombatResult => ActionDescriptor::new(CoreCommon, Gameplay, false),
+        }
+    }
+
+    pub const fn route(self) -> ActionRoute {
+        self.descriptor().route
+    }
+
+    pub const fn scope(self) -> ActionScope {
+        self.descriptor().scope
+    }
+
+    pub const fn requires_battle_authority(self) -> bool {
+        self.descriptor().requires_battle_authority
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ActionScope {
+    Gameplay,
+    Query,
+    Recovery,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ActionDisabledReasonCode {
+    RetiredFeature,
+    CorrosionForcedPause,
+    SkillPresentationPause,
+    SettingsOpen,
+    SelectionActive,
+    ContextIrrelevant,
+    NoEligiblePayload,
+    MissingEventChoiceKey,
+    CheckpointUnavailable,
+    ProgressionUnavailable,
+    ContentUnavailable,
+    CompletionUnavailable,
+    AlreadyActive,
+    InsufficientResources,
+    RedeployCooldown,
+    StanceCooldown,
+    ForcedDefense,
+    DeploymentLimit,
+    RelocationCooldown,
+    UnitUnavailable,
+    WeaponRequired,
+    EmployeeDead,
+    CriticalPhysicalDamage,
+    Breakdown,
+    NoTrauma,
+    SkillUnavailable,
+    ActivationModeNotManual,
+    HardCrowdControl,
+    Silenced,
+    DefenseStance,
+    DefenseRequired,
+    ActionInProgress,
+    ActionLocked,
+    FieldWorking,
+    ResonanceNotFull,
+    SkillTargetRequired,
+    SkillTargetTypeMismatch,
+    NoValidTarget,
+    OfferUnavailable,
+    RefreshUnavailable,
+    RefreshUsesExhausted,
+    PoolExhausted,
+    SellingUnavailable,
+    InvalidQuantity,
+    InvalidQuote,
+    ItemBound,
+    RelicNotSellable,
+    ItemEquipped,
+    TagNotAccepted,
+}
+
+impl ActionDisabledReasonCode {
+    pub const fn as_str(self) -> &'static str {
+        match self {
+            Self::RetiredFeature => "retired_feature",
+            Self::CorrosionForcedPause => "corrosion_forced_pause",
+            Self::SkillPresentationPause => "skill_presentation_pause",
+            Self::SettingsOpen => "settings_open",
+            Self::SelectionActive => "selection_active",
+            Self::ContextIrrelevant => "context_irrelevant",
+            Self::NoEligiblePayload => "no_eligible_payload",
+            Self::MissingEventChoiceKey => "missing_event_choice_key",
+            Self::CheckpointUnavailable => "checkpoint_unavailable",
+            Self::ProgressionUnavailable => "progression_unavailable",
+            Self::ContentUnavailable => "content_unavailable",
+            Self::CompletionUnavailable => "completion_unavailable",
+            Self::AlreadyActive => "already_active",
+            Self::InsufficientResources => "insufficient_resources",
+            Self::RedeployCooldown => "redeploy_cooldown",
+            Self::StanceCooldown => "stance_cooldown",
+            Self::ForcedDefense => "forced_defense",
+            Self::DeploymentLimit => "deployment_limit",
+            Self::RelocationCooldown => "relocation_cooldown",
+            Self::UnitUnavailable => "unit_unavailable",
+            Self::WeaponRequired => "weapon_required",
+            Self::EmployeeDead => "employee_dead",
+            Self::CriticalPhysicalDamage => "critical_physical_damage",
+            Self::Breakdown => "breakdown",
+            Self::NoTrauma => "no_trauma",
+            Self::SkillUnavailable => "skill_unavailable",
+            Self::ActivationModeNotManual => "activation_mode_not_manual",
+            Self::HardCrowdControl => "hard_crowd_control",
+            Self::Silenced => "silenced",
+            Self::DefenseStance => "defense_stance",
+            Self::DefenseRequired => "defense_required",
+            Self::ActionInProgress => "action_in_progress",
+            Self::ActionLocked => "action_locked",
+            Self::FieldWorking => "field_working",
+            Self::ResonanceNotFull => "resonance_not_full",
+            Self::SkillTargetRequired => "skill_target_required",
+            Self::SkillTargetTypeMismatch => "skill_target_type_mismatch",
+            Self::NoValidTarget => "no_valid_target",
+            Self::OfferUnavailable => "offer_unavailable",
+            Self::RefreshUnavailable => "refresh_unavailable",
+            Self::RefreshUsesExhausted => "refresh_uses_exhausted",
+            Self::PoolExhausted => "pool_exhausted",
+            Self::SellingUnavailable => "selling_unavailable",
+            Self::InvalidQuantity => "invalid_quantity",
+            Self::InvalidQuote => "invalid_quote",
+            Self::ItemBound => "item_bound",
+            Self::RelicNotSellable => "relic_not_sellable",
+            Self::ItemEquipped => "item_equipped",
+            Self::TagNotAccepted => "tag_not_accepted",
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct BattlePayloadEligibilityDto {
+    pub enabled: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub disabled_reason_code: Option<ActionDisabledReasonCode>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PayloadEligibilityDto {
+    pub enabled: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub disabled_reason_code: Option<ActionDisabledReasonCode>,
+}
+
+impl PayloadEligibilityDto {
+    pub const fn enabled() -> Self {
+        Self {
+            enabled: true,
+            disabled_reason_code: None,
+        }
+    }
+
+    pub const fn disabled(reason: ActionDisabledReasonCode) -> Self {
+        Self {
+            enabled: false,
+            disabled_reason_code: Some(reason),
+        }
+    }
+}
+
+impl BattlePayloadEligibilityDto {
+    pub const fn enabled() -> Self {
+        Self {
+            enabled: true,
+            disabled_reason_code: None,
+        }
+    }
+
+    pub const fn disabled(reason: ActionDisabledReasonCode) -> Self {
+        Self {
+            enabled: false,
+            disabled_reason_code: Some(reason),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ActionCapabilityDto {
+    pub action: ActionKind,
+    pub scope: ActionScope,
+    pub enabled: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub disabled_reason_code: Option<ActionDisabledReasonCode>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub struct BattleStateAuthorityDto {
+    pub battle_uuid: Uuid,
+    pub battle_state_revision: u64,
+}
+
+impl ActionCapabilityDto {
+    pub const fn enabled(action: ActionKind, scope: ActionScope) -> Self {
+        Self {
+            action,
+            scope,
+            enabled: true,
+            disabled_reason_code: None,
+        }
+    }
+
+    pub const fn disabled(
+        action: ActionKind,
+        scope: ActionScope,
+        reason: ActionDisabledReasonCode,
+    ) -> Self {
+        Self {
+            action,
+            scope,
+            enabled: false,
+            disabled_reason_code: Some(reason),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RunProgressionSnapshotDto {
     pub run_seed: u64,
+    pub instance_namespace: Uuid,
+    pub expedition_instance: Option<crate::game::expedition_lifecycle::ExpeditionInstance>,
+    pub deterrence: u32,
+    pub pending_continuation: Option<crate::game::expedition_lifecycle::PendingExpeditionContinuation>,
     pub game_mode: GameMode,
     pub floor_index: u32,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -296,25 +769,35 @@ pub struct RunProgressionSnapshotDto {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct RunAbnormalityResearchSnapshotDto {
-    pub entries: Vec<RunAbnormalityResearchEntrySnapshotDto>,
-    pub all_response_complete: bool,
+pub struct EncounterCompendiumSnapshotDto {
+    pub abnormalities: Vec<EncounterCompendiumAbnormalitySnapshotDto>,
+    pub corrosion_profiles: Vec<EncounterCompendiumCorrosionSnapshotDto>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PlayerProfileSnapshotDto {
+    pub lifecycle: crate::game::expedition_lifecycle::ExpeditionLifecycle,
+    pub highest_floor_reached: u32,
+    pub longest_deathless_floor_streak: u32,
+    pub all_live_final_bosses_defeated: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct RunAbnormalityResearchEntrySnapshotDto {
+pub struct EncounterCompendiumAbnormalitySnapshotDto {
     pub abnormality_id: String,
-    pub research_points: u32,
-    pub research_required: u32,
-    pub response_complete: bool,
-    pub suppression_wins: u32,
+    pub registered: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub last_encountered_floor: Option<u32>,
+    pub name: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub completed_at_floor: Option<u32>,
-    pub unique_fragment_granted: bool,
+    pub risk_level: Option<RiskLevel>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EncounterCompendiumCorrosionSnapshotDto {
+    pub profile_id: String,
+    pub registered: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub response_complete_skill_fragment_id: Option<SkillFragmentId>,
+    pub name: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -324,31 +807,240 @@ pub struct MapNavigationSnapshotDto {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct EventSceneSnapshotDto {
-    pub event_id: crate::game::data::event_data::EventId,
-    pub current_scene_id: crate::game::data::event_data::EventSceneId,
-    pub background_id: String,
-    pub script_id: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub speaker_id: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub portrait_id: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub committed_choice_id: Option<crate::game::data::event_data::EventChoiceId>,
-    pub choices: Vec<EventChoiceSnapshotDto>,
+pub struct MonolithConversionOptionDto {
+    pub abnormality_id: String,
+    pub abnormality_uuid: Uuid,
+    pub display_name: String,
+    pub risk_level: RiskLevel,
+    pub enabled: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub disabled_reason: Option<String>,
+    pub next_stage: u8,
+    pub uses_before: u8,
+    pub uses_after: u8,
+    pub max_attempts: u8,
+    pub reward_tier: MonolithRewardTierDto,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct EventChoiceSnapshotDto {
+pub struct MonolithConversionSnapshotDto {
+    pub action_label: String,
+    pub node_id: MapNodeId,
+    pub options: Vec<MonolithConversionOptionDto>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RevivalSnapshotDto {
+    pub abnormality_id: String,
+    pub abnormality_uuid: Uuid,
+    pub display_name: String,
+    pub risk_level: RiskLevel,
+    pub stage: u8,
+    pub max_attempts: u8,
+    pub reward_tier: MonolithRewardTierDto,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum MonolithRewardTierDto {
+    Enhanced,
+    FinalEnhanced,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventSceneSnapshotDto {
+    pub event_id: crate::game::data::event_data::EventId,
+    pub current_scene_id: crate::game::data::event_data::EventSceneId,
+    pub presentation: crate::game::data::event_data::EventScenePresentation,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub committed_check: Option<EventCommittedCheckDto>,
+    pub interaction: EventInteractionDto,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub relic_corruption_selections:
+        Option<Vec<crate::game::resources::CommittedRelicCorruptionSelection>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
+pub enum EventInteractionDto {
+    Advance,
+    RelicCorruption {
+        candidates: Vec<RelicCorruptionCandidateDto>,
+        can_decline: bool,
+        catalyst_cost: u32,
+    },
+    EmployeeCheckChoices {
+        choices: Vec<EventChoiceEvaluationDto>,
+    },
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct RelicCorruptionCandidateDto {
+    pub copy: crate::game::relic::OwnedRelic,
+    pub eligibility: PayloadEligibilityDto,
+    pub effects: Vec<crate::game::data::relic_data::RelicDamageEffect>,
+    pub penalties: Vec<crate::game::data::relic_data::RelicPenalty>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventChoiceEvaluationDto {
     pub choice_id: crate::game::data::event_data::EventChoiceId,
     pub label_id: String,
-    pub preview: crate::game::data::event_data::EventChoicePreview,
+    pub aptitude: crate::game::employee::EventAptitude,
+    pub dc: u8,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub required_choice_key: Option<crate::game::data::event_data::EventChoiceKeyId>,
+    pub eligibility: PayloadEligibilityDto,
+    pub employee_candidates: Vec<EventEmployeeEvaluationDto>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventEmployeeEvaluationDto {
+    pub employee_uuid: Uuid,
+    pub name: String,
+    pub eligibility: PayloadEligibilityDto,
+    pub employee_modifier: u8,
+    pub equipment_modifier: u8,
+    pub modifier_total: u8,
+    pub modifier_components: Vec<crate::game::resources::EventCheckModifierComponent>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub choice_key_evidence: Option<crate::game::resources::EventChoiceKeyEvidence>,
+    pub success_chance_percent: u8,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EventCommittedCheckDto {
+    pub source_scene_id: crate::game::data::event_data::EventSceneId,
+    pub choice_id: crate::game::data::event_data::EventChoiceId,
+    pub employee_uuid: Uuid,
+    pub aptitude: crate::game::employee::EventAptitude,
+    pub dc: u8,
+    pub raw_roll: u8,
+    pub modifier_components: Vec<crate::game::resources::EventCheckModifierComponent>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub choice_key_evidence: Option<crate::game::resources::EventChoiceKeyEvidence>,
+    pub modifier_total: u8,
+    pub total_roll: u8,
+    pub outcome: crate::game::data::event_data::EventCheckOutcome,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(tag = "type", rename_all = "snake_case")]
+pub enum VisualNovelSourceDto {
+    EventNode { node_id: MapNodeId },
+    HqBriefing,
+    Map,
+    Loadout,
+    Battle { battle_uuid: Uuid },
+    Tutorial,
+    Radio,
+    Cutscene,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct VisualNovelSpeakerDto {
+    pub speaker_id: String,
+    #[serde(default)]
+    pub portrait_id: Option<String>,
+    pub position: VisualNovelSpeakerPositionDto,
+    pub active: bool,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum VisualNovelSpeakerPositionDto {
+    FarLeft,
+    Left,
+    Center,
+    Right,
+    FarRight,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
+pub struct VisualNovelChoicePreviewDto {
+    #[serde(default)]
+    pub risk: Option<String>,
+    #[serde(default)]
+    pub starts_combat: bool,
+    #[serde(default)]
+    pub reward_hint_id: Option<String>,
+    #[serde(default)]
+    pub penalty_hint_id: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct VisualNovelChoiceSnapshotDto {
+    pub choice_id: String,
+    pub label_id: String,
+    #[serde(default)]
+    pub preview: VisualNovelChoicePreviewDto,
     pub selectable: bool,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum VisualNovelPresentationModeDto {
+    Cinematic,
+    Radio,
+    Compact,
+    NonBlocking,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct VisualNovelSnapshotDto {
+    pub source: VisualNovelSourceDto,
+    pub session_id: String,
+    pub vn_id: String,
+    pub current_scene_id: String,
+    #[serde(default)]
+    pub background_id: Option<String>,
+    pub script_id: String,
+    pub speakers: Vec<VisualNovelSpeakerDto>,
+    pub choices: Vec<VisualNovelChoiceSnapshotDto>,
+    pub blocking: bool,
+    pub presentation_mode: VisualNovelPresentationModeDto,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RunResourcesSnapshotDto {
     pub enkephalin: u32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MonolithProgressSnapshotDto {
+    pub abnormality_id: String,
+    pub display_name: String,
+    pub risk_level: RiskLevel,
+    pub natural_outcome: String,
+    pub victories: u8,
+    pub purchased: bool,
+    pub uses_remaining: u8,
+    pub active_node_id: Option<MapNodeId>,
+    pub remanifestation_failed: bool,
+    pub residual_created: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MonolithResidualSnapshotDto {
+    pub sequence: u64,
+    pub source_abnormality_id: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MonolithRunSnapshotDto {
+    pub entries: Vec<MonolithProgressSnapshotDto>,
+    pub residuals: Vec<MonolithResidualSnapshotDto>,
+    pub residual_exchange_threshold: usize,
+    pub exchange_state: String,
+    pub exchange_shop_guarantee_issued: bool,
+    pub next_floor_shop_guarantee_pending: bool,
+    pub corrupted_monolith_acquired: bool,
+    pub elite_pool_exhausted: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -358,31 +1050,27 @@ pub struct SnapshotErrorDto {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SkillFragmentProgressSnapshotDto {
-    pub research_progress: u32,
-    pub research_completion_count: u32,
-    pub upgrade_level: u8,
-    pub awakening_progress: u32,
-    pub awakening_available: bool,
-    pub awakened: bool,
+pub struct FragmentFormSnapshotDto {
+    pub form_id: String,
+    pub skill_id: crate::game::ability::SkillId,
+    pub resonance_max: u32,
+    pub unlocked: bool,
+    pub selected: bool,
+    pub can_unlock: bool,
+    pub can_select: bool,
+    pub unlock_unavailable_reason: Option<String>,
+    pub select_unavailable_reason: Option<String>,
+    pub recipe: Option<crate::game::data::skill_fragment_data::SkillFragmentRecipe>,
 }
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct InventorySkillFragmentSnapshotDto {
-    pub id: SkillFragmentId,
-    pub count: u32,
+    pub copy: OwnedFragment,
+    pub definition_count: u32,
     pub name: Option<String>,
     pub effect: Option<String>,
-    pub requirements: Option<SkillFragmentCompatibilityRequirements>,
-    pub progress: SkillFragmentProgressSnapshotDto,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct InventorySkillFragmentProgressSnapshotDto {
-    pub id: SkillFragmentId,
-    pub owned_count: u32,
-    pub name: Option<String>,
-    pub progress: SkillFragmentProgressSnapshotDto,
+    pub forms: Vec<FragmentFormSnapshotDto>,
+    pub dismantle_recipe: Option<crate::game::data::skill_fragment_data::SkillFragmentRecipe>,
+    pub unavailable_reason: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -404,70 +1092,35 @@ pub struct InventoryEquipmentMaterialSnapshotDto {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PendingResearchDeliverySnapshotDto {
-    pub fragment_id: SkillFragmentId,
-    pub count: u32,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct InventorySnapshotDto {
+    pub reserved_slot_count: usize,
+    pub occupied_slot_count: usize,
     pub equipments: Vec<InventoryEquipmentSnapshotDto>,
     pub equipment_materials: Vec<InventoryEquipmentMaterialSnapshotDto>,
-    pub artifacts: Vec<ArtifactItemDto>,
     pub consumables: Vec<ConsumableItemDto>,
     pub skill_fragments: Vec<InventorySkillFragmentSnapshotDto>,
-    pub skill_fragment_progress: Vec<InventorySkillFragmentProgressSnapshotDto>,
-    pub pending_research_deliveries: Vec<PendingResearchDeliverySnapshotDto>,
+    pub fragment_dust_usage: String,
     pub fragment_dust: u32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct RosterOrderSlotSnapshotDto {
-    pub slot: usize,
-    pub unit_uuid: Option<Uuid>,
+pub struct EmployeeConditionSnapshotDto {
+    pub breakdown_remaining_cost: Option<u32>,
+    pub physical_damage: u8,
+    pub physical_state: PhysicalDamageState,
+    pub trauma: u32,
+    pub mental_state: MentalConditionState,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct RosterOrderSnapshotDto {
-    pub max_slots: usize,
-    pub slots: Vec<RosterOrderSlotSnapshotDto>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct EmployeeHealthSnapshotDto {
-    pub current_hp: u32,
-    pub max_hp: u32,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct EmployeeInjurySnapshotDto {
-    pub id: String,
-    pub severity: u8,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct EmployeeTrustMemorySnapshotDto {
-    pub kind: String,
-    pub intensity: u8,
-    pub remaining_nodes: Option<u8>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct EmployeeTrustReactionSnapshotDto {
-    pub event: String,
-    pub trust_delta: i16,
-    pub cue_count: usize,
-    pub combat_modifier_count: usize,
-    pub trauma_modifier_count: usize,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct EmployeeTrustSnapshotDto {
-    pub score: i16,
-    pub band: String,
-    pub traits: Vec<String>,
-    pub memories: Vec<EmployeeTrustMemorySnapshotDto>,
-    pub recent_reactions: Vec<EmployeeTrustReactionSnapshotDto>,
+pub struct EmployeeEligibilitySnapshotDto {
+    pub combat: EmployeeEligibility,
+    pub event: EmployeeEligibility,
+    pub high_risk: EmployeeEligibility,
+    pub consumable: EmployeeEligibility,
+    pub loadout: EmployeeEligibility,
+    pub physical_treatment: EmployeeEligibility,
+    pub trauma_recovery: EmployeeEligibility,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -475,7 +1128,6 @@ pub struct EmployeeCombatProfileSnapshotDto {
     pub battle_tier: String,
     pub base_stats: UnitStats,
     pub basic_attack: BasicAttackDef,
-    pub deployment_affinity: DeploymentAffinity,
     pub effective_stats: Option<UnitStats>,
     pub effective_basic_attack: Option<BasicAttackDef>,
     pub effective_weapon_profile: Option<WeaponCombatProfile>,
@@ -493,19 +1145,21 @@ pub struct EmployeeSkillFragmentBriefSnapshotDto {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EmployeeSkillFragmentCompatibilitySnapshotDto {
-    pub id: SkillFragmentId,
+    pub copy_uuid: Uuid,
+    pub definition_id: SkillFragmentId,
+    pub selected_form: String,
     pub name: Option<String>,
     pub is_compatible: bool,
     pub failure_codes: Vec<SkillFragmentCompatibilityFailureCode>,
     pub requirements: Option<SkillFragmentCompatibilityRequirements>,
+    pub unavailable_reason: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EmployeeSkillFragmentsSnapshotDto {
     pub equipped: Vec<EmployeeSkillFragmentBriefSnapshotDto>,
     pub baseline_ids: Vec<SkillFragmentId>,
-    pub active_fragment_id: Option<SkillFragmentId>,
-    pub equipped_ids: Vec<SkillFragmentId>,
+    pub active_copy_uuid: Option<Uuid>,
     pub compatibility: Vec<EmployeeSkillFragmentCompatibilitySnapshotDto>,
 }
 
@@ -522,6 +1176,9 @@ pub struct ActiveConsumableModifierSnapshotDto {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EmployeeEquippedItemSnapshotDto {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub form: Option<crate::game::ability::equipment_forms::EquipmentFormView>,
+    pub weapon_stage: crate::game::ability::weapon_marks::WeaponStage,
     pub instance_uuid: Uuid,
     pub base_uuid: Uuid,
     pub equipment_type: EquipmentType,
@@ -535,28 +1192,25 @@ pub struct EmployeeEquippedItemSnapshotDto {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EmployeeSnapshotDto {
+    pub role: crate::game::employee::EmployeeRole,
     pub uuid: Uuid,
+    pub employee_definition_id: String,
     pub name: String,
+    pub profile: EmployeeProfile,
     pub level: u32,
     pub experience: u32,
-    pub life_state: String,
-    pub availability: String,
-    pub available_for_combat: bool,
-    pub trauma: u32,
-    pub health: EmployeeHealthSnapshotDto,
-    pub injuries: Vec<EmployeeInjurySnapshotDto>,
-    pub trust: EmployeeTrustSnapshotDto,
+    pub condition: EmployeeConditionSnapshotDto,
+    pub eligibility: EmployeeEligibilitySnapshotDto,
     pub combat_profile: EmployeeCombatProfileSnapshotDto,
     pub skill_fragments: EmployeeSkillFragmentsSnapshotDto,
     pub active_consumable_modifier: Option<ActiveConsumableModifierSnapshotDto>,
     pub equipped_items: Vec<EmployeeEquippedItemSnapshotDto>,
-    pub roster_slot: Option<usize>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EmployeeRosterSnapshotDto {
     pub employees: Vec<EmployeeSnapshotDto>,
-    pub available_employee_ids: Vec<Uuid>,
+    pub combat_eligible_employee_ids: Vec<Uuid>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -571,22 +1225,6 @@ pub struct DisplayEquipmentItemSnapshotDto {
     #[serde(rename = "type")]
     pub item_type: String,
     pub equipment_type: String,
-    pub description: String,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct DisplayArtifactItemSnapshotDto {
-    pub uuid: Uuid,
-    pub kind: String,
-    pub definition_id: String,
-    pub id: String,
-    pub name: String,
-    pub rarity: RiskLevel,
-    pub price: u32,
-    #[serde(rename = "type")]
-    pub item_type: String,
-    pub artifact_type: String,
-    pub effect_id: String,
     pub description: String,
 }
 
@@ -609,11 +1247,53 @@ pub struct DisplayConsumableItemSnapshotDto {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DisplayMonolithItemSnapshotDto {
+    pub uuid: Uuid,
+    pub abnormality_id: String,
+    pub name: String,
+    pub risk_level: RiskLevel,
+    pub victories: u8,
+    pub next_stage: u8,
+    pub uses_granted: u8,
+    pub kind: String,
+    pub id: String,
+    #[serde(rename = "type")]
+    pub item_type: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DisplayRelicItemSnapshotDto {
+    pub uuid: Uuid,
+    pub kind: String,
+    pub id: String,
+    pub definition_id: String,
+    pub relic: crate::game::data::relic_data::RelicDefinition,
+    pub variant: crate::game::relic::RelicVariant,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DisplayCatalystItemSnapshotDto {
+    pub uuid: Uuid,
+    pub kind: String,
+    pub id: String,
+    pub definition_id: String,
+    pub name: String,
+    pub description: String,
+    pub purpose: ShopCatalystPurpose,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ShopCatalystPurpose { Revival, RelicCorruption }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum DisplayItemSnapshotDto {
     Equipment(DisplayEquipmentItemSnapshotDto),
-    Artifact(DisplayArtifactItemSnapshotDto),
     Consumable(DisplayConsumableItemSnapshotDto),
+    Monolith(DisplayMonolithItemSnapshotDto),
+    Relic(DisplayRelicItemSnapshotDto),
+    Catalyst(DisplayCatalystItemSnapshotDto),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -630,6 +1310,64 @@ pub struct RewardOptionSnapshotDto {
     pub effects: Vec<RewardEffect>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum MasteredEliteSweepRewardBranchDto {
+    ReacquireFragment,
+    RepeatReward,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct MasteredEliteResolutionDto {
+    pub direct_battle: ActionCapabilityDto,
+    pub sweep: ActionCapabilityDto,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MasteredEliteSweepResultDto {
+    pub sweep_uuid: Uuid,
+    pub node_id: MapNodeId,
+    pub encounter_id: String,
+    pub reward_source_id: String,
+    pub fragment_id: SkillFragmentId,
+    pub reward_branch: MasteredEliteSweepRewardBranchDto,
+    pub base_rewards: Vec<RewardOption>,
+    pub exclusive_effects: Vec<RewardEffect>,
+    pub enkephalin_after: u32,
+    pub inventory_diff: InventoryDiffDto,
+    pub skill_fragment_diffs: Vec<SkillFragmentGrantDiffDto>,
+    pub employee_experience_diffs: Vec<crate::game::reward::EmployeeExperienceDiffDto>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct TraumaRecoveryEmployeePreviewDto {
+    pub employee_uuid: Uuid,
+    pub employee_name: String,
+    pub eligibility: EmployeeEligibility,
+    pub physical_damage: u8,
+    pub trauma_before: u32,
+    pub trauma_after: u32,
+    pub mental_state_before: MentalConditionState,
+    pub mental_state_after: MentalConditionState,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct TraumaRecoveryPreviewDto {
+    pub recovery: TraumaRecovery,
+    pub employees: Vec<TraumaRecoveryEmployeePreviewDto>,
+    pub physical_damage_unchanged: bool,
+    pub replaces_run_checkpoint: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct HeadquartersRecruitmentTermsDto {
+    pub recruit_price: u32,
+    pub includes_basic_weapon_and_fragment: bool,
+    pub remaining_recruits: u8,
+    pub maximum_depth: u32,
+    pub can_recruit: bool,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum SelectedEventSnapshotDto {
@@ -637,10 +1375,11 @@ pub enum SelectedEventSnapshotDto {
         id: String,
         name: String,
         uuid: Uuid,
-        shop_type: ShopType,
-        can_reroll: bool,
-        visible_items: Vec<DisplayItemSnapshotDto>,
-        visible_item_uuids: Vec<Uuid>,
+        context: ShopContext,
+        offers: Vec<ShopOfferSnapshotDto>,
+        refresh: ShopRefreshSnapshotDto,
+        selling_enabled: bool,
+        sale_candidates: Vec<ShopSaleCandidateSnapshotDto>,
     },
     Reward {
         stage_uuid: Uuid,
@@ -648,13 +1387,14 @@ pub enum SelectedEventSnapshotDto {
         rewards: Vec<RewardOptionSnapshotDto>,
         selected_reward_uuid: Option<Uuid>,
         can_skip: bool,
+        #[serde(default)]
+        relic_activity: Option<crate::game::relic_reward::RelicRewardView>,
+        #[serde(default)]
+        dealer: Option<crate::game::dealer::DealerView>,
     },
-    Support {
+    SavePoint {
         node_id: MapNodeId,
-        support_mode: SupportNodeMode,
-        support_type: Option<SupportNodeType>,
-        choices: Vec<SupportNodeType>,
-        selected_support_type: Option<SupportNodeType>,
+        recovery_preview: TraumaRecoveryPreviewDto,
     },
     Maintenance {
         node_id: MapNodeId,
@@ -663,7 +1403,8 @@ pub enum SelectedEventSnapshotDto {
     HeadquartersContact {
         node_id: MapNodeId,
         options: Vec<HeadquartersContactOption>,
-        recruitment_candidates: Vec<StarterEmployeeCandidate>,
+        recruitment_candidates: Vec<EmployeeDefinition>,
+        recruitment_terms: HeadquartersRecruitmentTermsDto,
         shop_pool_id: Option<String>,
     },
     Event {
@@ -676,17 +1417,78 @@ pub enum SelectedEventSnapshotDto {
         node_type: CombatNodeType,
         mission_variant: CombatMissionVariant,
         abnormality_uuid: Uuid,
+        outcome_id: crate::game::battle::types::BattleOutcomeId,
+        verdict: crate::game::battle::types::BattleVerdict,
         winner: BattleWinner,
         reward_mode: RewardMode,
         rewards: Vec<RewardOptionSnapshotDto>,
         result_stats: BattleResultStatsDto,
-        bonus_objectives: Vec<crate::game::pve_bonus_objectives::PveBonusObjectiveOutcomeDto>,
+        /// A valid ChooseOne outcome produced no candidates and needs no claim.
+        no_reward_candidates: bool,
         has_event_log: bool,
+    },
+    MasteredEliteSweepResult {
+        result: MasteredEliteSweepResultDto,
     },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ShopPayloadEligibilityDto {
+    pub enabled: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub disabled_reason_code: Option<ActionDisabledReasonCode>,
+}
+
+impl ShopPayloadEligibilityDto {
+    pub const fn enabled() -> Self {
+        Self {
+            enabled: true,
+            disabled_reason_code: None,
+        }
+    }
+
+    pub const fn disabled(reason: ActionDisabledReasonCode) -> Self {
+        Self {
+            enabled: false,
+            disabled_reason_code: Some(reason),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ShopOfferSnapshotDto {
+    pub offer_id: Uuid,
+    pub merchandise: ShopMerchandise,
+    pub quantity: u32,
+    pub total_price: u32,
+    pub item: DisplayItemSnapshotDto,
+    pub eligibility: ShopPayloadEligibilityDto,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ShopRefreshSnapshotDto {
+    pub available: bool,
+    pub current_cost: Option<u32>,
+    pub max_uses: u32,
+    pub uses_consumed: u32,
+    pub remaining_uses: u32,
+    pub eligibility: ShopPayloadEligibilityDto,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ShopSaleCandidateSnapshotDto {
+    pub item_uuid: Uuid,
+    pub merchandise: ShopMerchandise,
+    pub available_quantity: u32,
+    pub unit_quote: u32,
+    pub eligibility: ShopPayloadEligibilityDto,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
 pub struct CombatResultEventLogAttachmentDto {
+    pub outcome_id: crate::game::battle::types::BattleOutcomeId,
+    pub verdict: crate::game::battle::types::BattleVerdict,
     pub winner: BattleWinner,
     pub event_log: BattleEventLog,
 }
@@ -695,9 +1497,12 @@ pub struct CombatResultEventLogAttachmentDto {
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum GameStateContextDto {
     NotStarted,
+    PreRunBriefing {
+        game_mode: GameMode,
+    },
     SelectingStarterEmployees {
         required_count: usize,
-        candidates: Vec<StarterEmployeeCandidate>,
+        candidates: Vec<EmployeeDefinition>,
     },
     ViewingMap,
     NodeConfirm {
@@ -705,9 +1510,17 @@ pub enum GameStateContextDto {
         kind_id: MapNodeKindId,
         category: MapNodeCategory,
         combat_preview: Option<CombatPreview>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        trauma_recovery_preview: Option<TraumaRecoveryPreviewDto>,
         abnormality_attempt: Option<AbnormalityAttemptDto>,
         #[serde(default, skip_serializing_if = "Option::is_none")]
         omen: Option<crate::game::boss_omen::NodeConfirmOmenDto>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        monolith_conversion: Option<MonolithConversionSnapshotDto>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        monolith_remanifestation: Option<RevivalSnapshotDto>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        mastered_elite_resolution: Option<MasteredEliteResolutionDto>,
     },
     InNode {
         node_id: MapNodeId,
@@ -726,22 +1539,32 @@ pub enum GameStateContextDto {
     CombatResult {
         battle_uuid: Uuid,
     },
+    MasteredEliteSweepResult {
+        sweep_uuid: Uuid,
+    },
     InBattle {
         battle_uuid: Uuid,
         node_type: Option<CombatNodeType>,
         mission_variant: Option<CombatMissionVariant>,
         encounter_id: Option<String>,
         combat_preview: Option<CombatPreview>,
-        last_pushed_event_log_seq: Option<u64>,
+        battle_state_revision: u64,
+        tactical_resource: LiveBattleTacticalResourceDto,
         deployment: Option<LiveBattleDeploymentDto>,
         playback: Option<BattlePlaybackState>,
         abnormality_attempt: Option<AbnormalityAttemptDto>,
         can_retreat: bool,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        stress_combat: Option<crate::game::stress_combat::StressCombatView>,
     },
     GameOver,
     RunComplete,
     RunFailed {
         reason: RunFailureReason,
+    },
+    AwaitingRunFailureDecision {
+        reason: RunFailureReason,
+        contributing_reason: Option<RunFailureReason>,
     },
 }
 
@@ -749,17 +1572,26 @@ pub enum GameStateContextDto {
 pub struct RunSnapshotDto<SelectedEvent = SelectedEventSnapshotDto> {
     pub game_state: String,
     pub game_state_context: GameStateContextDto,
-    pub allowed_actions: Vec<ActionKind>,
+    pub action_capabilities: Vec<ActionCapabilityDto>,
     pub run_checkpoint: RunCheckpointSnapshotDto,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub combat_recovery_restriction: Option<CombatRecoveryRestrictionSnapshotDto>,
     pub run_progression: Option<RunProgressionSnapshotDto>,
-    pub abnormality_research: Option<RunAbnormalityResearchSnapshotDto>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub monolith: Option<MonolithRunSnapshotDto>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub revival: Option<crate::game::revival::RevivalRunSnapshot>,
+    pub player_profile: PlayerProfileSnapshotDto,
+    pub encounter_compendium: EncounterCompendiumSnapshotDto,
     pub map_navigation: Option<MapNavigationSnapshotDto>,
     pub map: Option<MapViewDto>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub facility: Option<crate::game::map::FacilityViewDto>,
     pub current_node_session: Option<NodeSession>,
+    pub visual_novel: Option<VisualNovelSnapshotDto>,
     pub selected_event: Option<SelectedEvent>,
     pub skill_catalog: SkillCatalogDto,
     pub roster: EmployeeRosterSnapshotDto,
-    pub roster_order: RosterOrderSnapshotDto,
     pub inventory: InventorySnapshotDto,
     pub resources: RunResourcesSnapshotDto,
 }
@@ -772,17 +1604,22 @@ impl<SelectedEvent> RunSnapshotDto<SelectedEvent> {
         let RunSnapshotDto {
             game_state,
             game_state_context,
-            allowed_actions,
+            action_capabilities,
             run_checkpoint,
+            combat_recovery_restriction,
             run_progression,
-            abnormality_research,
+            monolith,
+            revival,
+            player_profile,
+            encounter_compendium,
             map_navigation,
             map,
+            facility,
             current_node_session,
+            visual_novel,
             selected_event,
             skill_catalog,
             roster,
-            roster_order,
             inventory,
             resources,
         } = self;
@@ -790,17 +1627,22 @@ impl<SelectedEvent> RunSnapshotDto<SelectedEvent> {
         RunSnapshotDto {
             game_state,
             game_state_context,
-            allowed_actions,
+            action_capabilities,
             run_checkpoint,
+            combat_recovery_restriction,
             run_progression,
-            abnormality_research,
+            monolith,
+            revival,
+            player_profile,
+            encounter_compendium,
             map_navigation,
             map,
+            facility,
             current_node_session,
+            visual_novel,
             selected_event: f(selected_event),
             skill_catalog,
             roster,
-            roster_order,
             inventory,
             resources,
         }
@@ -808,28 +1650,61 @@ impl<SelectedEvent> RunSnapshotDto<SelectedEvent> {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct CombatRecoveryRestrictionSnapshotDto {
+    pub reason: RunFailureReason,
+    pub allowed_node_ids: Vec<MapNodeId>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct RunCheckpointSnapshotDto {
     pub exists: bool,
+    pub loadable: bool,
     pub loads_used: u8,
     pub max_loads: u8,
     pub remaining_loads: u8,
-    pub can_load: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub location: Option<RunCheckpointLocationDto>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct RunCheckpointLocationDto {
+    pub floor_index: u32,
+    pub node_id: MapNodeId,
+    pub slot_id: crate::game::map::MapSlotId,
+    pub kind_id: MapNodeKindId,
+    pub room_display_name: String,
 }
 
 /// GameServer에서 GameCore로 전달되는 플레이어 행동
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(tag = "type", rename_all = "snake_case")]
-pub enum PlayerBehavior {
+#[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
+pub(crate) enum PlayerBehavior {
     // ============================================================
     // 게임 관련 행동
     // ============================================================
     /// 새 게임 시작
     StartNewGame {
         game_mode: GameMode,
+        replace_active_run: bool,
     },
+    /// Leave the tutorial briefing without changing the permanent profile.
+    SkipTutorial,
+    /// Consume the pending first successful-return story exactly once.
+    AcknowledgeFirstReturnStory,
+    ReturnFromExpedition { materials: Vec<crate::game::material_economy::MaterialRecovery> },
+    ChooseExpeditionContinuation { choice: crate::game::expedition_lifecycle::ExpeditionContinuationChoice },
+    /// Host의 local-install active-run을 마지막 완료 SavePoint에서 이어감
+    ContinueRun,
+    /// 손상된 local-install active-run 원본을 명시적으로 초기화
+    ResetActiveRun,
+    /// Local-install player profile bootstrap/save를 명시적으로 재시도
+    RetryPlayerProfile,
+    /// 손상된 local-install player profile 원본과 메모리 상태 전체를 명시적으로 초기화
+    ResetPlayerProfile,
     /// 시작 후보 직원 중 이번 런에 투입할 3명을 선택
     SelectStarterEmployees {
-        candidate_ids: Vec<String>,
+        employee_definition_ids: Vec<String>,
+        loan_copy_ids: Vec<Uuid>,
     },
     // 아이템 장착 해제
     UnEquipItem {
@@ -846,29 +1721,35 @@ pub enum PlayerBehavior {
         item_uuid: Uuid,
         target_employee_uuid: Uuid,
     },
-    /// 직원에게 런 소유 스킬 파편 장착
+    /// Equip one exact owned copy in the employee active slot.
     EquipSkillFragment {
         employee_uuid: Uuid,
-        fragment_id: SkillFragmentId,
+        copy_uuid: Uuid,
     },
-    /// 직원에게 장착된 스킬 파편 해제
     UnequipSkillFragment {
         employee_uuid: Uuid,
-        fragment_id: SkillFragmentId,
+        copy_uuid: Uuid,
     },
-    /// 파편 가루를 소모해 대상 파편의 강화/개화 진행도를 올림
-    UpgradeSkillFragment {
-        target_fragment_id: SkillFragmentId,
+    TransferSkillFragment {
+        copy_uuid: Uuid,
+        target_employee_uuid: Uuid,
     },
-    /// 개화 가능하거나 조기 개화 파편 가루 비용을 지불할 수 있는 대상 파편을 개화
+    AwakenSkillFragmentWithWeapon { copy_uuid: Uuid, form_id: String, weapon_copy_uuid: Uuid, materials: Option<Vec<crate::game::material_economy::MaterialPayment>> },
+    AwakenSkillFragmentWithMaterials { copy_uuid: Uuid, form_id: String, materials: Vec<crate::game::material_economy::MaterialPayment> },
     AwakenSkillFragment {
-        target_fragment_id: SkillFragmentId,
+        copy_uuid: Uuid,
+        form_id: String,
     },
-    /// Maintenance에서 스킬 파편을 분쇄해 파편 가루로 전환
+    SelectSkillFragmentForm {
+        copy_uuid: Uuid,
+        form_id: String,
+    },
     DismantleSkillFragment {
-        fragment_id: SkillFragmentId,
+        copy_uuid: Uuid,
+        confirmed: bool,
     },
     /// Maintenance에서 완성 장비를 분해해 장비 재료로 전환
+    DismantleEquipmentConfirmed { item_uuid: Uuid, confirmed: bool },
     DismantleEquipment {
         item_uuid: Uuid,
     },
@@ -876,17 +1757,61 @@ pub enum PlayerBehavior {
     EnhanceEquipment {
         item_uuid: Uuid,
     },
-    /// 런 중 직원 명단 표시 순서 이동
-    MoveRosterUnit {
-        target_unit_uuid: Uuid,
-        dest_slot: usize,
-        swap_with_unit_uuid: Option<Uuid>,
+    EquipRelic {
+        copy_uuid: Uuid,
+        employee_uuid: Uuid,
+        slot: u8,
+    },
+    UnequipRelic {
+        copy_uuid: Uuid,
+    },
+    RequestRelicState,
+    RequestRelicNumericPlan {
+        employee_uuid: Uuid,
+    },
+    /// Read-only prospective structural plan; no execution credentials.
+    RequestRelicEffectivePlan {
+        employee_uuid: Uuid,
+    },
+    PreviewRelicCorruption {
+        copy_uuid: Uuid,
+    },
+    CorruptRelic {
+        copy_uuid: Uuid,
+    },
+    PreviewSkillFragmentBloom {
+        #[serde(default)]
+        weapon_copy_uuid: Option<Uuid>,
+        copy_uuid: Uuid,
+        form_id: String,
+        materials: Vec<crate::game::material_economy::MaterialPayment>,
+    },
+    PreviewRelicDismantle {
+        copy_uuid: Uuid,
+    },
+    DismantleRelic {
+        copy_uuid: Uuid,
+        confirmed: bool,
     },
     /// 현재 런 맵 상태 요청
     RequestMapData,
+    /// Move through a reached Gate along an authored room connection.
+    MoveToFacilityRoom { room_id: String },
     /// 사용 가능한 맵 노드 선택
     SelectMapNode {
         node_id: MapNodeId,
+    },
+    /// Consume an expedition egg and the explicitly allocated catalyst without entering combat.
+    HatchEncounter {
+        node_id: MapNodeId,
+        reward_source_id: String,
+        stage: crate::game::revival::RevivalStage,
+        payment: Vec<crate::game::material_economy::MaterialPayment>,
+    },
+    /// NodeConfirm의 일반 전투 노드를 선택한 모노리스 재현 노드로 원자적으로 치환
+    ConvertMapNodeWithMonolith {
+        node_id: MapNodeId,
+        abnormality_id: String,
     },
     /// 선택한 맵 노드에 실제로 진입
     ConfirmEnterNode,
@@ -894,15 +1819,15 @@ pub enum PlayerBehavior {
     CancelSelectedNode,
     /// 현재 노드 처리 완료
     CompleteNode,
-    /// 선택형 지원 노드에서 지원 효과 선택
-    ChooseSupport {
-        support_type: SupportNodeType,
-    },
     /// Safezone에서 마지막 SavePoint 체크포인트를 불러옴
     LoadRunCheckpoint,
+    /// 실패 사전 선택에서 체크포인트를 사용하지 않고 RunFailed를 확정
+    ConfirmRunFailure,
+    /// 현재 run을 자발적으로 포기
+    AbandonRun,
     /// 본사 연락 노드에서 후보 직원 1명을 채용하고 노드를 완료
     RecruitEmployee {
-        candidate_id: String,
+        employee_definition_id: String,
     },
     /// 본사 연락 노드에서 긴급 보급을 요청하고 노드를 완료
     RequestEmergencySupplies,
@@ -912,19 +1837,28 @@ pub enum PlayerBehavior {
     SelectReward {
         reward_id: Uuid,
     },
+    /// Pay the whole next relic-investment threshold.
+    InvestRelicReward,
+    /// Select or clear two unequipped copies; this does not consume them.
+    SelectRelicFusionInputs { copies: Option<[Uuid; 2]> },
+    /// Consume the selected inputs and complete the relic node atomically.
+    ConfirmRelicFusion,
+    DealerAct { revision: u64, action: crate::game::dealer::DealerAction },
+    StressCombatAct { battle_uuid: Uuid, completed_rounds: u8, extract: bool },
     // ============================================================
     // 상점 관련 행동
     // ============================================================
     /// 아이템 구매
     PurchaseItem {
-        item_uuid: Uuid,
+        offer_id: Uuid,
     },
     /// 아이템 판매
     SellItem {
         item_uuid: Uuid,
+        quantity: u32,
     },
-    /// 상점 리롤 (새로운 아이템으로 교체)
-    RerollShop,
+    /// 상점 새로고침 (현재 페이지 전체 교체)
+    RefreshShop,
     /// 상점 나가기
     ExitShop,
     // ============================================================
@@ -940,12 +1874,37 @@ pub enum PlayerBehavior {
         event_id: crate::game::data::event_data::EventId,
         current_scene_id: crate::game::data::event_data::EventSceneId,
     },
-    /// Event scene 선택지를 확정
-    SelectEventChoice {
+    /// Event employee check 선택지와 수행자를 확정하고 d20을 한 번 판정
+    ResolveEventChoiceCheck {
         node_id: MapNodeId,
         event_id: crate::game::data::event_data::EventId,
+        current_scene_id: crate::game::data::event_data::EventSceneId,
         choice_id: crate::game::data::event_data::EventChoiceId,
+        employee_uuid: Uuid,
     },
+    /// 현재 Event 선택 scene의 무료 변환 또는 거절을 원자적으로 확정.
+    /// historical retry에서 current_scene_id는 원래 요청 source scene이다.
+    ChooseRelicCorruption {
+        node_id: MapNodeId,
+        event_id: crate::game::data::event_data::EventId,
+        current_scene_id: crate::game::data::event_data::EventSceneId,
+        copy_uuid: Option<Uuid>,
+    },
+    /// 선택지가 없는 Visual Novel scene을 다음 scene으로 진행하거나 종료
+    AdvanceVisualNovel {
+        session_id: String,
+        current_scene_id: crate::game::data::visual_novel_data::VisualNovelSceneId,
+    },
+    /// Visual Novel scene 선택지를 확정
+    SelectVisualNovelChoice {
+        session_id: String,
+        current_scene_id: crate::game::data::visual_novel_data::VisualNovelSceneId,
+        choice_id: crate::game::data::visual_novel_data::VisualNovelChoiceId,
+    },
+    /// 현재 NodeConfirm의 숙달 Elite를 전투 없이 해결할 결과를 staging
+    SweepMasteredElite {},
+    /// 이미 staging된 숙달 Elite 소탕 결과를 원자적으로 확정
+    CompleteMasteredEliteSweep {},
     /// 전투 결과 확인 완료
     CompleteCombatResult,
     /// 실시간 전투 상태 요청
@@ -953,7 +1912,7 @@ pub enum PlayerBehavior {
         #[serde(default)]
         since_seq: Option<u64>,
     },
-    /// Unity scene/setup loss recovery. Discards the active live battle and returns to node confirm.
+    /// Unity scene/setup loss recovery. Reprojects immutable setup and current revisioned state.
     RecoverBattleSetupLoss,
     /// 실시간 DefenseRoute 전투에서 아직 배치되지 않은 직원의 방향별 범위 preview 요청
     RequestDeploymentRangePreview {
@@ -970,10 +1929,74 @@ pub enum PlayerBehavior {
     WithdrawUnit {
         employee_uuid: Uuid,
     },
+    /// 실시간 DefenseRoute 전투에서 배치된 직원의 Attack/Defense 태세를 변경
+    SetEngagementStance {
+        employee_uuid: Uuid,
+        stance: EngagementStance,
+    },
+    /// 실시간 DefenseRoute 전투에서 직원의 위치/방향을 즉시 변경
+    TacticalRelocateUnit {
+        employee_uuid: Uuid,
+        destination: Position,
+        facing: FacingDirection,
+    },
+    /// 두 배치 직원의 위치를 하나의 원자적 명령으로 교환
+    TacticalSwapUnits {
+        first_employee_uuid: Uuid,
+        second_employee_uuid: Uuid,
+        first_facing: FacingDirection,
+        second_facing: FacingDirection,
+    },
+    /// Open or switch the general ally/enemy information focus.
+    FocusBattleUnit {
+        unit_instance_id: UnitInstanceId,
+    },
+    ClearBattleFocus,
+    /// Begin a roster deployment/redeployment selection without placing a unit.
+    BeginDeploymentSelection {
+        employee_uuid: Uuid,
+    },
+    CancelDeploymentSelection,
+    OpenBattleSettings,
+    CloseBattleSettings,
+    /// PlayerUnit/PlayerTile 수동 스킬 target focus 시작
+    BeginSkillTargeting {
+        employee_uuid: Uuid,
+        skill_id: SkillId,
+    },
+    /// 현재 authoritative skill target focus 취소
+    CancelSkillTargeting,
+    /// Read-only validation of the final relocation or swap payload.
+    PreviewTacticalCommand {
+        command: TacticalCommandPreviewInput,
+    },
+    /// 현재 revision에서 explicit skill target candidate를 read-only 검증
+    PreviewSkillTarget {
+        employee_uuid: Uuid,
+        skill_id: SkillId,
+        target: SkillCastTarget,
+    },
     /// 실시간 DefenseRoute 전투에서 배치된 직원의 수동 스킬을 발동
     ActivateSkill {
         employee_uuid: Uuid,
         skill_id: crate::game::ability::SkillId,
+        #[serde(default)]
+        target: Option<SkillCastTarget>,
+    },
+    /// Select a relation menu target; selecting the current target detaches it.
+    SelectSkillRelation {
+        employee_uuid: Uuid,
+        entry: String,
+        target: UnitInstanceId,
+    },
+    /// Commit the complete prepared volley against this battle and revision.
+    CommitInputPlan { battle_uuid:Uuid, revision:u64, employee_uuid:Uuid, input:crate::game::ability::input_plan::ShotCommitInput },
+    CancelInputPlan { battle_uuid:Uuid, revision:u64, employee_uuid:Uuid, preparation:u64 },
+    /// 현재 source activation을 정확히 소비하는 지속 스킬 재입력.
+    ReinputSustainedSkill {
+        employee_uuid: Uuid,
+        skill_id: crate::game::ability::SkillId,
+        activation: u64,
         #[serde(default)]
         target: Option<SkillCastTarget>,
     },
@@ -993,37 +2016,74 @@ impl PlayerBehavior {
     pub fn kind(&self) -> ActionKind {
         match self {
             PlayerBehavior::StartNewGame { .. } => ActionKind::StartNewGame,
+            PlayerBehavior::ReturnFromExpedition { .. } | PlayerBehavior::ChooseExpeditionContinuation { .. } => ActionKind::ChooseExpeditionContinuation,
+            PlayerBehavior::SkipTutorial => ActionKind::SkipTutorial,
+            PlayerBehavior::AcknowledgeFirstReturnStory => ActionKind::AcknowledgeFirstReturnStory,
+            PlayerBehavior::ContinueRun => ActionKind::ContinueRun,
+            PlayerBehavior::ResetActiveRun => ActionKind::ResetActiveRun,
+            PlayerBehavior::RetryPlayerProfile => ActionKind::RetryPlayerProfile,
+            PlayerBehavior::ResetPlayerProfile => ActionKind::ResetPlayerProfile,
             PlayerBehavior::SelectStarterEmployees { .. } => ActionKind::SelectStarterEmployees,
             PlayerBehavior::UnEquipItem { .. } => ActionKind::UnEquipItem,
             PlayerBehavior::EquipItem { .. } => ActionKind::EquipItem,
             PlayerBehavior::UseConsumableItem { .. } => ActionKind::UseConsumableItem,
             PlayerBehavior::EquipSkillFragment { .. } => ActionKind::EquipSkillFragment,
             PlayerBehavior::UnequipSkillFragment { .. } => ActionKind::UnequipSkillFragment,
-            PlayerBehavior::UpgradeSkillFragment { .. } => ActionKind::UpgradeSkillFragment,
-            PlayerBehavior::AwakenSkillFragment { .. } => ActionKind::AwakenSkillFragment,
+            PlayerBehavior::SelectSkillFragmentForm { .. } => ActionKind::SelectSkillFragmentForm,
+            PlayerBehavior::TransferSkillFragment { .. } => ActionKind::TransferSkillFragment,
+            PlayerBehavior::AwakenSkillFragmentWithWeapon { .. } | PlayerBehavior::AwakenSkillFragmentWithMaterials { .. } | PlayerBehavior::AwakenSkillFragment { .. } => ActionKind::AwakenSkillFragment,
             PlayerBehavior::DismantleSkillFragment { .. } => ActionKind::DismantleSkillFragment,
-            PlayerBehavior::DismantleEquipment { .. } => ActionKind::DismantleEquipment,
+            PlayerBehavior::DismantleEquipmentConfirmed { .. } | PlayerBehavior::DismantleEquipment { .. } => ActionKind::DismantleEquipment,
             PlayerBehavior::EnhanceEquipment { .. } => ActionKind::EnhanceEquipment,
-            PlayerBehavior::MoveRosterUnit { .. } => ActionKind::MoveRosterUnit,
+            PlayerBehavior::EquipRelic { .. } => ActionKind::EquipRelic,
+            PlayerBehavior::UnequipRelic { .. } => ActionKind::UnequipRelic,
+            PlayerBehavior::RequestRelicState => ActionKind::RequestRelicState,
+            PlayerBehavior::RequestRelicNumericPlan { .. } => ActionKind::RequestRelicNumericPlan,
+            PlayerBehavior::RequestRelicEffectivePlan { .. } => {
+                ActionKind::RequestRelicEffectivePlan
+            }
+            PlayerBehavior::PreviewRelicCorruption { .. } => ActionKind::PreviewRelicCorruption,
+            PlayerBehavior::CorruptRelic { .. } => ActionKind::CorruptRelic,
+            PlayerBehavior::PreviewSkillFragmentBloom { .. } => ActionKind::PreviewSkillFragmentBloom,
+            PlayerBehavior::PreviewRelicDismantle { .. } => ActionKind::PreviewRelicDismantle,
+            PlayerBehavior::DismantleRelic { .. } => ActionKind::DismantleRelic,
             PlayerBehavior::RequestMapData => ActionKind::RequestMapData,
+            PlayerBehavior::MoveToFacilityRoom { .. } => ActionKind::MoveToFacilityRoom,
             PlayerBehavior::SelectMapNode { .. } => ActionKind::SelectMapNode,
+            PlayerBehavior::HatchEncounter { .. } => ActionKind::HatchEncounter,
+            PlayerBehavior::ConvertMapNodeWithMonolith { .. } => {
+                ActionKind::ConvertMapNodeWithMonolith
+            }
             PlayerBehavior::ConfirmEnterNode => ActionKind::ConfirmEnterNode,
             PlayerBehavior::CancelSelectedNode => ActionKind::CancelSelectedNode,
             PlayerBehavior::CompleteNode => ActionKind::CompleteNode,
-            PlayerBehavior::ChooseSupport { .. } => ActionKind::ChooseSupport,
             PlayerBehavior::LoadRunCheckpoint => ActionKind::LoadRunCheckpoint,
+            PlayerBehavior::ConfirmRunFailure => ActionKind::ConfirmRunFailure,
+            PlayerBehavior::AbandonRun => ActionKind::AbandonRun,
             PlayerBehavior::RecruitEmployee { .. } => ActionKind::RecruitEmployee,
             PlayerBehavior::RequestEmergencySupplies => ActionKind::RequestEmergencySupplies,
             PlayerBehavior::OpenHeadquartersShop => ActionKind::OpenHeadquartersShop,
             PlayerBehavior::SelectReward { .. } => ActionKind::SelectReward,
+            PlayerBehavior::InvestRelicReward => ActionKind::InvestRelicReward,
+            PlayerBehavior::SelectRelicFusionInputs { .. } => ActionKind::SelectRelicFusionInputs,
+            PlayerBehavior::ConfirmRelicFusion => ActionKind::ConfirmRelicFusion,
+            PlayerBehavior::DealerAct { .. } => ActionKind::DealerAct,
+            PlayerBehavior::StressCombatAct { .. } => ActionKind::StressCombatAct,
             PlayerBehavior::PurchaseItem { .. } => ActionKind::PurchaseItem,
             PlayerBehavior::SellItem { .. } => ActionKind::SellItem,
-            PlayerBehavior::RerollShop => ActionKind::RerollShop,
+            PlayerBehavior::RefreshShop => ActionKind::RefreshShop,
             PlayerBehavior::ExitShop => ActionKind::ExitShop,
             PlayerBehavior::ClaimReward => ActionKind::ClaimReward,
             PlayerBehavior::ExitReward => ActionKind::ExitReward,
             PlayerBehavior::AdvanceEventScene { .. } => ActionKind::AdvanceEventScene,
-            PlayerBehavior::SelectEventChoice { .. } => ActionKind::SelectEventChoice,
+            PlayerBehavior::ResolveEventChoiceCheck { .. } => ActionKind::ResolveEventChoiceCheck,
+            PlayerBehavior::ChooseRelicCorruption { .. } => ActionKind::ChooseRelicCorruption,
+            PlayerBehavior::AdvanceVisualNovel { .. } => ActionKind::AdvanceVisualNovel,
+            PlayerBehavior::SelectVisualNovelChoice { .. } => ActionKind::SelectVisualNovelChoice,
+            PlayerBehavior::SweepMasteredElite { .. } => ActionKind::SweepMasteredElite,
+            PlayerBehavior::CompleteMasteredEliteSweep { .. } => {
+                ActionKind::CompleteMasteredEliteSweep
+            }
             PlayerBehavior::CompleteCombatResult => ActionKind::CompleteCombatResult,
             PlayerBehavior::RequestBattleState { .. } => ActionKind::RequestBattleState,
             PlayerBehavior::RecoverBattleSetupLoss => ActionKind::RecoverBattleSetupLoss,
@@ -1032,7 +2092,23 @@ impl PlayerBehavior {
             }
             PlayerBehavior::DeployUnit { .. } => ActionKind::DeployUnit,
             PlayerBehavior::WithdrawUnit { .. } => ActionKind::WithdrawUnit,
-            PlayerBehavior::ActivateSkill { .. } => ActionKind::ActivateSkill,
+            PlayerBehavior::SetEngagementStance { .. } => ActionKind::SetEngagementStance,
+            PlayerBehavior::TacticalRelocateUnit { .. } => ActionKind::TacticalRelocateUnit,
+            PlayerBehavior::TacticalSwapUnits { .. } => ActionKind::TacticalSwapUnits,
+            PlayerBehavior::FocusBattleUnit { .. } => ActionKind::FocusBattleUnit,
+            PlayerBehavior::ClearBattleFocus => ActionKind::ClearBattleFocus,
+            PlayerBehavior::BeginDeploymentSelection { .. } => ActionKind::BeginDeploymentSelection,
+            PlayerBehavior::CancelDeploymentSelection => ActionKind::CancelDeploymentSelection,
+            PlayerBehavior::OpenBattleSettings => ActionKind::OpenBattleSettings,
+            PlayerBehavior::CloseBattleSettings => ActionKind::CloseBattleSettings,
+            PlayerBehavior::BeginSkillTargeting { .. } => ActionKind::BeginSkillTargeting,
+            PlayerBehavior::CancelSkillTargeting => ActionKind::CancelSkillTargeting,
+            PlayerBehavior::PreviewSkillTarget { .. } => ActionKind::PreviewSkillTarget,
+            PlayerBehavior::PreviewTacticalCommand { .. } => ActionKind::PreviewTacticalCommand,
+            PlayerBehavior::SelectSkillRelation { .. } => ActionKind::SelectSkillRelation,
+            PlayerBehavior::CommitInputPlan {..} | PlayerBehavior::CancelInputPlan {..} | PlayerBehavior::ActivateSkill { .. } | PlayerBehavior::ReinputSustainedSkill { .. } => {
+                ActionKind::ActivateSkill
+            }
             PlayerBehavior::RetreatBattle => ActionKind::RetreatBattle,
             PlayerBehavior::PauseBattle => ActionKind::PauseBattle,
             PlayerBehavior::ResumeBattle => ActionKind::ResumeBattle,
@@ -1041,18 +2117,18 @@ impl PlayerBehavior {
     }
 }
 
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+pub struct LiveBattleTacticalResourceDto {
+    pub current: u32,
+    pub maximum: u32,
+    pub recovery_per_second: u32,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
 pub struct LiveBattleDeploymentDto {
     pub battle_time_ms: u64,
-    /// Player-facing "공간 안정화치" value. Rust member name stays cost during the
-    /// first Unity/server contract migration.
-    pub current_cost: u32,
-    /// Player-facing maximum "공간 안정화치".
-    pub max_cost: u32,
-    /// Stabilization required for a first deployment.
-    pub base_deploy_cost: u32,
-    /// Automatic stabilization recovery rate.
-    pub cost_per_second: u32,
     pub unit_deploy_costs: Vec<LiveBattleUnitDeployCostDto>,
     pub deployed_units: Vec<LiveBattleDeployedUnitDto>,
     pub redeploying_units: Vec<LiveBattleRedeployUnitDto>,
@@ -1063,6 +2139,7 @@ pub struct LiveBattleUnitDeployCostDto {
     pub employee_uuid: Uuid,
     pub base_deploy_cost: u32,
     pub effective_deploy_cost: u32,
+    pub eligibility: BattlePayloadEligibilityDto,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -1071,8 +2148,41 @@ pub struct LiveBattleDeployedUnitDto {
     pub unit_instance_id: UnitInstanceId,
     pub position: Position,
     pub facing: FacingDirection,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub skill_readiness: Option<LiveBattleSkillReadinessDto>,
+    pub withdraw_eligibility: BattlePayloadEligibilityDto,
+    pub tactical_state: LiveBattleUnitTacticalStateDto,
+    pub skill_readiness: LiveBattleSkillReadinessDto,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum LiveBattleTileEffectDto {
+    None,
+    DefenseFocus,
+    Rest,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+pub struct LiveBattleStanceEligibilityDto {
+    pub attack: BattlePayloadEligibilityDto,
+    pub defense: BattlePayloadEligibilityDto,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+pub struct LiveBattleUnitTacticalStateDto {
+    pub stance: EngagementStance,
+    pub tile_kind: TacticalTileKind,
+    pub tile_effect: LiveBattleTileEffectDto,
+    pub stance_cooldown_until_ms: u64,
+    pub relocation_cooldown_until_ms: u64,
+    pub forced_defense_until_ms: Option<u64>,
+    pub forced_defense_remaining_ms: u64,
+    pub relocation_eligibility: BattlePayloadEligibilityDto,
+    pub stance_eligibility: LiveBattleStanceEligibilityDto,
+    pub base_block_capacity: u32,
+    pub effective_block_capacity: u32,
+    pub defense_focus_damage_reduction_percent: u32,
+    pub next_rest_tick_ms: Option<u64>,
+    pub activity: UnitExclusiveActivity,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -1083,9 +2193,38 @@ pub struct LiveBattleRedeployUnitDto {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum ResonanceUsePhaseDto {
+    Accepted,
+    Casting,
+    Acting,
+    Effects,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum ResonanceGainBlockReasonDto {
+    HardCrowdControl,
+    SkillUse,
+    AutonomousRecovery,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct ResonanceUseDto {
+    pub action_ordinal: u64,
+    pub skill_id: SkillId,
+    pub consumed: u32,
+    pub phase: ResonanceUsePhaseDto,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct LiveBattleSkillReadinessDto {
+    pub resonance_use: Option<ResonanceUseDto>,
+    pub resonance_gain_block_reasons: Vec<ResonanceGainBlockReasonDto>,
+    pub corrosion_ready: bool,
     pub skill_id: Option<SkillId>,
     pub activation_mode: SkillActivationMode,
+    pub selection: Option<SkillCastSelection>,
     pub resonance_current: u32,
     pub resonance_max: u32,
     pub manual_activation_allowed: bool,
@@ -1093,10 +2232,81 @@ pub struct LiveBattleSkillReadinessDto {
     pub target_required: bool,
     #[serde(default)]
     pub target_available: bool,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub can_activate_reason: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub target_block_reason: Option<String>,
+    pub eligibility: BattlePayloadEligibilityDto,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum LiveBattleTacticalFocusPurposeDto {
+    PlayerUnitSkill,
+    PlayerTileSkill,
+    PlayerTilePairSkill,
+    PlayerDirectionSkill,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct LiveBattleTacticalFocusDto {
+    pub purpose: LiveBattleTacticalFocusPurposeDto,
+    pub caster_unit_instance_id: UnitInstanceId,
+    pub skill_id: SkillId,
+    pub restore_playback: BattlePlaybackState,
+}
+
+#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize, PartialEq, Eq)]
+pub struct LiveBattleInteractionDto {
+    pub focused_unit_instance_id: Option<UnitInstanceId>,
+    pub deployment_employee_uuid: Option<Uuid>,
+    pub restore_playback: Option<BattlePlaybackState>,
+    pub settings_restore_playback: Option<BattlePlaybackState>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct LiveBattlePlaybackEligibilityDto {
+    pub forced_pause_remaining_ms: Option<u64>,
+    pub pause: BattlePayloadEligibilityDto,
+    pub resume: BattlePayloadEligibilityDto,
+    pub speeds: Vec<LiveBattleSpeedEligibilityDto>,
+}
+
+impl LiveBattlePlaybackEligibilityDto {
+    pub fn for_state(playback: BattlePlaybackState) -> Self {
+        let active = ActionDisabledReasonCode::AlreadyActive;
+        Self {
+            forced_pause_remaining_ms: None,
+            pause: if playback.paused {
+                BattlePayloadEligibilityDto::disabled(active)
+            } else {
+                BattlePayloadEligibilityDto::enabled()
+            },
+            resume: if playback.paused {
+                BattlePayloadEligibilityDto::enabled()
+            } else {
+                BattlePayloadEligibilityDto::disabled(active)
+            },
+            speeds: [
+                BattlePlaybackSpeed::X0_5,
+                BattlePlaybackSpeed::X1,
+                BattlePlaybackSpeed::X2,
+                BattlePlaybackSpeed::X3,
+            ]
+            .into_iter()
+            .map(|speed| LiveBattleSpeedEligibilityDto {
+                speed,
+                eligibility: if speed == playback.speed {
+                    BattlePayloadEligibilityDto::disabled(active)
+                } else {
+                    BattlePayloadEligibilityDto::enabled()
+                },
+            })
+            .collect(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+pub struct LiveBattleSpeedEligibilityDto {
+    pub speed: BattlePlaybackSpeed,
+    pub eligibility: BattlePayloadEligibilityDto,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -1104,15 +2314,19 @@ pub struct LiveBattleUpdateDto {
     #[serde(rename = "type")]
     pub message_type: LiveBattleUpdateMessageType,
     pub battle_uuid: Uuid,
+    pub battle_state_revision: u64,
+    pub action_capabilities: Vec<ActionCapabilityDto>,
     pub server_battle_time_ms: u64,
     pub events_delta: LiveBattleEventDeltaDto,
     pub checkpoint: LiveBattleStateCheckpointDto,
+    pub visual_novel: Option<VisualNovelSnapshotDto>,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum LiveBattleUpdateMessageType {
     BattleUpdate,
+    SnapshotResyncRequired,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -1132,6 +2346,7 @@ pub struct LiveBattleSetupSnapshotDto {
     pub spawn_zones: Vec<SpawnZone>,
     pub tactical_points: Vec<LiveBattleSetupTacticalPointDto>,
     pub static_objects: Vec<LiveBattleSetupStaticObjectDto>,
+    pub field_work_objects: Vec<LiveBattleSetupFieldWorkObjectDto>,
     pub initial_units: Vec<LiveBattleSetupInitialUnitDto>,
     pub catalog_refs: LiveBattleSetupCatalogRefsDto,
 }
@@ -1183,6 +2398,35 @@ pub enum LiveBattleSetupStaticObjectType {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct LiveBattleSetupFieldWorkObjectDto {
+    pub id: String,
+    pub presentation_kind: LiveBattleFieldWorkPresentationKindDto,
+    pub position: Position,
+    pub work_cells: Vec<LiveBattleSetupFieldWorkCellDto>,
+    pub required_work_ms: u64,
+    pub completion_effect: LiveBattleFieldWorkCompletionEffectDto,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct LiveBattleSetupFieldWorkCellDto {
+    pub id: String,
+    pub position: Position,
+    pub tile_kind: TacticalTileKind,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum LiveBattleFieldWorkPresentationKindDto {
+    EmergencyRepairTerminal,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(tag = "type", rename_all = "snake_case")]
+pub enum LiveBattleFieldWorkCompletionEffectDto {
+    RepairProtectedUnit { unit_ref: String, flat_hp: u32 },
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct LiveBattleSetupInitialUnitDto {
     pub unit_ref: String,
     pub owner: Side,
@@ -1197,7 +2441,7 @@ pub struct LiveBattleSetupCatalogRefsDto {
 }
 
 impl LiveBattleSetupSnapshotDto {
-    pub const SETUP_VERSION: u32 = 1;
+    pub const SETUP_VERSION: u32 = 2;
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -1226,14 +2470,17 @@ pub struct LiveBattlePresentationEventDto {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum LiveBattlePresentationEventKindDto {
+    EmployeeTransformed { actor: UnitInstanceId, successor: UnitInstanceId, employee_uuid: Uuid, equipment_copy: Uuid, world_position: EventLogVec2 },
+    CorrosionStarted {
+        actor: UnitInstanceId,
+        duration_ms: u64,
+    },
+    CorrosionEnded {
+        actor: UnitInstanceId,
+    },
     BattleStart {
         width: u8,
         height: u8,
-    },
-    ArtifactSpawned {
-        artifact_instance_id: Uuid,
-        owner: Side,
-        base_uuid: Uuid,
     },
     ItemSpawned {
         item_instance_id: Uuid,
@@ -1260,6 +2507,69 @@ pub enum LiveBattlePresentationEventKindDto {
         unit_instance_id: UnitInstanceId,
         position: Position,
         facing: FacingDirection,
+    },
+    StanceChanged {
+        unit_instance_id: UnitInstanceId,
+        before: crate::game::battle::types::EngagementStance,
+        after: crate::game::battle::types::EngagementStance,
+        cooldown_until_ms: u64,
+    },
+    FieldWorkAssignmentStarted {
+        object_id: String,
+        work_cell_id: String,
+        worker_unit_instance_id: UnitInstanceId,
+    },
+    FieldWorkAssignmentStopped {
+        object_id: String,
+        work_cell_id: String,
+        worker_unit_instance_id: UnitInstanceId,
+    },
+    FieldWorkCompleted {
+        object_id: String,
+        repaired_unit_instance_id: Option<UnitInstanceId>,
+        requested_flat_hp: u32,
+        actual_repaired_hp: u32,
+    },
+    UnitDisplaced {
+        source_instance_id: UnitInstanceId,
+        unit_instance_id: UnitInstanceId,
+        from_position: Position,
+        to_position: Position,
+        from_world_position: EventLogVec2,
+        to_world_position: EventLogVec2,
+    },
+    UnitTacticallyRelocated {
+        unit_instance_id: UnitInstanceId,
+        from_position: Position,
+        to_position: Position,
+        from_world_position: EventLogVec2,
+        to_world_position: EventLogVec2,
+        before_facing: FacingDirection,
+        after_facing: FacingDirection,
+        cooldown_until_ms: u64,
+    },
+    UnitsTacticallySwapped {
+        first_unit_instance_id: UnitInstanceId,
+        second_unit_instance_id: UnitInstanceId,
+        first_from_position: Position,
+        first_to_position: Position,
+        second_from_position: Position,
+        second_to_position: Position,
+        first_from_world_position: EventLogVec2,
+        first_to_world_position: EventLogVec2,
+        second_from_world_position: EventLogVec2,
+        second_to_world_position: EventLogVec2,
+        first_before_facing: FacingDirection,
+        first_after_facing: FacingDirection,
+        second_before_facing: FacingDirection,
+        second_after_facing: FacingDirection,
+        cooldown_until_ms: u64,
+    },
+    IndependentObjectRemoved {
+        receipt: crate::game::battle::core::ObjectRemovalReceipt,
+    },
+    IndependentObjectEvolved {
+        receipt: crate::game::battle::core::ObjectEvolutionReceipt,
     },
     UnitWithdrawn {
         unit_instance_id: UnitInstanceId,
@@ -1305,6 +2615,23 @@ pub enum LiveBattlePresentationEventKindDto {
         kind: Option<AttackKind>,
         #[serde(default, skip_serializing_if = "Option::is_none")]
         delivery: Option<AttackDelivery>,
+    },
+    BasicAttackTileReleased {
+        release_id: Uuid,
+        attacker_instance_id: UnitInstanceId,
+        tile: Position,
+        impact_at_ms: u64,
+    },
+    BasicAttackTileImpacted {
+        release_id: Uuid,
+        attacker_instance_id: UnitInstanceId,
+        tile: Position,
+        /// Eligible distinct occupants before damage; not an actual hit count.
+        target_count: u32,
+    },
+    BasicAttackTilesReleased {
+        attacker_instance_id: UnitInstanceId,
+        affected_tiles: Vec<Position>,
     },
     BasicAttackProjectileLaunched {
         projectile_id: Uuid,
@@ -1491,16 +2818,13 @@ pub enum LiveBattlePresentationEventKindDto {
 impl From<BattleLogEvent> for LiveBattlePresentationEventKindDto {
     fn from(value: BattleLogEvent) -> Self {
         match value {
+            BattleLogEvent::EmployeeTransformed { actor, successor, employee_uuid, equipment_copy, world_position } =>
+                Self::EmployeeTransformed { actor, successor, employee_uuid, equipment_copy, world_position },
+            BattleLogEvent::CorrosionStarted { actor, duration_ms } => {
+                Self::CorrosionStarted { actor, duration_ms }
+            }
+            BattleLogEvent::CorrosionEnded { actor } => Self::CorrosionEnded { actor },
             BattleLogEvent::BattleStart { width, height } => Self::BattleStart { width, height },
-            BattleLogEvent::ArtifactSpawned {
-                artifact_instance_id,
-                owner,
-                base_uuid,
-            } => Self::ArtifactSpawned {
-                artifact_instance_id,
-                owner,
-                base_uuid,
-            },
             BattleLogEvent::ItemSpawned {
                 item_instance_id,
                 owner,
@@ -1544,6 +2868,119 @@ impl From<BattleLogEvent> for LiveBattlePresentationEventKindDto {
                 position,
                 facing,
             },
+            BattleLogEvent::StanceChanged {
+                unit_instance_id,
+                before,
+                after,
+                cooldown_until_ms,
+            } => Self::StanceChanged {
+                unit_instance_id,
+                before,
+                after,
+                cooldown_until_ms,
+            },
+            BattleLogEvent::FieldWorkAssignmentStarted {
+                object_id,
+                work_cell_id,
+                worker_unit_instance_id,
+            } => Self::FieldWorkAssignmentStarted {
+                object_id,
+                work_cell_id,
+                worker_unit_instance_id,
+            },
+            BattleLogEvent::FieldWorkAssignmentStopped {
+                object_id,
+                work_cell_id,
+                worker_unit_instance_id,
+            } => Self::FieldWorkAssignmentStopped {
+                object_id,
+                work_cell_id,
+                worker_unit_instance_id,
+            },
+            BattleLogEvent::FieldWorkCompleted {
+                object_id,
+                repaired_unit_instance_id,
+                requested_flat_hp,
+                actual_repaired_hp,
+            } => Self::FieldWorkCompleted {
+                object_id,
+                repaired_unit_instance_id,
+                requested_flat_hp,
+                actual_repaired_hp,
+            },
+            BattleLogEvent::UnitDisplaced {
+                source_instance_id,
+                unit_instance_id,
+                from_position,
+                to_position,
+                from_world_position,
+                to_world_position,
+            } => Self::UnitDisplaced {
+                source_instance_id,
+                unit_instance_id,
+                from_position,
+                to_position,
+                from_world_position,
+                to_world_position,
+            },
+            BattleLogEvent::UnitTacticallyRelocated {
+                unit_instance_id,
+                from_position,
+                to_position,
+                from_world_position,
+                to_world_position,
+                before_facing,
+                after_facing,
+                cooldown_until_ms,
+            } => Self::UnitTacticallyRelocated {
+                unit_instance_id,
+                from_position,
+                to_position,
+                from_world_position,
+                to_world_position,
+                before_facing,
+                after_facing,
+                cooldown_until_ms,
+            },
+            BattleLogEvent::UnitsTacticallySwapped {
+                first_unit_instance_id,
+                second_unit_instance_id,
+                first_from_position,
+                first_to_position,
+                second_from_position,
+                second_to_position,
+                first_from_world_position,
+                first_to_world_position,
+                second_from_world_position,
+                second_to_world_position,
+                first_before_facing,
+                first_after_facing,
+                second_before_facing,
+                second_after_facing,
+                cooldown_until_ms,
+            } => Self::UnitsTacticallySwapped {
+                first_unit_instance_id,
+                second_unit_instance_id,
+                first_from_position,
+                first_to_position,
+                second_from_position,
+                second_to_position,
+                first_from_world_position,
+                first_to_world_position,
+                second_from_world_position,
+                second_to_world_position,
+                first_before_facing,
+                first_after_facing,
+                second_before_facing,
+                second_after_facing,
+                cooldown_until_ms,
+            },
+            BattleLogEvent::IndependentObjectRemoved { receipt } => {
+                Self::IndependentObjectRemoved { receipt }
+            }
+            BattleLogEvent::IndependentObjectEvolved { receipt } => {
+                Self::IndependentObjectEvolved { receipt }
+            }
             BattleLogEvent::UnitWithdrawn {
                 unit_instance_id,
                 world_position,
@@ -1614,6 +3051,12 @@ impl From<BattleLogEvent> for LiveBattlePresentationEventKindDto {
                 kind,
                 delivery,
             },
+            BattleLogEvent::BasicAttackTileReleased { release_id, attacker_instance_id, tile, impact_at_ms } =>
+                Self::BasicAttackTileReleased { release_id, attacker_instance_id, tile, impact_at_ms },
+            BattleLogEvent::BasicAttackTileImpacted { release_id, attacker_instance_id, tile, target_count } =>
+                Self::BasicAttackTileImpacted { release_id, attacker_instance_id, tile, target_count },
+            BattleLogEvent::BasicAttackTilesReleased { attacker_instance_id, affected_tiles } =>
+                Self::BasicAttackTilesReleased { attacker_instance_id, affected_tiles },
             BattleLogEvent::BasicAttackProjectileLaunched {
                 projectile_id,
                 attacker_instance_id,
@@ -1924,20 +3367,104 @@ impl From<BattleEventLogEntry> for LiveBattlePresentationEventDto {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LiveBattleStateCheckpointDto {
+    #[serde(default)]
+    pub presence_marks: crate::game::ability::marks::PresenceMarksSnapshot,
+    #[serde(default)]
+    pub weapon_marks: crate::game::ability::weapon_marks::WeaponMarksSnapshot,
+    #[serde(default)]
+    pub tile_bursts: crate::game::ability::tile_burst::TileBurstsSnapshot,
+    #[serde(default)]
+    pub counter_channels: crate::game::ability::counter_channel::CounterChannelsSnapshot,
+    #[serde(default)]
+    pub relation_actions: crate::game::ability::relation_action::RelationActionsSnapshot,
+    #[serde(default)]
+    pub input_plans: crate::game::ability::input_plan::InputPlansSnapshot,
+    #[serde(default)]
+    pub shared_cohorts: crate::game::ability::hostile_cohort::SharedCohortsSnapshot,
+    #[serde(default)]
+    pub prepared_volleys: crate::game::ability::prepared_volley::PreparedVolleysSnapshot,
+    #[serde(default)]
+    pub mobile_effects: crate::game::ability::mobile_effect::MobileEffectsSnapshot,
+    #[serde(default)]
+    pub paired_areas: crate::game::ability::paired_areas::PairedAreasSnapshot,
+    #[serde(default)]
+    pub sustained_effects: crate::game::ability::sustained::SustainedEffectsSnapshot,
+    #[serde(default)]
+    pub independent_objects: crate::game::battle::core::IndependentObjectsSnapshot,
     pub at_seq: u64,
     pub battle_time_ms: u64,
     pub playback: BattlePlaybackState,
+    pub playback_eligibility: LiveBattlePlaybackEligibilityDto,
+    pub tactical_focus: Option<LiveBattleTacticalFocusDto>,
+    pub interaction: LiveBattleInteractionDto,
+    pub field_work_objects: Vec<LiveBattleFieldWorkObjectStateDto>,
     pub units: Vec<LiveBattleUnitCheckpointDto>,
+    pub tactical_resource: LiveBattleTacticalResourceDto,
     pub deployment: Option<LiveBattleDeploymentDto>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct LiveBattleFieldWorkObjectStateDto {
+    pub id: String,
+    pub status: LiveBattleFieldWorkObjectStatusDto,
+    pub accumulated_work_ms: u64,
+    pub required_work_ms: u64,
+    pub work_cells: Vec<LiveBattleFieldWorkCellStateDto>,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum LiveBattleFieldWorkObjectStatusDto {
+    Active,
+    Completed,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct LiveBattleFieldWorkCellStateDto {
+    pub id: String,
+    pub position: Position,
+    pub tile_kind: TacticalTileKind,
+    pub worker_unit_instance_id: Option<UnitInstanceId>,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+pub struct LiveBattleUnitControlStateDto {
+    pub hard_cc_active: bool,
+    pub hard_cc_release_time_ms: Option<u64>,
+    pub silenced: bool,
+    pub skill_start_disabled_reason: Option<ActionDisabledReasonCode>,
+}
+
+#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum LiveBattleBasicActionKind {
+    #[default]
+    Damage,
+    Heal,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize, PartialEq, Eq)]
+pub struct LiveBattleBasicActionDto {
+    pub kind: LiveBattleBasicActionKind,
+    pub blocked_by: Option<UnitInstanceId>,
+    pub blocking: Vec<UnitInstanceId>,
+    pub preview_available: bool,
+    pub selected_target_id: Option<UnitInstanceId>,
+    pub eligible_target_ids: Vec<UnitInstanceId>,
+    pub block_exception_target_ids: Vec<UnitInstanceId>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LiveBattleUnitCheckpointDto {
+    pub basic_action: LiveBattleBasicActionDto,
     pub unit_instance_id: UnitInstanceId,
     pub owner: Side,
     pub role: BattleUnitRole,
     pub hud: LiveBattleUnitHudDto,
-    pub range_previews: LiveBattleRangePreviewsDto,
+    pub control: LiveBattleUnitControlStateDto,
+    pub tactical_state: Option<LiveBattleUnitTacticalStateDto>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub range_previews: Option<LiveBattleRangePreviewsDto>,
     pub mobility_kind: MobilityKind,
     pub unit_source: BattleUnitSourceIdentity,
     pub position: Position,
@@ -1984,7 +3511,10 @@ pub enum LiveBattleRangePreviewReason {
 pub enum LiveBattleActiveSkillTargetingKind {
     SelfTarget,
     AutoUnit,
+    ManualUnit,
     ManualTile,
+    ManualTilePair,
+    ManualDirection,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -2016,9 +3546,48 @@ pub struct LiveBattleRangePreviewsDto {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
+pub enum TacticalCommandPreviewInput {
+    Relocate {
+        employee_uuid: Uuid,
+        destination: Position,
+        facing: FacingDirection,
+    },
+    Swap {
+        first_employee_uuid: Uuid,
+        second_employee_uuid: Uuid,
+        first_facing: FacingDirection,
+        second_facing: FacingDirection,
+    },
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct TacticalCommandPreviewUnitDto {
+    pub employee_uuid: Uuid,
+    pub unit_instance_id: UnitInstanceId,
+    pub destination: Position,
+    pub facing: FacingDirection,
+    pub forced_defense_ms: u64,
+    pub range_previews: LiveBattleRangePreviewsDto,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct TacticalCommandPreviewResultDto {
+    pub battle_uuid: Uuid,
+    pub battle_state_revision: u64,
+    pub command: TacticalCommandPreviewInput,
+    pub cost: u32,
+    pub relocation_cooldown_ms: u64,
+    pub forced_defense_ms: u64,
+    pub eligibility: BattlePayloadEligibilityDto,
+    pub units: Vec<TacticalCommandPreviewUnitDto>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct DeploymentRangePreviewResultDto {
     pub employee_uuid: Uuid,
     pub position: Position,
+    pub deploy_eligibility: BattlePayloadEligibilityDto,
     pub facings: DeploymentRangePreviewFacingsDto,
 }
 
@@ -2055,10 +3624,25 @@ pub struct SkillCatalogSkillDto {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SkillCatalogCastTargetDto {
+    pub selection: SkillCastSelection,
     pub target_policy: SkillTarget,
-    pub range_policy: TileRangePolicy,
-    pub defense_tile_range: Option<TileRangePattern>,
+    pub reach: SkillTargetReach,
+    pub target_range: Option<TileRangePattern>,
     pub air_capable: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct SkillTargetPreviewResultDto {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub counter_channel: Option<crate::game::ability::counter_channel::CounterChannelPreview>,
+    pub employee_uuid: Uuid,
+    pub unit_instance_id: UnitInstanceId,
+    pub skill_id: SkillId,
+    pub target: SkillCastTarget,
+    pub battle_state_revision: u64,
+    pub eligibility: BattlePayloadEligibilityDto,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub object_placements: Vec<crate::game::battle::core::ObjectPlacementPreview>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -2066,9 +3650,6 @@ pub struct SkillCatalogStepDto {
     pub step_id: String,
     pub delay_ms: u32,
     pub target_policy: SkillTarget,
-    pub range_policy: TileRangePolicy,
-    pub defense_tile_range: Option<TileRangePattern>,
-    pub air_capable: bool,
     pub delivery: SkillCatalogDeliveryKind,
     pub tile_area: Option<SkillCatalogTileAreaDto>,
     pub effects_count: usize,
@@ -2085,6 +3666,7 @@ pub enum SkillCatalogDeliveryKind {
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct SkillCatalogTileAreaDto {
+    pub footprint: TileRangePattern,
     pub anchor: SkillAreaAnchorSource,
     pub tile_origin: SkillTileAreaOrigin,
     pub tracking: SkillAreaTracking,
@@ -2103,17 +3685,17 @@ pub struct SkillCatalogTileAreaDto {
 /// 4. 해당 아이템이 어디서 제거되는지,
 ///
 /// 등. 클라이언트는 해당 값들을 반영만 하게끔 해야함.
-#[derive(Debug, Serialize, Deserialize)]
-pub enum BehaviorResult {
-    /// 새 게임 시작
-    StartNewGame {
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub(crate) enum BehaviorResult {
+    DealerState { dealer: crate::game::dealer::DealerView },
+    /// 새 런 시작 흐름 진입
+    RunStartFlowStarted {
         game_mode: GameMode,
-        candidates: Vec<StarterEmployeeCandidate>,
-        required_count: usize,
+        visual_novel: Option<VisualNovelSnapshotDto>,
     },
     /// 시작 직원 선택 완료
     StarterEmployeesSelected {
-        selected_candidate_ids: Vec<String>,
+        selected_employee_definition_ids: Vec<String>,
         employee_uuids: Vec<Uuid>,
         map: MapViewDto,
     },
@@ -2128,7 +3710,6 @@ pub enum BehaviorResult {
         category: MapNodeCategory,
         payload: MapNodePayload,
         session: NodeSession,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
     /// 맵 노드 진입 전 확인/준비 상태
     NodePreview {
@@ -2139,34 +3720,29 @@ pub enum BehaviorResult {
         session: NodeSession,
         map: MapViewDto,
         combat_preview: Option<CombatPreview>,
+        trauma_recovery_preview: Option<TraumaRecoveryPreviewDto>,
     },
     /// 맵 노드 완료
     NodeCompleted {
         map: MapViewDto,
         outcome: Option<NodeOutcomeSummary>,
     },
-    /// 지원 노드 상태
-    SupportState {
+    /// SavePoint 노드 상태
+    SavePointState {
         node_id: MapNodeId,
-        support_mode: SupportNodeMode,
-        support_type: Option<SupportNodeType>,
-        choices: Vec<SupportNodeType>,
-        selected_support_type: Option<SupportNodeType>,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
+        recovery_preview: TraumaRecoveryPreviewDto,
     },
     /// 정비 노드 상태
     MaintenanceState {
         node_id: MapNodeId,
         maintenance_options: MaintenanceOptionsDto,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
     /// 본사 연락 노드 상태
     HeadquartersContactState {
         node_id: MapNodeId,
         options: Vec<HeadquartersContactOption>,
-        recruitment_candidates: Vec<StarterEmployeeCandidate>,
+        recruitment_candidates: Vec<EmployeeDefinition>,
         shop_pool_id: Option<String>,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
     /// Gate 노드 완료로 다음 Floor에 진입
     FloorAdvanced {
@@ -2183,6 +3759,14 @@ pub enum BehaviorResult {
         reason: RunFailureReason,
         outcome: Option<NodeOutcomeSummary>,
     },
+    /// checkpoint load 또는 명시적 실패 확정을 기다림
+    RunFailureDecisionRequired {
+        reason: RunFailureReason,
+        contributing_reason: Option<RunFailureReason>,
+        outcome: Option<NodeOutcomeSummary>,
+    },
+    /// 사용자가 현재 run을 자발적으로 종료함
+    RunAbandoned,
 
     // 아이템 장착 해제
     UnEquipItem {
@@ -2196,30 +3780,48 @@ pub enum BehaviorResult {
         item_uuid: Uuid,
         target_employee_uuid: Uuid,
         replaced_modifier: Option<ActiveConsumableModifier>,
-        applied_modifier: ActiveConsumableModifier,
+        active_modifier: Option<ActiveConsumableModifier>,
+        condition: EmployeeCondition,
         inventory_diff: InventoryDiffDto,
+    },
+    RelicState {
+        result: crate::game::relic::RelicStateDto,
+    },
+    #[serde(skip_deserializing)]
+    RelicNumericPlan {
+        result: crate::game::relic::plan::RelicNumericPlanDto,
+    },
+    #[serde(skip_deserializing)]
+    RelicEffectivePlan {
+        result: Option<crate::game::relic::structural::dto::RelicEffectivePlanDto>,
+    },
+    RelicPreview {
+        result: crate::game::relic::RelicOperationPreviewDto,
     },
     SkillFragmentLoadoutUpdated {
         employee_uuid: Uuid,
-        equipped_fragment_ids: Vec<SkillFragmentId>,
+        active_copy_uuid: Option<Uuid>,
     },
-    SkillFragmentUpgraded {
-        target_fragment_id: SkillFragmentId,
-        dust_spent: u32,
-        remaining_dust: u32,
-        progress: SkillFragmentProgress,
+    SkillFragmentTransferred {
+        copy: OwnedFragment,
+        previous_owner: Uuid,
+        changed: bool,
     },
     SkillFragmentAwakened {
-        target_fragment_id: SkillFragmentId,
-        dust_spent: u32,
-        remaining_dust: u32,
-        progress: SkillFragmentProgress,
+        copy: OwnedFragment,
+        changed: bool,
+        enkephalin_spent: u32,
+        inventory_diff: InventoryDiffDto,
+    },
+    SkillFragmentFormSelected {
+        copy: OwnedFragment,
+        changed: bool,
     },
     SkillFragmentDismantled {
-        fragment_id: SkillFragmentId,
-        remaining_count: u32,
-        dust_gained: u32,
-        total_dust: u32,
+        copy_uuid: Uuid,
+        definition_id: SkillFragmentId,
+        enkephalin_gained: u32,
+        inventory_diff: InventoryDiffDto,
     },
     EquipmentDismantled {
         item_uuid: Uuid,
@@ -2232,19 +3834,14 @@ pub enum BehaviorResult {
         enhancement_level: u8,
         inventory_diff: InventoryDiffDto,
     },
-    /// 런 중 직원 명단 표시 순서 이동
-    MoveRosterUnit {
-        roster_slots: Vec<RosterSlotDto>,
-    },
-
     /// 상점 상태 업데이트 (예: 리롤 이후)
     ShopState {
         shop: ShopEventOption,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
 
-    RerollShop {
-        new_items: Vec<Uuid>,
+    RefreshShop {
+        enkephalin: u32,
+        shop: ShopEventOption,
     },
 
     /// 아이템 판매 → 판매 확인
@@ -2257,11 +3854,13 @@ pub enum BehaviorResult {
     PurchaseItem {
         enkephalin: u32,
         inventory_diff: InventoryDiffDto,
+        relic_diffs: Vec<crate::game::relic::OwnedRelic>,
+        crafting_resources: Option<crate::game::relic::RunCraftingResources>,
     },
 
     /// 본사 연락 노드에서 직원 채용 완료
     EmployeeRecruited {
-        candidate_id: String,
+        employee_definition_id: String,
         employee_uuid: Uuid,
         completion: Box<BehaviorResult>,
     },
@@ -2277,7 +3876,11 @@ pub enum BehaviorResult {
     EventState {
         node_id: MapNodeId,
         event: EventSceneSnapshotDto,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
+    },
+
+    /// Global Visual Novel overlay 상태
+    VisualNovelState {
+        visual_novel: Option<VisualNovelSnapshotDto>,
     },
 
     /// 보상 수령 결과 (자원 및 인벤토리 변경)
@@ -2285,8 +3888,8 @@ pub enum BehaviorResult {
         enkephalin: u32,
         inventory_diff: InventoryDiffDto,
         skill_fragment_diffs: Vec<SkillFragmentGrantDiffDto>,
-        skill_fragment_research_diffs: Vec<SkillFragmentResearchDiffDto>,
         employee_experience_diffs: Vec<crate::game::reward::EmployeeExperienceDiffDto>,
+        relic_activity: Option<crate::game::relic_reward::RelicRewardReceipt>,
     },
 
     /// 전투 리플레이 종료 후 자동 지급된 보상과 이어진 노드 진행 결과
@@ -2294,9 +3897,23 @@ pub enum BehaviorResult {
         enkephalin: u32,
         inventory_diff: InventoryDiffDto,
         skill_fragment_diffs: Vec<SkillFragmentGrantDiffDto>,
-        skill_fragment_research_diffs: Vec<SkillFragmentResearchDiffDto>,
         employee_experience_diffs: Vec<crate::game::reward::EmployeeExperienceDiffDto>,
         outcome: NodeOutcomeSummary,
+        completion: Box<BehaviorResult>,
+    },
+
+    /// 전투 독립 숙달 Elite 소탕 결과가 확정 전 상태로 staging됨
+    MasteredEliteSweepResultStaged {
+        result: MasteredEliteSweepResultDto,
+    },
+
+    /// staging된 숙달 Elite 소탕 결과를 확인해 모든 run-local 효과를 함께 commit함
+    MasteredEliteSweepCompleted {
+        sweep_uuid: Uuid,
+        enkephalin: u32,
+        inventory_diff: InventoryDiffDto,
+        skill_fragment_diffs: Vec<SkillFragmentGrantDiffDto>,
+        employee_experience_diffs: Vec<crate::game::reward::EmployeeExperienceDiffDto>,
         completion: Box<BehaviorResult>,
     },
 
@@ -2326,6 +3943,14 @@ pub enum BehaviorResult {
     /// 아직 배치되지 않은 직원의 방향별 배치 범위 preview
     DeploymentRangePreview {
         result: DeploymentRangePreviewResultDto,
+    },
+
+    /// Explicit skill target candidate read-only validation result
+    SkillTargetPreview {
+        result: SkillTargetPreviewResultDto,
+    },
+    TacticalCommandPreview {
+        result: TacticalCommandPreviewResultDto,
     },
 
     /// 실시간 전투 재생 상태가 변경됨
@@ -2359,6 +3984,57 @@ pub enum BehaviorResult {
         unit_instance_id: UnitInstanceId,
     },
 
+    /// 실시간 전투에서 직원 태세 변경이 적용됨
+    BattleEngagementStanceChanged {
+        battle_uuid: Uuid,
+        encounter_id: String,
+        node_type: CombatNodeType,
+        mission_variant: CombatMissionVariant,
+        battle_update: LiveBattleUpdateDto,
+        employee_uuid: Uuid,
+        unit_instance_id: UnitInstanceId,
+        stance: EngagementStance,
+    },
+
+    /// 실시간 전투에서 직원 전술 재배치가 적용됨
+    BattleUnitTacticallyRelocated {
+        battle_uuid: Uuid,
+        encounter_id: String,
+        node_type: CombatNodeType,
+        mission_variant: CombatMissionVariant,
+        battle_update: LiveBattleUpdateDto,
+        employee_uuid: Uuid,
+        unit_instance_id: UnitInstanceId,
+        destination: Position,
+        facing: FacingDirection,
+    },
+
+    /// 실시간 전투에서 두 직원의 전술 위치 교환이 적용됨
+    BattleUnitsTacticallySwapped {
+        battle_uuid: Uuid,
+        encounter_id: String,
+        node_type: CombatNodeType,
+        mission_variant: CombatMissionVariant,
+        battle_update: LiveBattleUpdateDto,
+        first_employee_uuid: Uuid,
+        second_employee_uuid: Uuid,
+        first_unit_instance_id: UnitInstanceId,
+        second_unit_instance_id: UnitInstanceId,
+        first_destination: Position,
+        second_destination: Position,
+        first_facing: FacingDirection,
+        second_facing: FacingDirection,
+    },
+
+    /// Authoritative manual-skill targeting focus changed
+    BattleSkillTargetingFocusChanged {
+        battle_uuid: Uuid,
+        encounter_id: String,
+        node_type: CombatNodeType,
+        mission_variant: CombatMissionVariant,
+        battle_update: LiveBattleUpdateDto,
+    },
+
     /// 실시간 전투에서 직원 수동 스킬 발동 명령이 적용됨
     BattleSkillActivated {
         battle_uuid: Uuid,
@@ -2371,32 +4047,59 @@ pub enum BehaviorResult {
         skill_id: crate::game::ability::SkillId,
     },
 
+    /// The relation menu command committed; the checkpoint contains the selected target.
+    BattleRelationSelected {
+        battle_uuid: Uuid,
+        encounter_id: String,
+        node_type: CombatNodeType,
+        mission_variant: CombatMissionVariant,
+        battle_update: LiveBattleUpdateDto,
+        employee_uuid: Uuid,
+        unit_instance_id: UnitInstanceId,
+        entry: String,
+    },
+
     /// 보상 선택/수령 단계 상태
     RewardState {
         mode: RewardMode,
         rewards: Vec<RewardOption>,
         selected_reward_uuid: Option<Uuid>,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
 
     Ok,
 }
 
+#[cfg(test)]
 #[derive(Debug, Clone)]
-pub enum BehaviorCommandResultContract {
+pub(crate) enum BehaviorCommandResultContract {
     CommandPayload(CommandResultPayloadContract),
     BattleUpdate(BattleUpdateCommandResultContract),
     ReadOnlyPreview(CommandResultPayloadContract),
 }
 
+#[cfg(test)]
 #[derive(Debug, Clone)]
-pub struct BattleUpdateCommandResultContract {
+pub(crate) struct BattleUpdateCommandResultContract {
     pub battle_update: LiveBattleUpdateDto,
     pub battle_setup_snapshot: Option<LiveBattleSetupSnapshotDto>,
 }
 
 #[derive(Debug, Clone)]
-pub enum CommandResultPayloadContract {
+pub(crate) enum CoreResultProjection {
+    CommandPayload(CoreResultPayload),
+    BattleUpdate,
+    ReadOnlyPreview(CoreResultPayload),
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub(crate) struct CoreResultPayload {
+    pub result_type: &'static str,
+    pub payload: Value,
+}
+
+#[cfg(test)]
+#[derive(Debug, Clone)]
+pub(crate) enum CommandResultPayloadContract {
     Run(RunCommandResult),
     Map(MapCommandResult),
     Node(NodeCommandResult),
@@ -2406,18 +4109,19 @@ pub enum CommandResultPayloadContract {
     Shop(ShopCommandResult),
     Reward(RewardCommandResult),
     Battle(BattleCommandResult),
+    VisualNovel(VisualNovelCommandResult),
     General(GeneralCommandResult),
 }
 
+#[cfg(test)]
 #[derive(Debug, Clone)]
-pub enum RunCommandResult {
-    StartNewGame {
+pub(crate) enum RunCommandResult {
+    RunStartFlowStarted {
         game_mode: GameMode,
-        candidates: Vec<StarterEmployeeCandidate>,
-        required_count: usize,
+        visual_novel: Option<VisualNovelSnapshotDto>,
     },
     StarterEmployeesSelected {
-        selected_candidate_ids: Vec<String>,
+        selected_employee_definition_ids: Vec<String>,
         employee_uuids: Vec<Uuid>,
         map: MapViewDto,
     },
@@ -2433,16 +4137,23 @@ pub enum RunCommandResult {
         reason: RunFailureReason,
         outcome: Option<NodeOutcomeSummary>,
     },
+    RunFailureDecisionRequired {
+        reason: RunFailureReason,
+        contributing_reason: Option<RunFailureReason>,
+        outcome: Option<NodeOutcomeSummary>,
+    },
+    RunAbandoned,
 }
 
+#[cfg(test)]
 #[derive(Debug, Clone)]
-pub enum MapCommandResult {
+pub(crate) enum MapCommandResult {
     MapState { map: MapViewDto },
-    MoveRosterUnit { roster_slots: Vec<RosterSlotDto> },
 }
 
+#[cfg(test)]
 #[derive(Debug, Clone)]
-pub enum NodeCommandResult {
+pub(crate) enum NodeCommandResult {
     NodePreview {
         node_id: MapNodeId,
         kind_id: MapNodeKindId,
@@ -2451,6 +4162,7 @@ pub enum NodeCommandResult {
         session: NodeSession,
         map: MapViewDto,
         combat_preview: Option<CombatPreview>,
+        trauma_recovery_preview: Option<TraumaRecoveryPreviewDto>,
     },
     NodeEntered {
         node_id: MapNodeId,
@@ -2458,7 +4170,6 @@ pub enum NodeCommandResult {
         category: MapNodeCategory,
         payload: MapNodePayload,
         session: NodeSession,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
     NodeCompleted {
         map: MapViewDto,
@@ -2467,34 +4178,28 @@ pub enum NodeCommandResult {
     EventState {
         node_id: MapNodeId,
         event: EventSceneSnapshotDto,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
 }
 
+#[cfg(test)]
 #[derive(Debug, Clone)]
-pub enum FacilityCommandResult {
-    SupportState {
+pub(crate) enum FacilityCommandResult {
+    SavePointState {
         node_id: MapNodeId,
-        support_mode: SupportNodeMode,
-        support_type: Option<SupportNodeType>,
-        choices: Vec<SupportNodeType>,
-        selected_support_type: Option<SupportNodeType>,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
+        recovery_preview: TraumaRecoveryPreviewDto,
     },
     MaintenanceState {
         node_id: MapNodeId,
         maintenance_options: MaintenanceOptionsDto,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
     HeadquartersContactState {
         node_id: MapNodeId,
         options: Vec<HeadquartersContactOption>,
-        recruitment_candidates: Vec<StarterEmployeeCandidate>,
+        recruitment_candidates: Vec<EmployeeDefinition>,
         shop_pool_id: Option<String>,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
     EmployeeRecruited {
-        candidate_id: String,
+        employee_definition_id: String,
         employee_uuid: Uuid,
         completion: Box<CommandResultPayloadContract>,
     },
@@ -2505,8 +4210,9 @@ pub enum FacilityCommandResult {
     },
 }
 
+#[cfg(test)]
 #[derive(Debug, Clone)]
-pub enum InventoryCommandResult {
+pub(crate) enum InventoryCommandResult {
     UnEquipItem {
         result: UnequipItemResultDto,
     },
@@ -2517,30 +4223,46 @@ pub enum InventoryCommandResult {
         item_uuid: Uuid,
         target_employee_uuid: Uuid,
         replaced_modifier: Option<ActiveConsumableModifier>,
-        applied_modifier: ActiveConsumableModifier,
+        active_modifier: Option<ActiveConsumableModifier>,
+        condition: EmployeeCondition,
         inventory_diff: InventoryDiffDto,
+    },
+    RelicState {
+        result: crate::game::relic::RelicStateDto,
+    },
+    RelicNumericPlan {
+        result: crate::game::relic::plan::RelicNumericPlanDto,
+    },
+    RelicEffectivePlan {
+        result: Option<crate::game::relic::structural::dto::RelicEffectivePlanDto>,
+    },
+    RelicPreview {
+        result: crate::game::relic::RelicOperationPreviewDto,
     },
     SkillFragmentLoadoutUpdated {
         employee_uuid: Uuid,
-        equipped_fragment_ids: Vec<SkillFragmentId>,
+        active_copy_uuid: Option<Uuid>,
     },
-    SkillFragmentUpgraded {
-        target_fragment_id: SkillFragmentId,
-        dust_spent: u32,
-        remaining_dust: u32,
-        progress: SkillFragmentProgress,
+    SkillFragmentTransferred {
+        copy: OwnedFragment,
+        previous_owner: Uuid,
+        changed: bool,
     },
     SkillFragmentAwakened {
-        target_fragment_id: SkillFragmentId,
-        dust_spent: u32,
-        remaining_dust: u32,
-        progress: SkillFragmentProgress,
+        copy: OwnedFragment,
+        changed: bool,
+        enkephalin_spent: u32,
+        inventory_diff: InventoryDiffDto,
+    },
+    SkillFragmentFormSelected {
+        copy: OwnedFragment,
+        changed: bool,
     },
     SkillFragmentDismantled {
-        fragment_id: SkillFragmentId,
-        remaining_count: u32,
-        dust_gained: u32,
-        total_dust: u32,
+        copy_uuid: Uuid,
+        definition_id: SkillFragmentId,
+        enkephalin_gained: u32,
+        inventory_diff: InventoryDiffDto,
     },
     EquipmentDismantled {
         item_uuid: Uuid,
@@ -2555,23 +4277,25 @@ pub enum InventoryCommandResult {
     },
 }
 
+#[cfg(test)]
 #[derive(Debug, Clone)]
-pub enum RosterCommandResult {
+pub(crate) enum RosterCommandResult {
     EmployeeRecruited {
-        candidate_id: String,
+        employee_definition_id: String,
         employee_uuid: Uuid,
         completion: Box<CommandResultPayloadContract>,
     },
 }
 
+#[cfg(test)]
 #[derive(Debug, Clone)]
-pub enum ShopCommandResult {
+pub(crate) enum ShopCommandResult {
     ShopState {
         shop: ShopEventOption,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
-    RerollShop {
-        new_items: Vec<Uuid>,
+    RefreshShop {
+        enkephalin: u32,
+        shop: ShopEventOption,
     },
     SellItem {
         enkephalin: u32,
@@ -2580,68 +4304,565 @@ pub enum ShopCommandResult {
     PurchaseItem {
         enkephalin: u32,
         inventory_diff: InventoryDiffDto,
+        relic_diffs: Vec<crate::game::relic::OwnedRelic>,
+        crafting_resources: Option<crate::game::relic::RunCraftingResources>,
     },
 }
 
+#[cfg(test)]
 #[derive(Debug, Clone)]
-pub enum RewardCommandResult {
+pub(crate) enum RewardCommandResult {
+    DealerState { dealer: crate::game::dealer::DealerView },
     RewardState {
         mode: RewardMode,
         rewards: Vec<RewardOption>,
         selected_reward_uuid: Option<Uuid>,
-        research_deliveries: Vec<SkillFragmentResearchDelivery>,
     },
     RewardGranted {
         enkephalin: u32,
         inventory_diff: InventoryDiffDto,
         skill_fragment_diffs: Vec<SkillFragmentGrantDiffDto>,
-        skill_fragment_research_diffs: Vec<SkillFragmentResearchDiffDto>,
         employee_experience_diffs: Vec<crate::game::reward::EmployeeExperienceDiffDto>,
+        relic_activity: Option<crate::game::relic_reward::RelicRewardReceipt>,
     },
     CombatRewardsGranted {
         enkephalin: u32,
         inventory_diff: InventoryDiffDto,
         skill_fragment_diffs: Vec<SkillFragmentGrantDiffDto>,
-        skill_fragment_research_diffs: Vec<SkillFragmentResearchDiffDto>,
         employee_experience_diffs: Vec<crate::game::reward::EmployeeExperienceDiffDto>,
         outcome: NodeOutcomeSummary,
         completion: Box<CommandResultPayloadContract>,
     },
-}
-
-#[derive(Debug, Clone)]
-pub enum BattleCommandResult {
-    DeploymentRangePreview {
-        result: DeploymentRangePreviewResultDto,
+    MasteredEliteSweepResultStaged {
+        result: MasteredEliteSweepResultDto,
+    },
+    MasteredEliteSweepCompleted {
+        sweep_uuid: Uuid,
+        enkephalin: u32,
+        inventory_diff: InventoryDiffDto,
+        skill_fragment_diffs: Vec<SkillFragmentGrantDiffDto>,
+        employee_experience_diffs: Vec<crate::game::reward::EmployeeExperienceDiffDto>,
+        completion: Box<CommandResultPayloadContract>,
     },
 }
 
+#[cfg(test)]
 #[derive(Debug, Clone)]
-pub enum GeneralCommandResult {
+pub(crate) enum BattleCommandResult {
+    DeploymentRangePreview {
+        result: DeploymentRangePreviewResultDto,
+    },
+    SkillTargetPreview {
+        result: SkillTargetPreviewResultDto,
+    },
+    TacticalCommandPreview {
+        result: TacticalCommandPreviewResultDto,
+    },
+}
+
+#[cfg(test)]
+#[derive(Debug, Clone)]
+pub(crate) enum VisualNovelCommandResult {
+    VisualNovelState {
+        visual_novel: Option<VisualNovelSnapshotDto>,
+    },
+}
+
+#[cfg(test)]
+#[derive(Debug, Clone)]
+pub(crate) enum GeneralCommandResult {
     Ok,
 }
 
+fn nested_command_result_projection(completion: &BehaviorResult) -> serde_json::Result<Value> {
+    let projection = match completion.application_result_projection()? {
+        CoreResultProjection::CommandPayload(projection)
+        | CoreResultProjection::ReadOnlyPreview(projection) => projection,
+        CoreResultProjection::BattleUpdate => {
+            panic!("battle update results cannot be nested inside command result payloads")
+        }
+    };
+    crate::authoring::projection::object!({
+        "result_type": projection.result_type,
+        "payload": projection.payload,
+    })
+}
+
 impl BehaviorResult {
+    pub(crate) fn application_result_projection(&self) -> serde_json::Result<CoreResultProjection> {
+        // Borrow the actual payload fields before any owned JSON allocation.
+        macro_rules! json {
+            ({ $($key:literal : $value:expr),* $(,)? }) => {
+                crate::authoring::projection::object!({ $($key : $value),* })?
+            };
+        }
+        macro_rules! command_payload {
+            ($result_type:literal, $payload:expr) => {
+                Ok(CoreResultProjection::CommandPayload(CoreResultPayload {
+                    result_type: $result_type,
+                    payload: $payload,
+                }))
+            };
+        }
+        macro_rules! read_only_preview {
+            ($result_type:literal, $payload:expr) => {
+                Ok(CoreResultProjection::ReadOnlyPreview(CoreResultPayload {
+                    result_type: $result_type,
+                    payload: $payload,
+                }))
+            };
+        }
+
+        match self {
+            BehaviorResult::RunStartFlowStarted {
+                game_mode,
+                visual_novel,
+            } => command_payload!(
+                "RunStartFlowStarted",
+                json!({
+                    "game_mode": game_mode,
+                    "visual_novel": visual_novel,
+                })
+            ),
+            BehaviorResult::StarterEmployeesSelected {
+                selected_employee_definition_ids,
+                employee_uuids,
+                map,
+            } => command_payload!(
+                "StarterEmployeesSelected",
+                json!({
+                    "selected_employee_definition_ids": selected_employee_definition_ids,
+                    "employee_uuids": employee_uuids,
+                    "map": map,
+                })
+            ),
+            BehaviorResult::MapState { map } => {
+                command_payload!("MapState", json!({ "map": map }))
+            }
+            BehaviorResult::NodeEntered {
+                node_id,
+                kind_id,
+                category,
+                payload,
+                session,
+            } => command_payload!(
+                "NodeEntered",
+                json!({
+                    "node_id": node_id,
+                    "kind_id": kind_id,
+                    "category": category,
+                    "payload": payload,
+                    "session": session,
+                })
+            ),
+            BehaviorResult::NodePreview {
+                node_id,
+                kind_id,
+                category,
+                payload,
+                session,
+                map,
+                combat_preview,
+                trauma_recovery_preview,
+            } => command_payload!(
+                "NodePreview",
+                json!({
+                    "node_id": node_id,
+                    "kind_id": kind_id,
+                    "category": category,
+                    "payload": payload,
+                    "session": session,
+                    "map": map,
+                    "combat_preview": combat_preview,
+                    "trauma_recovery_preview": trauma_recovery_preview,
+                })
+            ),
+            BehaviorResult::NodeCompleted { map, outcome } => command_payload!(
+                "NodeCompleted",
+                json!({
+                    "map": map,
+                    "outcome": outcome,
+                })
+            ),
+            BehaviorResult::SavePointState {
+                node_id,
+                recovery_preview,
+            } => command_payload!(
+                "SavePointState",
+                json!({
+                    "node_id": node_id,
+                    "recovery_preview": recovery_preview,
+                })
+            ),
+            BehaviorResult::MaintenanceState {
+                node_id,
+                maintenance_options,
+            } => command_payload!(
+                "MaintenanceState",
+                json!({
+                    "node_id": node_id,
+                    "maintenance_options": maintenance_options,
+                })
+            ),
+            BehaviorResult::HeadquartersContactState {
+                node_id,
+                options,
+                recruitment_candidates,
+                shop_pool_id,
+            } => command_payload!(
+                "HeadquartersContactState",
+                json!({
+                    "node_id": node_id,
+                    "options": options,
+                    "recruitment_candidates": recruitment_candidates,
+                    "shop_pool_id": shop_pool_id,
+                })
+            ),
+            BehaviorResult::FloorAdvanced {
+                game_mode,
+                floor_index,
+                map,
+            } => command_payload!(
+                "FloorAdvanced",
+                json!({
+                    "game_mode": game_mode,
+                    "floor_index": floor_index,
+                    "map": map,
+                })
+            ),
+            BehaviorResult::RunComplete { map } => {
+                command_payload!("RunComplete", crate::authoring::projection::to_value(map)?)
+            }
+            BehaviorResult::RunFailed { reason, outcome } => command_payload!(
+                "RunFailed",
+                json!({
+                    "reason": reason,
+                    "outcome": outcome,
+                })
+            ),
+            BehaviorResult::RunFailureDecisionRequired {
+                reason,
+                contributing_reason,
+                outcome,
+            } => command_payload!(
+                "RunFailureDecisionRequired",
+                json!({
+                    "reason": reason,
+                    "contributing_reason": contributing_reason,
+                    "outcome": outcome,
+                })
+            ),
+            BehaviorResult::RunAbandoned => command_payload!("RunAbandoned", json!({})),
+            BehaviorResult::UnEquipItem { result } => {
+                command_payload!(
+                    "UnEquipItem",
+                    crate::authoring::projection::to_value(result)?
+                )
+            }
+            BehaviorResult::EquipItem { result } => {
+                command_payload!("EquipItem", crate::authoring::projection::to_value(result)?)
+            }
+            BehaviorResult::ConsumableItemUsed {
+                item_uuid,
+                target_employee_uuid,
+                replaced_modifier,
+                active_modifier,
+                condition,
+                inventory_diff,
+            } => command_payload!(
+                "ConsumableItemUsed",
+                json!({
+                    "item_uuid": item_uuid,
+                    "target_employee_uuid": target_employee_uuid,
+                    "replaced_modifier": replaced_modifier,
+                    "active_modifier": active_modifier,
+                    "condition": condition,
+                    "inventory_diff": inventory_diff,
+                })
+            ),
+            BehaviorResult::RelicState { result } => command_payload!(
+                "RelicState",
+                crate::authoring::projection::to_value(result)?
+            ),
+            BehaviorResult::RelicNumericPlan { result } => command_payload!(
+                "RelicNumericPlan",
+                crate::authoring::projection::to_value(result)?
+            ),
+            BehaviorResult::RelicEffectivePlan { result } => command_payload!(
+                "RelicEffectivePlan",
+                crate::authoring::projection::to_value(result)?
+            ),
+            BehaviorResult::RelicPreview { result } => command_payload!(
+                "RelicPreview",
+                crate::authoring::projection::to_value(result)?
+            ),
+            BehaviorResult::SkillFragmentLoadoutUpdated {
+                employee_uuid,
+                active_copy_uuid,
+            } => command_payload!(
+                "SkillFragmentLoadoutUpdated",
+                json!({"employee_uuid": employee_uuid, "active_copy_uuid": active_copy_uuid})
+            ),
+            BehaviorResult::SkillFragmentTransferred {
+                copy,
+                previous_owner,
+                changed,
+            } => command_payload!(
+                "SkillFragmentTransferred",
+                json!({"copy": copy, "previous_owner": previous_owner, "changed": changed})
+            ),
+            BehaviorResult::SkillFragmentAwakened {
+                copy,
+                changed,
+                enkephalin_spent,
+                inventory_diff,
+            } => command_payload!(
+                "SkillFragmentAwakened",
+                json!({"copy": copy, "changed": changed, "enkephalin_spent": enkephalin_spent, "inventory_diff": inventory_diff})
+            ),
+            BehaviorResult::SkillFragmentFormSelected { copy, changed } => command_payload!(
+                "SkillFragmentFormSelected",
+                json!({"copy": copy, "changed": changed})
+            ),
+            BehaviorResult::SkillFragmentDismantled {
+                copy_uuid,
+                definition_id,
+                enkephalin_gained,
+                inventory_diff,
+            } => command_payload!(
+                "SkillFragmentDismantled",
+                json!({"copy_uuid": copy_uuid, "definition_id": definition_id, "enkephalin_gained": enkephalin_gained, "inventory_diff": inventory_diff})
+            ),
+            BehaviorResult::EquipmentDismantled {
+                item_uuid,
+                equipment_id,
+                inventory_diff,
+            } => command_payload!(
+                "EquipmentDismantled",
+                json!({
+                    "item_uuid": item_uuid,
+                    "equipment_id": equipment_id,
+                    "inventory_diff": inventory_diff,
+                })
+            ),
+            BehaviorResult::EquipmentEnhanced {
+                item_uuid,
+                equipment_id,
+                enhancement_level,
+                inventory_diff,
+            } => command_payload!(
+                "EquipmentEnhanced",
+                json!({
+                    "item_uuid": item_uuid,
+                    "equipment_id": equipment_id,
+                    "enhancement_level": enhancement_level,
+                    "inventory_diff": inventory_diff,
+                })
+            ),
+            BehaviorResult::ShopState { shop } => {
+                command_payload!("ShopState", json!({ "shop": shop }))
+            }
+            BehaviorResult::RefreshShop { enkephalin, shop } => command_payload!(
+                "RefreshShop",
+                json!({
+                    "enkephalin": enkephalin,
+                    "shop": shop,
+                })
+            ),
+            BehaviorResult::SellItem {
+                enkephalin,
+                inventory_diff,
+            } => command_payload!(
+                "SellItem",
+                json!({
+                    "enkephalin": enkephalin,
+                    "inventory_diff": inventory_diff,
+                })
+            ),
+            BehaviorResult::PurchaseItem {
+                enkephalin,
+                inventory_diff,
+                relic_diffs,
+                crafting_resources,
+            } => command_payload!(
+                "PurchaseItem",
+                json!({
+                    "enkephalin": enkephalin,
+                    "inventory_diff": inventory_diff,
+                    "relic_diffs": relic_diffs,
+                    "crafting_resources": crafting_resources,
+                })
+            ),
+            BehaviorResult::EmployeeRecruited {
+                employee_definition_id,
+                employee_uuid,
+                completion,
+            } => command_payload!(
+                "EmployeeRecruited",
+                json!({
+                    "employee_definition_id": employee_definition_id,
+                    "employee_uuid": employee_uuid,
+                    "completion": nested_command_result_projection(completion)?,
+                })
+            ),
+            BehaviorResult::EmergencySuppliesGranted {
+                enkephalin,
+                inventory_diff,
+                completion,
+            } => command_payload!(
+                "EmergencySuppliesGranted",
+                json!({
+                    "enkephalin": enkephalin,
+                    "inventory_diff": inventory_diff,
+                    "completion": nested_command_result_projection(completion)?,
+                })
+            ),
+            BehaviorResult::EventState { node_id, event } => command_payload!(
+                "EventState",
+                json!({
+                    "node_id": node_id,
+                    "event": event,
+                })
+            ),
+            BehaviorResult::VisualNovelState { visual_novel } => command_payload!(
+                "VisualNovelState",
+                json!({
+                    "visual_novel": visual_novel,
+                })
+            ),
+            BehaviorResult::RewardGranted {
+                enkephalin,
+                inventory_diff,
+                skill_fragment_diffs,
+                employee_experience_diffs,
+                relic_activity,
+            } => command_payload!(
+                "RewardGranted",
+                json!({
+                    "enkephalin": enkephalin,
+                    "inventory_diff": inventory_diff,
+                    "skill_fragment_diffs": skill_fragment_diffs,
+                    "employee_experience_diffs": employee_experience_diffs,
+                    "relic_activity": relic_activity,
+                })
+            ),
+            BehaviorResult::CombatRewardsGranted {
+                enkephalin,
+                inventory_diff,
+                skill_fragment_diffs,
+                employee_experience_diffs,
+                outcome,
+                completion,
+            } => command_payload!(
+                "CombatRewardsGranted",
+                json!({
+                    "enkephalin": enkephalin,
+                    "inventory_diff": inventory_diff,
+                    "skill_fragment_diffs": skill_fragment_diffs,
+                    "employee_experience_diffs": employee_experience_diffs,
+                    "outcome": outcome,
+                    "completion": nested_command_result_projection(completion)?,
+                })
+            ),
+            BehaviorResult::MasteredEliteSweepResultStaged { result } => command_payload!(
+                "MasteredEliteSweepResultStaged",
+                json!({ "result": result })
+            ),
+            BehaviorResult::MasteredEliteSweepCompleted {
+                sweep_uuid,
+                enkephalin,
+                inventory_diff,
+                skill_fragment_diffs,
+                employee_experience_diffs,
+                completion,
+            } => command_payload!(
+                "MasteredEliteSweepCompleted",
+                json!({
+                    "sweep_uuid": sweep_uuid,
+                    "enkephalin": enkephalin,
+                    "inventory_diff": inventory_diff,
+                    "skill_fragment_diffs": skill_fragment_diffs,
+                    "employee_experience_diffs": employee_experience_diffs,
+                    "completion": nested_command_result_projection(completion)?,
+                })
+            ),
+            BehaviorResult::BattleAdvanced {
+                battle_setup_snapshot,
+                battle_update,
+                ..
+            } => {
+                let _ = (battle_setup_snapshot, battle_update);
+                Ok(CoreResultProjection::BattleUpdate)
+            }
+            BehaviorResult::BattleState { battle_update, .. }
+            | BehaviorResult::BattlePlaybackChanged { battle_update, .. }
+            | BehaviorResult::BattleUnitDeployed { battle_update, .. }
+            | BehaviorResult::BattleUnitWithdrawn { battle_update, .. }
+            | BehaviorResult::BattleEngagementStanceChanged { battle_update, .. }
+            | BehaviorResult::BattleUnitTacticallyRelocated { battle_update, .. }
+            | BehaviorResult::BattleUnitsTacticallySwapped { battle_update, .. }
+            | BehaviorResult::BattleSkillTargetingFocusChanged { battle_update, .. }
+            | BehaviorResult::BattleSkillActivated { battle_update, .. }
+            | BehaviorResult::BattleRelationSelected { battle_update, .. } => {
+                let _ = battle_update;
+                Ok(CoreResultProjection::BattleUpdate)
+            }
+            BehaviorResult::DeploymentRangePreview { result } => {
+                read_only_preview!(
+                    "DeploymentRangePreview",
+                    crate::authoring::projection::to_value(result)?
+                )
+            }
+            BehaviorResult::TacticalCommandPreview { result } => {
+                read_only_preview!(
+                    "TacticalCommandPreview",
+                    crate::authoring::projection::to_value(result)?
+                )
+            }
+            BehaviorResult::SkillTargetPreview { result } => {
+                read_only_preview!(
+                    "SkillTargetPreview",
+                    crate::authoring::projection::to_value(result)?
+                )
+            }
+            BehaviorResult::DealerState { dealer } => command_payload!("DealerState", json!({"dealer": dealer})),
+            BehaviorResult::RewardState {
+                mode,
+                rewards,
+                selected_reward_uuid,
+            } => command_payload!(
+                "RewardState",
+                json!({
+                    "mode": mode,
+                    "rewards": rewards,
+                    "selected_reward_uuid": selected_reward_uuid,
+                })
+            ),
+            BehaviorResult::Ok => {
+                command_payload!("Ok", crate::authoring::projection::to_value(())?)
+            }
+        }
+    }
+
+    #[cfg(test)]
     pub fn into_command_result_contract(self) -> BehaviorCommandResultContract {
         match self {
-            BehaviorResult::StartNewGame {
+            BehaviorResult::RunStartFlowStarted {
                 game_mode,
-                candidates,
-                required_count,
+                visual_novel,
             } => BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Run(
-                RunCommandResult::StartNewGame {
+                RunCommandResult::RunStartFlowStarted {
                     game_mode,
-                    candidates,
-                    required_count,
+                    visual_novel,
                 },
             )),
             BehaviorResult::StarterEmployeesSelected {
-                selected_candidate_ids,
+                selected_employee_definition_ids,
                 employee_uuids,
                 map,
             } => BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Run(
                 RunCommandResult::StarterEmployeesSelected {
-                    selected_candidate_ids,
+                    selected_employee_definition_ids,
                     employee_uuids,
                     map,
                 },
@@ -2655,7 +4876,6 @@ impl BehaviorResult {
                 category,
                 payload,
                 session,
-                research_deliveries,
             } => BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Node(
                 NodeCommandResult::NodeEntered {
                     node_id,
@@ -2663,7 +4883,6 @@ impl BehaviorResult {
                     category,
                     payload,
                     session,
-                    research_deliveries,
                 },
             )),
             BehaviorResult::NodePreview {
@@ -2674,6 +4893,7 @@ impl BehaviorResult {
                 session,
                 map,
                 combat_preview,
+                trauma_recovery_preview,
             } => BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Node(
                 NodeCommandResult::NodePreview {
                     node_id,
@@ -2683,6 +4903,7 @@ impl BehaviorResult {
                     session,
                     map,
                     combat_preview,
+                    trauma_recovery_preview,
                 },
             )),
             BehaviorResult::NodeCompleted { map, outcome } => {
@@ -2690,43 +4911,58 @@ impl BehaviorResult {
                     NodeCommandResult::NodeCompleted { map, outcome },
                 ))
             }
-            BehaviorResult::EventState {
+            BehaviorResult::EventState { node_id, event } => {
+                BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Node(
+                    NodeCommandResult::EventState { node_id, event },
+                ))
+            }
+            BehaviorResult::VisualNovelState { visual_novel } => {
+                BehaviorCommandResultContract::CommandPayload(
+                    CommandResultPayloadContract::VisualNovel(
+                        VisualNovelCommandResult::VisualNovelState { visual_novel },
+                    ),
+                )
+            }
+            BehaviorResult::SavePointState {
                 node_id,
-                event,
-                research_deliveries,
-            } => BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Node(
-                NodeCommandResult::EventState {
-                    node_id,
-                    event,
-                    research_deliveries,
-                },
-            )),
-            BehaviorResult::SupportState {
-                node_id,
-                support_mode,
-                support_type,
-                choices,
-                selected_support_type,
-                research_deliveries,
+                recovery_preview,
             } => BehaviorCommandResultContract::CommandPayload(
-                CommandResultPayloadContract::Facility(FacilityCommandResult::SupportState {
+                CommandResultPayloadContract::Facility(FacilityCommandResult::SavePointState {
                     node_id,
-                    support_mode,
-                    support_type,
-                    choices,
-                    selected_support_type,
-                    research_deliveries,
+                    recovery_preview,
                 }),
             ),
+            BehaviorResult::MasteredEliteSweepResultStaged { result } => {
+                BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Reward(
+                    RewardCommandResult::MasteredEliteSweepResultStaged { result },
+                ))
+            }
+            BehaviorResult::MasteredEliteSweepCompleted {
+                sweep_uuid,
+                enkephalin,
+                inventory_diff,
+                skill_fragment_diffs,
+                employee_experience_diffs,
+                completion,
+            } => {
+                BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Reward(
+                    RewardCommandResult::MasteredEliteSweepCompleted {
+                        sweep_uuid,
+                        enkephalin,
+                        inventory_diff,
+                        skill_fragment_diffs,
+                        employee_experience_diffs,
+                        completion: Box::new(completion.into_command_payload_contract()),
+                    },
+                ))
+            }
             BehaviorResult::MaintenanceState {
                 node_id,
                 maintenance_options,
-                research_deliveries,
             } => BehaviorCommandResultContract::CommandPayload(
                 CommandResultPayloadContract::Facility(FacilityCommandResult::MaintenanceState {
                     node_id,
                     maintenance_options,
-                    research_deliveries,
                 }),
             ),
             BehaviorResult::HeadquartersContactState {
@@ -2734,7 +4970,6 @@ impl BehaviorResult {
                 options,
                 recruitment_candidates,
                 shop_pool_id,
-                research_deliveries,
             } => BehaviorCommandResultContract::CommandPayload(
                 CommandResultPayloadContract::Facility(
                     FacilityCommandResult::HeadquartersContactState {
@@ -2742,7 +4977,6 @@ impl BehaviorResult {
                         options,
                         recruitment_candidates,
                         shop_pool_id,
-                        research_deliveries,
                     },
                 ),
             ),
@@ -2765,6 +4999,20 @@ impl BehaviorResult {
                     RunCommandResult::RunFailed { reason, outcome },
                 ))
             }
+            BehaviorResult::RunFailureDecisionRequired {
+                reason,
+                contributing_reason,
+                outcome,
+            } => BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Run(
+                RunCommandResult::RunFailureDecisionRequired {
+                    reason,
+                    contributing_reason,
+                    outcome,
+                },
+            )),
+            BehaviorResult::RunAbandoned => BehaviorCommandResultContract::CommandPayload(
+                CommandResultPayloadContract::Run(RunCommandResult::RunAbandoned),
+            ),
             BehaviorResult::UnEquipItem { result } => {
                 BehaviorCommandResultContract::CommandPayload(
                     CommandResultPayloadContract::Inventory(InventoryCommandResult::UnEquipItem {
@@ -2781,7 +5029,8 @@ impl BehaviorResult {
                 item_uuid,
                 target_employee_uuid,
                 replaced_modifier,
-                applied_modifier,
+                active_modifier,
+                condition,
                 inventory_diff,
             } => BehaviorCommandResultContract::CommandPayload(
                 CommandResultPayloadContract::Inventory(
@@ -2789,64 +5038,96 @@ impl BehaviorResult {
                         item_uuid,
                         target_employee_uuid,
                         replaced_modifier,
-                        applied_modifier,
+                        active_modifier,
+                        condition,
                         inventory_diff,
                     },
                 ),
             ),
+            BehaviorResult::RelicState { result } => BehaviorCommandResultContract::CommandPayload(
+                CommandResultPayloadContract::Inventory(InventoryCommandResult::RelicState {
+                    result,
+                }),
+            ),
+            BehaviorResult::RelicNumericPlan { result } => {
+                BehaviorCommandResultContract::CommandPayload(
+                    CommandResultPayloadContract::Inventory(
+                        InventoryCommandResult::RelicNumericPlan { result },
+                    ),
+                )
+            }
+            BehaviorResult::RelicEffectivePlan { result } => {
+                BehaviorCommandResultContract::CommandPayload(
+                    CommandResultPayloadContract::Inventory(
+                        InventoryCommandResult::RelicEffectivePlan { result },
+                    ),
+                )
+            }
+            BehaviorResult::RelicPreview { result } => {
+                BehaviorCommandResultContract::CommandPayload(
+                    CommandResultPayloadContract::Inventory(InventoryCommandResult::RelicPreview {
+                        result,
+                    }),
+                )
+            }
             BehaviorResult::SkillFragmentLoadoutUpdated {
                 employee_uuid,
-                equipped_fragment_ids,
+                active_copy_uuid,
             } => BehaviorCommandResultContract::CommandPayload(
                 CommandResultPayloadContract::Inventory(
                     InventoryCommandResult::SkillFragmentLoadoutUpdated {
                         employee_uuid,
-                        equipped_fragment_ids,
+                        active_copy_uuid,
                     },
                 ),
             ),
-            BehaviorResult::SkillFragmentUpgraded {
-                target_fragment_id,
-                dust_spent,
-                remaining_dust,
-                progress,
+            BehaviorResult::SkillFragmentTransferred {
+                copy,
+                previous_owner,
+                changed,
             } => BehaviorCommandResultContract::CommandPayload(
                 CommandResultPayloadContract::Inventory(
-                    InventoryCommandResult::SkillFragmentUpgraded {
-                        target_fragment_id,
-                        dust_spent,
-                        remaining_dust,
-                        progress,
+                    InventoryCommandResult::SkillFragmentTransferred {
+                        copy,
+                        previous_owner,
+                        changed,
                     },
                 ),
             ),
             BehaviorResult::SkillFragmentAwakened {
-                target_fragment_id,
-                dust_spent,
-                remaining_dust,
-                progress,
+                copy,
+                changed,
+                enkephalin_spent,
+                inventory_diff,
             } => BehaviorCommandResultContract::CommandPayload(
                 CommandResultPayloadContract::Inventory(
                     InventoryCommandResult::SkillFragmentAwakened {
-                        target_fragment_id,
-                        dust_spent,
-                        remaining_dust,
-                        progress,
+                        copy,
+                        changed,
+                        enkephalin_spent,
+                        inventory_diff,
                     },
                 ),
             ),
+            BehaviorResult::SkillFragmentFormSelected { copy, changed } => {
+                BehaviorCommandResultContract::CommandPayload(
+                    CommandResultPayloadContract::Inventory(
+                        InventoryCommandResult::SkillFragmentFormSelected { copy, changed },
+                    ),
+                )
+            }
             BehaviorResult::SkillFragmentDismantled {
-                fragment_id,
-                remaining_count,
-                dust_gained,
-                total_dust,
+                copy_uuid,
+                definition_id,
+                enkephalin_gained,
+                inventory_diff,
             } => BehaviorCommandResultContract::CommandPayload(
                 CommandResultPayloadContract::Inventory(
                     InventoryCommandResult::SkillFragmentDismantled {
-                        fragment_id,
-                        remaining_count,
-                        dust_gained,
-                        total_dust,
+                        copy_uuid,
+                        definition_id,
+                        enkephalin_gained,
+                        inventory_diff,
                     },
                 ),
             ),
@@ -2878,23 +5159,12 @@ impl BehaviorResult {
                     },
                 ),
             ),
-            BehaviorResult::MoveRosterUnit { roster_slots } => {
-                BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Map(
-                    MapCommandResult::MoveRosterUnit { roster_slots },
-                ))
-            }
-            BehaviorResult::ShopState {
-                shop,
-                research_deliveries,
-            } => BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Shop(
-                ShopCommandResult::ShopState {
-                    shop,
-                    research_deliveries,
-                },
-            )),
-            BehaviorResult::RerollShop { new_items } => {
+            BehaviorResult::ShopState { shop } => BehaviorCommandResultContract::CommandPayload(
+                CommandResultPayloadContract::Shop(ShopCommandResult::ShopState { shop }),
+            ),
+            BehaviorResult::RefreshShop { enkephalin, shop } => {
                 BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Shop(
-                    ShopCommandResult::RerollShop { new_items },
+                    ShopCommandResult::RefreshShop { enkephalin, shop },
                 ))
             }
             BehaviorResult::SellItem {
@@ -2909,19 +5179,23 @@ impl BehaviorResult {
             BehaviorResult::PurchaseItem {
                 enkephalin,
                 inventory_diff,
+                relic_diffs,
+                crafting_resources,
             } => BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Shop(
                 ShopCommandResult::PurchaseItem {
                     enkephalin,
                     inventory_diff,
+                relic_diffs,
+                crafting_resources,
                 },
             )),
             BehaviorResult::EmployeeRecruited {
-                candidate_id,
+                employee_definition_id,
                 employee_uuid,
                 completion,
             } => BehaviorCommandResultContract::CommandPayload(
                 CommandResultPayloadContract::Facility(FacilityCommandResult::EmployeeRecruited {
-                    candidate_id,
+                    employee_definition_id,
                     employee_uuid,
                     completion: Box::new(completion.into_command_payload_contract()),
                 }),
@@ -2943,22 +5217,21 @@ impl BehaviorResult {
                 enkephalin,
                 inventory_diff,
                 skill_fragment_diffs,
-                skill_fragment_research_diffs,
                 employee_experience_diffs,
+                relic_activity,
             } => BehaviorCommandResultContract::CommandPayload(
                 CommandResultPayloadContract::Reward(RewardCommandResult::RewardGranted {
                     enkephalin,
                     inventory_diff,
                     skill_fragment_diffs,
-                    skill_fragment_research_diffs,
                     employee_experience_diffs,
+                    relic_activity,
                 }),
             ),
             BehaviorResult::CombatRewardsGranted {
                 enkephalin,
                 inventory_diff,
                 skill_fragment_diffs,
-                skill_fragment_research_diffs,
                 employee_experience_diffs,
                 outcome,
                 completion,
@@ -2967,7 +5240,6 @@ impl BehaviorResult {
                     enkephalin,
                     inventory_diff,
                     skill_fragment_diffs,
-                    skill_fragment_research_diffs,
                     employee_experience_diffs,
                     outcome,
                     completion: Box::new(completion.into_command_payload_contract()),
@@ -2985,7 +5257,12 @@ impl BehaviorResult {
             | BehaviorResult::BattlePlaybackChanged { battle_update, .. }
             | BehaviorResult::BattleUnitDeployed { battle_update, .. }
             | BehaviorResult::BattleUnitWithdrawn { battle_update, .. }
-            | BehaviorResult::BattleSkillActivated { battle_update, .. } => {
+            | BehaviorResult::BattleEngagementStanceChanged { battle_update, .. }
+            | BehaviorResult::BattleUnitTacticallyRelocated { battle_update, .. }
+            | BehaviorResult::BattleUnitsTacticallySwapped { battle_update, .. }
+            | BehaviorResult::BattleSkillTargetingFocusChanged { battle_update, .. }
+            | BehaviorResult::BattleSkillActivated { battle_update, .. }
+            | BehaviorResult::BattleRelationSelected { battle_update, .. } => {
                 BehaviorCommandResultContract::BattleUpdate(BattleUpdateCommandResultContract {
                     battle_update,
                     battle_setup_snapshot: None,
@@ -2998,17 +5275,30 @@ impl BehaviorResult {
                     ),
                 )
             }
+            BehaviorResult::TacticalCommandPreview { result } => {
+                BehaviorCommandResultContract::ReadOnlyPreview(
+                    CommandResultPayloadContract::Battle(
+                        BattleCommandResult::TacticalCommandPreview { result },
+                    ),
+                )
+            }
+            BehaviorResult::SkillTargetPreview { result } => {
+                BehaviorCommandResultContract::ReadOnlyPreview(
+                    CommandResultPayloadContract::Battle(BattleCommandResult::SkillTargetPreview {
+                        result,
+                    }),
+                )
+            }
+            BehaviorResult::DealerState { dealer } => BehaviorCommandResultContract::CommandPayload(CommandResultPayloadContract::Reward(RewardCommandResult::DealerState { dealer })),
             BehaviorResult::RewardState {
                 mode,
                 rewards,
                 selected_reward_uuid,
-                research_deliveries,
             } => BehaviorCommandResultContract::CommandPayload(
                 CommandResultPayloadContract::Reward(RewardCommandResult::RewardState {
                     mode,
                     rewards,
                     selected_reward_uuid,
-                    research_deliveries,
                 }),
             ),
             BehaviorResult::Ok => BehaviorCommandResultContract::CommandPayload(
@@ -3017,6 +5307,7 @@ impl BehaviorResult {
         }
     }
 
+    #[cfg(test)]
     fn into_command_payload_contract(self) -> CommandResultPayloadContract {
         match self.into_command_result_contract() {
             BehaviorCommandResultContract::CommandPayload(payload)
@@ -3031,15 +5322,18 @@ impl BehaviorResult {
     // 타입 체크 헬퍼 (데이터가 없는 variant용)
     // ============================================================
 
-    pub fn is_start_new_game(&self) -> bool {
-        matches!(self, BehaviorResult::StartNewGame { .. })
+    #[cfg(test)]
+    pub fn is_run_start_flow_started(&self) -> bool {
+        matches!(self, BehaviorResult::RunStartFlowStarted { .. })
     }
 
+    #[cfg(test)]
     pub fn is_sell_item(&self) -> bool {
         matches!(self, BehaviorResult::SellItem { .. })
     }
 
     /// SellItem → (남은 엔케팔린, 인벤토리 변경 사항) 반환
+    #[cfg(test)]
     pub fn as_sell_item(&self) -> Option<(u32, &InventoryDiffDto)> {
         match self {
             BehaviorResult::SellItem {
@@ -3050,6 +5344,7 @@ impl BehaviorResult {
         }
     }
 
+    #[cfg(test)]
     pub fn is_ok(&self) -> bool {
         matches!(self, BehaviorResult::Ok)
     }
@@ -3059,6 +5354,7 @@ impl BehaviorResult {
     // ============================================================
 
     /// ShopState → ShopEventOption 참조 반환
+    #[cfg(test)]
     pub fn as_shop_state(&self) -> Option<&ShopEventOption> {
         match self {
             BehaviorResult::ShopState { shop, .. } => Some(shop),
@@ -3066,168 +5362,119 @@ impl BehaviorResult {
         }
     }
 
-    /// RerollShop → 새로운 아이템 UUID 리스트 참조 반환
-    pub fn as_reroll_shop(&self) -> Option<&Vec<Uuid>> {
-        match self {
-            BehaviorResult::RerollShop { new_items } => Some(new_items),
-            _ => None,
-        }
-    }
-
     /// PurchaseItem → (남은 엔케팔린, 인벤토리 변경 사항) 반환
+    #[cfg(test)]
     pub fn as_purchase_item(&self) -> Option<(u32, &InventoryDiffDto)> {
         match self {
             BehaviorResult::PurchaseItem {
                 enkephalin,
                 inventory_diff,
-            } => Some((*enkephalin, inventory_diff)),
-            _ => None,
-        }
-    }
-
-    /// RewardGranted → (남은 엔케팔린, 인벤토리 변경 사항) 반환
-    pub fn as_reward_granted(&self) -> Option<(u32, &InventoryDiffDto)> {
-        match self {
-            BehaviorResult::RewardGranted {
-                enkephalin,
-                inventory_diff,
                 ..
             } => Some((*enkephalin, inventory_diff)),
-            _ => None,
-        }
-    }
-
-    /// RewardState → (모드, 보상 목록, 현재 선택 보상 UUID) 반환
-    pub fn as_reward_state(&self) -> Option<(RewardMode, &[RewardOption], Option<Uuid>)> {
-        match self {
-            BehaviorResult::RewardState {
-                mode,
-                rewards,
-                selected_reward_uuid,
-                ..
-            } => Some((*mode, rewards.as_slice(), *selected_reward_uuid)),
             _ => None,
         }
     }
 }
 
+#[cfg(test)]
 impl CommandResultPayloadContract {
     pub fn result_type(&self) -> &'static str {
-        match self {
-            CommandResultPayloadContract::Run(result) => result.result_type(),
-            CommandResultPayloadContract::Map(result) => result.result_type(),
-            CommandResultPayloadContract::Node(result) => result.result_type(),
-            CommandResultPayloadContract::Facility(result) => result.result_type(),
-            CommandResultPayloadContract::Inventory(result) => result.result_type(),
-            CommandResultPayloadContract::Roster(result) => result.result_type(),
-            CommandResultPayloadContract::Shop(result) => result.result_type(),
-            CommandResultPayloadContract::Reward(result) => result.result_type(),
-            CommandResultPayloadContract::Battle(result) => result.result_type(),
-            CommandResultPayloadContract::General(result) => result.result_type(),
-        }
+        self.command_result_projection()
+            .expect("typed command result payload must serialize")
+            .result_type
     }
 
     pub fn payload_value(&self) -> serde_json::Result<Value> {
+        Ok(self.command_result_projection()?.payload)
+    }
+
+    fn command_result_projection(&self) -> serde_json::Result<CoreResultPayload> {
+        let result = self.clone().into_behavior_result();
+        match result.application_result_projection()? {
+            CoreResultProjection::CommandPayload(projection)
+            | CoreResultProjection::ReadOnlyPreview(projection) => Ok(projection),
+            CoreResultProjection::BattleUpdate => {
+                unreachable!("payload compatibility types cannot contain a battle update")
+            }
+        }
+    }
+
+    fn into_behavior_result(self) -> BehaviorResult {
         match self {
-            CommandResultPayloadContract::Run(result) => result.payload_value(),
-            CommandResultPayloadContract::Map(result) => result.payload_value(),
-            CommandResultPayloadContract::Node(result) => result.payload_value(),
-            CommandResultPayloadContract::Facility(result) => result.payload_value(),
-            CommandResultPayloadContract::Inventory(result) => result.payload_value(),
-            CommandResultPayloadContract::Roster(result) => result.payload_value(),
-            CommandResultPayloadContract::Shop(result) => result.payload_value(),
-            CommandResultPayloadContract::Reward(result) => result.payload_value(),
-            CommandResultPayloadContract::Battle(result) => result.payload_value(),
-            CommandResultPayloadContract::General(result) => result.payload_value(),
+            CommandResultPayloadContract::Run(result) => result.into_behavior_result(),
+            CommandResultPayloadContract::Map(result) => result.into_behavior_result(),
+            CommandResultPayloadContract::Node(result) => result.into_behavior_result(),
+            CommandResultPayloadContract::Facility(result) => result.into_behavior_result(),
+            CommandResultPayloadContract::Inventory(result) => result.into_behavior_result(),
+            CommandResultPayloadContract::Roster(result) => result.into_behavior_result(),
+            CommandResultPayloadContract::Shop(result) => result.into_behavior_result(),
+            CommandResultPayloadContract::Reward(result) => result.into_behavior_result(),
+            CommandResultPayloadContract::Battle(result) => result.into_behavior_result(),
+            CommandResultPayloadContract::VisualNovel(result) => result.into_behavior_result(),
+            CommandResultPayloadContract::General(result) => result.into_behavior_result(),
         }
     }
 }
 
-fn nested_payload_value(completion: &CommandResultPayloadContract) -> serde_json::Result<Value> {
-    Ok(json!({
-        "result_type": completion.result_type(),
-        "payload": completion.payload_value()?,
-    }))
-}
-
+#[cfg(test)]
 impl RunCommandResult {
-    fn result_type(&self) -> &'static str {
+    fn into_behavior_result(self) -> BehaviorResult {
         match self {
-            RunCommandResult::StartNewGame { .. } => "StartNewGame",
-            RunCommandResult::StarterEmployeesSelected { .. } => "StarterEmployeesSelected",
-            RunCommandResult::FloorAdvanced { .. } => "FloorAdvanced",
-            RunCommandResult::RunComplete { .. } => "RunComplete",
-            RunCommandResult::RunFailed { .. } => "RunFailed",
-        }
-    }
-
-    fn payload_value(&self) -> serde_json::Result<Value> {
-        match self {
-            RunCommandResult::StartNewGame {
+            RunCommandResult::RunStartFlowStarted {
                 game_mode,
-                candidates,
-                required_count,
-            } => Ok(json!({
-                "game_mode": game_mode,
-                "candidates": candidates,
-                "required_count": required_count,
-            })),
+                visual_novel,
+            } => BehaviorResult::RunStartFlowStarted {
+                game_mode,
+                visual_novel,
+            },
             RunCommandResult::StarterEmployeesSelected {
-                selected_candidate_ids,
+                selected_employee_definition_ids,
                 employee_uuids,
                 map,
-            } => Ok(json!({
-                "selected_candidate_ids": selected_candidate_ids,
-                "employee_uuids": employee_uuids,
-                "map": map,
-            })),
+            } => BehaviorResult::StarterEmployeesSelected {
+                selected_employee_definition_ids,
+                employee_uuids,
+                map,
+            },
             RunCommandResult::FloorAdvanced {
                 game_mode,
                 floor_index,
                 map,
-            } => Ok(json!({
-                "game_mode": game_mode,
-                "floor_index": floor_index,
-                "map": map,
-            })),
-            RunCommandResult::RunComplete { map } => serde_json::to_value(map),
-            RunCommandResult::RunFailed { reason, outcome } => Ok(json!({
-                "reason": reason,
-                "outcome": outcome,
-            })),
+            } => BehaviorResult::FloorAdvanced {
+                game_mode,
+                floor_index,
+                map,
+            },
+            RunCommandResult::RunComplete { map } => BehaviorResult::RunComplete { map },
+            RunCommandResult::RunFailed { reason, outcome } => {
+                BehaviorResult::RunFailed { reason, outcome }
+            }
+            RunCommandResult::RunFailureDecisionRequired {
+                reason,
+                contributing_reason,
+                outcome,
+            } => BehaviorResult::RunFailureDecisionRequired {
+                reason,
+                contributing_reason,
+                outcome,
+            },
+            RunCommandResult::RunAbandoned => BehaviorResult::RunAbandoned,
         }
     }
 }
 
+#[cfg(test)]
 impl MapCommandResult {
-    fn result_type(&self) -> &'static str {
+    fn into_behavior_result(self) -> BehaviorResult {
         match self {
-            MapCommandResult::MapState { .. } => "MapState",
-            MapCommandResult::MoveRosterUnit { .. } => "MoveRosterUnit",
-        }
-    }
-
-    fn payload_value(&self) -> serde_json::Result<Value> {
-        match self {
-            MapCommandResult::MapState { map } => Ok(json!({ "map": map })),
-            MapCommandResult::MoveRosterUnit { roster_slots } => Ok(json!({
-                "roster_slots": roster_slots,
-            })),
+            MapCommandResult::MapState { map } => BehaviorResult::MapState { map },
         }
     }
 }
 
+#[cfg(test)]
 impl NodeCommandResult {
-    fn result_type(&self) -> &'static str {
-        match self {
-            NodeCommandResult::NodePreview { .. } => "NodePreview",
-            NodeCommandResult::NodeEntered { .. } => "NodeEntered",
-            NodeCommandResult::NodeCompleted { .. } => "NodeCompleted",
-            NodeCommandResult::EventState { .. } => "EventState",
-        }
-    }
-
-    fn payload_value(&self) -> serde_json::Result<Value> {
+    fn into_behavior_result(self) -> BehaviorResult {
         match self {
             NodeCommandResult::NodePreview {
                 node_id,
@@ -3237,357 +5484,343 @@ impl NodeCommandResult {
                 session,
                 map,
                 combat_preview,
-            } => Ok(json!({
-                "node_id": node_id,
-                "kind_id": kind_id,
-                "category": category,
-                "payload": payload,
-                "session": session,
-                "map": map,
-                "combat_preview": combat_preview,
-            })),
+                trauma_recovery_preview,
+            } => BehaviorResult::NodePreview {
+                node_id,
+                kind_id,
+                category,
+                payload,
+                session,
+                map,
+                combat_preview,
+                trauma_recovery_preview,
+            },
             NodeCommandResult::NodeEntered {
                 node_id,
                 kind_id,
                 category,
                 payload,
                 session,
-                research_deliveries,
-            } => Ok(json!({
-                "node_id": node_id,
-                "kind_id": kind_id,
-                "category": category,
-                "payload": payload,
-                "session": session,
-                "research_deliveries": research_deliveries,
-            })),
-            NodeCommandResult::NodeCompleted { map, outcome } => Ok(json!({
-                "map": map,
-                "outcome": outcome,
-            })),
-            NodeCommandResult::EventState {
+            } => BehaviorResult::NodeEntered {
                 node_id,
-                event,
-                research_deliveries,
-            } => Ok(json!({
-                "node_id": node_id,
-                "event": event,
-                "research_deliveries": research_deliveries,
-            })),
+                kind_id,
+                category,
+                payload,
+                session,
+            },
+            NodeCommandResult::NodeCompleted { map, outcome } => {
+                BehaviorResult::NodeCompleted { map, outcome }
+            }
+            NodeCommandResult::EventState { node_id, event } => {
+                BehaviorResult::EventState { node_id, event }
+            }
         }
     }
 }
 
+#[cfg(test)]
 impl FacilityCommandResult {
-    fn result_type(&self) -> &'static str {
+    fn into_behavior_result(self) -> BehaviorResult {
         match self {
-            FacilityCommandResult::SupportState { .. } => "SupportState",
-            FacilityCommandResult::MaintenanceState { .. } => "MaintenanceState",
-            FacilityCommandResult::HeadquartersContactState { .. } => "HeadquartersContactState",
-            FacilityCommandResult::EmployeeRecruited { .. } => "EmployeeRecruited",
-            FacilityCommandResult::EmergencySuppliesGranted { .. } => "EmergencySuppliesGranted",
-        }
-    }
-
-    fn payload_value(&self) -> serde_json::Result<Value> {
-        match self {
-            FacilityCommandResult::SupportState {
+            FacilityCommandResult::SavePointState {
                 node_id,
-                support_mode,
-                support_type,
-                choices,
-                selected_support_type,
-                research_deliveries,
-            } => Ok(json!({
-                "node_id": node_id,
-                "support_mode": support_mode,
-                "support_type": support_type,
-                "choices": choices,
-                "selected_support_type": selected_support_type,
-                "research_deliveries": research_deliveries,
-            })),
+                recovery_preview,
+            } => BehaviorResult::SavePointState {
+                node_id,
+                recovery_preview,
+            },
             FacilityCommandResult::MaintenanceState {
                 node_id,
                 maintenance_options,
-                research_deliveries,
-            } => Ok(json!({
-                "node_id": node_id,
-                "maintenance_options": maintenance_options,
-                "research_deliveries": research_deliveries,
-            })),
+            } => BehaviorResult::MaintenanceState {
+                node_id,
+                maintenance_options,
+            },
             FacilityCommandResult::HeadquartersContactState {
                 node_id,
                 options,
                 recruitment_candidates,
                 shop_pool_id,
-                research_deliveries,
-            } => Ok(json!({
-                "node_id": node_id,
-                "options": options,
-                "recruitment_candidates": recruitment_candidates,
-                "shop_pool_id": shop_pool_id,
-                "research_deliveries": research_deliveries,
-            })),
+            } => BehaviorResult::HeadquartersContactState {
+                node_id,
+                options,
+                recruitment_candidates,
+                shop_pool_id,
+            },
             FacilityCommandResult::EmployeeRecruited {
-                candidate_id,
+                employee_definition_id,
                 employee_uuid,
                 completion,
-            } => Ok(json!({
-                "candidate_id": candidate_id,
-                "employee_uuid": employee_uuid,
-                "completion": nested_payload_value(completion)?,
-            })),
+            } => BehaviorResult::EmployeeRecruited {
+                employee_definition_id,
+                employee_uuid,
+                completion: Box::new(completion.into_behavior_result()),
+            },
             FacilityCommandResult::EmergencySuppliesGranted {
                 enkephalin,
                 inventory_diff,
                 completion,
-            } => Ok(json!({
-                "enkephalin": enkephalin,
-                "inventory_diff": inventory_diff,
-                "completion": nested_payload_value(completion)?,
-            })),
+            } => BehaviorResult::EmergencySuppliesGranted {
+                enkephalin,
+                inventory_diff,
+                completion: Box::new(completion.into_behavior_result()),
+            },
         }
     }
 }
 
+#[cfg(test)]
 impl InventoryCommandResult {
-    fn result_type(&self) -> &'static str {
+    fn into_behavior_result(self) -> BehaviorResult {
         match self {
-            InventoryCommandResult::UnEquipItem { .. } => "UnEquipItem",
-            InventoryCommandResult::EquipItem { .. } => "EquipItem",
-            InventoryCommandResult::ConsumableItemUsed { .. } => "ConsumableItemUsed",
-            InventoryCommandResult::SkillFragmentLoadoutUpdated { .. } => {
-                "SkillFragmentLoadoutUpdated"
+            InventoryCommandResult::RelicState { result } => BehaviorResult::RelicState { result },
+            InventoryCommandResult::RelicNumericPlan { result } => {
+                BehaviorResult::RelicNumericPlan { result }
             }
-            InventoryCommandResult::SkillFragmentUpgraded { .. } => "SkillFragmentUpgraded",
-            InventoryCommandResult::SkillFragmentAwakened { .. } => "SkillFragmentAwakened",
-            InventoryCommandResult::SkillFragmentDismantled { .. } => "SkillFragmentDismantled",
-            InventoryCommandResult::EquipmentDismantled { .. } => "EquipmentDismantled",
-            InventoryCommandResult::EquipmentEnhanced { .. } => "EquipmentEnhanced",
-        }
-    }
-
-    fn payload_value(&self) -> serde_json::Result<Value> {
-        match self {
-            InventoryCommandResult::UnEquipItem { result } => serde_json::to_value(result),
-            InventoryCommandResult::EquipItem { result } => serde_json::to_value(result),
+            InventoryCommandResult::RelicEffectivePlan { result } => {
+                BehaviorResult::RelicEffectivePlan { result }
+            }
+            InventoryCommandResult::RelicPreview { result } => {
+                BehaviorResult::RelicPreview { result }
+            }
+            InventoryCommandResult::UnEquipItem { result } => {
+                BehaviorResult::UnEquipItem { result }
+            }
+            InventoryCommandResult::EquipItem { result } => BehaviorResult::EquipItem { result },
             InventoryCommandResult::ConsumableItemUsed {
                 item_uuid,
                 target_employee_uuid,
                 replaced_modifier,
-                applied_modifier,
+                active_modifier,
+                condition,
                 inventory_diff,
-            } => Ok(json!({
-                "item_uuid": item_uuid,
-                "target_employee_uuid": target_employee_uuid,
-                "replaced_modifier": replaced_modifier,
-                "applied_modifier": applied_modifier,
-                "inventory_diff": inventory_diff,
-            })),
+            } => BehaviorResult::ConsumableItemUsed {
+                item_uuid,
+                target_employee_uuid,
+                replaced_modifier,
+                active_modifier,
+                condition,
+                inventory_diff,
+            },
             InventoryCommandResult::SkillFragmentLoadoutUpdated {
                 employee_uuid,
-                equipped_fragment_ids,
-            } => Ok(json!({
-                "employee_uuid": employee_uuid,
-                "equipped_fragment_ids": equipped_fragment_ids,
-            })),
-            InventoryCommandResult::SkillFragmentUpgraded {
-                target_fragment_id,
-                dust_spent,
-                remaining_dust,
-                progress,
+                active_copy_uuid,
+            } => BehaviorResult::SkillFragmentLoadoutUpdated {
+                employee_uuid,
+                active_copy_uuid,
+            },
+            InventoryCommandResult::SkillFragmentTransferred {
+                copy,
+                previous_owner,
+                changed,
+            } => BehaviorResult::SkillFragmentTransferred {
+                copy,
+                previous_owner,
+                changed,
+            },
+            InventoryCommandResult::SkillFragmentAwakened {
+                copy,
+                changed,
+                enkephalin_spent,
+                inventory_diff,
+            } => BehaviorResult::SkillFragmentAwakened {
+                copy,
+                changed,
+                enkephalin_spent,
+                inventory_diff,
+            },
+            InventoryCommandResult::SkillFragmentFormSelected { copy, changed } => {
+                BehaviorResult::SkillFragmentFormSelected { copy, changed }
             }
-            | InventoryCommandResult::SkillFragmentAwakened {
-                target_fragment_id,
-                dust_spent,
-                remaining_dust,
-                progress,
-            } => Ok(json!({
-                "target_fragment_id": target_fragment_id,
-                "dust_spent": dust_spent,
-                "remaining_dust": remaining_dust,
-                "progress": progress,
-            })),
             InventoryCommandResult::SkillFragmentDismantled {
-                fragment_id,
-                remaining_count,
-                dust_gained,
-                total_dust,
-            } => Ok(json!({
-                "fragment_id": fragment_id,
-                "remaining_count": remaining_count,
-                "dust_gained": dust_gained,
-                "total_dust": total_dust,
-            })),
+                copy_uuid,
+                definition_id,
+                enkephalin_gained,
+                inventory_diff,
+            } => BehaviorResult::SkillFragmentDismantled {
+                copy_uuid,
+                definition_id,
+                enkephalin_gained,
+                inventory_diff,
+            },
             InventoryCommandResult::EquipmentDismantled {
                 item_uuid,
                 equipment_id,
                 inventory_diff,
-            } => Ok(json!({
-                "item_uuid": item_uuid,
-                "equipment_id": equipment_id,
-                "inventory_diff": inventory_diff,
-            })),
+            } => BehaviorResult::EquipmentDismantled {
+                item_uuid,
+                equipment_id,
+                inventory_diff,
+            },
             InventoryCommandResult::EquipmentEnhanced {
                 item_uuid,
                 equipment_id,
                 enhancement_level,
                 inventory_diff,
-            } => Ok(json!({
-                "item_uuid": item_uuid,
-                "equipment_id": equipment_id,
-                "enhancement_level": enhancement_level,
-                "inventory_diff": inventory_diff,
-            })),
+            } => BehaviorResult::EquipmentEnhanced {
+                item_uuid,
+                equipment_id,
+                enhancement_level,
+                inventory_diff,
+            },
         }
     }
 }
 
+#[cfg(test)]
 impl RosterCommandResult {
-    fn result_type(&self) -> &'static str {
-        match self {
-            RosterCommandResult::EmployeeRecruited { .. } => "EmployeeRecruited",
-        }
-    }
-
-    fn payload_value(&self) -> serde_json::Result<Value> {
+    fn into_behavior_result(self) -> BehaviorResult {
         match self {
             RosterCommandResult::EmployeeRecruited {
-                candidate_id,
+                employee_definition_id,
                 employee_uuid,
                 completion,
-            } => Ok(json!({
-                "candidate_id": candidate_id,
-                "employee_uuid": employee_uuid,
-                "completion": nested_payload_value(completion)?,
-            })),
+            } => BehaviorResult::EmployeeRecruited {
+                employee_definition_id,
+                employee_uuid,
+                completion: Box::new(completion.into_behavior_result()),
+            },
         }
     }
 }
 
+#[cfg(test)]
 impl ShopCommandResult {
-    fn result_type(&self) -> &'static str {
+    fn into_behavior_result(self) -> BehaviorResult {
         match self {
-            ShopCommandResult::ShopState { .. } => "ShopState",
-            ShopCommandResult::RerollShop { .. } => "RerollShop",
-            ShopCommandResult::SellItem { .. } => "SellItem",
-            ShopCommandResult::PurchaseItem { .. } => "PurchaseItem",
-        }
-    }
-
-    fn payload_value(&self) -> serde_json::Result<Value> {
-        match self {
-            ShopCommandResult::ShopState {
-                shop,
-                research_deliveries,
-            } => Ok(json!({
-                "shop": shop,
-                "research_deliveries": research_deliveries,
-            })),
-            ShopCommandResult::RerollShop { new_items } => Ok(json!({
-                "new_items": new_items,
-            })),
+            ShopCommandResult::ShopState { shop } => BehaviorResult::ShopState { shop },
+            ShopCommandResult::RefreshShop { enkephalin, shop } => {
+                BehaviorResult::RefreshShop { enkephalin, shop }
+            }
             ShopCommandResult::SellItem {
                 enkephalin,
                 inventory_diff,
-            }
-            | ShopCommandResult::PurchaseItem {
+            } => BehaviorResult::SellItem {
                 enkephalin,
                 inventory_diff,
-            } => Ok(json!({
-                "enkephalin": enkephalin,
-                "inventory_diff": inventory_diff,
-            })),
+            },
+            ShopCommandResult::PurchaseItem {
+                enkephalin,
+                inventory_diff,
+                relic_diffs,
+                crafting_resources,
+            } => BehaviorResult::PurchaseItem {
+                enkephalin,
+                inventory_diff,
+                relic_diffs,
+                crafting_resources,
+            },
         }
     }
 }
 
+#[cfg(test)]
 impl RewardCommandResult {
-    fn result_type(&self) -> &'static str {
+    fn into_behavior_result(self) -> BehaviorResult {
         match self {
-            RewardCommandResult::RewardState { .. } => "RewardState",
-            RewardCommandResult::RewardGranted { .. } => "RewardGranted",
-            RewardCommandResult::CombatRewardsGranted { .. } => "CombatRewardsGranted",
-        }
-    }
-
-    fn payload_value(&self) -> serde_json::Result<Value> {
-        match self {
+            RewardCommandResult::DealerState { dealer } => BehaviorResult::DealerState { dealer },
             RewardCommandResult::RewardState {
                 mode,
                 rewards,
                 selected_reward_uuid,
-                research_deliveries,
-            } => Ok(json!({
-                "mode": mode,
-                "rewards": rewards,
-                "selected_reward_uuid": selected_reward_uuid,
-                "research_deliveries": research_deliveries,
-            })),
+            } => BehaviorResult::RewardState {
+                mode,
+                rewards,
+                selected_reward_uuid,
+            },
             RewardCommandResult::RewardGranted {
                 enkephalin,
                 inventory_diff,
                 skill_fragment_diffs,
-                skill_fragment_research_diffs,
                 employee_experience_diffs,
-            } => Ok(json!({
-                "enkephalin": enkephalin,
-                "inventory_diff": inventory_diff,
-                "skill_fragment_diffs": skill_fragment_diffs,
-                "skill_fragment_research_diffs": skill_fragment_research_diffs,
-                "employee_experience_diffs": employee_experience_diffs,
-            })),
+                relic_activity,
+            } => BehaviorResult::RewardGranted {
+                enkephalin,
+                inventory_diff,
+                skill_fragment_diffs,
+                employee_experience_diffs,
+                relic_activity,
+            },
             RewardCommandResult::CombatRewardsGranted {
                 enkephalin,
                 inventory_diff,
                 skill_fragment_diffs,
-                skill_fragment_research_diffs,
                 employee_experience_diffs,
                 outcome,
                 completion,
-            } => Ok(json!({
-                "enkephalin": enkephalin,
-                "inventory_diff": inventory_diff,
-                "skill_fragment_diffs": skill_fragment_diffs,
-                "skill_fragment_research_diffs": skill_fragment_research_diffs,
-                "employee_experience_diffs": employee_experience_diffs,
-                "outcome": outcome,
-                "completion": nested_payload_value(completion)?,
-            })),
+            } => BehaviorResult::CombatRewardsGranted {
+                enkephalin,
+                inventory_diff,
+                skill_fragment_diffs,
+                employee_experience_diffs,
+                outcome,
+                completion: Box::new(completion.into_behavior_result()),
+            },
+            RewardCommandResult::MasteredEliteSweepResultStaged { result } => {
+                BehaviorResult::MasteredEliteSweepResultStaged { result }
+            }
+            RewardCommandResult::MasteredEliteSweepCompleted {
+                sweep_uuid,
+                enkephalin,
+                inventory_diff,
+                skill_fragment_diffs,
+                employee_experience_diffs,
+                completion,
+            } => BehaviorResult::MasteredEliteSweepCompleted {
+                sweep_uuid,
+                enkephalin,
+                inventory_diff,
+                skill_fragment_diffs,
+                employee_experience_diffs,
+                completion: Box::new(completion.into_behavior_result()),
+            },
         }
     }
 }
 
+#[cfg(test)]
 impl BattleCommandResult {
-    fn result_type(&self) -> &'static str {
+    fn into_behavior_result(self) -> BehaviorResult {
         match self {
-            BattleCommandResult::DeploymentRangePreview { .. } => "DeploymentRangePreview",
-        }
-    }
-
-    fn payload_value(&self) -> serde_json::Result<Value> {
-        match self {
-            BattleCommandResult::DeploymentRangePreview { result } => serde_json::to_value(result),
+            BattleCommandResult::DeploymentRangePreview { result } => {
+                BehaviorResult::DeploymentRangePreview { result }
+            }
+            BattleCommandResult::TacticalCommandPreview { result } => {
+                BehaviorResult::TacticalCommandPreview { result }
+            }
+            BattleCommandResult::SkillTargetPreview { result } => {
+                BehaviorResult::SkillTargetPreview { result }
+            }
         }
     }
 }
 
+#[cfg(test)]
+impl VisualNovelCommandResult {
+    fn into_behavior_result(self) -> BehaviorResult {
+        match self {
+            VisualNovelCommandResult::VisualNovelState { visual_novel } => {
+                BehaviorResult::VisualNovelState { visual_novel }
+            }
+        }
+    }
+}
+
+#[cfg(test)]
 impl GeneralCommandResult {
-    fn result_type(&self) -> &'static str {
+    fn into_behavior_result(self) -> BehaviorResult {
         match self {
-            GeneralCommandResult::Ok => "Ok",
-        }
-    }
-
-    fn payload_value(&self) -> serde_json::Result<Value> {
-        match self {
-            GeneralCommandResult::Ok => Ok(Value::Null),
+            GeneralCommandResult::Ok => BehaviorResult::Ok,
         }
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone)]
 pub enum GameError {
+    /// Native battle admission/operation failure, with allocation-free details.
+    BattleRuntimeFault(crate::game::battle::runtime_control::BattleRuntimeFault),
+    /// A compiled value expression failed while consuming a battle occurrence.
+    ValueExpressionFault(crate::game::value_expr::ValueExprFault),
     /// 선택한 이벤트/보상이 현재 세션 옵션에 존재하지 않을 때
     EventNotFound,
     /// 이벤트는 존재하지만 기대한 타입(Shop/Reward/Random 등)이 아닐 때
@@ -3595,16 +5828,38 @@ pub enum GameError {
 
     /// 현재 GameState/Context에서 허용되지 않은 행동 (치팅 시도 포함)
     InvalidAction,
+    /// Endless admission requires completion of the fixed Standard tutorial.
+    TutorialCompletionRequired { game_mode: GameMode },
+    /// A context capability or selected payload failed the shared typed preflight.
+    ActionUnavailable {
+        action: ActionKind,
+        reason: ActionDisabledReasonCode,
+    },
+    /// A battle-derived employee profile was requested without an equipped weapon.
+    WeaponRequired,
     /// 클라이언트가 현재 전투에 존재하지 않는 미래 presentation seq로 resync를 요청했을 때
     InvalidBattleResyncSeq { requested: u64, latest: u64 },
+    /// 요청 cursor가 bounded active history floor보다 오래되어 snapshot resync가 필요할 때
+    BattleSnapshotResyncRequired {
+        requested: u64,
+        oldest_available_after_seq: u64,
+        latest: u64,
+    },
+    /// 전투 상태 revision을 더 이상 증가시킬 수 없을 때
+    BattleStateRevisionOverflow,
+    /// 활성 전투 mutation 명령이 필수 UUID/revision authority를 보내지 않았을 때
+    MissingBattleStateAuthority { current: BattleStateAuthorityDto },
+    /// 전투 mutation 명령이 현재 Core authority와 다른 battle UUID/revision을 제시했을 때
+    StaleBattleStateAuthority {
+        expected: BattleStateAuthorityDto,
+        current: BattleStateAuthorityDto,
+    },
 
     /// 상점 상태가 아니거나, 활성 노드 콘텐츠에 Shop 정보가 없을 때
     NotInShopState,
     /// 보상 상태가 아니거나, 활성 노드 콘텐츠에 Reward 정보가 없을 때
     NotInRewardState,
-    /// 상점이 리롤을 지원하지 않을 때
-    ShopRerollNotAllowed,
-    /// 상점의 visible_items / uuid_lookup_table에서 아이템을 찾지 못했을 때
+    /// 현재 Shop session에서 offer identity를 찾지 못했을 때
     ShopItemNotFound,
 
     /// 인벤토리가 가득 차서 아이템을 추가할 수 없을 때 (예: 아티팩트 슬롯)
@@ -3614,7 +5869,6 @@ pub enum GameError {
     /// 인벤토리에 존재하지만 해당 경로로 제거할 수 없는 아이템일 때
     InventoryItemNotRemovable,
     /// 유일해야 하는 아티팩트를 이미 보유 중일 때
-    AlreadyOwnedArtifact,
 
     /// 구매/행동에 필요한 자원이 부족할 때
     InsufficientResources,
@@ -3626,6 +5880,9 @@ pub enum GameError {
     InvalidUnitStats(&'static str),
     /// RON 등 정적 데이터가 현재 엔진 계약을 위반할 때
     InvalidStaticData(String),
+    /// Caller-selected data was not found; retains the historical public error
+    /// envelope while distinguishing input refusal from trusted runtime damage.
+    InvalidCommandData(String),
     /// 아직 구현되지 않은 핵심 게임 루프/콘텐츠를 호출했을 때
     NotImplemented(&'static str),
 
@@ -3647,21 +5904,406 @@ pub enum GameError {
     UnitNotFound,
 }
 
+impl GameError {
+    /// Stable protocol identity shared by Core projections and server adapters.
+    pub const fn code(&self) -> &'static str {
+        match self {
+            Self::BattleRuntimeFault(fault) => fault.code.as_str(),
+            Self::ValueExpressionFault(_) => "value_expression_fault",
+            Self::EventNotFound => "event_not_found",
+            Self::EventTypeMismatch => "event_type_mismatch",
+            Self::InvalidAction => "invalid_action",
+            Self::TutorialCompletionRequired { .. } => "standard_tutorial_completion_required",
+            Self::ActionUnavailable { reason, .. } => reason.as_str(),
+            Self::WeaponRequired => "weapon_required",
+            Self::InvalidBattleResyncSeq { .. } => "invalid_battle_resync_seq",
+            Self::BattleSnapshotResyncRequired { .. } => "battle_snapshot_resync_required",
+            Self::BattleStateRevisionOverflow => "battle_state_revision_overflow",
+            Self::MissingBattleStateAuthority { .. } => "missing_battle_state_authority",
+            Self::StaleBattleStateAuthority { .. } => "stale_battle_state_authority",
+            Self::NotInShopState => "not_in_shop_state",
+            Self::NotInRewardState => "not_in_reward_state",
+            Self::ShopItemNotFound => "shop_item_not_found",
+            Self::InventoryFull => "inventory_full",
+            Self::InventoryItemNotFound => "inventory_item_not_found",
+            Self::InventoryItemNotRemovable => "inventory_item_not_removable",
+            Self::InsufficientResources => "insufficient_resources",
+            Self::MissingResource(_) => "missing_resource",
+            Self::InvalidUnitStats(_) => "invalid_unit_stats",
+            Self::InvalidStaticData(_) | Self::InvalidCommandData(_) => "invalid_static_data",
+            Self::NotImplemented(_) => "not_implemented",
+            Self::SkillFragmentIncompatible { .. } => "skill_fragment_incompatible",
+            Self::OutOfBounds => "out_of_bounds",
+            Self::PositionOccupied => "position_occupied",
+            Self::StaticObstacleBlocked => "static_obstacle_blocked",
+            Self::UnitAlreadyPlaced => "unit_already_placed",
+            Self::UnitNotFound => "unit_not_found",
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::game::battle::event_log::{BattleEventCause, BattleEventRootCause, BattleLogEvent};
-    use crate::game::data::shop_data::ShopType;
+    use crate::game::data::shop_data::ShopContext;
     use crate::game::resources::InventoryDiffDto;
+
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+    enum CharacterizedActionRoute {
+        CoreCommon,
+        CoreDomain,
+        CoreBattle,
+        CoreContextual,
+        HostRecovery,
+    }
+
+    #[test]
+    fn every_action_kind_has_one_characterized_route_scope_and_authority_contract() {
+        use ActionKind::*;
+        use ActionScope::{Gameplay, Query, Recovery};
+        use CharacterizedActionRoute::{
+            CoreBattle, CoreCommon, CoreContextual, CoreDomain, HostRecovery,
+        };
+
+        let cases = [
+            (StartNewGame, CoreCommon, Gameplay, false),
+            (SkipTutorial, CoreCommon, Gameplay, false),
+            (AcknowledgeFirstReturnStory, CoreCommon, Gameplay, false),
+            (ChooseExpeditionContinuation, CoreCommon, Gameplay, false),
+            (ContinueRun, HostRecovery, Recovery, false),
+            (ResetActiveRun, HostRecovery, Recovery, false),
+            (RetryPlayerProfile, HostRecovery, Recovery, false),
+            (ResetPlayerProfile, HostRecovery, Recovery, false),
+            (SelectStarterEmployees, CoreCommon, Gameplay, false),
+            (UnEquipItem, CoreDomain, Gameplay, false),
+            (EquipItem, CoreDomain, Gameplay, false),
+            (UseConsumableItem, CoreDomain, Gameplay, false),
+            (EquipSkillFragment, CoreDomain, Gameplay, false),
+            (UnequipSkillFragment, CoreDomain, Gameplay, false),
+            (SelectSkillFragmentForm, CoreCommon, Gameplay, false),
+            (TransferSkillFragment, CoreDomain, Gameplay, false),
+            (AwakenSkillFragment, CoreCommon, Gameplay, false),
+            (DismantleSkillFragment, CoreCommon, Gameplay, false),
+            (DismantleEquipment, CoreCommon, Gameplay, false),
+            (EnhanceEquipment, CoreCommon, Gameplay, false),
+            (EquipRelic, CoreDomain, Gameplay, false),
+            (UnequipRelic, CoreDomain, Gameplay, false),
+            (RequestRelicState, CoreCommon, Query, false),
+            (RequestRelicNumericPlan, CoreCommon, Query, false),
+            (RequestRelicEffectivePlan, CoreCommon, Query, false),
+            (PreviewRelicCorruption, CoreCommon, Query, false),
+            (CorruptRelic, CoreDomain, Gameplay, false),
+            (PreviewSkillFragmentBloom, CoreCommon, Query, false),
+            (PreviewRelicDismantle, CoreCommon, Query, false),
+            (DismantleRelic, CoreDomain, Gameplay, false),
+            (RequestMapData, CoreCommon, Query, false),
+            (MoveToFacilityRoom, CoreCommon, Gameplay, false),
+            (SelectMapNode, CoreCommon, Gameplay, false),
+            (ConvertMapNodeWithMonolith, CoreDomain, Gameplay, false),
+            (HatchEncounter, CoreDomain, Gameplay, false),
+            (ConfirmEnterNode, CoreCommon, Gameplay, false),
+            (CancelSelectedNode, CoreCommon, Gameplay, false),
+            (CompleteNode, CoreCommon, Gameplay, false),
+            (LoadRunCheckpoint, CoreCommon, Recovery, false),
+            (ConfirmRunFailure, CoreCommon, Gameplay, false),
+            (AbandonRun, CoreCommon, Gameplay, false),
+            (RecruitEmployee, CoreCommon, Gameplay, false),
+            (RequestEmergencySupplies, CoreCommon, Gameplay, false),
+            (OpenHeadquartersShop, CoreCommon, Gameplay, false),
+            (SelectReward, CoreCommon, Gameplay, false),
+            (InvestRelicReward, CoreCommon, Gameplay, false),
+            (SelectRelicFusionInputs, CoreCommon, Gameplay, false),
+            (ConfirmRelicFusion, CoreCommon, Gameplay, false),
+            (DealerAct, CoreCommon, Gameplay, false),
+            (PurchaseItem, CoreDomain, Gameplay, false),
+            (SellItem, CoreDomain, Gameplay, false),
+            (RefreshShop, CoreDomain, Gameplay, false),
+            (ExitShop, CoreDomain, Gameplay, false),
+            (ClaimReward, CoreCommon, Gameplay, false),
+            (ExitReward, CoreCommon, Gameplay, false),
+            (AdvanceEventScene, CoreCommon, Gameplay, false),
+            (ResolveEventChoiceCheck, CoreCommon, Gameplay, false),
+            (ChooseRelicCorruption, CoreCommon, Gameplay, false),
+            (AdvanceVisualNovel, CoreContextual, Gameplay, true),
+            (SelectVisualNovelChoice, CoreContextual, Gameplay, true),
+            (SweepMasteredElite, CoreCommon, Gameplay, false),
+            (CompleteMasteredEliteSweep, CoreCommon, Gameplay, false),
+            (CompleteCombatResult, CoreCommon, Gameplay, false),
+            (RequestBattleState, CoreBattle, Query, false),
+            (RecoverBattleSetupLoss, CoreBattle, Recovery, false),
+            (RequestDeploymentRangePreview, CoreBattle, Query, false),
+            (DeployUnit, CoreBattle, Gameplay, true),
+            (WithdrawUnit, CoreBattle, Gameplay, true),
+            (SetEngagementStance, CoreBattle, Gameplay, true),
+            (TacticalRelocateUnit, CoreBattle, Gameplay, true),
+            (TacticalSwapUnits, CoreBattle, Gameplay, true),
+            (FocusBattleUnit, CoreBattle, Gameplay, true),
+            (ClearBattleFocus, CoreBattle, Gameplay, true),
+            (BeginDeploymentSelection, CoreBattle, Gameplay, true),
+            (CancelDeploymentSelection, CoreBattle, Gameplay, true),
+            (OpenBattleSettings, CoreBattle, Gameplay, true),
+            (CloseBattleSettings, CoreBattle, Gameplay, true),
+            (BeginSkillTargeting, CoreBattle, Gameplay, true),
+            (CancelSkillTargeting, CoreBattle, Gameplay, true),
+            (PreviewSkillTarget, CoreBattle, Query, false),
+            (PreviewTacticalCommand, CoreBattle, Query, false),
+            (ActivateSkill, CoreBattle, Gameplay, true),
+            (SelectSkillRelation, CoreBattle, Gameplay, true),
+            (RetreatBattle, CoreBattle, Gameplay, true),
+            (StressCombatAct, CoreBattle, Gameplay, true),
+            (PauseBattle, CoreBattle, Gameplay, true),
+            (ResumeBattle, CoreBattle, Gameplay, true),
+            (SetBattleSpeed, CoreBattle, Gameplay, true),
+        ];
+
+        assert_eq!(
+            cases.len(),
+            88,
+            "the current command vocabulary is exhaustive"
+        );
+        let characterized_actions = cases
+            .iter()
+            .map(|(action, ..)| *action)
+            .collect::<std::collections::HashSet<_>>();
+        assert_eq!(
+            characterized_actions.len(),
+            cases.len(),
+            "each command must have exactly one descriptor row"
+        );
+        assert_eq!(
+            characterized_actions,
+            ActionKind::ALL.iter().copied().collect(),
+            "the descriptor table must cover the macro-owned command vocabulary"
+        );
+        assert_eq!(
+            cases
+                .iter()
+                .filter(|(_, route, ..)| *route == HostRecovery)
+                .count(),
+            4,
+            "the host owns exactly the four established recovery commands"
+        );
+
+        for (action, route, scope, requires_battle_authority) in cases {
+            let actual_route = match action.route() {
+                ActionRoute::CoreCommon => CoreCommon,
+                ActionRoute::CoreDomain => CoreDomain,
+                ActionRoute::CoreBattle => CoreBattle,
+                ActionRoute::CoreContextual => CoreContextual,
+                ActionRoute::HostRecovery(operation) => {
+                    assert_eq!(
+                        action,
+                        match operation {
+                            HostRecoveryAction::ContinueRun => ContinueRun,
+                            HostRecoveryAction::ResetActiveRun => ResetActiveRun,
+                            HostRecoveryAction::RetryPlayerProfile => {
+                                RetryPlayerProfile
+                            }
+                            HostRecoveryAction::ResetPlayerProfile => {
+                                ResetPlayerProfile
+                            }
+                        },
+                        "host operation identity drift for {action:?}"
+                    );
+                    HostRecovery
+                }
+            };
+            assert_eq!(actual_route, route, "route drift for {action:?}");
+            assert_eq!(action.scope(), scope, "scope drift for {action:?}");
+            assert_eq!(
+                action.requires_battle_authority(),
+                requires_battle_authority,
+                "battle-authority drift for {action:?}"
+            );
+            assert_eq!(
+                serde_json::to_value(action).unwrap(),
+                serde_json::Value::String(format!("{action:?}")),
+                "ActionKind wire name drift for {action:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn monolith_reward_wire_contract_is_qualitative_only() {
+        let dto = MonolithConversionOptionDto {
+            abnormality_id: "abno".to_string(),
+            abnormality_uuid: Uuid::nil(),
+            display_name: "Abnormality".to_string(),
+            risk_level: RiskLevel::ZAYIN,
+            enabled: true,
+            disabled_reason: None,
+            next_stage: 3,
+            uses_before: 2,
+            uses_after: 1,
+            max_attempts: 3,
+            reward_tier: MonolithRewardTierDto::FinalEnhanced,
+        };
+
+        let value = serde_json::to_value(dto).unwrap();
+
+        assert_eq!(value["reward_tier"], "final_enhanced");
+        assert!(value.get("reward_multiplier_percent").is_none());
+    }
+
+    #[test]
+    fn resolve_event_choice_check_uses_one_exact_scene_qualified_wire_command() {
+        let node_id = MapNodeId::new(Uuid::from_u128(0xE001));
+        let employee_uuid = Uuid::from_u128(0xE002);
+        let behavior = PlayerBehavior::ResolveEventChoiceCheck {
+            node_id,
+            event_id: crate::game::data::event_data::EventId::new("event_a"),
+            current_scene_id: crate::game::data::event_data::EventSceneId::new("check"),
+            choice_id: crate::game::data::event_data::EventChoiceId::new("choice_a"),
+            employee_uuid,
+        };
+        let value = serde_json::to_value(&behavior).expect("event command serializes");
+        assert_eq!(
+            value,
+            serde_json::json!({
+                "type": "resolve_event_choice_check",
+                "node_id": node_id.0.to_string(),
+                "event_id": "event_a",
+                "current_scene_id": "check",
+                "choice_id": "choice_a",
+                "employee_uuid": employee_uuid.to_string(),
+            })
+        );
+        assert!(serde_json::from_value::<PlayerBehavior>(value).is_ok());
+        for removed in [
+            serde_json::json!({
+                "type": "select_event_choice",
+                "node_id": node_id.0.to_string(),
+                "event_id": "event_a",
+                "choice_id": "choice_a",
+            }),
+            serde_json::json!({
+                "type": "resolve_event_choice_check",
+                "node_id": node_id.0.to_string(),
+                "event_id": "event_a",
+                "choice_id": "choice_a",
+                "employee_uuid": employee_uuid.to_string(),
+            }),
+            serde_json::json!({
+                "type": "resolve_event_choice_check",
+                "node_id": node_id.0.to_string(),
+                "event_id": "event_a",
+                "current_scene_id": "check",
+                "choice_id": "choice_a",
+                "employee_uuid": employee_uuid.to_string(),
+                "modifier_total": 5,
+            }),
+        ] {
+            assert!(serde_json::from_value::<PlayerBehavior>(removed).is_err());
+        }
+    }
+
+    #[test]
+    fn choose_relic_corruption_wire_preserves_source_scene_and_optional_copy() {
+        let node_id = MapNodeId::new(Uuid::from_u128(0xE081));
+        for copy_uuid in [Some(Uuid::from_u128(0xE082)), None] {
+            let behavior = PlayerBehavior::ChooseRelicCorruption {
+                node_id,
+                event_id: crate::game::data::event_data::EventId::new("event_relic"),
+                current_scene_id: crate::game::data::event_data::EventSceneId::new("source"),
+                copy_uuid,
+            };
+            let value = serde_json::to_value(&behavior).unwrap();
+            assert_eq!(
+                value,
+                serde_json::json!({
+                    "type": "choose_relic_corruption",
+                    "node_id": node_id.0,
+                    "event_id": "event_relic",
+                    "current_scene_id": "source",
+                    "copy_uuid": copy_uuid,
+                })
+            );
+            let decoded: PlayerBehavior = serde_json::from_value(value.clone()).unwrap();
+            assert_eq!(decoded.kind(), ActionKind::ChooseRelicCorruption);
+            assert_eq!(serde_json::to_value(decoded).unwrap(), value);
+            for required in ["node_id", "event_id", "current_scene_id"] {
+                let mut missing = value.clone();
+                missing.as_object_mut().unwrap().remove(required);
+                assert!(serde_json::from_value::<PlayerBehavior>(missing).is_err());
+            }
+            let mut forged = value;
+            forged["catalyst_cost"] = serde_json::json!(0);
+            assert!(serde_json::from_value::<PlayerBehavior>(forged).is_err());
+        }
+    }
+
+    #[test]
+    fn action_capability_serialization_is_typed_and_omits_enabled_reason() {
+        let enabled = ActionCapabilityDto::enabled(ActionKind::RequestMapData, ActionScope::Query);
+        assert_eq!(
+            serde_json::to_value(enabled).unwrap(),
+            serde_json::json!({
+                "action": "RequestMapData",
+                "scope": "query",
+                "enabled": true
+            })
+        );
+
+        let disabled = ActionCapabilityDto::disabled(
+            ActionKind::LoadRunCheckpoint,
+            ActionScope::Recovery,
+            ActionDisabledReasonCode::CheckpointUnavailable,
+        );
+        assert_eq!(
+            serde_json::to_value(disabled).unwrap(),
+            serde_json::json!({
+                "action": "LoadRunCheckpoint",
+                "scope": "recovery",
+                "enabled": false,
+                "disabled_reason_code": "checkpoint_unavailable"
+            })
+        );
+    }
+
+    #[test]
+    fn shop_commands_require_offer_identity_quantity_and_refresh_vocabulary() {
+        let offer_id = Uuid::from_u128(0x5100);
+        let item_uuid = Uuid::from_u128(0x5200);
+        assert_eq!(
+            serde_json::to_value(PlayerBehavior::PurchaseItem { offer_id }).unwrap(),
+            serde_json::json!({
+                "type": "purchase_item",
+                "offer_id": offer_id,
+            })
+        );
+        assert_eq!(
+            serde_json::to_value(PlayerBehavior::SellItem {
+                item_uuid,
+                quantity: 3,
+            })
+            .unwrap(),
+            serde_json::json!({
+                "type": "sell_item",
+                "item_uuid": item_uuid,
+                "quantity": 3,
+            })
+        );
+        assert_eq!(
+            serde_json::to_value(PlayerBehavior::RefreshShop).unwrap(),
+            serde_json::json!({ "type": "refresh_shop" })
+        );
+        for removed in [
+            serde_json::json!({ "type": "reroll_shop" }),
+            serde_json::json!({ "type": "purchase_item", "item_uuid": item_uuid }),
+            serde_json::json!({ "type": "sell_item", "item_uuid": item_uuid }),
+        ] {
+            assert!(serde_json::from_value::<PlayerBehavior>(removed).is_err());
+        }
+    }
 
     #[test]
     fn behavior_result_helpers_match_variants() {
-        assert!(BehaviorResult::StartNewGame {
-            game_mode: GameMode::Standard,
-            candidates: Vec::new(),
-            required_count: 3,
+        assert!(BehaviorResult::RunStartFlowStarted {
+            game_mode: GameMode::Expedition,
+            visual_novel: None,
         }
-        .is_start_new_game());
+        .is_run_start_flow_started());
         assert!(BehaviorResult::Ok.is_ok());
 
         let sell = BehaviorResult::SellItem {
@@ -3676,6 +6318,8 @@ mod tests {
         let purchase = BehaviorResult::PurchaseItem {
             enkephalin: 7,
             inventory_diff: InventoryDiffDto::default(),
+            relic_diffs: Vec::new(),
+            crafting_resources: None,
         };
         let (remaining, diff) = purchase.as_purchase_item().unwrap();
         assert_eq!(remaining, 7);
@@ -3685,20 +6329,1007 @@ mod tests {
             id: "shop".to_string(),
             name: "Shop".to_string(),
             uuid: Uuid::nil(),
-            shop_type: ShopType::Shop,
-            can_reroll: true,
-            visible_items: vec![Uuid::nil()],
+            context: ShopContext::UnknownExploration,
+            offers: vec![],
+            refresh: None,
+            selling_enabled: false,
         };
-        let shop_state = BehaviorResult::ShopState {
-            shop: shop.clone(),
-            research_deliveries: vec![],
-        };
+        let shop_state = BehaviorResult::ShopState { shop: shop.clone() };
         assert_eq!(shop_state.as_shop_state(), Some(&shop));
+    }
+
+    #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+    enum CharacterizedResultTransport {
+        CommandPayload,
+        BattleUpdate,
+        ReadOnlyPreview,
+    }
+
+    fn characterized_map() -> MapViewDto {
+        MapViewDto {
+            map_template_id: crate::game::map::MapTemplateId::new("result_contract"),
+            facility_template_version: crate::game::map::FACILITY_TEMPLATE_VERSION,
+            nodes: Vec::new(),
+        }
+    }
+
+    fn characterized_session() -> NodeSession {
+        NodeSession {
+            node_id: MapNodeId::new(Uuid::from_u128(0x3301)),
+            kind_id: MapNodeKindId::new("save_point"),
+            category: MapNodeCategory::SavePoint,
+            payload: MapNodePayload::SavePoint,
+        }
+    }
+
+    fn characterized_outcome() -> NodeOutcomeSummary {
+        NodeOutcomeSummary {
+            node_id: MapNodeId::new(Uuid::from_u128(0x3302)),
+            kind_id: MapNodeKindId::new("combat"),
+            category: MapNodeCategory::Combat,
+            mission_success: true,
+            combat: None,
+            employee_changes: Vec::new(),
+            inventory_diff: InventoryDiffDto::default(),
+        }
+    }
+
+    fn characterized_shop() -> ShopEventOption {
+        ShopEventOption {
+            id: "result_shop".to_string(),
+            name: "Result Shop".to_string(),
+            uuid: Uuid::from_u128(0x3303),
+            context: ShopContext::UnknownExploration,
+            offers: Vec::new(),
+            refresh: None,
+            selling_enabled: false,
+        }
+    }
+
+    fn characterized_combat_preview() -> CombatPreview {
+        CombatPreview {
+            deterrence: Default::default(),
+            node_id: MapNodeId::new(Uuid::from_u128(0x3304)),
+            encounter_id: Some("result_encounter".to_string()),
+            battlefield_template_id: "result_battlefield".to_string(),
+            node_type: CombatNodeType::Defense,
+            mission_variant: CombatMissionVariant::Defense,
+            survive_timer_ms: None,
+            mission_risk: crate::game::combat_preview::CombatMissionRisk::Controlled,
+            archetype: crate::game::combat_preview::BattlefieldArchetype::OpenHall,
+            size_class: crate::game::combat_preview::BattlefieldSizeClass::Small,
+            width: 1,
+            height: 1,
+            tiles: Vec::new(),
+            valid_tiles: Vec::new(),
+            deployment_zones: Vec::new(),
+            spawn_zones: Vec::new(),
+            routes: Vec::new(),
+            spawn_waves: Vec::new(),
+            obstacles: Vec::new(),
+            enemy_briefing: Vec::new(),
+            threat_warnings: Vec::new(),
+            enemy_stat_scale: Default::default(),
+        }
+    }
+
+    fn characterized_battle_update(battle_uuid: Uuid) -> LiveBattleUpdateDto {
+        LiveBattleUpdateDto {
+            message_type: LiveBattleUpdateMessageType::BattleUpdate,
+            battle_uuid,
+            battle_state_revision: 33,
+            action_capabilities: Vec::new(),
+            server_battle_time_ms: 3_300,
+            events_delta: LiveBattleEventDeltaDto {
+                after_seq: 4,
+                to_seq: 5,
+                events: Vec::new(),
+            },
+            checkpoint: LiveBattleStateCheckpointDto {
+                presence_marks: Default::default(),
+                weapon_marks: Default::default(),
+                tile_bursts: Default::default(),
+                counter_channels: Default::default(),
+                relation_actions: Default::default(),
+                input_plans: Default::default(),
+                shared_cohorts: Default::default(),
+                prepared_volleys: Default::default(),
+                mobile_effects: Default::default(),
+                paired_areas: Default::default(),
+                sustained_effects: Default::default(),
+                independent_objects: Default::default(),
+                at_seq: 5,
+                battle_time_ms: 3_300,
+                playback: BattlePlaybackState::default(),
+                playback_eligibility: LiveBattlePlaybackEligibilityDto::for_state(
+                    BattlePlaybackState::default(),
+                ),
+                tactical_focus: None,
+                interaction: Default::default(),
+                field_work_objects: Vec::new(),
+                units: Vec::new(),
+                tactical_resource: LiveBattleTacticalResourceDto {
+                    current: 7,
+                    maximum: 10,
+                    recovery_per_second: 1,
+                },
+                deployment: None,
+            },
+            visual_novel: None,
+        }
+    }
+
+    fn characterized_battle_setup(battle_uuid: Uuid) -> LiveBattleSetupSnapshotDto {
+        LiveBattleSetupSnapshotDto {
+            message_type: LiveBattleSetupSnapshotMessageType::BattleSetupSnapshot,
+            setup_version: LiveBattleSetupSnapshotDto::SETUP_VERSION,
+            battle_uuid,
+            encounter_id: "result_encounter".to_string(),
+            node_type: CombatNodeType::Defense,
+            mission_variant: CombatMissionVariant::Defense,
+            survive_timer_ms: None,
+            battlefield: LiveBattleSetupBattlefieldDto {
+                width: 1,
+                height: 1,
+                tiles: Vec::new(),
+                valid_tiles: Vec::new(),
+                blocked_tiles: Vec::new(),
+                static_obstacles: Vec::new(),
+            },
+            routes: Vec::new(),
+            deployment_zones: Vec::new(),
+            spawn_zones: Vec::new(),
+            tactical_points: Vec::new(),
+            static_objects: Vec::new(),
+            field_work_objects: Vec::new(),
+            initial_units: Vec::new(),
+            catalog_refs: LiveBattleSetupCatalogRefsDto::default(),
+        }
+    }
+
+    fn characterized_range_previews() -> LiveBattleRangePreviewsDto {
+        LiveBattleRangePreviewsDto {
+            basic_attack: LiveBattleBasicAttackRangePreviewDto {
+                available: true,
+                reason: None,
+                cells: vec![Position::new(1, 1)],
+                source: LiveBattleRangePreviewSource::FallbackBasicAttack,
+                source_id: None,
+            },
+            active_skill: LiveBattleActiveSkillRangePreviewDto {
+                available: false,
+                reason: Some(LiveBattleRangePreviewReason::NoSkill),
+                skill_id: None,
+                targeting_kind: None,
+                requires_manual_target: false,
+                cast_cells: Vec::new(),
+                effect_preview_cells: Vec::new(),
+                source: LiveBattleRangePreviewSource::Unavailable,
+                source_id: None,
+            },
+        }
+    }
+
+    fn characterized_deployment_preview() -> DeploymentRangePreviewResultDto {
+        let facing = DeploymentRangePreviewFacingDto {
+            range_previews: characterized_range_previews(),
+        };
+        DeploymentRangePreviewResultDto {
+            employee_uuid: Uuid::from_u128(0x3305),
+            position: Position::new(1, 2),
+            deploy_eligibility: BattlePayloadEligibilityDto::enabled(),
+            facings: DeploymentRangePreviewFacingsDto {
+                up: facing.clone(),
+                right: facing.clone(),
+                down: facing.clone(),
+                left: facing,
+            },
+        }
+    }
+
+    fn characterized_result_transport(result: &BehaviorResult) -> CharacterizedResultTransport {
+        match result {
+            BehaviorResult::BattleAdvanced { .. }
+            | BehaviorResult::BattleState { .. }
+            | BehaviorResult::BattlePlaybackChanged { .. }
+            | BehaviorResult::BattleUnitDeployed { .. }
+            | BehaviorResult::BattleUnitWithdrawn { .. }
+            | BehaviorResult::BattleEngagementStanceChanged { .. }
+            | BehaviorResult::BattleUnitTacticallyRelocated { .. }
+            | BehaviorResult::BattleUnitsTacticallySwapped { .. }
+            | BehaviorResult::BattleSkillTargetingFocusChanged { .. }
+            | BehaviorResult::BattleSkillActivated { .. }
+            | BehaviorResult::BattleRelationSelected { .. } => {
+                CharacterizedResultTransport::BattleUpdate
+            }
+            BehaviorResult::DeploymentRangePreview { .. }
+            | BehaviorResult::SkillTargetPreview { .. }
+            | BehaviorResult::TacticalCommandPreview { .. } => {
+                CharacterizedResultTransport::ReadOnlyPreview
+            }
+            BehaviorResult::RunStartFlowStarted { .. }
+            | BehaviorResult::StarterEmployeesSelected { .. }
+            | BehaviorResult::MapState { .. }
+            | BehaviorResult::NodeEntered { .. }
+            | BehaviorResult::NodePreview { .. }
+            | BehaviorResult::NodeCompleted { .. }
+            | BehaviorResult::SavePointState { .. }
+            | BehaviorResult::MaintenanceState { .. }
+            | BehaviorResult::HeadquartersContactState { .. }
+            | BehaviorResult::FloorAdvanced { .. }
+            | BehaviorResult::RunComplete { .. }
+            | BehaviorResult::RunFailed { .. }
+            | BehaviorResult::RunFailureDecisionRequired { .. }
+            | BehaviorResult::RunAbandoned
+            | BehaviorResult::UnEquipItem { .. }
+            | BehaviorResult::EquipItem { .. }
+            | BehaviorResult::ConsumableItemUsed { .. }
+            | BehaviorResult::RelicState { .. }
+            | BehaviorResult::RelicNumericPlan { .. }
+            | BehaviorResult::RelicEffectivePlan { .. }
+            | BehaviorResult::RelicPreview { .. }
+            | BehaviorResult::SkillFragmentLoadoutUpdated { .. }
+            | BehaviorResult::SkillFragmentFormSelected { .. }
+            | BehaviorResult::SkillFragmentTransferred { .. }
+            | BehaviorResult::SkillFragmentAwakened { .. }
+            | BehaviorResult::SkillFragmentDismantled { .. }
+            | BehaviorResult::EquipmentDismantled { .. }
+            | BehaviorResult::EquipmentEnhanced { .. }
+            | BehaviorResult::ShopState { .. }
+            | BehaviorResult::RefreshShop { .. }
+            | BehaviorResult::SellItem { .. }
+            | BehaviorResult::PurchaseItem { .. }
+            | BehaviorResult::EmployeeRecruited { .. }
+            | BehaviorResult::EmergencySuppliesGranted { .. }
+            | BehaviorResult::EventState { .. }
+            | BehaviorResult::VisualNovelState { .. }
+            | BehaviorResult::RewardGranted { .. }
+            | BehaviorResult::CombatRewardsGranted { .. }
+            | BehaviorResult::MasteredEliteSweepResultStaged { .. }
+            | BehaviorResult::MasteredEliteSweepCompleted { .. }
+            | BehaviorResult::RewardState { .. }
+            | BehaviorResult::DealerState { .. }
+            | BehaviorResult::Ok => CharacterizedResultTransport::CommandPayload,
+        }
+    }
+
+    fn characterized_serialized_variant(value: Value) -> (String, Value) {
+        match value {
+            Value::String(result_type) => (result_type, json!({})),
+            Value::Object(object) => {
+                assert_eq!(
+                    object.len(),
+                    1,
+                    "externally tagged result must have one key"
+                );
+                object.into_iter().next().unwrap()
+            }
+            other => panic!("unexpected BehaviorResult serde shape: {other:?}"),
+        }
+    }
+
+    fn characterized_expected_payload(result_type: &str, fields: Value) -> Value {
+        match result_type {
+            "RunComplete" => fields["map"].clone(),
+            "UnEquipItem"
+            | "EquipItem"
+            | "RelicState"
+            | "RelicNumericPlan"
+            | "RelicEffectivePlan"
+            | "RelicPreview"
+            | "DeploymentRangePreview"
+            | "SkillTargetPreview"
+            | "TacticalCommandPreview" => fields["result"].clone(),
+            "RunAbandoned" => json!({}),
+            "Ok" => Value::Null,
+            "EmployeeRecruited"
+            | "EmergencySuppliesGranted"
+            | "CombatRewardsGranted"
+            | "MasteredEliteSweepCompleted" => {
+                let mut fields = fields.as_object().unwrap().clone();
+                let (nested_type, nested_fields) =
+                    characterized_serialized_variant(fields.remove("completion").unwrap());
+                fields.insert(
+                    "completion".to_string(),
+                    json!({
+                        "result_type": nested_type,
+                        "payload": characterized_expected_payload(&nested_type, nested_fields),
+                    }),
+                );
+                Value::Object(fields)
+            }
+            _ => fields,
+        }
+    }
+
+    fn characterized_results() -> Vec<BehaviorResult> {
+        let battle_uuid = Uuid::from_u128(0x33B0);
+        let employee_uuid = Uuid::from_u128(0x33E0);
+        let other_employee_uuid = Uuid::from_u128(0x33E1);
+        let unit_instance_id = UnitInstanceId::from(Uuid::from_u128(0x33A0));
+        let other_unit_instance_id = UnitInstanceId::from(Uuid::from_u128(0x33A1));
+        let session = characterized_session();
+
+        vec![
+            BehaviorResult::RunStartFlowStarted {
+                game_mode: GameMode::Expedition,
+                visual_novel: None,
+            },
+            BehaviorResult::StarterEmployeesSelected {
+                selected_employee_definition_ids: vec!["starter".to_string()],
+                employee_uuids: vec![employee_uuid],
+                map: characterized_map(),
+            },
+            BehaviorResult::MapState {
+                map: characterized_map(),
+            },
+            BehaviorResult::NodeEntered {
+                node_id: session.node_id,
+                kind_id: session.kind_id.clone(),
+                category: session.category,
+                payload: session.payload.clone(),
+                session: session.clone(),
+            },
+            BehaviorResult::NodePreview {
+                node_id: session.node_id,
+                kind_id: session.kind_id.clone(),
+                category: session.category,
+                payload: session.payload.clone(),
+                session,
+                map: characterized_map(),
+                combat_preview: None,
+                trauma_recovery_preview: None,
+            },
+            BehaviorResult::NodeCompleted {
+                map: characterized_map(),
+                outcome: Some(characterized_outcome()),
+            },
+            BehaviorResult::SavePointState {
+                node_id: MapNodeId::new(Uuid::from_u128(0x3310)),
+                recovery_preview: TraumaRecoveryPreviewDto {
+                    recovery: TraumaRecovery::CurrentPercent { percent: 15 },
+                    employees: Vec::new(),
+                    physical_damage_unchanged: true,
+                    replaces_run_checkpoint: true,
+                },
+            },
+            BehaviorResult::MaintenanceState {
+                node_id: MapNodeId::new(Uuid::from_u128(0x3311)),
+                maintenance_options: MaintenanceOptionsDto {
+                    selected_bloom_payment: None,
+                    warehouse_materials: vec![],
+                    items: Vec::new(),
+                    materials: Vec::new(),
+                },
+            },
+            BehaviorResult::HeadquartersContactState {
+                node_id: MapNodeId::new(Uuid::from_u128(0x3312)),
+                options: vec![HeadquartersContactOption::RecruitEmployee],
+                recruitment_candidates: Vec::new(),
+                shop_pool_id: Some("hq_shop".to_string()),
+            },
+            BehaviorResult::FloorAdvanced {
+                game_mode: GameMode::Expedition,
+                floor_index: 2,
+                map: characterized_map(),
+            },
+            BehaviorResult::RunComplete {
+                map: characterized_map(),
+            },
+            BehaviorResult::RunFailed {
+                reason: RunFailureReason::NoLivingEmployees,
+                outcome: None,
+            },
+            BehaviorResult::RunFailureDecisionRequired {
+                reason: RunFailureReason::NoDeployableEmployees,
+                contributing_reason: Some(RunFailureReason::BossDefeated),
+                outcome: Some(characterized_outcome()),
+            },
+            BehaviorResult::RunAbandoned,
+            BehaviorResult::UnEquipItem {
+                result: UnequipItemResultDto {
+                    item_uuid: Uuid::from_u128(0x3320),
+                    target_unit: employee_uuid,
+                    equipped_items: Vec::new(),
+                    inventory_diff: InventoryDiffDto::default(),
+                },
+            },
+            BehaviorResult::EquipItem {
+                result: EquipItemResultDto {
+                    requested_item_uuid: Uuid::from_u128(0x3321),
+                    target_unit: employee_uuid,
+                    outcome: crate::game::resources::EquipItemOutcomeDto::Equipped {
+                        item_uuid: Uuid::from_u128(0x3321),
+                    },
+                    equipped_items: Vec::new(),
+                    inventory_diff: InventoryDiffDto::default(),
+                },
+            },
+            BehaviorResult::ConsumableItemUsed {
+                item_uuid: Uuid::from_u128(0x3322),
+                target_employee_uuid: employee_uuid,
+                replaced_modifier: None,
+                active_modifier: None,
+                condition: EmployeeCondition::default(),
+                inventory_diff: InventoryDiffDto::default(),
+            },
+            BehaviorResult::RelicState {
+                result: crate::game::relic::RelicStateDto {
+                    copies: vec![],
+                    loadouts: vec![],
+                    not_sellable_copy_uuids: vec![],
+                    resources: Default::default(),
+                },
+            },
+            BehaviorResult::RelicNumericPlan {
+                result: crate::game::relic::plan::RelicNumericPlanDto {
+                    employee_uuid,
+                    generation: crate::game::data::content_pack::ContentIdentity {
+                        contract: crate::game::data::content_pack::ContentContract::current(),
+                        semantic_sha256: "0".repeat(64),
+                    },
+                    scope: crate::game::relic::plan::RelicNumericPlanScope::ProspectiveLoadout,
+                    base_battle_stats: None,
+                    effective_battle_stats: None,
+                    stats_unavailable_reason: Some(crate::game::relic::plan::RelicNumericPlanUnresolvedReason::ProviderUnavailable),
+                    penalties: vec![],
+                    targets: vec![],
+                },
+            },
+            BehaviorResult::RelicEffectivePlan { result: None },
+            BehaviorResult::RelicPreview {
+                result: crate::game::relic::RelicOperationPreviewDto {
+                    copy: crate::game::relic::OwnedRelic {
+                        copy_uuid: employee_uuid,
+                        definition_id: "fixture".into(),
+                        variant: Default::default(),
+                    },
+                    operation: crate::game::relic::RelicOperationKind::Corrupt,
+                    effects: vec![],
+                    penalties: vec![],
+                    support_conversions: vec![],
+                    catalyst_cost: 1,
+                    equipment_dust_gained: 0,
+                    irreversible: true,
+                    equipped_to: None,
+                },
+            },
+            BehaviorResult::SkillFragmentLoadoutUpdated {
+                employee_uuid,
+                active_copy_uuid: Some(Uuid::from_u128(99)),
+            },
+            BehaviorResult::SkillFragmentFormSelected {
+                copy: OwnedFragment { investment: Default::default(),
+                    copy_uuid: Uuid::from_u128(99),
+                    definition_id: SkillFragmentId::from("fragment"),
+                    unlocked_forms: std::collections::BTreeSet::from(["base".into()]),
+                    selected_form: "base".into(),
+                    equipped_to: None,
+                },
+                changed: true,
+            },
+            BehaviorResult::SkillFragmentTransferred {
+                copy: OwnedFragment { investment: Default::default(),
+                    copy_uuid: Uuid::from_u128(99),
+                    definition_id: SkillFragmentId::from("fragment"),
+                    unlocked_forms: std::collections::BTreeSet::from(["base".into()]),
+                    selected_form: "base".into(),
+                    equipped_to: None,
+                },
+                previous_owner: employee_uuid,
+                changed: true,
+            },
+            BehaviorResult::SkillFragmentAwakened {
+                copy: OwnedFragment { investment: Default::default(),
+                    copy_uuid: Uuid::from_u128(99),
+                    definition_id: SkillFragmentId::from("fragment"),
+                    unlocked_forms: std::collections::BTreeSet::from(["base".into()]),
+                    selected_form: "base".into(),
+                    equipped_to: None,
+                },
+                changed: true,
+                enkephalin_spent: 3,
+                inventory_diff: InventoryDiffDto::default(),
+            },
+            BehaviorResult::SkillFragmentDismantled {
+                copy_uuid: Uuid::from_u128(99),
+                definition_id: SkillFragmentId::from("fragment"),
+                enkephalin_gained: 2,
+                inventory_diff: InventoryDiffDto::default(),
+            },
+            BehaviorResult::EquipmentDismantled {
+                item_uuid: Uuid::from_u128(0x3323),
+                equipment_id: "equipment_a".to_string(),
+                inventory_diff: InventoryDiffDto::default(),
+            },
+            BehaviorResult::EquipmentEnhanced {
+                item_uuid: Uuid::from_u128(0x3324),
+                equipment_id: "equipment_b".to_string(),
+                enhancement_level: 2,
+                inventory_diff: InventoryDiffDto::default(),
+            },
+            BehaviorResult::ShopState {
+                shop: characterized_shop(),
+            },
+            BehaviorResult::RefreshShop {
+                enkephalin: 10,
+                shop: characterized_shop(),
+            },
+            BehaviorResult::SellItem {
+                enkephalin: 11,
+                inventory_diff: InventoryDiffDto::default(),
+            },
+            BehaviorResult::PurchaseItem {
+                enkephalin: 12,
+                inventory_diff: InventoryDiffDto::default(),
+            relic_diffs: Vec::new(),
+            crafting_resources: None,
+            },
+            BehaviorResult::EmployeeRecruited {
+                employee_definition_id: "recruit".to_string(),
+                employee_uuid,
+                completion: Box::new(BehaviorResult::NodeCompleted {
+                    map: characterized_map(),
+                    outcome: None,
+                }),
+            },
+            BehaviorResult::EmergencySuppliesGranted {
+                enkephalin: 13,
+                inventory_diff: InventoryDiffDto::default(),
+                completion: Box::new(BehaviorResult::RunComplete {
+                    map: characterized_map(),
+                }),
+            },
+            BehaviorResult::EventState {
+                node_id: MapNodeId::new(Uuid::from_u128(0x3330)),
+                event: EventSceneSnapshotDto {
+                    event_id: crate::game::data::event_data::EventId::new("event"),
+                    current_scene_id: crate::game::data::event_data::EventSceneId::new("scene"),
+                    presentation: crate::game::data::event_data::EventScenePresentation {
+                        panels: Vec::new(),
+                    },
+                    committed_check: None,
+                    relic_corruption_selections: None,
+                    interaction: EventInteractionDto::Advance,
+                },
+            },
+            BehaviorResult::VisualNovelState { visual_novel: None },
+            BehaviorResult::RewardGranted {
+                enkephalin: 14,
+                inventory_diff: InventoryDiffDto::default(),
+                skill_fragment_diffs: Vec::new(),
+                employee_experience_diffs: Vec::new(),
+                relic_activity: None,
+            },
+            BehaviorResult::CombatRewardsGranted {
+                enkephalin: 15,
+                inventory_diff: InventoryDiffDto::default(),
+                skill_fragment_diffs: Vec::new(),
+                employee_experience_diffs: Vec::new(),
+                outcome: characterized_outcome(),
+                completion: Box::new(BehaviorResult::FloorAdvanced {
+                    game_mode: GameMode::Expedition,
+                    floor_index: 3,
+                    map: characterized_map(),
+                }),
+            },
+            BehaviorResult::MasteredEliteSweepResultStaged {
+                result: MasteredEliteSweepResultDto {
+                    sweep_uuid: Uuid::from_u128(0x3340),
+                    node_id: MapNodeId::new(Uuid::from_u128(0x3341)),
+                    encounter_id: "mastered_elite_encounter".to_string(),
+                    reward_source_id: "mastered_elite_reward".to_string(),
+                    fragment_id: SkillFragmentId::from("mastered_elite_fragment"),
+                    reward_branch: MasteredEliteSweepRewardBranchDto::RepeatReward,
+                    base_rewards: Vec::new(),
+                    exclusive_effects: Vec::new(),
+                    enkephalin_after: 16,
+                    inventory_diff: InventoryDiffDto::default(),
+                    skill_fragment_diffs: Vec::new(),
+                    employee_experience_diffs: Vec::new(),
+                },
+            },
+            BehaviorResult::MasteredEliteSweepCompleted {
+                sweep_uuid: Uuid::from_u128(0x3340),
+                enkephalin: 16,
+                inventory_diff: InventoryDiffDto::default(),
+                skill_fragment_diffs: Vec::new(),
+                employee_experience_diffs: Vec::new(),
+                completion: Box::new(BehaviorResult::RunComplete {
+                    map: characterized_map(),
+                }),
+            },
+            BehaviorResult::BattleAdvanced {
+                battle_uuid,
+                encounter_id: "result_encounter".to_string(),
+                node_type: CombatNodeType::Defense,
+                mission_variant: CombatMissionVariant::Defense,
+                battle_setup_snapshot: Some(characterized_battle_setup(battle_uuid)),
+                battle_update: characterized_battle_update(battle_uuid),
+                finished: false,
+            },
+            BehaviorResult::BattleState {
+                battle_uuid,
+                node_type: CombatNodeType::Defense,
+                mission_variant: CombatMissionVariant::Defense,
+                encounter_id: "result_encounter".to_string(),
+                combat_preview: characterized_combat_preview(),
+                battle_update: characterized_battle_update(battle_uuid),
+                finished: false,
+            },
+            BehaviorResult::DeploymentRangePreview {
+                result: characterized_deployment_preview(),
+            },
+            BehaviorResult::TacticalCommandPreview {
+                result: TacticalCommandPreviewResultDto {
+                    battle_uuid: Uuid::from_u128(0xC006),
+                    battle_state_revision: 1,
+                    command: TacticalCommandPreviewInput::Relocate {
+                        employee_uuid: Uuid::from_u128(0x3305),
+                        destination: Position::new(1, 2),
+                        facing: FacingDirection::Right,
+                    },
+                    cost: 5,
+                    relocation_cooldown_ms: 10_000,
+                    forced_defense_ms: 1500,
+                    eligibility: BattlePayloadEligibilityDto::enabled(),
+                    units: Vec::new(),
+                },
+            },
+            BehaviorResult::SkillTargetPreview {
+                result: SkillTargetPreviewResultDto {
+                    counter_channel: None,
+                    object_placements: Vec::new(),
+                    employee_uuid,
+                    unit_instance_id,
+                    skill_id: SkillId::from("skill_a"),
+                    target: SkillCastTarget::Tile {
+                        position: Position::new(2, 3),
+                    },
+                    battle_state_revision: 33,
+                    eligibility: BattlePayloadEligibilityDto::enabled(),
+                },
+            },
+            BehaviorResult::BattlePlaybackChanged {
+                battle_uuid,
+                encounter_id: "result_encounter".to_string(),
+                node_type: CombatNodeType::Defense,
+                mission_variant: CombatMissionVariant::Defense,
+                battle_update: characterized_battle_update(battle_uuid),
+            },
+            BehaviorResult::BattleUnitDeployed {
+                battle_uuid,
+                encounter_id: "result_encounter".to_string(),
+                node_type: CombatNodeType::Defense,
+                mission_variant: CombatMissionVariant::Defense,
+                battle_update: characterized_battle_update(battle_uuid),
+                employee_uuid,
+                unit_instance_id,
+            },
+            BehaviorResult::BattleUnitWithdrawn {
+                battle_uuid,
+                encounter_id: "result_encounter".to_string(),
+                node_type: CombatNodeType::Defense,
+                mission_variant: CombatMissionVariant::Defense,
+                battle_update: characterized_battle_update(battle_uuid),
+                employee_uuid,
+                unit_instance_id,
+            },
+            BehaviorResult::BattleEngagementStanceChanged {
+                battle_uuid,
+                encounter_id: "result_encounter".to_string(),
+                node_type: CombatNodeType::Defense,
+                mission_variant: CombatMissionVariant::Defense,
+                battle_update: characterized_battle_update(battle_uuid),
+                employee_uuid,
+                unit_instance_id,
+                stance: EngagementStance::Defense,
+            },
+            BehaviorResult::BattleUnitTacticallyRelocated {
+                battle_uuid,
+                encounter_id: "result_encounter".to_string(),
+                node_type: CombatNodeType::Defense,
+                mission_variant: CombatMissionVariant::Defense,
+                battle_update: characterized_battle_update(battle_uuid),
+                employee_uuid,
+                unit_instance_id,
+                destination: Position::new(3, 4),
+                facing: FacingDirection::Right,
+            },
+            BehaviorResult::BattleUnitsTacticallySwapped {
+                battle_uuid,
+                encounter_id: "result_encounter".to_string(),
+                node_type: CombatNodeType::Defense,
+                mission_variant: CombatMissionVariant::Defense,
+                battle_update: characterized_battle_update(battle_uuid),
+                first_employee_uuid: employee_uuid,
+                second_employee_uuid: other_employee_uuid,
+                first_unit_instance_id: unit_instance_id,
+                second_unit_instance_id: other_unit_instance_id,
+                first_destination: Position::new(4, 5),
+                second_destination: Position::new(5, 4),
+                first_facing: FacingDirection::Left,
+                second_facing: FacingDirection::Right,
+            },
+            BehaviorResult::BattleSkillTargetingFocusChanged {
+                battle_uuid,
+                encounter_id: "result_encounter".to_string(),
+                node_type: CombatNodeType::Defense,
+                mission_variant: CombatMissionVariant::Defense,
+                battle_update: characterized_battle_update(battle_uuid),
+            },
+            BehaviorResult::BattleSkillActivated {
+                battle_uuid,
+                encounter_id: "result_encounter".to_string(),
+                node_type: CombatNodeType::Defense,
+                mission_variant: CombatMissionVariant::Defense,
+                battle_update: characterized_battle_update(battle_uuid),
+                employee_uuid,
+                unit_instance_id,
+                skill_id: SkillId::from("skill_b"),
+            },
+            BehaviorResult::BattleRelationSelected {
+                battle_uuid,
+                encounter_id: "result_encounter".to_string(),
+                node_type: CombatNodeType::Defense,
+                mission_variant: CombatMissionVariant::Defense,
+                battle_update: characterized_battle_update(battle_uuid),
+                employee_uuid,
+                unit_instance_id,
+                entry: "blessing".to_string(),
+            },
+            BehaviorResult::RewardState {
+                mode: RewardMode::ChooseOne,
+                rewards: Vec::new(),
+                selected_reward_uuid: None,
+            },
+            BehaviorResult::DealerState { dealer: serde_json::from_value(json!({
+                "phase":"GameSelection","game_rules":null,"revision":1,"points":30,"first_explanation":true,"assigned_multiplier":3,"gambit":null,"applied_multiplier":1,
+                "selected_game":null,"wager":0,"maximum_loss":0,"double_maximum_loss":null,"minimum_wager":1,"flip_loss":10,"flip_first_bonus":20,"round_number":0,"round":null,"last_result":null,
+                "eligible_actions":["choose_game","settle"],"copies":[],"collateral":[],"selected_copies":[],"selected_principal":0,"points_after_selection":30,"can_confirm_selection":false,"selection_reason":null,"forfeited_copies":[],"offers":[],"points_expire_on_leave":true
+            })).unwrap() },
+            BehaviorResult::Ok,
+        ]
+    }
+
+    #[test]
+    fn every_behavior_result_has_exact_old_command_projection_contract() {
+        const EXPECTED_RESULT_TYPES: [&str; 57] = [
+            "RunStartFlowStarted",
+            "StarterEmployeesSelected",
+            "MapState",
+            "NodeEntered",
+            "NodePreview",
+            "NodeCompleted",
+            "SavePointState",
+            "MaintenanceState",
+            "HeadquartersContactState",
+            "FloorAdvanced",
+            "RunComplete",
+            "RunFailed",
+            "RunFailureDecisionRequired",
+            "RunAbandoned",
+            "UnEquipItem",
+            "EquipItem",
+            "ConsumableItemUsed",
+            "RelicState",
+            "RelicNumericPlan",
+            "RelicEffectivePlan",
+            "RelicPreview",
+            "SkillFragmentLoadoutUpdated",
+            "SkillFragmentFormSelected",
+            "SkillFragmentTransferred",
+            "SkillFragmentAwakened",
+            "SkillFragmentDismantled",
+            "EquipmentDismantled",
+            "EquipmentEnhanced",
+            "ShopState",
+            "RefreshShop",
+            "SellItem",
+            "PurchaseItem",
+            "EmployeeRecruited",
+            "EmergencySuppliesGranted",
+            "EventState",
+            "VisualNovelState",
+            "RewardGranted",
+            "CombatRewardsGranted",
+            "MasteredEliteSweepResultStaged",
+            "MasteredEliteSweepCompleted",
+            "BattleAdvanced",
+            "BattleState",
+            "DeploymentRangePreview",
+            "TacticalCommandPreview",
+            "SkillTargetPreview",
+            "BattlePlaybackChanged",
+            "BattleUnitDeployed",
+            "BattleUnitWithdrawn",
+            "BattleEngagementStanceChanged",
+            "BattleUnitTacticallyRelocated",
+            "BattleUnitsTacticallySwapped",
+            "BattleSkillTargetingFocusChanged",
+            "BattleSkillActivated",
+            "BattleRelationSelected",
+            "RewardState",
+            "DealerState",
+            "Ok",
+        ];
+        let cases = characterized_results();
+        assert_eq!(cases.len(), EXPECTED_RESULT_TYPES.len());
+        assert_eq!(
+            crate::application::ApplicationResultKind::PLAYER_RESULTS.len(),
+            EXPECTED_RESULT_TYPES.len()
+        );
+
+        for (result, expected_result_type) in cases.into_iter().zip(EXPECTED_RESULT_TYPES) {
+            let expected_transport = characterized_result_transport(&result);
+            let (serialized_result_type, fields) =
+                characterized_serialized_variant(serde_json::to_value(&result).unwrap());
+            assert_eq!(serialized_result_type, expected_result_type);
+            let application_result =
+                crate::application::ApplicationResult::from_behavior(&result).unwrap();
+            let (bounded, _) = crate::authoring::control::run(
+                &crate::authoring::ExecutionLimits::default(),
+                &crate::authoring::CancellationToken::default(),
+                crate::authoring::ExecutionPhase::TrialExecution,
+                || crate::application::ApplicationResult::from_behavior(&result),
+            )
+            .unwrap();
+            assert_eq!(
+                bounded.unwrap(),
+                application_result,
+                "{expected_result_type}"
+            );
+            assert_eq!(application_result.meaning(), expected_result_type);
+            assert_ne!(
+                application_result.disposition(),
+                crate::application::ApplicationResultDisposition::AcceptedRecoveryPending
+            );
+            let expected_application_payload = match expected_transport {
+                CharacterizedResultTransport::BattleUpdate => fields.clone(),
+                CharacterizedResultTransport::CommandPayload
+                | CharacterizedResultTransport::ReadOnlyPreview => {
+                    characterized_expected_payload(expected_result_type, fields.clone())
+                }
+            };
+            assert_eq!(
+                application_result.payload().as_value(),
+                &expected_application_payload,
+                "application projection: {expected_result_type}"
+            );
+
+            match (
+                expected_transport,
+                result.application_result_projection().unwrap(),
+            ) {
+                (
+                    CharacterizedResultTransport::CommandPayload,
+                    CoreResultProjection::CommandPayload(projection),
+                )
+                | (
+                    CharacterizedResultTransport::ReadOnlyPreview,
+                    CoreResultProjection::ReadOnlyPreview(projection),
+                ) => {
+                    assert_eq!(projection.result_type, expected_result_type);
+                    assert_eq!(
+                        projection.payload,
+                        characterized_expected_payload(expected_result_type, fields.clone()),
+                        "central projection: {expected_result_type}"
+                    );
+                }
+                (
+                    CharacterizedResultTransport::BattleUpdate,
+                    CoreResultProjection::BattleUpdate,
+                ) => {
+                    assert!(fields.get("battle_update").is_some());
+                }
+                (expected, actual) => {
+                    panic!(
+                        "central transport drift for {expected_result_type}: expected {expected:?}, got {actual:?}"
+                    )
+                }
+            }
+
+            match (expected_transport, result.into_command_result_contract()) {
+                (
+                    CharacterizedResultTransport::CommandPayload,
+                    BehaviorCommandResultContract::CommandPayload(payload),
+                )
+                | (
+                    CharacterizedResultTransport::ReadOnlyPreview,
+                    BehaviorCommandResultContract::ReadOnlyPreview(payload),
+                ) => {
+                    let expected_payload =
+                        characterized_expected_payload(expected_result_type, fields);
+                    assert_eq!(payload.result_type(), expected_result_type);
+                    assert_eq!(
+                        payload.payload_value().unwrap(),
+                        expected_payload,
+                        "{expected_result_type}"
+                    );
+                    if expected_result_type == "RunComplete" {
+                        assert_eq!(
+                            expected_payload,
+                            serde_json::to_value(characterized_map()).unwrap()
+                        );
+                        assert!(expected_payload.get("map").is_none());
+                    }
+                }
+                (
+                    CharacterizedResultTransport::BattleUpdate,
+                    BehaviorCommandResultContract::BattleUpdate(update),
+                ) => {
+                    assert_eq!(
+                        serde_json::to_value(update.battle_update).unwrap(),
+                        fields["battle_update"],
+                        "{expected_result_type}"
+                    );
+                    let expected_setup = if expected_result_type == "BattleAdvanced" {
+                        fields["battle_setup_snapshot"].clone()
+                    } else {
+                        Value::Null
+                    };
+                    assert_eq!(
+                        serde_json::to_value(update.battle_setup_snapshot).unwrap(),
+                        expected_setup,
+                        "{expected_result_type}"
+                    );
+                }
+                (expected, actual) => {
+                    panic!(
+                        "transport drift for {expected_result_type}: expected {expected:?}, got {actual:?}"
+                    )
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn retained_roster_result_api_delegates_to_the_central_projection() {
+        let map = characterized_map();
+        let expected_map = serde_json::to_value(&map).unwrap();
+        let contract =
+            CommandResultPayloadContract::Roster(RosterCommandResult::EmployeeRecruited {
+                employee_definition_id: "public_recruit".to_string(),
+                employee_uuid: Uuid::from_u128(0x33F0),
+                completion: Box::new(CommandResultPayloadContract::Run(
+                    RunCommandResult::RunComplete { map },
+                )),
+            });
+
+        assert_eq!(contract.result_type(), "EmployeeRecruited");
+        let payload = contract.payload_value().unwrap();
+        assert_eq!(payload["completion"]["result_type"], "RunComplete");
+        assert_eq!(payload["completion"]["payload"], expected_map);
+        assert!(payload["completion"]["payload"].get("map").is_none());
+    }
+
+    #[test]
+    #[should_panic(
+        expected = "battle update results cannot be nested inside command result payloads"
+    )]
+    fn central_projection_rejects_nested_battle_updates() {
+        let battle_uuid = Uuid::from_u128(0x33F1);
+        let result = BehaviorResult::EmployeeRecruited {
+            employee_definition_id: "invalid_nested_battle".to_string(),
+            employee_uuid: Uuid::from_u128(0x33F2),
+            completion: Box::new(BehaviorResult::BattleAdvanced {
+                battle_uuid,
+                encounter_id: "result_encounter".to_string(),
+                node_type: CombatNodeType::Defense,
+                mission_variant: CombatMissionVariant::Defense,
+                battle_setup_snapshot: None,
+                battle_update: characterized_battle_update(battle_uuid),
+                finished: false,
+            }),
+        };
+
+        let _ = result.application_result_projection();
     }
 
     #[test]
     fn live_battle_presentation_event_dto_keeps_stable_wire_shape() {
         let entry = BattleEventLogEntry {
+            skill_effect_source: None,
             time_ms: 100,
             seq: 7,
             cause: BattleEventCause::Root {

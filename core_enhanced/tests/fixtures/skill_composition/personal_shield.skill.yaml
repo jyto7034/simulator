@@ -1,0 +1,90 @@
+# Independent shield pools: fixture values, not release balance.
+version: 1
+id: personal-shield-composition-fixture
+values:
+  - name: release-protection
+    value:
+      Amount:
+        moment: Snapshot
+        root:
+          Ratio:
+            numerator:
+              Mul:
+                value:
+                  Read:
+                    HitPoints:
+                      subject: Source
+                      field: Max
+                scalar:
+                  Const:
+                    value: 20
+                    unit: Scalar
+            denominator:
+              Const:
+                value: 100
+                unit: Scalar
+            rounding: Floor
+  - name: protection-time
+    value:
+      Milliseconds: 6000
+definitions:
+  - name: protect-employees
+    parameters:
+      - name: protection
+        value_type: Amount
+      - name: lifetime
+        value_type: Milliseconds
+    body:
+      Action:
+        id: grant
+        target:
+          Literal:
+            Target: SelfUnit
+        delivery:
+          Literal:
+            Delivery: Instant
+        effects:
+          - PersonalShieldGrant:
+              id: individual-pools
+              tags: [personal-protection]
+              amount:
+                Parameter: protection
+              duration:
+                Parameter: lifetime
+              priority: 0
+              recipients:
+                PlayerEmployeesAtRelease:
+                  radius_units: 2000000
+              support: null
+              replace_only_recipients: true
+              source_creation: null
+        wait: Released
+skills:
+  - id: authored-personal-shield
+    name: 독립 보호막 검사
+    kind: Untargeted
+    cast_targeting:
+      Explicit:
+        selection: self
+        target: SelfUnit
+        reach: pattern
+        air_capable: true
+    prepare_ms: 0
+    focus_permissions:
+      allows_move: true
+      allows_basic_attack: true
+    admission:
+      capacity: 100
+      requirement: Full
+      cost: All
+    body:
+      Call:
+        id: protect
+        definition: protect-employees
+        arguments:
+          - name: protection
+            value:
+              Shared: release-protection
+          - name: lifetime
+            value:
+              Shared: protection-time

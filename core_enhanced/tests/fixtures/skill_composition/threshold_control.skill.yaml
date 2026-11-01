@@ -1,0 +1,19 @@
+# E04 technical values; the counter is independent from fragment chill/freeze.
+version: 1
+id: threshold-control-fixture
+values:
+  - name: frostbite
+    value:
+      AttackProgram:
+        reactions: []
+        on_hit_status:
+          duration_ms: 5000
+          profile:
+            definition: frostbite
+            kind:
+              ThresholdControl: { stacks: 1, threshold: 5, control: Stun, control_ms: 1000 }
+equipment_attacks:
+  - equipment: frost_splinter
+    program: { Shared: frostbite }
+definitions: []
+skills: []

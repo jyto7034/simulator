@@ -8,12 +8,12 @@ use uuid::Uuid;
 pub enum CooldownSource {
     Unit { unit_instance_id: UnitInstanceId },
     Item { item_instance_id: Uuid },
-    Artifact { artifact_instance_id: Uuid },
 }
 
 #[derive(Debug, Clone)]
 pub struct SourcedEffect {
     pub source: CooldownSource,
+    pub equipment_source: Option<super::runtime_facts::EquipmentSourceSnapshot>,
     pub target: TriggerEffectTarget,
     pub effect: Effect,
 }
@@ -21,6 +21,7 @@ pub struct SourcedEffect {
 #[derive(Debug, Clone)]
 pub struct SourcedAbilityActivation {
     pub source: CooldownSource,
+    pub equipment_source: Option<super::runtime_facts::EquipmentSourceSnapshot>,
     pub binding: AbilityActivationBinding,
     pub binding_index: usize,
 }

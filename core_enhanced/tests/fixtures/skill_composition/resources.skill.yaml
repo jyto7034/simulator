@@ -1,0 +1,98 @@
+# Test-only amounts; the resource runtime owns balance, scope and persistence.
+version: 1
+id: resource-composition-fixture
+resources:
+  - { id: employee_meter, owner: Employee, lifetime: Run, initial: 7, cap: 15 }
+  - { id: copy_meter, owner: EquipmentCopy, lifetime: Run, initial: 7, cap: 15 }
+  - { id: fragment_meter, owner: FragmentCopy, lifetime: Attempt, initial: 0, cap: 15 }
+values:
+  - name: run-cost
+    value:
+      Effects:
+        - id: spend
+          op:
+            Resources:
+              operations:
+                - { resource: employee_meter, owner: SourceEmployee, operation: { Consume: 2 } }
+                - { resource: copy_meter, owner: SourceEquipment, operation: { Consume: 2 } }
+  - name: attempt-charge
+    value:
+      Effects:
+        - id: charge
+          op:
+            Resources:
+              operations:
+                - { resource: fragment_meter, owner: SourceFragment, operation: { Grant: 20 } }
+                - { resource: fragment_meter, owner: SourceFragment, operation: { Decay: 3 } }
+                - { resource: fragment_meter, owner: SourceFragment, operation: { Consume: 2 } }
+  - name: charge-heal
+    value:
+      Amount:
+        moment: Live
+        root:
+          Mul:
+            value:
+              Const: { value: 1, unit: Magnitude }
+            scalar:
+              Ratio:
+                numerator:
+                  Read:
+                    Resource: { resource: fragment_meter, owner: SourceFragment, field: Available }
+                denominator:
+                  Const: { value: 1, unit: { Resource: fragment_meter } }
+                rounding: Floor
+definitions:
+  - name: change-resource
+    parameters:
+      - { name: operations, value_type: Effects }
+    body:
+      Action:
+        id: mutate
+        target: { Literal: { Target: SelfUnit } }
+        delivery: { Literal: { Delivery: Instant } }
+        effects:
+          - Append:
+              effects: { Parameter: operations }
+        wait: EffectsSettled
+skills:
+  - id: authored-run-cost
+    name: 런 자원 소비 검사
+    kind: Untargeted
+    cast_targeting:
+      Explicit: { selection: self, target: SelfUnit, reach: pattern, air_capable: false }
+    prepare_ms: 0
+    focus_permissions: { allows_move: true, allows_basic_attack: true }
+    admission: null
+    body:
+      Call:
+        id: spend
+        definition: change-resource
+        arguments:
+          - { name: operations, value: { Shared: run-cost } }
+  - id: authored-attempt-heal
+    name: 전투 조각 자원 회복 검사
+    kind: Untargeted
+    cast_targeting:
+      Explicit: { selection: self, target: SelfUnit, reach: pattern, air_capable: false }
+    prepare_ms: 0
+    focus_permissions: { allows_move: true, allows_basic_attack: true }
+    admission: { capacity: 100, requirement: Full, cost: All }
+    body:
+      Sequence:
+        id: charge-and-heal
+        children:
+          - Call:
+              id: charge
+              definition: change-resource
+              arguments:
+                - { name: operations, value: { Shared: attempt-charge } }
+          - Action:
+              id: heal-from-balance
+              target: { Literal: { Target: SelfUnit } }
+              delivery: { Literal: { Delivery: Instant } }
+              effects:
+                - Heal:
+                    id: resource-heal
+                    tags: [resource-recovery]
+                    amount: { Shared: charge-heal }
+              wait: EffectsSettled

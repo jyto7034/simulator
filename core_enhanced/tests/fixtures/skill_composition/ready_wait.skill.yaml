@@ -1,0 +1,16 @@
+# Waiting coefficients are explicit verification values; N11's window is 15 seconds.
+version: 1
+id: ready-wait-fixture
+values:
+  - name: ready-wait-damage
+    value:
+      DefenseProgram:
+        ReadyWaitDamage:
+          per_second_percent: 10
+          max_percent: 50
+          duration_ms: 15000
+equipment_defenses:
+  - equipment: r11_weapon
+    program: { Shared: ready-wait-damage }
+definitions: []
+skills: []

@@ -1,0 +1,88 @@
+# Current support coefficients; duration and tile masks are test-only values.
+version: 1
+id: duration-modifiers-fixture
+values:
+  - name: regular-support
+    value:
+      Effects:
+        - id: support
+          op:
+            Sustained:
+              definition:
+                ChannelAura:
+                  duration_ms: 201
+                  aura:
+                    family: authored-support
+                    priority: 0
+                    prefer_strongest: true
+                    radius_units: 0
+                    basic_damage_percent: 20
+                    basic_speed_points: 15
+                    basic_scope: RegularOnly
+                    support:
+                      range:
+                        include_anchor_tile: true
+                        rows: [XXX, X@X, XXX]
+                      conversion:
+                        relic_definition: single-target-conversion
+                        variant: Normal
+                        selection_range:
+                          include_anchor_tile: true
+                          rows: [XXXXX, XXXXX, XX@XX, XXXXX, XXXXX]
+                        replacement:
+                          RegularBasic:
+                            damage_percent: 40
+                            speed_points: 20
+  - name: duration-increase
+    value: { Count: 25 }
+definitions:
+  - name: maintain-support
+    parameters:
+      - name: effects
+        value_type: Effects
+      - name: extra-time
+        value_type: Count
+    body:
+      Action:
+        id: maintain
+        target: { Literal: { Target: SelfUnit } }
+        delivery: { Literal: { Delivery: Instant } }
+        effects:
+          - Append:
+              effects: { Parameter: effects }
+        modifiers:
+          - id: extend-support
+            relic_definition: long-breath
+            variant: Normal
+            change:
+              Duration:
+                effect: support
+                percent: { Parameter: extra-time }
+        wait: EffectsSettled
+skills:
+  - id: authored-channel-support
+    name: 유물 지속 시간 검사
+    kind: Untargeted
+    cast_targeting:
+      Explicit:
+        selection: self
+        target: SelfUnit
+        reach: pattern
+        air_capable: true
+    prepare_ms: 0
+    focus_permissions:
+      allows_move: false
+      allows_basic_attack: false
+    admission:
+      capacity: 100
+      requirement: Full
+      cost: All
+    body:
+      Call:
+        id: support
+        definition: maintain-support
+        arguments:
+          - name: effects
+            value: { Shared: regular-support }
+          - name: extra-time
+            value: { Shared: duration-increase }

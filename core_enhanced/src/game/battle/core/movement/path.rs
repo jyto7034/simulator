@@ -26,7 +26,13 @@ pub(in crate::game::battle::core::movement) fn next_cell_path_target(
         return Some(first);
     }
 
-    let current_progress = route_progress_along_centers(&centers, current)?;
+    let (current_progress, projected) = route_projection_along_centers(&centers, current)?;
+    // Spawn regions and displacement can put an actor beside the route. Join
+    // its nearest segment before advancing, rather than cutting diagonally to
+    // the next waypoint through terrain beside that segment.
+    if current.distance(projected) > reach_radius.max(0.0) {
+        return Some(projected);
+    }
     let target_progress = current_progress + reach_radius.max(0.0);
     let mut cumulative = 0.0;
 
@@ -56,7 +62,7 @@ pub(in crate::game::battle::core::movement) fn route_progress_along_cells(
         .copied()
         .map(WorldVec2::from_tile_center)
         .collect::<Vec<_>>();
-    route_progress_along_centers(&centers, position)
+    route_projection_along_centers(&centers, position).map(|(progress, _)| progress)
 }
 
 pub(in crate::game::battle::core::movement) fn route_total_length(
@@ -79,17 +85,21 @@ pub(in crate::game::battle::core::movement) fn route_total_length(
     )
 }
 
-fn route_progress_along_centers(centers: &[WorldVec2], position: WorldVec2) -> Option<f32> {
+fn route_projection_along_centers(
+    centers: &[WorldVec2],
+    position: WorldVec2,
+) -> Option<(f32, WorldVec2)> {
     if centers.is_empty() {
         return None;
     }
     if centers.len() == 1 {
-        return Some(0.0);
+        return Some((0.0, centers[0]));
     }
 
     let mut cumulative = 0.0;
     let mut best_distance_sq = f32::MAX;
     let mut best_progress = 0.0;
+    let mut best_projected = centers[0];
 
     for segment in centers.windows(2) {
         let start = segment[0];
@@ -112,12 +122,13 @@ fn route_progress_along_centers(centers: &[WorldVec2], position: WorldVec2) -> O
         {
             best_distance_sq = distance_sq;
             best_progress = progress;
+            best_projected = projected;
         }
 
         cumulative += segment_length;
     }
 
-    Some(best_progress)
+    Some((best_progress, best_projected))
 }
 
 fn dot(a: WorldVec2, b: WorldVec2) -> f32 {

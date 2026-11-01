@@ -1,0 +1,31 @@
+# E06 memory brooch. Healing rate/cap are technical values, not release balance.
+version: 2
+id: recipient-support-fixture
+values:
+  - name: recipient-support
+    value:
+      SupportProgram:
+        heal_percent: 0
+        shield_percent: 0
+        received_heal_percent:
+          moment: Live
+          root:
+            Clamp:
+              value:
+                Mul:
+                  value:
+                    Ratio:
+                      numerator: { Read: { RelationCount: { subject: Source, relation: BlockingHostiles } } }
+                      denominator: { Const: { value: 1, unit: Count } }
+                      rounding: Floor
+                  scalar: { Const: { value: 20, unit: Scalar } }
+              min: { Const: { value: 0, unit: Scalar } }
+              max: { Const: { value: 60, unit: Scalar } }
+        control_duration:
+          reduction_percent: 50
+          kinds: [Stun, Freeze, Root, Slow, Silence, Taunt, BasicLock]
+equipment_supports:
+  - equipment: black_swan_memory_brooch
+    program: { Shared: recipient-support }
+definitions: []
+skills: []

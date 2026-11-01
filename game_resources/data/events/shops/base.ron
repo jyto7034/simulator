@@ -1,201 +1,168 @@
-// 상인 데이터
-// id: 상인 식별자
-// name: 상인 이름
-// uuid: 상인 프로필 사진 식별자
-// shop_type: 상점 타입 (Shop, DiscountShop)
-// visible_items: 처음 진열되는 아이템 목록
-// stock_items: 상점이 보유한 전체 재고 목록 (visible_items 포함)
-// can_reroll: 리롤 가능 여부
 ShopDatabase(
+    merchandise_presets: [
+        (
+            id: "headquarters_field_supplies",
+            entries: [
+                (
+                    merchandise: (type: consumable, consumable_id: "stabilizing_ampoule"),
+                    quantity: 2,
+                    weight: 12,
+                    repeatable: true,
+                    buy_percent: None,
+                    tags: ["field_supply"],
+                ),
+                (
+                    merchandise: (type: consumable, consumable_id: "emergency_nutrition_pack"),
+                    quantity: 2,
+                    weight: 12,
+                    repeatable: true,
+                    buy_percent: None,
+                    tags: ["field_supply"],
+                ),
+                (
+                    merchandise: (type: consumable, consumable_id: "memory_fixative"),
+                    quantity: 1,
+                    weight: 7,
+                    repeatable: false,
+                    buy_percent: None,
+                    tags: ["field_supply"],
+                ),
+                (
+                    merchandise: (type: consumable, consumable_id: "deployment_anchor_patch"),
+                    quantity: 1,
+                    weight: 8,
+                    repeatable: true,
+                    buy_percent: None,
+                    tags: ["field_supply"],
+                ),
+                (
+                    merchandise: (type: equipment, equipment_id: "standard_armor"),
+                    quantity: 1,
+                    weight: 4,
+                    repeatable: false,
+                    buy_percent: None,
+                    tags: ["basic_equipment"],
+                ),
+                (
+                    merchandise: (type: equipment, equipment_id: "thorned_lantern_guard"),
+                    quantity: 1,
+                    weight: 3,
+                    repeatable: false,
+                    buy_percent: None,
+                    tags: ["basic_equipment"],
+                ),
+            ],
+        ),
+        (
+            id: "unknown_high_value_merchandise",
+            entries: [
+                (
+                    merchandise: (type: consumable, consumable_id: "combat_stimulant"),
+                    quantity: 1,
+                    weight: 8,
+                    repeatable: true,
+                    buy_percent: None,
+                    tags: ["high_value"],
+                ),
+                (
+                    merchandise: (type: consumable, consumable_id: "ego_anchor_serum"),
+                    quantity: 1,
+                    weight: 7,
+                    repeatable: true,
+                    buy_percent: None,
+                    tags: ["high_value"],
+                ),
+                (
+                    merchandise: (type: consumable, consumable_id: "collapse_accelerant"),
+                    quantity: 1,
+                    weight: 6,
+                    repeatable: true,
+                    buy_percent: None,
+                    tags: ["high_value"],
+                ),
+            ],
+        ),
+    ],
     shops: [
-        // 일반 상점 - 아티팩트 상인
         (
-            id: "rachel_shop",
-            name: "아티팩트 상인 라헬",
-            uuid: "550e8400-e29b-41d4-a716-446655440001",
-            shop_type: Shop,
-            visible_items: [
-                "a0000005-0000-0000-0000-000000000005", // lobotomy_badge
-            ],
-            stock_items: [
-                "a0000001-0000-0000-0000-000000000001", // fragment_immortality
-                "a0000003-0000-0000-0000-000000000003", // manager_manual
-                "a0000004-0000-0000-0000-000000000004", // qliphoth_meter
-                "a0000005-0000-0000-0000-000000000005", // lobotomy_badge
-                "a0000006-0000-0000-0000-000000000006", // emergency_syringe
-                "a0000007-0000-0000-0000-000000000007", // black_box_recorder
-                "a0000008-0000-0000-0000-000000000008", // extraction_ticket
-                "a0000009-0000-0000-0000-000000000009", // pale_halo_fragment
-                "a0000010-0000-0000-0000-000000000010", // red_mist_memory
-                "a0000011-0000-0000-0000-000000000011", // abno_observation_log
-            ],
-            can_reroll: true,
-        ),
-
-        // 할인 상점 - E.G.O 무기 상인
-        (
-            id: "ain_shop",
-            name: "E.G.O 무기상 아인",
-            uuid: "550e8400-e29b-41d4-a716-446655440002",
-            shop_type: DiscountShop,
-            visible_items: [
-                "650e8400-e29b-41d4-a716-446655440021", // justitia
-                "650e8400-e29b-41d4-a716-446655440022", // paradise_lost
-                "e0000000-0000-0000-0000-000000000101", // magic_bullet
-            ],
-            stock_items: [
-                "650e8400-e29b-41d4-a716-446655440021", // justitia
-                "650e8400-e29b-41d4-a716-446655440022", // paradise_lost
-                "e0000000-0000-0000-0000-000000000101", // magic_bullet
-                "e0000000-0000-0000-0000-000000000102", // da_capo
-                "e0000000-0000-0000-0000-000000000103", // solemn_lament
-                "e0000000-0000-0000-0000-000000000104", // frost_splinter
-                "e0000000-0000-0000-0000-000000000105", // goodbye_cleave
-            ],
-            can_reroll: false,
-        ),
-
-        // 일반 상점 - 방어구 상인
-        (
-            id: "benjamin_shop",
-            name: "방어구 상인 벤자민",
-            uuid: "550e8400-e29b-41d4-a716-446655440003",
-            shop_type: Shop,
-            visible_items: [
-                "650e8400-e29b-41d4-a716-446655440031", // standard_armor
-            ],
-            stock_items: [
-                "650e8400-e29b-41d4-a716-446655440031", // standard_armor
-                "00000002-0000-0000-0000-000000000002", // smile_armor
-                "e0000000-0000-0000-0000-000000000201", // snow_queen_armor
-                "e0000000-0000-0000-0000-000000000204", // censored_plate
-                "e0000000-0000-0000-0000-000000000205", // thorned_lantern_guard
-            ],
-            can_reroll: true,
-        ),
-
-        // 일반 상점 - 악세서리 상인
-        (
-            id: "netzach_shop",
-            name: "악세서리 상인 네짜흐",
-            uuid: "550e8400-e29b-41d4-a716-446655440004",
-            shop_type: Shop,
-            visible_items: [
-                "650e8400-e29b-41d4-a716-446655440041", // crimson_goggles
-                "650e8400-e29b-41d4-a716-446655440042", // resonance_pendant
-                "e0000000-0000-0000-0000-000000000302", // butterfly_pin
-            ],
-            stock_items: [
-                "650e8400-e29b-41d4-a716-446655440041", // crimson_goggles
-                "650e8400-e29b-41d4-a716-446655440042", // resonance_pendant
-                "650e8400-e29b-41d4-a716-446655440043", // time_dial
-                "e0000000-0000-0000-0000-000000000301", // laetitia_gift
-                "e0000000-0000-0000-0000-000000000302", // butterfly_pin
-                "e0000000-0000-0000-0000-000000000303", // yin_yang_charm
-                "e0000000-0000-0000-0000-000000000304", // parasite_seed
-                "e0000000-0000-0000-0000-000000000305", // orchestra_baton
-            ],
-            can_reroll: true,
-        ),
-
-        // 위험 보상형 기물 상점
-        (
-            id: "yesod_shop",
-            name: "기물 관리자 예소드",
-            uuid: "550e8400-e29b-41d4-a716-446655440005",
-            shop_type: Shop,
-            visible_items: [
-            ],
-            stock_items: [
-                "e2000000-0000-0000-0000-000000000019", // placeholder_der_freischutz_weapon
-                "e2000000-0000-0000-0000-000000000020", // placeholder_funeral_butterfly_weapon
-                "e2000000-0000-0000-0000-000000000021", // placeholder_laetitia_weapon
-            ],
-            can_reroll: true,
-        ),
-
-        // 고위험 특수 상점
-        (
-            id: "gebura_shop",
-            name: "고위험 추출 담당 게부라",
-            uuid: "550e8400-e29b-41d4-a716-446655440006",
-            shop_type: DiscountShop,
-            visible_items: [
-                "e0000000-0000-0000-0000-000000000105", // goodbye_cleave
-                "e0000000-0000-0000-0000-000000000204", // censored_plate
-                "a0000010-0000-0000-0000-000000000010", // red_mist_memory
-            ],
-            stock_items: [
-                "e0000000-0000-0000-0000-000000000102", // da_capo
-                "e0000000-0000-0000-0000-000000000105", // goodbye_cleave
-                "e0000000-0000-0000-0000-000000000204", // censored_plate
-                "e0000000-0000-0000-0000-000000000305", // orchestra_baton
-                "a0000009-0000-0000-0000-000000000009", // pale_halo_fragment
-                "a0000010-0000-0000-0000-000000000010", // red_mist_memory
-            ],
-            can_reroll: false,
-        ),
-
-        // 최종 국면 혼합 상점
-        (
-            id: "binah_shop",
-            name: "최종 추출 담당 비나",
-            uuid: "550e8400-e29b-41d4-a716-446655440007",
-            shop_type: Shop,
-            visible_items: [
-                "e2000000-0000-0000-0000-000000000029", // placeholder_silent_orchestra_weapon
-                "e2000000-0000-0000-0000-000000000016", // placeholder_white_night_weapon
-            ],
-            stock_items: [
-                "e2000000-0000-0000-0000-000000000029", // placeholder_silent_orchestra_weapon
-                "e2000000-0000-0000-0000-000000000030", // placeholder_censored_weapon
-                "e2000000-0000-0000-0000-000000000016", // placeholder_white_night_weapon
-                "e2000000-0000-0000-0000-000000000015", // placeholder_nothing_there_weapon
-                "e2000000-0000-0000-0000-000000000014", // placeholder_melting_love_weapon
-                "e0000000-0000-0000-0000-000000000102", // da_capo
-                "a0000009-0000-0000-0000-000000000009", // pale_halo_fragment
-                "a0000010-0000-0000-0000-000000000010", // red_mist_memory
-            ],
-            can_reroll: true,
-        ),
-
-        // 본사 연락 노드 전용 저밸류 기본 보급
-        (
-            id: "headquarters_basic_supply",
-            name: "본사 긴급 보급",
+            id: "headquarters_support_shop",
+            name: "Headquarters Field Supply",
             uuid: "550e8400-e29b-41d4-a716-446655440101",
-            shop_type: Shop,
-            visible_items: [
-                "a0000003-0000-0000-0000-000000000003", // manager_manual
-                "a0000005-0000-0000-0000-000000000005", // lobotomy_badge
-                "a0000006-0000-0000-0000-000000000006", // emergency_syringe
+            context: headquarters_support,
+            offer_count: 3,
+            default_buy_percent: 90,
+            preset_refs: [
+                (preset_id: "headquarters_field_supplies", weight_multiplier: 1),
             ],
-            stock_items: [
-                "a0000003-0000-0000-0000-000000000003", // manager_manual
-                "a0000005-0000-0000-0000-000000000005", // lobotomy_badge
-                "a0000006-0000-0000-0000-000000000006", // emergency_syringe
+            local_entries: [
+                (
+                    merchandise: (type: consumable, consumable_id: "resonance_primer"),
+                    quantity: 1,
+                    weight: 7,
+                    repeatable: true,
+                    buy_percent: None,
+                    tags: ["field_supply"],
+                ),
             ],
-            can_reroll: false,
+            refresh_policy: Some((base_cost: 10, max_uses: 2)),
+            sell_policy: Some((
+                price_percent: 30,
+                accepted_tags: Some(["field_supply", "basic_equipment"]),
+            )),
+        ),
+        (
+            id: "unknown_exploration_shop",
+            name: "Unknown Shop",
+            uuid: "550e8400-e29b-41d4-a716-446655440201",
+            context: unknown_exploration,
+            offer_count: 3,
+            default_buy_percent: 100,
+            preset_refs: [
+                (preset_id: "headquarters_field_supplies", weight_multiplier: 1),
+            ],
+            local_entries: [
+                // Initial tuning: basic stock, never a rare merchandise roll.
+                (merchandise: (type: revival_catalyst, material_id: "revival_catalyst"),
+                 quantity: 1, base_price: Some(150), guaranteed: true,
+                 weight: 1, repeatable: false, buy_percent: None, tags: ["revival_catalyst"]),
+                (merchandise: (type: relic_corruption_catalyst),
+                 quantity: 1, base_price: Some(30), guaranteed: false,
+                 weight: 8, repeatable: true, buy_percent: None, tags: ["relic_corruption_catalyst"]),
+            ],
+            refresh_policy: Some((base_cost: 20, max_uses: 1)),
+            sell_policy: Some((price_percent: 35, accepted_tags: None)),
+        ),
+        (
+            id: "wandering_monolith_shop",
+            name: "Wandering Merchant",
+            uuid: "550e8400-e29b-41d4-a716-446655440202",
+            context: unknown_exploration,
+            offer_count: 3,
+            default_buy_percent: 110,
+            preset_refs: [
+                (preset_id: "unknown_high_value_merchandise", weight_multiplier: 1),
+            ],
+            local_entries: [
+                // Initial tuning: basic stock, never a rare merchandise roll.
+                (merchandise: (type: revival_catalyst, material_id: "revival_catalyst"),
+                 quantity: 1, base_price: Some(150), guaranteed: true,
+                 weight: 1, repeatable: false, buy_percent: None, tags: ["revival_catalyst"]),
+                (merchandise: (type: relic_corruption_catalyst),
+                 quantity: 1, base_price: Some(30), guaranteed: false,
+                 weight: 8, repeatable: true, buy_percent: None, tags: ["relic_corruption_catalyst"]),
+            ],
+            refresh_policy: Some((base_cost: 35, max_uses: 1)),
+            sell_policy: Some((price_percent: 40, accepted_tags: None)),
         ),
     ],
     pools: [
         (
             id: "default_shops",
-            shop_ids: [
-                "rachel_shop",
-                "ain_shop",
-                "benjamin_shop",
-                "netzach_shop",
-                "yesod_shop",
-                "gebura_shop",
-                "binah_shop",
-            ],
+            shop_ids: ["unknown_exploration_shop"],
         ),
         (
             id: "headquarters_basic_supplies",
-            shop_ids: [
-                "headquarters_basic_supply",
-            ],
+            shop_ids: ["headquarters_support_shop"],
         ),
     ],
 )

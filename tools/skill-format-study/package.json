@@ -1,0 +1,14 @@
+{
+  "name": "skill-format-study",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prepare-inputs": "node prepare.mjs",
+    "test": "node --test study.test.mjs"
+  },
+  "dependencies": {
+    "@bgotink/kdl": "0.4.1",
+    "jsonc-parser": "3.3.1",
+    "yaml": "2.9.1"
+  }
+}

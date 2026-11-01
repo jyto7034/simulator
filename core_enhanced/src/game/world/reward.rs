@@ -1,16 +1,13 @@
 use tracing::info;
 use uuid::Uuid;
 
-use super::GameCore;
+use super::{grant_state::EconomyGrantState, GameCore};
 use crate::game::behavior::{BehaviorResult, GameError};
-use crate::game::employee::EmployeeRoster;
 use crate::game::enums::{RewardAction, RewardMode};
-use crate::game::managers::uuid_manager::UuidManager;
-use crate::game::resources::{Enkephalin, GameState, Inventory, InventoryDiffDto};
+use crate::game::resources::{GameState, InventoryDiffDto};
 use crate::game::reward::{
-    GrantExecutionContext, GrantExecutionResult, GrantExecutor, RewardEffect, RewardOption,
+    GrantExecutionContext, GrantExecutionResult, RewardEffect, RewardOption,
 };
-use crate::game::skill_fragment::SkillFragmentInventory;
 
 impl GameCore {
     pub(super) fn execute_reward_action(
@@ -26,6 +23,15 @@ impl GameCore {
                     return Err(GameError::InvalidAction);
                 }
 
+                if let Some(continuation) = self.state.combat_reward_continuation.take() {
+                    self.state.active_node_content = None;
+                    self.transition_to(continuation.return_phase)?;
+                    if matches!(self.state.lifecycle.phase(), GameState::RunComplete) {
+                        self.settle_expedition_terminal(false)?;
+                    }
+                    return self.handle_request_map_data();
+                }
+
                 if self.state.node_session.is_some() {
                     return self.handle_complete_node();
                 }
@@ -35,6 +41,9 @@ impl GameCore {
     }
 
     pub(super) fn claim_current_reward_session(&mut self) -> Result<BehaviorResult, GameError> {
+        if self.state.active_node_content.as_ref().and_then(|c| c.as_reward().ok()).is_some_and(|r| r.relic_activity.is_some()) {
+            return self.claim_basic_relic_reward();
+        }
         let reward = {
             let selected = self
                 .state
@@ -44,23 +53,26 @@ impl GameCore {
             selected.as_reward()?.clone()
         };
 
-        let (
-            enkephalin,
-            inventory_diff,
-            skill_fragment_diffs,
-            skill_fragment_research_diffs,
-            employee_experience_diffs,
-        ) = self.apply_reward_session(&reward)?;
+        let context = self
+            .state
+            .combat_reward_continuation
+            .as_ref()
+            .map(|continuation| continuation.context.clone());
+        let (enkephalin, inventory_diff, skill_fragment_diffs, employee_experience_diffs) =
+            match context {
+                Some(context) => self.apply_reward_session_with_context(&reward, &context)?,
+                None => self.apply_reward_session(&reward)?,
+            };
 
         self.transition_to(GameState::InRewardClaimed {
             reward_uuid: reward.stage_uuid,
         })?;
 
         Ok(BehaviorResult::RewardGranted {
+            relic_activity: None,
             enkephalin,
             inventory_diff,
             skill_fragment_diffs,
-            skill_fragment_research_diffs,
             employee_experience_diffs,
         })
     }
@@ -73,7 +85,6 @@ impl GameCore {
             u32,
             InventoryDiffDto,
             Vec<crate::game::reward::SkillFragmentGrantDiffDto>,
-            Vec<crate::game::reward::SkillFragmentResearchDiffDto>,
             Vec<crate::game::reward::EmployeeExperienceDiffDto>,
         ),
         GameError,
@@ -90,7 +101,6 @@ impl GameCore {
             u32,
             InventoryDiffDto,
             Vec<crate::game::reward::SkillFragmentGrantDiffDto>,
-            Vec<crate::game::reward::SkillFragmentResearchDiffDto>,
             Vec<crate::game::reward::EmployeeExperienceDiffDto>,
         ),
         GameError,
@@ -103,40 +113,26 @@ impl GameCore {
                 .ok_or(GameError::InvalidAction)?],
         };
 
-        let mut next_inventory = self.state.inventory.clone();
-        let mut next_skill_fragments = self.state.skill_fragments.clone();
-        let mut next_roster = self.state.roster.clone();
-        let mut next_uuid_manager = self.state.uuid_manager.clone();
-        let mut next_enkephalin = self.state.enkephalin.clone();
+        for reward in &rewards_to_apply {
+            self.ensure_relic_grant(&reward.effects)?;
+        }
+        let mut grant_state = EconomyGrantState::capture(&self.state)?;
 
-        let (
-            inventory_diff,
-            skill_fragment_diffs,
-            skill_fragment_research_diffs,
-            employee_experience_diffs,
-        ) = self.apply_reward_options_with_context_to_state(
-            reward.stage_uuid,
-            &rewards_to_apply,
-            context,
-            &mut next_inventory,
-            &mut next_skill_fragments,
-            &mut next_roster,
-            &mut next_uuid_manager,
-            &mut next_enkephalin,
-        )?;
+        let (inventory_diff, skill_fragment_diffs, employee_experience_diffs) = self
+            .apply_reward_options_with_context_to_state(
+                reward.stage_uuid,
+                &rewards_to_apply,
+                context,
+                &mut grant_state,
+            )?;
 
-        self.state.inventory = next_inventory;
-        self.state.skill_fragments = next_skill_fragments;
-        self.state.roster = next_roster;
-        self.state.uuid_manager = next_uuid_manager;
-        self.state.enkephalin = next_enkephalin;
+        grant_state.commit_into(&mut self.state);
 
         let enkephalin = self.state.enkephalin.amount;
         Ok((
             enkephalin,
             inventory_diff,
             skill_fragment_diffs,
-            skill_fragment_research_diffs,
             employee_experience_diffs,
         ))
     }
@@ -146,23 +142,17 @@ impl GameCore {
         stage_uuid: Uuid,
         rewards_to_apply: &[RewardOption],
         context: &GrantExecutionContext,
-        inventory: &mut Inventory,
-        skill_fragments: &mut SkillFragmentInventory,
-        roster: &mut EmployeeRoster,
-        uuid_manager: &mut UuidManager,
-        enkephalin: &mut Enkephalin,
+        grant_state: &mut EconomyGrantState,
     ) -> Result<
         (
             InventoryDiffDto,
             Vec<crate::game::reward::SkillFragmentGrantDiffDto>,
-            Vec<crate::game::reward::SkillFragmentResearchDiffDto>,
             Vec<crate::game::reward::EmployeeExperienceDiffDto>,
         ),
         GameError,
     > {
         let mut inventory_diff = crate::game::resources::InventoryDiffDto::default();
         let mut skill_fragment_diffs = Vec::new();
-        let mut skill_fragment_research_diffs = Vec::new();
         let mut employee_experience_diffs = Vec::new();
 
         for (index, reward_option) in rewards_to_apply.iter().enumerate() {
@@ -174,12 +164,7 @@ impl GameCore {
             );
             let seed = self.reward_seed(stage_uuid, reward_option.uuid, index as u64);
 
-            let granted = GrantExecutor::grant_reward_with_state(
-                inventory,
-                skill_fragments,
-                roster,
-                uuid_manager,
-                enkephalin,
+            let granted = grant_state.grant_reward(
                 &self.game_data,
                 &self.state.skill_fragment_policy,
                 context,
@@ -188,14 +173,12 @@ impl GameCore {
             )?;
             Self::merge_inventory_diff(&mut inventory_diff, granted.inventory_diff);
             skill_fragment_diffs.extend(granted.skill_fragment_diffs);
-            skill_fragment_research_diffs.extend(granted.skill_fragment_research_diffs);
             employee_experience_diffs.extend(granted.employee_experience_diffs);
         }
 
         Ok((
             inventory_diff,
             skill_fragment_diffs,
-            skill_fragment_research_diffs,
             employee_experience_diffs,
         ))
     }
@@ -212,18 +195,10 @@ impl GameCore {
         effects: &[RewardEffect],
         context: &GrantExecutionContext,
     ) -> Result<GrantExecutionResult, GameError> {
-        let mut next_inventory = self.state.inventory.clone();
-        let mut next_skill_fragments = self.state.skill_fragments.clone();
-        let mut next_roster = self.state.roster.clone();
-        let mut next_uuid_manager = self.state.uuid_manager.clone();
-        let mut next_enkephalin = self.state.enkephalin.clone();
+        self.ensure_relic_grant(effects)?;
+        let mut grant_state = EconomyGrantState::capture(&self.state)?;
 
-        let granted = GrantExecutor::grant_effects_with_state(
-            &mut next_inventory,
-            &mut next_skill_fragments,
-            &mut next_roster,
-            &mut next_uuid_manager,
-            &mut next_enkephalin,
+        let granted = grant_state.grant_effects(
             &self.game_data,
             &self.state.skill_fragment_policy,
             context,
@@ -231,11 +206,7 @@ impl GameCore {
             self.run_seed ^ 0x4752_414e_5446_5853,
         )?;
 
-        self.state.inventory = next_inventory;
-        self.state.skill_fragments = next_skill_fragments;
-        self.state.roster = next_roster;
-        self.state.uuid_manager = next_uuid_manager;
-        self.state.enkephalin = next_enkephalin;
+        grant_state.commit_into(&mut self.state);
 
         Ok(granted)
     }
@@ -244,18 +215,10 @@ impl GameCore {
         &self,
         effects: &[RewardEffect],
     ) -> Result<GrantExecutionResult, GameError> {
-        let mut next_inventory = self.state.inventory.clone();
-        let mut next_skill_fragments = self.state.skill_fragments.clone();
-        let mut next_roster = self.state.roster.clone();
-        let mut next_uuid_manager = self.state.uuid_manager.clone();
-        let mut next_enkephalin = self.state.enkephalin.clone();
+        self.ensure_relic_grant(effects)?;
+        let mut grant_state = EconomyGrantState::capture(&self.state)?;
 
-        GrantExecutor::grant_effects_with_state(
-            &mut next_inventory,
-            &mut next_skill_fragments,
-            &mut next_roster,
-            &mut next_uuid_manager,
-            &mut next_enkephalin,
+        grant_state.grant_effects(
             &self.game_data,
             &self.state.skill_fragment_policy,
             &GrantExecutionContext::default(),
@@ -292,7 +255,6 @@ impl GameCore {
             mode: reward.mode,
             rewards: reward.rewards.clone(),
             selected_reward_uuid: reward.selected_reward_uuid,
-            research_deliveries: vec![],
         })
     }
 

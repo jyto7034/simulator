@@ -8,6 +8,7 @@ impl BattlefieldLayout {
             height,
             valid_tiles: None,
             static_obstacles: Default::default(),
+            static_obstacles_clone_history: Default::default(),
         }
     }
 
@@ -71,6 +72,7 @@ impl BattlefieldLayout {
 
     pub fn add_static_obstacle(&mut self, pos: Position) -> Result<(), GameError> {
         self.ensure_valid_tile(pos)?;
+        self.static_obstacles_clone_history.inserted();
         self.static_obstacles.insert(pos);
         Ok(())
     }
@@ -114,6 +116,38 @@ impl BattlefieldLayout {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn authoring_clone_history_covers_remove_clear_and_immutable_valid_tiles() {
+        let positions: Vec<_> = (0..8)
+            .flat_map(|y| (0..8).map(move |x| Position::new(x, y)))
+            .collect();
+        let mut field = BattlefieldLayout::new_with_valid_tiles(8, 8, positions.clone());
+        let initial_slots = field.authoring_clone_table_slots().unwrap();
+        assert!(initial_slots >= field.valid_tiles.as_ref().unwrap().capacity());
+        let before_invalid = field.authoring_clone_table_slots();
+        assert!(field.add_static_obstacle(Position::new(9, 9)).is_err());
+        assert_eq!(field.authoring_clone_table_slots(), before_invalid);
+        for &position in &positions {
+            field.add_static_obstacle(position).unwrap();
+        }
+        let populated_slots = field.authoring_clone_table_slots().unwrap();
+        assert!(populated_slots >= initial_slots + field.static_obstacles.capacity());
+        for &position in &positions {
+            assert!(field.remove_static_obstacle(position));
+        }
+        field.clear();
+        assert_eq!(field.authoring_clone_table_slots(), Some(populated_slots));
+        let copy = field.clone();
+        assert_eq!(copy.authoring_clone_table_slots(), Some(populated_slots));
+        assert_eq!(
+            copy.static_obstacles.capacity(),
+            field.static_obstacles.capacity()
+        );
+        assert_eq!(copy.valid_positions(), positions);
+        assert!(copy.static_obstacles().is_empty());
+        assert!(copy.void_tiles().is_empty());
+    }
 
     #[test]
     fn static_obstacles_block_placement() {

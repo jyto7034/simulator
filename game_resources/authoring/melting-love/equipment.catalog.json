@@ -1,0 +1,122 @@
+[
+  {
+    "id": "placeholder_melting_love_weapon",
+    "uuid": "e2000000-0000-0000-0000-000000000014",
+    "content_family": "d-03-109_melting_love",
+    "name": {
+      "Unresolved": "weapon-name"
+    },
+    "equipment_type": "Weapon",
+    "rarity": {
+      "Unresolved": "weapon-rarity"
+    },
+    "price": {
+      "Unresolved": "weapon-price"
+    },
+    "allow_duplicate_equip": {
+      "Unresolved": "weapon-duplicate"
+    },
+    "triggered_effects": {},
+    "ability_activations": [],
+    "weapon_profile": {
+      "action": "Damage",
+      "attack": {
+        "Unresolved": "weapon-attack"
+      },
+      "spell_power": 0,
+      "range_role": "Melee",
+      "weapon_archetype": "Shield",
+      "block_capacity": {
+        "Unresolved": "weapon-block"
+      },
+      "deployment_affinity": "ground_only",
+      "ground_defense_focus": {
+        "Unresolved": "weapon-defense-focus"
+      },
+      "platform_rest": null,
+      "damage_type": {
+        "Unresolved": "weapon-damage-type"
+      },
+      "targeting_profile": "DefaultForward",
+      "air_capable": false,
+      "defense_tile_range": {
+        "include_anchor_tile": false,
+        "rows": [
+          ".X.",
+          ".@.",
+          "..."
+        ]
+      },
+      "interval_ms": {
+        "Unresolved": "weapon-interval"
+      },
+      "windup_ms": {
+        "Unresolved": "weapon-windup"
+      },
+      "delivery": "Instant"
+    }
+  },
+  {
+    "id": "placeholder_melting_love_armor",
+    "uuid": "e2000000-0000-0000-0000-000000000114",
+    "content_family": "d-03-109_melting_love",
+    "name": "공생하는 살갗 (가칭)",
+    "equipment_type": "Armor",
+    "rarity": {
+      "Unresolved": "armor-rarity"
+    },
+    "price": {
+      "Unresolved": "armor-price"
+    },
+    "allow_duplicate_equip": {
+      "Unresolved": "armor-duplicate"
+    },
+    "triggered_effects": {
+      "Permanent": [
+        {
+          "target": "SelfUnit",
+          "effect": {
+            "Modifier": {
+              "stat": "MaxHealth",
+              "kind": "Flat",
+              "value": {
+                "Unresolved": "armor-MaxHealth"
+              }
+            }
+          }
+        },
+        {
+          "target": "SelfUnit",
+          "effect": {
+            "Modifier": {
+              "stat": "Defense",
+              "kind": "Flat",
+              "value": {
+                "Unresolved": "armor-Defense"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ability_activations": []
+  },
+  {
+    "id": "placeholder_melting_love_accessory",
+    "uuid": "e2000000-0000-0000-0000-000000000214",
+    "content_family": "d-03-109_melting_love",
+    "name": "남겨진 배양액 (가칭)",
+    "equipment_type": "Accessory",
+    "rarity": {
+      "Unresolved": "accessory-rarity"
+    },
+    "price": {
+      "Unresolved": "accessory-price"
+    },
+    "allow_duplicate_equip": {
+      "Unresolved": "accessory-duplicate"
+    },
+    "triggered_effects": {},
+    "ability_activations": []
+  }
+]

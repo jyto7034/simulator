@@ -1,0 +1,29 @@
+@layer components {
+  /* Families keep their hue meaning but sit on the warm archive palette instead of cool UI defaults. */
+  .tag-chip {
+    --tag-bg: #f1ece2;
+    --tag-ink: #5f5747;
+    --tag-border: #d9cfbc;
+    background-color: var(--tag-bg);
+    color: var(--tag-ink);
+    border-color: var(--tag-border);
+    transition: border-color 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
+  }
+  .tag-chip[data-tag-family="attack"] { --tag-bg: #fbecea; --tag-ink: #9a2d24; --tag-border: #ebb9b1; }
+  .tag-chip[data-tag-family="healing"] { --tag-bg: #e9f3ea; --tag-ink: #2d6b3c; --tag-border: #aed2b5; }
+  .tag-chip[data-tag-family="defense"] { --tag-bg: #e9f0f7; --tag-ink: #2b5683; --tag-border: #afc7e0; }
+  .tag-chip[data-tag-family="control"] { --tag-bg: #f2ecf7; --tag-ink: #66398c; --tag-border: #d0bbe2; }
+  .tag-chip[data-tag-family="summon"] { --tag-bg: #e6f3f1; --tag-ink: #1f6a64; --tag-border: #a7d3cd; }
+  .tag-chip[data-tag-family="growth"] { --tag-bg: #f8eed8; --tag-ink: #865a0e; --tag-border: #e5c98c; }
+  .tag-chip[data-tag-family="mechanics"] { --tag-bg: #ebedf6; --tag-ink: #3c4688; --tag-border: #bcc2e2; }
+  [data-theme="dark"] .tag-chip { --tag-bg: #242119; --tag-ink: #cfc5b0; --tag-border: #463f33; }
+  [data-theme="dark"] .tag-chip[data-tag-family="attack"] { --tag-bg: #33191a; --tag-ink: #f2a497; --tag-border: #6d3430; }
+  [data-theme="dark"] .tag-chip[data-tag-family="healing"] { --tag-bg: #15281b; --tag-ink: #93d3a2; --tag-border: #2f5a3b; }
+  [data-theme="dark"] .tag-chip[data-tag-family="defense"] { --tag-bg: #16222f; --tag-ink: #9ec3ea; --tag-border: #30506f; }
+  [data-theme="dark"] .tag-chip[data-tag-family="control"] { --tag-bg: #251a30; --tag-ink: #cfaff0; --tag-border: #553d6e; }
+  [data-theme="dark"] .tag-chip[data-tag-family="summon"] { --tag-bg: #12292a; --tag-ink: #86d6cc; --tag-border: #2a5a56; }
+  [data-theme="dark"] .tag-chip[data-tag-family="growth"] { --tag-bg: #2d2412; --tag-ink: #ebc675; --tag-border: #6a5222; }
+  [data-theme="dark"] .tag-chip[data-tag-family="mechanics"] { --tag-bg: #1b1e33; --tag-ink: #b4bdf2; --tag-border: #3e4677; }
+  .tag-chip:is(a, button):hover { border-color: var(--tag-ink); box-shadow: inset 0 0 0 1px var(--tag-ink); }
+  .tag-chip[aria-pressed="true"] { background-color: var(--tag-ink); color: var(--tag-bg); border-color: var(--tag-ink); box-shadow: 0 1px 4px -1px var(--tag-ink); }
+}

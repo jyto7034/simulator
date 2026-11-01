@@ -1,0 +1,547 @@
+{
+  "format": "node-graph",
+  "version": 1,
+  "id": "7d99b0ca-21da-44bf-b241-d66fe8565089",
+  "name": "포큐버스 · 황홀의 포자막",
+  "nodes": [
+    {
+      "id": "26612ab9-0581-45a6-8144-aa651648e79e",
+      "kind": "skill-range",
+      "title": "오롯한 축복 · 아군 선택 범위 미정",
+      "position": {
+        "x": 40,
+        "y": 721
+      },
+      "values": {
+        "includeAnchor": false,
+        "pattern": ""
+      },
+      "note": "",
+      "frame": "6d76c015-3594-4dce-9863-903e89cd1e69"
+    },
+    {
+      "id": "2a31c1ba-0ecf-4d5b-9401-c3333430369a",
+      "kind": "skill-seconds",
+      "title": "상태 지속 시간 · 미정",
+      "position": {
+        "x": 40,
+        "y": 395
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "0ffead0b-63df-4a13-9019-d08337561e5a"
+    },
+    {
+      "id": "2d15cbc2-6391-48e1-a06f-a2ef0ae859bc",
+      "kind": "skill-target-state",
+      "title": "같은 수명의 효과 묶음",
+      "position": {
+        "x": 480,
+        "y": 338
+      },
+      "values": {
+        "sourceExit": "end"
+      },
+      "note": "",
+      "frame": "0ffead0b-63df-4a13-9019-d08337561e5a"
+    },
+    {
+      "id": "316a3f3e-3946-4501-85b4-8b3146162fde",
+      "kind": "skill-resonance-amount",
+      "title": "최대 공명 · 미정",
+      "position": {
+        "x": 40,
+        "y": 1681.9380952380952
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "6d76c015-3594-4dce-9863-903e89cd1e69"
+    },
+    {
+      "id": "47428e55-8a40-4343-b3a0-0ccc1179de36",
+      "kind": "skill-target-selection",
+      "title": "입력 대상 선택",
+      "position": {
+        "x": 40,
+        "y": 2245.2
+      },
+      "values": {
+        "mode": "self"
+      },
+      "note": "",
+      "frame": "6d76c015-3594-4dce-9863-903e89cd1e69"
+    },
+    {
+      "id": "4da3a53f-f2eb-4d94-972d-f82f030c57ea",
+      "kind": "skill-resonance-admit",
+      "title": "원자적 접수·비용 확정",
+      "position": {
+        "x": 2240,
+        "y": 1451.5
+      },
+      "values": {},
+      "note": "",
+      "frame": "6d76c015-3594-4dce-9863-903e89cd1e69"
+    },
+    {
+      "id": "4e8a7c98-d7d2-4d5f-bf7d-faabb88b01a4",
+      "kind": "skill-run-action",
+      "title": "접수한 행동 실행·종료",
+      "position": {
+        "x": 2680,
+        "y": 1273
+      },
+      "values": {},
+      "note": "",
+      "frame": "6d76c015-3594-4dce-9863-903e89cd1e69"
+    },
+    {
+      "id": "5d3d007d-3541-490a-9918-469cb01ca9ab",
+      "kind": "skill-equipment-condition",
+      "title": "오롯한 축복 · 장착 여부",
+      "position": {
+        "x": 40,
+        "y": 979
+      },
+      "values": {
+        "copies": "once",
+        "definition": "single-target-conversion",
+        "slot": "relic",
+        "variant": "normal"
+      },
+      "note": "",
+      "frame": "6d76c015-3594-4dce-9863-903e89cd1e69"
+    },
+    {
+      "id": "636b421f-86ed-4b3c-8241-9205506f0de7",
+      "kind": "skill-personal-shield-effect",
+      "title": "시전자 최대 HP 기반 · 개인 보호량 미정",
+      "position": {
+        "x": 40,
+        "y": 173
+      },
+      "values": {
+        "percent": ""
+      },
+      "note": "",
+      "frame": "0ffead0b-63df-4a13-9019-d08337561e5a"
+    },
+    {
+      "id": "9bf3f26d-a1a0-4515-bc23-f12dd7ddab2d",
+      "kind": "skill-request",
+      "title": "파편 시전 입력",
+      "position": {
+        "x": 480,
+        "y": 2241.2
+      },
+      "values": {},
+      "note": "",
+      "frame": "6d76c015-3594-4dce-9863-903e89cd1e69"
+    },
+    {
+      "id": "9c15ff76-b40f-4674-953c-6909155a7222",
+      "kind": "skill-recipient-buff-plan",
+      "title": "방출 시 대상 확정 · 독립 상태 부여",
+      "position": {
+        "x": 920,
+        "y": 303
+      },
+      "values": {
+        "recipient": "allies"
+      },
+      "note": "",
+      "frame": "0ffead0b-63df-4a13-9019-d08337561e5a"
+    },
+    {
+      "id": "bacb4226-48bc-4241-a84b-e1052d8b4121",
+      "kind": "skill-resonance-requirement",
+      "title": "수동 · 공명 만충",
+      "position": {
+        "x": 1360,
+        "y": 2170.2
+      },
+      "values": {
+        "mode": "full"
+      },
+      "note": "",
+      "frame": "6d76c015-3594-4dce-9863-903e89cd1e69"
+    },
+    {
+      "id": "c38d5b56-be40-423f-9421-df9464fd7fce",
+      "kind": "skill-resonance-settings",
+      "title": "사본 공명 저장 설정",
+      "position": {
+        "x": 480,
+        "y": 1699.9380952380952
+      },
+      "values": {},
+      "note": "",
+      "frame": "6d76c015-3594-4dce-9863-903e89cd1e69"
+    },
+    {
+      "id": "c66aec13-1538-45d4-8657-13a897d4a64b",
+      "kind": "skill-resonance-read",
+      "title": "이번 요청의 공명 조회",
+      "position": {
+        "x": 920,
+        "y": 1692.2714285714287
+      },
+      "values": {},
+      "note": "",
+      "frame": "6d76c015-3594-4dce-9863-903e89cd1e69"
+    },
+    {
+      "id": "d656fce5-9bcc-400d-aaed-5efa81c6302e",
+      "kind": "skill-action-entry",
+      "title": "접수할 행동 정의",
+      "position": {
+        "x": 1360,
+        "y": 1868.2
+      },
+      "values": {
+        "interruption": "standard",
+        "start": "immediate"
+      },
+      "note": "",
+      "frame": "6d76c015-3594-4dce-9863-903e89cd1e69"
+    },
+    {
+      "id": "dfc0b30b-2452-4c29-9ca5-43d7fc34e50f",
+      "kind": "skill-modifier-single-support",
+      "title": "오롯한 축복 → 방출 시 대상 확정 · 독립 상태 부여",
+      "position": {
+        "x": 480,
+        "y": 848.8
+      },
+      "values": {
+        "factor": "",
+        "mode": "shield"
+      },
+      "note": "",
+      "frame": "6d76c015-3594-4dce-9863-903e89cd1e69"
+    },
+    {
+      "id": "e5c61656-10a5-46e8-b081-b14cf8e4dfc4",
+      "kind": "skill-resonance-qualify",
+      "title": "대상·공명·자원 자격 검사",
+      "position": {
+        "x": 1800,
+        "y": 1535
+      },
+      "values": {},
+      "note": "",
+      "frame": "6d76c015-3594-4dce-9863-903e89cd1e69"
+    },
+    {
+      "id": "f6921ba0-643f-41c3-b1ae-d86506e1fa62",
+      "kind": "skill-resonance-cost",
+      "title": "수동 · 공명 전량 소비",
+      "position": {
+        "x": 1360,
+        "y": 1354.2
+      },
+      "values": {
+        "minimumCost": "",
+        "mode": "all",
+        "percent": ""
+      },
+      "note": "",
+      "frame": "6d76c015-3594-4dce-9863-903e89cd1e69"
+    },
+    {
+      "id": "fe530d2a-c663-47c0-aecc-b15c2cc7dc35",
+      "kind": "skill-range",
+      "title": "아군 효과 범위 · 미정",
+      "position": {
+        "x": 480,
+        "y": 80
+      },
+      "values": {
+        "includeAnchor": false,
+        "pattern": ""
+      },
+      "note": "",
+      "frame": "0ffead0b-63df-4a13-9019-d08337561e5a"
+    }
+  ],
+  "edges": [
+    {
+      "id": "034e27eb-f915-406b-89bc-38e0e0d3f3b1",
+      "source": {
+        "node": "9bf3f26d-a1a0-4515-bc23-f12dd7ddab2d",
+        "port": "out"
+      },
+      "target": {
+        "node": "e5c61656-10a5-46e8-b081-b14cf8e4dfc4",
+        "port": "in"
+      }
+    },
+    {
+      "id": "0986b74f-b1a2-4a2a-942f-5a2de5c665b0",
+      "source": {
+        "node": "26612ab9-0581-45a6-8144-aa651648e79e",
+        "port": "range"
+      },
+      "target": {
+        "node": "dfc0b30b-2452-4c29-9ca5-43d7fc34e50f",
+        "port": "range"
+      }
+    },
+    {
+      "id": "0c3336a7-0eee-4c0d-9839-cc881263dfcc",
+      "source": {
+        "node": "e5c61656-10a5-46e8-b081-b14cf8e4dfc4",
+        "port": "permit"
+      },
+      "target": {
+        "node": "4da3a53f-f2eb-4d94-972d-f82f030c57ea",
+        "port": "permit"
+      }
+    },
+    {
+      "id": "1d3309f4-0ecb-4ae9-b64f-c0bf8221f73a",
+      "source": {
+        "node": "4da3a53f-f2eb-4d94-972d-f82f030c57ea",
+        "port": "out"
+      },
+      "target": {
+        "node": "4e8a7c98-d7d2-4d5f-bf7d-faabb88b01a4",
+        "port": "in"
+      }
+    },
+    {
+      "id": "1dc736bc-478a-4b23-8e83-0730ac0a3630",
+      "source": {
+        "node": "d656fce5-9bcc-400d-aaed-5efa81c6302e",
+        "port": "program"
+      },
+      "target": {
+        "node": "4e8a7c98-d7d2-4d5f-bf7d-faabb88b01a4",
+        "port": "program"
+      }
+    },
+    {
+      "id": "209a43bc-8d28-4ae6-8405-63a26f253d25",
+      "source": {
+        "node": "c66aec13-1538-45d4-8657-13a897d4a64b",
+        "port": "snapshot"
+      },
+      "target": {
+        "node": "e5c61656-10a5-46e8-b081-b14cf8e4dfc4",
+        "port": "snapshot"
+      }
+    },
+    {
+      "id": "3d7bd20e-a779-4c08-b3d7-07133df4c9db",
+      "source": {
+        "node": "9c15ff76-b40f-4674-953c-6909155a7222",
+        "port": "plan"
+      },
+      "target": {
+        "node": "d656fce5-9bcc-400d-aaed-5efa81c6302e",
+        "port": "plan"
+      }
+    },
+    {
+      "id": "4967b81e-e8d0-4db8-b827-bf0bb1e89dae",
+      "source": {
+        "node": "2d15cbc2-6391-48e1-a06f-a2ef0ae859bc",
+        "port": "state"
+      },
+      "target": {
+        "node": "9c15ff76-b40f-4674-953c-6909155a7222",
+        "port": "state"
+      }
+    },
+    {
+      "id": "65b84a4d-e47d-4945-b051-e745a84dbf2e",
+      "source": {
+        "node": "9bf3f26d-a1a0-4515-bc23-f12dd7ddab2d",
+        "port": "request"
+      },
+      "target": {
+        "node": "c66aec13-1538-45d4-8657-13a897d4a64b",
+        "port": "request"
+      }
+    },
+    {
+      "id": "7685a42e-1e03-4fc7-9d93-e5fa58fda26c",
+      "source": {
+        "node": "636b421f-86ed-4b3c-8241-9205506f0de7",
+        "port": "effect"
+      },
+      "target": {
+        "node": "2d15cbc2-6391-48e1-a06f-a2ef0ae859bc",
+        "port": "effects"
+      }
+    },
+    {
+      "id": "76998f75-40f9-4b34-b945-09e31263bdae",
+      "source": {
+        "node": "47428e55-8a40-4343-b3a0-0ccc1179de36",
+        "port": "selection"
+      },
+      "target": {
+        "node": "9bf3f26d-a1a0-4515-bc23-f12dd7ddab2d",
+        "port": "selection"
+      }
+    },
+    {
+      "id": "7e327e2f-3fd3-44e0-b725-184cd63adb78",
+      "source": {
+        "node": "c66aec13-1538-45d4-8657-13a897d4a64b",
+        "port": "snapshot"
+      },
+      "target": {
+        "node": "f6921ba0-643f-41c3-b1ae-d86506e1fa62",
+        "port": "snapshot"
+      }
+    },
+    {
+      "id": "82bff804-4888-49c2-8db7-5204c9d615dc",
+      "source": {
+        "node": "c38d5b56-be40-423f-9421-df9464fd7fce",
+        "port": "settings"
+      },
+      "target": {
+        "node": "c66aec13-1538-45d4-8657-13a897d4a64b",
+        "port": "settings"
+      }
+    },
+    {
+      "id": "863bf419-f735-42f1-a4cb-f87da921c5b5",
+      "source": {
+        "node": "fe530d2a-c663-47c0-aecc-b15c2cc7dc35",
+        "port": "range"
+      },
+      "target": {
+        "node": "9c15ff76-b40f-4674-953c-6909155a7222",
+        "port": "range"
+      }
+    },
+    {
+      "id": "9b03a2fd-194c-41b5-8718-b9dbe015f3f5",
+      "source": {
+        "node": "d656fce5-9bcc-400d-aaed-5efa81c6302e",
+        "port": "program"
+      },
+      "target": {
+        "node": "e5c61656-10a5-46e8-b081-b14cf8e4dfc4",
+        "port": "program"
+      }
+    },
+    {
+      "id": "9df2d44e-c892-4930-bfbf-ddc8611528f6",
+      "source": {
+        "node": "9c15ff76-b40f-4674-953c-6909155a7222",
+        "port": "plan"
+      },
+      "target": {
+        "node": "dfc0b30b-2452-4c29-9ca5-43d7fc34e50f",
+        "port": "target"
+      }
+    },
+    {
+      "id": "a7491763-cdd1-4ae3-8f28-125a0a0280c7",
+      "source": {
+        "node": "e5c61656-10a5-46e8-b081-b14cf8e4dfc4",
+        "port": "out"
+      },
+      "target": {
+        "node": "4da3a53f-f2eb-4d94-972d-f82f030c57ea",
+        "port": "in"
+      }
+    },
+    {
+      "id": "cd43a70d-02e2-4d25-8948-0017d827a037",
+      "source": {
+        "node": "316a3f3e-3946-4501-85b4-8b3146162fde",
+        "port": "value"
+      },
+      "target": {
+        "node": "c38d5b56-be40-423f-9421-df9464fd7fce",
+        "port": "capacity"
+      }
+    },
+    {
+      "id": "d25eff83-a305-4f09-9eb1-2b2561b3f6a0",
+      "source": {
+        "node": "4da3a53f-f2eb-4d94-972d-f82f030c57ea",
+        "port": "use"
+      },
+      "target": {
+        "node": "4e8a7c98-d7d2-4d5f-bf7d-faabb88b01a4",
+        "port": "use"
+      }
+    },
+    {
+      "id": "dfca1b3b-ec7c-4af3-b9fe-99b61f2d87d1",
+      "source": {
+        "node": "5d3d007d-3541-490a-9918-469cb01ca9ab",
+        "port": "condition"
+      },
+      "target": {
+        "node": "dfc0b30b-2452-4c29-9ca5-43d7fc34e50f",
+        "port": "condition"
+      }
+    },
+    {
+      "id": "e47ef512-466e-4877-815d-90b7de20d9af",
+      "source": {
+        "node": "2a31c1ba-0ecf-4d5b-9401-c3333430369a",
+        "port": "value"
+      },
+      "target": {
+        "node": "2d15cbc2-6391-48e1-a06f-a2ef0ae859bc",
+        "port": "duration"
+      }
+    },
+    {
+      "id": "e6a585dd-8315-4d10-9704-9f08f95915ed",
+      "source": {
+        "node": "9bf3f26d-a1a0-4515-bc23-f12dd7ddab2d",
+        "port": "request"
+      },
+      "target": {
+        "node": "e5c61656-10a5-46e8-b081-b14cf8e4dfc4",
+        "port": "request"
+      }
+    },
+    {
+      "id": "efc1fdcd-33b1-4cb7-8f2b-9ce7716fd9be",
+      "source": {
+        "node": "f6921ba0-643f-41c3-b1ae-d86506e1fa62",
+        "port": "cost"
+      },
+      "target": {
+        "node": "e5c61656-10a5-46e8-b081-b14cf8e4dfc4",
+        "port": "cost"
+      }
+    },
+    {
+      "id": "ffcedd24-dfe1-4c2b-9578-12f741a339ec",
+      "source": {
+        "node": "bacb4226-48bc-4241-a84b-e1052d8b4121",
+        "port": "requirement"
+      },
+      "target": {
+        "node": "e5c61656-10a5-46e8-b081-b14cf8e4dfc4",
+        "port": "requirement"
+      }
+    }
+  ],
+  "frames": [
+    {
+      "id": "0ffead0b-63df-4a13-9019-d08337561e5a",
+      "title": "대상마다 보호량·잔량·시간 분리"
+    },
+    {
+      "id": "6d76c015-3594-4dce-9863-903e89cd1e69",
+      "title": "시작 → 대상·공명 자격 → 비용 확정 → 행동 → 종료"
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "id": "fragment_melting_love_trace",
+  "uuid": "730e8400-e29b-41d4-a716-446655440015",
+  "name": "포자 감염 (가칭)",
+  "description": "장착 파편 출처의 감염망·연속 위력과 일제 기폭. 방어형 파편과 무기 자체 감염은 포함하지 않는다.",
+  "rarity": {
+    "Unresolved": "fragment-rarity"
+  },
+  "equip_limit": {
+    "Unresolved": "fragment-equip-limit"
+  },
+  "origin": {
+    "Abnormality": {
+      "abnormality_id": "d-03-109_melting_love"
+    }
+  },
+  "sources": [
+    {
+      "AbnormalityContainment": {
+        "abnormality_id": "d-03-109_melting_love"
+      }
+    }
+  ],
+  "dependencies": [
+    {
+      "SourceAbnormality": {
+        "abnormality_id": "d-03-109_melting_love"
+      }
+    }
+  ],
+  "compatibility": {
+    "Unresolved": "fragment-compatibility"
+  },
+  "effect": {
+    "ActiveSkill": {
+      "forms": {
+        "base": {
+          "skill_id": "fragment_melting_love_spore_burst",
+          "resonance_max": {
+            "Unresolved": "capacity"
+          }
+        }
+      }
+    }
+  }
+}

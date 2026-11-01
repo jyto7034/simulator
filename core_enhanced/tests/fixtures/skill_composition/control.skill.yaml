@@ -1,0 +1,83 @@
+# N10-a control composition fixture. Shape, duration and speed are test values.
+version: 1
+id: control-fixture
+values:
+  - name: approach-control
+    value:
+      Effects:
+        - id: control
+          op:
+            Sustained:
+              definition:
+                Control:
+                  duration_ms: 1501
+                  kind:
+                    ApproachTaunt:
+                      profile:
+                        speed_percent: 100
+                        attack_range_units: 1000000
+  - name: longer-control
+    value: { Count: 25 }
+definitions:
+  - name: apply-control
+    parameters:
+      - name: effects
+        value_type: Effects
+      - name: extra-time
+        value_type: Count
+    body:
+      Action:
+        id: apply
+        target: { Literal: { Target: SelfUnit } }
+        delivery:
+          Literal:
+            Delivery:
+              TileArea:
+                footprint:
+                  include_anchor_tile: true
+                  rows: [XXXXXXXXXXX, XXXXXXXXXXX, XXXXXXXXXXX, XXXXXXXXXXX, XXXXXXXXXXX, XXXXX@XXXXX, XXXXXXXXXXX, XXXXXXXXXXX, XXXXXXXXXXX, XXXXXXXXXXX, XXXXXXXXXXX]
+                area:
+                  mode: ReleaseQuery
+                  anchor: Caster
+                  tile_origin: Caster
+                  hit_targets: Enemies
+                  include_caster: false
+        effects:
+          - Append:
+              effects: { Parameter: effects }
+        modifiers:
+          - id: extend-control
+            relic_definition: long-breath
+            variant: Normal
+            change:
+              Duration:
+                effect: control
+                percent: { Parameter: extra-time }
+        wait: Released
+skills:
+  - id: authored-control
+    name: 일회 범위 제어 검사
+    kind: Untargeted
+    cast_targeting:
+      Explicit:
+        selection: self
+        target: SelfUnit
+        reach: pattern
+        air_capable: true
+    prepare_ms: 0
+    focus_permissions:
+      allows_move: true
+      allows_basic_attack: true
+    admission:
+      capacity: 100
+      requirement: Full
+      cost: All
+    body:
+      Call:
+        id: control
+        definition: apply-control
+        arguments:
+          - name: effects
+            value: { Shared: approach-control }
+          - name: extra-time
+            value: { Shared: longer-control }

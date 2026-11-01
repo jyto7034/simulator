@@ -1,0 +1,74 @@
+# Canonical current design; unresolved leaves are intentionally not executable.
+# Policy: core_enhanced/docs/content/abnormalities/scarecrow-searching-for-wisdom/fragment.md
+# Weapon timing, range, projectile and magazine belong to the equipped weapon.
+version: 1
+id: scarecrow-wisdom-harvest
+values:
+  - name: transformation
+    value:
+      Effects:
+        - id: form
+          op:
+            Sustained:
+              definition:
+                PreparedState:
+                  numerator: { Unresolved: "헤드샷 배율의 분자 미정" }
+                  denominator: { Unresolved: "헤드샷 배율의 분모 미정" }
+                  program:
+                    id: wisdom-harvest
+                    owns_use: false
+                    end_on_source_exit: true
+                    replacement: ReplaceSameSource
+                    fields: []
+                    handlers:
+                      - id: reward-direct-kill
+                        event:
+                          BasicAttackKill: { primary_only: false, once_per_action: true }
+                        body:
+                          - GrantOwnerResonance:
+                              amount: { Unresolved: "공명 일부 회복량과 고정량/비율 산정식 미정" }
+definitions:
+  - name: apply-self
+    parameters:
+      - name: effects
+        value_type: Effects
+    body:
+      Action:
+        id: install
+        target:
+          Literal:
+            Target: SelfUnit
+        delivery:
+          Literal:
+            Delivery: Instant
+        effects:
+          - Append:
+              effects:
+                Parameter: effects
+        wait: Released
+skills:
+  - id: fragment_scarecrow_wisdom_harvest
+    name: 지혜 수확
+    kind: Untargeted
+    cast_targeting:
+      Explicit:
+        selection: { Unresolved: "시전 선택 방식 미정" }
+        target: SelfUnit
+        reach: pattern
+        air_capable: true
+    prepare_ms: { Unresolved: "준비 상태를 부여하는 시전 준비 시간 미정" }
+    focus_permissions:
+      allows_move: true
+      allows_basic_attack: true
+    admission:
+      capacity: { Unresolved: "공명 최대치 미정" }
+      requirement: Full
+      cost: All
+    body:
+      Call:
+        id: transform
+        definition: apply-self
+        arguments:
+          - name: effects
+            value:
+              Shared: transformation

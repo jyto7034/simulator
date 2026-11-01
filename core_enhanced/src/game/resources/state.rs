@@ -12,11 +12,15 @@ pub enum RunFailureReason {
 
 /// 게임의 명시적인 상태.
 ///
-/// 기본 allowed_actions는 이 상태로 결정하고, GameCore가 현재 노드 세션 내용을 더해 최종 보정한다.
+/// Capability projection is derived on demand from this state and active domain content.
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub enum GameState {
     #[default]
     NotStarted,
+    PreRunBriefing {
+        game_mode: crate::game::map::GameMode,
+    },
     SelectingStarterEmployees,
     ViewingMap,
     NodeConfirm {
@@ -41,8 +45,15 @@ pub enum GameState {
     CombatResult {
         battle_uuid: Uuid,
     },
+    MasteredEliteSweepResult {
+        sweep_uuid: Uuid,
+    },
     InBattle {
         battle_uuid: Uuid,
+    },
+    AwaitingRunFailureDecision {
+        reason: RunFailureReason,
+        contributing_reason: Option<RunFailureReason>,
     },
     GameOver,
     RunComplete,

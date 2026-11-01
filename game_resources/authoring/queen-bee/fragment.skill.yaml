@@ -1,0 +1,128 @@
+# Current authored design; unresolved release inputs remain non-executable.
+version: 1
+id: queen-bee-royal-hive
+values:
+- name: royal-hive
+  value:
+    Effects:
+    - id: grant
+      op:
+        Sustained:
+          definition:
+            State:
+              duration_ms:
+                Unresolved: hive-duration
+              program:
+                id: queen-bee-royal-hive
+                owns_use: false
+                end_on_source_exit: false
+                replacement: ReplaceSameSource
+                fields:
+                - name: remaining
+                  value:
+                    Integer:
+                      unit: Count
+                      initial:
+                        Unresolved: bee-count
+                      min: 0
+                      max:
+                        Unresolved: bee-count
+                handlers:
+                - id: hostile-hit
+                  event:
+                    HpLost:
+                      relation: Hostile
+                      once_per_action: true
+                  body:
+                  - Set:
+                      field: remaining
+                      value:
+                        moment: Live
+                        root:
+                          Add:
+                          - Read:
+                              StateField:
+                                name: remaining
+                                unit: Count
+                          - Const:
+                              value: -1
+                              unit: Count
+                  - HealOwner:
+                      amount:
+                        moment: Live
+                        root:
+                          Ratio:
+                            numerator:
+                              Mul:
+                                value:
+                                  Read:
+                                    HitPoints:
+                                      subject: Target
+                                      field: Max
+                                scalar:
+                                  Const:
+                                    value:
+                                      Unresolved: heal-percent
+                                    unit: Scalar
+                            denominator:
+                              Const:
+                                value: 100
+                                unit: Scalar
+                            rounding: Floor
+                  - If:
+                      condition:
+                        Compare:
+                          left:
+                            moment: Live
+                            root:
+                              Read:
+                                StateField:
+                                  name: remaining
+                                  unit: Count
+                          comparison: Equal
+                          right:
+                            moment: Live
+                            root:
+                              Const:
+                                value: 0
+                                unit: Count
+                      then_ops:
+                      - End
+                      else_ops: []
+definitions: []
+skills:
+- id: fragment_queen_bee_royal_hive
+  name: 일벌의 가호
+  kind: Targeted
+  cast_targeting:
+    Explicit:
+      selection: player_unit
+      target: AllySingle
+      reach: pattern
+      air_capable: true
+      target_range:
+        Unresolved: selection-footprint
+  prepare_ms:
+    Unresolved: prepare-duration
+  focus_permissions:
+    allows_move: true
+    allows_basic_attack: true
+  admission:
+    capacity:
+      Unresolved: capacity
+    requirement: Full
+    cost: All
+  body:
+    Action:
+      id: attach
+      target:
+        Literal:
+          Target: CastTarget
+      delivery:
+        Literal:
+          Delivery: Instant
+      effects:
+      - Append:
+          effects:
+            Shared: royal-hive
+      wait: Released

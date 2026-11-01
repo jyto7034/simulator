@@ -3,11 +3,12 @@ use uuid::Uuid;
 
 use crate::game::{
     behavior::GameError,
-    employee::EmployeeLifeState,
-    reward::{GrantExecutionContext, GrantExecutionResult, GrantExecutor, RewardEffect},
+    employee::EmployeeCondition,
+    reward::{GrantExecutionContext, GrantExecutionResult, RewardEffect},
 };
 
 use super::{AdminCommandOutput, GameCore};
+use crate::game::world::grant_state::EconomyGrantState;
 
 impl GameCore {
     pub(super) fn admin_grant_equipment(
@@ -64,45 +65,24 @@ impl GameCore {
                 ))
             })?
             .clone();
-        let effects = (0..count)
-            .map(|_| RewardEffect::GrantConsumable {
-                consumable_id: metadata.id.clone(),
-            })
-            .collect::<Vec<_>>();
-        let granted = self.admin_apply_grant_effects(&effects)?;
-        let item_uuids = granted
-            .inventory_diff
-            .added
-            .iter()
-            .map(|item| item.uuid())
-            .collect::<Vec<_>>();
+        self.admin_apply_grant_effects(&[RewardEffect::GrantConsumable {
+            consumable_id: metadata.id.clone(),
+            quantity: count,
+        }])?;
+        let quantity = self
+            .state
+            .inventory
+            .consumables
+            .get_by_definition_id(definition_id)
+            .ok_or(GameError::InventoryItemNotFound)?
+            .quantity;
         Ok(self.admin_output(
             "AdminGrantedConsumable",
-            json!({ "definition_id": definition_id, "item_uuids": item_uuids }),
-        ))
-    }
-
-    pub(super) fn admin_grant_artifact(
-        &mut self,
-        definition_id: &str,
-    ) -> Result<AdminCommandOutput, GameError> {
-        let metadata = self
-            .game_data
-            .artifact_data
-            .get_by_id(definition_id)
-            .ok_or_else(|| {
-                GameError::InvalidStaticData(format!(
-                    "admin grant references missing artifact '{definition_id}'"
-                ))
-            })?
-            .clone();
-        let artifact_uuid = metadata.uuid;
-        self.admin_apply_grant_effects(&[RewardEffect::GrantArtifact {
-            artifact_id: metadata.id.clone(),
-        }])?;
-        Ok(self.admin_output(
-            "AdminGrantedArtifact",
-            json!({ "definition_id": definition_id, "artifact_uuid": artifact_uuid }),
+            json!({
+                "definition_id": definition_id,
+                "item_uuid": metadata.uuid,
+                "quantity": quantity,
+            }),
         ))
     }
 
@@ -182,21 +162,60 @@ impl GameCore {
         Ok(self.admin_output("AdminGrantedFragmentDust", json!({ "amount": amount })))
     }
 
+    pub(super) fn admin_grant_relic(
+        &mut self,
+        definition_id: &str,
+        count: u32,
+    ) -> Result<AdminCommandOutput, GameError> {
+        if count == 0 {
+            return Err(GameError::InvalidAction);
+        }
+        self.ensure_relic_operation()?;
+        crate::authoring::control::charge(
+            self.game_data.relic_data.relics.len() as u64,
+            "relic_admin_definition",
+        )?;
+        if self.game_data.relic_data.get_by_id(definition_id).is_none() {
+            return Err(GameError::InvalidCommandData(format!("admin grant references missing relic '{definition_id}'")));
+        }
+        let mut copies = Vec::new();
+        crate::game::battle::runtime_control::admit_retained_growth(
+            0,
+            (count as usize).checked_mul(
+                std::mem::size_of::<crate::game::relic::OwnedRelic>() + definition_id.len(),
+            ),
+            "relic_admin_grant_projection",
+        )?;
+        for _ in 0..count {
+            crate::authoring::control::poll("relic_admin_grant_loop")?;
+            let granted = self.admin_apply_grant_effects(&[RewardEffect::GrantRelic {
+                relic_id: definition_id.to_owned(),
+            }])?;
+            copies.extend(granted.relic_diffs);
+        }
+        Ok(self.admin_output(
+            "AdminGrantedRelic",
+            json!({ "definition_id": definition_id, "copies": copies }),
+        ))
+    }
+    pub(super) fn admin_grant_relic_resources(
+        &mut self,
+        effect: RewardEffect,
+    ) -> Result<AdminCommandOutput, GameError> {
+        self.ensure_relic_operation()?;
+        self.admin_apply_grant_effects(&[effect])?;
+        Ok(self.admin_output(
+            "AdminGrantedCraftingResources",
+            json!({ "resources": self.state.crafting_resources }),
+        ))
+    }
     fn admin_apply_grant_effects(
         &mut self,
         effects: &[RewardEffect],
     ) -> Result<GrantExecutionResult, GameError> {
-        let mut next_inventory = self.state.inventory.clone();
-        let mut next_skill_fragments = self.state.skill_fragments.clone();
-        let mut next_roster = self.state.roster.clone();
-        let mut next_uuid_manager = self.state.uuid_manager.clone();
-        let mut next_enkephalin = self.state.enkephalin.clone();
-        let granted = GrantExecutor::grant_effects_with_state(
-            &mut next_inventory,
-            &mut next_skill_fragments,
-            &mut next_roster,
-            &mut next_uuid_manager,
-            &mut next_enkephalin,
+        self.ensure_relic_grant(effects)?;
+        let mut grant_state = EconomyGrantState::capture(&self.state)?;
+        let granted = grant_state.grant_effects(
             &self.game_data,
             &self.state.skill_fragment_policy,
             &GrantExecutionContext::default(),
@@ -204,69 +223,38 @@ impl GameCore {
             self.run_seed ^ 0x4144_4d49_4e47_524e,
         )?;
 
-        self.state.inventory = next_inventory;
-        self.state.skill_fragments = next_skill_fragments;
-        self.state.roster = next_roster;
-        self.state.uuid_manager = next_uuid_manager;
-        self.state.enkephalin = next_enkephalin;
+        grant_state.commit_into(&mut self.state);
 
         Ok(granted)
     }
 
-    pub(super) fn admin_set_employee_hp(
+    pub(super) fn admin_set_employee_condition(
         &mut self,
         employee_uuid: Uuid,
-        current_hp: u32,
-        max_hp: Option<u32>,
-    ) -> Result<AdminCommandOutput, GameError> {
-        let (current_hp, max_hp) = {
-            let employee = self
-                .state
-                .roster
-                .get_mut(&employee_uuid)
-                .ok_or(GameError::UnitNotFound)?;
-            if employee.life_state != EmployeeLifeState::Alive {
-                return Err(GameError::InvalidAction);
-            }
-            if let Some(max_hp) = max_hp {
-                if max_hp == 0 {
-                    return Err(GameError::InvalidAction);
-                }
-                employee.health.max_hp = max_hp;
-            }
-            employee.health.current_hp = current_hp.min(employee.health.max_hp);
-            (employee.health.current_hp, employee.health.max_hp)
-        };
-        Ok(self.admin_output(
-            "AdminSetEmployeeHp",
-            json!({
-                "employee_uuid": employee_uuid,
-                "current_hp": current_hp,
-                "max_hp": max_hp,
-            }),
-        ))
-    }
-
-    pub(super) fn admin_set_employee_trauma(
-        &mut self,
-        employee_uuid: Uuid,
+        physical_damage: u8,
         trauma: u32,
     ) -> Result<AdminCommandOutput, GameError> {
-        let trauma = {
+        let condition = {
             let employee = self
                 .state
                 .roster
                 .get_mut(&employee_uuid)
                 .ok_or(GameError::UnitNotFound)?;
-            if employee.life_state != EmployeeLifeState::Alive {
+            if physical_damage > crate::game::employee::MAX_PHYSICAL_DAMAGE
+                || trauma > crate::game::employee::MAX_TRAUMA
+            {
                 return Err(GameError::InvalidAction);
             }
-            employee.trauma = trauma;
-            employee.trauma
+            employee.condition = EmployeeCondition::new(physical_damage, trauma);
+            employee.condition
         };
         Ok(self.admin_output(
-            "AdminSetEmployeeTrauma",
-            json!({ "employee_uuid": employee_uuid, "trauma": trauma }),
+            "AdminSetEmployeeCondition",
+            json!({
+                "employee_uuid": employee_uuid,
+                "physical_damage": condition.physical_damage,
+                "trauma": condition.trauma,
+            }),
         ))
     }
 

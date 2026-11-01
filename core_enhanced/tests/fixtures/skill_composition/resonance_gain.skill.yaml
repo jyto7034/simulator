@@ -1,0 +1,17 @@
+# E02 공명 장신구: 비율과 경로는 작성 입력, 출시 밸런스가 아닌 검증값.
+version: 1
+id: resonance-gain-fixture
+values:
+  - name: resonance-increase
+    value:
+      SupportProgram:
+        heal_percent: 0
+        shield_percent: 0
+        resonance_gain:
+          percent: 20
+          channels: AutomaticAndAuthored
+equipment_supports:
+  - equipment: r11_weapon
+    program: { Shared: resonance-increase }
+definitions: []
+skills: []

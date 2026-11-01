@@ -1,0 +1,124 @@
+# 현행 의미의 작성 원본. 출시 미정과 별도 시험 완성값을 구분합니다.
+definitions: []
+id: nothing-there-hello-goodbye
+skills:
+- admission:
+    capacity:
+      Unresolved: capacity
+    cost: All
+    requirement: Full
+  body:
+    Action:
+      delivery:
+        Literal:
+          Delivery: Instant
+      effects:
+      - Append:
+          effects:
+            Literal:
+              Effects:
+              - id: state
+                op:
+                  Sustained:
+                    definition:
+                      BasicAttackOverlay:
+                        duration_ms:
+                          Unresolved: hello-duration-ms
+                        goodbye_skill: fragment_nothing_there_goodbye
+                        next_attack_only: false
+                        profile:
+                          defense_tile_range: null
+                          delivery: Instant
+                          followup_on_input: true
+                          line:
+                            length_units:
+                              Unresolved: hello-length_units
+                            piercing:
+                              cap_percent:
+                                Unresolved: piercing-cap_percent
+                              increment_percent:
+                                Unresolved: piercing-increment_percent
+                              relic_definition: piercing-damage-increase
+                            piercing_relics: true
+                            power:
+                              Unresolved: hello-power
+                            weapon_effects: true
+                            width_units:
+                              Unresolved: hello-width_units
+                          range_policy: whole_field_valid_tiles
+                origin: Original
+                tags: []
+      id: entry
+      target:
+        Literal:
+          Target: SelfUnit
+      wait: Released
+  cast_targeting:
+    Explicit:
+      air_capable: false
+      reach: pattern
+      selection: self
+      target: SelfUnit
+      target_range: null
+  focus_permissions:
+    allows_basic_attack: true
+    allows_move: true
+  id: fragment_nothing_there_hello
+  kind: Untargeted
+  name: Hello (가칭)
+  prepare_ms: 0
+- admission: null
+  body:
+    Action:
+      delivery:
+        Literal:
+          Delivery:
+            TileArea:
+              area:
+                anchor: Caster
+                duration_ms: 0
+                emission: null
+                first_tick_delay_ms: 0
+                ground_status: null
+                hit_targets: Enemies
+                include_caster: false
+                mode: Legacy
+                on_hit_caster_heal_percent: null
+                tick_interval_ms: null
+                tick_policy: EveryTick
+                tile_origin: Caster
+                tracking: GroundFixed
+              footprint:
+                Unresolved: finish-footprint
+      effects:
+      - Damage:
+          amount:
+            Literal:
+              Amount:
+                moment: Snapshot
+                root:
+                  Unresolved: finish-power-expression
+          damage_type: Physical
+          id: damage
+          tags: []
+      id: entry
+      target:
+        Literal:
+          Target: SelfUnit
+      wait: Released
+  cast_targeting:
+    Explicit:
+      air_capable: false
+      reach: pattern
+      selection: self
+      target: SelfUnit
+      target_range: null
+  focus_permissions:
+    allows_basic_attack: true
+    allows_move: true
+  id: fragment_nothing_there_goodbye
+  kind: Untargeted
+  name: Goodbye (가칭)
+  prepare_ms: 0
+values: []
+version: 2

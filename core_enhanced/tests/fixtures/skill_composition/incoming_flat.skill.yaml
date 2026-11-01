@@ -1,0 +1,27 @@
+# Technical verification values; release balance remains open.
+version: 2
+id: incoming-flat-fixture
+values:
+  - name: incoming-flat
+    value:
+      DefenseProgram:
+        PhysicalBasicFlatReduction:
+          amount:
+            moment: Live
+            root:
+              Clamp:
+                value:
+                  Ratio:
+                    numerator:
+                      Mul:
+                        value: { Read: { Stat: { subject: Source, stat: Defense } } }
+                        scalar: { Const: { value: 50, unit: Scalar } }
+                    denominator: { Const: { value: 100, unit: Scalar } }
+                    rounding: Floor
+                min: { Const: { value: 0, unit: Magnitude } }
+                max: { Const: { value: 30, unit: Magnitude } }
+equipment_defenses:
+  - equipment: black_swan_nettle_coat
+    program: { Shared: incoming-flat }
+definitions: []
+skills: []

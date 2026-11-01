@@ -1,0 +1,114 @@
+# Test-only duration, geometry and power. No production balance is decided here.
+version: 1
+id: state-reward-fixture
+values:
+  - name: transformation
+    value:
+      Effects:
+        - id: form
+          op:
+            Sustained:
+              definition:
+                State:
+                  duration_ms: 2000
+                  program:
+                    id: kill-reaction
+                    owns_use: true
+                    end_on_source_exit: true
+                    replacement: ReplaceSameSource
+                    basic_attack:
+                      range_policy: whole_field_valid_tiles
+                      defense_tile_range: null
+                      delivery: Instant
+                      followup_on_input: false
+                      line:
+                        length_units: 6500000
+                        width_units: 500000
+                        power: 40
+                        weapon_effects: true
+                        piercing_relics: true
+                        piercing:
+                          relic_definition: piercing-damage-increase
+                          increment_percent: 25
+                          cap_percent: 50
+                    fields:
+                      - name: kills
+                        value:
+                          Integer: { unit: Count, initial: 0, min: 0, max: 100 }
+                    handlers:
+                      - id: reward-direct-kill
+                        event:
+                          BasicAttackKill: { primary_only: false, once_per_action: true }
+                        body:
+                          - Set:
+                              field: kills
+                              value:
+                                moment: Live
+                                root:
+                                  Add:
+                                    - Read:
+                                        StateField: { name: kills, unit: Count }
+                                    - Const: { value: 1, unit: Count }
+                          - ApplyOwnerState:
+                              duration:
+                                moment: Live
+                                root:
+                                  Const: { value: 1500, unit: Milliseconds }
+                              profile:
+                                definition: direct-kill-reward
+                                attack_percent: 25
+                                defense_percent: 0
+                                attack_speed_points: 0
+                                hp_floor_one: false
+                                end_on_source_exit: false
+                              replacement: ReplaceSameSource
+                          - HealOwner:
+                              amount:
+                                moment: Live
+                                root:
+                                  Const: { value: 100, unit: Magnitude }
+definitions:
+  - name: apply-self
+    parameters:
+      - name: effects
+        value_type: Effects
+    body:
+      Action:
+        id: install
+        target:
+          Literal:
+            Target: SelfUnit
+        delivery:
+          Literal:
+            Delivery: Instant
+        effects:
+          - Append:
+              effects:
+                Parameter: effects
+        wait: Released
+skills:
+  - id: authored-basic-kill
+    name: 일반 공격 직접 처치 반응 검사
+    kind: Untargeted
+    cast_targeting:
+      Explicit:
+        selection: self
+        target: SelfUnit
+        reach: pattern
+        air_capable: true
+    prepare_ms: 0
+    focus_permissions:
+      allows_move: true
+      allows_basic_attack: true
+    admission:
+      capacity: 100
+      requirement: Full
+      cost: All
+    body:
+      Call:
+        id: transform
+        definition: apply-self
+        arguments:
+          - name: effects
+            value:
+              Shared: transformation

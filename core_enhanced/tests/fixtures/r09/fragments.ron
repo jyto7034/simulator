@@ -1,0 +1,5 @@
+SkillFragmentDatabase(fragments: [SkillFragmentMetadata(
+ id: "r09_fragment", uuid: "09111111-1111-1111-1111-111111111111", name: "Corrosion trial", description: "R09 public acceptance",
+ rarity: Common, equip_limit: OwnedCopies, sources: [RareReward], corrosion_class: Ordinary,
+ effect: ActiveSkill(forms: {"base": (skill_id: "r08_strike", resonance_max: 100)}),
+)])

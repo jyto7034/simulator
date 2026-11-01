@@ -1,5 +1,6 @@
 [package]
 name = "game_server"
+default-run = "game_server"
 version.workspace = true
 edition.workspace = true
 description.workspace = true
@@ -19,6 +20,8 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 base64 = "0.22"
 flate2 = "1.0"
+fs2 = "0.4"
+sha2 = "0.10"
 dotenv = "0.15.0"
 config = {version = "0.15.11", features = ["toml"]}
 backoff = { version = "0.4.0", features = ["tokio"] }
@@ -26,6 +29,22 @@ lazy_static = "1.5.0"
 ron = "0.5.1"
 
 game_core = { path = "../core_enhanced" }
+metrics = { version = "=0.24.6", optional = true }
+metrics-exporter-prometheus = { version = "=0.18.3", default-features = false, features = ["http-listener"], optional = true }
+crossbeam-epoch = { version = "=0.9.21", optional = true }
+
+[features]
+# Explicit legacy fixture tests; never enabled for the production CMVA pair.
+test-fixtures = ["game_core/test-fixtures"]
+# Isolated CMVA workers use Core's fixed observations and process measurement
+# without starting the server exporter or changing its dependency features.
+cmva-lab-measurement = ["game_core/runtime-observation"]
+runtime-measurement = ["runtime-observation"]
+runtime-observation = ["game_core/runtime-observation", "dep:metrics", "dep:metrics-exporter-prometheus", "dep:crossbeam-epoch"]
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.59", features = ["Win32_Foundation", "Win32_Storage_FileSystem"] }
 
 [dev-dependencies]
 tokio-test = "0.4"
+tempfile = "3"

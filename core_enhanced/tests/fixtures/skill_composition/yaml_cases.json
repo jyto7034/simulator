@@ -1,0 +1,135 @@
+[
+  {
+    "source": "name: 한글 이름\nx: 3\n",
+    "accepted": true,
+    "value": {
+      "name": "한글 이름",
+      "x": 3
+    }
+  },
+  {
+    "source": "a: [null, Null, NULL, ~, true, True, TRUE, false, False, FALSE]\n",
+    "accepted": true,
+    "value": {
+      "a": [
+        null,
+        null,
+        null,
+        null,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false
+      ]
+    }
+  },
+  {
+    "source": "a: [0x20, 0o20, +2, 1.0, 1e3, .5, -0, 0012]\n",
+    "accepted": true,
+    "value": {
+      "a": [
+        32,
+        16,
+        2,
+        1,
+        1000,
+        0.5,
+        0,
+        12
+      ]
+    }
+  },
+  {
+    "source": "a: [\"null\", \"true\", \"0x20\", yes, no, 2026-10-23, 1_000]\n",
+    "accepted": true,
+    "value": {
+      "a": [
+        "null",
+        "true",
+        "0x20",
+        "yes",
+        "no",
+        "2026-10-23",
+        "1_000"
+      ]
+    }
+  },
+  {
+    "source": "a: \"line\\nnext\" # comment\nb: |-\n  hello\n  한글\n",
+    "accepted": true,
+    "value": {
+      "a": "line\nnext",
+      "b": "hello\n한글"
+    }
+  },
+  {
+    "source": "a: []\nb: {}\n",
+    "accepted": true,
+    "value": {
+      "a": [],
+      "b": {}
+    }
+  },
+  {
+    "source": "",
+    "accepted": false
+  },
+  {
+    "source": "a:",
+    "accepted": false
+  },
+  {
+    "source": "a: [",
+    "accepted": false
+  },
+  {
+    "source": "a: 1\na: 2",
+    "accepted": false
+  },
+  {
+    "source": "a: &x 2\nb: *x",
+    "accepted": false
+  },
+  {
+    "source": "a: !!str 2",
+    "accepted": false
+  },
+  {
+    "source": "a: !foo x",
+    "accepted": false
+  },
+  {
+    "source": "<<: {}",
+    "accepted": false
+  },
+  {
+    "source": "1: x",
+    "accepted": false
+  },
+  {
+    "source": "? [x,y]\n: z",
+    "accepted": false
+  },
+  {
+    "source": "a: .nan",
+    "accepted": false
+  },
+  {
+    "source": "a: .inf",
+    "accepted": false
+  },
+  {
+    "source": "a: 9007199254740993",
+    "accepted": false
+  },
+  {
+    "source": "%YAML 1.1\n---\na: yes",
+    "accepted": false
+  },
+  {
+    "source": "a: 1\n---\na: 2",
+    "accepted": false
+  }
+]

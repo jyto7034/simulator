@@ -1,0 +1,18 @@
+# E02: the 20% slow is agreed; its 1500ms duration is an integration test value.
+version: 1
+id: multi-target-basic-fixture
+values:
+  - name: web-hit
+    value:
+      AttackProgram:
+        reactions: []
+        on_hit_status:
+          duration_ms: 1500
+          profile:
+            definition: web-hit
+            kind: { Slow: { percent: 20 } }
+equipment_attacks:
+  - equipment: r11_weapon
+    program: { Shared: web-hit }
+definitions: []
+skills: []

@@ -1,0 +1,96 @@
+{
+  "purpose": "Explicit verification inputs; fixed grant10 credit20 recovery1, duration25%, multihit2/20%, cost5%/1000ms and armor15000ms remain in original. Exact Bow compatibility and other unresolved values are test-only.",
+  "values": {
+    "capacity": 100,
+    "mark-duration-ms": 5000,
+    "selection-range": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXXXX",
+        "XXXXXXX",
+        "XXXXXXX",
+        "XXX@XXX",
+        "XXXXXXX",
+        "XXXXXXX",
+        "XXXXXXX"
+      ]
+    },
+    "preparation-deadline_ms": 10000,
+    "preparation-decay_ms": 1000,
+    "preparation-first_ms": 1000,
+    "preparation-hold_ms": 2000,
+    "preparation-last_ms": 500,
+    "preparation-maximum": 3,
+    "projectile-power": 100,
+    "projectile-speed": {
+      "denominator": 1,
+      "numerator": 5
+    },
+    "projectile-range": {
+      "denominator": 1,
+      "numerator": 20
+    },
+    "projectile-width": {
+      "denominator": 2,
+      "numerator": 1
+    },
+    "projectile-lifetime_ms": 5000,
+    "projectile-area": {
+      "include_anchor_tile": true,
+      "rows": [
+        "@"
+      ]
+    },
+    "continuous-interval-ms": 250,
+    "expanded-area": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXX",
+        "X@X",
+        "XXX"
+      ]
+    },
+    "stun-duration-ms": 1000,
+    "armor-per_second_percent": 10,
+    "armor-max_percent": 50,
+    "area-per-extra-target": 10,
+    "area-cap": 50,
+    "fragment-rarity": "Exceptional",
+    "fragment-equip-limit": "GlobalExclusive",
+    "fragment-compatible-weapons": [
+      "Bow"
+    ],
+    "weapon-rarity": "WAW",
+    "weapon-price": 0,
+    "weapon-duplicate": true,
+    "armor-rarity": "WAW",
+    "armor-price": 0,
+    "armor-duplicate": true,
+    "accessory-rarity": "WAW",
+    "accessory-price": 0,
+    "accessory-duplicate": true,
+    "weapon-delay-ms": 400,
+    "weapon-attack": 30,
+    "weapon-damage-type": "Physical",
+    "weapon-platform-rest": {
+      "hp_recovery_per_tick": 3
+    },
+    "weapon-targeting": "HighestRouteProgress",
+    "weapon-footprint": {
+      "include_anchor_tile": false,
+      "rows": [
+        "..XXX..",
+        ".XXXXX.",
+        ".XXXXX.",
+        ".XXXXX.",
+        ".XXXXX.",
+        "...@..."
+      ]
+    },
+    "weapon-interval-ms": 2000,
+    "weapon-windup-ms": 600,
+    "armor-MaxHealth": 100,
+    "armor-Defense": 0,
+    "armor-MagicResist": 0
+  }
+}

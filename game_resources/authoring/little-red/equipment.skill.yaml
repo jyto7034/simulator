@@ -1,0 +1,98 @@
+# Current weapon, scar armor and shared-hunt accessory.
+# Completion values are explicit test inputs, not release balance.
+version: 1
+id: little-red-equipment
+resources:
+- id: little_red_bounty_pending
+  owner: EquipmentCopy
+  lifetime: Attempt
+  initial: 0
+  cap:
+    Unresolved: little_red_bounty_pending-cap
+- id: little_red_bounty_confirmed
+  owner: EquipmentCopy
+  lifetime: Run
+  initial: 0
+  cap:
+    Unresolved: little_red_bounty_confirmed-cap
+values:
+- name: handcannon
+  value:
+    AttackProgram:
+      reactions: []
+      magazine:
+        capacity: 6
+        reload_ms:
+          Unresolved: weapon-reload_ms
+        normal_percent:
+          Unresolved: weapon-normal_percent
+        enhanced_primary_percent:
+          Unresolved: weapon-enhanced_primary_percent
+        enhanced_secondary_percent:
+          Unresolved: weapon-enhanced_secondary_percent
+        enhanced_max_hits:
+          Unresolved: weapon-enhanced_max_hits
+        reward_family: f-01-57_little_red
+- name: scar-defense
+  value:
+    DefenseProgram:
+      DeferredDamage:
+        defer_percent:
+          Unresolved: scar-defer_percent
+        duration_ms:
+          Unresolved: scar-duration_ms
+        tick_ms:
+          Unresolved: scar-tick_ms
+        kill_clear_percent:
+          Unresolved: scar-kill_clear_percent
+- name: shared_hunt
+  value:
+    AttackProgram:
+      reactions: []
+      cohort:
+        prioritize: true
+        bounty:
+          pending: little_red_bounty_pending
+          confirmed: little_red_bounty_confirmed
+          tiers:
+            Unresolved: bounty-tiers
+        spawn:
+          attack_interval_ms:
+            Unresolved: cohort-attack_interval_ms
+          attack_range:
+            Unresolved: cohort-attack_range
+          block: 1
+          damage_type: Physical
+          definition: 0f40965e-31f1-40b6-b56f-87990f0b9879
+          hp:
+            Unresolved: cohort-hp
+          interval_ms:
+            Unresolved: cohort-interval_ms
+          kill_gain: 1
+          leak:
+            Unresolved: cohort-leak
+          magic_defense:
+            Unresolved: cohort-magic_defense
+          physical_defense:
+            Unresolved: cohort-physical_defense
+          power:
+            Unresolved: cohort-power
+          speed:
+            Unresolved: cohort-speed
+          weakness_family: f-01-57_little_red
+          weakness_percent:
+            denominator: 1
+            numerator: 50
+equipment_attacks:
+- equipment: placeholder_little_red_weapon
+  program:
+    Shared: handcannon
+- equipment: placeholder_little_red_accessory
+  program:
+    Shared: shared_hunt
+equipment_defenses:
+- equipment: placeholder_little_red_armor
+  program:
+    Shared: scar-defense
+definitions: []
+skills: []

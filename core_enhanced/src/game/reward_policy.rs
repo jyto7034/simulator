@@ -141,6 +141,7 @@ mod tests {
                 "consumable",
                 vec![RewardEffect::GrantConsumable {
                     consumable_id: "test".to_string(),
+                    quantity: 1,
                 }],
             )])
             .expect_err("disallowed grant kinds must not be valid combat rewards");
@@ -152,6 +153,10 @@ mod tests {
     fn policy_requires_at_least_one_featured_grant_kind_when_rewards_exist() {
         let policy =
             CombatRewardPolicy::for_mission(CombatNodeType::Defense, CombatMissionVariant::Defense);
+
+        policy
+            .validate_rewards(&[])
+            .expect("an empty reward pool should remain valid");
         let err = policy
             .validate_rewards(&[reward(
                 "currency",
@@ -159,22 +164,9 @@ mod tests {
             )])
             .expect_err("currency-only pools should not define combat reward identity");
 
-        assert!(err.contains("featured grant kind"));
-    }
-
-    #[test]
-    fn defense_policy_requires_defense_identity_reward() {
-        let policy =
-            CombatRewardPolicy::for_mission(CombatNodeType::Defense, CombatMissionVariant::Defense);
-
-        assert!(policy.validate_rewards(&[]).is_ok());
-        let err = policy
-            .validate_rewards(&[reward(
-                "currency",
-                vec![RewardEffect::GrantEnkephalin { amount: 1 }],
-            )])
-            .expect_err("defense reward pool should contain a defense featured grant kind");
-
-        assert!(err.contains("featured grant kind"));
+        assert_eq!(
+            err,
+            "Defense reward pool must include at least one featured grant kind [Equipment, FragmentDust, Narrative]"
+        );
     }
 }

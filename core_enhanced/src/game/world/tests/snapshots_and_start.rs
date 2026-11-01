@@ -1,20 +1,515 @@
 use super::*;
+use crate::game::behavior::{ActionCapabilityDto, ActionDisabledReasonCode, ActionScope};
 
 #[test]
-fn selected_shop_snapshot_includes_visible_display_item_metadata_without_hidden_stock() {
+fn run_snapshot_exposes_inactive_visual_novel_as_explicit_null() {
+    let core = GameCore::new(empty_game_data(), 123);
+
+    let snapshot = core
+        .get_run_snapshot_json()
+        .expect("run snapshot should serialize");
+
+    assert!(
+        snapshot
+            .as_object()
+            .expect("run snapshot should be an object")
+            .contains_key("visual_novel"),
+        "visual_novel must be an explicit root field even when inactive"
+    );
+    assert!(
+        snapshot["visual_novel"].is_null(),
+        "inactive VN overlay should serialize as visual_novel: null"
+    );
+}
+
+#[test]
+fn live_game_data_loads_run_start_visual_novel_triggers() {
+    let game_data = crate::game::data::ValidatedGameData::load_live_embedded()
+        .expect("embedded live gameplay RON must be valid");
+
+    let standard = game_data
+        .visual_novel_trigger_data
+        .get_by_id("run_start_standard_hq_briefing")
+        .expect("standard run-start trigger should load from live RON");
+    let endless = game_data
+        .visual_novel_trigger_data
+        .get_by_id("run_start_endless_hq_briefing")
+        .expect("endless run-start trigger should load from live RON");
+
+    assert_eq!(standard.vn_id.as_str(), "hq_briefing_standard_intro");
+    assert_eq!(endless.vn_id.as_str(), "hq_briefing_endless_intro");
+}
+
+#[test]
+fn start_new_game_opens_pre_run_hq_visual_novel_without_run_or_map() {
+    let mut core = GameCore::new(empty_game_data(), 123);
+    let player_id = Uuid::from_u128(1);
+
+    let result = core
+        .execute(
+            player_id,
+            PlayerBehavior::StartNewGame {
+                game_mode: GameMode::Expedition,
+                replace_active_run: false,
+            },
+        )
+        .unwrap();
+    let BehaviorResult::RunStartFlowStarted {
+        game_mode,
+        visual_novel: Some(visual_novel),
+    } = result
+    else {
+        panic!("start new game should return pre-run VN state");
+    };
+
+    assert_eq!(game_mode, GameMode::Expedition);
+    assert_eq!(
+        visual_novel.source,
+        crate::game::behavior::VisualNovelSourceDto::HqBriefing
+    );
+    assert_eq!(visual_novel.vn_id, "hq_briefing_standard_intro");
+    assert_eq!(visual_novel.current_scene_id, "start");
+    assert_eq!(visual_novel.script_id, "hq_briefing_standard_intro");
+    assert!(visual_novel.blocking);
+    assert!(core.state.run.is_none());
+    assert!(core.state.starter_candidates.is_empty());
+    assert!(matches!(
+        core.get_state(),
+        GameState::PreRunBriefing {
+            game_mode: GameMode::Expedition
+        }
+    ));
+
+    let snapshot = core.get_run_snapshot_json().unwrap();
+    assert_eq!(snapshot["game_state"], "pre_run_briefing");
+    assert_eq!(snapshot["game_state_context"]["type"], "pre_run_briefing");
+    assert_eq!(snapshot["game_state_context"]["game_mode"], "Expedition");
+    assert!(snapshot["run_progression"].is_null());
+    assert!(snapshot["map"].is_null());
+    assert_eq!(snapshot["visual_novel"]["source"]["type"], "hq_briefing");
+    assert_eq!(
+        snapshot["action_capabilities"],
+        json!([{
+            "action": "AdvanceVisualNovel",
+            "scope": "gameplay",
+            "enabled": true
+        }])
+    );
+
+    assert!(matches!(
+        core.execute(
+            player_id,
+            PlayerBehavior::SelectStarterEmployees {
+                employee_definition_ids: vec![],
+                loan_copy_ids: vec![],
+            }
+        )
+        .unwrap_err(),
+        GameError::ActionUnavailable {
+            action: ActionKind::SelectStarterEmployees,
+            reason: ActionDisabledReasonCode::ContextIrrelevant
+        }
+    ));
+}
+
+#[test]
+fn run_start_session_blocking_is_owned_only_by_the_matching_trigger() {
+    let mut triggers = test_hq_briefing_visual_novel_trigger_database();
+    triggers
+        .triggers
+        .iter_mut()
+        .find(|trigger| {
+            matches!(
+                trigger.source,
+                VisualNovelTriggerSource::RunStart {
+                    game_mode: GameMode::Expedition
+                }
+            )
+        })
+        .expect("standard run-start trigger")
+        .blocking = false;
+    let game_data = GameDataBuilder::empty()
+        .with_employee_definitions(test_employee_definition_database())
+        .with_visual_novels(test_hq_briefing_visual_novel_database())
+        .with_visual_novel_triggers(triggers)
+        .with_equipment(equipment_with_starter_assets(Vec::new()))
+        .with_skill_fragment_data(Arc::new(SkillFragmentDatabase::new(vec![
+            SkillFragmentMetadata::starter_basic_attack(),
+        ])))
+        .build_arc();
+    let mut core = GameCore::new(game_data, 123);
+
+    let result = core
+        .execute(
+            Uuid::from_u128(1),
+            PlayerBehavior::StartNewGame {
+                game_mode: GameMode::Expedition,
+                replace_active_run: false,
+            },
+        )
+        .expect("run start should activate the matching trigger");
+
+    let BehaviorResult::RunStartFlowStarted {
+        visual_novel: Some(visual_novel),
+        ..
+    } = result
+    else {
+        panic!("run start should return the trigger-owned VN session");
+    };
+    assert!(!visual_novel.blocking);
+    assert!(!core.state.visual_novel.active.as_ref().unwrap().blocking);
+}
+
+#[test]
+fn missing_run_start_visual_novel_trigger_fails_start_new_game() {
+    let game_data = GameDataBuilder::empty()
+        .with_employee_definitions(test_employee_definition_database())
+        .with_visual_novels(test_hq_briefing_visual_novel_database())
+        .with_equipment(equipment_with_starter_assets(Vec::new()))
+        .with_skill_fragment_data(Arc::new(SkillFragmentDatabase::new(vec![
+            SkillFragmentMetadata::starter_basic_attack(),
+        ])))
+        .build_arc();
+    let mut core = GameCore::new(game_data, 123);
+    let player_id = Uuid::from_u128(1);
+    let before = non_battle_state_without_profile_fingerprint(&core);
+    let before_profile = core.player_profile();
+    let before_run_seed = core.run_seed;
+
+    let first_error = core
+        .execute(
+            player_id,
+            PlayerBehavior::StartNewGame {
+                game_mode: GameMode::Expedition,
+                replace_active_run: false,
+            },
+        )
+        .unwrap_err();
+
+    assert!(
+        matches!(&first_error, GameError::InvalidStaticData(message) if message.contains("missing RunStart visual novel trigger"))
+    );
+    assert_eq!(non_battle_state_without_profile_fingerprint(&core), before);
+    assert_eq!(core.player_profile(), before_profile);
+    assert_eq!(core.run_seed, before_run_seed);
+
+    let retry_error = core
+        .execute(
+            player_id,
+            PlayerBehavior::StartNewGame {
+                game_mode: GameMode::Expedition,
+                replace_active_run: false,
+            },
+        )
+        .unwrap_err();
+    assert_eq!(format!("{retry_error:?}"), format!("{first_error:?}"));
+    assert_eq!(non_battle_state_without_profile_fingerprint(&core), before);
+    assert_eq!(core.player_profile(), before_profile);
+    assert_eq!(core.run_seed, before_run_seed);
+}
+
+#[test]
+fn pre_run_visual_novel_choice_works_without_run_state_and_opens_starter_selection() {
+    use crate::game::data::visual_novel_data::{
+        VisualNovelChoiceDefinition, VisualNovelChoiceId, VisualNovelChoiceNext,
+        VisualNovelChoicePreview, VisualNovelSpeakerDefinition, VisualNovelSpeakerPosition,
+    };
+
+    let mut standard_hq = test_hq_briefing_visual_novel_definition("hq_briefing_standard_intro");
+    standard_hq.scenes[0].text_kind = VisualNovelTextKind::Dialogue;
+    standard_hq.scenes[0].speakers = vec![VisualNovelSpeakerDefinition {
+        speaker_id: "operator".to_string(),
+        portrait_id: None,
+        position: VisualNovelSpeakerPosition::Center,
+        active: true,
+    }];
+    standard_hq.scenes[0].next = VisualNovelSceneNext::Choices {
+        choices: vec![VisualNovelChoiceDefinition {
+            id: VisualNovelChoiceId::new("begin"),
+            label_id: "hq_briefing_choice_begin".to_string(),
+            preview: VisualNovelChoicePreview::default(),
+            next: VisualNovelChoiceNext::End,
+        }],
+    };
+    let game_data = test_game_data_builder()
+        .with_visual_novels(VisualNovelDatabase::new(vec![
+            standard_hq,
+            test_hq_briefing_visual_novel_definition("hq_briefing_endless_intro"),
+        ]))
+        .build_arc();
+    let mut core = GameCore::new(game_data, 123);
+    let player_id = Uuid::from_u128(1);
+
+    let BehaviorResult::RunStartFlowStarted {
+        visual_novel: Some(visual_novel),
+        ..
+    } = core
+        .execute(
+            player_id,
+            PlayerBehavior::StartNewGame {
+                game_mode: GameMode::Expedition,
+                replace_active_run: false,
+            },
+        )
+        .unwrap()
+    else {
+        panic!("start should project pre-run VN");
+    };
+    assert!(core.state.run.is_none());
+    assert_eq!(visual_novel.choices.len(), 1);
+
+    let selected = core
+        .execute(
+            player_id,
+            PlayerBehavior::SelectVisualNovelChoice {
+                session_id: visual_novel.session_id,
+                current_scene_id: crate::game::data::visual_novel_data::VisualNovelSceneId::new(
+                    visual_novel.current_scene_id,
+                ),
+                choice_id: VisualNovelChoiceId::new("begin"),
+            },
+        )
+        .unwrap();
+
+    assert!(matches!(
+        selected,
+        BehaviorResult::VisualNovelState { visual_novel: None }
+    ));
+    assert!(core.state.run.is_none());
+    assert!(matches!(
+        core.get_state(),
+        GameState::SelectingStarterEmployees
+    ));
+    assert_eq!(core.state.starter_candidates.len(), 6);
+}
+
+#[test]
+fn run_snapshot_projects_active_visual_novel_session() {
+    let mut core = GameCore::new(live_game_data_from_ron(), 123);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
+    core.state.visual_novel.active = Some(crate::game::visual_novel::VisualNovelSession {
+        session_id: "vn_session_1".to_string(),
+        source: crate::game::visual_novel::VisualNovelSource::Map,
+        vn_id: crate::game::data::visual_novel_data::VisualNovelId::new(
+            "white_night_confession_intro",
+        ),
+        current_scene_id: crate::game::data::visual_novel_data::VisualNovelSceneId::new(
+            "white_night_speaks",
+        ),
+        committed_choice_id: None,
+        blocking: true,
+        presentation_mode: crate::game::visual_novel::VisualNovelSessionPresentationMode::Cinematic,
+    });
+
+    let snapshot = core
+        .get_run_snapshot_json()
+        .expect("run snapshot should serialize");
+    let visual_novel = &snapshot["visual_novel"];
+
+    assert_eq!(visual_novel["source"]["type"], "map");
+    assert_eq!(visual_novel["session_id"], "vn_session_1");
+    assert_eq!(visual_novel["vn_id"], "white_night_confession_intro");
+    assert_eq!(visual_novel["current_scene_id"], "white_night_speaks");
+    assert_eq!(visual_novel["background_id"], "white_night_chapel");
+    assert_eq!(visual_novel["script_id"], "white_night_confession_intro");
+    assert_eq!(visual_novel["speakers"][0]["speaker_id"], "white_night");
+    assert_eq!(
+        visual_novel["speakers"][0]["portrait_id"],
+        "white_night_veil"
+    );
+    assert_eq!(visual_novel["speakers"][0]["position"], "center");
+    assert_eq!(visual_novel["speakers"][0]["active"], true);
+    assert_eq!(visual_novel["blocking"], true);
+    assert_eq!(visual_novel["presentation_mode"], "cinematic");
+}
+
+#[test]
+fn blocking_visual_novel_gates_background_actions_and_advances_to_end() {
+    let mut core = GameCore::new(live_game_data_from_ron(), 123);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
+    core.state.visual_novel.active = Some(crate::game::visual_novel::VisualNovelSession {
+        session_id: "vn_session_advance".to_string(),
+        source: crate::game::visual_novel::VisualNovelSource::Map,
+        vn_id: crate::game::data::visual_novel_data::VisualNovelId::new(
+            "white_night_confession_intro",
+        ),
+        current_scene_id: crate::game::data::visual_novel_data::VisualNovelSceneId::new("start"),
+        committed_choice_id: None,
+        blocking: true,
+        presentation_mode: crate::game::visual_novel::VisualNovelSessionPresentationMode::Cinematic,
+    });
+
+    assert!(action_capability_enabled(
+        &core,
+        ActionKind::AdvanceVisualNovel
+    ));
+    assert!(action_capability(&core, ActionKind::SelectVisualNovelChoice).is_none());
+    assert!(matches!(
+        core.execute(player_id, PlayerBehavior::RequestMapData)
+            .unwrap_err(),
+        GameError::ActionUnavailable {
+            action: ActionKind::RequestMapData,
+            reason: ActionDisabledReasonCode::ContextIrrelevant
+        }
+    ));
+
+    let advanced = core
+        .execute(
+            player_id,
+            PlayerBehavior::AdvanceVisualNovel {
+                session_id: "vn_session_advance".to_string(),
+                current_scene_id: crate::game::data::visual_novel_data::VisualNovelSceneId::new(
+                    "start",
+                ),
+            },
+        )
+        .unwrap();
+    let BehaviorResult::VisualNovelState {
+        visual_novel: Some(visual_novel),
+    } = advanced
+    else {
+        panic!("advance should project the next VN scene");
+    };
+    assert_eq!(visual_novel.current_scene_id, "white_night_speaks");
+
+    let ended = core
+        .execute(
+            player_id,
+            PlayerBehavior::AdvanceVisualNovel {
+                session_id: "vn_session_advance".to_string(),
+                current_scene_id: crate::game::data::visual_novel_data::VisualNovelSceneId::new(
+                    "white_night_speaks",
+                ),
+            },
+        )
+        .unwrap();
+    let BehaviorResult::VisualNovelState { visual_novel: None } = ended else {
+        panic!("advancing an End scene should close the VN overlay");
+    };
+    assert!(core.state.visual_novel.active.is_none());
+    assert!(action_capability_enabled(&core, ActionKind::RequestMapData));
+}
+
+#[test]
+fn visual_novel_choice_command_advances_global_session() {
+    use crate::game::data::visual_novel_data::{
+        VisualNovelBackground, VisualNovelChoiceDefinition, VisualNovelChoiceId,
+        VisualNovelChoiceNext, VisualNovelChoicePreview, VisualNovelDatabase,
+        VisualNovelDefinition, VisualNovelId, VisualNovelPresentationMode,
+        VisualNovelSceneDefinition, VisualNovelSceneId, VisualNovelSceneNext,
+        VisualNovelSpeakerDefinition, VisualNovelSpeakerPosition, VisualNovelTextKind,
+    };
+
+    let game_data = test_game_data_builder()
+        .with_visual_novels(VisualNovelDatabase::new(vec![
+            test_hq_briefing_visual_novel_definition("hq_briefing_standard_intro"),
+            test_hq_briefing_visual_novel_definition("hq_briefing_endless_intro"),
+            VisualNovelDefinition {
+                id: VisualNovelId::new("choice_vn"),
+                entry_scene_id: VisualNovelSceneId::new("choice"),
+                default_presentation_mode: VisualNovelPresentationMode::Cinematic,
+                scenes: vec![
+                    VisualNovelSceneDefinition {
+                        id: VisualNovelSceneId::new("choice"),
+                        text_kind: VisualNovelTextKind::Dialogue,
+                        background: VisualNovelBackground::CurrentScreenDimmed,
+                        script_id: "choice_script".to_string(),
+                        speakers: vec![VisualNovelSpeakerDefinition {
+                            speaker_id: "operator".to_string(),
+                            portrait_id: None,
+                            position: VisualNovelSpeakerPosition::Center,
+                            active: true,
+                        }],
+                        next: VisualNovelSceneNext::Choices {
+                            choices: vec![VisualNovelChoiceDefinition {
+                                id: VisualNovelChoiceId::new("accept"),
+                                label_id: "choice_accept".to_string(),
+                                preview: VisualNovelChoicePreview::default(),
+                                next: VisualNovelChoiceNext::Scene {
+                                    scene_id: VisualNovelSceneId::new("after_choice"),
+                                },
+                            }],
+                        },
+                    },
+                    VisualNovelSceneDefinition {
+                        id: VisualNovelSceneId::new("after_choice"),
+                        text_kind: VisualNovelTextKind::Narration,
+                        background: VisualNovelBackground::CurrentScreenDimmed,
+                        script_id: "after_choice_script".to_string(),
+                        speakers: vec![],
+                        next: VisualNovelSceneNext::End,
+                    },
+                ],
+            },
+        ]))
+        .build_arc();
+    let mut core = GameCore::new(game_data, 123);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
+    core.state.visual_novel.active = Some(crate::game::visual_novel::VisualNovelSession {
+        session_id: "vn_session_choice".to_string(),
+        source: crate::game::visual_novel::VisualNovelSource::Map,
+        vn_id: VisualNovelId::new("choice_vn"),
+        current_scene_id: VisualNovelSceneId::new("choice"),
+        committed_choice_id: None,
+        blocking: true,
+        presentation_mode: crate::game::visual_novel::VisualNovelSessionPresentationMode::Cinematic,
+    });
+
+    let selected = core
+        .execute(
+            player_id,
+            PlayerBehavior::SelectVisualNovelChoice {
+                session_id: "vn_session_choice".to_string(),
+                current_scene_id: VisualNovelSceneId::new("choice"),
+                choice_id: VisualNovelChoiceId::new("accept"),
+            },
+        )
+        .unwrap();
+    let BehaviorResult::VisualNovelState {
+        visual_novel: Some(visual_novel),
+    } = selected
+    else {
+        panic!("choice command should project the next VN scene");
+    };
+
+    assert_eq!(visual_novel.current_scene_id, "after_choice");
+    assert_eq!(visual_novel.script_id, "after_choice_script");
+    assert!(visual_novel.background_id.is_none());
+    assert!(visual_novel.choices.is_empty());
+}
+
+#[test]
+fn selected_shop_snapshot_includes_typed_offer_metadata_without_hidden_generation_state() {
     let blade = equipment_meta(0x10, "raw_blade_core", EquipmentType::Weapon);
-    let lens = artifact_meta(0x20, "artifact_echo_lens");
-    let game_data = game_data_with_display_items(vec![blade.clone()], vec![lens.clone()]);
+    let game_data = game_data_with_display_items(vec![blade.clone()]);
     let mut core = GameCore::new(game_data, 123);
 
     core.state.active_node_content = Some(ActiveNodeContent::Shop(ShopSessionState {
-        id: "artifact_shop".to_string(),
-        name: "Artifact Merchant".to_string(),
+        id: "typed_shop".to_string(),
+        name: "Typed Shop".to_string(),
         uuid: Uuid::from_u128(0x30),
-        shop_type: crate::game::data::shop_data::ShopType::Shop,
-        can_reroll: true,
-        visible_items: vec![blade.uuid],
-        hidden_items: vec![lens.uuid],
+        context: crate::game::data::shop_data::ShopContext::UnknownExploration,
+        node_id: MapNodeId::new(Uuid::from_u128(0x31)),
+        offer_count: 1,
+        refresh_policy: None,
+        sell_policy: None,
+        refresh_uses: 0,
+        page_index: 0,
+        offers: vec![crate::game::resources::ShopOfferState {
+            offer_id: Uuid::from_u128(0x32),
+            merchandise: crate::game::data::shop_data::ShopMerchandise::Equipment {
+                equipment_id: blade.id.clone(),
+            },
+            item_uuid: blade.uuid,
+            quantity: 1,
+            total_price: 70,
+            repeatable: false,
+            tags: vec!["equipment".to_string()],
+        }],
+        purchased_merchandise: std::collections::HashSet::new(),
     }));
 
     let selected = core
@@ -22,123 +517,117 @@ fn selected_shop_snapshot_includes_visible_display_item_metadata_without_hidden_
         .unwrap()
         .expect("selected event snapshot");
 
-    assert_eq!(selected["visible_items"][0]["uuid"], json!(blade.uuid));
-    assert_eq!(selected["visible_items"][0]["kind"], "equipment");
     assert_eq!(
-        selected["visible_items"][0]["definition_id"],
+        selected["offers"][0]["offer_id"],
+        json!(Uuid::from_u128(0x32))
+    );
+    assert_eq!(selected["offers"][0]["quantity"], 1);
+    assert_eq!(selected["offers"][0]["total_price"], 70);
+    assert_eq!(selected["offers"][0]["item"]["uuid"], json!(blade.uuid));
+    assert_eq!(selected["offers"][0]["item"]["kind"], "equipment");
+    assert_eq!(
+        selected["offers"][0]["item"]["definition_id"],
         "raw_blade_core"
     );
-    assert_eq!(selected["visible_items"][0]["id"], "raw_blade_core");
-    assert_eq!(selected["visible_items"][0]["equipment_type"], "weapon");
-    assert!(selected["visible_items"][0]["icon"].is_null());
-    assert_eq!(selected["visible_item_uuids"][0], json!(blade.uuid));
+    assert_eq!(selected["offers"][0]["item"]["id"], "raw_blade_core");
+    assert_eq!(selected["offers"][0]["item"]["equipment_type"], "weapon");
+    assert!(selected["offers"][0]["item"]["icon"].is_null());
+    assert!(selected.get("visible_items").is_none());
+    assert!(selected.get("visible_item_uuids").is_none());
     assert!(selected.get("hidden_items").is_none());
     assert!(selected.get("hidden_item_uuids").is_none());
-
-    let shop = core
-        .state
-        .active_node_content
-        .as_ref()
-        .unwrap()
-        .as_shop()
-        .unwrap();
-    assert_eq!(shop.hidden_items, vec![lens.uuid]);
 }
 
 #[test]
-fn selling_owned_artifact_reports_not_removable_instead_of_missing_item() {
-    let lens = artifact_meta(0x20, "artifact_echo_lens");
-    let game_data = game_data_with_display_items(vec![], vec![lens.clone()]);
-    let mut core = GameCore::new(game_data, 123);
-    let player_id = Uuid::from_u128(1);
-
-    core.state
-        .inventory
-        .add_item_owned(
-            lens.uuid,
-            crate::game::data::Item::Artifact(Arc::new(lens.clone())),
-        )
-        .unwrap();
-    core.state.active_node_content = Some(ActiveNodeContent::Shop(ShopSessionState {
-        id: "artifact_shop".to_string(),
-        name: "Artifact Merchant".to_string(),
-        uuid: Uuid::from_u128(0x30),
-        shop_type: crate::game::data::shop_data::ShopType::Shop,
-        can_reroll: true,
-        visible_items: vec![],
-        hidden_items: vec![lens.uuid],
-    }));
-    core.transition_to(GameState::InShop {
-        shop_uuid: Uuid::from_u128(0x30),
-    })
-    .unwrap();
-
-    let err = core
-        .execute(
-            player_id,
-            PlayerBehavior::SellItem {
-                item_uuid: lens.uuid,
-            },
-        )
-        .unwrap_err();
-
-    assert!(matches!(err, GameError::InventoryItemNotRemovable));
-}
-
-#[test]
-fn game_core_rejects_disallowed_actions_and_updates_allowed_actions_on_state_transition() {
+fn game_core_projects_context_capabilities_and_revalidates_on_state_transition() {
     let mut core = GameCore::new(empty_game_data(), 123);
     let player_id = Uuid::from_u128(1);
 
     assert!(matches!(core.get_state(), GameState::NotStarted));
-    assert!(core.is_action_allowed(&PlayerBehavior::StartNewGame {
-        game_mode: GameMode::Standard,
-    }));
-    assert!(!core.is_action_allowed(&PlayerBehavior::RequestMapData));
+    assert!(action_capability_enabled(&core, ActionKind::StartNewGame));
+    assert!(action_capability(&core, ActionKind::RequestMapData).is_none());
 
     let err = core
         .execute(player_id, PlayerBehavior::RequestMapData)
         .unwrap_err();
-    assert!(matches!(err, GameError::InvalidAction));
+    assert!(matches!(
+        err,
+        GameError::ActionUnavailable {
+            action: ActionKind::RequestMapData,
+            reason: ActionDisabledReasonCode::ContextIrrelevant
+        }
+    ));
 
     let res = core
         .execute(
             player_id,
             PlayerBehavior::StartNewGame {
-                game_mode: GameMode::Standard,
+                game_mode: GameMode::Expedition,
+                replace_active_run: false,
             },
         )
         .unwrap();
-    let BehaviorResult::StartNewGame {
+    let BehaviorResult::RunStartFlowStarted {
         game_mode,
-        candidates,
-        required_count,
+        visual_novel: Some(visual_novel),
     } = res
     else {
-        panic!("start should expose starter candidates");
+        panic!("start should expose pre-run VN");
     };
-    assert_eq!(game_mode, GameMode::Standard);
-    assert_eq!(required_count, run_policy().setup.starter_employee_count);
-    assert_eq!(candidates.len(), 6);
+    assert_eq!(game_mode, GameMode::Expedition);
+    assert!(matches!(
+        core.get_state(),
+        GameState::PreRunBriefing {
+            game_mode: GameMode::Expedition
+        }
+    ));
+    assert!(action_capability_enabled(
+        &core,
+        ActionKind::AdvanceVisualNovel
+    ));
+    assert!(action_capability(&core, ActionKind::SelectVisualNovelChoice).is_none());
+
+    let ended = core
+        .execute(
+            player_id,
+            PlayerBehavior::AdvanceVisualNovel {
+                session_id: visual_novel.session_id,
+                current_scene_id: crate::game::data::visual_novel_data::VisualNovelSceneId::new(
+                    visual_novel.current_scene_id,
+                ),
+            },
+        )
+        .unwrap();
+    assert!(matches!(
+        ended,
+        BehaviorResult::VisualNovelState { visual_novel: None }
+    ));
     assert!(matches!(
         core.get_state(),
         GameState::SelectingStarterEmployees
     ));
+    assert_eq!(core.state.starter_candidates.len(), 6);
     assert_eq!(
-        core.get_allowed_actions(),
-        vec![ActionKind::SelectStarterEmployees]
+        core.get_action_capabilities(),
+        vec![ActionCapabilityDto::enabled(
+            ActionKind::SelectStarterEmployees,
+            ActionScope::Gameplay,
+        )]
     );
 
-    let selected_ids = candidates
-        .into_iter()
-        .take(required_count)
-        .map(|candidate| candidate.id)
+    let selected_ids = core
+        .state
+        .starter_candidates
+        .iter()
+        .take(run_policy().setup.starter_employee_count)
+        .map(|definition| definition.employee_definition_id.clone())
         .collect::<Vec<_>>();
     let selected = core
         .execute(
             player_id,
             PlayerBehavior::SelectStarterEmployees {
-                candidate_ids: selected_ids,
+                employee_definition_ids: selected_ids,
+                loan_copy_ids: vec![],
             },
         )
         .unwrap();
@@ -148,11 +637,23 @@ fn game_core_rejects_disallowed_actions_and_updates_allowed_actions_on_state_tra
     ));
     assert!(matches!(core.get_state(), GameState::ViewingMap));
 
-    let allowed = core.get_allowed_actions();
-    assert!(allowed.contains(&ActionKind::RequestMapData));
-    assert!(allowed.contains(&ActionKind::SelectMapNode));
-    assert!(allowed.contains(&ActionKind::EquipItem));
-    assert!(allowed.contains(&ActionKind::MoveRosterUnit));
+    assert!(action_capability_enabled(&core, ActionKind::RequestMapData));
+    assert!(action_capability_enabled(&core, ActionKind::SelectMapNode));
+    assert!(action_capability_enabled(&core, ActionKind::EquipItem));
+    assert!(action_capability_enabled(&core, ActionKind::UnEquipItem));
+    assert!(action_capability(&core, ActionKind::UseConsumableItem).is_some());
+    assert!(action_capability(&core, ActionKind::EquipSkillFragment).is_some());
+    assert!(action_capability(&core, ActionKind::UnequipSkillFragment).is_some());
+}
+
+#[test]
+fn fresh_profile_can_start_expedition_without_tutorial_unlock() {
+    let mut core = GameCore::new(empty_game_data(), 123);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_default_starters(&mut core, player_id);
+    assert!(matches!(core.get_state(), GameState::ViewingMap));
+    assert_eq!(core.state.run.as_ref().unwrap().run_progression.game_mode, GameMode::Expedition);
+    assert!(serde_json::to_value(&core.state.player_profile).unwrap().get("standard_tutorial_completed").is_none());
 }
 
 #[test]
@@ -164,106 +665,171 @@ fn start_new_game_uses_requested_game_mode_when_run_is_created() {
         .execute(
             player_id,
             PlayerBehavior::StartNewGame {
-                game_mode: GameMode::Endless,
+                game_mode: GameMode::Expedition,
+                replace_active_run: false,
             },
         )
         .unwrap();
-    let BehaviorResult::StartNewGame {
+    let BehaviorResult::RunStartFlowStarted {
         game_mode,
-        candidates,
-        required_count,
+        visual_novel: Some(visual_novel),
     } = start
     else {
-        panic!("start should expose starter candidates");
+        panic!("start should expose pre-run VN");
     };
-    assert_eq!(game_mode, GameMode::Endless);
+    assert_eq!(game_mode, GameMode::Expedition);
+    assert!(matches!(
+        core.get_state(),
+        GameState::PreRunBriefing {
+            game_mode: GameMode::Expedition
+        }
+    ));
 
-    let candidate_ids = candidates
-        .into_iter()
-        .take(required_count)
-        .map(|candidate| candidate.id)
+    core.execute(
+        player_id,
+        PlayerBehavior::AdvanceVisualNovel {
+            session_id: visual_novel.session_id,
+            current_scene_id: crate::game::data::visual_novel_data::VisualNovelSceneId::new(
+                visual_novel.current_scene_id,
+            ),
+        },
+    )
+    .unwrap();
+
+    let employee_definition_ids = core
+        .state
+        .starter_candidates
+        .iter()
+        .take(run_policy().setup.starter_employee_count)
+        .map(|definition| definition.employee_definition_id.clone())
         .collect::<Vec<_>>();
     core.execute(
         player_id,
-        PlayerBehavior::SelectStarterEmployees { candidate_ids },
+        PlayerBehavior::SelectStarterEmployees {
+            employee_definition_ids,
+            loan_copy_ids: vec![],
+        },
     )
     .unwrap();
 
     let run = core.state.run.as_ref().expect("run should be created");
-    assert_eq!(run.run_progression.game_mode, GameMode::Endless);
+    assert_eq!(run.run_progression.game_mode, GameMode::Expedition);
 
     let snapshot = core.get_run_snapshot_json().unwrap();
-    assert_eq!(snapshot["run_progression"]["game_mode"], "Endless");
+    assert_eq!(snapshot["run_progression"]["game_mode"], "Expedition");
 }
 
 #[test]
-fn start_new_game_initializes_abnormality_research_snapshot_from_live_catalog() {
+fn employee_definition_profile_json_preserves_authored_and_run_identities() {
+    let mut core = GameCore::new(empty_game_data(), 123);
+    let player_id = Uuid::from_u128(1);
+    let start = core
+        .execute(
+            player_id,
+            PlayerBehavior::StartNewGame {
+                game_mode: GameMode::Expedition,
+                replace_active_run: false,
+            },
+        )
+        .unwrap();
+    let BehaviorResult::RunStartFlowStarted {
+        visual_novel: Some(visual_novel),
+        ..
+    } = start
+    else {
+        panic!("start should expose pre-run VN");
+    };
+    core.execute(
+        player_id,
+        PlayerBehavior::AdvanceVisualNovel {
+            session_id: visual_novel.session_id,
+            current_scene_id: crate::game::data::visual_novel_data::VisualNovelSceneId::new(
+                visual_novel.current_scene_id,
+            ),
+        },
+    )
+    .unwrap();
+
+    let selecting = core.get_run_snapshot_json().unwrap();
+    let candidate = &selecting["game_state_context"]["candidates"][0];
+    assert_eq!(candidate["employee_definition_id"], "candidate_0");
+    assert_eq!(candidate["starter_eligible"], true);
+    assert_eq!(candidate["profile"]["personality"]["risk"], "Cautious");
+    assert_eq!(candidate["profile"]["personality"]["social"], "Obedient");
+    assert_eq!(candidate["profile"]["combat_aptitude"], "Balanced");
+    assert_eq!(candidate["profile"]["base_combat_stats"]["max_hp"], 100);
+    assert_eq!(candidate["profile"]["basic_attack_speed_percent"], 100);
+    assert!(candidate.get("id").is_none());
+    assert!(candidate.get("starter_loadout").is_none());
+
+    let employee_definition_ids = core
+        .state
+        .starter_candidates
+        .iter()
+        .take(run_policy().setup.starter_employee_count)
+        .map(|definition| definition.employee_definition_id.clone())
+        .collect::<Vec<_>>();
+    let command = serde_json::to_value(PlayerBehavior::SelectStarterEmployees {
+        employee_definition_ids: employee_definition_ids.clone(),
+        loan_copy_ids: vec![],
+    })
+    .unwrap();
+    assert_eq!(
+        command["employee_definition_ids"],
+        json!(employee_definition_ids)
+    );
+    assert!(command.get("candidate_ids").is_none());
+
+    core.execute(
+        player_id,
+        PlayerBehavior::SelectStarterEmployees {
+            employee_definition_ids,
+            loan_copy_ids: vec![],
+        },
+    )
+    .unwrap();
+    let running = core.get_run_snapshot_json().unwrap();
+    let employee = &running["roster"]["employees"][0];
+    assert!(employee["uuid"].is_string());
+    assert_eq!(employee["employee_definition_id"], "candidate_0");
+    assert_eq!(employee["profile"], candidate["profile"]);
+    assert!(employee.get("trust").is_none());
+    assert!(employee.get("psychology").is_none());
+    assert_eq!(employee["role"], candidate["role"]);
+}
+
+#[test]
+fn start_new_game_omits_removed_abnormality_research_snapshot() {
     let game_data = live_game_data_from_ron();
-    let expected_entries = game_data.abnormality_data.items.len();
     let mut core = GameCore::new(game_data, 123);
     let player_id = Uuid::from_u128(1);
 
-    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Endless);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
 
     let snapshot = core.get_run_snapshot_json().unwrap();
-    let research = &snapshot["abnormality_research"];
-    assert_eq!(research["all_response_complete"], false);
-    assert_eq!(
-        research["entries"]
-            .as_array()
-            .expect("research entries")
-            .len(),
-        expected_entries
-    );
-    assert!(research["entries"].as_array().unwrap().iter().all(|entry| {
-        entry["research_points"] == 0
-            && entry["research_required"] == 100
-            && entry["response_complete"] == false
-            && entry["suppression_wins"] == 0
-            && entry["unique_fragment_granted"] == false
-            && entry["response_complete_skill_fragment_id"].is_string()
-    }));
+    assert!(snapshot.get("abnormality_research").is_none());
 }
 
 #[test]
-fn run_checkpoint_preserves_abnormality_run_state() {
+fn run_checkpoint_preserves_encounter_progression_graph() {
     let mut core = GameCore::new(live_game_data_from_ron(), 123);
     let player_id = Uuid::from_u128(1);
-    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Endless);
-    let abnormality_id = core
-        .state
-        .run
-        .as_ref()
-        .unwrap()
-        .abnormality_research
-        .entries
-        .keys()
-        .next()
-        .cloned()
-        .expect("live research entry");
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
+    let reward_source_id = core.game_data.pve_data.reward_sources[0]
+        .reward_source_id
+        .clone();
     {
-        let entry = core
-            .state
-            .run
-            .as_mut()
-            .unwrap()
-            .abnormality_research
-            .entries
-            .get_mut(&abnormality_id)
-            .unwrap();
-        entry.research_points = 80;
-        entry.suppression_wins = 2;
-        entry.last_encountered_floor = Some(1);
+        let progression = &mut core.state.run.as_mut().unwrap().encounter_progression;
+        progression
+            .completed_reward_source_ids
+            .insert(reward_source_id.clone());
     }
-    core.state
-        .run
-        .as_mut()
-        .unwrap()
-        .abnormality_encounter_history
-        .record_appearance(&abnormality_id, 1);
-    let event_node_id = MapNodeId::new(Uuid::from_u128(0xC0FFEE));
+    let event_node_id = force_first_available_node(&mut core, MapNodeCategory::Event, "event_story",
+        MapNodePayload::Event {event_id:Some(crate::game::data::event_data::EventId::new("white_night_confession_01"))});
     {
         let run = core.state.run.as_mut().unwrap();
+        run.boss_omen.cycle_index = 1;
+        run.boss_omen.remaining_chain_ids = core.game_data.boss_omen_data.chains.iter().map(|chain|chain.id.clone()).collect();
         run.boss_omen.active = Some(crate::game::boss_omen::ActiveBossOmenState {
             chain_id: crate::game::data::boss_omen_data::BossOmenChainId::new("white_night"),
             boss_abnormality_id: "o-01-45_white_night".to_string(),
@@ -278,9 +844,20 @@ fn run_checkpoint_preserves_abnormality_run_state() {
                 node_id: event_node_id,
                 event_id: crate::game::data::event_data::EventId::new("white_night_confession_01"),
                 current_scene_id: crate::game::data::event_data::EventSceneId::new("choice"),
-                committed_choice_id: Some(crate::game::data::event_data::EventChoiceId::new(
-                    "listen",
-                )),
+                relic_corruption_selections: None,
+                committed_check: Some(crate::game::resources::EventCommittedCheckState {
+                    source_scene_id: crate::game::data::event_data::EventSceneId::new("choice"),
+                    choice_id: crate::game::data::event_data::EventChoiceId::new("listen"),
+                    employee_uuid: core.state.roster.iter().next().unwrap().uuid,
+                    raw_roll: 14,
+                    aptitude: crate::game::employee::EventAptitude::Analysis,
+                    dc: 12,
+                    modifier_components: vec![],
+                    modifier_total: 0,
+                    total_roll: 14,
+                    choice_key_evidence: None,
+                    outcome: crate::game::data::event_data::EventCheckOutcome::Success,
+                }),
                 started_combat: Some(crate::game::resources::EventStartedCombatState {
                     encounter_id: "suppress_white_night".to_string(),
                     primary_abnormality_id: Some("o-01-45_white_night".to_string()),
@@ -288,56 +865,49 @@ fn run_checkpoint_preserves_abnormality_run_state() {
             },
         );
     }
-    core.save_run_checkpoint().unwrap();
+    core.state.visual_novel.active = Some(crate::game::visual_novel::VisualNovelSession {
+        session_id: "checkpoint_vn_session".to_string(),
+        source: crate::game::visual_novel::VisualNovelSource::EventNode {
+            node_id: event_node_id,
+        },
+        vn_id: crate::game::data::visual_novel_data::VisualNovelId::new(
+            "white_night_confession_intro",
+        ),
+        current_scene_id: crate::game::data::visual_novel_data::VisualNovelSceneId::new("start"),
+        committed_choice_id: None,
+        blocking: true,
+        presentation_mode: crate::game::visual_novel::VisualNovelSessionPresentationMode::Cinematic,
+    });
+    core.save_run_checkpoint_for_test().unwrap();
+    core.validate_run_checkpoint_payload(core.state.run_checkpoint.payload.as_ref().unwrap()).unwrap();
     {
-        let entry = core
-            .state
-            .run
-            .as_mut()
-            .unwrap()
-            .abnormality_research
-            .entries
-            .get_mut(&abnormality_id)
-            .unwrap();
-        entry.research_points = 0;
-        entry.suppression_wins = 0;
-        entry.last_encountered_floor = None;
+        let progression = &mut core.state.run.as_mut().unwrap().encounter_progression;
+        progression.completed_reward_source_ids.clear();
     }
-    core.state
-        .run
-        .as_mut()
-        .unwrap()
-        .abnormality_encounter_history
-        .last_appeared_floor_by_abnormality
-        .clear();
     core.state.run.as_mut().unwrap().boss_omen.active = None;
     core.state.run.as_mut().unwrap().event_sessions.clear();
+    core.state.visual_novel.active = Some(crate::game::visual_novel::VisualNovelSession {
+        session_id: "mutated_vn_session".to_string(),
+        source: crate::game::visual_novel::VisualNovelSource::Map,
+        vn_id: crate::game::data::visual_novel_data::VisualNovelId::new(
+            "white_night_confession_intro",
+        ),
+        current_scene_id: crate::game::data::visual_novel_data::VisualNovelSceneId::new(
+            "white_night_speaks",
+        ),
+        committed_choice_id: None,
+        blocking: false,
+        presentation_mode: crate::game::visual_novel::VisualNovelSessionPresentationMode::Compact,
+    });
 
     core.execute(player_id, PlayerBehavior::LoadRunCheckpoint)
         .unwrap();
 
-    let restored = core
-        .state
-        .run
-        .as_ref()
-        .unwrap()
-        .abnormality_research
-        .entries
-        .get(&abnormality_id)
-        .unwrap();
-    assert_eq!(restored.research_points, 80);
-    assert_eq!(restored.suppression_wins, 2);
-    assert_eq!(restored.last_encountered_floor, Some(1));
-    assert_eq!(
-        core.state
-            .run
-            .as_ref()
-            .unwrap()
-            .abnormality_encounter_history
-            .last_appeared_floor(&abnormality_id),
-        Some(1)
-    );
     let restored_run = core.state.run.as_ref().unwrap();
+    assert!(restored_run
+        .completed_reward_source_ids
+        .contains(&reward_source_id));
+    assert!(restored_run.revival.eggs.is_empty());
     let restored_omen = restored_run
         .boss_omen
         .active
@@ -351,53 +921,159 @@ fn run_checkpoint_preserves_abnormality_run_state() {
         .expect("checkpoint should restore event session");
     assert_eq!(
         restored_session
-            .committed_choice_id
+            .committed_check
             .as_ref()
-            .map(|id| id.as_str()),
+            .map(|check| check.choice_id.as_str()),
         Some("listen")
     );
     assert!(restored_session.started_combat.is_some());
+    let active_vn = core
+        .state
+        .visual_novel
+        .active
+        .as_ref()
+        .expect("top-level VN should remain active after checkpoint load");
+    assert_eq!(active_vn.session_id, "mutated_vn_session");
+    assert_eq!(active_vn.current_scene_id.as_str(), "white_night_speaks");
+    assert!(!active_vn.blocking);
 }
 
 #[test]
-fn start_new_game_creates_starter_employee_roster_and_order() {
-    let mut core = GameCore::new(empty_game_data(), 123);
-    let player_id = Uuid::from_u128(1);
-
-    start_new_game_with_default_starters(&mut core, player_id);
-
-    let roster = core.roster().expect("employee roster exists");
-    assert_eq!(roster.len(), run_policy().setup.starter_employee_count);
-
-    let employee_ids = roster.available_employee_ids();
-    assert_eq!(
-        employee_ids.len(),
-        run_policy().setup.starter_employee_count
-    );
-    let roster_order = core.roster_order().expect("roster order exists");
-    for employee_id in employee_ids {
-        assert!(roster_order.slot_of(employee_id).is_some());
-        let employee = roster.get(&employee_id).unwrap();
-        let equipped: Vec<_> = employee.loadout.item_slot.iter().collect();
-        assert_eq!(equipped.len(), 1);
-        let equipped_ref = equipped[0];
-        let owned = core
-            .inventory()
-            .unwrap()
-            .equipments
-            .get_item(&equipped_ref.instance_uuid)
-            .expect("starter equipment should exist in inventory");
-        assert_eq!(owned.meta.id, "standard_armor");
-        assert_eq!(owned.equipped_to, Some(employee_id));
+fn run_checkpoint_rewinds_only_checkpoint_scoped_visual_novel_trigger_history() {
+    let base = live_game_data_from_ron();
+    let mut triggers = base.visual_novel_trigger_data.triggers.clone();
+    for (id, policy) in [
+        (
+            "persistent_before_checkpoint",
+            VisualNovelTriggerCheckpointPolicy::PersistAcrossCheckpointLoad,
+        ),
+        (
+            "persistent_after_checkpoint",
+            VisualNovelTriggerCheckpointPolicy::PersistAcrossCheckpointLoad,
+        ),
+        (
+            "rewind_before_checkpoint",
+            VisualNovelTriggerCheckpointPolicy::RewindWithRunCheckpoint,
+        ),
+        (
+            "rewind_after_checkpoint",
+            VisualNovelTriggerCheckpointPolicy::RewindWithRunCheckpoint,
+        ),
+    ] {
+        let mut trigger = triggers[0].clone();
+        trigger.id = VisualNovelTriggerId::new(id);
+        trigger.source = VisualNovelTriggerSource::MapNodeEntered {
+            category: MapNodeCategory::SavePoint,
+            kind_id: MapNodeKindId::new("save_point"),
+        };
+        trigger.repeat = VisualNovelTriggerRepeat::OncePerRun;
+        trigger.checkpoint_policy = policy;
+        triggers.push(trigger);
     }
+    let mut core = GameCore::new(
+        GameDataBuilder::from_validated(&crate::game::data::ValidatedGameData::from(base))
+            .with_visual_novel_triggers(VisualNovelTriggerDatabase::new(triggers))
+            .build_arc(),
+        123,
+    );
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_mode_and_default_starters(&mut core, player_id, GameMode::Expedition);
+
+    let persistent_before = VisualNovelTriggerConsumedKey {
+        trigger_id: VisualNovelTriggerId::new("persistent_before_checkpoint"),
+        scope: VisualNovelTriggerConsumedScope::Run,
+    };
+    let persistent_after = VisualNovelTriggerConsumedKey {
+        trigger_id: VisualNovelTriggerId::new("persistent_after_checkpoint"),
+        scope: VisualNovelTriggerConsumedScope::Run,
+    };
+    let rewind_before = VisualNovelTriggerConsumedKey {
+        trigger_id: VisualNovelTriggerId::new("rewind_before_checkpoint"),
+        scope: VisualNovelTriggerConsumedScope::Run,
+    };
+    let rewind_after = VisualNovelTriggerConsumedKey {
+        trigger_id: VisualNovelTriggerId::new("rewind_after_checkpoint"),
+        scope: VisualNovelTriggerConsumedScope::Run,
+    };
+
+    core.state
+        .visual_novel_triggers
+        .persistent_consumed
+        .insert(persistent_before.clone());
+    core.state
+        .visual_novel_triggers
+        .checkpoint_rewind_consumed
+        .insert(rewind_before.clone());
+    core.save_run_checkpoint_for_test().unwrap();
+
+    core.state
+        .visual_novel_triggers
+        .persistent_consumed
+        .insert(persistent_after.clone());
+    core.state
+        .visual_novel_triggers
+        .checkpoint_rewind_consumed
+        .insert(rewind_after);
+
+    core.refresh_continue_after_operation(super::super::application::ApplicationRoute::Behavior(
+        ActionKind::CompleteNode,
+    ))
+    .unwrap();
+    let current_history = core.state.visual_novel_triggers.clone();
+    for _ in 0..3 {
+        let export = core.export_active_run_checkpoint().unwrap().unwrap();
+        let mut restarted = core_with_profile_for_continue(&core, 999);
+        restarted
+            .continue_from_active_run_checkpoint(
+                player_id,
+                &export.core_payload_json,
+                export.loads_used,
+                export.run_peak_certified_power,
+            )
+            .unwrap();
+        assert_eq!(restarted.state.visual_novel_triggers, current_history);
+        assert_eq!(
+            restarted.export_active_run_checkpoint().unwrap().unwrap(),
+            export
+        );
+        core = restarted;
+    }
+
+    core.execute(player_id, PlayerBehavior::LoadRunCheckpoint)
+        .unwrap();
+
+    assert!(
+        core.state
+            .visual_novel_triggers
+            .persistent_consumed
+            .contains(&persistent_before),
+        "persistent trigger history from before the checkpoint should remain"
+    );
+    assert!(
+        core.state
+            .visual_novel_triggers
+            .persistent_consumed
+            .contains(&persistent_after),
+        "persistent trigger history added after the checkpoint should survive checkpoint load"
+    );
+    assert_eq!(
+        core.state
+            .visual_novel_triggers
+            .checkpoint_rewind_consumed
+            .iter()
+            .cloned()
+            .collect::<Vec<_>>(),
+        vec![rewind_before],
+        "checkpoint-scoped trigger history should rewind to the saved payload"
+    );
 }
 
 #[test]
-fn employee_roster_snapshot_exposes_status_loadout_and_roster_slot() {
+fn employee_roster_snapshot_exposes_gameplay_status_and_loadout_without_display_slot() {
     let mut core = GameCore::new(empty_game_data(), 123);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
-    let employee_id = core.roster().unwrap().available_employee_ids()[0];
+    let employee_id = core.roster().unwrap().combat_eligible_employee_ids()[0];
 
     let snapshot = core.get_employee_roster_snapshot_json().unwrap();
     let employees = snapshot["employees"].as_array().unwrap();
@@ -406,27 +1082,132 @@ fn employee_roster_snapshot_exposes_status_loadout_and_roster_slot() {
         .find(|employee| employee["uuid"] == json!(employee_id))
         .expect("starter employee is exposed in roster snapshot");
 
-    assert_eq!(employee["life_state"], "Alive");
-    assert_eq!(employee["availability"], "Available");
-    assert_eq!(employee["available_for_combat"], true);
-    assert_eq!(employee["trauma"], 0);
+    assert_eq!(employee["condition"]["physical_damage"], 0);
+    assert_eq!(employee["condition"]["physical_state"], "Normal");
+    assert_eq!(employee["condition"]["trauma"], 0);
+    assert_eq!(employee["condition"]["mental_state"], "Stable");
+    assert_eq!(employee["eligibility"]["combat"]["eligible"], true);
+    assert!(employee["eligibility"]["combat"]
+        .get("disabled_reason")
+        .is_none());
+    assert!(employee.get("life_state").is_none());
+    assert!(employee.get("availability").is_none());
+    assert!(employee.get("available_for_combat").is_none());
+    assert!(employee.get("health").is_none());
     assert!(employee.get("field_position").is_none());
-    assert_eq!(employee["roster_slot"], 0);
+    assert!(
+        employee.get("roster_slot").is_none(),
+        "display order is owned by Unity and must not be projected by Core"
+    );
     let equipped_items = employee["equipped_items"].as_array().unwrap();
-    assert_eq!(equipped_items.len(), 1);
-    assert_eq!(equipped_items[0]["definition_id"], "standard_armor");
+    assert_eq!(equipped_items.len(), 2);
     assert_eq!(
-        employee["combat_profile"]["deployment_affinity"],
+        equipped_items[0]["definition_id"],
+        "standard_training_sword"
+    );
+    assert_eq!(equipped_items[1]["definition_id"], "standard_armor");
+    assert!(employee["combat_profile"]
+        .get("deployment_affinity")
+        .is_none());
+    assert_eq!(
+        employee["combat_profile"]["effective_deployment_affinity"],
         "ground_only"
+    );
+    assert!(snapshot["combat_eligible_employee_ids"]
+        .as_array()
+        .unwrap()
+        .contains(&json!(employee_id)));
+}
+
+#[test]
+fn employee_roster_snapshot_projects_derived_condition_and_typed_reason_priority() {
+    let mut core = GameCore::new(empty_game_data(), 123);
+    let player_id = Uuid::from_u128(1);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let employee_id = core.roster().unwrap().combat_eligible_employee_ids()[0];
+    core.roster_mut()
+        .unwrap()
+        .get_mut(&employee_id)
+        .unwrap()
+        .condition = EmployeeCondition::new(5, 100);
+
+    let snapshot = core.get_employee_roster_snapshot_json().unwrap();
+    let employee = snapshot["employees"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|employee| employee["uuid"] == json!(employee_id))
+        .unwrap();
+
+    assert_eq!(employee["condition"]["physical_state"], "Critical");
+    assert_eq!(employee["condition"]["mental_state"], "Breakdown");
+    assert_eq!(employee["eligibility"]["combat"]["eligible"], false);
+    assert_eq!(
+        employee["eligibility"]["combat"]["disabled_reason"],
+        "CriticalPhysicalDamage"
+    );
+    assert_eq!(employee["eligibility"]["loadout"]["eligible"], true);
+    assert_eq!(
+        employee["eligibility"]["physical_treatment"]["eligible"],
+        true
+    );
+    assert!(!snapshot["combat_eligible_employee_ids"]
+        .as_array()
+        .unwrap()
+        .contains(&json!(employee_id)));
+}
+
+#[test]
+fn weaponless_employee_remains_safezone_visible_and_rearms_from_authored_profile() {
+    let mut core = GameCore::new(empty_game_data(), 0xA11C_E002);
+    let player_id = Uuid::from_u128(0xA11C_E002);
+    start_new_game_with_default_starters(&mut core, player_id);
+    let employee_uuid = core.roster().unwrap().combat_eligible_employee_ids()[0];
+    let weapon_instance_uuid = force_unequip_employee_weapon(&mut core, employee_uuid);
+
+    let snapshot = core.get_employee_roster_snapshot_json().unwrap();
+    let employee = snapshot["employees"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|employee| employee["uuid"] == json!(employee_uuid))
+        .expect("weaponless employee remains in the safe-zone roster");
+    assert_eq!(employee["eligibility"]["combat"]["eligible"], true);
+    assert_eq!(
+        employee["combat_profile"]["effective_profile_error"]["code"],
+        "weapon_required"
+    );
+    assert_eq!(
+        employee["combat_profile"]["effective_weapon_profile"],
+        Value::Null
+    );
+    assert!(!core
+        .roster()
+        .unwrap()
+        .get(&employee_uuid)
+        .unwrap()
+        .is_battle_deployable());
+
+    core.handle_equip_item(weapon_instance_uuid, employee_uuid)
+        .expect("safe-zone weapon attachment must remain available");
+    let rearmed = core.roster().unwrap().get(&employee_uuid).unwrap();
+    assert!(rearmed.is_battle_deployable());
+    let snapshot = core.get_employee_roster_snapshot_json().unwrap();
+    let employee = snapshot["employees"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|employee| employee["uuid"] == json!(employee_uuid))
+        .unwrap();
+    assert_eq!(
+        employee["combat_profile"]["effective_weapon_profile"]["weapon_archetype"],
+        "Sword"
     );
     assert_eq!(
         employee["combat_profile"]["effective_deployment_affinity"],
         "ground_only"
     );
-    assert!(snapshot["available_employee_ids"]
-        .as_array()
-        .unwrap()
-        .contains(&json!(employee_id)));
+    assert!(employee["combat_profile"]["effective_profile_error"].is_null());
 }
 
 #[test]
@@ -434,11 +1215,23 @@ fn employee_roster_snapshot_surfaces_effective_profile_errors() {
     let mut core = GameCore::new(empty_game_data(), 123);
     let player_id = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player_id);
-    let employee_id = core.roster().unwrap().available_employee_ids()[0];
+    let employee_id = core.roster().unwrap().combat_eligible_employee_ids()[0];
     let stale_item_uuid = Uuid::from_u128(0xEFFE_C710);
 
     {
         let employee = core.roster_mut().unwrap().get_mut(&employee_id).unwrap();
+        let starter_weapon_uuid = employee
+            .loadout
+            .item_slot
+            .iter()
+            .find(|equipped| equipped.equipment_type == EquipmentType::Weapon)
+            .map(|equipped| equipped.instance_uuid)
+            .expect("starter employee is armed");
+        employee
+            .loadout
+            .item_slot
+            .remove_by_instance(starter_weapon_uuid)
+            .unwrap();
         employee
             .loadout
             .item_slot
@@ -485,18 +1278,19 @@ fn run_snapshot_exposes_current_flow_after_start() {
 
     assert_eq!(snapshot["game_state"], "viewing_map");
     assert_eq!(snapshot["game_state_context"]["type"], "viewing_map");
-    assert_eq!(snapshot["run_progression"]["game_mode"], "Standard");
+    assert_eq!(snapshot["run_progression"]["game_mode"], "Expedition");
     assert_eq!(snapshot["run_progression"]["floor_index"], 0);
-    assert_eq!(
-        snapshot["run_progression"]["max_floors"],
-        run_policy().setup.standard_floor_count
-    );
+    assert!(snapshot["run_progression"]["max_floors"].is_null());
     assert!(snapshot["run_progression"]["current_floor_seed"].is_u64());
-    assert_eq!(snapshot["map"]["map_template_id"], "act_01_floor_a");
-    assert!(snapshot["allowed_actions"]
-        .as_array()
-        .unwrap()
-        .contains(&json!("SelectMapNode")));
+    assert_eq!(snapshot["map"]["map_template_id"], "expedition_development_v1");
+    assert!(
+        snapshot["action_capabilities"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|capability| capability["action"] == "SelectMapNode"
+                && capability["enabled"] == true)
+    );
     let map_nodes = snapshot["map"]["nodes"].as_array().unwrap();
     assert!(!map_nodes.is_empty());
     assert!(map_nodes.iter().all(|node| {
@@ -538,13 +1332,9 @@ fn run_snapshot_exposes_current_node_session_after_node_entry() {
     start_new_game_with_default_starters(&mut core, player_id);
     let node_id = force_first_available_node(
         &mut core,
-        MapNodeCategory::Support,
-        "support_choice",
-        MapNodePayload::Support {
-            support_type: SupportNodeType::SavePoint,
-            support_mode: SupportNodeMode::LimitedChoice,
-            choices: vec![SupportNodeType::SavePoint, SupportNodeType::Rest],
-        },
+        MapNodeCategory::SavePoint,
+        "save_point",
+        MapNodePayload::SavePoint,
     );
 
     core.execute(player_id, PlayerBehavior::SelectMapNode { node_id })
@@ -553,7 +1343,7 @@ fn run_snapshot_exposes_current_node_session_after_node_entry() {
 
     assert_eq!(snapshot["game_state"], "node_confirm");
     assert_eq!(snapshot["game_state_context"]["node_id"], json!(node_id));
-    assert_eq!(snapshot["map"]["map_template_id"], "act_01_floor_a");
+    assert_eq!(snapshot["map"]["map_template_id"], "expedition_development_v1");
     assert_eq!(
         snapshot["map_navigation"]["current_node_id"],
         core.state
@@ -566,16 +1356,24 @@ fn run_snapshot_exposes_current_node_session_after_node_entry() {
             .unwrap()
     );
     assert_eq!(snapshot["current_node_session"]["node_id"], json!(node_id));
+    assert_eq!(snapshot["current_node_session"]["payload"], "SavePoint");
     assert_eq!(
-        snapshot["current_node_session"]["payload"]["Support"]["support_mode"],
-        "LimitedChoice"
+        snapshot["game_state_context"]["trauma_recovery_preview"]["recovery"]["CurrentPercent"]
+            ["percent"],
+        15
     );
-    assert!(snapshot["allowed_actions"]
+    assert!(snapshot["action_capabilities"]
         .as_array()
         .unwrap()
-        .contains(&json!("ConfirmEnterNode")));
-    assert!(snapshot["allowed_actions"]
-        .as_array()
-        .unwrap()
-        .contains(&json!("SelectMapNode")));
+        .iter()
+        .any(|capability| capability["action"] == "ConfirmEnterNode"
+            && capability["enabled"] == true));
+    assert!(
+        snapshot["action_capabilities"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|capability| capability["action"] == "SelectMapNode"
+                && capability["enabled"] == true)
+    );
 }

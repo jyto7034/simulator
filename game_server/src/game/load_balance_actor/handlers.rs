@@ -1,5 +1,6 @@
 use actix::{Actor, Addr, AsyncContext, Handler};
 use tracing::{info, warn};
+use std::sync::Arc;
 
 use super::messages::*;
 use super::LoadBalanceActor;
@@ -41,12 +42,35 @@ impl Handler<GetOrCreatePlayerActor> for LoadBalanceActor {
         }
 
         info!("Creating PlayerGameActor for player {}", msg.player_id);
-        let actor = PlayerGameActor::new(
-            msg.player_id,
-            game_core::game::world::GameCore::new(msg.game_data, msg.run_seed),
-            ctx.address(),
-        )
-        .start();
+        let player_profile = self
+            .player_profile_persistence
+            .as_ref()
+            .and_then(|persistence| persistence.lock().ok()?.profile().ok())
+            .unwrap_or_default();
+        let (mut game_core, required) = match &self.approved_host {
+            Some(host) => { let (application, required) = host.new_application(msg.run_seed).expect("installed host selection must be available"); (application, Some(required)) },
+            None => (game_core::application::CoreApplication::new(msg.game_data, msg.run_seed), None),
+        };
+        #[cfg(feature = "runtime-observation")]
+        if let Some(observation) = &self.observation {
+            observation.attach(&mut game_core);
+        }
+        game_core
+            .install_authoritative_player_profile(game_core::application::ApplicationDocument::new(
+                serde_json::to_value(player_profile).expect("validated profile serialization"),
+            ))
+            .expect("stored player profile was validated before server publication");
+        let mut actor = PlayerGameActor::new(msg.player_id, game_core, ctx.address());
+        if let (Some(host), Some(required), Some(persistence)) = (&self.approved_host, required, &self.approved_persistence) {
+            actor = actor.with_approved_host(Arc::clone(host), required, Arc::clone(persistence));
+        }
+        if let Some(store) = self.active_run_store.clone() {
+            actor = actor.with_active_run_store(store);
+        }
+        if let Some(persistence) = self.player_profile_persistence.clone() {
+            actor = actor.with_player_profile_persistence(persistence);
+        }
+        let actor = actor.start();
         self.players.insert(msg.player_id, actor.clone());
         actor
     }
@@ -76,15 +100,17 @@ impl Handler<GetPlayerCount> for LoadBalanceActor {
     }
 }
 
-#[cfg(test)]
+// Legacy raw-data fixtures require Core fixture APIs in release tests.
+#[cfg(all(test, any(debug_assertions, feature = "test-fixtures")))]
 mod tests {
     use super::*;
-    use game_core::game::data::{GameDataBase, GameDataBuilder};
-    use std::sync::Arc;
+    use crate::game::player_game_actor::messages::GetEncounterCompendiumProfile;
+    use game_core::game::data::GameDataBuilder;
+    use game_core::game::encounter_compendium::EncounterCompendiumProfileState;
     use uuid::Uuid;
 
-    fn empty_game_data() -> Arc<GameDataBase> {
-        GameDataBuilder::empty().build_arc()
+    fn empty_game_data() -> game_core::game::data::ValidatedGameData {
+        GameDataBuilder::empty().build_arc().into()
     }
 
     #[actix_web::test]
@@ -119,5 +145,55 @@ mod tests {
                 .expect("player count query should succeed"),
             1
         );
+    }
+
+    #[actix_web::test]
+    async fn different_transport_players_share_local_install_player_profile() {
+        let directory = tempfile::tempdir().unwrap();
+        let active_store = crate::persistence::active_run_store::ActiveRunStore::open(
+            directory.path().join("active"),
+        )
+        .unwrap();
+        let profile_store = crate::persistence::player_profile_store::PlayerProfileStore::open(
+            directory.path().join("profile"),
+        )
+        .unwrap();
+        let mut persistence =
+            crate::persistence::player_profile_store::PlayerProfilePersistence::bootstrap(
+                profile_store,
+            );
+        let second_player_id = Uuid::new_v4();
+        let game_data = game_core::game::data::ValidatedGameData::load_live_embedded()
+            .expect("embedded live gameplay data should load");
+        let abnormality_id = game_data
+            .abnormality_data
+            .items
+            .first()
+            .expect("live abnormality catalog")
+            .id
+            .clone();
+        let profile = EncounterCompendiumProfileState {
+            registered_ids: std::collections::BTreeSet::from([abnormality_id]),
+        };
+        assert!(matches!(
+            persistence.merge_and_persist(profile.clone()).unwrap(),
+            crate::persistence::player_profile_store::PlayerProfilePersistOutcome::Saved
+        ));
+        let load_balance = LoadBalanceActor::with_persistence(active_store, persistence).start();
+
+        let actor = load_balance
+            .send(GetOrCreatePlayerActor {
+                player_id: second_player_id,
+                game_data,
+                run_seed: 99,
+            })
+            .await
+            .expect("actor recreation should succeed");
+        let restored = actor
+            .send(GetEncounterCompendiumProfile)
+            .await
+            .expect("profile query should succeed");
+
+        assert_eq!(restored.unwrap(), profile);
     }
 }

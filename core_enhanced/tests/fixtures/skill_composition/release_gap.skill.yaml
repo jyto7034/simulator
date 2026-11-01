@@ -1,0 +1,16 @@
+# Technical verification values; release balance remains unresolved.
+version: 1
+id: release-gap-fixture
+values:
+  - name: release-clock
+    value:
+      AttackProgram:
+        reactions: []
+        release_gap:
+          per_second_percent: 20
+          max_percent: 100
+equipment_attacks:
+  - equipment: r11_weapon
+    program: { Shared: release-clock }
+definitions: []
+skills: []

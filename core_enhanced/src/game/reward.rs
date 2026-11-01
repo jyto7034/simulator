@@ -10,13 +10,14 @@ use crate::game::{
         skill_fragment_data::SkillFragmentId,
         GameDataBase, Item,
     },
-    employee::{EmployeeLifeState, EmployeeRoster},
+    employee::EmployeeRoster,
     managers::uuid_manager::UuidManager,
     resources::{Enkephalin, Inventory, InventoryDiffDto, InventoryItemDto},
     skill_fragment::{SkillFragmentInventory, SkillFragmentPolicy},
 };
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
 pub enum RewardEffect {
     GrantEnkephalin {
         amount: u32,
@@ -35,20 +36,23 @@ pub enum RewardEffect {
         material_id: String,
         amount: u32,
     },
-    GrantArtifact {
-        artifact_id: String,
-    },
     GrantConsumable {
         consumable_id: String,
+        quantity: u32,
     },
     GrantSkillFragment {
         fragment_id: SkillFragmentId,
     },
-    GrantSkillFragmentResearch {
-        fragment_id: SkillFragmentId,
+    GrantFragmentDust {
         amount: u32,
     },
-    GrantFragmentDust {
+    GrantRelic {
+        relic_id: String,
+    },
+    GrantRelicCorruptionCatalyst {
+        amount: u32,
+    },
+    GrantEquipmentDust {
         amount: u32,
     },
 }
@@ -75,8 +79,11 @@ pub struct RewardOption {
 pub struct GrantExecutionResult {
     pub inventory_diff: InventoryDiffDto,
     pub skill_fragment_diffs: Vec<SkillFragmentGrantDiffDto>,
-    pub skill_fragment_research_diffs: Vec<SkillFragmentResearchDiffDto>,
     pub employee_experience_diffs: Vec<EmployeeExperienceDiffDto>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub relic_diffs: Vec<crate::game::relic::OwnedRelic>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub crafting_resources: Option<crate::game::relic::RunCraftingResources>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -91,19 +98,10 @@ pub struct EmployeeExperienceDiffDto {
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct SkillFragmentGrantDiffDto {
+    pub copy_uuid: Uuid,
     pub fragment_id: SkillFragmentId,
     pub count_before: u32,
     pub count_after: u32,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
-pub struct SkillFragmentResearchDiffDto {
-    pub fragment_id: SkillFragmentId,
-    pub research_progress_before: u32,
-    pub research_progress_after: u32,
-    pub research_completion_count_before: u32,
-    pub research_completion_count_after: u32,
-    pub newly_pending_deliveries: u32,
 }
 
 impl RewardOption {
@@ -131,11 +129,17 @@ impl From<&RewardMetadata> for RewardOption {
 
 pub struct GrantExecutor;
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct GrantExecutionContext {
     pub combat_participant_employee_ids: Option<Vec<Uuid>>,
     pub selected_employee_id: Option<Uuid>,
 }
+
+crate::authoring::clone_shape::struct_shape!(GrantExecutionContext {
+    combat_participant_employee_ids,
+    selected_employee_id
+});
 
 impl GrantExecutor {
     pub fn grant_reward_with_state(
@@ -176,6 +180,121 @@ impl GrantExecutor {
         effects: &[RewardEffect],
         seed: u64,
     ) -> Result<GrantExecutionResult, GameError> {
+        Self::grant_effects_internal(
+            inventory,
+            skill_fragments,
+            roster,
+            uuid_manager,
+            enkephalin,
+            game_data,
+            skill_fragment_policy,
+            context,
+            effects,
+            seed,
+            None,
+        )
+    }
+
+    /// Ordered effects on caller-owned transaction roots, including run relics.
+    /// The Core's EconomyGrantState supplies the atomic capture/commit boundary.
+    pub fn grant_effects_with_run_state(
+        relics: &mut crate::game::relic::RelicInventory,
+        resources: &mut crate::game::relic::RunCraftingResources,
+        inventory: &mut Inventory,
+        skill_fragments: &mut SkillFragmentInventory,
+        roster: &mut EmployeeRoster,
+        uuid_manager: &mut UuidManager,
+        enkephalin: &mut Enkephalin,
+        game_data: &GameDataBase,
+        skill_fragment_policy: &SkillFragmentPolicy,
+        context: &GrantExecutionContext,
+        effects: &[RewardEffect],
+        seed: u64,
+    ) -> Result<GrantExecutionResult, GameError> {
+        let uses_relics = !relics.is_empty()
+            || !resources.is_empty()
+            || effects.iter().any(RewardEffect::uses_relic_owner);
+        let initial_extent = if uses_relics {
+            relics.retained_extent()?
+        } else {
+            0
+        };
+        let mut operation = || {
+            Self::grant_effects_internal(
+                inventory,
+                skill_fragments,
+                roster,
+                uuid_manager,
+                enkephalin,
+                game_data,
+                skill_fragment_policy,
+                context,
+                effects,
+                seed,
+                Some((relics, resources)),
+            )
+        };
+        if uses_relics {
+            let settings = game_data.runtime_safety();
+            crate::game::battle::runtime_control::run_with_profile(
+                settings.native_runtime(),
+                settings,
+                || {
+                    crate::game::battle::runtime_control::seed_retained_extent(initial_extent)?;
+                    operation()
+                },
+            )
+        } else {
+            operation()
+        }
+    }
+
+    pub fn grant_reward_with_run_state(
+        relics: &mut crate::game::relic::RelicInventory,
+        resources: &mut crate::game::relic::RunCraftingResources,
+        inventory: &mut Inventory,
+        skill_fragments: &mut SkillFragmentInventory,
+        roster: &mut EmployeeRoster,
+        uuid_manager: &mut UuidManager,
+        enkephalin: &mut Enkephalin,
+        game_data: &GameDataBase,
+        skill_fragment_policy: &SkillFragmentPolicy,
+        context: &GrantExecutionContext,
+        reward: &RewardOption,
+        seed: u64,
+    ) -> Result<GrantExecutionResult, GameError> {
+        Self::grant_effects_with_run_state(
+            relics,
+            resources,
+            inventory,
+            skill_fragments,
+            roster,
+            uuid_manager,
+            enkephalin,
+            game_data,
+            skill_fragment_policy,
+            context,
+            &reward.effects,
+            seed,
+        )
+    }
+
+    fn grant_effects_internal(
+        inventory: &mut Inventory,
+        skill_fragments: &mut SkillFragmentInventory,
+        roster: &mut EmployeeRoster,
+        uuid_manager: &mut UuidManager,
+        enkephalin: &mut Enkephalin,
+        game_data: &GameDataBase,
+        skill_fragment_policy: &SkillFragmentPolicy,
+        context: &GrantExecutionContext,
+        effects: &[RewardEffect],
+        seed: u64,
+        mut run_state: Option<(
+            &mut crate::game::relic::RelicInventory,
+            &mut crate::game::relic::RunCraftingResources,
+        )>,
+    ) -> Result<GrantExecutionResult, GameError> {
         let mut result = GrantExecutionResult::default();
 
         for (effect_index, effect) in effects.iter().enumerate() {
@@ -191,6 +310,9 @@ impl GrantExecutor {
                 context,
                 effect,
                 effect_seed,
+                run_state
+                    .as_mut()
+                    .map(|(relics, resources)| (&mut **relics, &mut **resources)),
             )?;
             result
                 .inventory_diff
@@ -212,11 +334,12 @@ impl GrantExecutor {
                 .skill_fragment_diffs
                 .extend(granted.skill_fragment_diffs);
             result
-                .skill_fragment_research_diffs
-                .extend(granted.skill_fragment_research_diffs);
-            result
                 .employee_experience_diffs
                 .extend(granted.employee_experience_diffs);
+            result.relic_diffs.extend(granted.relic_diffs);
+            if granted.crafting_resources.is_some() {
+                result.crafting_resources = granted.crafting_resources;
+            }
         }
 
         Ok(result)
@@ -233,6 +356,10 @@ impl GrantExecutor {
         context: &GrantExecutionContext,
         effect: &RewardEffect,
         seed: u64,
+        run_state: Option<(
+            &mut crate::game::relic::RelicInventory,
+            &mut crate::game::relic::RunCraftingResources,
+        )>,
     ) -> Result<GrantExecutionResult, GameError> {
         let mut result = GrantExecutionResult::default();
 
@@ -271,6 +398,7 @@ impl GrantExecutor {
                     inventory,
                     uuid_manager,
                     item,
+                    1,
                     &mut result.inventory_diff,
                 )?;
             }
@@ -315,6 +443,7 @@ impl GrantExecutor {
                     inventory,
                     uuid_manager,
                     item,
+                    1,
                     &mut result.inventory_diff,
                 )?;
             }
@@ -331,7 +460,12 @@ impl GrantExecutor {
                         ))
                     })?;
 
-                let new_amount = inventory.equipment_materials.add(&metadata.id, *amount)?;
+                let new_amount = if metadata.id == "equipment_dust" {
+                    let (_, resources) = run_state.ok_or(GameError::InvalidAction)?;
+                    resources.grant_equipment_dust(*amount)?;
+                    result.crafting_resources = Some(*resources);
+                    resources.equipment_dust
+                } else { inventory.equipment_materials.add(&metadata.id, *amount)? };
                 result.inventory_diff.material_stacks.push(
                     crate::game::resources::EquipmentMaterialStackDto::from_metadata(
                         metadata, new_amount,
@@ -342,26 +476,10 @@ impl GrantExecutor {
                     metadata.id, amount, new_amount
                 );
             }
-            RewardEffect::GrantArtifact { artifact_id } => {
-                let item = Item::Artifact(std::sync::Arc::new(
-                    game_data
-                        .artifact_data
-                        .get_by_id(artifact_id)
-                        .ok_or_else(|| {
-                            GameError::InvalidStaticData(format!(
-                                "reward references missing artifact id '{artifact_id}'"
-                            ))
-                        })?
-                        .clone(),
-                ));
-                Self::grant_inventory_item(
-                    inventory,
-                    uuid_manager,
-                    item,
-                    &mut result.inventory_diff,
-                )?;
-            }
-            RewardEffect::GrantConsumable { consumable_id } => {
+            RewardEffect::GrantConsumable {
+                consumable_id,
+                quantity,
+            } => {
                 let item = Item::Consumable(std::sync::Arc::new(
                     game_data
                         .consumable_data
@@ -377,6 +495,7 @@ impl GrantExecutor {
                     inventory,
                     uuid_manager,
                     item,
+                    *quantity,
                     &mut result.inventory_diff,
                 )?;
             }
@@ -391,50 +510,16 @@ impl GrantExecutor {
                     })?;
 
                 let count_before = skill_fragments.count(&metadata.id);
-                skill_fragments.add_with_policy(metadata, skill_fragment_policy)?;
+                let copy_uuid =
+                    skill_fragments.grant(metadata, uuid_manager, skill_fragment_policy)?;
                 let count_after = skill_fragments.count(&metadata.id);
                 result.skill_fragment_diffs.push(SkillFragmentGrantDiffDto {
+                    copy_uuid,
                     fragment_id: metadata.id.clone(),
                     count_before,
                     count_after,
                 });
                 info!("Granted skill fragment reward: fragment_id={}", metadata.id);
-            }
-            RewardEffect::GrantSkillFragmentResearch {
-                fragment_id,
-                amount,
-            } => {
-                let metadata = game_data
-                    .skill_fragment_data
-                    .get_by_id(fragment_id)
-                    .ok_or_else(|| {
-                        GameError::InvalidStaticData(format!(
-                            "reward references missing skill fragment id '{fragment_id}'"
-                        ))
-                    })?;
-
-                let progress_before = skill_fragments.progress(&metadata.id);
-                let progress_after = skill_fragments.add_research_progress_with_policy(
-                    &metadata.id,
-                    *amount,
-                    skill_fragment_policy,
-                )?;
-                result
-                    .skill_fragment_research_diffs
-                    .push(SkillFragmentResearchDiffDto {
-                        fragment_id: metadata.id.clone(),
-                        research_progress_before: progress_before.research_progress,
-                        research_progress_after: progress_after.progress.research_progress,
-                        research_completion_count_before: progress_before.research_completion_count,
-                        research_completion_count_after: progress_after
-                            .progress
-                            .research_completion_count,
-                        newly_pending_deliveries: progress_after.newly_pending_deliveries,
-                    });
-                info!(
-                    "Granted skill fragment research progress: fragment_id={}, amount={}",
-                    metadata.id, amount
-                );
             }
             RewardEffect::GrantFragmentDust { amount } => {
                 let total = skill_fragments.add_fragment_dust(*amount)?;
@@ -442,6 +527,32 @@ impl GrantExecutor {
                     "Granted skill fragment dust: amount={}, new_total={}",
                     amount, total
                 );
+            }
+            RewardEffect::GrantRelic { relic_id } => {
+                let (relics, _) = run_state.ok_or(GameError::InvalidAction)?;
+                crate::authoring::control::charge(
+                    game_data.relic_data.relics.len() as u64,
+                    "relic_grant_definition",
+                )?;
+                let definition = game_data.relic_data.get_by_id(relic_id).ok_or_else(|| {
+                    GameError::InvalidStaticData(format!(
+                        "reward references missing relic '{relic_id}'"
+                    ))
+                })?;
+                let copy = relics.grant(definition, uuid_manager)?;
+                result
+                    .relic_diffs
+                    .push(relics.get(copy).ok_or(GameError::InvalidAction)?.clone());
+            }
+            RewardEffect::GrantRelicCorruptionCatalyst { amount } => {
+                let (_, resources) = run_state.ok_or(GameError::InvalidAction)?;
+                resources.grant_relic_catalysts(*amount)?;
+                result.crafting_resources = Some(*resources);
+            }
+            RewardEffect::GrantEquipmentDust { amount } => {
+                let (_, resources) = run_state.ok_or(GameError::InvalidAction)?;
+                resources.grant_equipment_dust(*amount)?;
+                result.crafting_resources = Some(*resources);
             }
         }
 
@@ -452,20 +563,38 @@ impl GrantExecutor {
         inventory: &mut Inventory,
         uuid_manager: &mut UuidManager,
         item: Item,
+        quantity: u32,
         inventory_diff: &mut InventoryDiffDto,
     ) -> Result<(), GameError> {
-        if !inventory.can_add_item(&item) {
-            return Err(GameError::InventoryFull);
-        }
-
         let owned_uuid = match &item {
-            Item::Consumable(_) => uuid_manager.next_owned_consumable(),
-            _ => uuid_manager.next_owned_equipment(),
+            Item::Equipment(_) => uuid_manager.next_owned_equipment(),
+            Item::Consumable(meta) => meta.uuid,
         };
-        inventory.add_item_owned(owned_uuid, item.clone_arc())?;
-        inventory_diff
-            .added
-            .push(InventoryItemDto::from_item_with_uuid(&item, owned_uuid)?);
+        let outcome = match &item {
+            Item::Consumable(meta) => {
+                inventory.add_consumable(std::sync::Arc::clone(meta), quantity)?
+            }
+            _ if quantity == 1 => inventory.add_item_owned(owned_uuid, item.clone_arc())?,
+            _ => return Err(GameError::InvalidAction),
+        };
+        let dto = match &item {
+            Item::Consumable(meta) => {
+                let stack = inventory
+                    .consumables
+                    .get_by_definition_id(&meta.id)
+                    .ok_or(GameError::InventoryItemNotFound)?;
+                InventoryItemDto::Consumable(
+                    crate::game::resources::ConsumableItemDto::from_consumable_stack(stack),
+                )
+            }
+            _ => InventoryItemDto::from_item_with_uuid(&item, owned_uuid)?,
+        };
+        match outcome {
+            crate::game::resources::InventoryAddOutcome::Added => inventory_diff.added.push(dto),
+            crate::game::resources::InventoryAddOutcome::Updated => {
+                inventory_diff.updated.push(dto)
+            }
+        }
 
         Ok(())
     }
@@ -488,7 +617,7 @@ impl GrantExecutor {
                 .ok_or(GameError::InvalidAction)?,
             ExperienceTargetPolicy::AliveRoster => roster
                 .iter()
-                .filter(|employee| employee.life_state == EmployeeLifeState::Alive)
+                .filter(|employee| employee.is_alive())
                 .map(|employee| employee.uuid)
                 .collect(),
             ExperienceTargetPolicy::SelectedEmployee => {
@@ -508,28 +637,18 @@ impl GrantExecutor {
             return Ok(Vec::new());
         }
 
-        let eligible_count =
-            u32::try_from(employee_ids.len()).map_err(|_| GameError::InvalidAction)?;
-        let base_amount = amount / eligible_count;
-        let mut remainder = amount % eligible_count;
         let mut diffs = Vec::with_capacity(employee_ids.len());
 
         for employee_id in employee_ids {
-            let grant_amount = base_amount + u32::from(remainder > 0);
-            remainder = remainder.saturating_sub(1);
-            if grant_amount == 0 {
-                continue;
-            }
-
             let employee = roster
                 .get_mut(&employee_id)
                 .ok_or(GameError::UnitNotFound)?;
             let level_before = employee.level;
             let experience_before = employee.experience;
-            employee.add_experience_with_policy(grant_amount, game_data.run_policy.as_ref());
+            employee.add_experience_with_policy(amount, game_data.run_policy.as_ref());
             diffs.push(EmployeeExperienceDiffDto {
                 employee_uuid: employee_id,
-                amount: grant_amount,
+                amount,
                 level_before,
                 level_after: employee.level,
                 experience_before,
@@ -538,5 +657,55 @@ impl GrantExecutor {
         }
 
         Ok(diffs)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::RewardEffect;
+
+    #[test]
+    fn consumable_grant_requires_explicit_canonical_quantity() {
+        let missing =
+            ron::de::from_str::<RewardEffect>(r#"GrantConsumable(consumable_id: "field_tonic")"#)
+                .expect_err("missing quantity must reject");
+        assert!(missing.to_string().contains("quantity"));
+
+        let legacy = ron::de::from_str::<RewardEffect>(
+            r#"GrantConsumable(consumable_id: "field_tonic", quantity: 2, count: 2)"#,
+        )
+        .expect_err("legacy count must reject");
+        assert!(legacy.to_string().contains("count"));
+
+        let parsed = ron::de::from_str::<RewardEffect>(
+            r#"GrantConsumable(consumable_id: "field_tonic", quantity: 2)"#,
+        )
+        .expect("canonical quantity should parse");
+        assert!(matches!(
+            parsed,
+            RewardEffect::GrantConsumable {
+                consumable_id,
+                quantity: 2,
+            } if consumable_id == "field_tonic"
+        ));
+    }
+
+    #[test]
+    fn removed_artifact_reward_vocabulary_is_rejected() {
+        let error =
+            ron::de::from_str::<RewardEffect>(r#"GrantArtifact(artifact_id: "legacy_artifact")"#)
+                .expect_err("removed Artifact rewards must fail strict decoding");
+        assert!(error.to_string().contains("GrantArtifact"));
+    }
+}
+
+impl RewardEffect {
+    pub(crate) fn uses_relic_owner(&self) -> bool {
+        matches!(
+            self,
+            Self::GrantRelic { .. }
+                | Self::GrantRelicCorruptionCatalyst { .. }
+                | Self::GrantEquipmentDust { .. }
+        )
     }
 }

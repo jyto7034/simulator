@@ -1,0 +1,73 @@
+# Four-form accessory only. Provisional text, appearance keys and balance stay unresolved.
+version: 1
+id: big-bad-wolf-equipment
+resources:
+- id: wolf_mask_pending
+  owner: EquipmentCopy
+  lifetime: Attempt
+  initial: 0
+  cap: 1
+- id: wolf_mask_wins
+  owner: EquipmentCopy
+  lifetime: Run
+  initial: 0
+  cap: 4
+values:
+- name: mask_forms
+  value:
+    AttackProgram:
+      reactions: []
+      victory_forms:
+        pending: wolf_mask_pending
+        confirmed: wolf_mask_wins
+        forms:
+        - name:
+            Unresolved: form-0-name
+          description:
+            Unresolved: form-0-description
+          appearance:
+            Unresolved: form-0-appearance
+          wins_required: 1
+          effect:
+            MaxHealth:
+              amount:
+                Unresolved: form-0-effect
+        - name:
+            Unresolved: form-1-name
+          description:
+            Unresolved: form-1-description
+          appearance:
+            Unresolved: form-1-appearance
+          wins_required: 2
+          effect:
+            Attack:
+              amount:
+                Unresolved: form-1-effect
+        - name:
+            Unresolved: form-2-name
+          description:
+            Unresolved: form-2-description
+          appearance:
+            Unresolved: form-2-appearance
+          wins_required: 1
+          effect:
+            IncomingDamage:
+              percent:
+                Unresolved: form-2-effect
+        - name:
+            Unresolved: form-3-name
+          description:
+            Unresolved: form-3-description
+          appearance:
+            Unresolved: form-3-appearance
+          wins_required: 0
+          effect:
+            Attack:
+              amount:
+                Unresolved: form-3-effect
+equipment_attacks:
+- equipment: placeholder_big_bad_wolf_accessory
+  program:
+    Shared: mask_forms
+definitions: []
+skills: []

@@ -1,0 +1,74 @@
+# E01 기술 검증값: 회복7, 획득100%, 상한3, 피해20%. 출시 밸런스가 아닙니다.
+version: 2
+id: equipment-kill-cast-fixture
+values:
+  - name: direct-kill-heal
+    value:
+      StateProgram:
+        id: direct-kill-heal
+        owns_use: false
+        end_on_source_exit: true
+        replacement: ReplaceSameSource
+        fields: []
+        handlers:
+          - id: active-kill
+            event: { OwnerDirectKill: { source: ActiveSkill } }
+            body:
+              - HealOwner:
+                  amount: { moment: Live, root: { Const: { value: 7, unit: Magnitude } } }
+  - name: next-cast
+    value:
+      StateProgram:
+        id: next-cast
+        owns_use: false
+        end_on_source_exit: true
+        replacement: ReplaceSameSource
+        fields:
+          - name: hearts
+            value: { Integer: { unit: Count, initial: 0, min: 0, max: 3 } }
+        handlers:
+          - id: direct-kill
+            event: { OwnerDirectKill: { source: BasicOrActiveSkill } }
+            body:
+              - Chance:
+                  percent: { moment: Live, root: { Const: { value: 100, unit: Scalar } } }
+                  then_ops:
+                    - Set:
+                        field: hearts
+                        value:
+                          moment: Live
+                          root:
+                            Clamp:
+                              value:
+                                Add:
+                                  - Read: { StateField: { name: hearts, unit: Count } }
+                                  - Const: { value: 1, unit: Count }
+                              min: { Const: { value: 0, unit: Count } }
+                              max: { Const: { value: 3, unit: Count } }
+                  else_ops: []
+          - id: actual-cast
+            event: OwnerSkillCast
+            body:
+              - If:
+                  condition:
+                    Compare:
+                      left: { moment: Live, root: { Read: { StateField: { name: hearts, unit: Count } } } }
+                      comparison: Greater
+                      right: { moment: Live, root: { Const: { value: 0, unit: Count } } }
+                  then_ops:
+                    - Set:
+                        field: hearts
+                        value:
+                          moment: Live
+                          root:
+                            Add:
+                              - Read: { StateField: { name: hearts, unit: Count } }
+                              - Const: { value: -1, unit: Count }
+                    - AddCastDamage:
+                        percent: { moment: Live, root: { Const: { value: 20, unit: Scalar } } }
+                  else_ops: []
+equipment_states:
+  - equipment: r11_weapon
+    program: { Shared: next-cast }
+definitions: []
+skills: []

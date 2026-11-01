@@ -1,0 +1,20 @@
+# E09 duration is an explicit verification value, not release balance.
+version: 1
+id: palm-slow-fixture
+values:
+  - name: palm-slow
+    value:
+      AttackProgram:
+        reactions: []
+        on_hit_status:
+          refresh_movement_slow: true
+          duration_ms: 3000
+          profile:
+            definition: palm-movement-slow
+            kind:
+              Slow: { percent: 20 }
+equipment_attacks:
+  - equipment: placeholder_clouded_monk_weapon
+    program: { Shared: palm-slow }
+definitions: []
+skills: []

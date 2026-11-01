@@ -1,0 +1,34 @@
+SkillDatabase(
+    skills: [
+        SkillDef(
+            id: "authoring_alpha", name: "Authoring Alpha", kind: Targeted,
+            focus_time_ms: 0,
+            use_lifetime: Action,
+            cast_targeting: Explicit(selection: automatic_unit, target: EnemySingle(rule: Nearest), reach: global, air_capable: false),
+            steps: [
+                SkillStepDef(id: "strike", delay_ms: 0, target: EnemySingle(rule: Nearest), delivery: Instant,
+                    effects: [
+                        (id: "damage", tags: ["impact", "red"], op: Damage(amount: 17, damage_type: True)),
+                        (id: "other_damage", tags: ["impact", "blue"], op: Damage(amount: 3, damage_type: True)),
+                    ]),
+                SkillStepDef(id: "recover", delay_ms: 1, target: SelfUnit, delivery: Instant,
+                    effects: [(id: "heal", tags: ["recovery"], op: Heal(amount: 9))]),
+            ],
+        ),
+        SkillDef(
+            id: "authoring_beta", name: "Authoring Beta", kind: Targeted,
+            focus_time_ms: 0,
+            use_lifetime: Action,
+            cast_targeting: Explicit(selection: automatic_unit, target: EnemySingle(rule: Nearest), reach: global, air_capable: false),
+            steps: [
+                SkillStepDef(id: "strike", delay_ms: 0, target: EnemySingle(rule: Nearest), delivery: Instant,
+                    effects: [
+                        (id: "damage", tags: ["impact", "red"], op: Damage(amount: 17, damage_type: True)),
+                        (id: "other_damage", tags: ["impact", "blue"], op: Damage(amount: 3, damage_type: True)),
+                    ]),
+                SkillStepDef(id: "recover", delay_ms: 1, target: SelfUnit, delivery: Instant,
+                    effects: [(id: "heal", tags: ["recovery"], origin: Added(source_definition_id: "authoring_alpha"), op: Heal(amount: 9))]),
+            ],
+        ),
+    ],
+)

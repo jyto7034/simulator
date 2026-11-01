@@ -1,5 +1,6 @@
 pub mod balance;
 pub mod battlefield_plan;
+pub mod boss_runtime;
 pub mod defense_object;
 pub mod enemy_spawns;
 pub mod mission_policy;

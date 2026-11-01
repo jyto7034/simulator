@@ -1,0 +1,338 @@
+import type { Definition } from "../types";
+import {
+  define,
+  input,
+  output,
+  optionalInput,
+  multipleInput,
+  number,
+  choice,
+} from "./skill-definition";
+export const equipmentModifierPortTypes = [
+  ["equipment-match", "같은 소유자의 장착 조건"],
+] as const;
+const condition = () => input("condition", "활성 장착 조건", "equipment-match");
+const percent = () => number("percent", "증가율 (%)");
+const binding = (
+  kind: string,
+  label: string,
+  type: string,
+  description: string,
+  fields = [percent()],
+) =>
+  define(
+    kind,
+    label,
+    "스킬 상태",
+    description,
+    [condition(), input("target", "변경할 정의", type)],
+    [],
+    fields,
+  );
+export const equipmentModifierCatalog: Definition[] = [
+  binding(
+    "modifier-piercing",
+    "장착 조건의 관통 순번 피해 증가",
+    "attack-profile",
+    "연결한 직선 기본 공격의 접촉 순서에서 첫 대상은 증가 없이 시작하고, 앞서 접촉한 서로 다른 적 수에 따라 원래 피해를 높입니다. 실제 HP 피해가 0이어도 접촉을 셉니다. 공격마다 초기화하고 마무리·파생 피해에는 전달하지 않습니다. 실제 비침식 유물 사본을 장착한 소유자에게 한 번 적용합니다.",
+    [
+      choice("curve", "관통 증가 곡선", [
+        ["unresolved", "미정"],
+        ["capped-linear", "선형 증가 후 상한"],
+      ]),
+      { ...number("step", "앞선 관통당 증가 (%p)"), integer: true },
+      { ...number("cap", "최대 증가 (%)"), integer: true },
+    ],
+  ),
+  define(
+    "equipment-condition",
+    "같은 소유자의 장착 조건",
+    "스킬 값",
+    "같은 직원이 지정한 정의의 실제 사본을 해당 부위에 장착하고 있을 때만 일치합니다. 선행 조건도 모두 활성이어야 합니다. 보관함·다른 직원의 장착은 제외합니다. 출처 사본 ID를 보존하며 조건 순환은 금지합니다. 연결된 변경은 장착 구성에서 다시 계산하고 원본 작성값을 덮어쓰지 않습니다. 표시 이름으로 장비를 추정하지 않습니다.",
+    [multipleInput("requires", "필요한 활성 선행 조건", "equipment-match")],
+    [output("condition", "활성 장착 조건", "equipment-match")],
+    [
+      choice(
+        "slot",
+        "장착 부위",
+        [
+          ["relic", "유물"],
+          ["weapon", "무기"],
+          ["armor", "방어구"],
+          ["accessory", "액세서리"],
+        ],
+        "relic",
+      ),
+      {
+        id: "definition",
+        label: "장착 정의 ID",
+        valueType: "text",
+        default: "",
+      },
+      choice(
+        "variant",
+        "장착 변형",
+        [
+          ["normal", "비침식"],
+          ["corrupt", "침식"],
+        ],
+        "normal",
+      ),
+      choice(
+        "copies",
+        "동일 정의 사본 적용",
+        [
+          ["once", "한 번 적용"],
+          ["each", "사본별 기여"],
+        ],
+        "once",
+      ),
+    ],
+  ),
+  binding(
+    "modifier-duration",
+    "장착 조건의 시간 변경",
+    "seconds",
+    "연결한 시간 값의 실제 사용만 증가율로 변경합니다. 같은 값의 여러 참조는 같은 결과를 공유하며 같은 기여를 반복 적용하지 않습니다. 동일 종류 비율은 합산하고 최종 시간을 밀리초로 올림합니다. 효과 유지 시간과 준비·주기·지연은 작성자가 별도 값으로 연결합니다. 다른 시간에 전파하지 않습니다.",
+    [number("percent", "시간 변화율 (%)", -99.999)],
+  ),
+  binding(
+    "modifier-number",
+    "장착 조건의 수량 배율",
+    "number",
+    "연결한 수량 생산자의 결과에 배율을 한 번 곱합니다. 기존 저장량을 다시 증폭하지 않습니다. 획득 보상·새 부여량에 연결하며 사망 타일 이전·소비·이월에는 자동 적용하지 않습니다. 여러 배율 기여는 곱하고 정수 수량의 최종 소수 부분은 버립니다.",
+    [number("factor", "수량 배율", 0)],
+  ),
+  binding(
+    "modifier-count",
+    "장착 조건의 개수 배율",
+    "count-rule",
+    "연결한 개수 계산 결과에 배율을 한 번 곱합니다. 새 부여·획득량을 변경하며 기존 재고나 실제 소비 영수증을 다시 계산하지 않습니다. 여러 배율은 곱하고 마지막에 정수로 내림합니다.",
+    [number("factor", "개수 배율", 0)],
+  ),
+  binding(
+    "modifier-power",
+    "장착 조건의 피해 증가",
+    "damage-power",
+    "연결한 위력 계산의 결과에 가하는 피해 증가 기여를 제공합니다. 같은 종류 비율은 합산하고 한 번 적용하며 피해 유형·출처·적중 횟수·소비를 보존합니다. 별도의 약화나 새 피해 사건을 만들지 않습니다. 침식 피해에는 적용하지 않습니다.",
+  ),
+  binding(
+    "modifier-healing",
+    "장착 조건의 회복 증가",
+    "healing-power",
+    "연결한 회복 요청량에 가하는 회복 증가 기여를 제공합니다. 동일 종류 비율은 합산합니다. 실제 회복 결과는 HP 상한·회복 불가 판정 후 구하며 초과 회복을 실제 회복으로 바꾸지 않습니다. 이미 증폭한 전달 회복에는 같은 기여를 다시 적용하지 않습니다.",
+  ),
+  define(
+    "modifier-range",
+    "장착 조건의 효과 범위 변경",
+    "스킬 상태",
+    "원본 효과 범위에 한 번만 적용합니다. 정사각형 규칙은 1칸→중심 3×3, 중심 3×3→기준점 기준 x/y -1..2의 4×4입니다. 다른 형상은 명시한 교체 마스크가 필요합니다. 교체 마스크는 원본으로 되먹이지 않습니다. 감지·선택 거리·생성 수·다중 폭발 제한은 자동으로 바꾸지 않습니다.",
+    [
+      condition(),
+      input("target", "원본 효과 범위", "tile-pattern"),
+      optionalInput("replacement", "명시한 확대 마스크", "tile-pattern"),
+    ],
+    [],
+    [
+      choice(
+        "mode",
+        "확대 규칙",
+        [
+          ["square-step", "1칸→3×3 / 3×3→4×4"],
+          ["replace", "명시한 마스크로 교체"],
+        ],
+        "square-step",
+      ),
+    ],
+  ),
+  define(
+    "modifier-interruption",
+    "장착 조건의 진행 시전 보호",
+    "스킬 상태",
+    "연결한 시작 설정 또는 집중의 진행 중 행동을 외부 Hard CC·침묵 중단에서 보호합니다. 상태 부착 면역이 아니며 새 시전 자격·직접 취소·사망·퇴각·비용·최대 시간은 유지합니다. 프로그램 또는 집중 중 한 종류를 연결합니다.",
+    [
+      condition(),
+      optionalInput("program", "보호할 행동 시작 설정", "skill-program"),
+      optionalInput("channel", "보호할 집중", "skill-channel"),
+    ],
+    [],
+  ),
+  define(
+    "modifier-capacity",
+    "장착 조건의 재고 상한 해제",
+    "스킬 상태",
+    "연결한 전투 재고의 기본 최대치만 해제합니다. 단계당 소비량·별도 대여 한도·타격 횟수·초기 지급량은 유지합니다. 음수 부채를 갖는 원장에는 적용하지 않습니다. 조건을 잃으면 원본 상한으로 복원하며 초과분은 잘라냅니다.",
+    [condition(), input("target", "상한을 해제할 재고", "resource-bank")],
+    [],
+  ),
+  define(
+    "modifier-population",
+    "장착 조건의 연속 자원 변경",
+    "스킬 상태",
+    "연결한 숙주 수 기반 연속 자원에서 성장량 증가 또는 자연 감소 방지 하나를 변경합니다. 성장 증가는 실제 생존 숙주 수를 반영한 증가량에만 적용하고 현재 누적치·피해 주기·최초 감염 확률을 바꾸지 않습니다. 감소 방지는 숙주 0명의 자연 감소만 막으며 성장·기폭 소비·수명 정리는 유지합니다.",
+    [condition(), input("target", "변경할 연속 자원", "population-power")],
+    [],
+    [
+      choice(
+        "mode",
+        "변경 종류",
+        [
+          ["growth", "성장량 증가"],
+          ["preserve", "자연 감소 방지"],
+        ],
+        "growth",
+      ),
+      percent(),
+    ],
+  ),
+  define(
+    "modifier-explosion-overlap",
+    "장착 조건의 별개 폭발 중복 허용",
+    "스킬 상태",
+    "연결한 폭발 규칙의 같은 차례/기폭 내 대상별 1회 제한만 해제합니다. 서로 다른 폭발은 각각 적중하며 한 폭발의 동일 적 중복 적중은 계속 금지합니다. 숙주의 자기 배율 피해에 자기 기본 폭발을 추가하지 않습니다. 하나의 구체 폭발에는 추가 피해가 없습니다.",
+    [condition(), input("target", "변경할 폭발 규칙", "explosion-rule")],
+    [],
+  ),
+  define(
+    "modifier-multihit",
+    "장착 조건의 대상별 직접 연타 증가",
+    "스킬 상태",
+    "연결한 행동 본문의 직접 타격마다 같은 시전·대상별 유효 적중 수를 증가시켜 첫 타부터 비율을 더합니다. 다른 대상은 별도 기록이고 새 시전은 초기화합니다. 주기 장판·독립 소환물·피해 파생 proc는 제외합니다. 상한은 이 증가분에만 적용합니다.",
+    [condition(), input("target", "직접 연타 본문", "action-plan")],
+    [],
+    [number("step", "적중당 증가 (%p)"), number("cap", "최대 증가 (%)")],
+  ),
+  binding(
+    "modifier-explosion-power",
+    "장착 조건의 폭발 피해 증가",
+    "explosion-rule",
+    "연결한 폭발 규칙이 실행하는 피해에만 증가율을 합산합니다. 같은 기초 위력을 공유하는 지속 피해·성장량·자기 피해에는 전파하지 않습니다. 한 폭발의 한 대상 피해에 한 번 적용합니다.",
+  ),
+  binding(
+    "modifier-mark-grant",
+    "장착 조건의 새 표식 부여 배율",
+    "mark-hit-source",
+    "연결한 무기 적중 구독에서 새로 부여하는 정수 스택에만 배율을 곱합니다. 존재형 감염, 기존 스택, 사망 타일 이전, 소비량, 스택당 위력은 변경하지 않습니다.",
+    [number("factor", "부여 배율", 0)],
+  ),
+  define(
+    "modifier-control-vulnerability",
+    "실제 제어 성공 뒤 독립 약화",
+    "스킬 상태",
+    "연결한 기절·빙결이 실제 적용된 직후 살아 있는 대상에게 별도 받는 피해 증가를 부여합니다. 면역·기존 상태 유지·둔화에는 발동하지 않습니다. 발동 타격 자체에는 소급하지 않습니다. 같은 장착 사본·대상은 남은 시간을 갱신하고, 서로 다른 사본의 기여는 합산합니다. 제어 종료·시전자 이탈 뒤에도 자기 수명을 유지하며 침식과 재귀 proc는 제외합니다. 제어 종류 하나를 연결합니다.",
+    [
+      condition(),
+      optionalInput("hit", "타격 뒤 제어", "hit-status"),
+      optionalInput("ground", "장판 제어", "ground-status-profile"),
+      optionalInput("reactive", "반응 제어", "reactive-status-profile"),
+      input("duration", "약화 독립 지속 시간", "seconds"),
+    ],
+    [],
+    [percent()],
+  ),
+  define(
+    "modifier-mobile-vulnerability",
+    "소환 효과 피해 뒤 독립 약화",
+    "스킬 상태",
+    "연결한 이동 효과와 그 변형이 실제 양수 HP 피해를 준 뒤 생존 대상에게 별도 받는 피해 증가를 부여합니다. 보호막만 소모·피해 0·직접 스킬 피해·침식은 제외합니다. 발동 피해에는 소급하지 않습니다. 같은 장착 사본·대상은 갱신하고 다른 사본의 기여는 합산합니다. 소환 효과 종료·시전자 이탈 뒤에도 자기 수명을 유지합니다.",
+    [
+      condition(),
+      input("target", "소환 피해 정의", "mobile-effect-profile"),
+      input("duration", "약화 독립 지속 시간", "seconds"),
+    ],
+    [],
+    [percent()],
+  ),
+
+  binding(
+    "modifier-mobile-power",
+    "장착 조건의 이동 효과 피해 증가",
+    "mobile-effect-profile",
+    "연결한 최종 이동 효과 정의의 피해에만 증가율을 합산합니다. 변형의 기초 위력 계산을 다시 증폭하지 않으며 각 구체 효과의 피해에 한 번 적용합니다. 직접 공격·다른 변형에 암묵 전파하지 않습니다.",
+  ),
+  binding(
+    "modifier-grant",
+    "장착 조건의 신규 자원 획득 배율",
+    "resource-grant",
+    "연결한 획득 사건의 새 지급량에만 배율을 곱하고 내림합니다. 기존 재고·초기 지급·소비·타일 이전·정산 이월에는 적용하지 않습니다. 부채가 있으면 증폭한 획득량으로 먼저 상환합니다.",
+    [number("factor", "획득 배율", 0)],
+  ),
+  binding(
+    "modifier-buff",
+    "장착 조건의 공격 속도 버프 증가",
+    "attack-speed-buff",
+    "연결한 버프가 제공하는 공격 속도 포인트에 증가율을 곱합니다. 기본 속도·버프 종류·지속 시간·교집합 조건은 유지합니다.",
+  ),
+  binding(
+    "modifier-taunt-damage",
+    "자기 도발 관계의 피해 변경",
+    "target-state-profile",
+    "연결한 상태의 도발이 현재 자기 출처로 적용된 적과의 피해만 변경합니다. 가하는 피해는 직접 기본 공격과 그 기본 공격의 교체에 한정합니다. 받는 피해는 해당 적의 직접 공격·스킬·지속 피해에 적용하고 반사·환경·침식은 제외합니다. 피해 직전 관계를 검사하고 관계가 끝나면 기여도 끝납니다.",
+    [
+      choice(
+        "mode",
+        "관계 피해 종류",
+        [
+          ["dealt-basic", "도발한 적에게 기본 공격 증가"],
+          ["taken", "도발한 적에게 받는 피해 감소"],
+        ],
+        "dealt-basic",
+      ),
+      percent(),
+    ],
+  ),
+  binding(
+    "modifier-ramp",
+    "장착 조건의 체류 제어 진행 가속",
+    "ground-member",
+    "연결한 점진 둔화 정의의 대상별 진행 속도에 배율을 곱합니다. 같은 체류 시간에서 둔화가 더 강해지고 기절에 빨리 도달하며 원래 최대 둔화율은 넘지 않습니다. 장판 수명·기절 수명·공명·다른 주기는 유지합니다.",
+    [number("factor", "진행 속도 배율", 1)],
+  ),
+  binding(
+    "modifier-relation-shield",
+    "장착 조건의 관계 보호막 증가",
+    "ally-relation",
+    "연결한 관계에 선언된 긴급 보호막의 새 생성량만 증가시킵니다. 발동 HP 조건·전투당 횟수·지속 시간·기존 잔량은 바꾸지 않습니다.",
+  ),
+  binding(
+    "modifier-hit-count",
+    "장착 조건의 타격 후 스택 부여 배율",
+    "hit-status",
+    "연결한 스택형 약화의 새 부여 개수만 배율로 곱하고 내림합니다. 소비 영수증·스택당 증가율·기존 스택·지속 시간을 변경하지 않습니다.",
+    [number("factor", "부여 배율", 0)],
+  ),
+  binding(
+    "modifier-primary-area",
+    "장착 조건의 주 대상 공격 범위화",
+    "action-plan",
+    "연결한 직접 주 대상 타격을 주 대상 중심 타일 한 칸의 범위 피해로 변경합니다. 이 변형에서 기절·상처 등 후속 상태는 원래 주 대상에만 적용합니다. 원래 주 대상의 생존·선택·남은 단계 규칙은 유지합니다. 기존 범위 타격에는 이 변경을 연결하지 않습니다.",
+    [],
+  ),
+  binding(
+    "modifier-retarget",
+    "주 대상 사망 뒤 남은 행동 연결",
+    "skill-program",
+    "연결한 행동의 주 대상이 누구에게든 사망하면 사망 위치에서 지정 거리 이내 살아 있는 적 중 가장 가까운 적을 고릅니다. 동률은 안정 ID순입니다. 시전자 사거리는 다시 제한하지 않습니다. 공격 순서·소비·사용·타이밍은 이어가고 대상별 상처·적중 기록은 이전하지 않습니다. 대상이 없으면 종료합니다. 단순 이탈·철수·소멸은 사망이 아닙니다.",
+    [number("tiles", "사망 위치부터 탐색 거리", 0)],
+  ),
+  binding(
+    "modifier-projectile-multihit",
+    "같은 사출의 대상별 연타 증가",
+    "projectile-profile",
+    "연결한 투사체의 같은 접수 사용·대상별 유효 직접 적중 수로 피해 증가를 계산합니다. 첫 적중부터 증가하며 다른 대상·새 사용은 별도 기록입니다. 독립 투사체의 출처·착탄 대기·재고·타격 횟수는 보존합니다.",
+    [number("step", "적중당 증가 (%p)"), number("cap", "최대 증가 (%)")],
+  ),
+  define(
+    "modifier-heal-buff",
+    "실제 회복 뒤 독립 버프",
+    "스킬 상태",
+    "연결한 회복 정의의 실제 HP 회복량이 양수인 아군에게 지정 상태를 부여합니다. 범위 안 자기 회복도 포함하고 회복 0·HP 상한 초과분만 발생한 결과는 제외합니다. 전달 회복은 실제 받는 대상에 한 번 적용합니다. 같은 장착 사본·대상·상태는 갱신하며 회복이나 유물의 재귀 발동을 만들지 않습니다. 버프 종류·수치·지속 시간을 별도로 작성해야 합니다.",
+    [
+      condition(),
+      input("target", "회복 요청량 정의", "healing-power"),
+      input("state", "실제 회복 뒤 부여할 버프", "target-state-profile"),
+    ],
+    [],
+    [],
+  ),
+];

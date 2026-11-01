@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::game::data::shop_data::{ShopMetadata, ShopType};
+use crate::game::data::shop_data::{ShopContext, ShopMerchandise};
 
 // ============================================================
 // 기타 Enums
@@ -43,32 +43,31 @@ pub enum RewardMode {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct ShopOfferOption {
+    pub offer_id: Uuid,
+    pub merchandise: ShopMerchandise,
+    pub item_uuid: Uuid,
+    pub quantity: u32,
+    pub total_price: u32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct ShopRefreshOption {
+    pub current_cost: u32,
+    pub max_uses: u32,
+    pub uses_consumed: u32,
+    pub remaining_uses: u32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct ShopEventOption {
     pub id: String,
     pub name: String,
     pub uuid: Uuid,
-    pub shop_type: ShopType,
-    pub can_reroll: bool,
-    pub visible_items: Vec<Uuid>,
-}
-
-impl From<&ShopMetadata> for ShopEventOption {
-    fn from(value: &ShopMetadata) -> Self {
-        Self {
-            id: value.id.clone(),
-            name: value.name.clone(),
-            uuid: value.uuid,
-            shop_type: value.shop_type,
-            can_reroll: value.can_reroll,
-            visible_items: value.visible_items.clone(),
-        }
-    }
-}
-
-impl From<ShopMetadata> for ShopEventOption {
-    fn from(value: ShopMetadata) -> Self {
-        Self::from(&value)
-    }
+    pub context: ShopContext,
+    pub offers: Vec<ShopOfferOption>,
+    pub refresh: Option<ShopRefreshOption>,
+    pub selling_enabled: bool,
 }
 
 // ============================================================
@@ -77,9 +76,9 @@ impl From<ShopMetadata> for ShopEventOption {
 
 /// 상점 내부 행동
 pub enum ShopAction {
-    Purchase { item_uuid: Uuid },
-    Sell { item_uuid: Uuid },
-    Reroll,
+    Purchase { offer_id: Uuid },
+    Sell { item_uuid: Uuid, quantity: u32 },
+    Refresh,
     Exit,
 }
 

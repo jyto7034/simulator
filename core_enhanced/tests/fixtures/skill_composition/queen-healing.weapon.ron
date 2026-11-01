@@ -1,0 +1,30 @@
+// Explicit verification values, not release balance. Pure healing, two targets.
+(
+    action: HealLowestHealth(flat: 10, spell_power_percent: 50, max_targets: 2),
+    attack: 0, spell_power: 20,
+    range_role: Ranged, weapon_archetype: Staff,
+    deployment_affinity: platform_only, block_capacity: 0,
+    ground_defense_focus: None, platform_rest: Some((hp_recovery_per_tick: 1)),
+    damage_type: Magic, targeting_profile: DefaultForward, air_capable: true,
+    defense_tile_range: (include_anchor_tile: true, rows: [
+        "XXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXX",
+        "XXXXXXXX@XXXXXXXX",
+        "XXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXX",
+
+    ]),
+    interval_ms: 1800, windup_ms: 50, ranged_reposition_ms: 0, delivery: Instant,
+)

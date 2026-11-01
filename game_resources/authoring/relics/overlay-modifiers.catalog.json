@@ -1,0 +1,23 @@
+{
+  "relics": [
+    {
+      "id": "piercing-damage-increase",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a141",
+      "name": "꿰뚫는 송곳",
+      "description": "Hello의 한 기본 공격에서 앞선 접촉 수에 따른 명시적 증가. 매 공격 초기화하며 마무리는 제외한다.",
+      "rarity": {
+        "Unresolved": "rarity"
+      },
+      "allow_duplicates": {
+        "Unresolved": "allow_duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": [],
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "dismantle_equipment_dust"
+      }
+    }
+  ]
+}

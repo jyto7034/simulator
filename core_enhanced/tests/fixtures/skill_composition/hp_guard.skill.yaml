@@ -1,0 +1,74 @@
+# E04 방어구 기술 검증값. 출시 HP 비율/시간이 아닙니다.
+version: 2
+id: hp-guard-fixture
+resources:
+  - { id: protection_charge, owner: EquipmentCopy, lifetime: Attempt, initial: 1, cap: 1 }
+values:
+  - name: protection-on-hp-loss
+    value:
+      StateProgram:
+        id: finite-hp-protection
+        owns_use: false
+        end_on_source_exit: true
+        replacement: ReplaceSameSource
+        fields: []
+        handlers:
+          - id: surviving-hp-loss
+            event:
+              HpLost: { relation: Any, once_per_action: false }
+            body:
+              - If:
+                  condition:
+                    Compare:
+                      left:
+                        moment: Live
+                        root:
+                          Mul:
+                            value: { Read: { HitPoints: { subject: Target, field: Max } } }
+                            scalar: { Const: { value: 30, unit: Scalar } }
+                      comparison: AtLeast
+                      right:
+                        moment: Live
+                        root:
+                          Mul:
+                            value: { Read: { HitPoints: { subject: Target, field: Current } } }
+                            scalar: { Const: { value: 100, unit: Scalar } }
+                  then_ops:
+                    - If:
+                        condition:
+                          Compare:
+                            left:
+                              moment: Live
+                              root:
+                                Read:
+                                  Resource: { resource: protection_charge, owner: SourceEquipment, field: Available }
+                            comparison: AtLeast
+                            right:
+                              moment: Live
+                              root:
+                                Const: { value: 1, unit: { Resource: protection_charge } }
+                        then_ops:
+                          - Resources:
+                              operations:
+                                - { resource: protection_charge, owner: SourceEquipment, operation: { Consume: 1 } }
+                          - ApplyOwnerState:
+                              duration: { moment: Live, root: { Const: { value: 3000, unit: Milliseconds } } }
+                              profile:
+                                definition: finite-hp-protection
+                                attack_percent: 0
+                                defense_percent: 0
+                                attack_speed_points: 0
+                                hp_floor_one: false
+                                damage_invulnerable: true
+                                basic_attack_locked: true
+                                active_skill_locked: true
+                                received_heal_percent: 50
+                                end_on_source_exit: true
+                              replacement: ReplaceSameSource
+                        else_ops: []
+                  else_ops: []
+equipment_states:
+  - equipment: snow_queen_armor
+    program: { Shared: protection-on-hp-loss }
+definitions: []
+skills: []

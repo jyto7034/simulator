@@ -1,0 +1,26 @@
+version: 2
+id: primary-hp-fixture
+values:
+  - name: primary-hp
+    value:
+      AttackProgram:
+        reactions: []
+        primary_damage_percent:
+          moment: Live
+          root:
+            Clamp:
+              value:
+                Ratio:
+                  numerator:
+                    Mul:
+                      value: { Read: { HitPoints: { subject: Target, field: Missing } } }
+                      scalar: { Const: { value: 100, unit: Scalar } }
+                  denominator: { Read: { HitPoints: { subject: Target, field: Max } } }
+                  rounding: Floor
+              min: { Const: { value: 0, unit: Scalar } }
+              max: { Const: { value: 50, unit: Scalar } }
+equipment_attacks:
+  - equipment: r11_weapon
+    program: { Shared: primary-hp }
+definitions: []
+skills: []

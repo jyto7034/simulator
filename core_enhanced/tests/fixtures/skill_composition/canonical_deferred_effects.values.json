@@ -1,0 +1,58 @@
+{
+  "queen-bee": {
+    "hive-duration": 6000,
+    "bee-count": 2,
+    "heal-percent": 20,
+    "prepare-duration": 0,
+    "capacity": 5,
+    "selection-footprint": {
+      "rows": [
+        "XXXXXXXXXXXXX",
+        "XXXXXXXXXXXXX",
+        "XXXXXXXXXXXXX",
+        "XXXXXXXXXXXXX",
+        "XXXXXXXXXXXXX",
+        "XXXXXXXXXXXXX",
+        "XXXXXX@XXXXXX",
+        "XXXXXXXXXXXXX",
+        "XXXXXXXXXXXXX",
+        "XXXXXXXXXXXXX",
+        "XXXXXXXXXXXXX",
+        "XXXXXXXXXXXXX",
+        "XXXXXXXXXXXXX"
+      ],
+      "include_anchor_tile": true
+    },
+    "rarity": "Common",
+    "equip_limit": "OwnedCopies"
+  },
+  "rudolta": {
+    "damage-percent": 150,
+    "search-footprint": {
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ],
+      "include_anchor_tile": true
+    },
+    "schedule-span": 201,
+    "opportunity-interval": 100,
+    "impact-footprint": {
+      "rows": [
+        "XXX",
+        "X@X",
+        "XXX"
+      ],
+      "include_anchor_tile": true
+    },
+    "fall-duration": 200,
+    "prepare-duration": 0,
+    "capacity": 5,
+    "rarity": "Common",
+    "equip_limit": "OwnedCopies",
+    "compatibility": {}
+  }
+}

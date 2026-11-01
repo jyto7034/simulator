@@ -1,20 +1,18 @@
-use super::movement::{
-    types::{UnitBody, WorldVec2, DATA_UNITS_PER_WORLD},
-    HALF_TILE_UNITS,
-};
+use super::movement::types::{WorldVec2, DATA_UNITS_PER_WORLD};
+#[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
+use super::movement::{types::UnitBody, HALF_TILE_UNITS};
 
+#[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
 pub const DEFAULT_UNIT_HITBOX_RADIUS_UNITS: i64 = (HALF_TILE_UNITS as i64) / 2;
 
+#[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
 pub fn distance_world(a: WorldVec2, b: WorldVec2) -> f32 {
     a.distance(b)
 }
 
+#[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
 pub fn body_distance(a: &UnitBody, b: &UnitBody) -> f32 {
     a.distance_to(b)
-}
-
-pub fn bodies_in_range(a: &UnitBody, b: &UnitBody, range_units: f32) -> bool {
-    a.can_reach(b, range_units)
 }
 
 pub fn data_units_to_world(units: i64) -> f32 {
@@ -66,12 +64,10 @@ mod tests {
     use super::*;
 
     #[test]
-    fn bodies_in_range_uses_world_distance_and_radii() {
+    fn body_distance_uses_world_positions() {
         let a = UnitBody::new_at(WorldVec2::new(0.0, 0.0), 0.35, 1.0);
         let b = UnitBody::new_at(WorldVec2::new(2.0, 0.0), 0.35, 1.0);
 
-        assert!(bodies_in_range(&a, &b, 1.3));
-        assert!(!bodies_in_range(&a, &b, 1.29));
         assert_eq!(body_distance(&a, &b), 2.0);
     }
 

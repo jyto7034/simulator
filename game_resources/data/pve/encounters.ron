@@ -2,20 +2,54 @@ PveEncounterDatabase(
     encounters: [
         // Generic corroded employee patrol - ordinary combat pool
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "normal_corroded_patrol",
             encounter_class: Normal,
             risk_level: ZAYIN,
             node_type: Some(Defense),
-            reward_mode: ClaimAll,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440101",
-                "650e8400-e29b-41d4-a716-446655440116",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440101",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             waves: [
                 PveWaveData(
                     id: "archive_sentries",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "archive_sentries",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
+                    required_for_victory: true,
                     source: GeneratedCorroded(
                         preset_id: "archive_sentry_pair",
                     ),
@@ -25,20 +59,54 @@ PveEncounterDatabase(
 
         // Generic breach response - ordinary combat pool
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "normal_breach_response",
             encounter_class: Normal,
             risk_level: TETH,
             node_type: Some(Defense),
-            reward_mode: ClaimAll,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440101",
-                "650e8400-e29b-41d4-a716-446655440116",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440101",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             waves: [
                 PveWaveData(
                     id: "breach_response",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "breach_response",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
+                    required_for_victory: true,
                     source: GeneratedCorroded(
                         preset_id: "breach_response_light",
                     ),
@@ -48,20 +116,54 @@ PveEncounterDatabase(
 
         // Generic black-box breach pressure - ordinary combat pool
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "normal_black_box_pressure",
             encounter_class: Normal,
             risk_level: HE,
             node_type: Some(Defense),
-            reward_mode: ClaimAll,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440101",
-                "650e8400-e29b-41d4-a716-446655440116",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440101",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             waves: [
                 PveWaveData(
                     id: "breach_pressure",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "breach_pressure",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
+                    required_for_victory: true,
                     source: GeneratedCorroded(
                         preset_id: "black_box_breach_pressure",
                     ),
@@ -71,16 +173,45 @@ PveEncounterDatabase(
 
         // Nameless Fetus - early unstable wail defense
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_nameless_fetus",
+            bonus_objectives: [(id: "decisive_primary", condition: DecisiveDamage(max_health_percent: 25), effects: [GrantEquipmentDust(amount: 2), GrantExperience(amount: 20, target: AliveRoster)])],
             encounter_class: Elite,
             primary_abnormality_id: Some("o-01-15_nameless_fetus"),
             risk_level: TETH,
             node_type: Some(Defense),
-            reward_mode: ClaimAll,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440101",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440118",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_protected_destroyed",
+                    verdict: defeat,
+                    condition: UnitDefeated(unit_ref: "black_box_device"),
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440101",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_protected_destroyed",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             battlefield: Some((
                 archetype: Some(OpenHall),
@@ -90,12 +221,16 @@ PveEncounterDatabase(
                 points: [],
                 objective: Some(ProtectUnit(unit_ref: "black_box_device")),
             )),
-            win_condition: Some(ProtectUnit(unit_ref: "black_box_device")),
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
+                    required_for_victory: true,
                     source: Manual([
                         CorrodedEmployee(
                             profile_id: "corroded_guard",
@@ -106,8 +241,13 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
+                    required_for_victory: true,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "o-01-15_nameless_fetus",
@@ -121,22 +261,55 @@ PveEncounterDatabase(
 
         // Porccubus - early spore pressure
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_porcubbus",
             encounter_class: Elite,
             primary_abnormality_id: Some("o-04-66_porcubbus"),
             risk_level: TETH,
             node_type: Some(Defense),
-            reward_mode: ClaimAll,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440101",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440118",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440101",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
+                    required_for_victory: true,
                     source: Manual([
                         CorrodedEmployee(
                             profile_id: "corroded_guard",
@@ -147,8 +320,13 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
+                    required_for_victory: true,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "o-04-66_porcubbus",
@@ -162,22 +340,55 @@ PveEncounterDatabase(
 
         // Scarecrow - wisdom theft pressure
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_scarecrow",
             encounter_class: Elite,
             primary_abnormality_id: Some("f-01-18_scarecrow"),
             risk_level: HE,
             node_type: Some(Defense),
-            reward_mode: ClaimAll,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440101",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440118",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440101",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
+                    required_for_victory: true,
                     source: Manual([
                         CorrodedEmployee(
                             profile_id: "corroded_guard",
@@ -188,8 +399,13 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
+                    required_for_victory: true,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "f-01-18_scarecrow",
@@ -203,16 +419,44 @@ PveEncounterDatabase(
 
         // Warm-Hearted Woodsman - generated corroded corridor defense
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_warm_hearted_woodsman",
             encounter_class: Elite,
             primary_abnormality_id: Some("f-05-32_warm_hearted_woodsman"),
             risk_level: HE,
             node_type: Some(Defense),
-            reward_mode: ClaimAll,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440101",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440118",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440101",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             battlefield: Some((
                 archetype: Some(Corridor),
@@ -221,7 +465,11 @@ PveEncounterDatabase(
             waves: [
                 PveWaveData(
                     id: "archive_sentries",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "archive_sentries",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
                     spawn_zone_ids: ["north_entry"],
                     required_for_victory: false,
@@ -231,7 +479,11 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "breach_response",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "breach_response",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
                     spawn_zone_ids: ["north_entry"],
                     required_for_victory: false,
@@ -241,8 +493,13 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
+                    required_for_victory: true,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "f-05-32_warm_hearted_woodsman",
@@ -256,16 +513,44 @@ PveEncounterDatabase(
 
         // Rudolta - rusher lane pressure
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_rudolta",
             encounter_class: Elite,
             primary_abnormality_id: Some("f-02-49_rudolta"),
             risk_level: HE,
             node_type: Some(Defense),
-            reward_mode: ClaimAll,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440101",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440118",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440101",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             battlefield: Some((
                 archetype: Some(Corridor),
@@ -274,8 +559,13 @@ PveEncounterDatabase(
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
+                    required_for_victory: true,
                     source: Manual([
                         CorrodedEmployee(
                             profile_id: "corroded_rusher",
@@ -291,8 +581,13 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
+                    required_for_victory: true,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "f-02-49_rudolta",
@@ -306,17 +601,42 @@ PveEncounterDatabase(
 
         // Der Freischutz - marksman ambush contract
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_freischutz",
             encounter_class: NormalBoss,
             primary_abnormality_id: Some("t-02-43_freischutz"),
             risk_level: HE,
             node_type: Some(Boss),
             mission_variant: Some(Boss),
-            reward_mode: ClaimAll,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440101",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440112",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_protected_destroyed",
+                    verdict: defeat,
+                    condition: UnitDefeated(unit_ref: "black_box_device"),
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_protected_destroyed",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             battlefield: Some((
                 archetype: Some(Ambush),
@@ -327,12 +647,35 @@ PveEncounterDatabase(
                     (id: "sniper_nest", position: (x: 4, y: 0)),
                 ],
                 objective: Some(ProtectUnit(unit_ref: "black_box_device")),
+                field_work_objects: [
+                    (
+                        id: "black_box_emergency_repair",
+                        presentation_kind: EmergencyRepairTerminal,
+                        position: (x: 2, y: 6),
+                        work_cells: [
+                            (
+                                id: "repair_cell",
+                                position: (x: 2, y: 6),
+                                tile_kind: ground,
+                            ),
+                        ],
+                        required_work_ms: 10000,
+                        completion_effect: RepairProtectedUnit(
+                            unit_ref: "black_box_device",
+                            flat_hp: 100,
+                        ),
+                    ),
+                ],
             )),
-            win_condition: Some(ProtectUnit(unit_ref: "black_box_device")),
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         CorrodedEmployee(
                             profile_id: "corroded_marksman",
@@ -343,7 +686,12 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "side_ambush",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "side_ambush",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         CorrodedEmployee(
                             profile_id: "corroded_marksman",
@@ -354,7 +702,12 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "t-02-43_freischutz",
@@ -368,26 +721,59 @@ PveEncounterDatabase(
 
         // Funeral Butterfly - execution marksman pressure
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_funeral_butterfly",
             encounter_class: NormalBoss,
             primary_abnormality_id: Some("t-02-99_funeral_butterfly"),
             risk_level: HE,
             node_type: Some(Boss),
             mission_variant: Some(Boss),
-            reward_mode: ClaimAll,
             battlefield: Some((
                 archetype: Some(BossArena),
                 size_class: Some(Large),
             )),
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440101",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440121",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440101",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         CorrodedEmployee(
                             profile_id: "corroded_marksman",
@@ -398,7 +784,12 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "t-02-99_funeral_butterfly",
@@ -412,22 +803,55 @@ PveEncounterDatabase(
 
         // Laetitia - delayed gift pressure
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_laetitia",
             encounter_class: Elite,
             primary_abnormality_id: Some("o-01-67_laetitia"),
             risk_level: WAW,
             node_type: Some(Defense),
-            reward_mode: ClaimAll,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440119",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440105",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
+                    required_for_victory: true,
                     source: Manual([
                         CorrodedEmployee(
                             profile_id: "corroded_rusher",
@@ -443,8 +867,13 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
+                    required_for_victory: true,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "o-01-67_laetitia",
@@ -458,22 +887,55 @@ PveEncounterDatabase(
 
         // Snow Queen - prison/marksman pressure
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_snow_queen",
             encounter_class: Elite,
             primary_abnormality_id: Some("f-01-87_snow_queen"),
             risk_level: WAW,
             node_type: Some(Defense),
-            reward_mode: ClaimAll,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440119",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440105",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
+                    required_for_victory: true,
                     source: Manual([
                         CorrodedEmployee(
                             profile_id: "corroded_marksman",
@@ -489,8 +951,13 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
+                    required_for_victory: true,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "f-01-87_snow_queen",
@@ -504,22 +971,55 @@ PveEncounterDatabase(
 
         // Queen Bee - infection swarm pressure
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_queen_bee",
             encounter_class: Elite,
             primary_abnormality_id: Some("t-04-50_queen_bee"),
             risk_level: WAW,
             node_type: Some(Defense),
-            reward_mode: ClaimAll,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440119",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440105",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
+                    required_for_victory: true,
                     source: Manual([
                         CorrodedEmployee(
                             profile_id: "corroded_medic",
@@ -535,8 +1035,13 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
+                    required_for_victory: true,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "t-04-50_queen_bee",
@@ -550,16 +1055,44 @@ PveEncounterDatabase(
 
         // Dream of a Black Swan - polluted family pressure
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_black_swan",
             encounter_class: Elite,
             primary_abnormality_id: Some("f-02-70_black_swan"),
             risk_level: WAW,
             node_type: Some(Defense),
-            reward_mode: ClaimAll,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440119",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440105",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             battlefield: Some((
                 archetype: Some(Surrounded),
@@ -568,8 +1101,13 @@ PveEncounterDatabase(
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
+                    required_for_victory: true,
                     source: Manual([
                         CorrodedEmployee(
                             profile_id: "corroded_bruiser",
@@ -585,8 +1123,13 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
+                    required_for_victory: true,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "f-02-70_black_swan",
@@ -600,22 +1143,55 @@ PveEncounterDatabase(
 
         // Schadenfreude - gaze pressure
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_schadenfreude",
             encounter_class: Elite,
             primary_abnormality_id: Some("o-05-76_schadenfreude"),
             risk_level: HE,
             node_type: Some(Defense),
-            reward_mode: ClaimAll,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440119",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440105",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
+                    required_for_victory: true,
                     source: Manual([
                         CorrodedEmployee(
                             profile_id: "corroded_bruiser",
@@ -631,8 +1207,13 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
+                    required_for_victory: true,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "o-05-76_schadenfreude",
@@ -646,17 +1227,44 @@ PveEncounterDatabase(
 
         // Clouded Monk - survival timer pressure
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_clouded_monk",
             encounter_class: Elite,
             primary_abnormality_id: Some("d-01-110_clouded_monk"),
             risk_level: WAW,
             node_type: Some(Defense),
-            survive_timer_ms: Some(45000),
-            reward_mode: ClaimAll,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440119",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: TimeReached(time_ms: 45000),
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440105",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             battlefield: Some((
                 archetype: Some(Surrounded),
@@ -665,8 +1273,13 @@ PveEncounterDatabase(
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
+                    required_for_victory: false,
                     source: Manual([
                         CorrodedEmployee(
                             profile_id: "corroded_veteran",
@@ -687,8 +1300,13 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
+                    required_for_victory: false,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "d-01-110_clouded_monk",
@@ -702,22 +1320,55 @@ PveEncounterDatabase(
 
         // Parasite Tree - root blessing pressure
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_parasite_tree",
             encounter_class: Elite,
             primary_abnormality_id: Some("d-04-108_parasite_tree"),
             risk_level: WAW,
             node_type: Some(Defense),
-            reward_mode: ClaimAll,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440119",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440105",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
+                    required_for_victory: true,
                     source: Manual([
                         CorrodedEmployee(
                             profile_id: "corroded_medic",
@@ -733,8 +1384,13 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
+                    required_for_victory: true,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "d-04-108_parasite_tree",
@@ -748,17 +1404,45 @@ PveEncounterDatabase(
 
         // Burrowing Heaven - route defense contract
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_burrowing_heaven",
             encounter_class: NormalBoss,
             primary_abnormality_id: Some("o-04-72_burrowing_heaven"),
             risk_level: WAW,
             node_type: Some(Boss),
             mission_variant: Some(Boss),
-            reward_mode: ClaimAll,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440119",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440105",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             battlefield: Some((
                 archetype: Some(ChokePoint),
@@ -767,7 +1451,11 @@ PveEncounterDatabase(
             waves: [
                 PveWaveData(
                     id: "breach_probe",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "breach_probe",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     required_for_victory: true,
                     source: GeneratedCorroded(
                         preset_id: "black_box_breach_probe",
@@ -775,7 +1463,11 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "breach_pressure",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "breach_pressure",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     required_for_victory: true,
                     source: GeneratedCorroded(
                         preset_id: "black_box_breach_pressure",
@@ -783,7 +1475,12 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "o-04-72_burrowing_heaven",
@@ -797,17 +1494,55 @@ PveEncounterDatabase(
 
         // Little Red - bounty hunt pressure
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_little_red",
             encounter_class: NormalBoss,
             primary_abnormality_id: Some("f-01-57_little_red"),
+            boss_runtime: Some((
+                encounter_id: "little_red_reference_encounter",
+                actors: [
+                    (
+                        actor_slot_id: "primary_abnormality",
+                        wave_id: "primary_abnormality",
+                        spawn_index: 0,
+                    ),
+                ],
+            )),
             risk_level: WAW,
             node_type: Some(Boss),
             mission_variant: Some(Boss),
-            reward_mode: ClaimAll,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440119",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440105",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             battlefield: Some((
                 archetype: Some(Ambush),
@@ -816,7 +1551,12 @@ PveEncounterDatabase(
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         CorrodedEmployee(
                             profile_id: "corroded_marksman",
@@ -832,7 +1572,13 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    route_id: Some("defense_main"),
+                    required_for_victory: true,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "f-01-57_little_red",
@@ -846,26 +1592,59 @@ PveEncounterDatabase(
 
         // Big and Will be Bad Wolf - isolation pressure
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_big_bad_wolf",
             encounter_class: NormalBoss,
             primary_abnormality_id: Some("f-02-58_big_bad_wolf"),
             risk_level: WAW,
             node_type: Some(Boss),
             mission_variant: Some(Boss),
-            reward_mode: ClaimAll,
             battlefield: Some((
                 archetype: Some(BossArena),
                 size_class: Some(Large),
             )),
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440119",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440105",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         CorrodedEmployee(
                             profile_id: "corroded_bruiser",
@@ -881,7 +1660,12 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "f-02-58_big_bad_wolf",
@@ -895,17 +1679,45 @@ PveEncounterDatabase(
 
         // King of Greed - lane hazard pressure
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_king_of_greed",
             encounter_class: NormalBoss,
             primary_abnormality_id: Some("o-01-64_king_of_greed"),
             risk_level: WAW,
             node_type: Some(Boss),
             mission_variant: Some(Boss),
-            reward_mode: ClaimAll,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440119",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440105",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             battlefield: Some((
                 archetype: Some(Corridor),
@@ -914,7 +1726,12 @@ PveEncounterDatabase(
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         CorrodedEmployee(
                             profile_id: "corroded_rusher",
@@ -925,7 +1742,12 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "o-01-64_king_of_greed",
@@ -939,26 +1761,59 @@ PveEncounterDatabase(
 
         // Moonlit Wail - piano resonance pressure
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_moonlit_wail",
             encounter_class: NormalBoss,
             primary_abnormality_id: Some("t-06-27_moonlit_wail"),
             risk_level: WAW,
             node_type: Some(Boss),
             mission_variant: Some(Boss),
-            reward_mode: ClaimAll,
             battlefield: Some((
                 archetype: Some(BossArena),
                 size_class: Some(Large),
             )),
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440119",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440105",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         CorrodedEmployee(
                             profile_id: "corroded_marksman",
@@ -974,7 +1829,12 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "t-06-27_moonlit_wail",
@@ -988,17 +1848,45 @@ PveEncounterDatabase(
 
         // Melting Love - outbreak pressure
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_melting_love",
             encounter_class: NormalBoss,
             primary_abnormality_id: Some("d-03-109_melting_love"),
             risk_level: ALEPH,
             node_type: Some(Boss),
             mission_variant: Some(Boss),
-            reward_mode: ClaimAll,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440119",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440105",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             battlefield: Some((
                 archetype: Some(Surrounded),
@@ -1007,7 +1895,12 @@ PveEncounterDatabase(
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         CorrodedEmployee(
                             profile_id: "corroded_medic",
@@ -1023,7 +1916,12 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "d-03-109_melting_love",
@@ -1037,26 +1935,59 @@ PveEncounterDatabase(
 
         // Nothing There - brute transformation pressure
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_nothing_there",
             encounter_class: NormalBoss,
             primary_abnormality_id: Some("o-06-20_nothing_there"),
             risk_level: ALEPH,
             node_type: Some(Boss),
             mission_variant: Some(Boss),
-            reward_mode: ClaimAll,
             battlefield: Some((
                 archetype: Some(BossArena),
                 size_class: Some(Large),
             )),
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440119",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440105",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         CorrodedEmployee(
                             profile_id: "corroded_bruiser",
@@ -1067,7 +1998,12 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "o-06-20_nothing_there",
@@ -1081,22 +2017,55 @@ PveEncounterDatabase(
 
         // CENSORED - fear pressure
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_censored",
             encounter_class: Elite,
             primary_abnormality_id: Some("o-03-89_censored"),
             risk_level: ALEPH,
             node_type: Some(Defense),
-            reward_mode: ClaimAll,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440119",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440105",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
+                    required_for_victory: true,
                     source: Manual([
                         CorrodedEmployee(
                             profile_id: "corroded_bruiser",
@@ -1107,8 +2076,13 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
                     route_id: Some("defense_main"),
+                    required_for_victory: true,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "o-03-89_censored",
@@ -1122,26 +2096,59 @@ PveEncounterDatabase(
 
         // Yin - paired resonance pressure
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_yin",
             encounter_class: NormalBoss,
             primary_abnormality_id: Some("o-01-64_yin"),
             risk_level: WAW,
             node_type: Some(Boss),
             mission_variant: Some(Boss),
-            reward_mode: ClaimAll,
             battlefield: Some((
                 archetype: Some(BossArena),
                 size_class: Some(Large),
             )),
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440119",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440105",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         CorrodedEmployee(
                             profile_id: "corroded_marksman",
@@ -1157,7 +2164,12 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "o-01-64_yin",
@@ -1171,26 +2183,59 @@ PveEncounterDatabase(
 
         // Yang - paired resonance pressure
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_yang",
             encounter_class: NormalBoss,
             primary_abnormality_id: Some("o-05-102_yang"),
             risk_level: WAW,
             node_type: Some(Boss),
             mission_variant: Some(Boss),
-            reward_mode: ClaimAll,
             battlefield: Some((
                 archetype: Some(BossArena),
                 size_class: Some(Large),
             )),
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440119",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440105",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         CorrodedEmployee(
                             profile_id: "corroded_medic",
@@ -1206,7 +2251,12 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "o-05-102_yang",
@@ -1220,26 +2270,59 @@ PveEncounterDatabase(
 
         // Knight of Despair - protection contract pressure
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_knight_of_despair",
             encounter_class: NormalBoss,
             primary_abnormality_id: Some("o-01-73_knight_of_despair"),
             risk_level: WAW,
             node_type: Some(Boss),
             mission_variant: Some(Boss),
-            reward_mode: ClaimAll,
             battlefield: Some((
                 archetype: Some(BossArena),
                 size_class: Some(Large),
             )),
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440119",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440105",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         CorrodedEmployee(
                             profile_id: "corroded_guard",
@@ -1255,7 +2338,12 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "o-01-73_knight_of_despair",
@@ -1269,17 +2357,45 @@ PveEncounterDatabase(
 
         // WhiteNight - final boss placeholder
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_white_night",
             encounter_class: FinalBoss,
             primary_abnormality_id: Some("o-01-45_white_night"),
             risk_level: ALEPH,
             node_type: Some(Boss),
             mission_variant: Some(Boss),
-            reward_mode: ClaimAll,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440119",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440105",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             battlefield: Some((
                 archetype: Some(BossArena),
@@ -1288,7 +2404,12 @@ PveEncounterDatabase(
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         CorrodedEmployee(
                             profile_id: "corroded_veteran",
@@ -1304,7 +2425,12 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "o-01-45_white_night",
@@ -1318,17 +2444,45 @@ PveEncounterDatabase(
 
         // Silent Orchestra - final boss placeholder
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_silent_orchestra",
             encounter_class: FinalBoss,
             primary_abnormality_id: Some("t-01-31_silent_orchestra"),
             risk_level: ALEPH,
             node_type: Some(Boss),
             mission_variant: Some(Boss),
-            reward_mode: ClaimAll,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440119",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440105",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             battlefield: Some((
                 archetype: Some(BossArena),
@@ -1337,7 +2491,12 @@ PveEncounterDatabase(
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         CorrodedEmployee(
                             profile_id: "corroded_marksman",
@@ -1348,7 +2507,12 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "t-01-31_silent_orchestra",
@@ -1362,17 +2526,45 @@ PveEncounterDatabase(
 
         // Apocalypse Bird - final boss placeholder
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_apocalypse_bird",
             encounter_class: FinalBoss,
             primary_abnormality_id: Some("o-02-63_apocalypse_bird"),
             risk_level: ALEPH,
             node_type: Some(Boss),
             mission_variant: Some(Boss),
-            reward_mode: ClaimAll,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440119",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440105",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             battlefield: Some((
                 archetype: Some(BossArena),
@@ -1381,7 +2573,12 @@ PveEncounterDatabase(
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         CorrodedEmployee(
                             profile_id: "corroded_veteran",
@@ -1397,7 +2594,12 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "o-02-63_apocalypse_bird",
@@ -1409,19 +2611,47 @@ PveEncounterDatabase(
             ],
         ),
 
-        // Queen of Hatred - final boss placeholder
+        // Queen of Hatred - normal boss placeholder
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_queen_of_hatred",
-            encounter_class: FinalBoss,
+            encounter_class: NormalBoss,
             primary_abnormality_id: Some("o-01-04_queen_of_hatred"),
             risk_level: ALEPH,
             node_type: Some(Boss),
             mission_variant: Some(Boss),
-            reward_mode: ClaimAll,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440119",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440105",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             battlefield: Some((
                 archetype: Some(BossArena),
@@ -1430,7 +2660,12 @@ PveEncounterDatabase(
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         CorrodedEmployee(
                             profile_id: "corroded_marksman",
@@ -1446,7 +2681,12 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "o-01-04_queen_of_hatred",
@@ -1458,19 +2698,47 @@ PveEncounterDatabase(
             ],
         ),
 
-        // Mountain of Smiling Bodies - final boss placeholder
+        // Mountain of Smiling Bodies - normal boss placeholder
         PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
             id: "suppress_mountain",
-            encounter_class: FinalBoss,
+            encounter_class: NormalBoss,
             primary_abnormality_id: Some("t-01-75_mountain"),
             risk_level: ALEPH,
             node_type: Some(Boss),
             mission_variant: Some(Boss),
-            reward_mode: ClaimAll,
-            reward_uuids: [
-                "650e8400-e29b-41d4-a716-446655440105",
-                "650e8400-e29b-41d4-a716-446655440116",
-                "650e8400-e29b-41d4-a716-446655440119",
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "defeat_all_players",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [
+                        "650e8400-e29b-41d4-a716-446655440105",
+                        "650e8400-e29b-41d4-a716-446655440116",
+                    ],
+                    grant_node_bonus: true,
+                    advance_encounter_progression: true,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "defeat_all_players",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
             ],
             battlefield: Some((
                 archetype: Some(BossArena),
@@ -1479,7 +2747,12 @@ PveEncounterDatabase(
             waves: [
                 PveWaveData(
                     id: "wave_0",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "wave_0",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         CorrodedEmployee(
                             profile_id: "corroded_bruiser",
@@ -1495,7 +2768,12 @@ PveEncounterDatabase(
                 ),
                 PveWaveData(
                     id: "primary_abnormality",
-                    time_ms: 5000,
+                    activation: (
+                        trigger_id: "primary_abnormality",
+                        priority: 0,
+                        primary: AtTimeMs(time_ms: 5000),
+                    ),
+                    required_for_victory: true,
                     source: Manual([
                         Abnormality(
                             abnormality_id: "t-01-75_mountain",
@@ -1506,5 +2784,296 @@ PveEncounterDatabase(
                 ),
             ],
         ),
-    ]
+        // NONPRODUCTION REFERENCE ONLY: opt-in CWBS vertical-path fixture.
+        PveEncounter(
+            deterrence_tuning: (unrestrained_health_percent: 150, unrestrained_attack_percent: 150, seal_health_percent: 150, seal_attack_percent: 150),
+            id: "reference_cwbs_final_boss",
+            encounter_class: ReferenceFinalBoss,
+            primary_abnormality_id: Some("x-00-00_cwbs_reference_boss"),
+            boss_runtime: Some((
+                encounter_id: "cwbs_reference_final_boss_runtime",
+                actors: [
+                    (
+                        actor_slot_id: "reference_boss",
+                        wave_id: "reference_boss",
+                        spawn_index: 0,
+                    ),
+                ],
+            )),
+            risk_level: ALEPH,
+            node_type: Some(Boss),
+            mission_variant: Some(Boss),
+            terminal_outcomes: [
+                PveTerminalOutcomeData(
+                    id: "reference_victory",
+                    verdict: victory,
+                    condition: AllRequiredEnemyGroupsDefeated,
+                    priority: 0,
+                ),
+                PveTerminalOutcomeData(
+                    id: "reference_defeat",
+                    verdict: defeat,
+                    condition: AllPlayerCombatantsDefeated,
+                    priority: 0,
+                ),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(
+                    outcome_id: "reference_victory",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
+                PveOutcomePolicyData(
+                    outcome_id: "reference_defeat",
+                    reward_mode: ClaimAll,
+                    reward_uuids: [],
+                    grant_node_bonus: false,
+                    advance_encounter_progression: false,
+                ),
+            ],
+            battlefield: Some((
+                archetype: Some(Ambush),
+                size_class: Some(Medium),
+            )),
+            waves: [
+                PveWaveData(
+                    id: "reference_boss",
+                    activation: (
+                        trigger_id: "reference_boss",
+                        priority: 100,
+                        primary: AtTimeMs(time_ms: 0),
+                    ),
+                    route_id: Some("defense_main"),
+                    required_for_victory: true,
+                    source: Manual([
+                        Abnormality(
+                            abnormality_id: "x-00-00_cwbs_reference_boss",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
+                ),
+                PveWaveData(
+                    id: "conditional_reinforcement",
+                    activation: (
+                        trigger_id: "conditional_reinforcement",
+                        priority: 50,
+                        primary: ActorHealthAtOrBelowPercent(
+                            actor_slot_id: "reference_boss",
+                            percent: 100,
+                        ),
+                        deadline_ms: Some(5000),
+                    ),
+                    route_id: Some("defense_main"),
+                    required_for_victory: true,
+                    source: Manual([
+                        CorrodedEmployee(
+                            profile_id: "corroded_rusher",
+                            tier: I,
+                            count: 1,
+                        ),
+                    ]),
+                ),
+            ],
+        ),
+
+        // U16-4 representative five-round defense; U21 owns later balance/content.
+        PveEncounter(
+            id: "stress_defense_v1", encounter_class: StressCombat, risk_level: ZAYIN,
+            node_type: Some(Defense), mission_variant: Some(Defense),
+            terminal_outcomes: [
+                PveTerminalOutcomeData(id:"victory",verdict:victory,condition:AllRequiredEnemyGroupsDefeated,priority:0),
+                PveTerminalOutcomeData(id:"defeat_protected_destroyed",verdict:defeat,condition:UnitDefeated(unit_ref:"black_box_device"),priority:0),
+            ],
+            outcome_policies: [
+                PveOutcomePolicyData(outcome_id:"victory",reward_mode:ClaimAll,reward_uuids:[],grant_node_bonus:false,advance_encounter_progression:false),
+                PveOutcomePolicyData(outcome_id:"defeat_protected_destroyed",reward_mode:ClaimAll,reward_uuids:[],grant_node_bonus:false,advance_encounter_progression:false),
+            ],
+            battlefield: Some((archetype:Some(OpenHall),size_class:Some(Small))),
+            tactical_plan: Some((points:[],objective:Some(ProtectUnit(unit_ref:"black_box_device")))),
+            waves: [PveWaveData(id:"stress_wave_1",activation:(trigger_id:"stress_wave_1",priority:0,primary:AtTimeMs(time_ms: 1000)),route_id:Some("defense_main"),required_for_victory:true,source:Manual([CorrodedEmployee(profile_id:"corroded_guard",tier:I,count:1)])),
+PveWaveData(id:"stress_wave_2",activation:(trigger_id:"stress_wave_2",priority:0,primary:GroupCleared(wave_id: "stress_wave_1")),route_id:Some("defense_main"),required_for_victory:true,source:Manual([CorrodedEmployee(profile_id:"corroded_guard",tier:II,count:1)])),
+PveWaveData(id:"stress_wave_3",activation:(trigger_id:"stress_wave_3",priority:0,primary:GroupCleared(wave_id: "stress_wave_2")),route_id:Some("defense_main"),required_for_victory:true,source:Manual([CorrodedEmployee(profile_id:"corroded_guard",tier:II,count:2)])),
+PveWaveData(id:"stress_wave_4",activation:(trigger_id:"stress_wave_4",priority:0,primary:GroupCleared(wave_id: "stress_wave_3")),route_id:Some("defense_main"),required_for_victory:true,source:Manual([CorrodedEmployee(profile_id:"corroded_guard",tier:III,count:2)])),
+PveWaveData(id:"stress_wave_5",activation:(trigger_id:"stress_wave_5",priority:0,primary:GroupCleared(wave_id: "stress_wave_4")),route_id:Some("defense_main"),required_for_victory:true,source:Manual([CorrodedEmployee(profile_id:"corroded_guard",tier:III,count:3)])),], static_obstacles: [],
+        ),
+    ],
+    reward_sources: [
+        PveEncounterRewardSource(
+            reward_source_id: "elite_black_swan", encounter_id: "suppress_black_swan",
+            fragment_id: "fragment_black_swan_trace", first_equipment_ids: ["placeholder_black_swan_weapon"],
+            repeat_rewards: [GrantEquipmentDust(amount: 5), GrantExperience(amount: 8, target: AliveRoster)],
+            revival: None,
+        ),
+        PveEncounterRewardSource(
+            reward_source_id: "elite_censored", encounter_id: "suppress_censored",
+            fragment_id: "fragment_censored_trace", first_equipment_ids: ["censored_plate"],
+            repeat_rewards: [GrantEquipmentDust(amount: 5), GrantExperience(amount: 8, target: AliveRoster)],
+            revival: None,
+        ),
+        PveEncounterRewardSource(
+            reward_source_id: "elite_clouded_monk", encounter_id: "suppress_clouded_monk",
+            fragment_id: "fragment_clouded_monk_trace", first_equipment_ids: ["standard_armor"],
+            repeat_rewards: [GrantEquipmentDust(amount: 5), GrantExperience(amount: 8, target: AliveRoster)],
+            revival: None,
+        ),
+        PveEncounterRewardSource(
+            reward_source_id: "elite_laetitia", encounter_id: "suppress_laetitia",
+            fragment_id: "fragment_laetitia_trace", first_equipment_ids: ["laetitia_gift"],
+            repeat_rewards: [GrantEquipmentDust(amount: 5), GrantExperience(amount: 8, target: AliveRoster)],
+            revival: None,
+        ),
+        PveEncounterRewardSource(
+            reward_source_id: "elite_nameless_fetus", encounter_id: "suppress_nameless_fetus",
+            fragment_id: "fragment_nameless_fetus_trace", first_equipment_ids: ["standard_armor"],
+            repeat_rewards: [GrantEquipmentDust(amount: 5), GrantExperience(amount: 8, target: AliveRoster)],
+            revival: None,
+        ),
+        PveEncounterRewardSource(
+            reward_source_id: "elite_parasite_tree", encounter_id: "suppress_parasite_tree",
+            fragment_id: "fragment_parasite_tree_trace", first_equipment_ids: ["parasite_seed"],
+            repeat_rewards: [GrantEquipmentDust(amount: 5), GrantExperience(amount: 8, target: AliveRoster)],
+            revival: None,
+        ),
+        PveEncounterRewardSource(
+            reward_source_id: "elite_porcubbus", encounter_id: "suppress_porcubbus",
+            fragment_id: "fragment_porcubbus_trace", first_equipment_ids: ["thorned_lantern_guard"],
+            repeat_rewards: [GrantEquipmentDust(amount: 5), GrantExperience(amount: 8, target: AliveRoster)],
+            revival: None,
+        ),
+        PveEncounterRewardSource(
+            reward_source_id: "elite_queen_bee", encounter_id: "suppress_queen_bee",
+            fragment_id: "fragment_queen_bee_trace", first_equipment_ids: ["placeholder_queen_bee_weapon"],
+            repeat_rewards: [GrantEquipmentDust(amount: 5), GrantExperience(amount: 8, target: AliveRoster)],
+            revival: None,
+        ),
+        PveEncounterRewardSource(
+            reward_source_id: "elite_rudolta", encounter_id: "suppress_rudolta",
+            fragment_id: "fragment_rudolta_trace", first_equipment_ids: ["standard_armor"],
+            repeat_rewards: [GrantEquipmentDust(amount: 5), GrantExperience(amount: 8, target: AliveRoster)],
+            revival: None,
+        ),
+        PveEncounterRewardSource(
+            reward_source_id: "elite_scarecrow", encounter_id: "suppress_scarecrow",
+            fragment_id: "fragment_scarecrow_trace", first_equipment_ids: ["standard_armor"],
+            repeat_rewards: [GrantEquipmentDust(amount: 5), GrantExperience(amount: 8, target: AliveRoster)],
+            revival: None,
+        ),
+        PveEncounterRewardSource(
+            reward_source_id: "elite_schadenfreude", encounter_id: "suppress_schadenfreude",
+            fragment_id: "fragment_schadenfreude_trace", first_equipment_ids: ["placeholder_schadenfreude_weapon"],
+            repeat_rewards: [GrantEquipmentDust(amount: 5), GrantExperience(amount: 8, target: AliveRoster)],
+            revival: None,
+        ),
+        PveEncounterRewardSource(
+            reward_source_id: "elite_snow_queen", encounter_id: "suppress_snow_queen",
+            fragment_id: "fragment_snow_queen_trace", first_equipment_ids: ["frost_splinter"],
+            repeat_rewards: [GrantEquipmentDust(amount: 5), GrantExperience(amount: 8, target: AliveRoster)],
+            revival: None,
+        ),
+        PveEncounterRewardSource(
+            reward_source_id: "elite_warm_hearted_woodsman", encounter_id: "suppress_warm_hearted_woodsman",
+            fragment_id: "fragment_warm_hearted_woodsman_trace", first_equipment_ids: ["placeholder_warm_hearted_woodsman_weapon"],
+            repeat_rewards: [GrantEquipmentDust(amount: 5), GrantExperience(amount: 8, target: AliveRoster)],
+            revival: None,
+        ),
+        PveEncounterRewardSource(
+            reward_source_id: "normal_boss_big_bad_wolf", encounter_id: "suppress_big_bad_wolf",
+            fragment_id: None, first_equipment_ids: [],
+            repeat_rewards: [GrantEquipmentDust(amount: 10)],
+            revival: Some((catalyst_material_id: "revival_catalyst", catalyst_amount: 1, part_material_id: "part_big_bad_wolf", stage_2: (encounter_id: "suppress_big_bad_wolf", stat_multiplier_percent: 140, rewards: [GrantEquipmentMaterial(material_id: "part_big_bad_wolf", amount: 2)], equipment_choices: ["placeholder_big_bad_wolf_accessory"]), stage_3: (encounter_id: "suppress_big_bad_wolf", stat_multiplier_percent: 180, rewards: [GrantEquipmentMaterial(material_id: "part_big_bad_wolf", amount: 4)], equipment_choices: ["placeholder_big_bad_wolf_accessory"]))),
+        ),
+        PveEncounterRewardSource(
+            reward_source_id: "normal_boss_burrowing_heaven", encounter_id: "suppress_burrowing_heaven",
+            fragment_id: "fragment_burrowing_heaven_trace", first_equipment_ids: [],
+            repeat_rewards: [GrantEquipmentDust(amount: 10)],
+            revival: Some((catalyst_material_id: "revival_catalyst", catalyst_amount: 1, part_material_id: "part_burrowing_heaven", stage_2: (encounter_id: "suppress_burrowing_heaven", stat_multiplier_percent: 140, rewards: [GrantEquipmentMaterial(material_id: "part_burrowing_heaven", amount: 2)], equipment_choices: ["placeholder_burrowing_heaven_weapon", "placeholder_burrowing_heaven_armor", "placeholder_burrowing_heaven_accessory"]), stage_3: (encounter_id: "suppress_burrowing_heaven", stat_multiplier_percent: 180, rewards: [GrantEquipmentMaterial(material_id: "part_burrowing_heaven", amount: 4)], equipment_choices: ["placeholder_burrowing_heaven_weapon", "placeholder_burrowing_heaven_armor", "placeholder_burrowing_heaven_accessory"]))),
+        ),
+        PveEncounterRewardSource(
+            reward_source_id: "normal_boss_freischutz", encounter_id: "suppress_freischutz",
+            fragment_id: "fragment_freischutz_black_round", first_equipment_ids: [],
+            repeat_rewards: [],
+            revival: None,
+        ),
+        PveEncounterRewardSource(
+            reward_source_id: "normal_boss_funeral_butterfly", encounter_id: "suppress_funeral_butterfly",
+            fragment_id: "fragment_funeral_butterfly_eulogy", first_equipment_ids: [],
+            repeat_rewards: [GrantEquipmentDust(amount: 10)],
+            revival: Some((catalyst_material_id: "revival_catalyst", catalyst_amount: 1, part_material_id: "part_funeral_butterfly", stage_2: (encounter_id: "suppress_funeral_butterfly", stat_multiplier_percent: 140, rewards: [GrantEquipmentMaterial(material_id: "part_funeral_butterfly", amount: 2)], equipment_choices: ["solemn_lament", "butterfly_pin"]), stage_3: (encounter_id: "suppress_funeral_butterfly", stat_multiplier_percent: 180, rewards: [GrantEquipmentMaterial(material_id: "part_funeral_butterfly", amount: 4)], equipment_choices: ["solemn_lament", "butterfly_pin"]))),
+        ),
+        PveEncounterRewardSource(
+            reward_source_id: "normal_boss_king_of_greed", encounter_id: "suppress_king_of_greed",
+            fragment_id: "fragment_king_of_greed_trace", first_equipment_ids: [],
+            repeat_rewards: [GrantEquipmentDust(amount: 10)],
+            revival: Some((catalyst_material_id: "revival_catalyst", catalyst_amount: 1, part_material_id: "part_king_of_greed", stage_2: (encounter_id: "suppress_king_of_greed", stat_multiplier_percent: 140, rewards: [GrantEquipmentMaterial(material_id: "part_king_of_greed", amount: 2)], equipment_choices: ["placeholder_king_of_greed_weapon", "placeholder_king_of_greed_armor", "placeholder_king_of_greed_accessory"]), stage_3: (encounter_id: "suppress_king_of_greed", stat_multiplier_percent: 180, rewards: [GrantEquipmentMaterial(material_id: "part_king_of_greed", amount: 4)], equipment_choices: ["placeholder_king_of_greed_weapon", "placeholder_king_of_greed_armor", "placeholder_king_of_greed_accessory"]))),
+        ),
+        PveEncounterRewardSource(
+            reward_source_id: "normal_boss_knight_of_despair", encounter_id: "suppress_knight_of_despair",
+            fragment_id: "fragment_knight_of_despair_trace", first_equipment_ids: [],
+            repeat_rewards: [GrantEquipmentDust(amount: 10)],
+            revival: Some((catalyst_material_id: "revival_catalyst", catalyst_amount: 1, part_material_id: "part_knight_of_despair", stage_2: (encounter_id: "suppress_knight_of_despair", stat_multiplier_percent: 140, rewards: [GrantEquipmentMaterial(material_id: "part_knight_of_despair", amount: 2)], equipment_choices: ["placeholder_knight_of_despair_weapon", "placeholder_knight_of_despair_armor", "placeholder_knight_of_despair_accessory"]), stage_3: (encounter_id: "suppress_knight_of_despair", stat_multiplier_percent: 180, rewards: [GrantEquipmentMaterial(material_id: "part_knight_of_despair", amount: 4)], equipment_choices: ["placeholder_knight_of_despair_weapon", "placeholder_knight_of_despair_armor", "placeholder_knight_of_despair_accessory"]))),
+        ),
+        PveEncounterRewardSource(
+            reward_source_id: "normal_boss_little_red", encounter_id: "suppress_little_red",
+            fragment_id: "fragment_little_red_trace", first_equipment_ids: [],
+            repeat_rewards: [GrantEquipmentDust(amount: 10)],
+            revival: Some((catalyst_material_id: "revival_catalyst", catalyst_amount: 1, part_material_id: "part_little_red", stage_2: (encounter_id: "suppress_little_red", stat_multiplier_percent: 140, rewards: [GrantEquipmentMaterial(material_id: "part_little_red", amount: 2)], equipment_choices: ["placeholder_little_red_weapon", "placeholder_little_red_armor", "placeholder_little_red_accessory"]), stage_3: (encounter_id: "suppress_little_red", stat_multiplier_percent: 180, rewards: [GrantEquipmentMaterial(material_id: "part_little_red", amount: 4)], equipment_choices: ["placeholder_little_red_weapon", "placeholder_little_red_armor", "placeholder_little_red_accessory"]))),
+        ),
+        PveEncounterRewardSource(
+            reward_source_id: "normal_boss_melting_love", encounter_id: "suppress_melting_love",
+            fragment_id: "fragment_melting_love_trace", first_equipment_ids: [],
+            repeat_rewards: [GrantEquipmentDust(amount: 10)],
+            revival: Some((catalyst_material_id: "revival_catalyst", catalyst_amount: 1, part_material_id: "part_melting_love", stage_2: (encounter_id: "suppress_melting_love", stat_multiplier_percent: 140, rewards: [GrantEquipmentMaterial(material_id: "part_melting_love", amount: 2)], equipment_choices: ["placeholder_melting_love_weapon", "placeholder_melting_love_armor", "placeholder_melting_love_accessory"]), stage_3: (encounter_id: "suppress_melting_love", stat_multiplier_percent: 180, rewards: [GrantEquipmentMaterial(material_id: "part_melting_love", amount: 4)], equipment_choices: ["placeholder_melting_love_weapon", "placeholder_melting_love_armor", "placeholder_melting_love_accessory"]))),
+        ),
+        PveEncounterRewardSource(
+            reward_source_id: "normal_boss_mountain", encounter_id: "suppress_mountain",
+            fragment_id: "fragment_mountain_smiling_bodies_trace", first_equipment_ids: [],
+            repeat_rewards: [GrantEquipmentDust(amount: 10)],
+            revival: Some((catalyst_material_id: "revival_catalyst", catalyst_amount: 1, part_material_id: "part_mountain_smiling_bodies", stage_2: (encounter_id: "suppress_mountain", stat_multiplier_percent: 140, rewards: [GrantEquipmentMaterial(material_id: "part_mountain_smiling_bodies", amount: 2)], equipment_choices: ["placeholder_mountain_smiling_bodies_weapon", "placeholder_mountain_smiling_bodies_armor", "placeholder_mountain_smiling_bodies_accessory"]), stage_3: (encounter_id: "suppress_mountain", stat_multiplier_percent: 180, rewards: [GrantEquipmentMaterial(material_id: "part_mountain_smiling_bodies", amount: 4)], equipment_choices: ["placeholder_mountain_smiling_bodies_weapon", "placeholder_mountain_smiling_bodies_armor", "placeholder_mountain_smiling_bodies_accessory"]))),
+        ),
+        PveEncounterRewardSource(
+            reward_source_id: "normal_boss_nothing_there", encounter_id: "suppress_nothing_there",
+            fragment_id: "fragment_nothing_there_trace", first_equipment_ids: [],
+            repeat_rewards: [GrantEquipmentDust(amount: 10)],
+            revival: Some((catalyst_material_id: "revival_catalyst", catalyst_amount: 1, part_material_id: "part_nothing_there", stage_2: (encounter_id: "suppress_nothing_there", stat_multiplier_percent: 140, rewards: [GrantEquipmentMaterial(material_id: "part_nothing_there", amount: 2)], equipment_choices: ["placeholder_nothing_there_weapon", "placeholder_nothing_there_armor", "placeholder_nothing_there_accessory"]), stage_3: (encounter_id: "suppress_nothing_there", stat_multiplier_percent: 180, rewards: [GrantEquipmentMaterial(material_id: "part_nothing_there", amount: 4)], equipment_choices: ["placeholder_nothing_there_weapon", "placeholder_nothing_there_armor", "placeholder_nothing_there_accessory"]))),
+        ),
+        PveEncounterRewardSource(
+            reward_source_id: "normal_boss_queen_of_hatred", encounter_id: "suppress_queen_of_hatred",
+            fragment_id: "fragment_queen_of_hatred_trace", first_equipment_ids: [],
+            repeat_rewards: [GrantEquipmentDust(amount: 10)],
+            revival: Some((catalyst_material_id: "revival_catalyst", catalyst_amount: 1, part_material_id: "part_queen_of_hatred", stage_2: (encounter_id: "suppress_queen_of_hatred", stat_multiplier_percent: 140, rewards: [GrantEquipmentMaterial(material_id: "part_queen_of_hatred", amount: 2)], equipment_choices: ["placeholder_queen_of_hatred_weapon", "placeholder_queen_of_hatred_armor", "placeholder_queen_of_hatred_accessory"]), stage_3: (encounter_id: "suppress_queen_of_hatred", stat_multiplier_percent: 180, rewards: [GrantEquipmentMaterial(material_id: "part_queen_of_hatred", amount: 4)], equipment_choices: ["placeholder_queen_of_hatred_weapon", "placeholder_queen_of_hatred_armor", "placeholder_queen_of_hatred_accessory"]))),
+        ),
+        PveEncounterRewardSource(
+            reward_source_id: "normal_boss_yang", encounter_id: "suppress_yang",
+            fragment_id: "fragment_yang_trace", first_equipment_ids: [],
+            repeat_rewards: [GrantEquipmentDust(amount: 10)],
+            revival: Some((catalyst_material_id: "revival_catalyst", catalyst_amount: 1, part_material_id: "part_yang", stage_2: (encounter_id: "suppress_yang", stat_multiplier_percent: 140, rewards: [GrantEquipmentMaterial(material_id: "part_yang", amount: 2)], equipment_choices: ["placeholder_yang_weapon", "placeholder_yang_armor", "placeholder_yang_accessory"]), stage_3: (encounter_id: "suppress_yang", stat_multiplier_percent: 180, rewards: [GrantEquipmentMaterial(material_id: "part_yang", amount: 4)], equipment_choices: ["placeholder_yang_weapon", "placeholder_yang_armor", "placeholder_yang_accessory"]))),
+        ),
+        PveEncounterRewardSource(
+            reward_source_id: "normal_boss_yin", encounter_id: "suppress_yin",
+            fragment_id: "fragment_yin_trace", first_equipment_ids: [],
+            repeat_rewards: [GrantEquipmentDust(amount: 10)],
+            revival: Some((catalyst_material_id: "revival_catalyst", catalyst_amount: 1, part_material_id: "part_yin", stage_2: (encounter_id: "suppress_yin", stat_multiplier_percent: 140, rewards: [GrantEquipmentMaterial(material_id: "part_yin", amount: 2)], equipment_choices: ["placeholder_yin_weapon", "placeholder_yin_armor", "placeholder_yin_accessory"]), stage_3: (encounter_id: "suppress_yin", stat_multiplier_percent: 180, rewards: [GrantEquipmentMaterial(material_id: "part_yin", amount: 4)], equipment_choices: ["placeholder_yin_weapon", "placeholder_yin_armor", "placeholder_yin_accessory"]))),
+        ),
+        PveEncounterRewardSource(
+            reward_source_id: "final_boss_apocalypse_bird", encounter_id: "suppress_apocalypse_bird",
+            fragment_id: "fragment_apocalypse_bird_trace", first_equipment_ids: [],
+            repeat_rewards: [GrantEquipmentDust(amount: 20)],
+            revival: None,
+        ),
+        PveEncounterRewardSource(
+            reward_source_id: "final_boss_silent_orchestra", encounter_id: "suppress_silent_orchestra",
+            fragment_id: "fragment_silent_orchestra_trace", first_equipment_ids: [],
+            repeat_rewards: [GrantEquipmentDust(amount: 20)],
+            revival: None,
+        ),
+        PveEncounterRewardSource(
+            reward_source_id: "final_boss_white_night", encounter_id: "suppress_white_night",
+            fragment_id: "fragment_white_night_trace", first_equipment_ids: [],
+            repeat_rewards: [GrantEquipmentDust(amount: 20)],
+            revival: None,
+        ),
+    ],
 )

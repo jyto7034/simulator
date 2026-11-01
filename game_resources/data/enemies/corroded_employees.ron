@@ -49,7 +49,6 @@ CorrodedEmployeeProfileDatabase(
             magic_resist: 0,
             movement: (speed_units_per_ms: 2600),
             basic_attack: (
-                range_units: 1.0,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -76,7 +75,6 @@ CorrodedEmployeeProfileDatabase(
             magic_resist: -5,
             movement: (speed_units_per_ms: 3400),
             basic_attack: (
-                range_units: 1.0,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -103,7 +101,6 @@ CorrodedEmployeeProfileDatabase(
             magic_resist: 0,
             movement: (speed_units_per_ms: 2400),
             basic_attack: (
-                range_units: 5.0,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -130,7 +127,6 @@ CorrodedEmployeeProfileDatabase(
             magic_resist: 0,
             movement: (speed_units_per_ms: 2200),
             basic_attack: (
-                range_units: 1.0,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -157,7 +153,6 @@ CorrodedEmployeeProfileDatabase(
             magic_resist: 8,
             movement: (speed_units_per_ms: 2600),
             basic_attack: (
-                range_units: 4.0,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,
@@ -184,7 +179,6 @@ CorrodedEmployeeProfileDatabase(
             magic_resist: 3,
             movement: (speed_units_per_ms: 2800),
             basic_attack: (
-                range_units: 1.0,
                 range_policy: pattern,
                 defense_tile_range: None,
                 damage_type: Physical,

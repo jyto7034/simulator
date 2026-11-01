@@ -1,0 +1,136 @@
+[
+  {
+    "id": "placeholder_mountain_smiling_bodies_weapon",
+    "uuid": "e2000000-0000-0000-0000-000000000013",
+    "content_family": "t-01-75_mountain",
+    "name": "웃음",
+    "equipment_type": "Weapon",
+    "rarity": {
+      "Unresolved": "weapon-rarity"
+    },
+    "price": {
+      "Unresolved": "weapon-price"
+    },
+    "allow_duplicate_equip": {
+      "Unresolved": "weapon-duplicate"
+    },
+    "triggered_effects": {},
+    "ability_activations": [],
+    "weapon_profile": {
+      "action": {
+        "DamageArea": {
+          "footprint": {
+            "Unresolved": "shockwave-footprint"
+          },
+          "secondary_percent": {
+            "Unresolved": "shockwave-percent"
+          }
+        }
+      },
+      "attack": {
+        "Unresolved": "weapon-attack"
+      },
+      "spell_power": 0,
+      "range_role": "Melee",
+      "weapon_archetype": "Shield",
+      "block_capacity": {
+        "Unresolved": "weapon-block"
+      },
+      "deployment_affinity": "ground_only",
+      "ground_defense_focus": {
+        "Unresolved": "weapon-defense-focus"
+      },
+      "platform_rest": null,
+      "damage_type": {
+        "Unresolved": "weapon-damage-type"
+      },
+      "targeting_profile": "DefaultForward",
+      "air_capable": false,
+      "defense_tile_range": {
+        "Unresolved": "weapon-footprint"
+      },
+      "interval_ms": {
+        "Unresolved": "weapon-interval-ms"
+      },
+      "windup_ms": {
+        "Unresolved": "weapon-windup-ms"
+      },
+      "delivery": "Instant"
+    }
+  },
+  {
+    "id": "placeholder_mountain_smiling_bodies_armor",
+    "uuid": "e2000000-0000-0000-0000-000000000113",
+    "content_family": "t-01-75_mountain",
+    "name": "웃음",
+    "equipment_type": "Armor",
+    "rarity": {
+      "Unresolved": "armor-rarity"
+    },
+    "price": {
+      "Unresolved": "armor-price"
+    },
+    "allow_duplicate_equip": {
+      "Unresolved": "armor-duplicate"
+    },
+    "triggered_effects": {
+      "Permanent": [
+        {
+          "target": "SelfUnit",
+          "effect": {
+            "Modifier": {
+              "stat": "MaxHealth",
+              "kind": "Flat",
+              "value": {
+                "Unresolved": "armor-MaxHealth"
+              }
+            }
+          }
+        },
+        {
+          "target": "SelfUnit",
+          "effect": {
+            "Modifier": {
+              "stat": "Defense",
+              "kind": "Flat",
+              "value": {
+                "Unresolved": "armor-Defense"
+              }
+            }
+          }
+        },
+        {
+          "target": "SelfUnit",
+          "effect": {
+            "Modifier": {
+              "stat": "MagicResist",
+              "kind": "Flat",
+              "value": {
+                "Unresolved": "armor-MagicResist"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ability_activations": []
+  },
+  {
+    "id": "placeholder_mountain_smiling_bodies_accessory",
+    "uuid": "e2000000-0000-0000-0000-000000000213",
+    "content_family": "t-01-75_mountain",
+    "name": "웃는 가면 (가칭)",
+    "equipment_type": "Accessory",
+    "rarity": {
+      "Unresolved": "accessory-rarity"
+    },
+    "price": {
+      "Unresolved": "accessory-price"
+    },
+    "allow_duplicate_equip": {
+      "Unresolved": "accessory-duplicate"
+    },
+    "triggered_effects": {},
+    "ability_activations": []
+  }
+]

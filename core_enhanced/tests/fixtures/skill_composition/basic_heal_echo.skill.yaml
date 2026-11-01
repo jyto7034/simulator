@@ -1,0 +1,17 @@
+# Adjustable first prototype; equipment stats remain separate balance.
+version: 1
+id: basic-heal-echo-composition-fixture
+equipment_supports:
+  - equipment: r11_weapon
+    program: { Shared: pendant-self-heal }
+values:
+  - name: pendant-self-heal
+    value:
+      SupportProgram:
+        heal_percent: 0
+        shield_percent: 0
+        basic_heal_echo:
+          actual_heal_percent: 25
+          max_hp_cap_percent: 10
+definitions: []
+skills: []

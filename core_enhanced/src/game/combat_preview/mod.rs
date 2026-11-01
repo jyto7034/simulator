@@ -11,7 +11,9 @@ use threat::{
     detectable_threat_warning_tags, rumor_threat_warning_tag, THREAT_RUMOR_CHANCE_PERCENT,
 };
 pub use types::*;
+#[cfg(test)]
 use validation::validate_instance;
+use validation::validate_instance_with_location;
 
 use crate::game::{
     battle::types::BattleUnitStatScale,
@@ -20,26 +22,28 @@ use crate::game::{
     data::{pve_data::PveEncounter, pve_data::PveWaveData, GameDataBase},
     determinism,
     enums::RiskLevel,
-    map::{MapNodeCategory, MapNodeId},
+    map::{MapNodeCategory, MapNodeCombatDifficulty, MapNodeId},
     resources::Position,
     wave_resolution::resolve_pve_wave_enemy_data_with_budget_multiplier,
 };
 use serde::{Deserialize, Serialize};
-use std::{collections::HashSet, sync::OnceLock};
+use std::collections::HashSet;
 
 const CORRODED_APPEARANCE_SEED_NS: u64 = 0x434F_5241_5050_4541; // "CORAPPEA"
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-struct BattlefieldSizeClassDefinition {
-    size_class: BattlefieldSizeClass,
+#[serde(deny_unknown_fields)]
+pub(crate) struct BattlefieldSizeClassDefinition {
+    pub(crate) size_class: BattlefieldSizeClass,
     id: String,
     width: i32,
     height: i32,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-struct BattlefieldArchetypeGenerationDefinition {
-    archetype: BattlefieldArchetype,
+#[serde(deny_unknown_fields)]
+pub(crate) struct BattlefieldArchetypeGenerationDefinition {
+    pub(crate) archetype: BattlefieldArchetype,
     id: String,
     default_size_class: BattlefieldSizeClass,
     enabled: bool,
@@ -47,14 +51,16 @@ struct BattlefieldArchetypeGenerationDefinition {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-struct BattlefieldGenerationPolicyDatabase {
-    size_classes: Vec<BattlefieldSizeClassDefinition>,
-    archetypes: Vec<BattlefieldArchetypeGenerationDefinition>,
+#[serde(deny_unknown_fields)]
+pub(crate) struct BattlefieldGenerationPolicyDatabase {
+    pub(crate) size_classes: Vec<BattlefieldSizeClassDefinition>,
+    pub(crate) archetypes: Vec<BattlefieldArchetypeGenerationDefinition>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-struct BattlefieldTemplateDefinition {
-    id: String,
+#[serde(deny_unknown_fields)]
+pub(crate) struct BattlefieldTemplateDefinition {
+    pub(crate) id: String,
     archetype: BattlefieldArchetype,
     size_class: BattlefieldSizeClass,
     rows: Vec<String>,
@@ -63,6 +69,7 @@ struct BattlefieldTemplateDefinition {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 struct BattlefieldRouteDefinition {
     id: String,
     overlay: Vec<String>,
@@ -84,31 +91,13 @@ struct ParsedBattlefieldTemplate {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-struct BattlefieldTemplateDatabase {
-    templates: Vec<BattlefieldTemplateDefinition>,
+#[serde(deny_unknown_fields)]
+pub(crate) struct BattlefieldTemplateDatabase {
+    pub(crate) templates: Vec<BattlefieldTemplateDefinition>,
 }
 
 impl BattlefieldGenerationPolicyDatabase {
-    /// Load the embedded battlefield archetype/size selection policy.
-    ///
-    /// Combat preview owns this domain builtin because it is used to resolve a
-    /// playable battlefield before battle setup DTOs are produced. It is not an
-    /// alternate `GameDataBase` live bundle loader.
-    fn builtin() -> &'static Self {
-        static DATABASE: OnceLock<BattlefieldGenerationPolicyDatabase> = OnceLock::new();
-        DATABASE.get_or_init(|| {
-            let database: BattlefieldGenerationPolicyDatabase = ron::de::from_str(include_str!(
-                "../../../../game_resources/data/map/battlefield_archetypes.ron"
-            ))
-            .expect("built-in battlefield archetype generation policy must be valid RON");
-            database
-                .validate_contract()
-                .expect("built-in battlefield archetype generation policy must satisfy contract");
-            database
-        })
-    }
-
-    fn validate_contract(&self) -> Result<(), String> {
+    pub(crate) fn validate_contract(&self) -> Result<(), String> {
         if self.size_classes.is_empty() {
             return Err("battlefield policy must define at least one size class".to_string());
         }
@@ -241,28 +230,10 @@ impl BattlefieldGenerationPolicyDatabase {
 }
 
 impl BattlefieldTemplateDatabase {
-    /// Load the embedded battlefield template catalog.
-    ///
-    /// The combat preview/battlefield domain owns this catalog. It is validated
-    /// here because template ASCII rows, valid tiles, deployment zones, routes,
-    /// and obstacles are interpreted by the battlefield parser rather than by
-    /// generic game-data loading.
-    fn builtin() -> &'static Self {
-        static DATABASE: OnceLock<BattlefieldTemplateDatabase> = OnceLock::new();
-        DATABASE.get_or_init(|| {
-            let templates: Vec<BattlefieldTemplateDefinition> = ron::de::from_str(include_str!(
-                "../../../../game_resources/data/map/battlefield_templates.ron"
-            ))
-            .expect("built-in battlefield templates must be valid RON");
-            let database = BattlefieldTemplateDatabase { templates };
-            database
-                .validate_contract()
-                .expect("built-in battlefield templates must satisfy contract");
-            database
-        })
-    }
-
-    fn validate_contract(&self) -> Result<(), String> {
+    pub(crate) fn validate_contract(
+        &self,
+        policy: &BattlefieldGenerationPolicyDatabase,
+    ) -> Result<(), String> {
         if self.templates.is_empty() {
             return Err(
                 "battlefield template database must define at least one template".to_string(),
@@ -305,9 +276,7 @@ impl BattlefieldTemplateDatabase {
             BattlefieldArchetype::ObstacleRoom,
             BattlefieldArchetype::BossArena,
         ] {
-            let default_size = BattlefieldGenerationPolicyDatabase::builtin()
-                .archetype(archetype)
-                .default_size_class;
+            let default_size = policy.archetype(archetype).default_size_class;
             if !archetype_size_pairs.contains(&(archetype, default_size)) {
                 return Err(format!(
                     "battlefield template database is missing default template for {:?}/{:?}",
@@ -321,6 +290,7 @@ impl BattlefieldTemplateDatabase {
 
     fn select(
         &self,
+        policy: &BattlefieldGenerationPolicyDatabase,
         archetype: BattlefieldArchetype,
         size_class: BattlefieldSizeClass,
         seed: u64,
@@ -334,13 +304,37 @@ impl BattlefieldTemplateDatabase {
             return candidates[(seed as usize) % candidates.len()];
         }
 
-        let default_size = BattlefieldGenerationPolicyDatabase::builtin()
-            .archetype(archetype)
-            .default_size_class;
+        let default_size = policy.archetype(archetype).default_size_class;
         self.templates
             .iter()
             .find(|template| template.archetype == archetype && template.size_class == default_size)
             .expect("validated default battlefield template should exist")
+    }
+}
+
+/// Ephemeral source context from the same generator used by gameplay.
+/// The publication validator resolves these positions to authored pack sources.
+#[derive(Debug)]
+pub(crate) struct CombatGenerationFailure {
+    pub error: GameError,
+    pub template_id: Option<String>,
+    pub wave_field: Option<(usize, String)>,
+}
+
+impl From<GameError> for CombatGenerationFailure {
+    fn from(error: GameError) -> Self {
+        Self {
+            error,
+            template_id: None,
+            wave_field: None,
+        }
+    }
+}
+
+impl CombatGenerationFailure {
+    fn with_template(mut self, template_id: &str) -> Self {
+        self.template_id = Some(template_id.to_owned());
+        self
     }
 }
 
@@ -349,9 +343,31 @@ impl BattlefieldGenerator {
         request: BattlefieldGenerationRequest<'_>,
         game_data: &GameDataBase,
     ) -> Result<BattlefieldInstance, GameError> {
-        let instance = Self::build_instance(request, game_data)?;
-        validate_instance(&instance).map_err(|message| {
-            GameError::InvalidStaticData(format!("invalid battlefield instance: {message}"))
+        Self::try_generate_with_difficulty(request, game_data, None)
+    }
+
+    fn try_generate_with_difficulty(
+        request: BattlefieldGenerationRequest<'_>,
+        game_data: &GameDataBase,
+        difficulty: Option<&MapNodeCombatDifficulty>,
+    ) -> Result<BattlefieldInstance, GameError> {
+        Self::try_generate_with_diagnostic(request, game_data, difficulty)
+            .map_err(|failure| failure.error)
+    }
+
+    fn try_generate_with_diagnostic(
+        request: BattlefieldGenerationRequest<'_>,
+        game_data: &GameDataBase,
+        difficulty: Option<&MapNodeCombatDifficulty>,
+    ) -> Result<BattlefieldInstance, CombatGenerationFailure> {
+        let instance = Self::build_instance(request, game_data, difficulty)?;
+        validate_instance_with_location(&instance).map_err(|failure| CombatGenerationFailure {
+            error: GameError::InvalidStaticData(format!(
+                "invalid battlefield instance: {}",
+                failure.message
+            )),
+            template_id: Some(instance.battlefield_template_id.clone()),
+            wave_field: failure.wave_field,
         })?;
         Ok(instance)
     }
@@ -366,7 +382,8 @@ impl BattlefieldGenerator {
     fn build_instance(
         request: BattlefieldGenerationRequest<'_>,
         game_data: &GameDataBase,
-    ) -> Result<BattlefieldInstance, GameError> {
+        difficulty: Option<&MapNodeCombatDifficulty>,
+    ) -> Result<BattlefieldInstance, CombatGenerationFailure> {
         let encounter = request
             .encounter_id
             .and_then(|id| game_data.pve_data.get_by_id(id));
@@ -377,7 +394,13 @@ impl BattlefieldGenerator {
                     .as_ref()
                     .and_then(|battlefield| battlefield.archetype)
             })
-            .unwrap_or_else(|| archetype_for(request.category, request.seed));
+            .unwrap_or_else(|| {
+                archetype_for(
+                    request.category,
+                    request.seed,
+                    &game_data.map_catalogs.battlefield_archetypes,
+                )
+            });
         let node_type = encounter
             .and_then(|encounter| encounter.node_type)
             .map(Ok)
@@ -390,7 +413,7 @@ impl BattlefieldGenerator {
         let mission_variant = encounter
             .and_then(|encounter| encounter.mission_variant)
             .unwrap_or_else(|| CombatMissionVariant::default_for_node_type(node_type));
-        let survive_timer_ms = encounter.and_then(|encounter| encounter.survive_timer_ms);
+        let survive_timer_ms = encounter.and_then(|encounter| encounter.survive_timer_ms());
         let mission_risk = encounter
             .map(|encounter| CombatMissionRisk::from_risk_level(encounter.risk_level))
             .unwrap_or(CombatMissionRisk::Controlled);
@@ -401,9 +424,19 @@ impl BattlefieldGenerator {
                     .as_ref()
                     .and_then(|battlefield| battlefield.size_class)
             })
-            .unwrap_or_else(|| size_for(request.category, archetype));
-        let template =
-            BattlefieldTemplateDatabase::builtin().select(archetype, size_class, request.seed);
+            .unwrap_or_else(|| {
+                size_for(
+                    request.category,
+                    archetype,
+                    &game_data.map_catalogs.battlefield_archetypes,
+                )
+            });
+        let template = game_data.map_catalogs.battlefield_templates.select(
+            &game_data.map_catalogs.battlefield_archetypes,
+            archetype,
+            size_class,
+            request.seed,
+        );
         let mut battlefield_template =
             parse_battlefield_template(template).unwrap_or_else(|message| {
                 panic!(
@@ -412,14 +445,31 @@ impl BattlefieldGenerator {
                 )
             });
         apply_authored_static_obstacles(&mut battlefield_template, encounter);
-        ensure_defense_route(&mut battlefield_template, node_type)?;
-        let scaling_stage = game_data
-            .run_policy
-            .floor_combat_scaling_for_floor_index(request.floor_index);
+        ensure_defense_route(&mut battlefield_template, node_type).map_err(|error| {
+            CombatGenerationFailure::from(error).with_template(&battlefield_template.id)
+        })?;
+        let difficulty_tuning = match difficulty {
+            Some(difficulty) => game_data
+                .run_policy
+                .resolved_tuning_for_manifested_node(difficulty)
+                .ok_or_else(|| {
+                    GameError::InvalidStaticData(format!(
+                        "manifested combat difficulty '{}@{}' does not match live policy",
+                        difficulty.difficulty_profile_id, difficulty.power_model_version
+                    ))
+                })?,
+            None => game_data
+                .run_policy
+                .standard_non_manifested_combat_tuning()
+                .clone(),
+        };
         let enemy_stat_scale = BattleUnitStatScale {
-            max_health_percent: scaling_stage.max_health_multiplier_percent,
-            attack_percent: scaling_stage.attack_multiplier_percent,
-            defense_percent: scaling_stage.defense_multiplier_percent,
+            max_health_percent: difficulty_tuning.max_health_multiplier_percent,
+            attack_percent: difficulty_tuning.attack_multiplier_percent,
+            defense_percent: difficulty_tuning.defense_multiplier_percent,
+            exact_override: None,
+            encounter_health_percent: 100,
+            encounter_attack_percent: 100,
         };
         let spawn_waves = spawn_waves_for(
             node_type,
@@ -428,9 +478,10 @@ impl BattlefieldGenerator {
             encounter,
             game_data,
             request.seed,
-            scaling_stage.generated_wave_budget_multiplier_percent,
-            &scaling_stage.extra_waves,
-        )?;
+            difficulty_tuning.generated_wave_budget_multiplier_percent,
+            &difficulty_tuning.extra_waves,
+        )
+        .map_err(|failure| failure.with_template(&battlefield_template.id))?;
         let enemy_briefing = enemy_briefing(encounter, game_data, request.category, &spawn_waves);
         let threat_warnings = threat_warnings_for(&spawn_waves, game_data, request.seed);
         Ok(BattlefieldInstance {
@@ -479,7 +530,8 @@ impl CombatPreview {
         game_data: &GameDataBase,
         seed: u64,
     ) -> Result<Self, GameError> {
-        let instance = BattlefieldGenerator::try_generate(
+        Self::try_generate_from_request(
+            node_id,
             BattlefieldGenerationRequest {
                 category,
                 encounter_id,
@@ -487,31 +539,8 @@ impl CombatPreview {
                 floor_index: 0,
             },
             game_data,
-        )?;
-
-        Ok(Self {
-            node_id,
-            encounter_id: encounter_id.map(str::to_string),
-            battlefield_template_id: instance.battlefield_template_id,
-            node_type: instance.node_type,
-            mission_variant: instance.mission_variant,
-            survive_timer_ms: instance.survive_timer_ms,
-            mission_risk: instance.mission_risk,
-            archetype: instance.archetype,
-            size_class: instance.size_class,
-            width: instance.width,
-            height: instance.height,
-            tiles: instance.tiles,
-            valid_tiles: instance.valid_tiles,
-            deployment_zones: instance.deployment_zones,
-            spawn_zones: instance.spawn_zones,
-            routes: instance.routes,
-            spawn_waves: instance.spawn_waves,
-            obstacles: instance.obstacles,
-            enemy_briefing: instance.enemy_briefing,
-            threat_warnings: instance.threat_warnings,
-            enemy_stat_scale: instance.enemy_stat_scale,
-        })
+            None,
+        )
     }
 
     pub fn try_generate_for_node_at_floor(
@@ -522,7 +551,28 @@ impl CombatPreview {
         seed: u64,
         floor_index: u32,
     ) -> Result<Self, GameError> {
-        let instance = BattlefieldGenerator::try_generate(
+        Self::try_generate_for_node_at_floor_with_difficulty(
+            node_id,
+            category,
+            encounter_id,
+            game_data,
+            seed,
+            floor_index,
+            None,
+        )
+    }
+
+    pub(crate) fn try_generate_for_node_at_floor_with_difficulty(
+        node_id: MapNodeId,
+        category: MapNodeCategory,
+        encounter_id: Option<&str>,
+        game_data: &GameDataBase,
+        seed: u64,
+        floor_index: u32,
+        difficulty: Option<&MapNodeCombatDifficulty>,
+    ) -> Result<Self, GameError> {
+        Self::try_generate_from_request(
+            node_id,
             BattlefieldGenerationRequest {
                 category,
                 encounter_id,
@@ -530,11 +580,45 @@ impl CombatPreview {
                 floor_index,
             },
             game_data,
-        )?;
+            difficulty,
+        )
+    }
 
-        Ok(Self {
+    fn try_generate_from_request(
+        node_id: MapNodeId,
+        request: BattlefieldGenerationRequest<'_>,
+        game_data: &GameDataBase,
+        difficulty: Option<&MapNodeCombatDifficulty>,
+    ) -> Result<Self, GameError> {
+        Self::try_generate_from_request_with_diagnostic(node_id, request, game_data, difficulty)
+            .map_err(|failure| failure.error)
+    }
+
+    pub(crate) fn try_generate_from_request_with_diagnostic(
+        node_id: MapNodeId,
+        request: BattlefieldGenerationRequest<'_>,
+        game_data: &GameDataBase,
+        difficulty: Option<&MapNodeCombatDifficulty>,
+    ) -> Result<Self, CombatGenerationFailure> {
+        let encounter_id = request.encounter_id.map(str::to_string);
+        let instance =
+            BattlefieldGenerator::try_generate_with_diagnostic(request, game_data, difficulty)?;
+        Ok(Self::from_battlefield_instance(
             node_id,
-            encounter_id: encounter_id.map(str::to_string),
+            encounter_id,
+            instance,
+        ))
+    }
+
+    fn from_battlefield_instance(
+        node_id: MapNodeId,
+        encounter_id: Option<String>,
+        instance: BattlefieldInstance,
+    ) -> Self {
+        Self {
+            deterrence: Default::default(),
+            node_id,
+            encounter_id,
             battlefield_template_id: instance.battlefield_template_id,
             node_type: instance.node_type,
             mission_variant: instance.mission_variant,
@@ -554,7 +638,7 @@ impl CombatPreview {
             enemy_briefing: instance.enemy_briefing,
             threat_warnings: instance.threat_warnings,
             enemy_stat_scale: instance.enemy_stat_scale,
-        })
+        }
     }
 
     pub fn generate_for_node(
@@ -586,31 +670,29 @@ impl CombatPreview {
         )
         .expect("combat preview battlefield should be valid")
     }
-
-    pub fn disprove_rumor_warnings(&mut self) {
-        for warning in &mut self.threat_warnings {
-            if warning.source == ThreatWarningSource::Rumor {
-                warning.status = ThreatWarningStatus::Disproved;
-            }
-        }
-    }
 }
 
-fn archetype_for(category: MapNodeCategory, seed: u64) -> BattlefieldArchetype {
+fn archetype_for(
+    category: MapNodeCategory,
+    seed: u64,
+    policy: &BattlefieldGenerationPolicyDatabase,
+) -> BattlefieldArchetype {
     if category == MapNodeCategory::Boss {
         return BattlefieldArchetype::BossArena;
     }
 
-    BattlefieldGenerationPolicyDatabase::builtin().random_archetype(seed)
+    policy.random_archetype(seed)
 }
 
-fn size_for(category: MapNodeCategory, archetype: BattlefieldArchetype) -> BattlefieldSizeClass {
+fn size_for(
+    category: MapNodeCategory,
+    archetype: BattlefieldArchetype,
+    policy: &BattlefieldGenerationPolicyDatabase,
+) -> BattlefieldSizeClass {
     if category == MapNodeCategory::Boss {
         BattlefieldSizeClass::Large
     } else {
-        BattlefieldGenerationPolicyDatabase::builtin()
-            .archetype(archetype)
-            .default_size_class
+        policy.archetype(archetype).default_size_class
     }
 }
 
@@ -654,11 +736,12 @@ fn spawn_waves_for(
     preview_seed: u64,
     generated_wave_budget_multiplier_percent: u32,
     extra_waves: &[PveWaveData],
-) -> Result<Vec<SpawnWave>, GameError> {
+) -> Result<Vec<SpawnWave>, CombatGenerationFailure> {
     let Some(encounter) = encounter else {
         return Err(GameError::InvalidStaticData(
             "combat preview requires an authored pve encounter".to_string(),
-        ));
+        )
+        .into());
     };
 
     let mut authored_waves = encounter.wave_definitions();
@@ -667,26 +750,34 @@ fn spawn_waves_for(
         return Err(GameError::InvalidStaticData(format!(
             "pve encounter '{}' must define at least one wave",
             encounter.id
-        )));
+        ))
+        .into());
     }
 
     authored_waves
         .iter()
         .enumerate()
         .map(|(index, wave)| {
+            crate::authoring::control::charge(1, "preview_wave")?;
             let route_id = if node_type == CombatNodeType::Defense {
-                Some(wave.route_id.clone().ok_or_else(|| {
-                    GameError::InvalidStaticData(format!(
-                        "defense pve encounter '{}' wave '{}' must define route_id",
-                        encounter.id, wave.id
-                    ))
-                })?)
+                Some(
+                    wave.route_id
+                        .clone()
+                        .ok_or_else(|| CombatGenerationFailure {
+                            error: GameError::InvalidStaticData(format!(
+                                "defense pve encounter '{}' wave '{}' must define route_id",
+                                encounter.id, wave.id
+                            )),
+                            template_id: None,
+                            wave_field: Some((index, "route_id".into())),
+                        })?,
+                )
             } else {
                 wave.route_id.clone()
             };
             Ok(SpawnWave {
                 id: wave.id.clone(),
-                time_ms: wave.time_ms,
+                activation: wave.activation.clone(),
                 spawn_zone_ids: if wave.spawn_zone_ids.is_empty() {
                     spawn_zone_ids_for_wave(archetype, spawn_zones, index)
                 } else {
@@ -699,7 +790,7 @@ fn spawn_waves_for(
                     preview_seed,
                     index,
                     generated_wave_budget_multiplier_percent,
-                ),
+                )?,
                 required_for_victory: wave.required_for_victory,
             })
         })
@@ -746,58 +837,78 @@ fn wave_enemy_entries(
     preview_seed: u64,
     wave_index: usize,
     generated_wave_budget_multiplier_percent: u32,
-) -> Vec<SpawnWaveEnemyEntry> {
-    resolve_pve_wave_enemy_data_with_budget_multiplier(
+) -> Result<Vec<SpawnWaveEnemyEntry>, GameError> {
+    use crate::authoring::control::{self, Resource};
+    let enemies = resolve_pve_wave_enemy_data_with_budget_multiplier(
         wave,
         game_data,
         preview_seed,
         wave_index,
         generated_wave_budget_multiplier_percent,
-    )
-    .iter()
-    .enumerate()
-    .map(|(enemy_index, enemy)| {
-        let count = enemy.count().max(1);
-        match enemy {
-            crate::game::data::pve_data::PveWaveEnemyData::Abnormality {
-                abnormality_id, ..
-            } => SpawnWaveEnemyEntry {
-                kind: EnemyKind::Abnormality,
-                profile_id: None,
-                abnormality_id: abnormality_id.clone(),
-                tier: enemy.tier(),
-                count,
-                appearance_seeds: Vec::new(),
-            },
-            crate::game::data::pve_data::PveWaveEnemyData::CorrodedEmployee {
-                profile_id, ..
-            } => SpawnWaveEnemyEntry {
-                kind: EnemyKind::CorrodedEmployee,
-                profile_id: Some(profile_id.clone()),
-                abnormality_id: String::new(),
-                tier: enemy.tier(),
-                count,
-                appearance_seeds: appearance_seeds_for_corroded_employee(
-                    preview_seed,
-                    wave_index,
-                    enemy_index,
-                    profile_id,
+    );
+    // The legacy resolver has an infallible public signature. A controlled
+    // early return is disposable only at this immediate fallible boundary.
+    control::poll("resolved_wave_entries")?;
+    let mut total = 0_usize;
+    for enemy in &enemies {
+        let count = enemy.count().max(1) as usize;
+        control::admit(
+            Resource::RetainedEntities,
+            total,
+            count,
+            "preview_wave_entities",
+        )?;
+        control::charge(count as u64 + 1, "preview_appearance_seeds")?;
+        total = total.saturating_add(count);
+    }
+    Ok(enemies
+        .iter()
+        .enumerate()
+        .map(|(enemy_index, enemy)| {
+            let count = enemy.count().max(1);
+            match enemy {
+                crate::game::data::pve_data::PveWaveEnemyData::Abnormality {
+                    abnormality_id,
+                    ..
+                } => SpawnWaveEnemyEntry {
+                    kind: EnemyKind::Abnormality,
+                    profile_id: None,
+                    abnormality_id: abnormality_id.clone(),
+                    tier: enemy.tier(),
                     count,
-                ),
-            },
-            crate::game::data::pve_data::PveWaveEnemyData::FacilityEntity {
-                profile_id, ..
-            } => SpawnWaveEnemyEntry {
-                kind: EnemyKind::FacilityEntity,
-                profile_id: Some(profile_id.clone()),
-                abnormality_id: String::new(),
-                tier: enemy.tier(),
-                count,
-                appearance_seeds: Vec::new(),
-            },
-        }
-    })
-    .collect()
+                    appearance_seeds: Vec::new(),
+                },
+                crate::game::data::pve_data::PveWaveEnemyData::CorrodedEmployee {
+                    profile_id,
+                    ..
+                } => SpawnWaveEnemyEntry {
+                    kind: EnemyKind::CorrodedEmployee,
+                    profile_id: Some(profile_id.clone()),
+                    abnormality_id: String::new(),
+                    tier: enemy.tier(),
+                    count,
+                    appearance_seeds: appearance_seeds_for_corroded_employee(
+                        preview_seed,
+                        wave_index,
+                        enemy_index,
+                        profile_id,
+                        count,
+                    ),
+                },
+                crate::game::data::pve_data::PveWaveEnemyData::FacilityEntity {
+                    profile_id,
+                    ..
+                } => SpawnWaveEnemyEntry {
+                    kind: EnemyKind::FacilityEntity,
+                    profile_id: Some(profile_id.clone()),
+                    abnormality_id: String::new(),
+                    tier: enemy.tier(),
+                    count,
+                    appearance_seeds: Vec::new(),
+                },
+            }
+        })
+        .collect())
 }
 
 fn appearance_seeds_for_corroded_employee(
@@ -906,24 +1017,36 @@ fn role_for(category: MapNodeCategory) -> &'static str {
 }
 
 #[cfg(test)]
-fn archetype_id(archetype: BattlefieldArchetype) -> &'static str {
-    BattlefieldGenerationPolicyDatabase::builtin()
+fn archetype_id(archetype: BattlefieldArchetype) -> String {
+    crate::game::data::live_ron::embedded_map_catalogs_for_fixtures()
+        .battlefield_archetypes
         .archetype(archetype)
         .id
-        .as_str()
+        .clone()
 }
 
 #[cfg(test)]
-fn size_class_id(size_class: BattlefieldSizeClass) -> &'static str {
-    BattlefieldGenerationPolicyDatabase::builtin()
+fn size_class_id(size_class: BattlefieldSizeClass) -> String {
+    crate::game::data::live_ron::embedded_map_catalogs_for_fixtures()
+        .battlefield_archetypes
         .size_class(size_class)
         .id
-        .as_str()
+        .clone()
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn battlefield_template_database_rejects_unknown_wrapper_fields() {
+        let error = ron::de::from_str::<BattlefieldTemplateDatabase>(
+            "(templates: [], legacy_templates: [])",
+        )
+        .expect_err("unknown battlefield template database fields must reject");
+
+        assert!(error.to_string().contains("legacy_templates"));
+    }
     use uuid::Uuid;
 
     use crate::game::data::{
@@ -948,10 +1071,23 @@ mod tests {
         GameDataBuilder::empty().build()
     }
 
+    fn manifested_difficulty(
+        band: crate::game::data::run_policy_data::OrdinaryCombatDifficultyBand,
+    ) -> MapNodeCombatDifficulty {
+        MapNodeCombatDifficulty {
+            power_model_version: 2,
+            difficulty_profile_id: "default_facility".to_string(),
+            class: crate::game::map::MapNodeCombatDifficultyClass::Ordinary(band),
+            revival: None,
+            floor_power_anchor: 100,
+            target_power: 100,
+        }
+    }
+
     fn preview_wave(abnormality_id: &str, route_id: Option<&str>) -> PveWaveData {
         PveWaveData {
             id: "wave_0".to_string(),
-            time_ms: 0,
+            activation: crate::game::data::pve_data::PveWaveActivationData::at_time("wave_0", 0),
             spawn_zone_ids: Vec::new(),
             route_id: route_id.map(str::to_string),
             required_for_victory: true,
@@ -972,19 +1108,22 @@ mod tests {
         GameDataBuilder::empty()
             .with_abnormalities(vec![preview_test_abnormality(&abnormality_id, 0xDADA)])
             .with_pve(PveEncounterDatabase::new(vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
                 id: encounter_id.to_string(),
                 encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
                 primary_abnormality_id: Some(abnormality_id.clone()),
+                boss_runtime: None,
                 risk_level: RiskLevel::ZAYIN,
-                reward_mode: crate::game::enums::RewardMode::ClaimAll,
-                reward_uuids: Vec::new(),
-                suppression_research: None,
+                outcome_policies: PveEncounter::fixture_outcome_policies(
+                    crate::game::enums::RewardMode::ClaimAll,
+                    Vec::new(),
+                ),
                 node_type: Some(node_type),
                 mission_variant: None,
-                survive_timer_ms: None,
+                terminal_outcomes: PveEncounter::fixture_terminal_outcomes(None),
                 battlefield: None,
                 tactical_plan: None,
-                win_condition: None,
                 waves: vec![preview_wave(&abnormality_id, route_id)],
                 static_obstacles: Vec::new(),
             }]))
@@ -1072,22 +1211,27 @@ mod tests {
         let data = GameDataBuilder::empty()
             .with_abnormalities(vec![armored])
             .with_pve(PveEncounterDatabase::new(vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
                 id: "threat_encounter".to_string(),
                 encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
                 primary_abnormality_id: Some("armored_enemy".to_string()),
+                boss_runtime: None,
                 risk_level: RiskLevel::ZAYIN,
-                reward_mode: crate::game::enums::RewardMode::ClaimAll,
-                reward_uuids: Vec::new(),
-                suppression_research: None,
+                outcome_policies: PveEncounter::fixture_outcome_policies(
+                    crate::game::enums::RewardMode::ClaimAll,
+                    Vec::new(),
+                ),
                 node_type: Some(CombatNodeType::Defense),
                 mission_variant: None,
-                survive_timer_ms: None,
+                terminal_outcomes: PveEncounter::fixture_terminal_outcomes(None),
                 battlefield: None,
                 tactical_plan: None,
-                win_condition: None,
                 waves: vec![PveWaveData {
                     id: "wave_0".to_string(),
-                    time_ms: 0,
+                    activation: crate::game::data::pve_data::PveWaveActivationData::at_time(
+                        "wave_0", 0,
+                    ),
                     spawn_zone_ids: Vec::new(),
                     route_id: Some("defense_main".to_string()),
                     required_for_victory: true,
@@ -1143,22 +1287,27 @@ mod tests {
         let data = GameDataBuilder::empty()
             .with_abnormalities(vec![drone])
             .with_pve(PveEncounterDatabase::new(vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
                 id: "airborne_encounter".to_string(),
                 encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
                 primary_abnormality_id: Some("airborne_enemy".to_string()),
+                boss_runtime: None,
                 risk_level: RiskLevel::ZAYIN,
-                reward_mode: crate::game::enums::RewardMode::ClaimAll,
-                reward_uuids: Vec::new(),
-                suppression_research: None,
+                outcome_policies: PveEncounter::fixture_outcome_policies(
+                    crate::game::enums::RewardMode::ClaimAll,
+                    Vec::new(),
+                ),
                 node_type: Some(CombatNodeType::Defense),
                 mission_variant: None,
-                survive_timer_ms: None,
+                terminal_outcomes: PveEncounter::fixture_terminal_outcomes(None),
                 battlefield: None,
                 tactical_plan: None,
-                win_condition: None,
                 waves: vec![PveWaveData {
                     id: "wave_0".to_string(),
-                    time_ms: 0,
+                    activation: crate::game::data::pve_data::PveWaveActivationData::at_time(
+                        "wave_0", 0,
+                    ),
                     spawn_zone_ids: Vec::new(),
                     route_id: Some("defense_main".to_string()),
                     required_for_victory: true,
@@ -1216,40 +1365,76 @@ mod tests {
     }
 
     #[test]
-    fn combat_preview_enemy_stat_scale_is_internal_not_wire_contract() {
+    fn manifested_node_difficulty_owns_internal_enemy_scale_without_floor_fallback() {
         let data = GameDataBuilder::empty()
             .with_abnormalities(vec![preview_test_abnormality("scaled_enemy", 0xC0_51C1)])
             .with_pve(PveEncounterDatabase::new(vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
                 id: "scaled_encounter".to_string(),
                 encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
                 primary_abnormality_id: Some("scaled_enemy".to_string()),
+                boss_runtime: None,
                 risk_level: RiskLevel::ZAYIN,
-                reward_mode: crate::game::enums::RewardMode::ClaimAll,
-                reward_uuids: Vec::new(),
-                suppression_research: None,
+                outcome_policies: PveEncounter::fixture_outcome_policies(
+                    crate::game::enums::RewardMode::ClaimAll,
+                    Vec::new(),
+                ),
                 node_type: Some(CombatNodeType::Defense),
                 mission_variant: None,
-                survive_timer_ms: None,
+                terminal_outcomes: PveEncounter::fixture_terminal_outcomes(None),
                 battlefield: None,
                 tactical_plan: None,
-                win_condition: None,
                 waves: vec![preview_wave("scaled_enemy", Some("defense_main"))],
                 static_obstacles: Vec::new(),
             }]))
             .build();
-        let preview = CombatPreview::try_generate_for_node_at_floor(
+        let easy = manifested_difficulty(
+            crate::game::data::run_policy_data::OrdinaryCombatDifficultyBand::Easy,
+        );
+        let hard = manifested_difficulty(
+            crate::game::data::run_policy_data::OrdinaryCombatDifficultyBand::Hard,
+        );
+        let easy_preview = CombatPreview::try_generate_for_node_at_floor_with_difficulty(
             MapNodeId::new(Uuid::from_u128(0xC0_51C1)),
             MapNodeCategory::Combat,
             Some("scaled_encounter"),
             &data,
             51,
-            6,
+            0,
+            Some(&easy),
         )
         .expect("combat preview should generate from live data");
+        let hard_preview = CombatPreview::try_generate_for_node_at_floor_with_difficulty(
+            MapNodeId::new(Uuid::from_u128(0xC0_51C1)),
+            MapNodeCategory::Combat,
+            Some("scaled_encounter"),
+            &data,
+            51,
+            99,
+            Some(&hard),
+        )
+        .expect("combat preview should generate from manifested node difficulty");
+        let hard_other_floor = CombatPreview::try_generate_for_node_at_floor_with_difficulty(
+            MapNodeId::new(Uuid::from_u128(0xC0_51C1)),
+            MapNodeCategory::Combat,
+            Some("scaled_encounter"),
+            &data,
+            51,
+            0,
+            Some(&hard),
+        )
+        .expect("the same manifested difficulty should ignore Floor index");
 
-        assert_ne!(preview.enemy_stat_scale, BattleUnitStatScale::default());
+        assert_eq!(easy_preview.enemy_stat_scale.max_health_percent, 90);
+        assert_eq!(easy_preview.enemy_stat_scale.attack_percent, 90);
+        assert_eq!(easy_preview.enemy_stat_scale.defense_percent, 90);
+        assert_eq!(hard_preview.enemy_stat_scale.max_health_percent, 110);
+        assert_eq!(hard_preview.enemy_stat_scale.attack_percent, 110);
+        assert_eq!(hard_preview.enemy_stat_scale.defense_percent, 110);
+        assert_eq!(hard_preview, hard_other_floor);
 
-        let value = serde_json::to_value(&preview).expect("serialize combat preview");
+        let value = serde_json::to_value(&hard_preview).expect("serialize combat preview");
         assert!(value.get("enemy_stat_scale").is_none());
 
         let round_tripped: CombatPreview =
@@ -1257,6 +1442,70 @@ mod tests {
         assert_eq!(
             round_tripped.enemy_stat_scale,
             BattleUnitStatScale::default()
+        );
+    }
+
+    #[test]
+    fn revival_changes_actual_enemy_scale_without_changing_waves() {
+        let data = GameDataBuilder::empty()
+            .with_abnormalities(vec![preview_test_abnormality("monolith_enemy", 0xC0_51C2)])
+            .with_pve(PveEncounterDatabase::new(vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
+                id: "monolith_encounter".to_string(),
+                encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
+                primary_abnormality_id: Some("monolith_enemy".to_string()),
+                boss_runtime: None,
+                risk_level: RiskLevel::ZAYIN,
+                outcome_policies: PveEncounter::fixture_outcome_policies(
+                    crate::game::enums::RewardMode::ClaimAll,
+                    Vec::new(),
+                ),
+                node_type: Some(CombatNodeType::Defense),
+                mission_variant: None,
+                terminal_outcomes: PveEncounter::fixture_terminal_outcomes(None),
+                battlefield: None,
+                tactical_plan: None,
+                waves: vec![preview_wave("monolith_enemy", Some("defense_main"))],
+                static_obstacles: Vec::new(),
+            }]))
+            .build();
+        let mut stage_two = manifested_difficulty(
+            crate::game::data::run_policy_data::OrdinaryCombatDifficultyBand::Standard,
+        );
+        stage_two.class = crate::game::map::MapNodeCombatDifficultyClass::Role(
+            crate::game::data::run_policy_data::CombatNodeDifficultyRole::Revival,
+        );
+        stage_two.revival = Some(crate::game::revival::RevivalNodeTuning { stage: crate::game::map::RevivalStage::Stage2, stat_multiplier_percent: 150 });
+        stage_two.target_power = 330;
+        let mut stage_three = stage_two.clone();
+        stage_three.revival = Some(crate::game::revival::RevivalNodeTuning { stage: crate::game::map::RevivalStage::Stage3, stat_multiplier_percent: 200 });
+        stage_three.target_power = 440;
+
+        let generate = |difficulty| {
+            CombatPreview::try_generate_for_node_at_floor_with_difficulty(
+                MapNodeId::new(Uuid::from_u128(0xC0_51C2)),
+                MapNodeCategory::Combat,
+                Some("monolith_encounter"),
+                &data,
+                52,
+                0,
+                Some(difficulty),
+            )
+            .expect("monolith combat preview should generate")
+        };
+        let stage_two_preview = generate(&stage_two);
+        let stage_three_preview = generate(&stage_three);
+
+        assert_eq!(stage_two_preview.enemy_stat_scale.max_health_percent, 248);
+        assert_eq!(stage_two_preview.enemy_stat_scale.attack_percent, 218);
+        assert_eq!(stage_two_preview.enemy_stat_scale.defense_percent, 218);
+        assert_eq!(stage_three_preview.enemy_stat_scale.max_health_percent, 330);
+        assert_eq!(stage_three_preview.enemy_stat_scale.attack_percent, 290);
+        assert_eq!(stage_three_preview.enemy_stat_scale.defense_percent, 290);
+        assert_eq!(
+            stage_two_preview.spawn_waves,
+            stage_three_preview.spawn_waves
         );
     }
 
@@ -1299,6 +1548,76 @@ mod tests {
     }
 
     #[test]
+    fn public_generation_entrypoints_preserve_complete_output_across_floor_values() {
+        let data = preview_data_with_encounter(
+            "public_entrypoint_encounter",
+            CombatNodeType::Defense,
+            Some("defense_main"),
+        );
+        let node_id = MapNodeId::new(Uuid::from_u128(0xC0_5103));
+
+        for seed in [0, 1, 42, u64::MAX] {
+            let instance_at_floor_zero = BattlefieldGenerator::try_generate(
+                BattlefieldGenerationRequest {
+                    category: MapNodeCategory::Combat,
+                    encounter_id: Some("public_entrypoint_encounter"),
+                    seed,
+                    floor_index: 0,
+                },
+                &data,
+            )
+            .expect("public battlefield generation should succeed");
+            let instance_at_max_floor = BattlefieldGenerator::generate(
+                BattlefieldGenerationRequest {
+                    category: MapNodeCategory::Combat,
+                    encounter_id: Some("public_entrypoint_encounter"),
+                    seed,
+                    floor_index: u32::MAX,
+                },
+                &data,
+            );
+            assert_eq!(instance_at_floor_zero, instance_at_max_floor);
+
+            let fallible = CombatPreview::try_generate_for_node(
+                node_id,
+                MapNodeCategory::Combat,
+                Some("public_entrypoint_encounter"),
+                &data,
+                seed,
+            )
+            .expect("public preview generation should succeed");
+            let fallible_at_max_floor = CombatPreview::try_generate_for_node_at_floor(
+                node_id,
+                MapNodeCategory::Combat,
+                Some("public_entrypoint_encounter"),
+                &data,
+                seed,
+                u32::MAX,
+            )
+            .expect("public Floor preview generation should succeed");
+            let infallible = CombatPreview::generate_for_node(
+                node_id,
+                MapNodeCategory::Combat,
+                Some("public_entrypoint_encounter"),
+                &data,
+                seed,
+            );
+            let infallible_at_max_floor = CombatPreview::generate_for_node_at_floor(
+                node_id,
+                MapNodeCategory::Combat,
+                Some("public_entrypoint_encounter"),
+                &data,
+                seed,
+                u32::MAX,
+            );
+
+            assert_eq!(fallible, fallible_at_max_floor);
+            assert_eq!(fallible, infallible);
+            assert_eq!(fallible, infallible_at_max_floor);
+        }
+    }
+
+    #[test]
     fn validate_instance_rejects_invalid_battlefield_contracts() {
         let instance = BattlefieldInstance {
             battlefield_template_id: "broken".to_string(),
@@ -1329,7 +1648,9 @@ mod tests {
             routes: Vec::new(),
             spawn_waves: vec![SpawnWave {
                 id: "wave_0".to_string(),
-                time_ms: 0,
+                activation: crate::game::data::pve_data::PveWaveActivationData::at_time(
+                    "wave_0", 0,
+                ),
                 spawn_zone_ids: vec!["spawn".to_string()],
                 route_id: None,
                 enemy_entries: Vec::new(),
@@ -1370,7 +1691,7 @@ mod tests {
             assert!(!instance.deployment_zones.is_empty());
             assert!(!instance.spawn_zones.is_empty());
             assert!(!instance.spawn_waves.is_empty());
-            assert_eq!(instance.spawn_waves[0].time_ms, 0);
+            assert_eq!(instance.spawn_waves[0].activation.at_time_ms(), Some(0));
         }
 
         assert_eq!(archetypes.len(), 6);
@@ -1380,7 +1701,8 @@ mod tests {
 
     #[test]
     fn battlefield_generation_policy_is_loaded_from_shared_ron() {
-        let policy = BattlefieldGenerationPolicyDatabase::builtin();
+        let catalogs = crate::game::data::live_ron::embedded_map_catalogs_for_fixtures();
+        let policy = &catalogs.battlefield_archetypes;
 
         assert_eq!(
             policy
@@ -1448,14 +1770,18 @@ mod tests {
 
     #[test]
     fn battlefield_template_database_selects_seeded_variants() {
-        let database = BattlefieldTemplateDatabase::builtin();
+        let catalogs = crate::game::data::live_ron::embedded_map_catalogs_for_fixtures();
+        let database = &catalogs.battlefield_templates;
+        let policy = &catalogs.battlefield_archetypes;
 
         let first = database.select(
+            policy,
             BattlefieldArchetype::Corridor,
             BattlefieldSizeClass::Medium,
             0,
         );
         let second = database.select(
+            policy,
             BattlefieldArchetype::Corridor,
             BattlefieldSizeClass::Medium,
             1,
@@ -1477,7 +1803,8 @@ mod tests {
 
     #[test]
     fn every_authored_battlefield_template_satisfies_instance_contract() {
-        for template in &BattlefieldTemplateDatabase::builtin().templates {
+        let catalogs = crate::game::data::live_ron::embedded_map_catalogs_for_fixtures();
+        for template in &catalogs.battlefield_templates.templates {
             if matches!(
                 template.archetype,
                 BattlefieldArchetype::SplitRoom | BattlefieldArchetype::BossArena
@@ -1510,7 +1837,9 @@ mod tests {
                 routes: parsed.routes,
                 spawn_waves: vec![SpawnWave {
                     id: "wave_0".to_string(),
-                    time_ms: 0,
+                    activation: crate::game::data::pve_data::PveWaveActivationData::at_time(
+                        "wave_0", 0,
+                    ),
                     spawn_zone_ids: vec![first_spawn_zone_id],
                     route_id,
                     enemy_entries: Vec::new(),
@@ -1533,7 +1862,9 @@ mod tests {
 
     #[test]
     fn authored_defense_route_for_non_rectangular_corridor_is_contiguous() {
-        let template = BattlefieldTemplateDatabase::builtin()
+        let catalogs = crate::game::data::live_ron::embedded_map_catalogs_for_fixtures();
+        let template = catalogs
+            .battlefield_templates
             .templates
             .iter()
             .find(|template| template.id == "corridor_switchback_01")
@@ -1720,7 +2051,9 @@ mod tests {
             routes: Vec::new(),
             spawn_waves: vec![SpawnWave {
                 id: "wave_0".to_string(),
-                time_ms: 0,
+                activation: crate::game::data::pve_data::PveWaveActivationData::at_time(
+                    "wave_0", 0,
+                ),
                 spawn_zone_ids: vec!["spawn".to_string()],
                 route_id: None,
                 enemy_entries: Vec::new(),
@@ -1782,7 +2115,9 @@ mod tests {
             }],
             spawn_waves: vec![SpawnWave {
                 id: "wave_0".to_string(),
-                time_ms: 0,
+                activation: crate::game::data::pve_data::PveWaveActivationData::at_time(
+                    "wave_0", 0,
+                ),
                 spawn_zone_ids: vec!["spawn".to_string()],
                 route_id: Some("jump".to_string()),
                 enemy_entries: Vec::new(),
@@ -1868,7 +2203,9 @@ mod tests {
             ],
             spawn_waves: vec![SpawnWave {
                 id: "wave_0".to_string(),
-                time_ms: 0,
+                activation: crate::game::data::pve_data::PveWaveActivationData::at_time(
+                    "wave_0", 0,
+                ),
                 spawn_zone_ids: vec!["spawn".to_string()],
                 route_id: Some("lane_a".to_string()),
                 enemy_entries: Vec::new(),
@@ -1900,22 +2237,27 @@ mod tests {
                 ],
             ))
             .with_pve(PveEncounterDatabase::new(vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
                 id: "encounter".to_string(),
                 encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
                 primary_abnormality_id: Some("display_abno".to_string()),
+                boss_runtime: None,
                 risk_level: RiskLevel::ZAYIN,
-                reward_mode: crate::game::enums::RewardMode::ClaimAll,
-                reward_uuids: Vec::new(),
-                suppression_research: None,
+                outcome_policies: PveEncounter::fixture_outcome_policies(
+                    crate::game::enums::RewardMode::ClaimAll,
+                    Vec::new(),
+                ),
                 node_type: None,
                 mission_variant: None,
-                survive_timer_ms: None,
+                terminal_outcomes: PveEncounter::fixture_terminal_outcomes(None),
                 battlefield: None,
                 tactical_plan: None,
-                win_condition: None,
                 waves: vec![PveWaveData {
                     id: "wave_0".to_string(),
-                    time_ms: 0,
+                    activation: crate::game::data::pve_data::PveWaveActivationData::at_time(
+                        "wave_0", 0,
+                    ),
                     spawn_zone_ids: Vec::new(),
                     route_id: Some("defense_main".to_string()),
                     required_for_victory: true,
@@ -1991,7 +2333,7 @@ mod tests {
                 pressure: "test".to_string(),
                 preferred_node_types: vec![CombatNodeType::Defense],
                 preferred_risk_levels: vec![RiskLevel::ZAYIN],
-                budget: 3,
+                budget: 2,
                 count_range: CorrodedWaveCountRange { min: 2, max: 3 },
                 role_mix: vec![
                     CorrodedWaveRoleWeight {
@@ -2013,22 +2355,27 @@ mod tests {
                 ],
             }]))
             .with_pve(PveEncounterDatabase::new(vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
                 id: "generated_corroded_encounter".to_string(),
                 encounter_class: crate::game::data::pve_data::PveEncounterClass::Normal,
                 primary_abnormality_id: None,
+                boss_runtime: None,
                 risk_level: RiskLevel::ZAYIN,
-                reward_mode: crate::game::enums::RewardMode::ClaimAll,
-                reward_uuids: Vec::new(),
-                suppression_research: None,
+                outcome_policies: PveEncounter::fixture_outcome_policies(
+                    crate::game::enums::RewardMode::ClaimAll,
+                    Vec::new(),
+                ),
                 node_type: Some(CombatNodeType::Defense),
                 mission_variant: None,
-                survive_timer_ms: None,
+                terminal_outcomes: PveEncounter::fixture_terminal_outcomes(None),
                 battlefield: None,
                 tactical_plan: None,
-                win_condition: None,
                 waves: vec![PveWaveData {
                     id: "wave_0".to_string(),
-                    time_ms: 0,
+                    activation: crate::game::data::pve_data::PveWaveActivationData::at_time(
+                        "wave_0", 0,
+                    ),
                     spawn_zone_ids: Vec::new(),
                     route_id: Some("defense_main".to_string()),
                     required_for_victory: true,
@@ -2042,7 +2389,13 @@ mod tests {
             }]))
             .build();
 
-        let first = BattlefieldGenerator::generate(
+        let hard = manifested_difficulty(
+            crate::game::data::run_policy_data::OrdinaryCombatDifficultyBand::Hard,
+        );
+        let easy = manifested_difficulty(
+            crate::game::data::run_policy_data::OrdinaryCombatDifficultyBand::Easy,
+        );
+        let first = BattlefieldGenerator::try_generate_with_difficulty(
             BattlefieldGenerationRequest {
                 category: MapNodeCategory::Combat,
                 encounter_id: Some("generated_corroded_encounter"),
@@ -2050,8 +2403,10 @@ mod tests {
                 floor_index: 0,
             },
             &data,
-        );
-        let second = BattlefieldGenerator::generate(
+            Some(&hard),
+        )
+        .unwrap();
+        let second = BattlefieldGenerator::try_generate_with_difficulty(
             BattlefieldGenerationRequest {
                 category: MapNodeCategory::Combat,
                 encounter_id: Some("generated_corroded_encounter"),
@@ -2059,10 +2414,32 @@ mod tests {
                 floor_index: 0,
             },
             &data,
-        );
+            Some(&hard),
+        )
+        .unwrap();
+        let easy_instance = BattlefieldGenerator::try_generate_with_difficulty(
+            BattlefieldGenerationRequest {
+                category: MapNodeCategory::Combat,
+                encounter_id: Some("generated_corroded_encounter"),
+                seed: 44,
+                floor_index: 0,
+            },
+            &data,
+            Some(&easy),
+        )
+        .unwrap();
 
         assert_eq!(first.spawn_waves, second.spawn_waves);
         let entries = &first.spawn_waves[0].enemy_entries;
+        assert!(
+            entries.iter().map(|entry| entry.count).sum::<u32>()
+                > easy_instance.spawn_waves[0]
+                    .enemy_entries
+                    .iter()
+                    .map(|entry| entry.count)
+                    .sum::<u32>(),
+            "Hard generated-wave budget must be strictly stronger than Easy"
+        );
         assert!(entries
             .iter()
             .all(|entry| entry.kind == EnemyKind::CorrodedEmployee));
@@ -2082,13 +2459,16 @@ mod tests {
         );
         assert_eq!(first.enemy_briefing[0].kind, EnemyKind::CorrodedEmployee);
 
-        let combat_preview = CombatPreview::generate_for_node(
+        let combat_preview = CombatPreview::try_generate_for_node_at_floor_with_difficulty(
             MapNodeId::new(Uuid::from_u128(0xC0_660D)),
             MapNodeCategory::Combat,
             Some("generated_corroded_encounter"),
             &data,
             44,
-        );
+            0,
+            Some(&hard),
+        )
+        .unwrap();
         assert_eq!(combat_preview.spawn_waves, first.spawn_waves);
         let spawn_groups =
             crate::game::combat_setup::enemy_spawns::enemy_spawn_groups_from_preview(
@@ -2120,25 +2500,30 @@ mod tests {
                 preview_test_abnormality("enemy_a", 0xE0A),
             ])
             .with_pve(PveEncounterDatabase::new(vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
                 id: "authored_route".to_string(),
                 encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
                 primary_abnormality_id: Some("enemy_a".to_string()),
+                boss_runtime: None,
                 risk_level: RiskLevel::ZAYIN,
-                reward_mode: crate::game::enums::RewardMode::ClaimAll,
-                reward_uuids: Vec::new(),
-                suppression_research: None,
+                outcome_policies: PveEncounter::fixture_outcome_policies(
+                    crate::game::enums::RewardMode::ClaimAll,
+                    Vec::new(),
+                ),
                 node_type: Some(CombatNodeType::Defense),
                 mission_variant: None,
-                survive_timer_ms: None,
+                terminal_outcomes: PveEncounter::fixture_terminal_outcomes(None),
                 battlefield: Some(PveBattlefieldOverrideData {
                     archetype: Some(BattlefieldArchetype::ChokePoint),
                     size_class: Some(BattlefieldSizeClass::Small),
                 }),
                 tactical_plan: None,
-                win_condition: None,
                 waves: vec![PveWaveData {
                     id: "wave_0".to_string(),
-                    time_ms: 0,
+                    activation: crate::game::data::pve_data::PveWaveActivationData::at_time(
+                        "wave_0", 0,
+                    ),
                     spawn_zone_ids: vec!["north_entry".to_string()],
                     route_id: Some("defense_main".to_string()),
                     required_for_victory: false,
@@ -2178,25 +2563,30 @@ mod tests {
                 preview_test_abnormality("enemy_a", 0xE0A),
             ])
             .with_pve(PveEncounterDatabase::new(vec![PveEncounter {
+                deterrence_tuning: Default::default(),
+                bonus_objectives: Vec::new(),
                 id: "authored_obstacles".to_string(),
                 encounter_class: crate::game::data::pve_data::PveEncounterClass::Elite,
                 primary_abnormality_id: Some("enemy_a".to_string()),
+                boss_runtime: None,
                 risk_level: RiskLevel::ZAYIN,
-                reward_mode: crate::game::enums::RewardMode::ClaimAll,
-                reward_uuids: Vec::new(),
-                suppression_research: None,
+                outcome_policies: PveEncounter::fixture_outcome_policies(
+                    crate::game::enums::RewardMode::ClaimAll,
+                    Vec::new(),
+                ),
                 node_type: Some(CombatNodeType::Defense),
                 mission_variant: None,
-                survive_timer_ms: None,
+                terminal_outcomes: PveEncounter::fixture_terminal_outcomes(None),
                 battlefield: Some(PveBattlefieldOverrideData {
                     archetype: Some(BattlefieldArchetype::ObstacleRoom),
                     size_class: Some(BattlefieldSizeClass::Medium),
                 }),
                 tactical_plan: None,
-                win_condition: None,
                 waves: vec![PveWaveData {
                     id: "wave_0".to_string(),
-                    time_ms: 0,
+                    activation: crate::game::data::pve_data::PveWaveActivationData::at_time(
+                        "wave_0", 0,
+                    ),
                     spawn_zone_ids: Vec::new(),
                     route_id: Some("defense_main".to_string()),
                     required_for_victory: true,

@@ -1,0 +1,17 @@
+version: 2
+id: conditional-damage-fixture
+values:
+  - name: movement-bonus
+    value:
+      AttackProgram:
+        reactions: []
+        conditional_damage:
+          condition: MovementImpaired
+          percent:
+            moment: Live
+            root: { Const: { value: 20, unit: Scalar } }
+equipment_attacks:
+  - equipment: ice_crown
+    program: { Shared: movement-bonus }
+definitions: []
+skills: []

@@ -1,7 +1,8 @@
+use crate::authoring::control;
 use crate::{
     game::resources::Position,
     game::{
-        ability::{SkillStepDef, SkillTarget, UnitTargetRule},
+        ability::{SkillDef, SkillStepDef, SkillTarget, UnitTargetRule},
         battle::{
             core::{
                 movement::types::WorldVec2,
@@ -26,6 +27,28 @@ pub(in crate::game::battle::core) enum PreviousStepDamageGate {
     Pending,
 }
 
+#[derive(Debug, Clone, Copy)]
+pub(in crate::game::battle::core) enum SkillTargetUsefulness<'a> {
+    Cast {
+        time_ms: u64,
+        skill: &'a SkillDef,
+    },
+    AllowedDeadCasterCast {
+        time_ms: u64,
+        skill: &'a SkillDef,
+    },
+    DeliveryStep {
+        time_ms: u64,
+        step_index: usize,
+        step: &'a SkillStepDef,
+    },
+    AllowedDeadCasterDeliveryStep {
+        time_ms: u64,
+        step_index: usize,
+        step: &'a SkillStepDef,
+    },
+}
+
 impl BattleCore {
     pub(in crate::game::battle::core) fn stored_skill_cast_anchor_position(
         &self,
@@ -45,12 +68,50 @@ impl BattleCore {
             .and_then(|cast_state| cast_state.cast_target_anchor_world_position)
     }
 
-    fn cleanup_finished_skill_cast(&mut self, cast_seq: u64) {
+    pub(in crate::game::battle::core) fn cleanup_finished_skill_cast(&mut self, cast_seq: u64) {
+        if let Some(cast) = self.active_skill_casts.get_mut(&cast_seq) {
+            if let Some(flow) = cast
+                .flow
+                .as_ref()
+                .filter(|flow| !flow.plan.legacy || !flow.plan.side_branches.is_empty())
+            {
+                let work = cast
+                    .step_progress
+                    .len()
+                    .saturating_mul(flow.nodes.len())
+                    .saturating_add(cast.impact_contexts_by_step.len());
+                if control::charge(work as u64, "flow_completed_occurrence_prune").is_err() {
+                    return;
+                }
+                let before = cast.step_progress.len();
+                cast.step_progress.retain(|occurrence, progress| {
+                    !progress.is_terminal() || flow.retains_occurrence(*occurrence)
+                });
+                cast.total_steps -= before - cast.step_progress.len();
+                // One latest impact remains an anchor for a following authored
+                // leaf; completed repeat history does not grow with iterations.
+                let latest = cast.impact_contexts_by_step.keys().next_back().copied();
+                cast.impact_contexts_by_step.retain(|index, _| {
+                    Some(*index) == latest || cast.step_progress.contains_key(index)
+                });
+            }
+        }
+        let size = self
+            .active_skill_casts
+            .get(&cast_seq)
+            .map_or(0, |cast| cast.step_progress.len());
+        if control::charge(size as u64 + 1, "cast_cleanup_scan").is_err() {
+            return;
+        }
         let should_remove = self
             .active_skill_casts
             .get(&cast_seq)
             .is_some_and(|cast_state| {
-                cast_state.deferred_steps.is_empty()
+                cast_state
+                    .flow
+                    .as_ref()
+                    .is_none_or(|flow| flow.complete && !flow.has_pending_sides())
+                    && cast_state.deferred_steps.is_empty()
                     && cast_state.active_area_ids.is_empty()
                     && cast_state.step_progress.len() == cast_state.total_steps
                     && cast_state
@@ -70,6 +131,17 @@ impl BattleCore {
         step_index: usize,
         delivery_count: usize,
     ) {
+        let growth = usize::from(
+            self.active_skill_casts
+                .get(&cast_seq)
+                .is_some_and(|cast| !cast.step_progress.contains_key(&step_index)),
+        );
+        if self
+            .admit_authoring_runtime_growth(growth, "cast_child_record")
+            .is_err()
+        {
+            return;
+        }
         let Some(cast_state) = self.active_skill_casts.get_mut(&cast_seq) else {
             return;
         };
@@ -78,6 +150,7 @@ impl BattleCore {
             .step_progress
             .entry(step_index)
             .or_insert_with(|| SkillStepProgress {
+                use_owned: false,
                 result: SkillStepResult::default(),
                 started: true,
                 pending_delivery_count: 0,
@@ -94,6 +167,17 @@ impl BattleCore {
         step_index: usize,
         result: SkillStepResult,
     ) {
+        let growth = usize::from(
+            self.active_skill_casts
+                .get(&cast_seq)
+                .is_some_and(|cast| !cast.step_progress.contains_key(&step_index)),
+        );
+        if self
+            .admit_authoring_runtime_growth(growth, "cast_child_record")
+            .is_err()
+        {
+            return;
+        }
         let Some(cast_state) = self.active_skill_casts.get_mut(&cast_seq) else {
             return;
         };
@@ -102,6 +186,7 @@ impl BattleCore {
             .step_progress
             .entry(step_index)
             .or_insert_with(|| SkillStepProgress {
+                use_owned: false,
                 result: SkillStepResult::default(),
                 started: true,
                 pending_delivery_count: 0,
@@ -118,18 +203,24 @@ impl BattleCore {
         time_ms: u64,
     ) {
         self.record_skill_step_result(cast_seq, step_index, result);
+        if control::poll("skill_result_recorded").is_err() {
+            return;
+        }
+        let sustained_children = self.sustained_flow_children(cast_seq, step_index);
         if let Some(cast_state) = self.active_skill_casts.get_mut(&cast_seq) {
             let progress = cast_state
                 .step_progress
                 .entry(step_index)
                 .or_insert_with(|| SkillStepProgress {
+                    use_owned: false,
                     result: SkillStepResult::default(),
                     started: true,
                     pending_delivery_count: 0,
                 });
             progress.started = true;
-            progress.pending_delivery_count = 0;
+            progress.pending_delivery_count = sustained_children;
         }
+        self.wake_skill_flow(cast_seq, time_ms);
         self.release_deferred_skill_steps(cast_seq, time_ms);
         self.cleanup_finished_skill_cast(cast_seq);
     }
@@ -143,12 +234,16 @@ impl BattleCore {
         time_ms: u64,
     ) {
         self.record_skill_step_result(cast_seq, step_index, result);
+        if control::poll("skill_result_recorded").is_err() {
+            return;
+        }
 
         if let Some(cast_state) = self.active_skill_casts.get_mut(&cast_seq) {
             let progress = cast_state
                 .step_progress
                 .entry(step_index)
                 .or_insert_with(|| SkillStepProgress {
+                    use_owned: false,
                     result: SkillStepResult::default(),
                     started: true,
                     pending_delivery_count: usize::from(!terminal),
@@ -159,6 +254,25 @@ impl BattleCore {
             }
         }
 
+        self.wake_skill_flow(cast_seq, time_ms);
+        self.release_deferred_skill_steps(cast_seq, time_ms);
+        self.cleanup_finished_skill_cast(cast_seq);
+    }
+
+    pub(in crate::game::battle::core) fn finish_skill_step_delivery(
+        &mut self,
+        cast_seq: u64,
+        step_index: usize,
+        time_ms: u64,
+    ) {
+        if let Some(progress) = self
+            .active_skill_casts
+            .get_mut(&cast_seq)
+            .and_then(|cast| cast.step_progress.get_mut(&step_index))
+        {
+            progress.pending_delivery_count = progress.pending_delivery_count.saturating_sub(1);
+        }
+        self.wake_skill_flow(cast_seq, time_ms);
         self.release_deferred_skill_steps(cast_seq, time_ms);
         self.cleanup_finished_skill_cast(cast_seq);
     }
@@ -169,6 +283,17 @@ impl BattleCore {
         step_index: usize,
         deferred: DeferredSkillStep,
     ) {
+        let growth = usize::from(
+            self.active_skill_casts
+                .get(&cast_seq)
+                .is_some_and(|cast| !cast.deferred_steps.contains_key(&step_index)),
+        );
+        if self
+            .admit_authoring_runtime_growth(growth, "cast_child_record")
+            .is_err()
+        {
+            return;
+        }
         let Some(cast_state) = self.active_skill_casts.get_mut(&cast_seq) else {
             return;
         };
@@ -205,6 +330,13 @@ impl BattleCore {
         cast_seq: u64,
         time_ms: u64,
     ) {
+        let size = self
+            .active_skill_casts
+            .get(&cast_seq)
+            .map_or(0, |cast| cast.deferred_steps.len());
+        if control::charge(size as u64 + 1, "deferred_step_scan").is_err() {
+            return;
+        }
         let ready_steps = self
             .active_skill_casts
             .get(&cast_seq)
@@ -224,6 +356,9 @@ impl BattleCore {
             .unwrap_or_default();
 
         for step_index in ready_steps {
+            if control::charge(1, "deferred_step_release").is_err() {
+                return;
+            }
             let deferred = self
                 .active_skill_casts
                 .get_mut(&cast_seq)
@@ -256,7 +391,14 @@ impl BattleCore {
             .impact_contexts_by_step
             .range(..step_index)
             .next_back()
-            .map(|(_, context)| context.clone())
+            .and_then(|(_, context)| {
+                control::charge(
+                    context.hit_unit_ids.len() as u64 + 1,
+                    "prior_impact_context_copy",
+                )
+                .ok()?;
+                Some(context.clone())
+            })
     }
 
     pub(in crate::game::battle::core) fn update_skill_cast_impact_context(
@@ -265,6 +407,29 @@ impl BattleCore {
         step_index: usize,
         context: SkillImpactContext,
     ) {
+        if control::charge(context.hit_unit_ids.len() as u64 + 1, "impact_context_copy").is_err() {
+            return;
+        }
+        let Some(cast) = self.active_skill_casts.get(&cast_seq) else {
+            return;
+        };
+        let prior = cast.impact_contexts_by_step.get(&step_index);
+        let last = cast.last_impact_context.as_ref();
+        let removed = prior
+            .map_or(0, |context| context.hit_unit_ids.len())
+            .saturating_add(last.map_or(0, |context| context.hit_unit_ids.len()));
+        let additional = context
+            .hit_unit_ids
+            .len()
+            .saturating_mul(2)
+            .saturating_add(usize::from(prior.is_none()))
+            .saturating_add(usize::from(last.is_none()));
+        if self
+            .admit_authoring_runtime_replacement(removed, additional, "impact_context_storage")
+            .is_err()
+        {
+            return;
+        }
         let Some(cast_state) = self.active_skill_casts.get_mut(&cast_seq) else {
             return;
         };
@@ -272,6 +437,75 @@ impl BattleCore {
             .impact_contexts_by_step
             .insert(step_index, context.clone());
         cast_state.last_impact_context = Some(context);
+    }
+
+    pub(in crate::game::battle::core) fn is_alive_ally(
+        &self,
+        id: UnitInstanceId,
+        owner: Side,
+    ) -> bool {
+        self.units
+            .get(&id)
+            .is_some_and(|unit| unit.owner == owner && unit.is_active() && !self.stress_protected_target(id))
+    }
+
+    pub(in crate::game::battle::core) fn choose_ally_skill_target(
+        &self,
+        caster: UnitInstanceId,
+        reach: crate::game::ability::SkillTargetReach,
+        range: Option<&TileRangePattern>,
+        air_capable: bool,
+        usefulness: SkillTargetUsefulness<'_>,
+    ) -> Option<UnitInstanceId> {
+        control::charge(self.units.len() as u64 + 1, "ally_skill_candidates").ok()?;
+        let owner = self.units.get(&caster)?.owner;
+        self.authoring_target_candidates()
+            .ok()?
+            .filter(|unit| {
+                if !self.is_alive_ally(unit.instance_id, owner)
+                    || !self.single_target_can_target_unit(unit.instance_id, air_capable)
+                    || !self.is_target_in_skill_reach(caster, unit.instance_id, reach, range)
+                {
+                    return false;
+                }
+                match usefulness {
+                    SkillTargetUsefulness::Cast { time_ms, skill }
+                    | SkillTargetUsefulness::AllowedDeadCasterCast { time_ms, skill } => self
+                        .skill_has_useful_automatic_cast_target_for_origin(
+                            time_ms,
+                            skill,
+                            caster,
+                            Some(SkillCastTarget::Unit {
+                                unit_instance_id: unit.instance_id,
+                            }),
+                            matches!(
+                                usefulness,
+                                SkillTargetUsefulness::AllowedDeadCasterCast { .. }
+                            ),
+                        ),
+                    SkillTargetUsefulness::DeliveryStep { step, .. }
+                    | SkillTargetUsefulness::AllowedDeadCasterDeliveryStep { step, .. } => {
+                        self.is_skill_step_useful_ally_target(caster, step, unit.instance_id)
+                    }
+                }
+            })
+            .min_by(|a, b| {
+                (u64::from(a.stats.current_health) * u64::from(b.stats.max_health.max(1)))
+                    .cmp(
+                        &(u64::from(b.stats.current_health) * u64::from(a.stats.max_health.max(1))),
+                    )
+                    .then_with(|| {
+                        self.basic_attack_target_distance_sq_world(caster, a.instance_id)
+                            .unwrap_or(f32::INFINITY)
+                            .total_cmp(
+                                &self
+                                    .basic_attack_target_distance_sq_world(caster, b.instance_id)
+                                    .unwrap_or(f32::INFINITY),
+                            )
+                    })
+                    .then_with(|| a.instance_id.cmp(&b.instance_id))
+            })
+            .map(|unit| unit.instance_id)
     }
 
     pub(in crate::game::battle::core) fn choose_skill_target_by_rule(
@@ -283,9 +517,20 @@ impl BattleCore {
         defense_tile_range: Option<&TileRangePattern>,
         rule: UnitTargetRule,
         air_capable: bool,
-        usefulness_step: Option<&SkillStepDef>,
+        usefulness: SkillTargetUsefulness<'_>,
     ) -> Option<UnitInstanceId> {
+        if control::charge(self.units.len() as u64 + 1, "skill_target_candidates").is_err() {
+            return None;
+        }
+        let hostile = if self.approach_taunt(caster_instance_id).is_some() { match usefulness {
+            SkillTargetUsefulness::Cast { skill, .. } | SkillTargetUsefulness::AllowedDeadCasterCast { skill, .. } => Self::hostile_attack_skill(skill),
+            SkillTargetUsefulness::DeliveryStep { step, .. } | SkillTargetUsefulness::AllowedDeadCasterDeliveryStep { step, .. } => {
+                control::charge(step.effects.len() as u64, "taunt_step_effects").ok()?;
+                step.effects.iter().any(|effect| matches!(effect.op, crate::game::ability::SkillEffectDef::Damage { .. } | crate::game::ability::SkillEffectDef::DamageExpr { .. }))
+            }
+        } } else { false };
         let in_range = |unit_id: UnitInstanceId| {
+            if hostile && !self.approach_taunt_attack_allowed(caster_instance_id, unit_id) { return false; }
             if !self.single_target_can_target_unit(unit_id, air_capable) {
                 return false;
             }
@@ -297,12 +542,66 @@ impl BattleCore {
             )
         };
         let is_useful = |unit_id: UnitInstanceId| {
-            usefulness_step.is_none_or(|step| {
-                self.is_skill_step_useful_hostile_target(caster_instance_id, step, unit_id)
-            })
+            let target = Some(SkillCastTarget::Unit {
+                unit_instance_id: unit_id,
+            });
+            match usefulness {
+                SkillTargetUsefulness::Cast { time_ms, skill }
+                | SkillTargetUsefulness::AllowedDeadCasterCast { time_ms, skill } => self
+                    .skill_has_useful_automatic_cast_target_for_origin(
+                        time_ms,
+                        skill,
+                        caster_instance_id,
+                        target,
+                        matches!(
+                            usefulness,
+                            SkillTargetUsefulness::AllowedDeadCasterCast { .. }
+                        ),
+                    ),
+                SkillTargetUsefulness::DeliveryStep {
+                    time_ms,
+                    step_index,
+                    step,
+                }
+                | SkillTargetUsefulness::AllowedDeadCasterDeliveryStep {
+                    time_ms,
+                    step_index,
+                    step,
+                } => self.skill_step_has_useful_actual_delivery_target_for_origin(
+                    time_ms,
+                    step_index,
+                    caster_instance_id,
+                    step,
+                    target,
+                    matches!(
+                        usefulness,
+                        SkillTargetUsefulness::AllowedDeadCasterDeliveryStep { .. }
+                    ),
+                ),
+            }
         };
 
         match rule {
+            UnitTargetRule::RouteProgress => {
+                let mut best: Option<(f32, u64, UnitInstanceId)> = None;
+                for unit in self.authoring_target_candidates().ok()? {
+                    control::poll("skill_route_target_candidate").ok()?;
+                    let id = unit.instance_id;
+                    if !unit.is_active() || unit.owner == caster_owner || !in_range(id) || !is_useful(id) { continue; }
+                    let plan = unit.enemy_movement_plan.as_ref().unwrap_or(&self.scenario.tactical_plan.enemy_plan);
+                    let crate::game::battle::scenario::EnemyMovementPlan::PathAlongCells { cells } = plan;
+                    control::charge(cells.len() as u64 * 2 + 1, "skill_route_projection").ok()?;
+                    crate::game::battle::runtime_control::admit_retained_growth(0,
+                        cells.len().checked_mul(std::mem::size_of::<WorldVec2>()), "skill_route_projection").ok()?;
+                    let progress = self.enemy_route_progress(id);
+                    if best.is_none_or(|(old_progress, old_spawn, old_id)| progress.total_cmp(&old_progress).reverse()
+                        .then_with(|| unit.spawn_order.cmp(&old_spawn))
+                        .then_with(|| id.as_bytes().cmp(old_id.as_bytes())).is_lt()) {
+                        best = Some((progress, unit.spawn_order, id));
+                    }
+                }
+                best.map(|(_, _, id)| id)
+            }
             UnitTargetRule::CurrentTarget => self
                 .units
                 .get(&caster_instance_id)
@@ -312,6 +611,7 @@ impl BattleCore {
                     })
                 })
                 .or_else(|| {
+                    control::poll("skill_target_fallback").ok()?;
                     self.choose_skill_target_by_rule(
                         caster_instance_id,
                         caster_owner,
@@ -320,7 +620,7 @@ impl BattleCore {
                         defense_tile_range,
                         UnitTargetRule::Nearest,
                         air_capable,
-                        usefulness_step,
+                        usefulness,
                     )
                 }),
             UnitTargetRule::LowestHealthEnemy => {
@@ -328,7 +628,8 @@ impl BattleCore {
                     return None;
                 };
                 let mut best: Option<(u32, f32, UnitInstanceId)> = None;
-                for unit in self.units.values() {
+                for unit in self.authoring_target_candidates().ok()? {
+                    control::poll("skill_target_candidate").ok()?;
                     if !unit.is_active() || unit.owner == caster_owner {
                         continue;
                     }
@@ -368,11 +669,13 @@ impl BattleCore {
                     })
                 })
                 .or_else(|| {
+                    control::poll("skill_target_fallback").ok()?;
                     let Some(caster_body) = self.unit_body_view(caster_instance_id) else {
                         return None;
                     };
                     let mut best: Option<(f32, UnitInstanceId)> = None;
-                    for unit in self.units.values() {
+                    for unit in self.authoring_target_candidates().ok()? {
+                        control::poll("skill_target_candidate").ok()?;
                         if !unit.is_active()
                             || unit.owner == caster_owner
                             || !in_range(unit.instance_id)
@@ -401,7 +704,9 @@ impl BattleCore {
                     best.map(|(_, id)| id)
                 }),
         }
-        .filter(|id| in_range(*id) && is_useful(*id))
+        .filter(|id| {
+            control::poll("skill_target_result").is_ok() && in_range(*id) && is_useful(*id)
+        })
     }
 
     pub(in crate::game::battle::core) fn resolve_skill_step_targets(
@@ -411,6 +716,9 @@ impl BattleCore {
         step: &SkillStepDef,
         step_target: Option<SkillCastTarget>,
     ) -> Vec<UnitInstanceId> {
+        if control::charge(1, "skill_step_target").is_err() {
+            return Vec::new();
+        }
         let Some((caster_owner, _caster_pos)) =
             self.resolve_cast_origin_context(Some(cast_seq), caster_instance_id, false)
         else {
@@ -421,16 +729,22 @@ impl BattleCore {
 
         match &step.target {
             SkillTarget::SelfUnit => targets.push(caster_instance_id),
+            SkillTarget::AllySingle => {
+                if let Some(SkillCastTarget::Unit { unit_instance_id }) = step_target {
+                    if self.is_alive_ally(unit_instance_id, caster_owner)
+                        && self.is_skill_step_useful_ally_target(
+                            caster_instance_id,
+                            step,
+                            unit_instance_id,
+                        )
+                    {
+                        targets.push(unit_instance_id);
+                    }
+                }
+            }
             SkillTarget::EnemySingle { .. } => {
                 if let Some(SkillCastTarget::Unit { unit_instance_id }) = step_target {
                     if self.is_alive_enemy(unit_instance_id, caster_owner)
-                        && self.single_target_can_target_unit(unit_instance_id, step.air_capable)
-                        && self.is_target_in_tile_range_policy(
-                            caster_instance_id,
-                            unit_instance_id,
-                            step.range_policy,
-                            step.defense_tile_range.as_ref(),
-                        )
                         && self.is_skill_step_useful_hostile_target(
                             caster_instance_id,
                             step,

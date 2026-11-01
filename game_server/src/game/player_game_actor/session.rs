@@ -126,13 +126,13 @@ impl PlayerGameSession {
                 .load_balance_addr
                 .send(GetOrCreatePlayerActor {
                     player_id,
-                    game_data: app_state.game_data.clone(),
+                    game_data: app_state.approved_host.future_generation().map_err(|e| PlayerGameActorError::new("approved_selection_unavailable", e.to_string()))?.0,
                     run_seed: derive_run_seed(player_id, app_state.current_run_id),
                 })
                 .await
                 .map_err(mailbox_error)?;
 
-            let snapshot = actor
+            let attach = actor
                 .send(AttachSession {
                     session_id,
                     socket,
@@ -141,18 +141,23 @@ impl PlayerGameSession {
                 .await
                 .map_err(mailbox_error)??;
 
-            Ok::<_, PlayerGameActorError>((actor, snapshot))
+            Ok::<_, PlayerGameActorError>((actor, attach))
         }
         .into_actor(self)
         .map(move |result, act, ctx| match result {
-            Ok((actor, snapshot)) => {
+            Ok((actor, attach)) => {
                 act.player_id = Some(player_id);
                 act.player_actor = Some(actor.clone());
                 Self::send_json(ctx, &PlayerGameServerMessage::Authed { player_id });
                 Self::send_json(
                     ctx,
-                    &PlayerGameServerMessage::StateSnapshot { state: snapshot },
+                    &PlayerGameServerMessage::StateSnapshot {
+                        state: attach.state_snapshot,
+                    },
                 );
+                for side_message in &attach.side_messages {
+                    Self::send_json(ctx, side_message);
+                }
                 actor.do_send(EnsureLiveBattleTick);
             }
             Err(error) => {
@@ -187,23 +192,12 @@ impl PlayerGameSession {
                 session_id,
                 request_id: request_id.clone(),
                 behavior: command.behavior,
+                battle_authority: command.battle_authority,
                 battle_side_message: command.battle_side_message,
             })
             .into_actor(self)
             .map(move |result, _act, ctx| match result {
-                Ok(Ok(result)) => {
-                    Self::send_json(ctx, &result.response);
-                    for side_message in &result.side_messages {
-                        Self::send_json(ctx, side_message);
-                    }
-                    if let Some(state_snapshot) = result.state_snapshot {
-                        Self::send_json(
-                            ctx,
-                            &PlayerGameServerMessage::StateSnapshot {
-                                state: state_snapshot,
-                            },
-                        );
-                    }
+                Ok(Ok(_result)) => {
                     actor.do_send(EnsureLiveBattleTick);
                 }
                 Ok(Err(error)) => {
@@ -222,7 +216,7 @@ impl PlayerGameSession {
         &mut self,
         ctx: &mut Ctx,
         request_id: String,
-        command: game_core::game::world::AdminCommand,
+        command: game_core::application::ApplicationAdminCommand,
         token: Option<String>,
     ) {
         if let Err(error) = admin_command_access_from_env(token.as_deref()) {
@@ -335,8 +329,13 @@ impl StreamHandler<Result<Message, ProtocolError>> for PlayerGameSession {
                     Ok(PlayerGameClientMessage::Command {
                         request_id,
                         behavior,
+                        battle_authority,
                         battle_response,
-                    }) => match PlayerBehaviorCommand::from_transport(behavior, battle_response) {
+                    }) => match PlayerBehaviorCommand::from_transport(
+                        behavior,
+                        battle_authority,
+                        battle_response,
+                    ) {
                         Ok(command) => self.handle_command(ctx, request_id, command),
                         Err(error) => {
                             Self::send_json(ctx, &error.to_server_message(Some(request_id)))

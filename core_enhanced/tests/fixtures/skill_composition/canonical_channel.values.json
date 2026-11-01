@@ -1,0 +1,70 @@
+{
+  "purpose": "Explicit test completion only. Unknown release parameters stay in the original sources.",
+  "values": {
+    "capacity": 100,
+    "prepare-ms": 0,
+    "ground-footprint": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXX",
+        "X@X",
+        "XXX"
+      ]
+    },
+    "channel-duration-ms": 2001,
+    "residence-duration-ms": 1000,
+    "max-slow-percent": 80,
+    "enlarged-ground": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "progress-numerator": 3,
+    "progress-denominator": 2,
+    "vulnerability-percent": 15,
+    "fragment-rarity": "Common",
+    "fragment-equip-limit": "OwnedCopies",
+    "opening-duration-ms": 2000,
+    "opening-reduction-percent": 50,
+    "root-duration-ms": 1000,
+    "weapon-name": "검증용 가시 지팡이",
+    "weapon-rarity": "WAW",
+    "weapon-price": 0,
+    "weapon-duplicate": true,
+    "weapon-attack": 0,
+    "weapon-platform-rest": {
+      "hp_recovery_per_tick": 3
+    },
+    "weapon-damage-type": "Magic",
+    "weapon-targeting": "DefaultForward",
+    "weapon-air": true,
+    "weapon-footprint": {
+      "include_anchor_tile": false,
+      "rows": [
+        "..X..",
+        ".XXX.",
+        "..X..",
+        "..@..",
+        "....."
+      ]
+    },
+    "weapon-interval-ms": 1800,
+    "weapon-windup-ms": 280,
+    "armor-name": "개안의 보호 (가칭)",
+    "armor-rarity": "WAW",
+    "armor-price": 0,
+    "armor-duplicate": true,
+    "armor-MaxHealth": 0,
+    "armor-Defense": 0,
+    "armor-MagicResist": 0,
+    "accessory-name": "남겨진 시선 (가칭)",
+    "accessory-rarity": "WAW",
+    "accessory-price": 0,
+    "accessory-duplicate": true
+  }
+}

@@ -1,0 +1,14 @@
+# N01 별자리의 수의: 합의된 타격별 기본 공격 회피 30%.
+version: 1
+id: equipment-evasion-fixture
+values:
+  - name: basic-evasion
+    value:
+      DefenseProgram:
+        BasicAttackEvasion:
+          chance_percent: 30
+equipment_defenses:
+  - equipment: r11_weapon
+    program: { Shared: basic-evasion }
+definitions: []
+skills: []

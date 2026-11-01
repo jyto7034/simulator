@@ -1,0 +1,22 @@
+[package]
+name = "runtime_architecture_preservation"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[dependencies]
+game_core = { path = "../..", features = ["test-fixtures"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+sha2 = "0.10"
+uuid = { version = "1.14.0", features = ["serde"] }
+
+[[bin]]
+name = "preservation_baseline"
+path = "src/main.rs"
+
+[[bin]]
+name = "verify_feature_manifest"
+path = "src/bin/verify_feature_manifest.rs"

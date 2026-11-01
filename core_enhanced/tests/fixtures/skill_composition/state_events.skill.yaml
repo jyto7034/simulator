@@ -1,0 +1,120 @@
+# E03-a test values only: two charges, 20%, 2000ms. Not release balance.
+version: 1
+id: state-event-fixture
+values:
+  - name: aid
+    value:
+      Effects:
+        - id: grant
+          op:
+            Sustained:
+              definition:
+                State:
+                  duration_ms: 2000
+                  program:
+                    id: finite-aid
+                    owns_use: true
+                    end_on_source_exit: false
+                    replacement: ReplaceSameSource
+                    fields:
+                      - name: remaining
+                        value:
+                          Integer:
+                            unit: Count
+                            initial: 2
+                            min: 0
+                            max: 2
+                    handlers:
+                      - id: hostile-hit
+                        event:
+                          HpLost:
+                            relation: Hostile
+                            once_per_action: true
+                        body:
+                          - Set:
+                              field: remaining
+                              value:
+                                moment: Live
+                                root:
+                                  Add:
+                                    - Read:
+                                        StateField:
+                                          name: remaining
+                                          unit: Count
+                                    - Const:
+                                        value: -1
+                                        unit: Count
+                          - HealOwner:
+                              amount:
+                                moment: Live
+                                root:
+                                  Ratio:
+                                    numerator:
+                                      Mul:
+                                        value:
+                                          Read:
+                                            HitPoints:
+                                              subject: Target
+                                              field: Max
+                                        scalar:
+                                          Const:
+                                            value: 20
+                                            unit: Scalar
+                                    denominator:
+                                      Const:
+                                        value: 100
+                                        unit: Scalar
+                                    rounding: Floor
+                          - If:
+                              condition:
+                                Compare:
+                                  left:
+                                    moment: Live
+                                    root:
+                                      Read:
+                                        StateField:
+                                          name: remaining
+                                          unit: Count
+                                  comparison: Equal
+                                  right:
+                                    moment: Live
+                                    root:
+                                      Const:
+                                        value: 0
+                                        unit: Count
+                              then_ops:
+                                - End
+                              else_ops: []
+definitions: []
+skills:
+  - id: authored-state
+    name: 반응 상태 검사
+    kind: Targeted
+    cast_targeting:
+      Explicit:
+        selection: player_unit
+        target: AllySingle
+        reach: global
+        air_capable: true
+    prepare_ms: 0
+    focus_permissions:
+      allows_move: true
+      allows_basic_attack: true
+    admission:
+      capacity: 100
+      requirement: Full
+      cost: All
+    body:
+      Action:
+        id: attach
+        target:
+          Literal:
+            Target: CastTarget
+        delivery:
+          Literal:
+            Delivery: Instant
+        effects:
+          - Append:
+              effects:
+                Shared: aid
+        wait: Released

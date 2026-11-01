@@ -1,0 +1,40 @@
+# Explicit prototype values for validation, not release balance or final narrative/assets.
+version: 1
+id: sheep-mask-forms-fixture
+resources:
+  - { id: mask_pending, owner: EquipmentCopy, lifetime: Attempt, initial: 0, cap: 1 }
+  - { id: mask_wins, owner: EquipmentCopy, lifetime: Run, initial: 0, cap: 4 }
+values:
+  - name: mask_forms
+    value:
+      AttackProgram:
+        reactions: []
+        victory_forms:
+          pending: mask_pending
+          confirmed: mask_wins
+          forms:
+            - name: 양의 탈
+              description: 아직 누구도 해치고 싶지 않은 늑대. 최대 HP 증가.
+              appearance: sheep-mask-smiling
+              wins_required: 1
+              effect: { MaxHealth: { amount: 100 } }
+            - name: 흐려진 미소
+              description: 웃음에 그늘이 생긴다. 공격력 증가.
+              appearance: sheep-mask-clouded
+              wins_required: 2
+              effect: { Attack: { amount: 10 } }
+            - name: 금이 간 탈
+              description: 미소가 사라지고 탈에 금이 간다. 받는 피해 증가.
+              appearance: sheep-mask-cracked
+              wins_required: 1
+              effect: { IncomingDamage: { percent: 25 } }
+            - name: 나쁜 늑대
+              description: 이빨을 드러낸 늑대. 공격력 대폭 증가.
+              appearance: sheep-mask-wolf
+              wins_required: 0
+              effect: { Attack: { amount: 40 } }
+equipment_attacks:
+  - equipment: r11_accessory
+    program: { Shared: mask_forms }
+definitions: []
+skills: []

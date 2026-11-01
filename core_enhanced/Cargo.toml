@@ -3,61 +3,104 @@ name = "game_core"
 version = "0.1.0"
 edition = "2021"
 description = "card backend"
+autobins = false
 
+[[bin]]
+name = "compile_node_graph"
+path = "src/bin/compile_node_graph.rs"
+test = false
+bench = false
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[[bin]]
+name = "compile_skill_composition"
+path = "src/bin/compile_skill_composition.rs"
+test = false
+bench = false
 
-[build-dependencies]
-globwalk = "0.9.1"
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-serde_yaml = "0.9.34"
+[[bin]]
+name = "compile_skill_source"
+path = "src/bin/compile_skill_source.rs"
+test = false
+bench = false
+
+[[bin]]
+name = "author_content"
+path = "src/bin/author_content.rs"
+test = false
+bench = false
+
+[[bin]]
+name = "run_skill_source"
+path = "src/bin/run_skill_source.rs"
+test = false
+bench = false
+
+[[bin]]
+name = "package_official_content"
+path = "src/bin/package_official_content.rs"
+test = false
+bench = false
+
+[[bin]]
+name = "consume_content_pack"
+path = "src/bin/consume_content_pack.rs"
+test = false
+bench = false
+
+[[bin]]
+name = "generate_encounter_compendium_contract_fixture"
+path = "src/bin/generate_encounter_compendium_contract_fixture.rs"
+test = false
+bench = false
+required-features = ["test-fixtures"]
+
+[[bin]]
+name = "generate_event_contract_fixture"
+path = "src/bin/generate_event_contract_fixture.rs"
+test = false
+bench = false
+required-features = ["test-fixtures"]
+
+[[bin]]
+name = "generate_inventory_contract_fixture"
+path = "src/bin/generate_inventory_contract_fixture.rs"
+test = false
+bench = false
+required-features = ["test-fixtures"]
+
+[[bin]]
+name = "generate_shop_contract_fixture"
+path = "src/bin/generate_shop_contract_fixture.rs"
+test = false
+bench = false
+required-features = ["test-fixtures"]
 
 [dependencies]
-rand_core = "0.6"
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-base64 = "0.13.1"
-byteorder = "1.5.0"
-rayon = "1.8.0"
-rapier2d = "0.32.0"
-clap = {version="4.5.26", features = ["derive"]}
-ctor = "0.4.1"
-
-actix-web = "4.9.0"
-actix = "=0.13.5"
-actix-ws = "0.3.0"
-async-tungstenite = {version="0.28.2", features = ["tokio-runtime"]}
-reqwest = "0.12.12"
-
-futures-util = {version = "0.3", features = ["sink"]}
-futures = "0.3.31"
-argon2 = "0.5.3"
-dotenv = "0.15.0"
-
-gnuplot = "0.0.45"
-criterion = "0.5.1"
-url = "2.5.4"
-
-tokio = { version = "1.15", features = ["full", "tracing"] }
-tokio-console = "0.1.13"
-console-subscriber = "0.4.1"
-
-uuid = { version = "1.14.0", features = ["v4", "serde"] }
-lazy_static = "1.5.0"
-structopt = "=0.3.26"
 rand = "0.8.5"
-hex = "0.4.3"
-parking_lot = "0.12.3"
-tracing = "0.1.41"
-tracing-appender = "0.2.3"
-tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
-paste = "1.0.15"
-cargo-llvm-cov = "0.6.16"
-
-serial_test = "3.2.0"
+rapier2d = "0.32.0"
 ron = "0.5.1"
+serde = { version = "1.0", features = ["derive", "rc"] }
+serde_json = "1.0"
+serde_path_to_error = "0.1"
+yaml-rust2 = { version = "=0.13.0", default-features = false }
+sha2 = "0.10.9"
+hmac = "=0.12.1"
+fs2 = "0.4"
+tracing = "0.1.41"
+uuid = { version = "1.14.0", features = ["v4", "serde"] }
+
+[build-dependencies]
+sha2 = "0.10.9"
+serde_json = "1.0"
+
+[target.'cfg(unix)'.dependencies]
+rustix = { version = "=1.0.7", features = ["fs", "process"] }
 
 [features]
 # Event-log validation/replay tests will be redesigned; keep them opt-in for now.
 event_log_checks = []
+# Non-default capability for dedicated Core test/support crates. Production
+# release builds do not expose bare game-data construction.
+test-fixtures = []
+# Optional fixed-size runtime observations; no exporter dependencies in Core.
+runtime-observation = []

@@ -236,7 +236,6 @@ pub fn passive_dummy_patch(max_health: u32, current_health_after_start: Option<u
             radius_units: 350_000,
         })
         .with_basic_attack(BasicAttackDef {
-            range_units: 1.0,
             defense_tile_range: None,
             interval_ms: 5_000,
             windup_ms: 0,

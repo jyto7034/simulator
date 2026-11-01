@@ -5,17 +5,14 @@
 //! battle builder resolves final stats from that draft:
 //!
 //! 1. Employee profile stage:
-//!    base employee profile -> skill fragments -> run HP/trauma condition ->
-//!    active consumable battle modifier.
+//!    base employee profile -> skill fragments -> active consumable battle modifier.
 //! 2. Draft final-stat stage:
 //!    draft combat profile, including weapon overrides -> growth stacks ->
 //!    equipped item Permanent effects -> equipment enhancement modifiers ->
-//!    artifact Permanent effects -> current HP ratio preservation.
+//!    exact employee trauma starting HP or non-employee current HP ratio preservation.
 //!
 //! Keep tests for both the individual stages and their composition. The split is
 //! an execution boundary, not permission for call sites to invent another order.
-
-use uuid::Uuid;
 
 use crate::game::{
     battle::types::{BattleUnitDraft, UnitCombatProfile},
@@ -28,15 +25,13 @@ use crate::game::{
     skill_fragment::SkillFragmentInventory,
 };
 
-/// Builds the employee-side battle profile before scenario-level equipment and artifact
-/// effects are applied.
+/// Builds the employee-side battle profile before scenario-level equipment effects are applied.
 ///
 /// Current order:
 ///
 /// 1. Base employee combat profile.
 /// 2. Skill fragment loadout.
-/// 3. Run HP and trauma battle-start condition.
-/// 4. Active consumable battle profile modifier.
+/// 3. Active consumable battle profile modifier.
 pub(crate) fn employee_combat_profile_for_battle(
     employee: &Employee,
     skill_fragments: &SkillFragmentDatabase,
@@ -45,11 +40,28 @@ pub(crate) fn employee_combat_profile_for_battle(
     let mut profile = employee.skill_fragments.apply_to_profile(
         skill_fragments,
         fragment_inventory,
+        employee.uuid,
         &employee.combat_profile.battle_profile,
     )?;
-    profile.stats.current_health = employee.battle_start_hp_for_max(profile.stats.max_health);
     apply_consumable_battle_profile_effects(employee, &mut profile);
     Ok(profile)
+}
+
+/// Builds the employee profile from persistent loadout inputs only.
+///
+/// Active consumables and condition-derived HP are deliberately excluded from
+/// certified power so readiness cannot rewrite the run's difficulty authority.
+pub(crate) fn employee_combat_profile_for_certified_power(
+    employee: &Employee,
+    skill_fragments: &SkillFragmentDatabase,
+    fragment_inventory: &SkillFragmentInventory,
+) -> Result<UnitCombatProfile, GameError> {
+    employee.skill_fragments.apply_to_profile(
+        skill_fragments,
+        fragment_inventory,
+        employee.uuid,
+        &employee.combat_profile.battle_profile,
+    )
 }
 
 /// Computes final battle-entry stats from an already assembled battle draft.
@@ -60,17 +72,100 @@ pub(crate) fn employee_combat_profile_for_battle(
 /// 2. Growth stacks.
 /// 3. Equipped item Permanent effects.
 /// 4. Equipped item enhancement modifiers.
-/// 5. Artifact Permanent effects.
-/// 6. Run HP ratio preservation after max HP changes.
+/// 5. Exact employee trauma starting HP after final max HP, or non-employee current HP ratio.
 pub(crate) fn effective_stats_for_draft(
     draft: &BattleUnitDraft,
     game_data: &GameDataBase,
-    artifacts: &[Uuid],
 ) -> Result<crate::game::stats::UnitStats, GameError> {
     let base_profile = draft.combat_profile(game_data)?;
     let base_current_health = base_profile.stats.current_health;
     let base_max_health = base_profile.stats.max_health.max(1);
+    let mut stats = persistent_stats_for_draft_profile(draft, game_data, &base_profile)?;
+
+    apply_draft_stat_scale(&mut stats, draft.stat_scale);
+
+    stats.current_health = if let Some(condition) = draft.employee_start_condition {
+        let remaining = crate::game::employee::MAX_TRAUMA.saturating_sub(condition.trauma);
+        if remaining == 0 {
+            0
+        } else {
+            let condition_hp = (u64::from(stats.max_health) * u64::from(remaining)
+                / u64::from(crate::game::employee::MAX_TRAUMA))
+                as u32;
+            let condition_hp = condition_hp.max(1);
+            let bonus = percent_amount_ceil(stats.max_health, condition.battle_hp_bonus_percent);
+            condition_hp.saturating_add(bonus).min(stats.max_health)
+        }
+    } else if base_current_health == 0 {
+        0
+    } else {
+        let scaled = (u128::from(base_current_health) * u128::from(stats.max_health)
+            / u128::from(base_max_health))
+        .min(u128::from(u32::MAX)) as u32;
+        scaled.max(1).min(stats.max_health)
+    };
+
+    Ok(stats)
+}
+
+/// Resolves permanent employee stats, including growth, equipped item effects,
+/// and enhancement levels, without condition HP or scenario difficulty scale.
+pub(crate) fn persistent_stats_for_draft(
+    draft: &BattleUnitDraft,
+    game_data: &GameDataBase,
+) -> Result<crate::game::stats::UnitStats, GameError> {
+    let base_profile = draft.combat_profile(game_data)?;
+    persistent_stats_for_draft_profile(draft, game_data, &base_profile)
+}
+
+fn persistent_stats_for_draft_profile(
+    draft: &BattleUnitDraft,
+    game_data: &GameDataBase,
+    base_profile: &UnitCombatProfile,
+) -> Result<crate::game::stats::UnitStats, GameError> {
     let mut stats = base_profile.stats;
+
+    // Only the selected weapon contributes base numbers. Behavioral profile
+    // application does not add these values, so rebuilding cannot accumulate.
+    if let Some(weapon) = &base_profile.weapon_profile {
+        stats.attack = stats.attack.checked_add(weapon.attack).ok_or_else(|| {
+            GameError::InvalidStaticData("weapon Attack contribution overflowed".into())
+        })?;
+        stats.spell_power = stats
+            .spell_power
+            .checked_add(weapon.spell_power)
+            .ok_or_else(|| {
+                GameError::InvalidStaticData("weapon SpellPower contribution overflowed".into())
+            })?;
+    }
+
+    let mut bound_copies = std::collections::BTreeMap::new();
+    for binding in &draft.equipped_items {
+        if let Some(copy) = binding.persistent_copy_uuid {
+            if bound_copies.insert(copy, binding.base_uuid).is_some() {
+                return Err(GameError::InvalidStaticData(
+                    "duplicate equipped copy binding".into(),
+                ));
+            }
+        }
+    }
+    let mut enhancements = std::collections::BTreeMap::new();
+    for enhancement in &draft.equipped_item_enhancements {
+        let Some(copy) = enhancement.persistent_copy_uuid else {
+            return Err(GameError::InvalidStaticData(
+                "enhancement requires an exact copy".into(),
+            ));
+        };
+        if bound_copies.get(&copy) != Some(&enhancement.base_uuid)
+            || enhancements
+                .insert(copy, enhancement.enhancement_level)
+                .is_some()
+        {
+            return Err(GameError::InvalidStaticData(
+                "enhancement copy binding mismatch or duplicate".into(),
+            ));
+        }
+    }
 
     for (stat_id, value) in &draft.growth_stacks.stacks {
         match stat_id {
@@ -80,10 +175,10 @@ pub(crate) fn effective_stats_for_draft(
         }
     }
 
-    for item_uuid in &draft.equipped_items {
+    for binding in &draft.equipped_items {
         let origin_item = game_data
             .equipment_data
-            .get_by_uuid(item_uuid)
+            .get_by_uuid(&binding.base_uuid)
             .ok_or(GameError::MissingResource(""))?;
 
         stats
@@ -96,12 +191,10 @@ pub(crate) fn effective_stats_for_draft(
                 other => other,
             })?;
 
-        let enhancement_level: u32 = draft
-            .equipped_item_enhancements
-            .iter()
-            .filter(|enhancement| enhancement.base_uuid == *item_uuid)
-            .map(|enhancement| u32::from(enhancement.enhancement_level))
-            .sum();
+        let enhancement_level = binding
+            .persistent_copy_uuid
+            .and_then(|copy| enhancements.get(&copy).copied())
+            .unwrap_or(0);
         if enhancement_level > 0 {
             if let Some(recipe) = game_data
                 .equipment_data
@@ -116,32 +209,7 @@ pub(crate) fn effective_stats_for_draft(
         }
     }
 
-    for artifact_uuid in artifacts {
-        let origin_artifact = game_data
-            .artifact_data
-            .get_by_uuid(artifact_uuid)
-            .ok_or(GameError::MissingResource(""))?;
-
-        stats
-            .apply_permanent_effects(&origin_artifact.triggered_effects)
-            .map_err(|err| match err {
-                GameError::InvalidStaticData(message) => GameError::InvalidStaticData(format!(
-                    "artifact '{}' invalid Permanent effect: {}",
-                    origin_artifact.id, message
-                )),
-                other => other,
-            })?;
-    }
-
-    apply_draft_stat_scale(&mut stats, draft.stat_scale);
-
-    stats.current_health = if base_current_health == 0 {
-        0
-    } else {
-        let scaled = base_current_health.saturating_mul(stats.max_health) / base_max_health;
-        scaled.max(1).min(stats.max_health)
-    };
-
+    stats.current_health = stats.max_health;
     Ok(stats)
 }
 
@@ -149,9 +217,20 @@ fn apply_draft_stat_scale(
     stats: &mut crate::game::stats::UnitStats,
     scale: crate::game::battle::types::BattleUnitStatScale,
 ) {
-    stats.max_health = percent_amount_ceil(stats.max_health, scale.max_health_percent);
+    stats.set_max_health(percent_amount_ceil(
+        stats.max_health,
+        scale.max_health_percent,
+    ));
     stats.attack = percent_amount_ceil(stats.attack, scale.attack_percent);
     stats.defense = scale_i32_percent_ceil(stats.defense, scale.defense_percent);
+    if let Some(exact) = scale.exact_override {
+        stats.set_max_health(exact.max_health);
+        stats.attack = exact.attack;
+        stats.defense = exact.defense;
+        stats.magic_resist = exact.magic_resistance;
+    }
+    stats.set_max_health(percent_amount_ceil(stats.max_health, scale.encounter_health_percent));
+    stats.attack = percent_amount_ceil(stats.attack, scale.encounter_attack_percent);
 }
 
 fn scale_i32_percent_ceil(value: i32, percent: u32) -> i32 {
@@ -170,14 +249,7 @@ fn apply_consumable_battle_profile_effects(employee: &Employee, profile: &mut Un
     };
 
     match &modifier.effect {
-        ConsumableEffect::BattleHpSetup { bonus_percent } => {
-            let bonus = percent_amount_ceil(profile.stats.max_health, *bonus_percent);
-            profile.stats.current_health = profile
-                .stats
-                .current_health
-                .saturating_add(bonus)
-                .min(profile.stats.max_health);
-        }
+        ConsumableEffect::BattleHpSetup { .. } => {}
         ConsumableEffect::OffenseBoost {
             attack_bonus_percent,
         } if modifier.tier.allows_offense_boost() => {
@@ -205,7 +277,9 @@ fn apply_consumable_battle_profile_effects(employee: &Employee, profile: &mut Un
 
 #[cfg(test)]
 mod tests {
+    mod r06_stats;
     use std::collections::HashMap;
+    use uuid::Uuid;
 
     use super::*;
     use crate::game::{
@@ -249,6 +323,7 @@ mod tests {
         );
 
         EquipmentMetadata {
+            content_family: None,
             id: "test_weapon".to_string(),
             uuid,
             name: "Test Weapon".to_string(),
@@ -261,6 +336,8 @@ mod tests {
             triggered_effects,
             ability_activations: vec![],
             weapon_profile: Some(Default::default()),
+            event_check_modifiers: vec![],
+            event_choice_keys: vec![],
         }
     }
 
@@ -289,7 +366,8 @@ mod tests {
 
     #[test]
     fn employee_profile_pipeline_applies_skill_fragments_before_consumable_offense_boost() {
-        let mut employee = Employee::new(Uuid::from_u128(1), "pipeline_employee");
+        let mut employee =
+            Employee::new(Uuid::from_u128(1), "pipeline_employee", "Pipeline Employee");
         employee.skill_fragments =
             SkillFragmentLoadout::with_baseline_ids(vec![starter_basic_attack_fragment_id()]);
         employee.apply_consumable_modifier(
@@ -340,17 +418,24 @@ mod tests {
             level: Tier::I,
             stat_scale: Default::default(),
             growth_stacks,
-            equipped_items: vec![weapon_uuid],
+            equipment_layout: None,
+            equipped_items: vec![crate::game::battle::types::BattleEquipmentBinding {
+            weapon_stage: Default::default(),
+                base_uuid: weapon_uuid,
+                persistent_copy_uuid: None,
+                slot: None,
+            }],
             equipped_item_enhancements: vec![],
+            employee_start_condition: None,
         };
 
-        let stats = effective_stats_for_draft(&draft, &game_data, &[]).unwrap();
+        let stats = effective_stats_for_draft(&draft, &game_data).unwrap();
 
         assert_eq!(stats.attack, 121);
     }
 
     #[test]
-    fn draft_stats_pipeline_applies_floor_stat_scale_to_enemy_stats() {
+    fn draft_stats_pipeline_applies_manifested_difficulty_scale_to_enemy_stats() {
         let abno_uuid = Uuid::from_u128(11);
         let mut abnormality = abnormality(abno_uuid, 10);
         abnormality.max_health = 101;
@@ -369,19 +454,103 @@ mod tests {
                 max_health_percent: 150,
                 attack_percent: 125,
                 defense_percent: 150,
+                exact_override: None,
+                encounter_health_percent: 100,
+                encounter_attack_percent: 100,
             },
             growth_stacks: GrowthStack::new(),
+            equipment_layout: None,
             equipped_items: vec![],
             equipped_item_enhancements: vec![],
+            employee_start_condition: None,
         };
 
-        let stats = effective_stats_for_draft(&draft, &game_data, &[]).unwrap();
+        let stats = effective_stats_for_draft(&draft, &game_data).unwrap();
 
         assert_eq!(stats.max_health, 152);
         assert_eq!(stats.current_health, 152);
         assert_eq!(stats.attack, 13);
         assert_eq!(stats.defense, 5);
         assert_eq!(stats.magic_resist, 0);
+    }
+
+    #[test]
+    fn authored_stage_three_scale_saturates_stats_and_preserves_full_health() {
+        let mut profile = UnitCombatProfile::employee_default();
+        profile.stats =
+            crate::game::stats::UnitStats::with_values(u32::MAX, u32::MAX, u32::MAX, -3, 1_000);
+        let draft = BattleUnitDraft {
+            owned_uuid: Uuid::from_u128(0x207),
+            source: BattleUnitSource::TestFixture {
+                base_uuid: Uuid::from_u128(0x208),
+                profile,
+            },
+            threat_class: crate::game::battle::types::BattleUnitThreatClass::Elite,
+            level: Tier::I,
+            stat_scale: crate::game::battle::types::BattleUnitStatScale {
+                max_health_percent: 207,
+                attack_percent: 182,
+                defense_percent: 182,
+                exact_override: None,
+                encounter_health_percent: 100,
+                encounter_attack_percent: 100,
+            },
+            growth_stacks: GrowthStack::new(),
+            equipment_layout: None,
+            equipped_items: vec![],
+            equipped_item_enhancements: vec![],
+            employee_start_condition: None,
+        };
+
+        let stats = effective_stats_for_draft(&draft, &GameDataBuilder::empty().build()).unwrap();
+
+        assert_eq!(stats.max_health, i32::MAX as u32);
+        assert_eq!(stats.current_health, i32::MAX as u32);
+        assert_eq!(stats.attack, u32::MAX);
+        assert_eq!(stats.defense, -6);
+    }
+
+    #[test]
+    fn employee_start_hp_uses_final_max_hp_then_trauma_floor_and_battle_hp_bonus() {
+        let weapon_uuid = Uuid::from_u128(0xA11);
+        let weapon = weapon_with_permanent_modifier(
+            weapon_uuid,
+            StatModifier {
+                stat: StatId::MaxHealth,
+                kind: StatModifierKind::Percent,
+                value: 50,
+            },
+        );
+        let game_data = GameDataBuilder::empty()
+            .with_equipment(vec![weapon])
+            .build();
+        let draft = BattleUnitDraft {
+            owned_uuid: Uuid::from_u128(0xE11),
+            source: BattleUnitSource::Employee(UnitCombatProfile::employee_default()),
+            threat_class: crate::game::battle::types::BattleUnitThreatClass::Normal,
+            level: Tier::I,
+            stat_scale: Default::default(),
+            growth_stacks: GrowthStack::new(),
+            equipment_layout: None,
+            equipped_items: vec![crate::game::battle::types::BattleEquipmentBinding {
+            weapon_stage: Default::default(),
+                base_uuid: weapon_uuid,
+                persistent_copy_uuid: None,
+                slot: None,
+            }],
+            equipped_item_enhancements: vec![],
+            employee_start_condition: Some(
+                crate::game::battle::types::EmployeeBattleStartCondition {
+                    trauma: 25,
+                    battle_hp_bonus_percent: 20,
+                },
+            ),
+        };
+
+        let stats = effective_stats_for_draft(&draft, &game_data).unwrap();
+
+        assert_eq!(stats.max_health, 150);
+        assert_eq!(stats.current_health, 142); // floor(150 * .75) + ceil(150 * .20)
     }
 
     #[test]
@@ -398,7 +567,8 @@ mod tests {
         let game_data = GameDataBuilder::empty()
             .with_equipment(vec![weapon])
             .build();
-        let mut employee = Employee::new(Uuid::from_u128(1), "pipeline_employee");
+        let mut employee =
+            Employee::new(Uuid::from_u128(1), "pipeline_employee", "Pipeline Employee");
         employee.skill_fragments =
             SkillFragmentLoadout::with_baseline_ids(vec![starter_basic_attack_fragment_id()]);
         employee.apply_consumable_modifier(
@@ -423,15 +593,50 @@ mod tests {
             level: Tier::I,
             stat_scale: Default::default(),
             growth_stacks: GrowthStack::new(),
-            equipped_items: vec![weapon_uuid],
+            equipment_layout: None,
+            equipped_items: vec![crate::game::battle::types::BattleEquipmentBinding {
+            weapon_stage: Default::default(),
+                base_uuid: weapon_uuid,
+                persistent_copy_uuid: None,
+                slot: None,
+            }],
             equipped_item_enhancements: vec![],
+            employee_start_condition: Some(
+                crate::game::battle::types::EmployeeBattleStartCondition {
+                    trauma: employee.condition.trauma,
+                    battle_hp_bonus_percent: 0,
+                },
+            ),
         };
 
-        let stats = effective_stats_for_draft(&draft, &game_data, &[]).unwrap();
+        let stats = effective_stats_for_draft(&draft, &game_data).unwrap();
 
         // Base employee attack is 12. The committed order is:
         // consumable +50% => 18, then equipment +10% => 19.
         // If equipment percent applied before the consumable stage, this would be 20.
         assert_eq!(stats.attack, 19);
+    }
+}
+
+#[cfg(test)]
+mod u14_scaling_tests {
+    use super::*;
+    use crate::game::battle::types::{BattleUnitStatScale,BattleUnitExactStatOverride};
+    #[test]
+    fn u14_revival_times_unrestrained_and_exact_stats_keep_non_targets() {
+        let mut stats=crate::game::stats::UnitStats::with_values(100,100,40,20,30);
+        stats.magic_resist=30;
+        apply_draft_stat_scale(&mut stats,BattleUnitStatScale{
+            max_health_percent:150,attack_percent:150,defense_percent:100,
+            encounter_health_percent:150,encounter_attack_percent:150,exact_override:None,
+        });
+        assert_eq!((stats.max_health,stats.attack,stats.defense,stats.magic_resist),(225,90,20,30));
+        apply_draft_stat_scale(&mut stats,BattleUnitStatScale{
+            max_health_percent:300,attack_percent:300,defense_percent:300,
+            encounter_health_percent:200,encounter_attack_percent:150,
+            exact_override:Some(BattleUnitExactStatOverride{max_health:120,attack:60,defense:7,magic_resistance:13}),
+        });
+        assert_eq!((stats.max_health,stats.attack,stats.defense,stats.magic_resist),(240,90,7,13));
+        assert_eq!((stats.attack_interval_ms,stats.move_speed_units_per_ms),(30,1));
     }
 }

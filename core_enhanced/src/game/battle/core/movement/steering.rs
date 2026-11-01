@@ -1,15 +1,7 @@
 use super::{
-    engine::{MovementOutput, MovementStopReasonContinuous, MovementUnitInput},
+    engine::{MovementOutput, MovementUnitInput},
     types::{MovementGoal, WorldVec2},
 };
-
-pub(super) fn movement_velocity(from: WorldVec2, to: WorldVec2, dt_seconds: f32) -> WorldVec2 {
-    if dt_seconds <= f32::EPSILON {
-        WorldVec2::ZERO
-    } else {
-        WorldVec2::new((to.x - from.x) / dt_seconds, (to.y - from.y) / dt_seconds)
-    }
-}
 
 pub(super) fn desired_velocity(unit: &MovementUnitInput, target: WorldVec2) -> WorldVec2 {
     let desired = target - unit.body.position;
@@ -33,7 +25,7 @@ pub(super) fn goal_target_position(
     unit: &MovementUnitInput,
     _units: &[MovementUnitInput],
 ) -> Option<WorldVec2> {
-    match unit.body.goal {
+    match unit.goal {
         Some(MovementGoal::MoveToPoint { point, .. }) => Some(point),
         Some(MovementGoal::AttackUnit { .. }) => None,
         None => None,
@@ -44,13 +36,11 @@ pub(super) fn reached_goal(
     unit: &MovementUnitInput,
     _units: &[MovementUnitInput],
 ) -> Option<MovementOutput> {
-    match unit.body.goal {
+    match unit.goal {
         Some(MovementGoal::MoveToPoint { point, stop_radius }) => {
             if unit.body.position.distance(point) <= stop_radius {
                 Some(MovementOutput::MovementStopped {
                     unit_id: unit.unit_id,
-                    position: unit.body.position,
-                    reason: MovementStopReasonContinuous::TargetReached,
                 })
             } else {
                 None
@@ -62,8 +52,6 @@ pub(super) fn reached_goal(
         }),
         None => Some(MovementOutput::MovementStopped {
             unit_id: unit.unit_id,
-            position: unit.body.position,
-            reason: MovementStopReasonContinuous::NoGoal,
         }),
     }
 }

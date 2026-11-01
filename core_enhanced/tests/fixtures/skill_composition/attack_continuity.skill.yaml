@@ -1,0 +1,16 @@
+# Explicit verification cap; release balance remains unresolved.
+version: 1
+id: attack-continuity-fixture
+values:
+  - name: attack-clock
+    value:
+      AttackProgram:
+        reactions: []
+        continuity:
+          per_second_percent: 1
+          max_percent: 100
+equipment_attacks:
+  - equipment: placeholder_schadenfreude_accessory
+    program: { Shared: attack-clock }
+definitions: []
+skills: []

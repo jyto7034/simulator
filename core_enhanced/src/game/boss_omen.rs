@@ -1,5 +1,6 @@
+use std::collections::BTreeSet;
+
 use serde::{Deserialize, Serialize};
-use std::collections::VecDeque;
 use tracing::warn;
 
 use crate::game::{
@@ -11,20 +12,23 @@ use crate::game::{
     },
     determinism,
     map::{
-        GameMode, MapEdgeDirection, MapEdgeDto, MapNode, MapNodeCategory, MapNodeId, MapNodeKindId,
-        MapNodeOmenOverlayDto, MapNodePayload, MapNodeState, MapNodeVisibility, MapProgression,
-        MapSlotId, RunMap, RunProgression,
+        FacilityCapstoneEntryInput, FacilityCapstoneRequest, FacilityMapGenerator,
+        FacilityTerminalResolution, GameMode, MapNodeCategory, MapNodeId, MapNodeOmenOverlayDto,
+        MapNodePayload, MapProgression, MapSlotId, MapTemplateId, RunMap, RunProgression,
     },
     skill_fragment::SkillFragmentInventory,
 };
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct BossOmenRunState {
     pub provisional: Option<ProvisionalBossOmenState>,
     pub active: Option<ActiveBossOmenState>,
     pub placed_source: Option<PlacedBossOmenSourceState>,
     pub forced_boss: Option<ForcedBossOmenNodeState>,
-    pub skipped_chain_ids: Vec<BossOmenChainId>,
+    pub cycle_index: u64,
+    pub remaining_chain_ids: Vec<BossOmenChainId>,
+    pub completed_chain_ids: BTreeSet<BossOmenChainId>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -111,10 +115,26 @@ impl BossOmenRunState {
             .is_some_and(|placed| !placed.confirmed && self.active.is_none());
         if ignored_first_source {
             if let Some(provisional) = self.provisional.take() {
-                self.skipped_chain_ids.push(provisional.chain_id);
+                self.defer_chain(&provisional.chain_id);
             }
             self.placed_source = None;
         }
+    }
+
+    pub fn handle_source_failure(&mut self, node_id: MapNodeId) -> bool {
+        let Some(placed) = self.placed_source.take() else {
+            return false;
+        };
+        if placed.node_id != node_id {
+            self.placed_source = Some(placed);
+            return false;
+        }
+        if self.active.is_none() {
+            if let Some(provisional) = self.provisional.take() {
+                self.defer_chain(&provisional.chain_id);
+            }
+        }
+        true
     }
 
     pub fn consume_completed_source(&mut self, node_id: MapNodeId) {
@@ -149,16 +169,161 @@ impl BossOmenRunState {
     }
 
     pub fn clear_after_forced_boss_victory(&mut self, node_id: MapNodeId) {
-        if self
+        if let Some(chain_id) = self
             .forced_boss
             .as_ref()
-            .is_some_and(|forced| forced.node_id == node_id)
+            .filter(|forced| forced.node_id == node_id)
+            .map(|forced| forced.chain_id.clone())
         {
+            self.remaining_chain_ids.retain(|id| id != &chain_id);
+            self.completed_chain_ids.insert(chain_id);
             self.provisional = None;
             self.active = None;
             self.placed_source = None;
             self.forced_boss = None;
         }
+    }
+
+    fn ensure_cycle(&mut self, game_data: &GameDataBase, run_seed: u64) {
+        if !self.remaining_chain_ids.is_empty()
+            || self.provisional.is_some()
+            || self.active.is_some()
+            || self.forced_boss.is_some()
+        {
+            return;
+        }
+        let cycle_seed =
+            determinism::seed_with_namespace(run_seed ^ self.cycle_index, 0x424F_4D45_4E5F_4359);
+        let mut members = game_data
+            .boss_omen_data
+            .chains
+            .iter()
+            .map(|chain| chain.id.clone())
+            .collect::<Vec<_>>();
+        members.sort_by_key(|chain_id| {
+            determinism::seed_with_namespace(
+                cycle_seed ^ stable_text_hash(chain_id.as_str()),
+                0x424F_4D45_4E5F_4F52,
+            )
+        });
+        self.remaining_chain_ids = members;
+        self.cycle_index = self.cycle_index.saturating_add(1);
+    }
+
+    fn defer_chain(&mut self, chain_id: &BossOmenChainId) {
+        let Some(index) = self
+            .remaining_chain_ids
+            .iter()
+            .position(|candidate| candidate == chain_id)
+        else {
+            return;
+        };
+        let chain_id = self.remaining_chain_ids.remove(index);
+        self.remaining_chain_ids.push(chain_id);
+    }
+
+    pub fn validate_checkpoint_state(
+        &self,
+        game_data: &GameDataBase,
+        node_exists: impl Fn(MapNodeId) -> bool,
+    ) -> Result<(), String> {
+        let authored_ids = game_data
+            .boss_omen_data
+            .chains
+            .iter()
+            .map(|chain| chain.id.as_str())
+            .collect::<std::collections::HashSet<_>>();
+        let mut remaining = std::collections::HashSet::new();
+        for chain_id in &self.remaining_chain_ids {
+            if !authored_ids.contains(chain_id.as_str()) || !remaining.insert(chain_id.as_str()) {
+                return Err(format!(
+                    "BossOmen cycle contains unknown or duplicate chain '{}'",
+                    chain_id.as_str()
+                ));
+            }
+        }
+        if self
+            .completed_chain_ids
+            .iter()
+            .any(|chain_id| !authored_ids.contains(chain_id.as_str()))
+        {
+            return Err("BossOmen completed ledger references unknown chain".to_string());
+        }
+        if self.provisional.is_some() && self.active.is_some() {
+            return Err("BossOmen cannot be provisional and active simultaneously".to_string());
+        }
+        let current_chain_id = self
+            .active
+            .as_ref()
+            .map(|active| &active.chain_id)
+            .or_else(|| {
+                self.provisional
+                    .as_ref()
+                    .map(|provisional| &provisional.chain_id)
+            });
+        if current_chain_id.is_some_and(|chain_id| {
+            !self.remaining_chain_ids.contains(chain_id)
+                || !authored_ids.contains(chain_id.as_str())
+        }) {
+            return Err("BossOmen current chain is outside the current cycle".to_string());
+        }
+        if let Some(active) = &self.active {
+            let chain = game_data
+                .boss_omen_data
+                .get_by_id(active.chain_id.as_str())
+                .ok_or_else(|| "BossOmen active chain is missing".to_string())?;
+            if active.boss_abnormality_id != chain.boss_abnormality_id
+                || active.next_step_index != active.completed_steps.len()
+                || active.next_step_index > chain.steps.len()
+                || active
+                    .completed_steps
+                    .iter()
+                    .zip(chain.steps.iter())
+                    .any(|(actual, expected)| actual != &expected.id)
+            {
+                return Err("BossOmen active step ledger is inconsistent".to_string());
+            }
+        }
+        if let Some(placed) = &self.placed_source {
+            if !node_exists(placed.node_id)
+                || current_chain_id != Some(&placed.chain_id)
+                || !game_data
+                    .boss_omen_data
+                    .get_by_id(placed.chain_id.as_str())
+                    .and_then(|chain| chain.steps.get(placed.step_index))
+                    .is_some_and(|step| {
+                        step.id == placed.step_id && step.source_kind == placed.source_kind
+                    })
+            {
+                return Err("BossOmen placed source is inconsistent".to_string());
+            }
+        }
+        if let Some(forced) = &self.forced_boss {
+            let Some(active) = &self.active else {
+                return Err("BossOmen forced boss has no active chain".to_string());
+            };
+            let chain = game_data
+                .boss_omen_data
+                .get_by_id(forced.chain_id.as_str())
+                .ok_or_else(|| "BossOmen forced chain is missing".to_string())?;
+            if !node_exists(forced.node_id)
+                || forced.chain_id != active.chain_id
+                || forced.boss_abnormality_id != chain.boss_abnormality_id
+                || forced.encounter_id != chain.boss_encounter_id
+                || active.completed_steps.len() < chain.required_steps as usize
+            {
+                return Err("BossOmen forced boss state is inconsistent".to_string());
+            }
+        }
+        if self.cycle_index == 0
+            && (!self.remaining_chain_ids.is_empty()
+                || self.provisional.is_some()
+                || self.active.is_some()
+                || self.forced_boss.is_some())
+        {
+            return Err("BossOmen initialized state must have a positive cycle index".to_string());
+        }
+        Ok(())
     }
 }
 
@@ -173,18 +338,18 @@ pub fn apply_boss_omen_to_map(
     if state.forced_boss.is_some() {
         return;
     }
-    if run_progression.game_mode != GameMode::Endless {
+    if run_progression.game_mode != GameMode::Expedition {
         return;
     }
+    state.ensure_cycle(game_data, run_progression.run_seed);
     if state.active.is_some() {
         apply_active_chain_step(map, run_progression, game_data, state);
         return;
     }
     if state.provisional.is_none() {
-        if !has_awakened_skill_fragment(skill_fragments) {
-            return;
-        }
-        let Some(chain) = select_provisional_chain(run_progression, game_data, state) else {
+        let Some(chain) =
+            select_provisional_chain(run_progression, skill_fragments, game_data, state)
+        else {
             return;
         };
         state.provisional = Some(ProvisionalBossOmenState {
@@ -218,43 +383,41 @@ pub fn force_boss_node_if_ready(
     if active.completed_steps.len() < chain.required_steps as usize {
         return;
     }
-    let current_node_id = progression
-        .current_node_id
-        .unwrap_or_else(|| panic!("boss omen chain completed without current map node"));
-    let current = map
-        .node(current_node_id)
-        .unwrap_or_else(|| panic!("boss omen completed source node is missing from map"))
-        .clone();
-
-    let boss_node_id = unique_forced_boss_node_id(map, run_progression, current_node_id);
-    let (depth, lane) = unique_forced_boss_slot(map, current.depth.saturating_add(1), current.lane);
-    let boss_node = MapNode {
-        id: boss_node_id,
-        depth,
-        lane,
-        slot_id: MapSlotId::for_grid_position(depth, lane),
-        kind_id: MapNodeKindId::new("boss_omen_final_boss"),
-        category: MapNodeCategory::Boss,
-        state: MapNodeState::Available,
-        visibility: MapNodeVisibility::Revealed,
-        payload: MapNodePayload::Encounter {
-            encounter_id: Some(chain.boss_encounter_id.clone()),
+    let floor_difficulty_authority = map
+        .nodes
+        .iter()
+        .find_map(|node| node.combat_difficulty.clone())
+        .expect("manifested floor must carry combat difficulty authority");
+    let mut generated = FacilityMapGenerator::generate_capstone(
+        run_progression.run_seed,
+        run_progression.floor_index(),
+        &FacilityCapstoneRequest {
+            template_id: MapTemplateId::new("boss_omen_capstone"),
+            entries: vec![FacilityCapstoneEntryInput {
+                slot_id: MapSlotId::new("boss_chamber"),
+                payload: MapNodePayload::Encounter {
+                    encounter_id: Some(chain.boss_encounter_id.clone()),
+                },
+            }],
         },
-        omen: None,
+        &game_data.map_catalogs,
+    )
+    .unwrap_or_else(|error| panic!("validated Boss Omen capstone must generate: {error}"));
+    let [boss_node_id] = generated.entry_node_ids.as_slice() else {
+        panic!("Boss Omen capstone must expose exactly one Entry node");
     };
-    for node in &mut map.nodes {
-        if node.state == MapNodeState::Available {
-            node.state = MapNodeState::Unavailable;
-        }
-    }
-    map.nodes.push(boss_node);
-    map.edges.push(MapEdgeDto {
-        from_node_id: current_node_id,
-        to_node_id: boss_node_id,
-        direction: MapEdgeDirection::ForwardOnly,
-    });
-    map.terminal_node_id = boss_node_id;
-    progression.available_node_ids = vec![boss_node_id];
+    let boss_node_id = *boss_node_id;
+    assign_role_difficulty(
+        generated
+            .map
+            .node_mut(boss_node_id)
+            .expect("Boss Omen capstone entry must exist"),
+        crate::game::data::run_policy_data::CombatNodeDifficultyRole::BossOmen,
+        &floor_difficulty_authority,
+        game_data,
+    );
+    *map = generated.map;
+    *progression = MapProgression::from_map(map);
     state.forced_boss = Some(ForcedBossOmenNodeState {
         node_id: boss_node_id,
         chain_id: chain.id.clone(),
@@ -263,82 +426,72 @@ pub fn force_boss_node_if_ready(
     });
 }
 
-fn unique_forced_boss_node_id(
-    map: &RunMap,
-    run_progression: &RunProgression,
-    source_node_id: MapNodeId,
-) -> MapNodeId {
-    for index in 0..u64::MAX {
-        let uuid = determinism::uuid_v4_from_seed(
-            determinism::seed_with_uuid(
-                run_progression.current_floor_seed(),
-                0x424F_4D45_4E46,
-                source_node_id.0,
-            ),
-            0x424F_4D45_4E42,
-            index,
-        );
-        let node_id = MapNodeId::new(uuid);
-        if map.node(node_id).is_none() {
-            return node_id;
-        }
+pub fn complete_forced_boss_with_exit_gate(
+    map: &mut RunMap,
+    progression: &mut MapProgression,
+    template: &crate::game::map::FacilityTemplate,
+    state: &mut BossOmenRunState,
+) -> Result<bool, crate::game::map::MapProgressionError> {
+    let Some(forced_boss_id) = state.forced_boss_node_id() else {
+        return Ok(false);
+    };
+    if progression.current_node_id != Some(forced_boss_id) {
+        return Ok(false);
     }
-    unreachable!("deterministic boss omen node id space exhausted")
-}
-
-fn unique_forced_boss_slot(map: &RunMap, start_depth: u8, preferred_lane: u8) -> (u8, u8) {
-    for depth_offset in 0..u8::MAX {
-        let depth = start_depth.saturating_add(depth_offset);
-        for lane_offset in 0..u8::MAX {
-            let lanes = [
-                preferred_lane.saturating_add(lane_offset),
-                preferred_lane.saturating_sub(lane_offset),
-            ];
-            for lane in lanes {
-                let slot_id = MapSlotId::for_grid_position(depth, lane);
-                if map.nodes.iter().all(|node| node.slot_id != slot_id) {
-                    return (depth, lane);
-                }
-            }
-        }
+    let forced_boss = map
+        .node(forced_boss_id)
+        .ok_or(crate::game::map::MapProgressionError::MissingNode)?
+        .category;
+    if forced_boss != MapNodeCategory::Boss {
+        return Ok(false);
     }
-    panic!("unable to allocate unique boss omen map slot")
-}
 
-fn has_awakened_skill_fragment(skill_fragments: &SkillFragmentInventory) -> bool {
-    skill_fragments
-        .progress_entries()
-        .any(|(_, progress)| progress.awakened)
+    let reached_terminal = progression.complete_current_node(map, template)?;
+    if reached_terminal.is_some() {
+        return Ok(false);
+    }
+
+    if !progression.reveal_terminal_nodes(map, FacilityTerminalResolution::BossOmenExitGate)? {
+        return Ok(false);
+    }
+    state.clear_after_forced_boss_victory(forced_boss_id);
+    Ok(true)
 }
 
 fn select_provisional_chain<'a>(
     run_progression: &RunProgression,
+    skill_fragments: &SkillFragmentInventory,
     game_data: &'a GameDataBase,
     state: &BossOmenRunState,
 ) -> Option<&'a BossOmenChain> {
-    let mut candidates = game_data
-        .boss_omen_data
-        .chains
+    state
+        .remaining_chain_ids
         .iter()
+        .filter_map(|chain_id| game_data.boss_omen_data.get_by_id(chain_id.as_str()))
         .filter(|chain| run_progression.floor_index() >= chain.min_floor)
-        .filter(|chain| !state.skipped_chain_ids.contains(&chain.id))
-        .collect::<Vec<_>>();
-    if candidates.is_empty() && !state.skipped_chain_ids.is_empty() {
-        candidates = game_data
-            .boss_omen_data
-            .chains
-            .iter()
-            .filter(|chain| run_progression.floor_index() >= chain.min_floor)
-            .collect::<Vec<_>>();
-    }
-    candidates.sort_by(|left, right| left.id.as_str().cmp(right.id.as_str()));
-    if candidates.is_empty() {
-        return None;
-    }
-    let seed =
-        determinism::seed_with_namespace(run_progression.current_floor_seed(), 0x424F_4D45_4E31);
-    let index = (seed as usize) % candidates.len();
-    Some(candidates[index])
+        .filter(|chain| {
+            chain
+                .dependencies
+                .iter()
+                .all(|dependency| state.completed_chain_ids.contains(dependency))
+        })
+        .filter(|chain| {
+            chain.required_fragment.as_ref().is_none_or(|required| {
+                skill_fragments.contains(&required.fragment_id)
+                    && (!required.awakening_required
+                        || skill_fragments.any_form_unlocked(&required.fragment_id, "awakened"))
+            })
+        })
+        .next()
+}
+
+fn stable_text_hash(value: &str) -> u64 {
+    value
+        .as_bytes()
+        .iter()
+        .fold(0xcbf2_9ce4_8422_2325, |hash, byte| {
+            (hash ^ u64::from(*byte)).wrapping_mul(0x0000_0100_0000_01b3)
+        })
 }
 
 fn apply_active_chain_step(
@@ -356,7 +509,14 @@ fn apply_active_chain_step(
             active.chain_id.as_str()
         );
     };
-    place_step(map, run_progression, chain, active.next_step_index, state);
+    place_step(
+        map,
+        run_progression,
+        chain,
+        active.next_step_index,
+        game_data,
+        state,
+    );
 }
 
 fn apply_provisional_chain_step(
@@ -377,7 +537,14 @@ fn apply_provisional_chain_step(
             provisional.chain_id.as_str()
         );
     };
-    place_step(map, run_progression, chain, provisional.step_index, state);
+    place_step(
+        map,
+        run_progression,
+        chain,
+        provisional.step_index,
+        game_data,
+        state,
+    );
 }
 
 fn place_step(
@@ -385,6 +552,7 @@ fn place_step(
     run_progression: &RunProgression,
     chain: &BossOmenChain,
     step_index: usize,
+    game_data: &GameDataBase,
     state: &mut BossOmenRunState,
 ) {
     let Some(step) = chain.steps.get(step_index) else {
@@ -419,6 +587,16 @@ fn place_step(
             node.payload = MapNodePayload::Encounter {
                 encounter_id: step.encounter_id.clone(),
             };
+            let authority = node
+                .combat_difficulty
+                .clone()
+                .expect("Boss Omen combat source must start from a manifested combat node");
+            assign_role_difficulty(
+                node,
+                crate::game::data::run_policy_data::CombatNodeDifficultyRole::BossOmen,
+                &authority,
+                game_data,
+            );
         }
     }
     node.omen = Some(MapNodeOmenOverlayDto {
@@ -443,6 +621,37 @@ fn place_step(
     });
 }
 
+fn assign_role_difficulty(
+    node: &mut crate::game::map::MapNode,
+    role: crate::game::data::run_policy_data::CombatNodeDifficultyRole,
+    authority: &crate::game::map::MapNodeCombatDifficulty,
+    game_data: &GameDataBase,
+) {
+    let profile = game_data
+        .run_policy
+        .combat_difficulty_profile(&authority.difficulty_profile_id)
+        .expect("manifested combat difficulty profile must remain live");
+    let tuning = profile
+        .role_tuning
+        .iter()
+        .find(|entry| entry.role == role)
+        .expect("validated difficulty profile must define Boss Omen tuning");
+    let target_power = u64::try_from(
+        u128::from(authority.floor_power_anchor)
+            .saturating_mul(u128::from(tuning.tuning.target_power_percent))
+            .div_ceil(100),
+    )
+    .unwrap_or(u64::MAX);
+    node.combat_difficulty = Some(crate::game::map::MapNodeCombatDifficulty {
+        power_model_version: authority.power_model_version,
+        difficulty_profile_id: authority.difficulty_profile_id.clone(),
+        class: crate::game::map::MapNodeCombatDifficultyClass::Role(role),
+        revival: None,
+        floor_power_anchor: authority.floor_power_anchor,
+        target_power,
+    });
+}
+
 fn select_overlay_node(
     map: &RunMap,
     run_progression: &RunProgression,
@@ -463,99 +672,128 @@ fn select_overlay_node(
         })
         .collect::<Vec<_>>();
     candidates.sort_by_key(|node| {
-        (
-            map_distance_to_terminal(map, node.id),
-            node.depth,
-            node.lane,
-            determinism::seed_with_uuid(
-                run_progression.current_floor_seed(),
-                0x424F_4D45_4E32,
-                node.id.0,
-            ),
+        determinism::seed_with_uuid(
+            run_progression.current_floor_seed(),
+            0x424F_4D45_4E32,
+            node.id.0,
         )
     });
     candidates.first().map(|node| node.id)
 }
 
-fn map_distance_to_terminal(map: &RunMap, node_id: MapNodeId) -> u32 {
-    let mut frontier = VecDeque::from([(node_id, 0_u32)]);
-    let mut visited = Vec::new();
-    while let Some((current, distance)) = frontier.pop_front() {
-        if current == map.terminal_node_id {
-            return distance;
-        }
-        if visited.contains(&current) {
-            continue;
-        }
-        visited.push(current);
-        for neighbor in map.bidirectional_neighbors(current) {
-            frontier.push_back((neighbor, distance.saturating_add(1)));
-        }
-    }
-    u32::MAX
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::game::map::{MapEdgeDirection, MapTemplateId, DEFAULT_MAP_TEMPLATE_ID};
     use uuid::Uuid;
 
-    fn test_node(raw_id: u128, depth: u8, lane: u8) -> MapNode {
-        MapNode {
-            id: MapNodeId::new(Uuid::from_u128(raw_id)),
-            depth,
-            lane,
-            slot_id: MapSlotId::for_grid_position(depth, lane),
-            kind_id: MapNodeKindId::new(format!("node_{raw_id}")),
-            category: MapNodeCategory::Combat,
-            state: MapNodeState::Available,
-            visibility: MapNodeVisibility::Revealed,
-            payload: MapNodePayload::None,
-            omen: None,
-        }
+    fn node(value: u128) -> MapNodeId {
+        MapNodeId::new(Uuid::from_u128(value))
     }
 
-    fn test_edge(from_node_id: MapNodeId, to_node_id: MapNodeId) -> MapEdgeDto {
-        MapEdgeDto {
-            from_node_id,
-            to_node_id,
-            direction: MapEdgeDirection::Bidirectional,
+    fn placed(chain_id: &str, node_id: MapNodeId) -> PlacedBossOmenSourceState {
+        PlacedBossOmenSourceState {
+            node_id,
+            chain_id: BossOmenChainId::new(chain_id),
+            boss_abnormality_id: format!("abnormality_{chain_id}"),
+            step_id: BossOmenStepId::new("step_1"),
+            step_index: 0,
+            source_kind: BossOmenSourceKind::Combat,
+            hint_id: "hint".to_string(),
+            title_id: "title".to_string(),
+            description_id: "description".to_string(),
+            event_id: None,
+            encounter_id: Some("source_encounter".to_string()),
+            confirmed: true,
         }
     }
 
     #[test]
-    fn map_distance_to_terminal_uses_shortest_bfs_path() {
-        let start = MapNodeId::new(Uuid::from_u128(1));
-        let long_a = MapNodeId::new(Uuid::from_u128(2));
-        let long_b = MapNodeId::new(Uuid::from_u128(3));
-        let terminal = MapNodeId::new(Uuid::from_u128(4));
-        let short = MapNodeId::new(Uuid::from_u128(99));
-        let unreachable = MapNodeId::new(Uuid::from_u128(100));
+    fn provisional_failure_requeues_but_active_failure_retains_same_step() {
+        let mut provisional = BossOmenRunState {
+            remaining_chain_ids: vec![BossOmenChainId::new("a"), BossOmenChainId::new("b")],
+            provisional: Some(ProvisionalBossOmenState {
+                chain_id: BossOmenChainId::new("a"),
+                boss_abnormality_id: "abnormality_a".to_string(),
+                step_index: 0,
+            }),
+            placed_source: Some(placed("a", node(1))),
+            ..Default::default()
+        };
+        assert!(provisional.handle_source_failure(node(1)));
+        assert!(provisional.provisional.is_none());
+        assert_eq!(
+            provisional
+                .remaining_chain_ids
+                .iter()
+                .map(BossOmenChainId::as_str)
+                .collect::<Vec<_>>(),
+            vec!["b", "a"]
+        );
 
-        let map = RunMap {
-            map_template_id: MapTemplateId::new(DEFAULT_MAP_TEMPLATE_ID),
-            nodes: vec![
-                test_node(1, 0, 0),
-                test_node(2, 1, 0),
-                test_node(3, 2, 0),
-                test_node(4, 3, 0),
-                test_node(99, 1, 1),
-                test_node(100, 9, 9),
-            ],
-            edges: vec![
-                test_edge(start, long_a),
-                test_edge(long_a, long_b),
-                test_edge(long_b, terminal),
-                test_edge(start, short),
-                test_edge(short, terminal),
-            ],
-            start_node_ids: vec![start],
-            terminal_node_id: terminal,
+        let active_state = ActiveBossOmenState {
+            chain_id: BossOmenChainId::new("a"),
+            boss_abnormality_id: "abnormality_a".to_string(),
+            next_step_index: 1,
+            completed_steps: vec![BossOmenStepId::new("step_1")],
+        };
+        let mut active = BossOmenRunState {
+            remaining_chain_ids: vec![BossOmenChainId::new("a"), BossOmenChainId::new("b")],
+            active: Some(active_state.clone()),
+            placed_source: Some(PlacedBossOmenSourceState {
+                step_index: 1,
+                ..placed("a", node(2))
+            }),
+            ..Default::default()
+        };
+        assert!(active.handle_source_failure(node(2)));
+        assert_eq!(active.active, Some(active_state));
+        assert!(active.placed_source.is_none());
+        assert_eq!(
+            active
+                .remaining_chain_ids
+                .iter()
+                .map(BossOmenChainId::as_str)
+                .collect::<Vec<_>>(),
+            vec!["a", "b"]
+        );
+    }
+
+    #[test]
+    fn forced_boss_victory_consumes_cycle_member_and_records_run_completion() {
+        let mut state = BossOmenRunState {
+            remaining_chain_ids: vec![BossOmenChainId::new("a")],
+            active: Some(ActiveBossOmenState {
+                chain_id: BossOmenChainId::new("a"),
+                boss_abnormality_id: "abnormality_a".to_string(),
+                next_step_index: 1,
+                completed_steps: vec![BossOmenStepId::new("step_1")],
+            }),
+            forced_boss: Some(ForcedBossOmenNodeState {
+                node_id: node(1),
+                chain_id: BossOmenChainId::new("a"),
+                boss_abnormality_id: "abnormality_a".to_string(),
+                encounter_id: "boss_a".to_string(),
+            }),
+            ..Default::default()
         };
 
-        assert_eq!(map_distance_to_terminal(&map, start), 2);
-        assert_eq!(map_distance_to_terminal(&map, short), 1);
-        assert_eq!(map_distance_to_terminal(&map, unreachable), u32::MAX);
+        state.clear_after_forced_boss_victory(node(1));
+
+        assert!(state.remaining_chain_ids.is_empty());
+        assert!(state
+            .completed_chain_ids
+            .contains(&BossOmenChainId::new("a")));
+        assert!(state.active.is_none());
+        assert!(state.forced_boss.is_none());
     }
 }
+
+crate::authoring::clone_shape::struct_shape!(BossOmenRunState {
+    provisional,
+    active,
+    placed_source,
+    forced_boss,
+    cycle_index,
+    remaining_chain_ids,
+    completed_chain_ids
+});

@@ -1,0 +1,25 @@
+{
+  "id": "placeholder_big_bad_wolf_accessory",
+  "uuid": "e3000000-0000-0000-0000-000000000204",
+  "content_family": "f-02-58_big_bad_wolf",
+  "name": {
+    "Unresolved": "equipment-name"
+  },
+  "equipment_type": "Accessory",
+  "rarity": {
+    "Unresolved": "equipment-rarity"
+  },
+  "price": {
+    "Unresolved": "equipment-price"
+  },
+  "allow_duplicate_equip": {
+    "Unresolved": "equipment-allow_duplicate_equip"
+  },
+  "bound": false,
+  "cannot_unequip_reason": "equipment_bound",
+  "triggered_effects": {},
+  "ability_activations": [],
+  "weapon_profile": null,
+  "event_check_modifiers": [],
+  "event_choice_keys": []
+}

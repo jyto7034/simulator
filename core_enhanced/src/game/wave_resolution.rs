@@ -1,3 +1,4 @@
+use crate::authoring::control::{self, Resource};
 use crate::game::{
     data::{
         corroded_wave_data::{CorrodedWavePreset, CorrodedWaveRoleWeight},
@@ -31,8 +32,16 @@ pub fn resolve_pve_wave_enemy_data_with_budget_multiplier(
     wave_index: usize,
     generated_budget_multiplier_percent: u32,
 ) -> Vec<PveWaveEnemyData> {
+    if control::charge(1, "wave_resolution").is_err() {
+        return Vec::new();
+    }
     match &wave.source {
-        PveWaveSource::Manual(enemies) => enemies.clone(),
+        PveWaveSource::Manual(enemies) => {
+            if control::charge(enemies.len() as u64, "manual_wave_entries").is_err() {
+                return Vec::new();
+            }
+            enemies.clone()
+        }
         PveWaveSource::GeneratedCorroded {
             preset_id,
             budget_override,
@@ -70,17 +79,35 @@ fn generate_corroded_wave(
     preview_seed: u64,
     wave_index: usize,
 ) -> Vec<PveWaveEnemyData> {
+    if control::charge(preset.role_mix.len() as u64, "generated_wave_roles").is_err() {
+        return Vec::new();
+    }
     let mut remaining_budget = budget_override.unwrap_or(preset.budget);
     let mut counts = vec![0_u32; preset.role_mix.len()];
+    let mut admitted = 0_usize;
 
     for (index, role) in preset.role_mix.iter().enumerate() {
         let min_count = role.min_count;
+        if control::admit(
+            Resource::RetainedEntities,
+            admitted,
+            min_count as usize,
+            "generated_minimum_counts",
+        )
+        .is_err()
+        {
+            return Vec::new();
+        }
+        admitted = admitted.saturating_add(min_count as usize);
         counts[index] = min_count;
         remaining_budget = remaining_budget.saturating_sub(role.cost.saturating_mul(min_count));
     }
 
     let target_count = generated_corroded_target_count(preset, preview_seed, seed_salt, wave_index);
     while counts.iter().sum::<u32>() < target_count {
+        if control::charge(counts.len() as u64 * 2 + 1, "generated_wave_iteration").is_err() {
+            return Vec::new();
+        }
         let Some(index) = choose_corroded_role_index(
             &preset.role_mix,
             &counts,
@@ -90,8 +117,22 @@ fn generate_corroded_wave(
             wave_index,
             counts.iter().sum::<u32>(),
         ) else {
+            if control::poll("generated_role_selection").is_err() {
+                return Vec::new();
+            }
             break;
         };
+        if control::admit(
+            Resource::RetainedEntities,
+            admitted,
+            1,
+            "generated_wave_growth",
+        )
+        .is_err()
+        {
+            return Vec::new();
+        }
+        admitted = admitted.saturating_add(1);
         counts[index] += 1;
         remaining_budget = remaining_budget.saturating_sub(preset.role_mix[index].cost);
     }
@@ -126,6 +167,9 @@ fn choose_corroded_role_index(
     wave_index: usize,
     pick_index: u32,
 ) -> Option<usize> {
+    if control::charge(roles.len() as u64 * 2, "generated_role_candidates").is_err() {
+        return None;
+    }
     let candidates = roles
         .iter()
         .enumerate()
@@ -243,7 +287,7 @@ mod tests {
         let game_data = test_game_data();
         let wave = PveWaveData {
             id: "generated".to_string(),
-            time_ms: 0,
+            activation: crate::game::data::pve_data::PveWaveActivationData::at_time("generated", 0),
             spawn_zone_ids: vec![],
             route_id: None,
             required_for_victory: true,
@@ -264,11 +308,11 @@ mod tests {
     }
 
     #[test]
-    fn manual_wave_counts_are_not_scaled_by_floor_budget_multiplier() {
+    fn manual_wave_counts_are_not_scaled_by_generated_wave_budget_multiplier() {
         let game_data = test_game_data();
         let wave = PveWaveData {
             id: "manual".to_string(),
-            time_ms: 0,
+            activation: crate::game::data::pve_data::PveWaveActivationData::at_time("manual", 0),
             spawn_zone_ids: vec![],
             route_id: None,
             required_for_victory: true,

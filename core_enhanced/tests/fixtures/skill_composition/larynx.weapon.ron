@@ -1,0 +1,23 @@
+// Initial authored policy, not a claim of release balance validation.
+(
+    action: DamageCone(length_tiles: 5, end_half_width_tiles: 2),
+    attack: 20,
+    spell_power: 0,
+    range_role: Ranged,
+    weapon_archetype: Gun,
+    deployment_affinity: platform_only,
+    block_capacity: 0,
+    ground_defense_focus: None,
+    platform_rest: Some((hp_recovery_per_tick: 1)),
+    damage_type: Magic,
+    targeting_profile: HighestRouteProgress,
+    air_capable: true,
+    defense_tile_range: (
+        include_anchor_tile: false,
+        rows: ["....X....", ".XXXXXXX.", "XXXXXXXXX", "XXXXXXXXX", "XXXXXXXXX", "....@...."],
+    ),
+    interval_ms: 400,
+    windup_ms: 80,
+    ranged_reposition_ms: 0,
+    delivery: Instant,
+)

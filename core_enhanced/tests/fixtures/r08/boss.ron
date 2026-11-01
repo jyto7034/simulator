@@ -1,0 +1,31 @@
+(patterns: [(id: "r08_pattern", parameters: [], outcomes: ["completed", "requestrejected", "targetinvalidated", "timedout", "canceled", "noeligibletarget"], entry_state_id: "acquire", states: [
+(id: "acquire", tasks: [AcquireTarget(id: "target", query: Literal((target_kind: EnemyUnit, filters: [ActiveHostile, Reachable], order_by: [MinPathCost], lock_policy: LockUntilInvalid)))], transitions: [
+ (id: "acquired", priority: 2, condition: TaskResult(task_id: "target", result: Acquired), target: State("cast")),
+ (id: "empty", priority: 1, condition: TaskResult(task_id: "target", result: NoEligibleTarget), target: Outcome("noeligibletarget")),
+ ]),
+ (id: "cast", tasks: [StartAction(id: "action", skill_id: "r08_strike", target: LockedUnit, facing: left, milestone: EffectsSettled, timeout_ms: 1000, on_timeout: CancelUnreleased)], transitions: [
+(id: "on_completed", priority: 100, condition: TaskResult(task_id: "action", result: Completed), target: Outcome("completed")),
+(id: "on_requestrejected", priority: 99, condition: TaskResult(task_id: "action", result: RequestRejected), target: Outcome("requestrejected")),
+(id: "on_targetinvalidated", priority: 98, condition: TaskResult(task_id: "action", result: TargetInvalidated), target: Outcome("targetinvalidated")),
+(id: "on_timedout", priority: 97, condition: TaskResult(task_id: "action", result: TimedOut), target: Outcome("timedout")),
+(id: "on_canceled", priority: 96, condition: TaskResult(task_id: "action", result: Canceled), target: Outcome("canceled")),
+ ]),
+])], signals: [],
+actor_behaviors: [(id: "r08_behavior", entry_node_id: "pattern", nodes: [PatternCall(id: "pattern", selector: FixedSequence(candidates: [(pattern_id: "r08_pattern", arguments: [])], repeat: false), outcome_routes: [
+(pattern_id: "r08_pattern", outcome_id: "completed", target_node_id: "completed"),
+(pattern_id: "r08_pattern", outcome_id: "requestrejected", target_node_id: "requestrejected"),
+(pattern_id: "r08_pattern", outcome_id: "targetinvalidated", target_node_id: "targetinvalidated"),
+(pattern_id: "r08_pattern", outcome_id: "timedout", target_node_id: "timedout"),
+(pattern_id: "r08_pattern", outcome_id: "canceled", target_node_id: "canceled"),
+(pattern_id: "r08_pattern", outcome_id: "noeligibletarget", target_node_id: "noeligibletarget"),
+], no_eligible_node_id: "completed"),
+State(id: "completed", tasks: [], transitions: []),
+State(id: "requestrejected", tasks: [], transitions: []),
+State(id: "targetinvalidated", tasks: [], transitions: []),
+State(id: "timedout", tasks: [], transitions: []),
+State(id: "canceled", tasks: [], transitions: []),
+State(id: "noeligibletarget", tasks: [], transitions: []),
+])], encounters: [(id: "r08_encounter", actor_slots: ["primary"], entry_phase_id: "phase_one", phases: [
+ (id: "phase_one", actor_behaviors: [(actor_slot_id: "primary", behavior_id: "r08_behavior")], transitions: [])
+ ])],
+)

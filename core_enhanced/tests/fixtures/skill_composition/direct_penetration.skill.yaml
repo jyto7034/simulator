@@ -1,0 +1,14 @@
+# E09 penetration is a verification value, not release balance.
+version: 2
+id: direct-penetration-fixture
+values:
+  - name: direct-penetration
+    value:
+      AttackProgram:
+        reactions: []
+        direct_physical_penetration_percent: 25
+equipment_attacks:
+  - equipment: placeholder_clouded_monk_accessory
+    program: { Shared: direct-penetration }
+definitions: []
+skills: []

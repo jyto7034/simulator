@@ -1,0 +1,589 @@
+{
+  "format": "node-graph",
+  "version": 1,
+  "id": "852b6b5b-b0ba-4371-8d3e-0371cfa964b0",
+  "name": "아무 것도 없는 · Hello / Goodbye",
+  "nodes": [
+    {
+      "id": "0c0f2c09-c023-4535-98b3-1b1862e60f66",
+      "kind": "skill-use",
+      "title": "Hello 첫 사용",
+      "position": {
+        "x": 40,
+        "y": 80
+      },
+      "values": {},
+      "note": "",
+      "frame": "fe967df9-aa94-46d6-976a-d93f2f29d9f5"
+    },
+    {
+      "id": "0d03ecfc-d31e-4d2e-863c-a02df15369c9",
+      "kind": "skill-attack-profile",
+      "title": "Hello 관통 공격",
+      "position": {
+        "x": 680,
+        "y": 320
+      },
+      "values": {
+        "length": "",
+        "piercingRelics": true,
+        "power": "",
+        "weaponEffects": true,
+        "width": ""
+      },
+      "note": "미미크리 장착 시 실제 HP 피해를 공격별 합산해 무기 흡혈 상한을 한 번 적용합니다. 관통 유물 이력은 다음 공격에서 초기화합니다.",
+      "frame": "fe967df9-aa94-46d6-976a-d93f2f29d9f5"
+    },
+    {
+      "id": "2993f0c3-b4ec-49d1-98b2-5c230c1f6578",
+      "kind": "skill-cue",
+      "title": "관통 공격 표시",
+      "position": {
+        "x": 360,
+        "y": 640
+      },
+      "values": {
+        "description": "실제 기본 공격 사건에 맞춰 직선 관통 공격을 표시합니다. 별도 추가 타격이나 물리 투사체를 생성하는 지시가 아닙니다."
+      },
+      "note": "",
+      "frame": "fe967df9-aa94-46d6-976a-d93f2f29d9f5"
+    },
+    {
+      "id": "395b53ad-5b9c-47e5-8680-2315740fab11",
+      "kind": "skill-owner-exit",
+      "title": "Hello 외부 종료",
+      "position": {
+        "x": 40,
+        "y": 2100
+      },
+      "values": {
+        "policy": "unresolved"
+      },
+      "note": "",
+      "frame": "08d06e99-2dfb-4a74-ae23-c9fa65b3b25e"
+    },
+    {
+      "id": "5d46d876-7e11-48fe-8f8d-1ca5cfadbdd7",
+      "kind": "skill-finish",
+      "title": "만료 후 복귀",
+      "position": {
+        "x": 360,
+        "y": 1780
+      },
+      "values": {
+        "reason": "expiry"
+      },
+      "note": "",
+      "frame": "08d06e99-2dfb-4a74-ae23-c9fa65b3b25e"
+    },
+    {
+      "id": "606afee0-9055-423c-be9e-84e89a712392",
+      "kind": "skill-time-power",
+      "title": "Goodbye 위력",
+      "position": {
+        "x": 680,
+        "y": 1360
+      },
+      "values": {
+        "base": "",
+        "cap": "",
+        "curve": "unresolved",
+        "rate": ""
+      },
+      "note": "",
+      "frame": "9c9910a0-0ed4-4bc7-a5cf-b62753f53ef4"
+    },
+    {
+      "id": "64de6d72-be13-4193-842e-5feb724f024a",
+      "kind": "skill-cue",
+      "title": "포신 변형 표시",
+      "position": {
+        "x": 680,
+        "y": 80
+      },
+      "values": {
+        "description": "같은 직원의 팔을 포신처럼 표시합니다. 실제 위치·저지·무기 종류를 바꾸지 않습니다."
+      },
+      "note": "",
+      "frame": "fe967df9-aa94-46d6-976a-d93f2f29d9f5"
+    },
+    {
+      "id": "6b4d4033-a14b-40f7-bdaf-341ad295561e",
+      "kind": "skill-expiry",
+      "title": "Hello 자연 만료",
+      "position": {
+        "x": 40,
+        "y": 1780
+      },
+      "values": {},
+      "note": "",
+      "frame": "08d06e99-2dfb-4a74-ae23-c9fa65b3b25e"
+    },
+    {
+      "id": "6dc86360-ff6a-44e9-9a15-6288c6c3eac3",
+      "kind": "skill-reinput",
+      "title": "Goodbye 재입력",
+      "position": {
+        "x": 40,
+        "y": 1000
+      },
+      "values": {
+        "permission": "unresolved"
+      },
+      "note": "",
+      "frame": "9c9910a0-0ed4-4bc7-a5cf-b62753f53ef4"
+    },
+    {
+      "id": "752978cb-8d95-4c0f-b6fe-14e53bb2cf4e",
+      "kind": "skill-capture-time",
+      "title": "포기할 시간 고정",
+      "position": {
+        "x": 360,
+        "y": 1000
+      },
+      "values": {
+        "moment": "unresolved"
+      },
+      "note": "",
+      "frame": "9c9910a0-0ed4-4bc7-a5cf-b62753f53ef4"
+    },
+    {
+      "id": "83d28b3d-5267-4b4c-a3a2-26385d1dca7d",
+      "kind": "skill-finish",
+      "title": "Hello 조기 종료",
+      "position": {
+        "x": 680,
+        "y": 1000
+      },
+      "values": {
+        "reason": "manual"
+      },
+      "note": "",
+      "frame": "9c9910a0-0ed4-4bc7-a5cf-b62753f53ef4"
+    },
+    {
+      "id": "88f53468-ea85-4053-bcbb-0e9c1b5991d2",
+      "kind": "skill-area-damage",
+      "title": "Goodbye 일격",
+      "position": {
+        "x": 1000,
+        "y": 1000
+      },
+      "values": {},
+      "note": "",
+      "frame": "9c9910a0-0ed4-4bc7-a5cf-b62753f53ef4"
+    },
+    {
+      "id": "8f563813-7200-44b5-b421-2f6812a8a76f",
+      "kind": "skill-overlay",
+      "title": "Hello 적용",
+      "position": {
+        "x": 360,
+        "y": 80
+      },
+      "values": {},
+      "note": "공명 잠금의 종료 시점은 원문 정합성 확인 대상입니다. 활성 수명과 행동·충전 가능 여부를 동일시하지 않습니다.",
+      "frame": "fe967df9-aa94-46d6-976a-d93f2f29d9f5"
+    },
+    {
+      "id": "94b9554a-8915-4174-a38b-af6779e5d4d1",
+      "kind": "skill-basic-event",
+      "title": "Hello의 개별 기본 공격",
+      "position": {
+        "x": 40,
+        "y": 640
+      },
+      "values": {},
+      "note": "",
+      "frame": "fe967df9-aa94-46d6-976a-d93f2f29d9f5"
+    },
+    {
+      "id": "a5b39b63-d5b1-42a0-8fac-171de1af6326",
+      "kind": "skill-area",
+      "title": "Goodbye 전방 범위",
+      "position": {
+        "x": 1000,
+        "y": 1360
+      },
+      "values": {
+        "angle": "",
+        "facing": "unresolved",
+        "length": "",
+        "shape": "unresolved",
+        "width": ""
+      },
+      "note": "",
+      "frame": "9c9910a0-0ed4-4bc7-a5cf-b62753f53ef4"
+    },
+    {
+      "id": "a7e68358-affe-4ecd-82ea-d1c3ed97d359",
+      "kind": "skill-cue",
+      "title": "생체 칼날 표시",
+      "position": {
+        "x": 1320,
+        "y": 1000
+      },
+      "values": {
+        "description": "전방 일격의 실제 사건에 맞춰 팔을 생체 칼날로 표시합니다. Hello 관통 공격의 이력·흡혈은 적용하지 않습니다."
+      },
+      "note": "",
+      "frame": "9c9910a0-0ed4-4bc7-a5cf-b62753f53ef4"
+    },
+    {
+      "id": "d6da1438-beee-4198-81f2-7a45bd569b3e",
+      "kind": "skill-state",
+      "title": "Hello 상태 선언",
+      "position": {
+        "x": 40,
+        "y": 320
+      },
+      "values": {},
+      "note": "이번 활성의 수명과 마무리 권리를 소유합니다. 전투 전체나 개별 관통 공격의 누적 상태가 아닙니다.",
+      "frame": "fe967df9-aa94-46d6-976a-d93f2f29d9f5"
+    },
+    {
+      "id": "f097464f-9560-41ba-ac76-fbe7a2081473",
+      "kind": "skill-finish",
+      "title": "이탈 상태 정리",
+      "position": {
+        "x": 360,
+        "y": 2100
+      },
+      "values": {
+        "reason": "owner-exit"
+      },
+      "note": "",
+      "frame": "08d06e99-2dfb-4a74-ae23-c9fa65b3b25e"
+    },
+    {
+      "id": "fb05801c-b695-42a5-8ce2-a1af625a7a5d",
+      "kind": "skill-cue",
+      "title": "정상 모습 복귀",
+      "position": {
+        "x": 680,
+        "y": 1940
+      },
+      "values": {
+        "description": "일격 종료·자연 만료·이탈 정리 후 정상 외형을 표시합니다. 자동 Goodbye나 부활을 발생시키지 않습니다."
+      },
+      "note": "",
+      "frame": "08d06e99-2dfb-4a74-ae23-c9fa65b3b25e"
+    },
+    {
+      "id": "fdc9acbe-9676-4775-88e4-dc8cdfad449d",
+      "kind": "skill-seconds",
+      "title": "Hello 유지 시간",
+      "position": {
+        "x": 360,
+        "y": 320
+      },
+      "values": {
+        "value": ""
+      },
+      "note": "",
+      "frame": "fe967df9-aa94-46d6-976a-d93f2f29d9f5"
+    }
+  ],
+  "edges": [
+    {
+      "id": "0ecf8b86-951a-4dbd-bda1-046e8b54d5fa",
+      "source": {
+        "node": "d6da1438-beee-4198-81f2-7a45bd569b3e",
+        "port": "state"
+      },
+      "target": {
+        "node": "6dc86360-ff6a-44e9-9a15-6288c6c3eac3",
+        "port": "state"
+      }
+    },
+    {
+      "id": "1042f019-37ca-41ef-9818-9a5b27dd5b33",
+      "source": {
+        "node": "752978cb-8d95-4c0f-b6fe-14e53bb2cf4e",
+        "port": "out"
+      },
+      "target": {
+        "node": "83d28b3d-5267-4b4c-a3a2-26385d1dca7d",
+        "port": "in"
+      }
+    },
+    {
+      "id": "136e6dc8-cb0f-4550-a4f9-cb97527efb73",
+      "source": {
+        "node": "5d46d876-7e11-48fe-8f8d-1ca5cfadbdd7",
+        "port": "cue"
+      },
+      "target": {
+        "node": "fb05801c-b695-42a5-8ce2-a1af625a7a5d",
+        "port": "event"
+      }
+    },
+    {
+      "id": "1687ead6-68ce-4cdc-a8e9-cde705ebd50d",
+      "source": {
+        "node": "6dc86360-ff6a-44e9-9a15-6288c6c3eac3",
+        "port": "activation"
+      },
+      "target": {
+        "node": "752978cb-8d95-4c0f-b6fe-14e53bb2cf4e",
+        "port": "activation"
+      }
+    },
+    {
+      "id": "1aa33b43-843e-4e73-a27f-d0337c6b835d",
+      "source": {
+        "node": "fdc9acbe-9676-4775-88e4-dc8cdfad449d",
+        "port": "value"
+      },
+      "target": {
+        "node": "8f563813-7200-44b5-b421-2f6812a8a76f",
+        "port": "duration"
+      }
+    },
+    {
+      "id": "20f4a37d-0690-4503-a251-5dce07db1002",
+      "source": {
+        "node": "a5b39b63-d5b1-42a0-8fac-171de1af6326",
+        "port": "area"
+      },
+      "target": {
+        "node": "88f53468-ea85-4053-bcbb-0e9c1b5991d2",
+        "port": "area"
+      }
+    },
+    {
+      "id": "2c53941f-d028-4f85-a88b-7da4237a8243",
+      "source": {
+        "node": "6dc86360-ff6a-44e9-9a15-6288c6c3eac3",
+        "port": "activation"
+      },
+      "target": {
+        "node": "83d28b3d-5267-4b4c-a3a2-26385d1dca7d",
+        "port": "activation"
+      }
+    },
+    {
+      "id": "2ddde76b-5f24-4aa7-b0ba-2524f209e844",
+      "source": {
+        "node": "88f53468-ea85-4053-bcbb-0e9c1b5991d2",
+        "port": "completed"
+      },
+      "target": {
+        "node": "fb05801c-b695-42a5-8ce2-a1af625a7a5d",
+        "port": "event"
+      }
+    },
+    {
+      "id": "37adb0f8-2f6b-4ad6-8a7b-f3353622188c",
+      "source": {
+        "node": "f097464f-9560-41ba-ac76-fbe7a2081473",
+        "port": "cue"
+      },
+      "target": {
+        "node": "fb05801c-b695-42a5-8ce2-a1af625a7a5d",
+        "port": "event"
+      }
+    },
+    {
+      "id": "43b651d3-f690-4bcb-859d-f58c409b361d",
+      "source": {
+        "node": "d6da1438-beee-4198-81f2-7a45bd569b3e",
+        "port": "state"
+      },
+      "target": {
+        "node": "6b4d4033-a14b-40f7-bdaf-341ad295561e",
+        "port": "state"
+      }
+    },
+    {
+      "id": "48523870-5444-44bb-870c-38d1b66b5565",
+      "source": {
+        "node": "606afee0-9055-423c-be9e-84e89a712392",
+        "port": "power"
+      },
+      "target": {
+        "node": "88f53468-ea85-4053-bcbb-0e9c1b5991d2",
+        "port": "power"
+      }
+    },
+    {
+      "id": "5d23f2cb-ef52-4b4d-a410-b9d95cd600f2",
+      "source": {
+        "node": "d6da1438-beee-4198-81f2-7a45bd569b3e",
+        "port": "state"
+      },
+      "target": {
+        "node": "395b53ad-5b9c-47e5-8680-2315740fab11",
+        "port": "state"
+      }
+    },
+    {
+      "id": "68307e60-3c93-402c-95e4-1cd110373456",
+      "source": {
+        "node": "94b9554a-8915-4174-a38b-af6779e5d4d1",
+        "port": "cue"
+      },
+      "target": {
+        "node": "2993f0c3-b4ec-49d1-98b2-5c230c1f6578",
+        "port": "event"
+      }
+    },
+    {
+      "id": "70845a18-a61f-4179-a6f7-9637353ffc5d",
+      "source": {
+        "node": "752978cb-8d95-4c0f-b6fe-14e53bb2cf4e",
+        "port": "seconds"
+      },
+      "target": {
+        "node": "606afee0-9055-423c-be9e-84e89a712392",
+        "port": "seconds"
+      }
+    },
+    {
+      "id": "8cdc4e30-204d-487c-a959-cc4a2236e8d3",
+      "source": {
+        "node": "395b53ad-5b9c-47e5-8680-2315740fab11",
+        "port": "out"
+      },
+      "target": {
+        "node": "f097464f-9560-41ba-ac76-fbe7a2081473",
+        "port": "in"
+      }
+    },
+    {
+      "id": "95ec1112-1de8-4678-8a7b-8908ee979d6f",
+      "source": {
+        "node": "d6da1438-beee-4198-81f2-7a45bd569b3e",
+        "port": "state"
+      },
+      "target": {
+        "node": "8f563813-7200-44b5-b421-2f6812a8a76f",
+        "port": "state"
+      }
+    },
+    {
+      "id": "98c594dd-fb9a-4cad-894b-4219f31e7b60",
+      "source": {
+        "node": "0d03ecfc-d31e-4d2e-863c-a02df15369c9",
+        "port": "profile"
+      },
+      "target": {
+        "node": "8f563813-7200-44b5-b421-2f6812a8a76f",
+        "port": "profile"
+      }
+    },
+    {
+      "id": "a57f9a8b-fe38-4fec-8d22-b572557abf9f",
+      "source": {
+        "node": "6b4d4033-a14b-40f7-bdaf-341ad295561e",
+        "port": "out"
+      },
+      "target": {
+        "node": "5d46d876-7e11-48fe-8f8d-1ca5cfadbdd7",
+        "port": "in"
+      }
+    },
+    {
+      "id": "a6d8a554-5f62-4869-95e5-c3c2b8ca098d",
+      "source": {
+        "node": "8f563813-7200-44b5-b421-2f6812a8a76f",
+        "port": "cue"
+      },
+      "target": {
+        "node": "64de6d72-be13-4193-842e-5feb724f024a",
+        "port": "event"
+      }
+    },
+    {
+      "id": "a765abb0-355a-442d-8239-7644017de91b",
+      "source": {
+        "node": "88f53468-ea85-4053-bcbb-0e9c1b5991d2",
+        "port": "cue"
+      },
+      "target": {
+        "node": "a7e68358-affe-4ecd-82ea-d1c3ed97d359",
+        "port": "event"
+      }
+    },
+    {
+      "id": "ac5b2fa0-bf03-4c6e-8d55-84adef902c68",
+      "source": {
+        "node": "6b4d4033-a14b-40f7-bdaf-341ad295561e",
+        "port": "activation"
+      },
+      "target": {
+        "node": "5d46d876-7e11-48fe-8f8d-1ca5cfadbdd7",
+        "port": "activation"
+      }
+    },
+    {
+      "id": "afcc0654-59e7-4384-9982-b34782d2a170",
+      "source": {
+        "node": "6dc86360-ff6a-44e9-9a15-6288c6c3eac3",
+        "port": "out"
+      },
+      "target": {
+        "node": "752978cb-8d95-4c0f-b6fe-14e53bb2cf4e",
+        "port": "in"
+      }
+    },
+    {
+      "id": "ca977fc1-9e2d-439b-874d-844d2dafcc5c",
+      "source": {
+        "node": "0c0f2c09-c023-4535-98b3-1b1862e60f66",
+        "port": "out"
+      },
+      "target": {
+        "node": "8f563813-7200-44b5-b421-2f6812a8a76f",
+        "port": "in"
+      }
+    },
+    {
+      "id": "cd24e3c1-d5b9-41f0-8028-24c10cd72fcf",
+      "source": {
+        "node": "83d28b3d-5267-4b4c-a3a2-26385d1dca7d",
+        "port": "out"
+      },
+      "target": {
+        "node": "88f53468-ea85-4053-bcbb-0e9c1b5991d2",
+        "port": "in"
+      }
+    },
+    {
+      "id": "d511e54d-b943-4208-a76f-d6a3786ee278",
+      "source": {
+        "node": "395b53ad-5b9c-47e5-8680-2315740fab11",
+        "port": "activation"
+      },
+      "target": {
+        "node": "f097464f-9560-41ba-ac76-fbe7a2081473",
+        "port": "activation"
+      }
+    },
+    {
+      "id": "f6d9c619-d75c-4e7c-a217-ae57e6daaa8f",
+      "source": {
+        "node": "d6da1438-beee-4198-81f2-7a45bd569b3e",
+        "port": "state"
+      },
+      "target": {
+        "node": "94b9554a-8915-4174-a38b-af6779e5d4d1",
+        "port": "state"
+      }
+    }
+  ],
+  "frames": [
+    {
+      "id": "08d06e99-2dfb-4a74-ae23-c9fa65b3b25e",
+      "title": "3 · 만료와 외부 종료"
+    },
+    {
+      "id": "9c9910a0-0ed4-4bc7-a5cf-b62753f53ef4",
+      "title": "2 · 재입력과 Goodbye"
+    },
+    {
+      "id": "fe967df9-aa94-46d6-976a-d93f2f29d9f5",
+      "title": "1 · Hello 시작과 기본 공격"
+    }
+  ]
+}

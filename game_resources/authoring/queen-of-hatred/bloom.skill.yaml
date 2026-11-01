@@ -1,0 +1,1324 @@
+# Current Queen of Hatred design: fragment.md and synergies.md.
+# Unknown amounts, shapes, resonance and heal-buff policy remain explicit.
+# All menu declarations share one semantic program; native loader rejects mismatch.
+definitions: []
+id: hatred-counter-bloom
+skills:
+- admission:
+    capacity:
+      Unresolved: capacity
+    cost: All
+    requirement: Full
+  body:
+    Action:
+      delivery:
+        Literal:
+          Delivery: Instant
+      effects:
+      - Append:
+          effects:
+            Shared: black-hole-program
+      id: entry
+      target:
+        Literal:
+          Target: SelfUnit
+      wait: Released
+  cast_targeting:
+    Explicit:
+      air_capable: true
+      reach: pattern
+      selection: player_tile
+      target: CastTarget
+      target_range:
+        Unresolved: bloom-selection-0
+  focus_permissions:
+    allows_basic_attack: false
+    allows_move: false
+  id: fragment_hatred_love_bloom__entry_0
+  kind: Targeted
+  name: 증오의 여왕 · 개화 · 블랙홀
+  prepare_ms: 0
+- admission:
+    capacity:
+      Unresolved: capacity
+    cost: All
+    requirement: Full
+  body:
+    Action:
+      delivery:
+        Literal:
+          Delivery: Instant
+      effects:
+      - Append:
+          effects:
+            Shared: beam-program
+      id: entry
+      target:
+        Literal:
+          Target: SelfUnit
+      wait: Released
+  cast_targeting:
+    Explicit:
+      air_capable: true
+      reach: pattern
+      selection: player_tile
+      target: CastTarget
+      target_range:
+        Unresolved: bloom-selection-1
+  focus_permissions:
+    allows_basic_attack: false
+    allows_move: false
+  id: fragment_hatred_love_bloom
+  kind: Targeted
+  name: 증오의 여왕 · 개화 · 광선
+  prepare_ms: 0
+- admission:
+    capacity:
+      Unresolved: capacity
+    cost: Zero
+    requirement: None
+  body:
+    Action:
+      delivery:
+        Literal:
+          Delivery: Instant
+      effects:
+      - Append:
+          effects:
+            Shared: hysteric-program
+      id: entry
+      target:
+        Literal:
+          Target: SelfUnit
+      wait: Released
+  cast_targeting:
+    Explicit:
+      air_capable: true
+      reach: global
+      selection: player_tile
+      target: CastTarget
+      target_range: null
+  focus_permissions:
+    allows_basic_attack: false
+    allows_move: false
+  id: fragment_hatred_love_bloom__entry_2
+  kind: Targeted
+  name: 증오의 여왕 · 개화 · 히스테릭
+  prepare_ms: 0
+values:
+- name: black-hole-program
+  value:
+    Effects:
+    - id: channel
+      op:
+        CounterChannel:
+          entry: 0
+          program:
+            capacity: 6
+            default_entry: 1
+            definition: 2da642f6-5b63-4c52-9852-e962a417753b
+            entries:
+            - admission:
+                capacity:
+                  Unresolved: capacity
+                cost: All
+                requirement: Full
+              automatic: false
+              completion_award: null
+              key: black-hole
+              maximum: 5
+              minimum: 0
+              pause_basic: true
+              phases:
+              - definition: 6ec0bad8-0ff0-48c5-8b46-041f89e81f8a
+                duration_ms: 2000
+                interval_ms: 500
+                origin: SelectedTile
+                queries:
+                - corrupted_only: true
+                  definition: 5931650d-5e24-4b23-8e34-1afff335a391
+                  effect:
+                    Pull:
+                      distance_units:
+                        Unresolved: bloom-pull-5931650d-5e24-4b23-8e34-1afff335a391
+                  include_caster: false
+                  targets: Enemies
+                - corrupted_only: false
+                  definition: 12a28219-51dd-4534-bd1b-0271f94d735a
+                  effect:
+                    Heal:
+                      amount:
+                        base:
+                          Unresolved: bloom-amount-462799a5-6d71-4d10-9ce7-5956ba696ed2
+                        definition: 462799a5-6d71-4d10-9ce7-5956ba696ed2
+                        per_count_percent:
+                          Unresolved: bloom-count-percent-462799a5-6d71-4d10-9ce7-5956ba696ed2
+                  include_caster: true
+                  targets: Allies
+                range:
+                  Consumed:
+                  - - 0
+                    - definition: 477909a4-b476-4d5a-a15d-a024cf9879ef
+                      pattern:
+                        Unresolved: bloom-range-477909a4-b476-4d5a-a15d-a024cf9879ef
+                  - - 1
+                    - definition: 978f2fda-e4b6-40c3-9071-6d7f5a309d52
+                      pattern:
+                        Unresolved: bloom-range-978f2fda-e4b6-40c3-9071-6d7f5a309d52
+                  - - 2
+                    - definition: 989189c3-5c9e-417f-bacf-cda15cb96ee7
+                      pattern:
+                        Unresolved: bloom-range-989189c3-5c9e-417f-bacf-cda15cb96ee7
+                  - - 3
+                    - definition: 27806d66-67d3-41f6-b443-a42a676978fa
+                      pattern:
+                        Unresolved: bloom-range-27806d66-67d3-41f6-b443-a42a676978fa
+                  - - 4
+                    - definition: 0937fd6c-742e-48d8-840d-4fd1654934d5
+                      pattern:
+                        Unresolved: bloom-range-0937fd6c-742e-48d8-840d-4fd1654934d5
+                  - - 5
+                    - definition: 7643ea89-d010-4325-baa6-d4fe63598782
+                      pattern:
+                        Unresolved: bloom-range-7643ea89-d010-4325-baa6-d4fe63598782
+              - definition: 93c37c80-353b-4f94-9e54-13ac300e69c0
+                duration_ms: 3000
+                interval_ms: 500
+                origin: SelectedTile
+                queries:
+                - corrupted_only: false
+                  definition: 7e6c6a81-5114-4f29-a67c-940f628bec95
+                  effect:
+                    Damage:
+                      amount:
+                        base:
+                          Unresolved: bloom-amount-6cd4e3ba-fcfe-4f87-8f7a-be42ba4b9ce7
+                        definition: 6cd4e3ba-fcfe-4f87-8f7a-be42ba4b9ce7
+                        per_count_percent:
+                          Unresolved: bloom-count-percent-6cd4e3ba-fcfe-4f87-8f7a-be42ba4b9ce7
+                      damage_type: Magic
+                  include_caster: false
+                  targets: Enemies
+                - corrupted_only: false
+                  definition: 741fd616-5ca1-4406-a761-7dcaf7e798b6
+                  effect:
+                    Heal:
+                      amount:
+                        base:
+                          Unresolved: bloom-amount-9559c5c7-9028-4462-9b3c-b189899dc981
+                        definition: 9559c5c7-9028-4462-9b3c-b189899dc981
+                        per_count_percent:
+                          Unresolved: bloom-count-percent-9559c5c7-9028-4462-9b3c-b189899dc981
+                  include_caster: true
+                  targets: Allies
+                range:
+                  Fixed:
+                    definition: 84e253cf-e1ad-44ef-ad5b-a36bbd11b824
+                    pattern:
+                      Unresolved: bloom-range-84e253cf-e1ad-44ef-ad5b-a36bbd11b824
+              protected: false
+              remember_aim: false
+              selection_range:
+                Unresolved: bloom-selection-0
+              spend: AdmissionAll
+            - admission:
+                capacity:
+                  Unresolved: capacity
+                cost: All
+                requirement: Full
+              automatic: false
+              completion_award:
+                base: 1
+                damage_and_healing_bonus: 1
+              key: beam
+              maximum: 5
+              minimum: 0
+              pause_basic: true
+              phases:
+              - definition: 48d7c7bc-0ecb-4198-883c-2c8abecde5c9
+                duration_ms: 2000
+                interval_ms: 500
+                origin: SelectedDirection
+                queries:
+                - corrupted_only: false
+                  definition: ddaead66-6986-47d6-bcff-32171f6fa57f
+                  effect:
+                    Damage:
+                      amount:
+                        base:
+                          Unresolved: bloom-amount-c16e789b-01f9-49c4-a7de-ec46a5e2a771
+                        definition: c16e789b-01f9-49c4-a7de-ec46a5e2a771
+                        per_count_percent:
+                          denominator: 1
+                          numerator: 0
+                      damage_type: Magic
+                  include_caster: false
+                  targets: Enemies
+                - corrupted_only: false
+                  definition: d6fa9965-21fb-40dc-beba-311489489053
+                  effect:
+                    Heal:
+                      amount:
+                        base:
+                          Unresolved: bloom-amount-281ec176-4610-478d-8f5c-b38a37d7d0e2
+                        definition: 281ec176-4610-478d-8f5c-b38a37d7d0e2
+                        per_count_percent:
+                          denominator: 1
+                          numerator: 0
+                  include_caster: true
+                  targets: Allies
+                range:
+                  Fixed:
+                    definition: cfabac4b-6a7c-4772-817f-47168e862236
+                    pattern:
+                      Unresolved: bloom-range-cfabac4b-6a7c-4772-817f-47168e862236
+              protected: false
+              remember_aim: true
+              selection_range:
+                Unresolved: bloom-selection-1
+              spend: None
+            - admission:
+                capacity:
+                  Unresolved: capacity
+                cost: Zero
+                requirement: None
+              automatic: true
+              completion_award: null
+              key: a3b82714-f7b1-44ca-963d-d7f1084e7d7e
+              maximum: 6
+              minimum: 6
+              pause_basic: true
+              phases:
+              - definition: 68e7af8d-f359-430a-b3d6-79d1403509f9
+                duration_ms: 2000
+                interval_ms: 500
+                origin: SelectedTile
+                queries:
+                - corrupted_only: true
+                  definition: 2e4927aa-0db0-4b82-a49f-8ebe75d3d197
+                  effect:
+                    Pull:
+                      distance_units:
+                        Unresolved: bloom-pull-2e4927aa-0db0-4b82-a49f-8ebe75d3d197
+                  include_caster: false
+                  targets: Enemies
+                - corrupted_only: false
+                  definition: ad28a8c9-804d-4adc-b44f-7e5388e6a9d0
+                  effect:
+                    Damage:
+                      amount:
+                        base:
+                          Unresolved: bloom-amount-70b36091-179f-43b4-8804-57ef6294cc44
+                        definition: 70b36091-179f-43b4-8804-57ef6294cc44
+                        per_count_percent:
+                          denominator: 1
+                          numerator: 0
+                      damage_type: Magic
+                  include_caster: true
+                  targets: Any
+                range:
+                  Fixed:
+                    definition: 92d46026-5fc8-4732-8b24-3a15ca6734f4
+                    pattern:
+                      Unresolved: bloom-range-92d46026-5fc8-4732-8b24-3a15ca6734f4
+              - definition: 4e449a7c-08b5-4d00-b7a9-6e633590f32e
+                duration_ms: 3000
+                interval_ms: 500
+                origin: SelectedTile
+                queries:
+                - corrupted_only: false
+                  definition: 7575ee0f-4f57-4ee7-9136-dd3d9f8e525a
+                  effect:
+                    Damage:
+                      amount:
+                        base:
+                          Unresolved: bloom-amount-3c6a508c-a72f-4a02-b498-323b591d5389
+                        definition: 3c6a508c-a72f-4a02-b498-323b591d5389
+                        per_count_percent:
+                          denominator: 1
+                          numerator: 0
+                      damage_type: Magic
+                  include_caster: true
+                  targets: Any
+                range:
+                  Fixed:
+                    definition: a6e193ab-43bc-451b-8636-6a3f6cd025cf
+                    pattern:
+                      Unresolved: bloom-range-a6e193ab-43bc-451b-8636-6a3f6cd025cf
+              protected: false
+              remember_aim: false
+              selection_range: null
+              spend: EndAll
+            interval_ms: 15000
+            modifiers:
+            - change:
+                Healing:
+                  definition: 462799a5-6d71-4d10-9ce7-5956ba696ed2
+                  percent:
+                    Unresolved: healing-increase-percent
+              id: 04c893dd-4ac4-45f2-ac3e-92c3d0255297
+              relic_definition: healing-increase
+            - change:
+                Range:
+                  definition: 92d46026-5fc8-4732-8b24-3a15ca6734f4
+                  pattern:
+                    Unresolved: bloom-widened-92d46026-5fc8-4732-8b24-3a15ca6734f4
+              id: 05d1e140-ee5f-4f35-a30a-81497cc2e753
+              relic_definition: widened-horizon
+            - change:
+                Protection:
+                  entry: black-hole
+              id: 09d9efdc-16ad-45bf-a0d8-2be6e4eee87d
+              relic_definition: unbroken-trance
+            - change:
+                Range:
+                  definition: 989189c3-5c9e-417f-bacf-cda15cb96ee7
+                  pattern:
+                    Unresolved: bloom-widened-989189c3-5c9e-417f-bacf-cda15cb96ee7
+              id: 0a1c0891-6ef3-4e21-824f-982f5d3f7cac
+              relic_definition: widened-horizon
+            - change:
+                Range:
+                  definition: 477909a4-b476-4d5a-a15d-a024cf9879ef
+                  pattern:
+                    Unresolved: bloom-widened-477909a4-b476-4d5a-a15d-a024cf9879ef
+              id: 27e41637-58a4-4bae-83fd-b3c098446b49
+              relic_definition: widened-horizon
+            - change:
+                Range:
+                  definition: cfabac4b-6a7c-4772-817f-47168e862236
+                  pattern:
+                    Unresolved: bloom-widened-cfabac4b-6a7c-4772-817f-47168e862236
+              id: 43c1fa18-2c36-4bac-8a8d-8c3be26651d3
+              relic_definition: widened-horizon
+            - change:
+                Protection:
+                  entry: a3b82714-f7b1-44ca-963d-d7f1084e7d7e
+              id: 4d7b4336-efa9-4516-a771-a41e5e03e4ea
+              relic_definition: unbroken-trance
+            - change:
+                Range:
+                  definition: a6e193ab-43bc-451b-8636-6a3f6cd025cf
+                  pattern:
+                    Unresolved: bloom-widened-a6e193ab-43bc-451b-8636-6a3f6cd025cf
+              id: 52442df3-e2d7-46f2-9b0a-126651c42614
+              relic_definition: widened-horizon
+            - change:
+                Protection:
+                  entry: beam
+              id: 57c08ce4-4024-454e-afda-fd6c2008b167
+              relic_definition: unbroken-trance
+            - change:
+                Healing:
+                  definition: 9559c5c7-9028-4462-9b3c-b189899dc981
+                  percent:
+                    Unresolved: healing-increase-percent
+              id: 59b7fc13-bfb4-4803-8e33-335bcce02a71
+              relic_definition: healing-increase
+            - change:
+                HealBuff:
+                  definition: 9559c5c7-9028-4462-9b3c-b189899dc981
+                  duration_ms:
+                    Unresolved: heal-buff-duration-ms
+                  profile:
+                    Unresolved: bloom-heal-buff-profile
+              id: 5cc71598-8642-4390-8bf1-49ee62feeac5
+              relic_definition: lingering-warmth
+            - change:
+                Range:
+                  definition: 978f2fda-e4b6-40c3-9071-6d7f5a309d52
+                  pattern:
+                    Unresolved: bloom-widened-978f2fda-e4b6-40c3-9071-6d7f5a309d52
+              id: 661f0f49-a70a-4af2-922d-5af6a8747567
+              relic_definition: widened-horizon
+            - change:
+                Period:
+                  decrease: true
+                  percent:
+                    Unresolved: cooldown-reduction-percent
+              id: 67a977eb-5d1b-427a-bbbc-977d4160e629
+              relic_definition: hasty-second-hand
+            - change:
+                HealBuff:
+                  definition: 281ec176-4610-478d-8f5c-b38a37d7d0e2
+                  duration_ms:
+                    Unresolved: heal-buff-duration-ms
+                  profile:
+                    Unresolved: bloom-heal-buff-profile
+              id: 929fa97b-3b3c-4c69-a1f0-01e3ff29fb48
+              relic_definition: lingering-warmth
+            - change:
+                Range:
+                  definition: 7643ea89-d010-4325-baa6-d4fe63598782
+                  pattern:
+                    Unresolved: bloom-widened-7643ea89-d010-4325-baa6-d4fe63598782
+              id: 9497dfa0-1384-47b1-bf24-412e3dbce260
+              relic_definition: widened-horizon
+            - change:
+                Range:
+                  definition: 27806d66-67d3-41f6-b443-a42a676978fa
+                  pattern:
+                    Unresolved: bloom-widened-27806d66-67d3-41f6-b443-a42a676978fa
+              id: 95c10765-6ef7-491c-9c63-e5cbaa53997e
+              relic_definition: widened-horizon
+            - change:
+                Gain:
+                  factor:
+                    denominator: 1
+                    numerator: 2
+                  target: Periodic
+              id: bceb00c1-acda-4786-a773-8f20fd0ae116
+              relic_definition: double-harvest
+            - change:
+                Range:
+                  definition: 0937fd6c-742e-48d8-840d-4fd1654934d5
+                  pattern:
+                    Unresolved: bloom-widened-0937fd6c-742e-48d8-840d-4fd1654934d5
+              id: d24e1676-7eb0-44e9-9ff7-66cd620242e3
+              relic_definition: widened-horizon
+            - change:
+                Healing:
+                  definition: 281ec176-4610-478d-8f5c-b38a37d7d0e2
+                  percent:
+                    Unresolved: healing-increase-percent
+              id: d56e9eb6-7427-476d-b835-295cbe2b8d26
+              relic_definition: healing-increase
+            - change:
+                Range:
+                  definition: 84e253cf-e1ad-44ef-ad5b-a36bbd11b824
+                  pattern:
+                    Unresolved: bloom-widened-84e253cf-e1ad-44ef-ad5b-a36bbd11b824
+              id: dfa1c98b-f24a-456c-8f74-205b86e962d7
+              relic_definition: widened-horizon
+            - change:
+                HealBuff:
+                  definition: 462799a5-6d71-4d10-9ce7-5956ba696ed2
+                  duration_ms:
+                    Unresolved: heal-buff-duration-ms
+                  profile:
+                    Unresolved: bloom-heal-buff-profile
+              id: e764f169-1944-4d96-8028-933825d941a2
+              relic_definition: lingering-warmth
+            - change:
+                Gain:
+                  factor:
+                    denominator: 1
+                    numerator: 2
+                  target: Completion
+              id: fee614c1-348c-455f-a72e-d7064445852b
+              relic_definition: double-harvest
+            periodic_gain: 1
+          root: fragment_hatred_love_bloom
+      origin: Original
+      tags: []
+- name: beam-program
+  value:
+    Effects:
+    - id: channel
+      op:
+        CounterChannel:
+          entry: 1
+          program:
+            capacity: 6
+            default_entry: 1
+            definition: 2da642f6-5b63-4c52-9852-e962a417753b
+            entries:
+            - admission:
+                capacity:
+                  Unresolved: capacity
+                cost: All
+                requirement: Full
+              automatic: false
+              completion_award: null
+              key: black-hole
+              maximum: 5
+              minimum: 0
+              pause_basic: true
+              phases:
+              - definition: 6ec0bad8-0ff0-48c5-8b46-041f89e81f8a
+                duration_ms: 2000
+                interval_ms: 500
+                origin: SelectedTile
+                queries:
+                - corrupted_only: true
+                  definition: 5931650d-5e24-4b23-8e34-1afff335a391
+                  effect:
+                    Pull:
+                      distance_units:
+                        Unresolved: bloom-pull-5931650d-5e24-4b23-8e34-1afff335a391
+                  include_caster: false
+                  targets: Enemies
+                - corrupted_only: false
+                  definition: 12a28219-51dd-4534-bd1b-0271f94d735a
+                  effect:
+                    Heal:
+                      amount:
+                        base:
+                          Unresolved: bloom-amount-462799a5-6d71-4d10-9ce7-5956ba696ed2
+                        definition: 462799a5-6d71-4d10-9ce7-5956ba696ed2
+                        per_count_percent:
+                          Unresolved: bloom-count-percent-462799a5-6d71-4d10-9ce7-5956ba696ed2
+                  include_caster: true
+                  targets: Allies
+                range:
+                  Consumed:
+                  - - 0
+                    - definition: 477909a4-b476-4d5a-a15d-a024cf9879ef
+                      pattern:
+                        Unresolved: bloom-range-477909a4-b476-4d5a-a15d-a024cf9879ef
+                  - - 1
+                    - definition: 978f2fda-e4b6-40c3-9071-6d7f5a309d52
+                      pattern:
+                        Unresolved: bloom-range-978f2fda-e4b6-40c3-9071-6d7f5a309d52
+                  - - 2
+                    - definition: 989189c3-5c9e-417f-bacf-cda15cb96ee7
+                      pattern:
+                        Unresolved: bloom-range-989189c3-5c9e-417f-bacf-cda15cb96ee7
+                  - - 3
+                    - definition: 27806d66-67d3-41f6-b443-a42a676978fa
+                      pattern:
+                        Unresolved: bloom-range-27806d66-67d3-41f6-b443-a42a676978fa
+                  - - 4
+                    - definition: 0937fd6c-742e-48d8-840d-4fd1654934d5
+                      pattern:
+                        Unresolved: bloom-range-0937fd6c-742e-48d8-840d-4fd1654934d5
+                  - - 5
+                    - definition: 7643ea89-d010-4325-baa6-d4fe63598782
+                      pattern:
+                        Unresolved: bloom-range-7643ea89-d010-4325-baa6-d4fe63598782
+              - definition: 93c37c80-353b-4f94-9e54-13ac300e69c0
+                duration_ms: 3000
+                interval_ms: 500
+                origin: SelectedTile
+                queries:
+                - corrupted_only: false
+                  definition: 7e6c6a81-5114-4f29-a67c-940f628bec95
+                  effect:
+                    Damage:
+                      amount:
+                        base:
+                          Unresolved: bloom-amount-6cd4e3ba-fcfe-4f87-8f7a-be42ba4b9ce7
+                        definition: 6cd4e3ba-fcfe-4f87-8f7a-be42ba4b9ce7
+                        per_count_percent:
+                          Unresolved: bloom-count-percent-6cd4e3ba-fcfe-4f87-8f7a-be42ba4b9ce7
+                      damage_type: Magic
+                  include_caster: false
+                  targets: Enemies
+                - corrupted_only: false
+                  definition: 741fd616-5ca1-4406-a761-7dcaf7e798b6
+                  effect:
+                    Heal:
+                      amount:
+                        base:
+                          Unresolved: bloom-amount-9559c5c7-9028-4462-9b3c-b189899dc981
+                        definition: 9559c5c7-9028-4462-9b3c-b189899dc981
+                        per_count_percent:
+                          Unresolved: bloom-count-percent-9559c5c7-9028-4462-9b3c-b189899dc981
+                  include_caster: true
+                  targets: Allies
+                range:
+                  Fixed:
+                    definition: 84e253cf-e1ad-44ef-ad5b-a36bbd11b824
+                    pattern:
+                      Unresolved: bloom-range-84e253cf-e1ad-44ef-ad5b-a36bbd11b824
+              protected: false
+              remember_aim: false
+              selection_range:
+                Unresolved: bloom-selection-0
+              spend: AdmissionAll
+            - admission:
+                capacity:
+                  Unresolved: capacity
+                cost: All
+                requirement: Full
+              automatic: false
+              completion_award:
+                base: 1
+                damage_and_healing_bonus: 1
+              key: beam
+              maximum: 5
+              minimum: 0
+              pause_basic: true
+              phases:
+              - definition: 48d7c7bc-0ecb-4198-883c-2c8abecde5c9
+                duration_ms: 2000
+                interval_ms: 500
+                origin: SelectedDirection
+                queries:
+                - corrupted_only: false
+                  definition: ddaead66-6986-47d6-bcff-32171f6fa57f
+                  effect:
+                    Damage:
+                      amount:
+                        base:
+                          Unresolved: bloom-amount-c16e789b-01f9-49c4-a7de-ec46a5e2a771
+                        definition: c16e789b-01f9-49c4-a7de-ec46a5e2a771
+                        per_count_percent:
+                          denominator: 1
+                          numerator: 0
+                      damage_type: Magic
+                  include_caster: false
+                  targets: Enemies
+                - corrupted_only: false
+                  definition: d6fa9965-21fb-40dc-beba-311489489053
+                  effect:
+                    Heal:
+                      amount:
+                        base:
+                          Unresolved: bloom-amount-281ec176-4610-478d-8f5c-b38a37d7d0e2
+                        definition: 281ec176-4610-478d-8f5c-b38a37d7d0e2
+                        per_count_percent:
+                          denominator: 1
+                          numerator: 0
+                  include_caster: true
+                  targets: Allies
+                range:
+                  Fixed:
+                    definition: cfabac4b-6a7c-4772-817f-47168e862236
+                    pattern:
+                      Unresolved: bloom-range-cfabac4b-6a7c-4772-817f-47168e862236
+              protected: false
+              remember_aim: true
+              selection_range:
+                Unresolved: bloom-selection-1
+              spend: None
+            - admission:
+                capacity:
+                  Unresolved: capacity
+                cost: Zero
+                requirement: None
+              automatic: true
+              completion_award: null
+              key: a3b82714-f7b1-44ca-963d-d7f1084e7d7e
+              maximum: 6
+              minimum: 6
+              pause_basic: true
+              phases:
+              - definition: 68e7af8d-f359-430a-b3d6-79d1403509f9
+                duration_ms: 2000
+                interval_ms: 500
+                origin: SelectedTile
+                queries:
+                - corrupted_only: true
+                  definition: 2e4927aa-0db0-4b82-a49f-8ebe75d3d197
+                  effect:
+                    Pull:
+                      distance_units:
+                        Unresolved: bloom-pull-2e4927aa-0db0-4b82-a49f-8ebe75d3d197
+                  include_caster: false
+                  targets: Enemies
+                - corrupted_only: false
+                  definition: ad28a8c9-804d-4adc-b44f-7e5388e6a9d0
+                  effect:
+                    Damage:
+                      amount:
+                        base:
+                          Unresolved: bloom-amount-70b36091-179f-43b4-8804-57ef6294cc44
+                        definition: 70b36091-179f-43b4-8804-57ef6294cc44
+                        per_count_percent:
+                          denominator: 1
+                          numerator: 0
+                      damage_type: Magic
+                  include_caster: true
+                  targets: Any
+                range:
+                  Fixed:
+                    definition: 92d46026-5fc8-4732-8b24-3a15ca6734f4
+                    pattern:
+                      Unresolved: bloom-range-92d46026-5fc8-4732-8b24-3a15ca6734f4
+              - definition: 4e449a7c-08b5-4d00-b7a9-6e633590f32e
+                duration_ms: 3000
+                interval_ms: 500
+                origin: SelectedTile
+                queries:
+                - corrupted_only: false
+                  definition: 7575ee0f-4f57-4ee7-9136-dd3d9f8e525a
+                  effect:
+                    Damage:
+                      amount:
+                        base:
+                          Unresolved: bloom-amount-3c6a508c-a72f-4a02-b498-323b591d5389
+                        definition: 3c6a508c-a72f-4a02-b498-323b591d5389
+                        per_count_percent:
+                          denominator: 1
+                          numerator: 0
+                      damage_type: Magic
+                  include_caster: true
+                  targets: Any
+                range:
+                  Fixed:
+                    definition: a6e193ab-43bc-451b-8636-6a3f6cd025cf
+                    pattern:
+                      Unresolved: bloom-range-a6e193ab-43bc-451b-8636-6a3f6cd025cf
+              protected: false
+              remember_aim: false
+              selection_range: null
+              spend: EndAll
+            interval_ms: 15000
+            modifiers:
+            - change:
+                Healing:
+                  definition: 462799a5-6d71-4d10-9ce7-5956ba696ed2
+                  percent:
+                    Unresolved: healing-increase-percent
+              id: 04c893dd-4ac4-45f2-ac3e-92c3d0255297
+              relic_definition: healing-increase
+            - change:
+                Range:
+                  definition: 92d46026-5fc8-4732-8b24-3a15ca6734f4
+                  pattern:
+                    Unresolved: bloom-widened-92d46026-5fc8-4732-8b24-3a15ca6734f4
+              id: 05d1e140-ee5f-4f35-a30a-81497cc2e753
+              relic_definition: widened-horizon
+            - change:
+                Protection:
+                  entry: black-hole
+              id: 09d9efdc-16ad-45bf-a0d8-2be6e4eee87d
+              relic_definition: unbroken-trance
+            - change:
+                Range:
+                  definition: 989189c3-5c9e-417f-bacf-cda15cb96ee7
+                  pattern:
+                    Unresolved: bloom-widened-989189c3-5c9e-417f-bacf-cda15cb96ee7
+              id: 0a1c0891-6ef3-4e21-824f-982f5d3f7cac
+              relic_definition: widened-horizon
+            - change:
+                Range:
+                  definition: 477909a4-b476-4d5a-a15d-a024cf9879ef
+                  pattern:
+                    Unresolved: bloom-widened-477909a4-b476-4d5a-a15d-a024cf9879ef
+              id: 27e41637-58a4-4bae-83fd-b3c098446b49
+              relic_definition: widened-horizon
+            - change:
+                Range:
+                  definition: cfabac4b-6a7c-4772-817f-47168e862236
+                  pattern:
+                    Unresolved: bloom-widened-cfabac4b-6a7c-4772-817f-47168e862236
+              id: 43c1fa18-2c36-4bac-8a8d-8c3be26651d3
+              relic_definition: widened-horizon
+            - change:
+                Protection:
+                  entry: a3b82714-f7b1-44ca-963d-d7f1084e7d7e
+              id: 4d7b4336-efa9-4516-a771-a41e5e03e4ea
+              relic_definition: unbroken-trance
+            - change:
+                Range:
+                  definition: a6e193ab-43bc-451b-8636-6a3f6cd025cf
+                  pattern:
+                    Unresolved: bloom-widened-a6e193ab-43bc-451b-8636-6a3f6cd025cf
+              id: 52442df3-e2d7-46f2-9b0a-126651c42614
+              relic_definition: widened-horizon
+            - change:
+                Protection:
+                  entry: beam
+              id: 57c08ce4-4024-454e-afda-fd6c2008b167
+              relic_definition: unbroken-trance
+            - change:
+                Healing:
+                  definition: 9559c5c7-9028-4462-9b3c-b189899dc981
+                  percent:
+                    Unresolved: healing-increase-percent
+              id: 59b7fc13-bfb4-4803-8e33-335bcce02a71
+              relic_definition: healing-increase
+            - change:
+                HealBuff:
+                  definition: 9559c5c7-9028-4462-9b3c-b189899dc981
+                  duration_ms:
+                    Unresolved: heal-buff-duration-ms
+                  profile:
+                    Unresolved: bloom-heal-buff-profile
+              id: 5cc71598-8642-4390-8bf1-49ee62feeac5
+              relic_definition: lingering-warmth
+            - change:
+                Range:
+                  definition: 978f2fda-e4b6-40c3-9071-6d7f5a309d52
+                  pattern:
+                    Unresolved: bloom-widened-978f2fda-e4b6-40c3-9071-6d7f5a309d52
+              id: 661f0f49-a70a-4af2-922d-5af6a8747567
+              relic_definition: widened-horizon
+            - change:
+                Period:
+                  decrease: true
+                  percent:
+                    Unresolved: cooldown-reduction-percent
+              id: 67a977eb-5d1b-427a-bbbc-977d4160e629
+              relic_definition: hasty-second-hand
+            - change:
+                HealBuff:
+                  definition: 281ec176-4610-478d-8f5c-b38a37d7d0e2
+                  duration_ms:
+                    Unresolved: heal-buff-duration-ms
+                  profile:
+                    Unresolved: bloom-heal-buff-profile
+              id: 929fa97b-3b3c-4c69-a1f0-01e3ff29fb48
+              relic_definition: lingering-warmth
+            - change:
+                Range:
+                  definition: 7643ea89-d010-4325-baa6-d4fe63598782
+                  pattern:
+                    Unresolved: bloom-widened-7643ea89-d010-4325-baa6-d4fe63598782
+              id: 9497dfa0-1384-47b1-bf24-412e3dbce260
+              relic_definition: widened-horizon
+            - change:
+                Range:
+                  definition: 27806d66-67d3-41f6-b443-a42a676978fa
+                  pattern:
+                    Unresolved: bloom-widened-27806d66-67d3-41f6-b443-a42a676978fa
+              id: 95c10765-6ef7-491c-9c63-e5cbaa53997e
+              relic_definition: widened-horizon
+            - change:
+                Gain:
+                  factor:
+                    denominator: 1
+                    numerator: 2
+                  target: Periodic
+              id: bceb00c1-acda-4786-a773-8f20fd0ae116
+              relic_definition: double-harvest
+            - change:
+                Range:
+                  definition: 0937fd6c-742e-48d8-840d-4fd1654934d5
+                  pattern:
+                    Unresolved: bloom-widened-0937fd6c-742e-48d8-840d-4fd1654934d5
+              id: d24e1676-7eb0-44e9-9ff7-66cd620242e3
+              relic_definition: widened-horizon
+            - change:
+                Healing:
+                  definition: 281ec176-4610-478d-8f5c-b38a37d7d0e2
+                  percent:
+                    Unresolved: healing-increase-percent
+              id: d56e9eb6-7427-476d-b835-295cbe2b8d26
+              relic_definition: healing-increase
+            - change:
+                Range:
+                  definition: 84e253cf-e1ad-44ef-ad5b-a36bbd11b824
+                  pattern:
+                    Unresolved: bloom-widened-84e253cf-e1ad-44ef-ad5b-a36bbd11b824
+              id: dfa1c98b-f24a-456c-8f74-205b86e962d7
+              relic_definition: widened-horizon
+            - change:
+                HealBuff:
+                  definition: 462799a5-6d71-4d10-9ce7-5956ba696ed2
+                  duration_ms:
+                    Unresolved: heal-buff-duration-ms
+                  profile:
+                    Unresolved: bloom-heal-buff-profile
+              id: e764f169-1944-4d96-8028-933825d941a2
+              relic_definition: lingering-warmth
+            - change:
+                Gain:
+                  factor:
+                    denominator: 1
+                    numerator: 2
+                  target: Completion
+              id: fee614c1-348c-455f-a72e-d7064445852b
+              relic_definition: double-harvest
+            periodic_gain: 1
+          root: fragment_hatred_love_bloom
+      origin: Original
+      tags: []
+- name: hysteric-program
+  value:
+    Effects:
+    - id: channel
+      op:
+        CounterChannel:
+          entry: 2
+          program:
+            capacity: 6
+            default_entry: 1
+            definition: 2da642f6-5b63-4c52-9852-e962a417753b
+            entries:
+            - admission:
+                capacity:
+                  Unresolved: capacity
+                cost: All
+                requirement: Full
+              automatic: false
+              completion_award: null
+              key: black-hole
+              maximum: 5
+              minimum: 0
+              pause_basic: true
+              phases:
+              - definition: 6ec0bad8-0ff0-48c5-8b46-041f89e81f8a
+                duration_ms: 2000
+                interval_ms: 500
+                origin: SelectedTile
+                queries:
+                - corrupted_only: true
+                  definition: 5931650d-5e24-4b23-8e34-1afff335a391
+                  effect:
+                    Pull:
+                      distance_units:
+                        Unresolved: bloom-pull-5931650d-5e24-4b23-8e34-1afff335a391
+                  include_caster: false
+                  targets: Enemies
+                - corrupted_only: false
+                  definition: 12a28219-51dd-4534-bd1b-0271f94d735a
+                  effect:
+                    Heal:
+                      amount:
+                        base:
+                          Unresolved: bloom-amount-462799a5-6d71-4d10-9ce7-5956ba696ed2
+                        definition: 462799a5-6d71-4d10-9ce7-5956ba696ed2
+                        per_count_percent:
+                          Unresolved: bloom-count-percent-462799a5-6d71-4d10-9ce7-5956ba696ed2
+                  include_caster: true
+                  targets: Allies
+                range:
+                  Consumed:
+                  - - 0
+                    - definition: 477909a4-b476-4d5a-a15d-a024cf9879ef
+                      pattern:
+                        Unresolved: bloom-range-477909a4-b476-4d5a-a15d-a024cf9879ef
+                  - - 1
+                    - definition: 978f2fda-e4b6-40c3-9071-6d7f5a309d52
+                      pattern:
+                        Unresolved: bloom-range-978f2fda-e4b6-40c3-9071-6d7f5a309d52
+                  - - 2
+                    - definition: 989189c3-5c9e-417f-bacf-cda15cb96ee7
+                      pattern:
+                        Unresolved: bloom-range-989189c3-5c9e-417f-bacf-cda15cb96ee7
+                  - - 3
+                    - definition: 27806d66-67d3-41f6-b443-a42a676978fa
+                      pattern:
+                        Unresolved: bloom-range-27806d66-67d3-41f6-b443-a42a676978fa
+                  - - 4
+                    - definition: 0937fd6c-742e-48d8-840d-4fd1654934d5
+                      pattern:
+                        Unresolved: bloom-range-0937fd6c-742e-48d8-840d-4fd1654934d5
+                  - - 5
+                    - definition: 7643ea89-d010-4325-baa6-d4fe63598782
+                      pattern:
+                        Unresolved: bloom-range-7643ea89-d010-4325-baa6-d4fe63598782
+              - definition: 93c37c80-353b-4f94-9e54-13ac300e69c0
+                duration_ms: 3000
+                interval_ms: 500
+                origin: SelectedTile
+                queries:
+                - corrupted_only: false
+                  definition: 7e6c6a81-5114-4f29-a67c-940f628bec95
+                  effect:
+                    Damage:
+                      amount:
+                        base:
+                          Unresolved: bloom-amount-6cd4e3ba-fcfe-4f87-8f7a-be42ba4b9ce7
+                        definition: 6cd4e3ba-fcfe-4f87-8f7a-be42ba4b9ce7
+                        per_count_percent:
+                          Unresolved: bloom-count-percent-6cd4e3ba-fcfe-4f87-8f7a-be42ba4b9ce7
+                      damage_type: Magic
+                  include_caster: false
+                  targets: Enemies
+                - corrupted_only: false
+                  definition: 741fd616-5ca1-4406-a761-7dcaf7e798b6
+                  effect:
+                    Heal:
+                      amount:
+                        base:
+                          Unresolved: bloom-amount-9559c5c7-9028-4462-9b3c-b189899dc981
+                        definition: 9559c5c7-9028-4462-9b3c-b189899dc981
+                        per_count_percent:
+                          Unresolved: bloom-count-percent-9559c5c7-9028-4462-9b3c-b189899dc981
+                  include_caster: true
+                  targets: Allies
+                range:
+                  Fixed:
+                    definition: 84e253cf-e1ad-44ef-ad5b-a36bbd11b824
+                    pattern:
+                      Unresolved: bloom-range-84e253cf-e1ad-44ef-ad5b-a36bbd11b824
+              protected: false
+              remember_aim: false
+              selection_range:
+                Unresolved: bloom-selection-0
+              spend: AdmissionAll
+            - admission:
+                capacity:
+                  Unresolved: capacity
+                cost: All
+                requirement: Full
+              automatic: false
+              completion_award:
+                base: 1
+                damage_and_healing_bonus: 1
+              key: beam
+              maximum: 5
+              minimum: 0
+              pause_basic: true
+              phases:
+              - definition: 48d7c7bc-0ecb-4198-883c-2c8abecde5c9
+                duration_ms: 2000
+                interval_ms: 500
+                origin: SelectedDirection
+                queries:
+                - corrupted_only: false
+                  definition: ddaead66-6986-47d6-bcff-32171f6fa57f
+                  effect:
+                    Damage:
+                      amount:
+                        base:
+                          Unresolved: bloom-amount-c16e789b-01f9-49c4-a7de-ec46a5e2a771
+                        definition: c16e789b-01f9-49c4-a7de-ec46a5e2a771
+                        per_count_percent:
+                          denominator: 1
+                          numerator: 0
+                      damage_type: Magic
+                  include_caster: false
+                  targets: Enemies
+                - corrupted_only: false
+                  definition: d6fa9965-21fb-40dc-beba-311489489053
+                  effect:
+                    Heal:
+                      amount:
+                        base:
+                          Unresolved: bloom-amount-281ec176-4610-478d-8f5c-b38a37d7d0e2
+                        definition: 281ec176-4610-478d-8f5c-b38a37d7d0e2
+                        per_count_percent:
+                          denominator: 1
+                          numerator: 0
+                  include_caster: true
+                  targets: Allies
+                range:
+                  Fixed:
+                    definition: cfabac4b-6a7c-4772-817f-47168e862236
+                    pattern:
+                      Unresolved: bloom-range-cfabac4b-6a7c-4772-817f-47168e862236
+              protected: false
+              remember_aim: true
+              selection_range:
+                Unresolved: bloom-selection-1
+              spend: None
+            - admission:
+                capacity:
+                  Unresolved: capacity
+                cost: Zero
+                requirement: None
+              automatic: true
+              completion_award: null
+              key: a3b82714-f7b1-44ca-963d-d7f1084e7d7e
+              maximum: 6
+              minimum: 6
+              pause_basic: true
+              phases:
+              - definition: 68e7af8d-f359-430a-b3d6-79d1403509f9
+                duration_ms: 2000
+                interval_ms: 500
+                origin: SelectedTile
+                queries:
+                - corrupted_only: true
+                  definition: 2e4927aa-0db0-4b82-a49f-8ebe75d3d197
+                  effect:
+                    Pull:
+                      distance_units:
+                        Unresolved: bloom-pull-2e4927aa-0db0-4b82-a49f-8ebe75d3d197
+                  include_caster: false
+                  targets: Enemies
+                - corrupted_only: false
+                  definition: ad28a8c9-804d-4adc-b44f-7e5388e6a9d0
+                  effect:
+                    Damage:
+                      amount:
+                        base:
+                          Unresolved: bloom-amount-70b36091-179f-43b4-8804-57ef6294cc44
+                        definition: 70b36091-179f-43b4-8804-57ef6294cc44
+                        per_count_percent:
+                          denominator: 1
+                          numerator: 0
+                      damage_type: Magic
+                  include_caster: true
+                  targets: Any
+                range:
+                  Fixed:
+                    definition: 92d46026-5fc8-4732-8b24-3a15ca6734f4
+                    pattern:
+                      Unresolved: bloom-range-92d46026-5fc8-4732-8b24-3a15ca6734f4
+              - definition: 4e449a7c-08b5-4d00-b7a9-6e633590f32e
+                duration_ms: 3000
+                interval_ms: 500
+                origin: SelectedTile
+                queries:
+                - corrupted_only: false
+                  definition: 7575ee0f-4f57-4ee7-9136-dd3d9f8e525a
+                  effect:
+                    Damage:
+                      amount:
+                        base:
+                          Unresolved: bloom-amount-3c6a508c-a72f-4a02-b498-323b591d5389
+                        definition: 3c6a508c-a72f-4a02-b498-323b591d5389
+                        per_count_percent:
+                          denominator: 1
+                          numerator: 0
+                      damage_type: Magic
+                  include_caster: true
+                  targets: Any
+                range:
+                  Fixed:
+                    definition: a6e193ab-43bc-451b-8636-6a3f6cd025cf
+                    pattern:
+                      Unresolved: bloom-range-a6e193ab-43bc-451b-8636-6a3f6cd025cf
+              protected: false
+              remember_aim: false
+              selection_range: null
+              spend: EndAll
+            interval_ms: 15000
+            modifiers:
+            - change:
+                Healing:
+                  definition: 462799a5-6d71-4d10-9ce7-5956ba696ed2
+                  percent:
+                    Unresolved: healing-increase-percent
+              id: 04c893dd-4ac4-45f2-ac3e-92c3d0255297
+              relic_definition: healing-increase
+            - change:
+                Range:
+                  definition: 92d46026-5fc8-4732-8b24-3a15ca6734f4
+                  pattern:
+                    Unresolved: bloom-widened-92d46026-5fc8-4732-8b24-3a15ca6734f4
+              id: 05d1e140-ee5f-4f35-a30a-81497cc2e753
+              relic_definition: widened-horizon
+            - change:
+                Protection:
+                  entry: black-hole
+              id: 09d9efdc-16ad-45bf-a0d8-2be6e4eee87d
+              relic_definition: unbroken-trance
+            - change:
+                Range:
+                  definition: 989189c3-5c9e-417f-bacf-cda15cb96ee7
+                  pattern:
+                    Unresolved: bloom-widened-989189c3-5c9e-417f-bacf-cda15cb96ee7
+              id: 0a1c0891-6ef3-4e21-824f-982f5d3f7cac
+              relic_definition: widened-horizon
+            - change:
+                Range:
+                  definition: 477909a4-b476-4d5a-a15d-a024cf9879ef
+                  pattern:
+                    Unresolved: bloom-widened-477909a4-b476-4d5a-a15d-a024cf9879ef
+              id: 27e41637-58a4-4bae-83fd-b3c098446b49
+              relic_definition: widened-horizon
+            - change:
+                Range:
+                  definition: cfabac4b-6a7c-4772-817f-47168e862236
+                  pattern:
+                    Unresolved: bloom-widened-cfabac4b-6a7c-4772-817f-47168e862236
+              id: 43c1fa18-2c36-4bac-8a8d-8c3be26651d3
+              relic_definition: widened-horizon
+            - change:
+                Protection:
+                  entry: a3b82714-f7b1-44ca-963d-d7f1084e7d7e
+              id: 4d7b4336-efa9-4516-a771-a41e5e03e4ea
+              relic_definition: unbroken-trance
+            - change:
+                Range:
+                  definition: a6e193ab-43bc-451b-8636-6a3f6cd025cf
+                  pattern:
+                    Unresolved: bloom-widened-a6e193ab-43bc-451b-8636-6a3f6cd025cf
+              id: 52442df3-e2d7-46f2-9b0a-126651c42614
+              relic_definition: widened-horizon
+            - change:
+                Protection:
+                  entry: beam
+              id: 57c08ce4-4024-454e-afda-fd6c2008b167
+              relic_definition: unbroken-trance
+            - change:
+                Healing:
+                  definition: 9559c5c7-9028-4462-9b3c-b189899dc981
+                  percent:
+                    Unresolved: healing-increase-percent
+              id: 59b7fc13-bfb4-4803-8e33-335bcce02a71
+              relic_definition: healing-increase
+            - change:
+                HealBuff:
+                  definition: 9559c5c7-9028-4462-9b3c-b189899dc981
+                  duration_ms:
+                    Unresolved: heal-buff-duration-ms
+                  profile:
+                    Unresolved: bloom-heal-buff-profile
+              id: 5cc71598-8642-4390-8bf1-49ee62feeac5
+              relic_definition: lingering-warmth
+            - change:
+                Range:
+                  definition: 978f2fda-e4b6-40c3-9071-6d7f5a309d52
+                  pattern:
+                    Unresolved: bloom-widened-978f2fda-e4b6-40c3-9071-6d7f5a309d52
+              id: 661f0f49-a70a-4af2-922d-5af6a8747567
+              relic_definition: widened-horizon
+            - change:
+                Period:
+                  decrease: true
+                  percent:
+                    Unresolved: cooldown-reduction-percent
+              id: 67a977eb-5d1b-427a-bbbc-977d4160e629
+              relic_definition: hasty-second-hand
+            - change:
+                HealBuff:
+                  definition: 281ec176-4610-478d-8f5c-b38a37d7d0e2
+                  duration_ms:
+                    Unresolved: heal-buff-duration-ms
+                  profile:
+                    Unresolved: bloom-heal-buff-profile
+              id: 929fa97b-3b3c-4c69-a1f0-01e3ff29fb48
+              relic_definition: lingering-warmth
+            - change:
+                Range:
+                  definition: 7643ea89-d010-4325-baa6-d4fe63598782
+                  pattern:
+                    Unresolved: bloom-widened-7643ea89-d010-4325-baa6-d4fe63598782
+              id: 9497dfa0-1384-47b1-bf24-412e3dbce260
+              relic_definition: widened-horizon
+            - change:
+                Range:
+                  definition: 27806d66-67d3-41f6-b443-a42a676978fa
+                  pattern:
+                    Unresolved: bloom-widened-27806d66-67d3-41f6-b443-a42a676978fa
+              id: 95c10765-6ef7-491c-9c63-e5cbaa53997e
+              relic_definition: widened-horizon
+            - change:
+                Gain:
+                  factor:
+                    denominator: 1
+                    numerator: 2
+                  target: Periodic
+              id: bceb00c1-acda-4786-a773-8f20fd0ae116
+              relic_definition: double-harvest
+            - change:
+                Range:
+                  definition: 0937fd6c-742e-48d8-840d-4fd1654934d5
+                  pattern:
+                    Unresolved: bloom-widened-0937fd6c-742e-48d8-840d-4fd1654934d5
+              id: d24e1676-7eb0-44e9-9ff7-66cd620242e3
+              relic_definition: widened-horizon
+            - change:
+                Healing:
+                  definition: 281ec176-4610-478d-8f5c-b38a37d7d0e2
+                  percent:
+                    Unresolved: healing-increase-percent
+              id: d56e9eb6-7427-476d-b835-295cbe2b8d26
+              relic_definition: healing-increase
+            - change:
+                Range:
+                  definition: 84e253cf-e1ad-44ef-ad5b-a36bbd11b824
+                  pattern:
+                    Unresolved: bloom-widened-84e253cf-e1ad-44ef-ad5b-a36bbd11b824
+              id: dfa1c98b-f24a-456c-8f74-205b86e962d7
+              relic_definition: widened-horizon
+            - change:
+                HealBuff:
+                  definition: 462799a5-6d71-4d10-9ce7-5956ba696ed2
+                  duration_ms:
+                    Unresolved: heal-buff-duration-ms
+                  profile:
+                    Unresolved: bloom-heal-buff-profile
+              id: e764f169-1944-4d96-8028-933825d941a2
+              relic_definition: lingering-warmth
+            - change:
+                Gain:
+                  factor:
+                    denominator: 1
+                    numerator: 2
+                  target: Completion
+              id: fee614c1-348c-455f-a72e-d7064445852b
+              relic_definition: double-harvest
+            periodic_gain: 1
+          root: fragment_hatred_love_bloom
+      origin: Original
+      tags: []
+version: 1

@@ -1,0 +1,404 @@
+(
+    signals: [
+        (id: "cwbs_reference_cleanup"),
+    ],
+    patterns: [
+        (
+            id: "little_red_pursuit",
+            parameters: [
+                (
+                    id: "target_query",
+                    parameter_type: TargetQuery,
+                ),
+                (
+                    id: "timeout_ms",
+                    parameter_type: DurationMs(min_ms: 1, max_ms: 60000),
+                ),
+            ],
+            outcomes: ["complete", "target_missing", "route_unavailable"],
+            entry_state_id: "acquire_target",
+            states: [
+                (
+                    id: "acquire_target",
+                    tasks: [
+                        AcquireTarget(
+                            id: "acquire_target_task",
+                            query: Parameter("target_query"),
+                        ),
+                    ],
+                    transitions: [
+                        (
+                            id: "target_acquired",
+                            priority: 20,
+                            condition: TaskResult(
+                                task_id: "acquire_target_task",
+                                result: Acquired,
+                            ),
+                            target: State("move_to_target"),
+                        ),
+                        (
+                            id: "target_missing",
+                            priority: 10,
+                            condition: TaskResult(
+                                task_id: "acquire_target_task",
+                                result: NoEligibleTarget,
+                            ),
+                            target: Outcome("target_missing"),
+                        ),
+                    ],
+                ),
+                (
+                    id: "move_to_target",
+                    tasks: [
+                        MoveToTarget(
+                            id: "move_to_target_task",
+                            timeout_ms: Parameter("timeout_ms"),
+                        ),
+                    ],
+                    transitions: [
+                        (
+                            id: "target_reached",
+                            priority: 40,
+                            condition: TaskResult(
+                                task_id: "move_to_target_task",
+                                result: Reached,
+                            ),
+                            target: State("rejoin_forward_route"),
+                        ),
+                        (
+                            id: "target_path_unavailable",
+                            priority: 30,
+                            condition: TaskResult(
+                                task_id: "move_to_target_task",
+                                result: PathUnavailable,
+                            ),
+                            target: State("rejoin_forward_route"),
+                        ),
+                        (
+                            id: "target_invalidated",
+                            priority: 20,
+                            condition: TaskResult(
+                                task_id: "move_to_target_task",
+                                result: TargetInvalidated,
+                            ),
+                            target: State("rejoin_forward_route"),
+                        ),
+                        (
+                            id: "target_timeout",
+                            priority: 10,
+                            condition: TaskResult(
+                                task_id: "move_to_target_task",
+                                result: TimedOut,
+                            ),
+                            target: State("rejoin_forward_route"),
+                        ),
+                    ],
+                ),
+                (
+                    id: "rejoin_forward_route",
+                    tasks: [
+                        RejoinForwardRoute(
+                            id: "rejoin_forward_route_task",
+                            timeout_ms: Parameter("timeout_ms"),
+                        ),
+                    ],
+                    transitions: [
+                        (
+                            id: "route_rejoined",
+                            priority: 30,
+                            condition: TaskResult(
+                                task_id: "rejoin_forward_route_task",
+                                result: Reached,
+                            ),
+                            target: Outcome("complete"),
+                        ),
+                        (
+                            id: "route_path_unavailable",
+                            priority: 20,
+                            condition: TaskResult(
+                                task_id: "rejoin_forward_route_task",
+                                result: PathUnavailable,
+                            ),
+                            target: Outcome("route_unavailable"),
+                        ),
+                        (
+                            id: "route_timeout",
+                            priority: 10,
+                            condition: TaskResult(
+                                task_id: "rejoin_forward_route_task",
+                                result: TimedOut,
+                            ),
+                            target: Outcome("route_unavailable"),
+                        ),
+                    ],
+                ),
+            ],
+        ),
+        // NONPRODUCTION REFERENCE ONLY: one deterministic summon/signal cycle.
+        (
+            id: "cwbs_reference_summon_cycle",
+            parameters: [],
+            outcomes: ["complete", "failed"],
+            entry_state_id: "summon",
+            states: [
+                (
+                    id: "summon",
+                    tasks: [
+                        Summon(
+                            id: "summon_reference_minion",
+                            definition_id: "cwbs_reference_minion",
+                            count: 1,
+                            batch_handle_id: "reference_batch",
+                            placement: AroundSummoner(radius_tiles: 2),
+                            occupancy_policy: RequireUnoccupied,
+                            on_insufficient_space: Fail,
+                            route_id: Some("defense_main"),
+                            lifetime: Some((
+                                lifetime_ms: Literal(30000),
+                                mode: Despawn,
+                            )),
+                            removal_signal: Some((
+                                signal_id: "cwbs_reference_cleanup",
+                                mode: Despawn,
+                            )),
+                        ),
+                    ],
+                    transitions: [
+                        (
+                            id: "spawned",
+                            priority: 40,
+                            condition: TaskResult(
+                                task_id: "summon_reference_minion",
+                                result: Spawned,
+                            ),
+                            target: State("wait_cleanup"),
+                        ),
+                        (
+                            id: "limit_reached",
+                            priority: 30,
+                            condition: TaskResult(
+                                task_id: "summon_reference_minion",
+                                result: LimitReached,
+                            ),
+                            target: Outcome("failed"),
+                        ),
+                        (
+                            id: "no_space",
+                            priority: 20,
+                            condition: TaskResult(
+                                task_id: "summon_reference_minion",
+                                result: NoSpawnSpace,
+                            ),
+                            target: Outcome("failed"),
+                        ),
+                        (
+                            id: "canceled",
+                            priority: 10,
+                            condition: TaskResult(
+                                task_id: "summon_reference_minion",
+                                result: Canceled,
+                            ),
+                            target: Outcome("failed"),
+                        ),
+                    ],
+                ),
+                (
+                    id: "wait_cleanup",
+                    tasks: [
+                        Wait(
+                            id: "wait_before_cleanup",
+                            duration_ms: Literal(1000),
+                        ),
+                    ],
+                    transitions: [
+                        (
+                            id: "cleanup_delay_complete",
+                            priority: 10,
+                            condition: TaskResult(
+                                task_id: "wait_before_cleanup",
+                                result: Completed,
+                            ),
+                            target: State("emit_cleanup"),
+                        ),
+                    ],
+                ),
+                (
+                    id: "emit_cleanup",
+                    tasks: [
+                        EmitSignal(
+                            id: "emit_reference_cleanup",
+                            signal_id: "cwbs_reference_cleanup",
+                        ),
+                    ],
+                    transitions: [
+                        (
+                            id: "cleanup_emitted",
+                            priority: 10,
+                            condition: TaskResult(
+                                task_id: "emit_reference_cleanup",
+                                result: Completed,
+                            ),
+                            target: State("wait_batch_clear"),
+                        ),
+                    ],
+                ),
+                (
+                    id: "wait_batch_clear",
+                    tasks: [],
+                    transitions: [
+                        (
+                            id: "batch_cleared",
+                            priority: 10,
+                            condition: SummonBatchCleared(
+                                batch_handle_id: "reference_batch",
+                            ),
+                            target: Outcome("complete"),
+                        ),
+                    ],
+                ),
+            ],
+        ),
+    ],
+    actor_behaviors: [
+        (
+            id: "little_red_reference_behavior",
+            entry_node_id: "pursuit_once",
+            nodes: [
+                PatternCall(
+                    id: "pursuit_once",
+                    selector: FixedSequence(
+                        candidates: [
+                            (
+                                pattern_id: "little_red_pursuit",
+                                arguments: [
+                                    (
+                                        parameter_id: "target_query",
+                                        value: TargetQuery((
+                                            target_kind: EnemyUnit,
+                                            filters: [ActiveHostile, Reachable],
+                                            order_by: [MinPathCost],
+                                            lock_policy: LockUntilInvalid,
+                                        )),
+                                    ),
+                                    (
+                                        parameter_id: "timeout_ms",
+                                        value: DurationMs(10000),
+                                    ),
+                                ],
+                            ),
+                        ],
+                        repeat: false,
+                    ),
+                    outcome_routes: [
+                        (
+                            pattern_id: "little_red_pursuit",
+                            outcome_id: "complete",
+                            target_node_id: "route_combat",
+                        ),
+                        (
+                            pattern_id: "little_red_pursuit",
+                            outcome_id: "target_missing",
+                            target_node_id: "route_combat",
+                        ),
+                        (
+                            pattern_id: "little_red_pursuit",
+                            outcome_id: "route_unavailable",
+                            target_node_id: "route_combat",
+                        ),
+                    ],
+                    no_eligible_node_id: "route_combat",
+                ),
+                State(
+                    id: "route_combat",
+                    tasks: [
+                        RouteCombat(id: "route_combat_task"),
+                    ],
+                    transitions: [],
+                ),
+            ],
+        ),
+        (
+            id: "cwbs_reference_boss_behavior",
+            entry_node_id: "summon_once",
+            nodes: [
+                PatternCall(
+                    id: "summon_once",
+                    selector: FixedSequence(
+                        candidates: [
+                            (
+                                pattern_id: "cwbs_reference_summon_cycle",
+                                arguments: [],
+                            ),
+                        ],
+                        repeat: false,
+                    ),
+                    outcome_routes: [
+                        (
+                            pattern_id: "cwbs_reference_summon_cycle",
+                            outcome_id: "complete",
+                            target_node_id: "route_combat",
+                        ),
+                        (
+                            pattern_id: "cwbs_reference_summon_cycle",
+                            outcome_id: "failed",
+                            target_node_id: "route_combat",
+                        ),
+                    ],
+                    no_eligible_node_id: "route_combat",
+                ),
+                State(
+                    id: "route_combat",
+                    tasks: [RouteCombat(id: "route_combat_task")],
+                    transitions: [],
+                ),
+            ],
+        ),
+        (
+            id: "cwbs_reference_minion_behavior",
+            entry_node_id: "route_combat",
+            nodes: [
+                State(
+                    id: "route_combat",
+                    tasks: [RouteCombat(id: "route_combat_task")],
+                    transitions: [],
+                ),
+            ],
+        ),
+    ],
+    encounters: [
+        (
+            id: "little_red_reference_encounter",
+            actor_slots: ["primary_abnormality"],
+            entry_phase_id: "pursuit_phase",
+            phases: [
+                (
+                    id: "pursuit_phase",
+                    actor_behaviors: [
+                        (
+                            actor_slot_id: "primary_abnormality",
+                            behavior_id: "little_red_reference_behavior",
+                        ),
+                    ],
+                    transitions: [],
+                ),
+            ],
+        ),
+        (
+            id: "cwbs_reference_final_boss_runtime",
+            actor_slots: ["reference_boss"],
+            entry_phase_id: "reference_phase",
+            phases: [
+                (
+                    id: "reference_phase",
+                    actor_behaviors: [
+                        (
+                            actor_slot_id: "reference_boss",
+                            behavior_id: "cwbs_reference_boss_behavior",
+                        ),
+                    ],
+                    transitions: [],
+                ),
+            ],
+        ),
+    ],
+)

@@ -1,0 +1,15 @@
+# N03 태극 초기값. 실제 World에서는 별도 방어구 사본에 연결한다.
+version: 1
+id: overheal-reserve-fixture
+values:
+  - name: overheal-defense
+    value:
+      DefenseProgram:
+        OverhealReserve:
+          max_hp_cap_percent: 50
+          trigger_hp_percent: 50
+equipment_defenses:
+  - equipment: r11_weapon
+    program: { Shared: overheal-defense }
+definitions: []
+skills: []

@@ -1,0 +1,106 @@
+# N01 검은 눈물 prototype: 3스택 × 7 공속 포인트, 전체 5초. 출시 밸런스 미정.
+# last_stack/valid_until은 마지막 적용 이력이며 만료 뒤 현재 중첩을 뜻하지 않습니다.
+version: 1
+id: equipment-state-fixture
+values:
+  - name: black-tear
+    value:
+      StateProgram:
+        id: reactive-speed
+        owns_use: false
+        end_on_source_exit: true
+        replacement: ReplaceSameSource
+        fields:
+          - name: last_stack
+            value:
+              Integer: { unit: Count, initial: 0, min: 0, max: 3 }
+          - name: valid_until
+            value:
+              Integer: { unit: Milliseconds, initial: 0, min: 0, max: 9007199254740991 }
+        handlers:
+          - id: hostile-direct-hp-loss
+            event:
+              DirectHpLost: { relation: Hostile, once_per_action: true }
+            body:
+              - If:
+                  condition:
+                    Compare:
+                      left: { moment: Live, root: { Read: { Time: BattleElapsed } } }
+                      comparison: AtLeast
+                      right: { moment: Live, root: { Read: { StateField: { name: valid_until, unit: Milliseconds } } } }
+                  then_ops:
+                    - Set:
+                        field: last_stack
+                        value: { moment: Live, root: { Const: { value: 0, unit: Count } } }
+                  else_ops: []
+              - Set:
+                  field: last_stack
+                  value:
+                    moment: Live
+                    root:
+                      Clamp:
+                        value:
+                          Add:
+                            - Read: { StateField: { name: last_stack, unit: Count } }
+                            - Const: { value: 1, unit: Count }
+                        min: { Const: { value: 0, unit: Count } }
+                        max: { Const: { value: 3, unit: Count } }
+              - Set:
+                  field: valid_until
+                  value:
+                    moment: Live
+                    root:
+                      Add:
+                        - Read: { Time: BattleElapsed }
+                        - Const: { value: 5000, unit: Milliseconds }
+              - If:
+                  condition:
+                    Compare:
+                      left: { moment: Live, root: { Read: { StateField: { name: last_stack, unit: Count } } } }
+                      comparison: Equal
+                      right: { moment: Live, root: { Const: { value: 1, unit: Count } } }
+                  then_ops:
+                    - ApplyOwnerState:
+                        duration: { moment: Live, root: { Const: { value: 5000, unit: Milliseconds } } }
+                        profile:
+                          definition: black-tear-speed
+                          attack_percent: 0
+                          defense_percent: 0
+                          attack_speed_points: 7
+                          hp_floor_one: false
+                          end_on_source_exit: true
+                        replacement: ReplaceSameSource
+                  else_ops:
+                    - If:
+                        condition:
+                          Compare:
+                            left: { moment: Live, root: { Read: { StateField: { name: last_stack, unit: Count } } } }
+                            comparison: Equal
+                            right: { moment: Live, root: { Const: { value: 2, unit: Count } } }
+                        then_ops:
+                          - ApplyOwnerState:
+                              duration: { moment: Live, root: { Const: { value: 5000, unit: Milliseconds } } }
+                              profile:
+                                definition: black-tear-speed
+                                attack_percent: 0
+                                defense_percent: 0
+                                attack_speed_points: 14
+                                hp_floor_one: false
+                                end_on_source_exit: true
+                              replacement: ReplaceSameSource
+                        else_ops:
+                          - ApplyOwnerState:
+                              duration: { moment: Live, root: { Const: { value: 5000, unit: Milliseconds } } }
+                              profile:
+                                definition: black-tear-speed
+                                attack_percent: 0
+                                defense_percent: 0
+                                attack_speed_points: 21
+                                hp_floor_one: false
+                                end_on_source_exit: true
+                              replacement: ReplaceSameSource
+equipment_states:
+  - equipment: r11_weapon
+    program: { Shared: black-tear }
+definitions: []
+skills: []

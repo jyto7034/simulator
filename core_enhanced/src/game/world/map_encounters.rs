@@ -1,55 +1,102 @@
-use crate::game::abnormality_research::{
-    RunAbnormalityEncounterHistory, RunAbnormalityResearchState,
-};
-use crate::game::combat_setup::mission_policy::CombatMissionPolicy;
-use crate::game::data::{
-    pve_data::{PveEncounter, PveEncounterClass, PveEncounterDatabase},
-    run_policy_data::{
-        EmptyEncounterCandidateFallbackPolicy, EncounterRepeatWeightingPolicy, RunPolicyData,
+use std::collections::HashSet;
+
+use crate::game::{
+    combat_setup::mission_policy::CombatMissionPolicy,
+    data::{
+        pve_data::{PveEncounter, PveEncounterClass, PveEncounterDatabase},
+        run_policy_data::{OrdinaryCombatDifficultyBand, RunPolicyData},
     },
-};
-use crate::game::determinism;
-use crate::game::map::{
-    GameMode, MapNode, MapNodeCategory, MapNodePayload, RunMap, RunProgression,
+    determinism,
+    encounter_progression::EncounterProgressionState,
+    map::{
+        GameMode, MapNode, MapNodeCategory, MapNodeCombatDifficultyClass, MapNodeKindId,
+        MapNodePayload, RunMap, RunProgression,
+    },
 };
 
 pub(super) fn assign_map_encounters(
     pve_data: &PveEncounterDatabase,
     map: &mut RunMap,
     run_progression: &RunProgression,
-    abnormality_research: &RunAbnormalityResearchState,
-    abnormality_encounter_history: &RunAbnormalityEncounterHistory,
+    encounter_progression: &mut EncounterProgressionState,
     run_policy: &RunPolicyData,
 ) {
-    let mut encounters = pve_data.encounters.iter().collect::<Vec<_>>();
-    encounters.sort_by(|a, b| a.id.cmp(&b.id));
-    if encounters.is_empty() {
+    assign_map_encounters_excluding(pve_data,map,run_progression,encounter_progression,run_policy,&HashSet::new());
+}
+
+pub(super) fn assign_map_encounters_excluding(
+    pve_data: &PveEncounterDatabase,
+    map: &mut RunMap,
+    run_progression: &RunProgression,
+    encounter_progression: &mut EncounterProgressionState,
+    run_policy: &RunPolicyData,
+    excluded: &HashSet<crate::game::map::MapNodeId>,
+) {
+    if pve_data.encounters.is_empty() {
         return;
     }
 
+    let mut assigned_elite_source_ids = HashSet::new();
+    let mut assigned_natural_elite_abnormality_ids = HashSet::new();
+    let mut assigned_normal_boss_source_ids = HashSet::new();
+
     for node in &mut map.nodes {
+        if excluded.contains(&node.id) { continue; }
         if !matches!(
             node.category,
             MapNodeCategory::Combat | MapNodeCategory::Boss
-        ) {
-            continue;
-        }
-
-        if !matches!(
+        ) || !matches!(
             &node.payload,
             MapNodePayload::Encounter { encounter_id: None }
         ) {
             continue;
         }
 
-        let selected = select_encounter_for_map_node(
-            &encounters,
-            node,
-            run_progression,
-            abnormality_research,
-            abnormality_encounter_history,
-            run_policy,
-        );
+        let selected = if run_progression.game_mode == GameMode::Expedition
+            && node.category == MapNodeCategory::Combat
+            && node.kind_id.as_str().contains("elite")
+        {
+            select_endless_elite(
+                pve_data,
+                node,
+                run_progression,
+                encounter_progression,
+                &mut assigned_elite_source_ids,
+                &mut assigned_natural_elite_abnormality_ids,
+            )
+        } else if run_progression.game_mode == GameMode::Expedition
+            && node.category == MapNodeCategory::Boss
+        {
+            select_endless_normal_boss(
+                pve_data,
+                run_progression,
+                encounter_progression,
+                &mut assigned_normal_boss_source_ids,
+            )
+        } else {
+            select_static_class_encounter(pve_data, node, run_progression)
+        };
+
+        let selected = match selected {
+            Some(selected) => selected,
+            None if node.category == MapNodeCategory::Combat
+                && node.kind_id.as_str().contains("elite") =>
+            {
+                node.kind_id = MapNodeKindId::new("combat_normal");
+                convert_elite_difficulty_to_authored_ordinary(node, run_policy);
+                select_static_class_encounter(pve_data, node, run_progression).unwrap_or_else(|| {
+                    panic!(
+                        "authored Elite slot has no distinct authored Elite candidate and no ordinary fallback encounter"
+                    )
+                })
+            }
+            None => panic!(
+                "no authored encounter source is available for map node {:?} ({:?}, kind '{}')",
+                node.id,
+                node.category,
+                node.kind_id.as_str()
+            ),
+        };
 
         if let MapNodePayload::Encounter { encounter_id } = &mut node.payload {
             *encounter_id = Some(selected.id.clone());
@@ -57,217 +104,119 @@ pub(super) fn assign_map_encounters(
     }
 }
 
-fn select_encounter_for_map_node<'a>(
-    encounters: &'a [&'a PveEncounter],
+fn select_endless_elite<'a>(
+    pve_data: &'a PveEncounterDatabase,
     node: &MapNode,
     run_progression: &RunProgression,
-    abnormality_research: &RunAbnormalityResearchState,
-    abnormality_encounter_history: &RunAbnormalityEncounterHistory,
-    run_policy: &RunPolicyData,
-) -> &'a PveEncounter {
-    if encounters.is_empty() {
-        panic!("cannot assign map encounter: pve encounter database is empty");
-    }
-
-    let hard_candidates = encounter_candidates_for_map_node(
-        encounters,
-        node.category,
-        node.kind_id.as_str(),
-        run_progression,
-    );
-    assert!(
-        !hard_candidates.is_empty(),
-        "no {:?} pve encounters are compatible with map node {:?} ({:?}, kind '{}')",
-        encounter_class_for_map_node(node.category, node.kind_id.as_str(), run_progression),
-        node.id,
-        node.category,
-        node.kind_id.as_str()
-    );
-
-    let index_seed = encounter_selection_seed(run_progression, node);
-    if should_apply_repeat_weighting(run_progression, &hard_candidates) {
-        let weighted_candidates = encounter_repeat_weighted_candidates(
-            &hard_candidates,
-            run_progression.floor_index(),
-            abnormality_research,
-            abnormality_encounter_history,
-            run_policy.encounter_repeat_weighting,
-        );
-        return select_weighted_candidate(&weighted_candidates, index_seed);
-    }
-
-    let index = (index_seed as usize) % hard_candidates.len();
-    hard_candidates[index]
+    _progression: &mut EncounterProgressionState,
+    assigned_source_ids: &mut HashSet<String>,
+    assigned_natural_abnormality_ids: &mut HashSet<String>,
+) -> Option<&'a PveEncounter> {
+    let mut candidates = pve_data.reward_sources.iter().filter_map(|source| {
+        let encounter = pve_data.get_by_id(&source.encounter_id)?;
+        let kind = encounter.primary_abnormality_id()?;
+        (encounter.encounter_class == PveEncounterClass::Elite
+            && !assigned_source_ids.contains(&source.reward_source_id)
+            && !assigned_natural_abnormality_ids.contains(kind)).then_some((source, encounter, kind))
+    }).collect::<Vec<_>>();
+    candidates.sort_by(|a, b| a.0.reward_source_id.cmp(&b.0.reward_source_id));
+    if candidates.is_empty() { return None; }
+    let (source, encounter, kind) = candidates[encounter_selection_seed(run_progression, node) as usize % candidates.len()];
+    assigned_source_ids.insert(source.reward_source_id.clone());
+    assigned_natural_abnormality_ids.insert(kind.to_owned());
+    Some(encounter)
 }
 
-fn encounter_candidates_for_map_node<'a>(
-    encounters: &'a [&'a PveEncounter],
-    category: MapNodeCategory,
-    kind_id: &str,
+fn select_endless_normal_boss<'a>(
+    pve_data: &'a PveEncounterDatabase,
     run_progression: &RunProgression,
-) -> Vec<&'a PveEncounter> {
-    let Some(encounter_class) = encounter_class_for_map_node(category, kind_id, run_progression)
-    else {
-        return Vec::new();
-    };
-    let preferred_node_types =
-        CombatMissionPolicy::preferred_node_types_for_map_node(category, kind_id);
-
-    encounters
+    progression: &mut EncounterProgressionState,
+    assigned_source_ids: &mut HashSet<String>,
+) -> Option<&'a PveEncounter> {
+    let source_id =
+        progression.reserve_normal_boss(pve_data, run_progression.run_seed, assigned_source_ids)?;
+    assigned_source_ids.insert(source_id.clone());
+    let source = pve_data
+        .reward_sources
         .iter()
-        .copied()
-        .filter(|encounter| encounter.encounter_class == encounter_class)
+        .find(|source| source.reward_source_id == source_id)
+        .expect("validated NormalBoss cycle source must remain authored");
+    pve_data.get_by_id(&source.encounter_id)
+}
+
+fn select_static_class_encounter<'a>(
+    pve_data: &'a PveEncounterDatabase,
+    node: &MapNode,
+    run_progression: &RunProgression,
+) -> Option<&'a PveEncounter> {
+    let class =
+        encounter_class_for_map_node(node.category, node.kind_id.as_str(), run_progression)?;
+    let preferred_node_types = CombatMissionPolicy::preferred_node_types_for_map_node(
+        node.category,
+        node.kind_id.as_str(),
+    );
+    let mut candidates = pve_data
+        .encounters
+        .iter()
+        .filter(|encounter| encounter.encounter_class == class)
         .filter(|encounter| {
             preferred_node_types.is_empty()
                 || encounter
                     .node_type
                     .is_some_and(|node_type| preferred_node_types.contains(&node_type))
         })
-        .collect()
+        .collect::<Vec<_>>();
+    candidates.sort_by(|left, right| left.id.cmp(&right.id));
+    (!candidates.is_empty()).then(|| {
+        let index = encounter_selection_seed(run_progression, node) as usize % candidates.len();
+        candidates[index]
+    })
 }
 
-#[derive(Debug, Clone, Copy)]
-struct WeightedEncounterCandidate<'a> {
-    encounter: &'a PveEncounter,
-    weight: u64,
+fn convert_elite_difficulty_to_authored_ordinary(node: &mut MapNode, run_policy: &RunPolicyData) {
+    let Some(difficulty) = node.combat_difficulty.as_mut() else {
+        return;
+    };
+    let Some(profile) = run_policy.combat_difficulty_profile(&difficulty.difficulty_profile_id)
+    else {
+        return;
+    };
+    let Some(tuning) = profile
+        .ordinary_bands
+        .iter()
+        .find(|entry| entry.band == OrdinaryCombatDifficultyBand::Standard)
+    else {
+        return;
+    };
+    difficulty.class =
+        MapNodeCombatDifficultyClass::Ordinary(OrdinaryCombatDifficultyBand::Standard);
+    difficulty.target_power = percent_of_anchor_ceil(
+        difficulty.floor_power_anchor,
+        tuning.tuning.target_power_percent,
+    );
+}
+
+fn percent_of_anchor_ceil(anchor: u64, percent: u32) -> u64 {
+    let value = u128::from(anchor)
+        .saturating_mul(u128::from(percent))
+        .div_ceil(100);
+    u64::try_from(value).unwrap_or(u64::MAX)
 }
 
 fn encounter_selection_seed(run_progression: &RunProgression, node: &MapNode) -> u64 {
-    run_progression.current_floor_seed()
-        ^ (u64::from(node.depth) << 32)
-        ^ u64::from(node.lane)
-        ^ determinism::seed_with_uuid(
-            run_progression.current_floor_seed(),
-            0x4D41_505F_454E_4354,
-            node.id.0,
-        )
-}
-
-fn should_apply_repeat_weighting(
-    run_progression: &RunProgression,
-    hard_candidates: &[&PveEncounter],
-) -> bool {
-    run_progression.game_mode == GameMode::Endless
-        && hard_candidates
-            .iter()
-            .any(|encounter| encounter.primary_abnormality_id().is_some())
-}
-
-fn encounter_repeat_weighted_candidates<'a>(
-    hard_candidates: &[&'a PveEncounter],
-    floor_index: u32,
-    abnormality_research: &RunAbnormalityResearchState,
-    abnormality_encounter_history: &RunAbnormalityEncounterHistory,
-    policy: EncounterRepeatWeightingPolicy,
-) -> Vec<WeightedEncounterCandidate<'a>> {
-    let soft_filtered = hard_candidates
-        .iter()
-        .copied()
-        .filter(|encounter| {
-            !is_recently_encountered(
-                encounter,
-                floor_index,
-                abnormality_encounter_history,
-                policy,
-            )
-        })
-        .map(|encounter| WeightedEncounterCandidate {
-            encounter,
-            weight: repeat_weight_for_encounter(encounter, abnormality_research, policy),
-        })
-        .collect::<Vec<_>>();
-
-    if !soft_filtered.is_empty() {
-        return soft_filtered;
-    }
-
-    match policy.empty_pool_fallback {
-        EmptyEncounterCandidateFallbackPolicy::ResetSoftRepeatConstraints => hard_candidates
-            .iter()
-            .copied()
-            .map(|encounter| WeightedEncounterCandidate {
-                encounter,
-                weight: 100,
-            })
-            .collect(),
-    }
-}
-
-fn is_recently_encountered(
-    encounter: &PveEncounter,
-    floor_index: u32,
-    abnormality_encounter_history: &RunAbnormalityEncounterHistory,
-    policy: EncounterRepeatWeightingPolicy,
-) -> bool {
-    let Some(abnormality_id) = encounter.primary_abnormality_id() else {
-        return false;
-    };
-    let Some(last_floor) = abnormality_encounter_history.last_appeared_floor(abnormality_id) else {
-        return false;
-    };
-
-    floor_index.saturating_sub(last_floor) <= policy.recent_floor_exclusion_window
-}
-
-fn repeat_weight_for_encounter(
-    encounter: &PveEncounter,
-    abnormality_research: &RunAbnormalityResearchState,
-    policy: EncounterRepeatWeightingPolicy,
-) -> u64 {
-    let Some(abnormality_id) = encounter.primary_abnormality_id() else {
-        return u64::from(policy.incomplete_weight_multiplier_percent);
-    };
-    let Some(entry) = abnormality_research.entries.get(abnormality_id) else {
-        return u64::from(policy.incomplete_weight_multiplier_percent);
-    };
-
-    if entry.response_complete {
-        u64::from(policy.response_complete_weight_multiplier_percent)
-    } else {
-        u64::from(policy.incomplete_weight_multiplier_percent)
-    }
-}
-
-fn select_weighted_candidate<'a>(
-    candidates: &[WeightedEncounterCandidate<'a>],
-    index_seed: u64,
-) -> &'a PveEncounter {
-    assert!(
-        !candidates.is_empty(),
-        "cannot select weighted encounter from empty candidate set"
-    );
-    let total_weight = candidates
-        .iter()
-        .map(|candidate| candidate.weight)
-        .sum::<u64>();
-    assert!(
-        total_weight > 0,
-        "weighted encounter candidate total weight must be greater than zero"
-    );
-
-    let mut pick = index_seed % total_weight;
-    for candidate in candidates {
-        if pick < candidate.weight {
-            return candidate.encounter;
-        }
-        pick -= candidate.weight;
-    }
-
-    candidates
-        .last()
-        .expect("validated weighted candidate set must be non-empty")
-        .encounter
+    determinism::seed_with_uuid(
+        run_progression.current_floor_seed(),
+        0x4D41_505F_454E_4354,
+        node.id.0,
+    )
 }
 
 fn encounter_class_for_map_node(
     category: MapNodeCategory,
     kind_id: &str,
-    run_progression: &RunProgression,
+    _run_progression: &RunProgression,
 ) -> Option<PveEncounterClass> {
     match category {
-        MapNodeCategory::Boss if run_progression.is_final_standard_floor() => {
-            Some(PveEncounterClass::FinalBoss)
-        }
         MapNodeCategory::Boss => Some(PveEncounterClass::NormalBoss),
         MapNodeCategory::Combat if kind_id.contains("elite") => Some(PveEncounterClass::Elite),
         MapNodeCategory::Combat => Some(PveEncounterClass::Normal),
@@ -278,259 +227,108 @@ fn encounter_class_for_map_node(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::game::{
-        abnormality_research::RunAbnormalityResearchEntry,
-        combat_preview::CombatNodeType,
-        data::run_policy_data::{
-            EmptyEncounterCandidateFallbackPolicy, EncounterRepeatWeightingPolicy,
-        },
-        enums::{RewardMode, RiskLevel},
-        map::{MapNodeId, MapNodeKindId, MapNodeState, MapNodeVisibility, MapSlotId},
-    };
-    use std::collections::BTreeMap;
+    use crate::game::map::test_facility_map;
     use uuid::Uuid;
 
-    fn elite_encounter(id: &str, abnormality_id: &str) -> PveEncounter {
-        PveEncounter {
-            id: id.to_string(),
-            encounter_class: PveEncounterClass::Elite,
-            primary_abnormality_id: Some(abnormality_id.to_string()),
-            risk_level: RiskLevel::TETH,
-            node_type: Some(CombatNodeType::Defense),
-            mission_variant: None,
-            survive_timer_ms: None,
-            reward_mode: RewardMode::ClaimAll,
-            reward_uuids: Vec::new(),
-            suppression_research: None,
-            battlefield: None,
-            tactical_plan: None,
-            win_condition: None,
-            waves: Vec::new(),
-            static_obstacles: Vec::new(),
-        }
+    #[test]
+    fn u17_natural_elite_slots_ignore_completion_and_preserve_assignments() {
+        let data = crate::game::data::ValidatedGameData::load_live_embedded()
+            .expect("embedded game data should load");
+        let progression = RunProgression::new(77, GameMode::Expedition, 3);
+        let elite_sources = data
+            .pve_data
+            .reward_sources
+            .iter()
+            .filter_map(|source| {
+                let encounter = data.pve_data.get_by_id(&source.encounter_id)?;
+                (encounter.encounter_class == PveEncounterClass::Elite).then_some((
+                    source,
+                    encounter.primary_abnormality_id().unwrap().to_string(),
+                ))
+            })
+            .collect::<Vec<_>>();
+        assert!(elite_sources.len() >= 3);
+
+        let mut ledger = EncounterProgressionState::default();
+        ledger.completed_reward_source_ids.extend(elite_sources.iter().map(|(s, _)| s.reward_source_id.clone()));
+        let mut map = test_facility_map(77);
+        let template = map.nodes[0].clone();
+        map.nodes = (0..4_u128)
+            .map(|index| MapNode {
+                id: crate::game::map::MapNodeId::new(Uuid::from_u128(0xE110 + index)),
+                category: MapNodeCategory::Combat,
+                kind_id: MapNodeKindId::new("combat_elite"),
+                payload: MapNodePayload::Encounter { encounter_id: None },
+                combat_difficulty: None,
+                ..template.clone()
+            })
+            .collect();
+
+        assign_map_encounters(
+            &data.pve_data,
+            &mut map,
+            &progression,
+            &mut ledger,
+            &data.run_policy,
+        );
+
+        let assigned_encounters = map
+            .nodes
+            .iter()
+            .map(|node| {
+                let MapNodePayload::Encounter {
+                    encounter_id: Some(encounter_id),
+                } = &node.payload
+                else {
+                    panic!("every generated combat slot must resolve an encounter");
+                };
+                (node.kind_id.as_str(), encounter_id.as_str())
+            })
+            .collect::<Vec<_>>();
+        let assigned_elites = assigned_encounters
+            .iter()
+            .filter(|(kind_id, _)| *kind_id == "combat_elite")
+            .map(|(_, encounter_id)| *encounter_id)
+            .collect::<HashSet<_>>();
+        assert_eq!(assigned_elites.len(), 4);
+        assert!(assigned_encounters.iter().all(|(kind, _)| *kind == "combat_elite"));
+        assert!(ledger.revival.eggs.is_empty());
+        // Existing assignments stay fixed when progression changes.
+        let before = serde_json::to_value(&map).unwrap();
+        ledger.completed_reward_source_ids.clear();
+        assign_map_encounters(&data.pve_data, &mut map, &progression, &mut ledger, &data.run_policy);
+        assert_eq!(serde_json::to_value(&map).unwrap(), before);
+
     }
 
-    fn normal_encounter(id: &str) -> PveEncounter {
-        PveEncounter {
-            id: id.to_string(),
-            encounter_class: PveEncounterClass::Normal,
-            primary_abnormality_id: None,
-            risk_level: RiskLevel::TETH,
-            node_type: Some(CombatNodeType::Defense),
-            mission_variant: None,
-            survive_timer_ms: None,
-            reward_mode: RewardMode::ClaimAll,
-            reward_uuids: Vec::new(),
-            suppression_research: None,
-            battlefield: None,
-            tactical_plan: None,
-            win_condition: None,
-            waves: Vec::new(),
-            static_obstacles: Vec::new(),
-        }
-    }
+    #[test]
+    fn endless_normal_boss_cycle_excludes_unpublished_moonlit_wail() {
+        let data = crate::game::data::ValidatedGameData::load_live_embedded()
+            .expect("embedded game data should load");
+        let progression = RunProgression::new(42, GameMode::Expedition, 3);
+        let mut ledger = EncounterProgressionState::default();
+        let mut map = test_facility_map(42);
+        let mut boss = map.nodes[0].clone();
+        boss.category = MapNodeCategory::Boss;
+        boss.kind_id = MapNodeKindId::new("boss_abnormality");
+        boss.payload = MapNodePayload::Encounter { encounter_id: None };
+        boss.combat_difficulty = None;
+        map.nodes = vec![boss];
 
-    fn elite_node() -> MapNode {
-        MapNode {
-            id: MapNodeId::new(Uuid::from_u128(0xE117E)),
-            depth: 2,
-            lane: 1,
-            slot_id: MapSlotId::for_grid_position(2, 1),
-            kind_id: MapNodeKindId::new("combat_elite"),
-            category: MapNodeCategory::Combat,
-            state: MapNodeState::Available,
-            visibility: MapNodeVisibility::Revealed,
-            payload: MapNodePayload::Encounter { encounter_id: None },
-            omen: None,
-        }
-    }
-
-    fn endless_progression_at_floor(floor_index: u32) -> RunProgression {
-        let mut progression = RunProgression::new(99, GameMode::Endless, 3);
-        progression.mode_state = crate::game::map::RunProgressionModeState::Endless { floor_index };
-        progression
-    }
-
-    fn standard_progression_at_floor(floor_index: u8) -> RunProgression {
-        let mut progression = RunProgression::new(99, GameMode::Standard, 3);
-        progression.mode_state = crate::game::map::RunProgressionModeState::Standard {
-            floor_index,
-            max_floors: 3,
+        assign_map_encounters(
+            &data.pve_data,
+            &mut map,
+            &progression,
+            &mut ledger,
+            &data.run_policy,
+        );
+        let MapNodePayload::Encounter {
+            encounter_id: Some(encounter_id),
+        } = &map.nodes[0].payload
+        else {
+            panic!("boss encounter must be assigned");
         };
-        progression
-    }
-
-    fn research_entry(
-        last_encountered_floor: Option<u32>,
-        response_complete: bool,
-    ) -> RunAbnormalityResearchEntry {
-        RunAbnormalityResearchEntry {
-            research_points: if response_complete { 100 } else { 0 },
-            research_required: 100,
-            response_complete,
-            suppression_wins: 0,
-            last_encountered_floor,
-            completed_at_floor: response_complete.then_some(0),
-            unique_fragment_granted: response_complete,
-        }
-    }
-
-    fn research(entries: &[(&str, RunAbnormalityResearchEntry)]) -> RunAbnormalityResearchState {
-        RunAbnormalityResearchState {
-            entries: entries
-                .iter()
-                .map(|(id, entry)| ((*id).to_string(), entry.clone()))
-                .collect::<BTreeMap<_, _>>(),
-        }
-    }
-
-    fn encounter_history(entries: &[(&str, u32)]) -> RunAbnormalityEncounterHistory {
-        let mut history = RunAbnormalityEncounterHistory::default();
-        for (abnormality_id, floor_index) in entries {
-            history.record_appearance(abnormality_id, *floor_index);
-        }
-        history
-    }
-
-    fn repeat_policy() -> EncounterRepeatWeightingPolicy {
-        EncounterRepeatWeightingPolicy {
-            recent_floor_exclusion_window: 1,
-            response_complete_weight_multiplier_percent: 25,
-            incomplete_weight_multiplier_percent: 100,
-            empty_pool_fallback: EmptyEncounterCandidateFallbackPolicy::ResetSoftRepeatConstraints,
-        }
-    }
-
-    fn run_policy_with_repeat_policy(policy: EncounterRepeatWeightingPolicy) -> RunPolicyData {
-        let mut run_policy = RunPolicyData::builtin();
-        run_policy.encounter_repeat_weighting = policy;
-        run_policy
-    }
-
-    #[test]
-    fn endless_repeat_weighting_excludes_recent_abnormality_candidates() {
-        let recent = elite_encounter("recent", "abno_recent");
-        let open = elite_encounter("open", "abno_open");
-        let encounters = [&recent, &open];
-        let node = elite_node();
-        let progression = endless_progression_at_floor(1);
-        let research = research(&[
-            ("abno_recent", research_entry(Some(0), false)),
-            ("abno_open", research_entry(None, false)),
-        ]);
-        let encounter_history = encounter_history(&[("abno_recent", 0)]);
-        let run_policy = run_policy_with_repeat_policy(repeat_policy());
-
-        let selected = select_encounter_for_map_node(
-            &encounters,
-            &node,
-            &progression,
-            &research,
-            &encounter_history,
-            &run_policy,
-        );
-
-        assert_eq!(selected.id, "open");
-    }
-
-    #[test]
-    fn recent_appearance_history_excludes_candidate_without_research_victory() {
-        let recent = elite_encounter("appeared_without_win", "abno_recent");
-        let open = elite_encounter("open", "abno_open");
-        let encounters = [&recent, &open];
-        let node = elite_node();
-        let progression = endless_progression_at_floor(1);
-        let research = research(&[]);
-        let encounter_history = encounter_history(&[("abno_recent", 0)]);
-        let run_policy = run_policy_with_repeat_policy(repeat_policy());
-
-        let selected = select_encounter_for_map_node(
-            &encounters,
-            &node,
-            &progression,
-            &research,
-            &encounter_history,
-            &run_policy,
-        );
-
-        assert_eq!(selected.id, "open");
-    }
-
-    #[test]
-    fn empty_repeat_candidate_pool_resets_soft_constraints_but_keeps_hard_constraints() {
-        let recent = elite_encounter("recent_elite", "abno_recent");
-        let wrong_class = normal_encounter("normal_decoy");
-        let encounters = [&recent, &wrong_class];
-        let node = elite_node();
-        let progression = endless_progression_at_floor(1);
-        let research = research(&[("abno_recent", research_entry(Some(0), true))]);
-        let encounter_history = encounter_history(&[("abno_recent", 0)]);
-        let run_policy = run_policy_with_repeat_policy(repeat_policy());
-
-        let selected = select_encounter_for_map_node(
-            &encounters,
-            &node,
-            &progression,
-            &research,
-            &encounter_history,
-            &run_policy,
-        );
-
-        assert_eq!(selected.id, "recent_elite");
-    }
-
-    #[test]
-    fn standard_selection_does_not_apply_endless_repeat_soft_constraints() {
-        let recent = elite_encounter("standard_recent_elite", "abno_recent");
-        let encounters = [&recent];
-        let node = elite_node();
-        let progression = standard_progression_at_floor(0);
-        let research = research(&[("abno_recent", research_entry(Some(0), true))]);
-        let encounter_history = encounter_history(&[("abno_recent", 0)]);
-        let run_policy = run_policy_with_repeat_policy(repeat_policy());
-
-        let selected = select_encounter_for_map_node(
-            &encounters,
-            &node,
-            &progression,
-            &research,
-            &encounter_history,
-            &run_policy,
-        );
-
-        assert_eq!(selected.id, "standard_recent_elite");
-    }
-
-    #[test]
-    fn response_complete_candidates_receive_lower_repeat_weight() {
-        let complete = elite_encounter("complete", "abno_complete");
-        let incomplete = elite_encounter("incomplete", "abno_incomplete");
-        let candidates = [&complete, &incomplete];
-        let research = research(&[
-            ("abno_complete", research_entry(None, true)),
-            ("abno_incomplete", research_entry(None, false)),
-        ]);
-
-        let weighted = encounter_repeat_weighted_candidates(
-            &candidates,
-            4,
-            &research,
-            &RunAbnormalityEncounterHistory::default(),
-            repeat_policy(),
-        );
-
-        let complete_weight = weighted
-            .iter()
-            .find(|candidate| candidate.encounter.id == "complete")
-            .map(|candidate| candidate.weight)
-            .expect("complete candidate must exist");
-        let incomplete_weight = weighted
-            .iter()
-            .find(|candidate| candidate.encounter.id == "incomplete")
-            .map(|candidate| candidate.weight)
-            .expect("incomplete candidate must exist");
-
-        assert_eq!(complete_weight, 25);
-        assert_eq!(incomplete_weight, 100);
+        assert_ne!(encounter_id, "suppress_moonlit_wail");
+        assert_eq!(ledger.normal_boss_cycle.assigned_source_ids.len(), 1);
     }
 }

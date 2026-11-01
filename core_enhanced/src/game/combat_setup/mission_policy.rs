@@ -6,7 +6,6 @@
 use crate::game::{
     battle::scenario::{
         BattleObjective, EnemyMovementPlan, PlayerMovementPlan, ScenarioUnitRef, TacticalPlan,
-        WinCondition,
     },
     behavior::GameError,
     combat_preview::{
@@ -35,10 +34,11 @@ impl CombatMissionPolicy {
         RewardGrantKind::Currency,
         RewardGrantKind::Experience,
         RewardGrantKind::Equipment,
-        RewardGrantKind::Artifact,
         RewardGrantKind::SkillFragment,
-        RewardGrantKind::ResearchProgress,
+        RewardGrantKind::FragmentDust,
         RewardGrantKind::Narrative,
+        RewardGrantKind::Relic,
+        RewardGrantKind::RelicCorruptionCatalyst,
     ];
 
     pub fn is_supported_encounter_node_type(node_type: CombatNodeType) -> bool {
@@ -58,21 +58,13 @@ impl CombatMissionPolicy {
 
     pub fn preferred_node_types_for_map_node(
         category: MapNodeCategory,
-        kind_id: &str,
+        _kind_id: &str,
     ) -> &'static [CombatNodeType] {
-        if category == MapNodeCategory::Boss {
-            return &[CombatNodeType::Boss];
+        match category {
+            MapNodeCategory::Boss => &[CombatNodeType::Boss],
+            MapNodeCategory::Combat => &[CombatNodeType::Defense],
+            _ => &[],
         }
-
-        if category != MapNodeCategory::Combat {
-            return &[];
-        }
-
-        if kind_id.contains("elite") {
-            return &[CombatNodeType::Defense];
-        }
-
-        &[CombatNodeType::Defense]
     }
 
     pub fn try_fallback_node_type_for_archetype(
@@ -115,14 +107,15 @@ impl CombatMissionPolicy {
     ) -> &'static [RewardGrantKind] {
         match (node_type, mission_variant) {
             (CombatNodeType::Defense, CombatMissionVariant::Defense) => &[
-                RewardGrantKind::ResearchProgress,
                 RewardGrantKind::Equipment,
+                RewardGrantKind::FragmentDust,
                 RewardGrantKind::Narrative,
             ],
             (CombatNodeType::Boss, CombatMissionVariant::Boss) => &[
                 RewardGrantKind::SkillFragment,
                 RewardGrantKind::Equipment,
-                RewardGrantKind::ResearchProgress,
+                RewardGrantKind::FragmentDust,
+                RewardGrantKind::Narrative,
             ],
             _ => &[],
         }
@@ -145,32 +138,6 @@ impl CombatMissionPolicy {
             _ => TacticalPlan::default(),
         }
     }
-
-    pub fn default_win_condition_for_tactical_plan(
-        mission_variant: CombatMissionVariant,
-        _mission_risk: CombatMissionRisk,
-        tactical_plan: &TacticalPlan,
-        survive_timer_ms: Option<u64>,
-    ) -> WinCondition {
-        if matches!(
-            mission_variant,
-            CombatMissionVariant::Defense | CombatMissionVariant::Boss
-        ) {
-            if let BattleObjective::ProtectUnit { unit_ref } = &tactical_plan.objective {
-                if let Some(time_ms) = survive_timer_ms {
-                    return WinCondition::ProtectUnitUntil {
-                        unit_ref: unit_ref.clone(),
-                        time_ms,
-                    };
-                }
-                return WinCondition::ProtectUnit {
-                    unit_ref: unit_ref.clone(),
-                };
-            }
-        }
-
-        WinCondition::AllRequiredEnemyGroupsDefeated
-    }
 }
 
 fn default_defense_tactical_plan(combat_preview: &CombatPreview) -> TacticalPlan {
@@ -183,6 +150,7 @@ fn default_defense_tactical_plan(combat_preview: &CombatPreview) -> TacticalPlan
             cells: default_defense_route_cells(combat_preview),
         },
         points: Vec::new(),
+        field_work_objects: Vec::new(),
     }
 }
 
@@ -229,54 +197,112 @@ mod tests {
 
     #[test]
     fn only_current_encounter_node_types_are_supported() {
+        assert_eq!(
+            CombatMissionPolicy::SUPPORTED_ENCOUNTER_NODE_TYPES,
+            &[CombatNodeType::Defense, CombatNodeType::Boss]
+        );
         assert!(CombatMissionPolicy::is_supported_encounter_node_type(
             CombatNodeType::Defense
         ));
         assert!(CombatMissionPolicy::is_supported_encounter_node_type(
             CombatNodeType::Boss
         ));
-    }
 
-    #[test]
-    fn elite_map_nodes_prefer_high_pressure_missions() {
-        let preferred = CombatMissionPolicy::preferred_node_types_for_map_node(
-            MapNodeCategory::Combat,
-            "combat_elite",
+        for kind_id in ["combat_standard", "combat_elite"] {
+            assert_eq!(
+                CombatMissionPolicy::preferred_node_types_for_map_node(
+                    MapNodeCategory::Combat,
+                    kind_id,
+                ),
+                &[CombatNodeType::Defense]
+            );
+        }
+        assert_eq!(
+            CombatMissionPolicy::preferred_node_types_for_map_node(
+                MapNodeCategory::Boss,
+                "boss_elite",
+            ),
+            &[CombatNodeType::Boss]
         );
-
-        assert_eq!(preferred[0], CombatNodeType::Defense);
+        for category in [
+            MapNodeCategory::Start,
+            MapNodeCategory::SavePoint,
+            MapNodeCategory::Maintenance,
+            MapNodeCategory::HeadquartersContact,
+            MapNodeCategory::Event,
+            MapNodeCategory::Shop,
+            MapNodeCategory::Gate,
+            MapNodeCategory::Reward,
+        ] {
+            assert_eq!(
+                CombatMissionPolicy::preferred_node_types_for_map_node(category, "combat_elite"),
+                &[]
+            );
+        }
     }
 
     #[test]
     fn split_room_fallback_is_disabled_until_policy_is_implemented() {
-        let result = CombatMissionPolicy::try_fallback_node_type_for_archetype(
+        let error = CombatMissionPolicy::try_fallback_node_type_for_archetype(
             MapNodeCategory::Combat,
             BattlefieldArchetype::SplitRoom,
-        );
+        )
+        .expect_err("SplitRoom fallback must remain explicitly disabled");
+        let GameError::InvalidStaticData(message) = error else {
+            panic!("SplitRoom fallback should report invalid static data");
+        };
 
-        assert!(result.is_err());
+        assert_eq!(
+            message,
+            "SplitRoom battlefield archetype requires an explicit DefenseRoute/SplitRoom encounter; fallback is disabled until SplitRoom is implemented"
+        );
     }
 
     #[test]
     fn live_execution_is_explicit_per_mission_variant() {
-        assert!(CombatMissionPolicy::starts_as_live_battle(
-            CombatNodeType::Defense,
-            CombatMissionVariant::Defense
-        ));
-        assert!(CombatMissionPolicy::starts_as_live_battle(
-            CombatNodeType::Boss,
-            CombatMissionVariant::Boss
-        ));
-    }
+        for (node_type, mission_variant) in [
+            (CombatNodeType::Defense, CombatMissionVariant::Defense),
+            (CombatNodeType::Boss, CombatMissionVariant::Boss),
+        ] {
+            assert!(CombatMissionPolicy::starts_as_live_battle(
+                node_type,
+                mission_variant
+            ));
+        }
+        for (node_type, mission_variant) in [
+            (CombatNodeType::Defense, CombatMissionVariant::Boss),
+            (CombatNodeType::Boss, CombatMissionVariant::Defense),
+        ] {
+            assert!(!CombatMissionPolicy::starts_as_live_battle(
+                node_type,
+                mission_variant
+            ));
+        }
 
-    #[test]
-    fn battlefield_archetype_does_not_change_mission_variant() {
-        assert_eq!(
-            CombatMissionPolicy::fallback_mission_variant_for_archetype(
-                CombatNodeType::Defense,
-                BattlefieldArchetype::Surrounded,
-            ),
-            CombatMissionVariant::Defense
-        );
+        for archetype in [
+            BattlefieldArchetype::OpenHall,
+            BattlefieldArchetype::Corridor,
+            BattlefieldArchetype::ChokePoint,
+            BattlefieldArchetype::Ambush,
+            BattlefieldArchetype::Surrounded,
+            BattlefieldArchetype::SplitRoom,
+            BattlefieldArchetype::ObstacleRoom,
+            BattlefieldArchetype::BossArena,
+        ] {
+            assert_eq!(
+                CombatMissionPolicy::fallback_mission_variant_for_archetype(
+                    CombatNodeType::Defense,
+                    archetype,
+                ),
+                CombatMissionVariant::Defense
+            );
+            assert_eq!(
+                CombatMissionPolicy::fallback_mission_variant_for_archetype(
+                    CombatNodeType::Boss,
+                    archetype,
+                ),
+                CombatMissionVariant::Boss
+            );
+        }
     }
 }

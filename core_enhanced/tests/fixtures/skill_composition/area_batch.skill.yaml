@@ -1,0 +1,34 @@
+version: 2
+id: area-batch-fixture
+values:
+  - name: area-batch
+    value:
+      AttackProgram:
+        reactions: []
+        area_damage_percent:
+          moment: Live
+          root:
+            Clamp:
+              value:
+                Ratio:
+                  numerator:
+                    Mul:
+                      value:
+                        Add:
+                          - Aggregate:
+                              source: ResolvedTargets
+                              grouping: WholeSet
+                              reduction: Count
+                              outer_reduction: null
+                              member: { Const: { value: 0, unit: Scalar } }
+                          - Const: { value: -1, unit: Count }
+                      scalar: { Const: { value: 10, unit: Scalar } }
+                  denominator: { Const: { value: 1, unit: Count } }
+                  rounding: Floor
+              min: { Const: { value: 0, unit: Scalar } }
+              max: { Const: { value: 50, unit: Scalar } }
+equipment_attacks:
+  - equipment: r11_weapon
+    program: { Shared: area-batch }
+definitions: []
+skills: []
