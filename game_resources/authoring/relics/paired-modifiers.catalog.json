@@ -1,0 +1,46 @@
+{
+  "relics": [
+    {
+      "id": "vivid-blessing",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a113",
+      "name": "선명한 축복",
+      "description": "작성된 파편의 modifier가 효과를 소유한다.",
+      "rarity": {
+        "Unresolved": "relic-rarity"
+      },
+      "allow_duplicates": {
+        "Unresolved": "relic-allow-duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": {
+        "Unresolved": "relic-incompatible-with"
+      },
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "relic-dismantle-dust"
+      }
+    },
+    {
+      "id": "yin-yang-dragon",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a114",
+      "name": "승천의 징표",
+      "description": "정체를 알 수 없는 징표.",
+      "rarity": {
+        "Unresolved": "relic-rarity"
+      },
+      "allow_duplicates": {
+        "Unresolved": "relic-allow-duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": {
+        "Unresolved": "relic-incompatible-with"
+      },
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "relic-dismantle-dust"
+      }
+    }
+  ]
+}

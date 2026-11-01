@@ -1,0 +1,80 @@
+# 현행 의미의 작성 원본. Unresolved는 출시 미정이며 시험 완성값이 아닙니다.
+version: 2
+id: melting-love-equipment
+predicates:
+- name: owned-dot-victim
+  context: State
+  parameters: []
+  body: EventVictimHadOwnerDot
+values:
+- name: dot-recovery
+  value:
+    StateProgram:
+      id: dot-recovery
+      owns_use: false
+      end_on_source_exit: true
+      replacement: ReplaceSameSource
+      fields: []
+      handlers:
+      - id: recover
+        event:
+          Periodic:
+            interval_ms:
+              Unresolved: recovery-interval-ms
+        body:
+        - HealOwner:
+            amount:
+              moment: Live
+              root:
+                Clamp:
+                  value:
+                    Aggregate:
+                      source: StateOwnerDotTargets
+                      grouping: WholeSet
+                      reduction: Sum
+                      outer_reduction: null
+                      member:
+                        Const:
+                          value:
+                            Unresolved: recovery-per-target
+                          unit: Magnitude
+                  min:
+                    Const:
+                      value: 0
+                      unit: Magnitude
+                  max:
+                    Const:
+                      value:
+                        Unresolved: recovery-cap
+                      unit: Magnitude
+- name: dot-kill
+  value:
+    StateProgram:
+      id: dot-kill
+      owns_use: false
+      end_on_source_exit: true
+      replacement: ReplaceSameSource
+      fields: []
+      handlers:
+      - id: killed
+        event: OwnerKill
+        body:
+        - If:
+            condition:
+              Predicate:
+                name: owned-dot-victim
+                arguments: []
+            then_ops:
+            - GrantOwnerResonance:
+                amount:
+                  Unresolved: kill-resonance
+            else_ops: []
+definitions: []
+skills: []
+equipment_states:
+- equipment: placeholder_melting_love_armor
+  program:
+    Shared: dot-recovery
+- equipment: placeholder_melting_love_accessory
+  program:
+    Shared: dot-kill

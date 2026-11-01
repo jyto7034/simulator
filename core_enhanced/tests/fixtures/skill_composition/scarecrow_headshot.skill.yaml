@@ -1,0 +1,87 @@
+# Test-only duration, geometry and power. No production balance is decided here.
+version: 1
+id: scarecrow-headshot-fixture
+values:
+  - name: transformation
+    value:
+      Effects:
+        - id: form
+          op:
+            Sustained:
+              definition:
+                PreparedState:
+                  numerator: 5
+                  denominator: 2
+                  program:
+                    id: wisdom-harvest
+                    owns_use: false
+                    end_on_source_exit: true
+                    replacement: ReplaceSameSource
+                    fields: []
+                    handlers:
+                      - id: reward-direct-kill
+                        event:
+                          BasicAttackKill: { primary_only: false, once_per_action: true }
+                        body:
+                          - GrantOwnerResonance:
+                              amount:
+                                moment: Live
+                                root:
+                                  Const: { value: 20, unit: Magnitude }
+  - name: single_round
+    value:
+      AttackProgram:
+        reactions: []
+        magazine:
+          capacity: 1
+          reload_ms: 1500
+          normal_percent: 100
+equipment_attacks:
+  - equipment: r11_weapon
+    program: { Shared: single_round }
+
+definitions:
+  - name: apply-self
+    parameters:
+      - name: effects
+        value_type: Effects
+    body:
+      Action:
+        id: install
+        target:
+          Literal:
+            Target: SelfUnit
+        delivery:
+          Literal:
+            Delivery: Instant
+        effects:
+          - Append:
+              effects:
+                Parameter: effects
+        wait: Released
+skills:
+  - id: authored-prepared-state
+    name: 수확 1발 탄창과 강화 본체 처치 공명 검사
+    kind: Untargeted
+    cast_targeting:
+      Explicit:
+        selection: self
+        target: SelfUnit
+        reach: pattern
+        air_capable: true
+    prepare_ms: 0
+    focus_permissions:
+      allows_move: true
+      allows_basic_attack: true
+    admission:
+      capacity: 100
+      requirement: Full
+      cost: All
+    body:
+      Call:
+        id: transform
+        definition: apply-self
+        arguments:
+          - name: effects
+            value:
+              Shared: transformation

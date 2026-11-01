@@ -3,7 +3,7 @@ use uuid::Uuid;
 use super::GameCore;
 use crate::game::behavior::{BehaviorResult, GameError};
 use crate::game::resources::{
-    EquipItemOutcomeDto, EquipItemResultDto, EquipmentItemDto, EquipmentLoadoutTransition,
+    EquipItemOutcomeDto, EquipItemResultDto, EquipmentLoadoutTransition,
     InventoryDiffDto, InventoryItemDto, UnequipItemResultDto,
 };
 use crate::game::reward::RewardEffect;
@@ -27,7 +27,7 @@ impl GameCore {
                 staged_inventory
                     .equipments
                     .get_item(uuid)
-                    .map(EquipmentItemDto::from_owned_equipment)
+                    .map(|owned| self.equipment_item_dto(owned))
                     .map(InventoryItemDto::Equipment)
                     .ok_or(GameError::InventoryItemNotFound)
             })
@@ -74,7 +74,7 @@ impl GameCore {
             .get_item(&item_uuid)
             .ok_or(GameError::InventoryItemNotFound)?;
         let updated_item =
-            InventoryItemDto::Equipment(EquipmentItemDto::from_owned_equipment(owned_equipment));
+            InventoryItemDto::Equipment(self.equipment_item_dto(owned_equipment));
         let inventory_diff = InventoryDiffDto {
             added: vec![],
             updated: vec![updated_item],
@@ -411,7 +411,7 @@ impl GameCore {
             let owned = staged.inventory.equipments.get_item_mut(&weapon).ok_or(GameError::InvalidAction)?;
             owned.weapon_stage = crate::game::ability::weapon_marks::WeaponStage::Upgraded;
             inventory_diff.updated.push(crate::game::resources::InventoryItemDto::Equipment(
-                crate::game::resources::EquipmentItemDto::from_owned_equipment(owned)
+                self.equipment_item_dto(owned)
             ));
             crate::authoring::control::poll("fragment_weapon_evolved")?;
         }
@@ -643,7 +643,7 @@ impl GameCore {
         equipment.enhancement_level = equipment.enhancement_level.checked_add(1).ok_or(GameError::InvalidAction)?;
         let enhancement_level = equipment.enhancement_level;
         let updated_item =
-            InventoryItemDto::Equipment(EquipmentItemDto::from_owned_equipment(equipment));
+            InventoryItemDto::Equipment(self.equipment_item_dto(equipment));
         *self.inventory_mut()? = staged_inventory;
         self.state.crafting_resources = staged_resources;
 

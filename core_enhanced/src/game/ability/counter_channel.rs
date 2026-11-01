@@ -211,7 +211,9 @@ impl CounterChannelDef {
         if entry == self.default_entry {
             root.clone()
         } else {
-            format!("{root}::entry:{entry}").into()
+            // Derive a local sibling without introducing a namespace boundary.
+            // Both global `root` and explicit `namespace::root` remain valid pack keys.
+            format!("{root}__entry_{entry}").into()
         }
     }
     pub fn validate(&self) -> Result<(), String> {

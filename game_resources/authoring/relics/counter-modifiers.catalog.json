@@ -1,0 +1,46 @@
+{
+  "relics": [
+    {
+      "id": "healing-increase",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a111",
+      "name": "온기의 성배",
+      "description": "작성된 파편의 provider modifier가 실제 회복과 후속 효과를 소유한다.",
+      "rarity": {
+        "Unresolved": "relic-rarity"
+      },
+      "allow_duplicates": {
+        "Unresolved": "relic-allow-duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": {
+        "Unresolved": "relic-incompatible-with"
+      },
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "relic-dismantle-dust"
+      }
+    },
+    {
+      "id": "lingering-warmth",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a112",
+      "name": "남은 온기",
+      "description": "작성된 파편의 provider modifier가 실제 회복과 후속 효과를 소유한다.",
+      "rarity": {
+        "Unresolved": "relic-rarity"
+      },
+      "allow_duplicates": {
+        "Unresolved": "relic-allow-duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": {
+        "Unresolved": "relic-incompatible-with"
+      },
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "relic-dismantle-dust"
+      }
+    }
+  ]
+}

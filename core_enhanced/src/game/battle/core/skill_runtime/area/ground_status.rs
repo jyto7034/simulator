@@ -38,6 +38,24 @@ crate::authoring::clone_shape::struct_shape!(GroundAreaState {
     contributions
 });
 impl GroundAreaState {
+    fn slow_percent(&self, unit: UnitInstanceId, status: usize) -> u32 {
+        match self.program.statuses[status].kind {
+            GroundStatusKind::Slow { percent } => percent,
+            GroundStatusKind::RampingSlow { duration_ms, max_percent, rate_numerator, rate_denominator } => {
+                self.members.get(&unit).map_or(0, |relation| {
+                    let progress = u128::from(self.sampled_at.saturating_sub(relation.entered_at)) * u128::from(rate_numerator);
+                    let clock = u128::from(duration_ms) * u128::from(rate_denominator);
+                    if progress >= clock { max_percent } else { (progress * u128::from(max_percent) / clock) as u32 }
+                })
+            }
+            _ => 0,
+        }
+    }
+
+
+    pub(in crate::game::battle::core) fn membership(&self) -> crate::game::battle::core::area_observation::AreaMembership {
+        crate::game::battle::core::area_observation::AreaMembership { members: self.members.len(), contributions: self.contributions.len() }
+    }
     pub(super) fn new(program: GroundStatusProgram, declaration_seq: u64) -> Self {
         Self {
             program,
@@ -64,6 +82,26 @@ impl GroundAreaState {
             .len()
             .saturating_add(self.contributions.len())
             .saturating_add(self.members.values().map(|r| r.fired.len()).sum::<usize>())
+    }
+    pub(in crate::game::battle::core) fn has_stun_target(&self, target: UnitInstanceId) -> Result<bool, GameError> {
+        control::charge(self.contributions.len() as u64, "ground_stun_owner_lookup")?;
+        Ok(self.contributions.keys().any(|(unit, status)| *unit == target
+            && self.program.statuses[*status].kind == GroundStatusKind::Stun))
+    }
+    pub(in crate::game::battle::core) fn stun_targets(&self) -> Result<Vec<UnitInstanceId>, GameError> {
+        control::charge(self.contributions.len() as u64, "ground_stun_end_targets")?;
+        crate::game::battle::runtime_control::admit_retained_growth(0,
+            self.contributions.len().checked_mul(std::mem::size_of::<UnitInstanceId>()),
+            "ground_stun_end_targets")?;
+        let mut targets = Vec::with_capacity(self.contributions.len());
+        for (target, status) in self.contributions.keys() {
+            if self.program.statuses[*status].kind == GroundStatusKind::Stun {
+                targets.push(*target);
+            }
+        }
+        // BTreeMap keys are already ordered by target then status.
+        targets.dedup();
+        Ok(targets)
     }
     pub(super) fn affected_targets(&self) -> BTreeSet<UnitInstanceId> {
         self.contributions
@@ -195,6 +233,10 @@ impl BattleCore {
         {
             return Ok(());
         }
+        let mut ended_stuns = if self.game_data.equipment_state_catalog().has_owner_stun_end {
+            ground.stun_targets()?
+        } else { Vec::new() };
+        let before_membership = ground.membership();
         let previous_entities = ground.entity_count();
         let mut next = crate::authoring::clone_shape::controlled_clone(ground.as_ref())?;
         let caster = area.caster_instance_id;
@@ -202,6 +244,11 @@ impl BattleCore {
         let mut changed = BTreeSet::new();
         let mut stuns = BTreeSet::new();
         let source = area.source_snapshot.fact_source.clone();
+        let producer_bytes = area.skill_id.as_str().len().checked_add(area.step_id.len());
+        crate::game::battle::runtime_control::admit_retained_growth(0, producer_bytes, "ground_effect_origin")?;
+        control::charge(producer_bytes.unwrap_or(usize::MAX) as u64, "ground_effect_origin")?;
+        let producer = (area.source_generation.clone(), area.skill_id.clone(), area.step_id.clone(), area.cast_seq,
+            area.source_snapshot.skill_cast_source.clone());
         let mut vulnerabilities = Vec::new();
         // Only integer-percentage boundaries are scheduled; no per-frame polling.
         // Reconciliation can also jump across boundaries after a restored checkpoint.
@@ -333,6 +380,7 @@ impl BattleCore {
                             control::charge_serialized(v, "ground_vulnerability_copy")?;
                             vulnerabilities.push((
                                 target,
+                                rule.status,
                                 crate::authoring::clone_shape::controlled_clone(v)?,
                             ));
                         }
@@ -350,7 +398,12 @@ impl BattleCore {
         let boundary = next.next_boundary(expires);
         // Preserve the unmodified base before publishing the first speed contribution.
         for target in &changed {
-            self.ensure_ground_stat_base(*target)?;
+            self.ensure_passive_stat_base(*target)?;
+        }
+        if !ended_stuns.is_empty() {
+            let remaining = next.stun_targets()?;
+            control::charge(ended_stuns.len() as u64 * 64, "ground_stun_end_compare")?;
+            ended_stuns.retain(|target| remaining.binary_search(target).is_err());
         }
         let area = self.active_areas.get_mut(&id).unwrap();
         area.ground_status = Some(Box::new(next));
@@ -382,9 +435,23 @@ impl BattleCore {
         for target in stuns {
             self.cancel_unreleased_actions_for_hard_cc(now, caster, target);
         }
-        for (target, v) in vulnerabilities {
+        for (target, status_index, v) in vulnerabilities {
+            let bytes = std::mem::size_of::<super::super::super::area_observation::AreaEffectSource>()
+                .checked_add(producer.1.as_str().len()).and_then(|n| n.checked_add(producer.2.len()))
+                .and_then(|n| n.checked_add(v.definition.len()))
+                .and_then(|n| producer.4.as_ref().map_or(Some(n), |cast|
+                    n.checked_add(std::mem::size_of_val(cast.as_ref()))
+                        .and_then(|n| n.checked_add(cast.skill_id.as_str().len()))))
+                .and_then(|n| n.checked_add(v.modifier_source.as_ref().map_or(0, |m| m.definition.len() + m.rule.len())));
+            crate::game::battle::runtime_control::admit_retained_growth(0, bytes, "ground_effect_origin")?;
+            control::charge(bytes.unwrap_or(usize::MAX) as u64, "ground_effect_origin")?;
+            let origin = std::sync::Arc::new(super::super::super::area_observation::AreaEffectSource {
+                generation: producer.0.clone(), captured_cast: producer.4.clone(),
+                area_id: id, skill_id: producer.1.clone(), step_id: producer.2.clone(),
+                cast_sequence: producer.3, status_index, definition: v.definition.clone(), modifier_source: v.modifier_source.clone(),
+            });
             let prior = std::mem::replace(&mut self.runtime_fact_source, source.clone());
-            let result = self.begin_sustained(
+            let result = self.begin_sustained_from_area(
                 caster,
                 target,
                 crate::game::ability::sustained::SustainedEffectDef::HitStatus {
@@ -399,6 +466,7 @@ impl BattleCore {
                     },
                 },
                 now,
+                origin,
             );
             self.runtime_fact_source = prior;
             result?;
@@ -406,6 +474,12 @@ impl BattleCore {
         if changed_any {
             self.refresh_block_state();
             self.schedule_continuous_movement_tick(now);
+        }
+        if let Some(area) = self.active_areas.get(&id) {
+            crate::game::battle::core::area_observation::record(&mut self.authoring_observation, area, now, crate::game::battle::core::area_observation::AreaChange::Reconciled, Some(before_membership))?;
+        }
+        for target in ended_stuns {
+            self.dispatch_equipment_stun_end(caster, target, now)?;
         }
         control::poll("ground_reconciled")
     }
@@ -425,26 +499,7 @@ impl BattleCore {
                 }
                 let def = &ground.program.statuses[*status];
                 let (slow, damage) = match def.kind {
-                    GroundStatusKind::Slow { percent } => (percent, 0),
-                    GroundStatusKind::RampingSlow {
-                        duration_ms,
-                        max_percent,
-                        rate_numerator,
-                        rate_denominator,
-                    } => {
-                        let percent = ground.members.get(unit).map_or(0, |relation| {
-                            let progress =
-                                u128::from(ground.sampled_at.saturating_sub(relation.entered_at))
-                                    * u128::from(rate_numerator);
-                            let clock = u128::from(duration_ms) * u128::from(rate_denominator);
-                            if progress >= clock {
-                                u128::from(max_percent)
-                            } else {
-                                progress * u128::from(max_percent) / clock
-                            }
-                        });
-                        (percent as u32, 0)
-                    }
+                    GroundStatusKind::Slow { .. } | GroundStatusKind::RampingSlow { .. } => (ground.slow_percent(*unit, *status), 0),
                     GroundStatusKind::DamageTaken { percent } => (0, percent),
                     GroundStatusKind::Stun => continue,
                 };
@@ -518,5 +573,16 @@ impl BattleCore {
             })
             .map(|a| a.expires_at_ms.saturating_sub(1))
             .max()
+    }
+}
+
+impl BattleCore {
+    pub(in crate::game::battle::core) fn ground_target_movement_impaired(&self, target: UnitInstanceId, now: u64) -> Result<bool, GameError> {
+        control::charge(self.ground_composition_work(), "ground_movement_impairment_query")?;
+        Ok(self.active_areas.values().filter(|area| now < area.expires_at_ms).any(|area| {
+            area.ground_status.as_ref().is_some_and(|ground| ground.contributions.keys().any(|(unit, status)| {
+                *unit == target && (ground.program.statuses[*status].kind == GroundStatusKind::Stun || ground.slow_percent(*unit, *status) > 0)
+            }))
+        }))
     }
 }

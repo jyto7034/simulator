@@ -12,11 +12,16 @@ fn fusion_placement_world_fixture() -> (GameCore, Uuid, Uuid, Position) {
     )))
     .unwrap();
     let fragment = fragments.fragments[0].clone();
-    let data = game_data_with_pve_equipment_and_active_skill_fragments(
+    let data = game_data_builder_with_pve_equipment_and_active_skill_fragments(
         vec![],
         native.skills,
         vec![fragment.clone()],
-    );
+    )
+    .with_relics(unowned_graph_modifier_relics(&[
+        "explosion-vulnerability", "widened-horizon", "summon-vulnerability",
+        "long-breath", "red-thread",
+    ]))
+    .build_arc();
     let mut c = GameCore::new(data, 0xabc99);
     let p = Uuid::from_u128(0xabc99);
     start_new_game_with_default_starters(&mut c, p);

@@ -1,9 +1,13 @@
 use super::*;
+use crate::authoring::composition::{canonical_pair_tests as source, compile_json, Artifact};
+use crate::game::battle::core::boss_runtime::tests::compiled_action_fixture::{
+    assert_fragment_trace_origin, enable_complete_trace, hp_trace_rows, primary_fragment_input,
+};
 use crate::game::battle::core::{
-    boss_runtime::tests::compiled_action_fixture::{fixture_graph, place},
+    boss_runtime::tests::compiled_action_fixture::{fixture_content_with_data, place},
     sim::{BattleExecutionState, BattleLiveCommand},
 };
-use serde_json::{json, Value};
+use serde_json::json;
 const RELICS: [&str; 6] = [
     "long-breath",
     "widened-horizon",
@@ -14,7 +18,6 @@ const RELICS: [&str; 6] = [
 ];
 fn fixture(
     relics: &[usize],
-    edit: impl FnOnce(&mut Value),
 ) -> (
     BattleCore,
     BattleExecutionState,
@@ -22,9 +25,37 @@ fn fixture(
     UnitInstanceId,
     UnitInstanceId,
 ) {
-    let mut doc = crate::authoring::node_graph::tests::paired_areas_fixture();
-    edit(&mut doc);
-    let (mut c, s, a, e, b) = fixture_graph(&RELICS, relics, doc);
+    let mut document = source::resolved();
+    document["skills"][0]["id"] = json!("r11_aura");
+    let artifact = compile_json(&document.to_string()).unwrap();
+    let native = crate::authoring::node_graph::NativeGraphContent {
+        skills: Artifact::from_ron(&artifact.to_ron().unwrap())
+            .unwrap()
+            .load_native()
+            .unwrap(),
+        equipment: vec![],
+        mark_weapons: vec![],
+    };
+    let catalog = source::relics();
+    let equipped: Vec<_> = relics
+        .iter()
+        .map(|i| {
+            catalog
+                .relics
+                .iter()
+                .position(|r| r.id == RELICS[*i])
+                .unwrap()
+        })
+        .collect();
+    let (mut c, s, a, e, b) = fixture_content_with_data(
+        &RELICS,
+        &equipped,
+        native,
+        |_| {},
+        crate::game::resource::ResourceCatalog { resources: vec![] },
+        |data| data.with_relics(catalog),
+        |_| {},
+    );
     Arc::make_mut(&mut c.scenario).terminal_outcomes =
         crate::game::battle::scenario::BattleScenario::fixture_survival_outcomes(120000);
     for t in [a, e, b] {
@@ -50,9 +81,157 @@ fn cast(c: &mut BattleCore, a: UnitInstanceId, first: Position, second: Position
 fn step(c: &mut BattleCore, s: &mut BattleExecutionState, now: u64) {
     c.step_battle_execution_until(s, now).unwrap();
 }
+
+fn provenance_fixture(
+    burst: bool,
+) -> (
+    BattleCore,
+    BattleExecutionState,
+    UnitInstanceId,
+    UnitInstanceId,
+    UnitInstanceId,
+) {
+    let (mut c, s, a, e, b) = fixture(if burst { &[5] } else { &[] });
+    c.units.get_mut(&b).unwrap().stats.current_health = 500;
+    place(&mut c, e, 4, 1);
+    if burst {
+        c.units.get_mut(&e).unwrap().threat_class = BattleUnitThreatClass::Boss;
+        c.units.get_mut(&e).unwrap().stats.max_health = 1001;
+        c.units.get_mut(&e).unwrap().stats.current_health = 1001;
+        place(&mut c, b, 7, 3);
+    } else {
+        place(&mut c, b, 4, 1);
+        place(&mut c, e, 7, 3);
+    }
+    (c, s, a, e, b)
+}
+
+#[test]
+fn canonical_pair_heal_and_dragon_provenance_preserve_observer_parity() {
+    for burst in [false, true] {
+        let (mut plain, mut ps, a, e, b) = provenance_fixture(burst);
+        let copy = primary_fragment_input(&plain, a);
+        let (mut observed, mut os) = (plain.clone(), ps.clone());
+        let (_trace, trace_from) = enable_complete_trace(&mut observed);
+        for (core, state) in [(&mut plain, &mut ps), (&mut observed, &mut os)] {
+            cast(
+                core,
+                a,
+                Position::new(if burst { 4 } else { 2 }, 1),
+                Position::new(4, 1),
+                0,
+            );
+            step(core, state, 1000);
+            assert_eq!(
+                core.units[&e].stats.current_health,
+                if burst { 750 } else { 1000 }
+            );
+            assert_eq!(
+                core.units[&b].stats.current_health,
+                if burst { 500 } else { 650 }
+            );
+        }
+        assert_eq!(
+            plain.event_log.to_json_string().unwrap(),
+            observed.event_log.to_json_string().unwrap()
+        );
+        assert_eq!(
+            plain.event_queue_debug_snapshot(),
+            observed.event_queue_debug_snapshot()
+        );
+        assert_eq!(
+            serde_json::to_value(plain.runtime_fact_summary()).unwrap(),
+            serde_json::to_value(observed.runtime_fact_summary()).unwrap()
+        );
+        assert_eq!(
+            plain.paired_areas_snapshot().unwrap(),
+            observed.paired_areas_snapshot().unwrap()
+        );
+        let obs = observed.authoring_observation().unwrap().unwrap();
+        let hp = obs.latest_nonzero_sourced_hp.as_ref().unwrap();
+        assert_eq!(hp.fragment.as_ref().unwrap().copy_uuid, copy);
+        assert_eq!(hp.source.as_ref().unwrap().cast.skill_id, "r11_aura");
+        assert!(!hp.source.as_ref().unwrap().authored.source_file.is_empty());
+        for row in hp_trace_rows(&observed, trace_from) {
+            assert_fragment_trace_origin(&row, a, Some(("r11_aura", 0)));
+        }
+        let events = observed
+            .event_log
+            .entries
+            .iter()
+            .filter(|entry| {
+                matches!(entry.event,
+            crate::game::battle::event_log::BattleLogEvent::HpChanged { delta, .. } if delta != 0)
+            })
+            .count();
+        assert_eq!(obs.nonzero_hp_applications, events as u64);
+    }
+}
+
+#[test]
+fn canonical_pair_observed_heal_and_dragon_cancel_restore_and_retry() {
+    use crate::authoring::{CancellationToken, ExecutionLimits, ExecutionPhase};
+    for burst in [false, true] {
+        for site in [
+            "sustained_observation_source",
+            if burst {
+                "pair_burst_effect"
+            } else {
+                "direct_heal_applied"
+            },
+        ] {
+            let (mut c, mut s, a, e, b) = provenance_fixture(burst);
+            c.enable_authoring_observation();
+            cast(
+                &mut c,
+                a,
+                Position::new(if burst { 4 } else { 2 }, 1),
+                Position::new(4, 1),
+                0,
+            );
+            step(&mut c, &mut s, 999);
+            let before = (
+                c.transaction_debug_snapshot(),
+                c.event_queue_debug_snapshot(),
+                serde_json::to_value(c.authoring_observation().unwrap()).unwrap(),
+                format!("{s:?}"),
+            );
+            let token = CancellationToken::default();
+            let result = control::with_test_cancellation(site, 1, || {
+                control::run(
+                    &ExecutionLimits::default(),
+                    &token,
+                    ExecutionPhase::TrialExecution,
+                    || c.step_battle_execution_until(&mut s, 1000),
+                )
+            });
+            assert!(token.is_cancelled(), "{burst}/{site}: {result:?}");
+            assert!(result.is_err());
+            assert_eq!(
+                before,
+                (
+                    c.transaction_debug_snapshot(),
+                    c.event_queue_debug_snapshot(),
+                    serde_json::to_value(c.authoring_observation().unwrap()).unwrap(),
+                    format!("{s:?}")
+                )
+            );
+            step(&mut c, &mut s, 1000);
+            assert_eq!(
+                c.units[&e].stats.current_health,
+                if burst { 750 } else { 1000 }
+            );
+            assert_eq!(
+                c.units[&b].stats.current_health,
+                if burst { 500 } else { 650 }
+            );
+        }
+    }
+}
+
 #[test]
 fn paired_areas_runtime_union_once_and_intersection_membership_independent_of_healing() {
-    let (mut c, mut s, a, _, b) = fixture(&[], |_| {});
+    let (mut c, mut s, a, _, b) = fixture(&[]);
     place(&mut c, b, 3, 1);
     c.units.get_mut(&b).unwrap().stats.current_health = 500;
     cast(&mut c, a, Position::new(2, 1), Position::new(4, 1), 0);
@@ -79,7 +258,7 @@ fn paired_areas_runtime_union_once_and_intersection_membership_independent_of_he
 }
 #[test]
 fn paired_areas_runtime_base_before_transfer_no_reboost_or_retransfer() {
-    let (mut c, mut s, a, _, b) = fixture(&[2, 4], |_| {});
+    let (mut c, mut s, a, _, b) = fixture(&[2, 4]);
     c.units.get_mut(&b).unwrap().stats.current_health = 500;
     cast(&mut c, a, Position::new(2, 1), Position::new(4, 1), 0);
     step(&mut c, &mut s, 1000);
@@ -100,7 +279,7 @@ fn paired_areas_runtime_base_before_transfer_no_reboost_or_retransfer() {
 }
 #[test]
 fn paired_areas_runtime_rejects_partial_invalid_second_and_preserves_old_pair() {
-    let (mut c, mut s, a, _, _) = fixture(&[], |_| {});
+    let (mut c, mut s, a, _, _) = fixture(&[]);
     for target in [
         None,
         Some(SkillCastTarget::Tile {
@@ -146,7 +325,7 @@ fn paired_areas_runtime_rejects_partial_invalid_second_and_preserves_old_pair() 
 }
 #[test]
 fn paired_areas_runtime_relics_change_only_declared_lifetime_range_and_buff() {
-    let (mut c, mut s, a, _, b) = fixture(&[0, 1, 3], |_| {});
+    let (mut c, mut s, a, _, b) = fixture(&[0, 1, 3]);
     place(&mut c, b, 4, 1);
     cast(&mut c, a, Position::new(2, 1), Position::new(4, 1), 0);
     step(&mut c, &mut s, 0);
@@ -160,7 +339,7 @@ fn paired_areas_runtime_relics_change_only_declared_lifetime_range_and_buff() {
 }
 #[test]
 fn paired_areas_runtime_coincident_burst_is_paid_one_shot_without_support() {
-    let (mut c, mut s, a, e, b) = fixture(&[5], |_| {});
+    let (mut c, mut s, a, e, b) = fixture(&[5]);
     place(&mut c, e, 3, 1);
     place(&mut c, b, 3, 2);
     c.units.get_mut(&e).unwrap().threat_class = BattleUnitThreatClass::Boss;
@@ -179,7 +358,7 @@ fn paired_areas_runtime_coincident_burst_is_paid_one_shot_without_support() {
 }
 #[test]
 fn paired_areas_runtime_proportional_residue_uses_stable_id_and_caps_to_deficit() {
-    let (mut c, mut s, a, _, b) = fixture(&[], |_| {});
+    let (mut c, mut s, a, _, b) = fixture(&[]);
     let extra = UnitInstanceId(Uuid::from_u128(1));
     let mut u = controlled_clone(&c.units[&b]).unwrap();
     u.instance_id = extra;
@@ -198,7 +377,7 @@ fn paired_areas_runtime_proportional_residue_uses_stable_id_and_caps_to_deficit(
 #[test]
 fn paired_areas_runtime_empty_rejected_and_airborne_members() {
     for case in 0..4 {
-        let (mut c, mut s, a, _, b) = fixture(&[], |_| {});
+        let (mut c, mut s, a, _, b) = fixture(&[]);
         c.units.get_mut(&b).unwrap().stats.current_health = 500;
         c.units.get_mut(&b).unwrap().mobility_kind =
             crate::game::battle::types::MobilityKind::Airborne;
@@ -223,7 +402,7 @@ fn paired_areas_runtime_empty_rejected_and_airborne_members() {
 }
 #[test]
 fn paired_areas_runtime_copies_heal_separately_and_keep_intersection_contributions_separate() {
-    let (mut c, mut s, a, _, b) = fixture(&[3], |_| {});
+    let (mut c, mut s, a, _, b) = fixture(&[3]);
     place(&mut c, b, 3, 1);
     cast(&mut c, a, Position::new(2, 1), Position::new(4, 1), 0);
     cast(&mut c, b, Position::new(2, 1), Position::new(4, 1), 0);
@@ -244,7 +423,7 @@ fn paired_areas_runtime_copies_heal_separately_and_keep_intersection_contributio
 fn paired_areas_runtime_hard_cc_silence_preserve_installation_but_exit_cancels() {
     use crate::game::ability::sustained::{HitStatusKind, HitStatusProfile};
     for case in 0..3 {
-        let (mut c, mut s, a, e, b) = fixture(&[], |_| {});
+        let (mut c, mut s, a, e, b) = fixture(&[]);
         c.units.get_mut(&b).unwrap().stats.current_health = 500;
         cast(&mut c, a, Position::new(2, 1), Position::new(4, 1), 0);
         step(&mut c, &mut s, 0);
@@ -300,7 +479,7 @@ fn paired_areas_runtime_hard_cc_silence_preserve_installation_but_exit_cancels()
 #[test]
 fn paired_areas_runtime_burst_requires_equipped_same_center_and_cancel_before_impact() {
     for case in 0..4 {
-        let (mut c, mut s, a, e, b) = fixture(if case == 0 { &[] } else { &[5] }, |_| {});
+        let (mut c, mut s, a, e, b) = fixture(if case == 0 { &[] } else { &[5] });
         place(&mut c, b, 3, 1);
         place(&mut c, e, 3, 2);
         cast(
@@ -330,7 +509,7 @@ fn paired_areas_runtime_burst_requires_equipped_same_center_and_cancel_before_im
 fn paired_areas_runtime_burst_classification_and_normal_damage_protection() {
     use crate::game::ability::sustained::SurvivalPolicy;
     for case in 0..4 {
-        let (mut c, mut s, a, e, b) = fixture(&[5], |_| {});
+        let (mut c, mut s, a, e, b) = fixture(&[5]);
         place(&mut c, a, 0, 0);
         place(&mut c, b, 3, 1);
         place(&mut c, e, 3, 2);
@@ -401,7 +580,7 @@ fn paired_areas_runtime_burst_classification_and_normal_damage_protection() {
 fn paired_areas_runtime_install_and_heal_cancellation_restore_state_queue_and_retry() {
     use crate::authoring::control::{CancellationToken, ExecutionLimits, ExecutionPhase};
     for site in ["paired_membership_query", "paired_heal_segment"] {
-        let (mut c, mut s, a, _, b) = fixture(&[], |_| {});
+        let (mut c, mut s, a, _, b) = fixture(&[]);
         c.units.get_mut(&b).unwrap().stats.current_health = 500;
         cast(&mut c, a, Position::new(2, 1), Position::new(4, 1), 0);
         let now = if site == "paired_heal_segment" {
@@ -450,7 +629,7 @@ fn paired_areas_runtime_install_and_heal_cancellation_restore_state_queue_and_re
 fn paired_areas_runtime_retained_boundary_replacement_restores_old_pair_and_retries() {
     use crate::game::battle::runtime_control as native;
     for replacement in [false, true] {
-        let (mut c, mut s, a, _, b) = fixture(&[], |_| {});
+        let (mut c, mut s, a, _, b) = fixture(&[]);
         place(&mut c, b, 3, 1);
         if replacement {
             cast(&mut c, a, Position::new(2, 1), Position::new(4, 1), 0);

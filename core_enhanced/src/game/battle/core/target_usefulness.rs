@@ -654,7 +654,7 @@ impl BattleCore {
             ) {
                 Ok(Some(useful)) => useful,
                 Ok(None) => skill.steps.iter().any(|step| {
-                    matches!(step.target, SkillTarget::AllySingle)
+                    matches!(step.target, SkillTarget::AllySingle | SkillTarget::CastTarget)
                         && self.is_skill_step_useful_ally_target(
                             caster_instance_id,
                             step,

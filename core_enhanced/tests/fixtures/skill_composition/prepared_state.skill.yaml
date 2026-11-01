@@ -1,0 +1,95 @@
+# Test-only duration, geometry and power. No production balance is decided here.
+version: 1
+id: prepared-state-fixture
+values:
+  - name: transformation
+    value:
+      Effects:
+        - id: form
+          op:
+            Sustained:
+              definition:
+                PreparedState:
+                  numerator: 5
+                  denominator: 2
+                  program:
+                    id: prepared-strike
+                    owns_use: false
+                    end_on_source_exit: true
+                    replacement: ReplaceSameSource
+                    fields:
+                      - name: kills
+                        value:
+                          Integer: { unit: Count, initial: 0, min: 0, max: 100 }
+                    handlers:
+                      - id: reward-direct-kill
+                        event:
+                          BasicAttackKill: { primary_only: false, once_per_action: true }
+                        body:
+                          - Set:
+                              field: kills
+                              value:
+                                moment: Live
+                                root:
+                                  Add:
+                                    - Read:
+                                        StateField: { name: kills, unit: Count }
+                                    - Const: { value: 1, unit: Count }
+                          - ApplyOwnerState:
+                              duration:
+                                moment: Live
+                                root:
+                                  Const: { value: 2000, unit: Milliseconds }
+                              profile:
+                                definition: direct-kill-reward
+                                attack_percent: 25
+                                defense_percent: 0
+                                attack_speed_points: 0
+                                hp_floor_one: false
+                                end_on_source_exit: false
+                              replacement: ReplaceSameSource
+definitions:
+  - name: apply-self
+    parameters:
+      - name: effects
+        value_type: Effects
+    body:
+      Action:
+        id: install
+        target:
+          Literal:
+            Target: SelfUnit
+        delivery:
+          Literal:
+            Delivery: Instant
+        effects:
+          - Append:
+              effects:
+                Parameter: effects
+        wait: Released
+skills:
+  - id: authored-prepared-state
+    name: 다음 무기 기본 공격 준비와 직접 처치 반응 검사
+    kind: Untargeted
+    cast_targeting:
+      Explicit:
+        selection: self
+        target: SelfUnit
+        reach: pattern
+        air_capable: true
+    prepare_ms: 0
+    focus_permissions:
+      allows_move: true
+      allows_basic_attack: true
+    admission:
+      capacity: 100
+      requirement: Full
+      cost: All
+    body:
+      Call:
+        id: transform
+        definition: apply-self
+        arguments:
+          - name: effects
+            value:
+              Shared: transformation

@@ -1,6 +1,0 @@
-{
-  "path": "core_enhanced/src/game/battle/core/sim.rs",
-  "bytes": 213815,
-  "sha256": "154e0ff8765133791f006cd8f1968c0ca765cb2ece1d7322c4511461362daf17",
-  "authorization": "Root whole-file handover; cfg(test) build_skill_step_commands explicit rejection only"
-}

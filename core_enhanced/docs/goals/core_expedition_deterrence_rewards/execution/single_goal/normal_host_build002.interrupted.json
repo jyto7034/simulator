@@ -1,7 +1,0 @@
-{
-  "exit_code": 130,
-  "reason": "owned build stopped after known external probe flat-payload consumer error; only U14 host is needed, all-bins relinks unrelated legacy probes",
-  "original_command": "normal_host_build002.stdout.log",
-  "source_change": "contact helper v3 and supported cmva probe-bin selector for U14 only",
-  "product_core_delta": false
-}

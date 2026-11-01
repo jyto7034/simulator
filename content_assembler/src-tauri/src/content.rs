@@ -9,22 +9,26 @@ const GROUPS: &str = ".graph-groups.json";
 const SUFFIX: &str = ".node-graph.json";
 
 fn filename(value: &Value) -> Result<&str, String> {
+    filename_for(value, SUFFIX)
+}
+
+fn filename_for<'a>(value: &'a Value, suffix: &str) -> Result<&'a str, String> {
     let name = value.as_str().ok_or("파일 이름이 필요합니다.")?;
     let stem = name.split('.').next().unwrap_or("").to_ascii_lowercase();
     let reserved = ["con", "prn", "aux", "nul"].contains(&stem.as_str())
         || ((stem.starts_with("com") || stem.starts_with("lpt"))
             && stem.len() == 4
             && stem.as_bytes()[3].is_ascii_digit());
-    if !name.ends_with(SUFFIX)
-        || name.len() <= SUFFIX.len()
+    if !name.ends_with(suffix)
+        || name.len() <= suffix.len()
         || name.len() > 180
         || name.starts_with('.')
         || name.chars().any(|c| c < ' ' || "<>:\"/\\|?*".contains(c))
         || reserved
     {
-        return Err(
-            "파일 이름을 확인하세요. 폴더 경로 없이 .node-graph.json 이름을 사용하세요.".into(),
-        );
+        return Err(format!(
+            "파일 이름을 확인하세요. 폴더 경로 없이 {suffix} 이름을 사용하세요."
+        ));
     }
     Ok(name)
 }
@@ -129,6 +133,13 @@ impl Drop for WriteLock {
 }
 
 pub fn operation(directory: &Path, input: &Value) -> Result<Value, String> {
+    let composition = match input.get("kind").and_then(Value::as_str) {
+        None if input.get("kind").is_none() => false,
+        Some("node-graph") => false,
+        Some("composition") => true,
+        _ => return Err("지원하지 않는 콘텐츠 종류입니다.".into()),
+    };
+    let suffix = if composition { ".skill.yaml" } else { SUFFIX };
     fs::create_dir_all(directory).map_err(|e| e.to_string())?;
     let metadata = fs::symlink_metadata(directory).map_err(|e| e.to_string())?;
     if !metadata.is_dir() || metadata.file_type().is_symlink() {
@@ -141,21 +152,24 @@ pub fn operation(directory: &Path, input: &Value) -> Result<Value, String> {
             let kind = entry.file_type().map_err(|e| e.to_string())?;
             if kind.is_file()
                 && let Some(name) = entry.file_name().to_str()
-                && filename(&json!(name)).is_ok()
+                && filename_for(&json!(name), suffix).is_ok()
             {
                 names.push(name.to_string());
             }
         }
         names.sort();
         return Ok(
-            json!({"directory": directory.to_string_lossy(), "files": names, "organization": read_groups(directory)?}),
+            json!({"directory": directory.to_string_lossy(), "files": names, "organization": if composition { json!({"document":empty_groups(),"revision":null}) } else { read_groups(directory)? }}),
         );
     }
     let grouping = input["operation"] == "save-groups";
+    if grouping && composition {
+        return Err("조합 원본은 그래프 그룹 파일을 수정할 수 없습니다.".into());
+    }
     let name = if grouping {
         GROUPS
     } else {
-        filename(&input["name"])?
+        filename_for(&input["name"], suffix)?
     };
     if input["operation"] == "read" {
         return read_file(directory, name);
@@ -167,10 +181,17 @@ pub fn operation(directory: &Path, input: &Value) -> Result<Value, String> {
     if text.len() as u64 > LIMIT {
         return Err("파일 크기 제한은 5MB입니다.".into());
     }
-    let document: Value = serde_json::from_str(text).map_err(|e| e.to_string())?;
+    if composition && text.len() > 2_000_000 {
+        return Err("원본 크기 제한은 2MB입니다.".into());
+    }
+    let document: Value = if composition {
+        Value::Null
+    } else {
+        serde_json::from_str(text).map_err(|e| e.to_string())?
+    };
     if grouping {
         validate_groups(&document)?;
-    } else if document["format"] != "node-graph" || document["version"] != 1 {
+    } else if !composition && (document["format"] != "node-graph" || document["version"] != 1) {
         return Err("지원하는 노드 그래프 파일이 아닙니다.".into());
     }
     let expected = input.get("expected").ok_or("저장 기준이 필요합니다.")?;
@@ -236,6 +257,38 @@ mod tests {
             .unwrap()
             .as_nanos();
         std::env::temp_dir().join(format!("content-files-{}-{unique}", std::process::id()))
+    }
+    #[test]
+    fn incomplete_composition_roundtrips_and_stale_save_preserves_bytes() {
+        let root = folder();
+        let name = "미완성.skill.yaml";
+        let text = "# 주석 보존\nversion: 1\nskills: [";
+        let first = operation(&root, &json!({"kind":"composition","operation":"save","name":name,"json":text,"expected":null})).unwrap();
+        assert_eq!(
+            operation(
+                &root,
+                &json!({"kind":"composition","operation":"read","name":name})
+            )
+            .unwrap(),
+            first
+        );
+        assert!(operation(&root, &json!({"kind":"composition","operation":"save","name":name,"json":"new","expected":null})).is_err());
+        assert_eq!(fs::read_to_string(root.join(name)).unwrap(), text);
+        assert!(
+            operation(
+                &root,
+                &json!({"kind":"composition","operation":"read","name":"one.node-graph.json"})
+            )
+            .is_err()
+        );
+        assert!(
+            operation(
+                &root,
+                &json!({"kind":"composition","operation":"save-groups","json":"{}","expected":null})
+            )
+            .is_err()
+        );
+        fs::remove_dir_all(root).unwrap();
     }
     #[test]
     fn roundtrip_conflict_and_invalid_paths_preserve_file() {

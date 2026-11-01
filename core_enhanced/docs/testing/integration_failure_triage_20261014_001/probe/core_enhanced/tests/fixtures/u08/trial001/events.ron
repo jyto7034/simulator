@@ -1,9 +1,0 @@
-(events: [
-    (id: "u08_trial_corruption", entry_scene_id: "first", scenes: [
-      (id: "first", presentation: (panels: [(image_id: "u08_trial", text_ids: ["choose"])]),
-       next: RelicCorruption(next_scene_id: "second")),
-      (id: "second", presentation: (panels: [(image_id: "u08_trial", text_ids: ["decline"])]),
-       next: RelicCorruption(next_scene_id: "end")),
-      (id: "end", presentation: (panels: [(image_id: "u08_trial", text_ids: ["complete"])]), next: End),
-    ]),
-])

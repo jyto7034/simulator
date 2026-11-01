@@ -1,0 +1,261 @@
+# N01 authored-condition exercise; same 3 x 7 / 5s prototype as equipment_state.
+# Empty stacks are inactive; resetting an empty stack has no state change.
+version: 2
+id: predicate-equipment-window-fixture
+predicates:
+  - name: active-window
+    context: State
+    parameters:
+      - name: now
+        value_type:
+          Amount: Milliseconds
+      - name: deadline
+        value_type:
+          Amount: Milliseconds
+      - name: stacks
+        value_type:
+          Amount: Count
+    body:
+      Logic:
+        All:
+          - Compare:
+              left:
+                Parameter: now
+              comparison: Less
+              right:
+                Parameter: deadline
+          - Compare:
+              left:
+                Parameter: stacks
+              comparison: Greater
+              right:
+                Literal:
+                  Amount:
+                    moment: Live
+                    root:
+                      Const:
+                        value: 0
+                        unit: Count
+  - name: needs-reset
+    context: State
+    parameters:
+      - name: now
+        value_type:
+          Amount: Milliseconds
+      - name: deadline
+        value_type:
+          Amount: Milliseconds
+      - name: stacks
+        value_type:
+          Amount: Count
+    body:
+      Logic:
+        Not:
+          Call:
+            name: active-window
+            arguments:
+              - name: now
+                value:
+                  Parameter: now
+              - name: deadline
+                value:
+                  Parameter: deadline
+              - name: stacks
+                value:
+                  Parameter: stacks
+values:
+  - name: black-tear
+    value:
+      StateProgram:
+        id: reactive-speed
+        owns_use: false
+        end_on_source_exit: true
+        replacement: ReplaceSameSource
+        fields:
+          - name: last_stack
+            value:
+              Integer:
+                unit: Count
+                initial: 0
+                min: 0
+                max: 3
+          - name: valid_until
+            value:
+              Integer:
+                unit: Milliseconds
+                initial: 0
+                min: 0
+                max: 9007199254740991
+        handlers:
+          - id: hostile-direct-hp-loss
+            event:
+              DirectHpLost:
+                relation: Hostile
+                once_per_action: true
+            body:
+              - If:
+                  condition:
+                    Predicate:
+                      name: needs-reset
+                      arguments:
+                        - name: now
+                          value:
+                            Literal:
+                              Amount:
+                                moment: Live
+                                root:
+                                  Read:
+                                    Time: BattleElapsed
+                        - name: deadline
+                          value:
+                            Literal:
+                              Amount:
+                                moment: Live
+                                root:
+                                  Read:
+                                    StateField:
+                                      name: valid_until
+                                      unit: Milliseconds
+                        - name: stacks
+                          value:
+                            Literal:
+                              Amount:
+                                moment: Live
+                                root:
+                                  Read:
+                                    StateField:
+                                      name: last_stack
+                                      unit: Count
+                  then_ops:
+                    - Set:
+                        field: last_stack
+                        value:
+                          moment: Live
+                          root:
+                            Const:
+                              value: 0
+                              unit: Count
+                  else_ops: []
+              - Set:
+                  field: last_stack
+                  value:
+                    moment: Live
+                    root:
+                      Clamp:
+                        value:
+                          Add:
+                            - Read:
+                                StateField:
+                                  name: last_stack
+                                  unit: Count
+                            - Const:
+                                value: 1
+                                unit: Count
+                        min:
+                          Const:
+                            value: 0
+                            unit: Count
+                        max:
+                          Const:
+                            value: 3
+                            unit: Count
+              - Set:
+                  field: valid_until
+                  value:
+                    moment: Live
+                    root:
+                      Add:
+                        - Read:
+                            Time: BattleElapsed
+                        - Const:
+                            value: 5000
+                            unit: Milliseconds
+              - If:
+                  condition:
+                    Compare:
+                      left:
+                        moment: Live
+                        root:
+                          Read:
+                            StateField:
+                              name: last_stack
+                              unit: Count
+                      comparison: Equal
+                      right:
+                        moment: Live
+                        root:
+                          Const:
+                            value: 1
+                            unit: Count
+                  then_ops:
+                    - ApplyOwnerState:
+                        duration:
+                          moment: Live
+                          root:
+                            Const:
+                              value: 5000
+                              unit: Milliseconds
+                        profile:
+                          definition: black-tear-speed
+                          attack_percent: 0
+                          defense_percent: 0
+                          attack_speed_points: 7
+                          hp_floor_one: false
+                          end_on_source_exit: true
+                        replacement: ReplaceSameSource
+                  else_ops:
+                    - If:
+                        condition:
+                          Compare:
+                            left:
+                              moment: Live
+                              root:
+                                Read:
+                                  StateField:
+                                    name: last_stack
+                                    unit: Count
+                            comparison: Equal
+                            right:
+                              moment: Live
+                              root:
+                                Const:
+                                  value: 2
+                                  unit: Count
+                        then_ops:
+                          - ApplyOwnerState:
+                              duration:
+                                moment: Live
+                                root:
+                                  Const:
+                                    value: 5000
+                                    unit: Milliseconds
+                              profile:
+                                definition: black-tear-speed
+                                attack_percent: 0
+                                defense_percent: 0
+                                attack_speed_points: 14
+                                hp_floor_one: false
+                                end_on_source_exit: true
+                              replacement: ReplaceSameSource
+                        else_ops:
+                          - ApplyOwnerState:
+                              duration:
+                                moment: Live
+                                root:
+                                  Const:
+                                    value: 5000
+                                    unit: Milliseconds
+                              profile:
+                                definition: black-tear-speed
+                                attack_percent: 0
+                                defense_percent: 0
+                                attack_speed_points: 21
+                                hp_floor_one: false
+                                end_on_source_exit: true
+                              replacement: ReplaceSameSource
+equipment_states:
+  - equipment: r11_weapon
+    program:
+      Shared: black-tear
+definitions: []
+skills: []

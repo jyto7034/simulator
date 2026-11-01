@@ -550,21 +550,28 @@ fn rv004_publication_work_retained_basis_and_cancellation_fail_closed_then_retry
             ));
         }
     }
-    for site in ["publication_context_lookup", "publication_context_expand"] {
+    for site in ["publication_context_lookup", "publication_context_expand", "publication_equipment_prefix", "publication_weapon_witness_lookup", "publication_storage_proof", "publication_storage_identity"] {
+        let make_cancel = || {
+            let mut items = four_items();
+            if site == "publication_weapon_witness_lookup" {
+                items.push(weapon("cancellation_sword", 0xf200, WeaponArchetype::Sword));
+            }
+            build(items, four_rules(), &["p", "q", "r", "s"])
+        };
         let result = control::with_test_cancellation(site, 2, || {
             control::run(
                 &limits,
                 &CancellationToken::default(),
                 ExecutionPhase::FinalValidation,
-                make,
+                make_cancel,
             )
         });
-        assert_eq!(result.err().unwrap().code, "authoring_cancelled", "{site}");
+        assert_eq!(result.err().unwrap_or_else(|| panic!("cancellation site was not visited: {site}")).code, "authoring_cancelled", "{site}");
         control::run(
             &limits,
             &CancellationToken::default(),
             ExecutionPhase::FinalValidation,
-            make,
+            make_cancel,
         )
         .unwrap()
         .0

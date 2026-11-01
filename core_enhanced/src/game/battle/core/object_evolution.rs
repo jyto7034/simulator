@@ -185,10 +185,7 @@ impl BattleCore {
             unit.block_radius_units = profile.block_radius_units;
             unit.blockable = profile.blockable;
             unit.mobility_kind = profile.mobility_kind;
-            #[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
-            {
-                unit.target_traits = profile.target_traits;
-            }
+            unit.target_traits = profile.target_traits;
             unit.body.radius =
                 profile.movement.radius_units as f32 / super::movement::types::DATA_UNITS_PER_WORLD;
             unit.body.move_speed = unit.stats.move_speed_units_per_ms as f32 * 1000.0

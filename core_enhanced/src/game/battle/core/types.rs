@@ -32,7 +32,6 @@ use crate::{
     },
 };
 
-#[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
 use crate::game::battle::types::UnitTargetTrait;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -82,6 +81,8 @@ crate::authoring::clone_shape::struct_shape!(BasicSpatialProjectile {
 });
 #[derive(Debug, Clone, PartialEq)]
 pub struct ProjectileRecord {
+    pub area: Option<std::sync::Arc<super::basic_projectile_area::BasicProjectileArea>>,
+    pub batch_id: Option<Uuid>,
     pub spatial: Option<BasicSpatialProjectile>,
     pub fired_at_ms: u64,
     pub last_reevaluation_ms: u64,
@@ -150,6 +151,8 @@ crate::authoring::clone_shape::struct_shape!(EffectHitHistory {
 });
 #[derive(Debug, Clone, PartialEq)]
 pub struct AreaRuntime {
+    pub(in crate::game::battle::core) channel_started_at: Option<u64>,
+    pub(crate) source_generation: Option<std::sync::Arc<crate::game::data::content_pack::ContentIdentity>>,
     pub(in crate::game::battle::core) mode: crate::game::ability::SkillTileAreaMode,
     pub(in crate::game::battle::core) ground_status: Option<Box<super::skill_runtime::area::ground_status::GroundAreaState>>,
     pub emission: Option<crate::game::ability::SkillAreaEmissionDef>,
@@ -476,6 +479,7 @@ pub enum RuntimeUnitLifecycle {
     Withdrawn,
     Despawned,
     Dead,
+    PermanentlyDead,
 }
 
 /// Immutable equipment layout projected at the unit's battle entry.
@@ -503,7 +507,7 @@ impl RuntimeUnitLifecycle {
     }
 
     pub fn is_dead(self) -> bool {
-        matches!(self, RuntimeUnitLifecycle::Dead)
+        matches!(self, RuntimeUnitLifecycle::Dead | RuntimeUnitLifecycle::PermanentlyDead)
     }
 }
 
@@ -535,7 +539,6 @@ pub struct RuntimeUnit {
     pub block_radius_units: f32,
     pub blockable: bool,
     pub mobility_kind: MobilityKind,
-    #[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
     pub target_traits: Vec<UnitTargetTrait>,
     pub facing_direction: Option<FacingDirection>,
     pub move_epoch: u32,
@@ -552,6 +555,7 @@ pub struct RuntimeUnit {
     pub resonance_lock_ms: u64,
     pub(super) resonance_use: Option<ResonanceUse>,
     pub(super) next_resonance_pulse_ms: Option<u64>,
+    pub(super) equipment_resonance_gain: Option<super::equipment_resonance_gain::ResonanceGainState>,
     pub next_action_time: u64,
     pub pending_cast: bool,
     pub pending_cast_cause: Option<BattleEventCause>,
@@ -559,9 +563,9 @@ pub struct RuntimeUnit {
 }
 
 impl RuntimeUnit {
-    pub(super) fn independent_retained_extent(&self) -> Option<usize> {
-        let BattleUnitSourceIdentity::IndependentObject { definition_id, .. } =
-            &self.source_identity
+    pub(super) fn dynamic_profile_retained_extent(&self) -> Option<usize> {
+        let (BattleUnitSourceIdentity::IndependentObject { definition_id, .. }
+            | BattleUnitSourceIdentity::SummonedUnit { definition_id, .. }) = &self.source_identity
         else {
             return Some(0);
         };
@@ -578,7 +582,6 @@ impl RuntimeUnit {
             .checked_add(definition_id.capacity())?
             .checked_add(self.skill_id.as_ref().map_or(0, |id| id.as_str().len()))?
             .checked_add(path)?;
-        #[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
         let bytes = bytes.checked_add(
             self.target_traits
                 .capacity()
@@ -592,6 +595,7 @@ impl RuntimeUnit {
             + std::mem::size_of::<Option<Arc<BattleEquipmentSlots>>>()
             + std::mem::size_of::<u32>()
             + std::mem::size_of::<Option<ResonanceUse>>()
+            + std::mem::size_of::<Option<super::equipment_resonance_gain::ResonanceGainState>>()
             + std::mem::size_of::<Option<u64>>()
     }
 
@@ -661,7 +665,6 @@ impl RuntimeUnit {
             block_radius_units,
             blockable,
             mobility_kind,
-            #[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
             target_traits,
             facing_direction,
             move_epoch,
@@ -678,6 +681,7 @@ impl RuntimeUnit {
             resonance_lock_ms,
             resonance_use,
             next_resonance_pulse_ms,
+            equipment_resonance_gain,
             next_action_time,
             pending_cast,
             pending_cast_cause,
@@ -714,7 +718,6 @@ impl RuntimeUnit {
         self.block_radius_units.clone_from(block_radius_units);
         self.blockable.clone_from(blockable);
         self.mobility_kind.clone_from(mobility_kind);
-        #[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
         self.target_traits.clone_from(target_traits);
         self.facing_direction.clone_from(facing_direction);
         self.move_epoch.clone_from(move_epoch);
@@ -732,6 +735,7 @@ impl RuntimeUnit {
         self.resonance_max.clone_from(resonance_max);
         self.resonance_lock_ms.clone_from(resonance_lock_ms);
         self.resonance_use.clone_from(resonance_use);
+        self.equipment_resonance_gain.clone_from(equipment_resonance_gain);
         self.next_resonance_pulse_ms
             .clone_from(next_resonance_pulse_ms);
         self.next_action_time.clone_from(next_action_time);
@@ -834,6 +838,8 @@ crate::authoring::clone_shape::struct_shape!(UnitTacticalState {
     activity,
 });
 crate::authoring::clone_shape::struct_shape!(ProjectileRecord {
+    area,
+    batch_id,
     spatial,
     fired_at_ms,
     last_reevaluation_ms,
@@ -887,6 +893,8 @@ crate::authoring::clone_shape::struct_shape!(SkillImpactContext {
     spawned_area_id,
 });
 crate::authoring::clone_shape::struct_shape!(AreaRuntime {
+    channel_started_at,
+    source_generation,
     mode,
     ground_status,
     emission,
@@ -1023,7 +1031,6 @@ crate::authoring::clone_shape::struct_shape!(RuntimeUnit {
     block_radius_units,
     blockable,
     mobility_kind,
-    #[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
     target_traits,
     facing_direction,
     move_epoch,
@@ -1040,6 +1047,7 @@ crate::authoring::clone_shape::struct_shape!(RuntimeUnit {
     resonance_lock_ms,
     resonance_use,
     next_resonance_pulse_ms,
+    equipment_resonance_gain,
     next_action_time,
     pending_cast,
     pending_cast_cause,

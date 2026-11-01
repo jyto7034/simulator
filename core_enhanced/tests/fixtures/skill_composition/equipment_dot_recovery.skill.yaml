@@ -1,0 +1,37 @@
+# N07 방어구 기술 fixture: 자기 DOT 고유 대상당 10, 최대 15, 1초마다 회복.
+# 출시 밸런스가 아니며 시험 장비 정의 r11_weapon에 연결합니다.
+version: 2
+id: equipment-dot-recovery-fixture
+values:
+  - name: dot-recovery
+    value:
+      StateProgram:
+        id: dot-recovery
+        owns_use: false
+        end_on_source_exit: true
+        replacement: ReplaceSameSource
+        fields: []
+        handlers:
+          - id: recover
+            event:
+              Periodic: { interval_ms: 1000 }
+            body:
+              - HealOwner:
+                  amount:
+                    moment: Live
+                    root:
+                      Clamp:
+                        value:
+                          Aggregate:
+                            source: StateOwnerDotTargets
+                            grouping: WholeSet
+                            reduction: Sum
+                            outer_reduction: null
+                            member: { Const: { value: 10, unit: Magnitude } }
+                        min: { Const: { value: 0, unit: Magnitude } }
+                        max: { Const: { value: 15, unit: Magnitude } }
+equipment_states:
+  - equipment: r11_weapon
+    program: { Shared: dot-recovery }
+definitions: []
+skills: []

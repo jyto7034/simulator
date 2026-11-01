@@ -1,0 +1,32 @@
+# H98 배달부 외투: 50포인트/3000ms는 기술 검증값이며 출시 밸런스가 아니다.
+version: 1
+id: kill-speed-fixture
+values:
+  - name: kill-speed
+    value:
+      StateProgram:
+        id: own-direct-kill-speed
+        owns_use: false
+        end_on_source_exit: true
+        replacement: ReplaceSameSource
+        fields: []
+        handlers:
+          - id: own-basic-or-active-kill
+            event:
+              OwnerDirectKill: { source: BasicOrActiveSkill }
+            body:
+              - ApplyOwnerState:
+                  duration: { moment: Live, root: { Const: { value: 3000, unit: Milliseconds } } }
+                  profile:
+                    definition: delivery-coat-speed
+                    attack_percent: 0
+                    defense_percent: 0
+                    attack_speed_points: 50
+                    hp_floor_one: false
+                    end_on_source_exit: true
+                  replacement: ReplaceSameSource
+equipment_states:
+  - equipment: r11_weapon
+    program: { Shared: kill-speed }
+definitions: []
+skills: []

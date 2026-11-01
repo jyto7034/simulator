@@ -186,8 +186,7 @@ impl TileBurstState {
     }
 }
 fn amount(base: u64, factor: MarkRatio) -> Result<u32, GameError> {
-    let value =
-        (u128::from(base) * u128::from(factor.numerator)).div_ceil(u128::from(factor.denominator));
+    let value = (u128::from(base) * u128::from(factor.numerator)) / u128::from(factor.denominator);
     if value > i32::MAX as u128 {
         return Err(GameError::InvalidAction);
     }
@@ -317,7 +316,10 @@ impl BattleCore {
                     if !self.units.get(unit).is_some_and(|u| u.is_active()) {
                         continue;
                     }
-                    let Some(tile) = self.sample_unit_body_at(*unit, now).map(|b| b.projected_tile()) else {
+                    let Some(tile) = self
+                        .sample_unit_body_at(*unit, now)
+                        .map(|b| b.projected_tile())
+                    else {
                         continue;
                     };
                     let n = totals.entry((tile.x, tile.y)).or_default();
@@ -573,6 +575,7 @@ impl BattleCore {
         }
         let mut wave: BTreeMap<UnitInstanceId, u32> = BTreeMap::new();
         let mut hits = Vec::new();
+        let mut batch_ends = Vec::new();
         for c in r.plan.centers.iter().filter(|c| c.rounds > r.round) {
             let tiles = r
                 .plan
@@ -602,10 +605,14 @@ impl BattleCore {
                         .or_insert(c.damage);
                 }
             }
+            if r.plan.definition.dedup == ExplosionDedup::Explosion {
+                batch_ends.push(hits.len());
+            }
             control::poll("tile_burst_target_query")?;
         }
         if r.plan.definition.dedup == ExplosionDedup::Wave {
             hits.extend(wave);
+            batch_ends.push(hits.len());
         }
         crate::game::battle::runtime_control::admit_retained_growth(
             0,
@@ -613,26 +620,57 @@ impl BattleCore {
                 .checked_mul(std::mem::size_of::<(UnitInstanceId, u32)>()),
             "tile_burst_hits",
         )?;
-        for (target, damage) in hits {
-            if !self.units.get(&target).is_some_and(|u| u.is_active()) {
-                continue;
+        crate::game::battle::runtime_control::admit_retained_growth(
+            0,
+            batch_ends
+                .capacity()
+                .checked_mul(std::mem::size_of::<usize>()),
+            "tile_burst_batches",
+        )?;
+        let mut batch_start = 0;
+        for batch_end in batch_ends {
+            let batch = &hits[batch_start..batch_end];
+            let targets: Vec<_> = batch.iter().map(|(target, _)| *target).collect();
+            let area_percent = self.area_damage_percent(
+                r.snapshot.source_id,
+                r.snapshot.source_side,
+                &r.snapshot.fact_source,
+                &targets,
+                now,
+            )?;
+            for &(target, damage) in batch {
+                if !self.units.get(&target).is_some_and(|u| u.is_active()) {
+                    continue;
+                }
+                let mut snapshot = r.snapshot.clone();
+                snapshot.modifiers.damage_amp_percent = snapshot
+                    .modifiers
+                    .damage_amp_percent
+                    .saturating_add(area_percent);
+                snapshot.base_damage = damage;
+                snapshot.committed_at_ms = now;
+                let snapshot = self.materialize_damage_source_snapshot_for_target_hit(
+                    snapshot,
+                    target,
+                    u32::try_from(r.round).map_err(|_| GameError::InvalidAction)?,
+                );
+                // A released wave has no ambient skill-effect event (and an orb
+                // expires on host time). Observe its immutable release provenance,
+                // without changing damage authority or borrowing a later cast.
+                self.execute_damage_with_observation_origin(
+                    super::damage_runtime::CommittedDamageInput {
+                        target_id: target,
+                        source_snapshot: snapshot,
+                        committed_at_ms: now,
+                        policy: super::damage_runtime::CommittedDamagePolicy::GeneralCommand,
+                    },
+                    false,
+                    Some(&r.snapshot.fact_source),
+                )
+                .ok_or(GameError::InvalidAction)?;
+                control::poll("tile_burst_damage")?;
             }
-            let mut snapshot = r.snapshot.clone();
-            snapshot.base_damage = damage;
-            snapshot.committed_at_ms = now;
-            let snapshot = self.materialize_damage_source_snapshot_for_target_hit(
-                snapshot,
-                target,
-                u32::try_from(r.round).map_err(|_| GameError::InvalidAction)?,
-            );
-            self.execute_committed_damage(super::damage_runtime::CommittedDamageInput {
-                target_id: target,
-                source_snapshot: snapshot,
-                committed_at_ms: now,
-                policy: super::damage_runtime::CommittedDamagePolicy::GeneralCommand,
-            })
-            .ok_or(GameError::InvalidAction)?;
-            control::poll("tile_burst_damage")?;
+            batch_start = batch_end;
         }
         r.round += 1;
         if r.plan.centers.iter().any(|c| c.rounds > r.round) {

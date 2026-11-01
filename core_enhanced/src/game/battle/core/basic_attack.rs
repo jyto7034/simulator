@@ -1,3 +1,4 @@
+use crate::authoring::control;
 use crate::game::{
     battle::{
         damage::{DamageModifiers, DamageSource},
@@ -12,6 +13,58 @@ use crate::game::{
 use super::BattleCore;
 
 impl BattleCore {
+    pub(super) fn basic_attack_weapon_source(
+        &self,
+        actor: UnitInstanceId,
+    ) -> Result<
+        Option<crate::game::battle::runtime_facts::EquipmentSourceSnapshot>,
+        crate::game::behavior::GameError,
+    > {
+        use crate::game::{battle::runtime_control, data::equipment_data::EquipmentType};
+        let Some(unit) = self.units.get(&actor) else {
+            return Ok(None);
+        };
+        let slots = unit.equipment_slots.as_ref();
+        control::charge(
+            if slots.is_some() { 3 } else { self.items.len() } as u64,
+            "basic_attack_weapon_source",
+        )?;
+        let slot_items = slots
+            .into_iter()
+            .flat_map(|s| s.slots.iter().flatten())
+            .map(|s| {
+                self.items
+                    .get(&s.runtime_item_instance_id)
+                    .ok_or_else(|| runtime_control::invariant("basic_attack_weapon_slot"))
+            });
+        let legacy_items = self
+            .items
+            .values()
+            .take(if slots.is_some() { 0 } else { self.items.len() })
+            .filter(|item| item.owner_unit_instance == actor)
+            .map(Ok);
+        let mut source = None;
+        for item in slot_items.chain(legacy_items) {
+            let item = item?;
+            if item.owner_unit_instance != actor {
+                return Err(runtime_control::invariant("basic_attack_weapon_owner"));
+            }
+            if self
+                .game_data
+                .equipment_data
+                .get_by_uuid(&item.base_uuid)
+                .is_some_and(|item| item.equipment_type == EquipmentType::Weapon)
+            {
+                if source.is_some() {
+                    return Err(runtime_control::invariant("basic_attack_multiple_weapons"));
+                }
+                source = Some(item.source_snapshot());
+            }
+        }
+        Ok(source)
+    }
+
+
     fn start_ranged_reposition_after_attack_release(
         &mut self,
         attacker_instance_id: UnitInstanceId,
@@ -100,6 +153,10 @@ impl BattleCore {
         }
 
         if attacker.owner == Side::Player {
+            if let Some(preferred) = self.choose_attack_target_in_range(attacker_instance_id)
+                .filter(|target| self.equipment_prioritizes_cohort(attacker_instance_id, *target)) {
+                return Some(preferred);
+            }
             if attacker.basic_attack.range_role == WeaponRangeRole::Melee {
                 if let Some(blocked_target) = self
                     .first_blocked_enemy(attacker_instance_id)
@@ -239,7 +296,7 @@ impl BattleCore {
             can_attack,
             lock_until,
             current_target,
-            interval_ms,
+            base_interval_ms,
         ) = {
             let Some(attacker) = self.units.get(&attacker_instance_id) else {
                 return false;
@@ -251,10 +308,7 @@ impl BattleCore {
                 attacker.action_locks.can_basic_attack(current_time_ms),
                 attacker.action_locks.basic_attack_until_ms,
                 attacker.current_target,
-                self.sustained_basic_interval(
-                    attacker_instance_id,
-                    attacker.stats.attack_interval_ms.max(1),
-                ),
+                attacker.stats.attack_interval_ms.max(1),
             )
         };
         if is_dead || !can_basic_attack {
@@ -354,6 +408,7 @@ impl BattleCore {
             self.select_basic_attack_target(attacker_instance_id, current_target, hinted_target);
 
         if target.is_none() {
+            if schedule_next && self.break_attack_continuity(attacker_instance_id).is_err() { return false; }
             if let Some(attacker) = self.units.get_mut(&attacker_instance_id) {
                 attacker.current_target = None;
             }
@@ -366,11 +421,24 @@ impl BattleCore {
             return false;
         }
 
+        match self.equipment_magazine_ready(attacker_instance_id, time_ms, schedule_next) {
+            Ok(true) => (), _ => return false,
+        }
         let target_id = target.unwrap();
+        let (interval_ms, mut speed_witness) = if schedule_next {
+            let Ok(equipment) = self.equipment_basic_speed(attacker_instance_id, time_ms, true) else {
+                return false;
+            };
+            (self.basic_interval_with_equipment(attacker_instance_id, base_interval_ms, equipment.points, time_ms), equipment.witness)
+        } else { (base_interval_ms, None) };
         if self.runtime_fact_source.action.is_none()
             || !self.runtime_fact_source.allows_finite_children
         {
             let source = crate::game::battle::runtime_facts::RuntimeFactSource {
+                equipment: match self.basic_attack_weapon_source(attacker_instance_id) {
+                    Ok(source) => source,
+                    Err(_) => return false,
+                },
                 extended_observation: match self
                     .independent_action_origin(attacker_instance_id)
                     .and_then(|origin| {
@@ -473,6 +541,7 @@ impl BattleCore {
         {
             None
         } else {
+            if schedule_next && self.continue_attack_activity(attacker_instance_id, time_ms, interval_ms.max(windup_ms)).is_err() { return false; }
             let Some(mut source_snapshot) = self.damage_source_snapshot_for_regular_occurrence(
                 attacker_instance_id,
                 target_id,
@@ -487,11 +556,14 @@ impl BattleCore {
             ) else {
                 return false;
             };
+            source_snapshot.basic_primary = schedule_next.then_some(target_id);
             if schedule_next && self.bind_relation_basic(&source_snapshot, attack_epoch).is_err() { return false; }
-            if schedule_next && self.bind_prepared_basic(&mut source_snapshot, attack_epoch, time_ms).is_err() { return false; }
+            if schedule_next && self.bind_prepared_basic(&mut source_snapshot, attack_epoch, target_id, time_ms).is_err() { return false; }
             if schedule_next && self.bind_weapon_marks(&mut source_snapshot).is_err() { return false; }
             if schedule_next && self.bind_presence(&mut source_snapshot).is_err() { return false; }
             if schedule_next && self.bind_weapon_growth(&mut source_snapshot, target_id).is_err() { return false; }
+            if schedule_next && self.bind_equipment_attack(&mut source_snapshot, target_id).is_err() { return false; }
+            if schedule_next && self.capture_state_basic(&mut source_snapshot, target_id, time_ms).is_err() { return false; }
             Some(source_snapshot)
         };
 
@@ -531,6 +603,10 @@ impl BattleCore {
             .push_with_context(event, None, self.runtime_fact_source.clone());
 
         if schedule_next {
+            if let (Some(observer), Some(mut witness)) = (&mut self.authoring_observation, speed_witness.take()) {
+                witness.final_interval_ms = interval_ms;
+                observer.latest_equipment_speed = Some(witness);
+            }
             let next_time = time_ms.saturating_add(interval_ms);
             if let Some(attacker) = self.units.get_mut(&attacker_instance_id) {
                 attacker.next_basic_attack_ms = next_time;

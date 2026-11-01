@@ -241,7 +241,7 @@ impl BattleCore {
         if !unit.is_active() || !Self::is_employee_resonance_unit(unit) {
             return;
         }
-        self.add_resonance(actor, 1, now, false);
+        self.add_resonance_from(actor, 1, now, false, Some(super::equipment_resonance_gain::ResonanceGainChannel::Automatic));
         self.schedule_resonance_pulse(actor, now);
     }
 

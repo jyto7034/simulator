@@ -142,7 +142,7 @@ impl EffectiveSkillBinding {
             .effects
             .iter()
             .find(|(bound, _)| bound == site)
-            .map(|(_, index)| &self.plan.effects[*index])
+            .map(|(_, index)| self.plan.effects[*index].as_ref())
     }
     pub(crate) fn compose_amount(
         &self,
@@ -318,7 +318,7 @@ impl BattleCore {
             .effects
             .iter()
             .find(|(bound, _)| bound == site)
-            .map(|(_, index)| &plan.effects[*index]))
+            .map(|(_, index)| plan.effects[*index].as_ref()))
     }
     pub(super) fn cloned_current_skill(
         &self,
@@ -580,5 +580,11 @@ impl BattleCore {
             return binding.execution().amounts.get(site);
         }
         self.game_data.value_expr_catalog().get(site)
+    }
+    pub(super) fn state_program_for_source<'a>(&'a self, source: &'a RuntimeFactSource) -> Option<&'a Arc<crate::game::ability::state_program::CompiledStateProgram>> {
+        let site = &source.authored.as_ref()?.site;
+        if let Some(b) = source.causal().and_then(|c| c.program.as_ref()) { return b.execution().amounts.state(site); }
+        if let Some(binding) = source.relic_effective() { return binding.execution().amounts.state(site); }
+        self.game_data.value_expr_catalog().state(site)
     }
 }

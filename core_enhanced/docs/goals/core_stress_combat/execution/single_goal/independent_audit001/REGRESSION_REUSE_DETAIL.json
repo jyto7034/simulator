@@ -1,9 +1,0 @@
-{
-  "core_lib_distinct_passes": 2150,
-  "core_integration_distinct_passes": 72,
-  "core_total": 2222,
-  "server_baseline_evidence": {
-    "behavior_excerpt": "SelectStarterEmployees {\n        employee_definition_ids: Vec<String>,\n        loan_copy_ids: Vec<Uuid>,\n    }",
-    "test_excerpt": "fn deserializes_snake_case_node_flow_requests() {\n        use ApplicationCommandKind as K;\n        let node = Uuid::from_u128(0x5100);\n        let copy = Uuid::from_u128(0xF001);\n        let employee = Uuid::from_u128(0xE001);\n        let item = Uuid::from_u128(0x1001);\n        for (kind, input) in [\n            (\n                K::SelectStarterEmployees,\n                serde_json::json!({\"type\":\"select_starter_employees\",\"employee_definition_ids\":[\"a\",\"b\",\"c\"]}),\n            ),\n            (\n                K::ConvertMapNodeWithMonolith,\n                serde_json::json!({\"type\":\"convert_map_node_with_monolith\",\"node_id\":node,\"abnormality_id\":\"o-01-15_nameless_fetus\"}),\n            ),\n            (\n                K::AwakenSkillFragment,\n                serde_json::json!({\"type\":\"awaken_skill_fragment\",\"copy_uuid\":copy,\"form_id\":\"awakened\"}),\n            ),\n            (K::ClaimReward, serde_json::json!({\"type\":\"claim_reward\"})),\n            (\n                K::CompleteCombatResult,\n                serde_json::json!({\"type\":\"compl"
-  }
-}

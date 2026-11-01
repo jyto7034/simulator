@@ -3,6 +3,7 @@ use crate::game::data::relic_data::*;
 
 fn definition(id: &str, number: u128, duplicates: bool) -> RelicDefinition {
     RelicDefinition {
+        provider_authored: false,
         id: id.into(),
         uuid: Uuid::from_u128(number),
         name: id.into(),

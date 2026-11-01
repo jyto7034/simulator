@@ -1,0 +1,46 @@
+{
+  "id": "fragment_yang_trace",
+  "uuid": "730e8400-e29b-41d4-a716-446655440040",
+  "name": "음양의 순환 · 양",
+  "description": "두 영역의 회복과 교집합. 기존 보상 파편의 정체성과 출처는 유지하며 같은 실행 정의를 참조한다.",
+  "rarity": {
+    "Unresolved": "rarity"
+  },
+  "equip_limit": {
+    "Unresolved": "equip_limit"
+  },
+  "origin": {
+    "Abnormality": {
+      "abnormality_id": "o-05-102_yang"
+    }
+  },
+  "sources": [
+    {
+      "AbnormalityContainment": {
+        "abnormality_id": "o-05-102_yang"
+      }
+    }
+  ],
+  "dependencies": [
+    {
+      "SourceAbnormality": {
+        "abnormality_id": "o-05-102_yang"
+      }
+    }
+  ],
+  "compatibility": {
+    "Unresolved": "compatibility"
+  },
+  "effect": {
+    "ActiveSkill": {
+      "forms": {
+        "base": {
+          "skill_id": "fragment_yin_yang_cycle",
+          "resonance_max": {
+            "Unresolved": "capacity"
+          }
+        }
+      }
+    }
+  }
+}

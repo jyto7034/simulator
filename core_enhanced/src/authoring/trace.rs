@@ -346,6 +346,9 @@ mod tests {
                 reason: HpChangeReason::Command,
             },
             source: None,
+            authored: None,
+            area_source: None,
+            equipment: None,
         }
     }
     fn enabled(limits: TraceLimits) -> TraceOptions {
@@ -556,5 +559,32 @@ mod tests {
         let parsed: serde_json::Value = serde_json::from_slice(trace.view().ndjson).unwrap();
         assert_eq!(parsed["source"]["authored"]["source_file"], text);
         assert_eq!(parsed, serde_json::to_value(row).unwrap());
+    }
+
+    #[test]
+    fn composition_area_effect_source_trace_bounds_and_utf8() {
+        let mut row = witness(1);
+        row.area_source = Some(Arc::new(crate::authoring::view::AreaEffectSource {
+            generation: None, captured_cast: None, area_id: uuid::Uuid::from_u128(1), skill_id: "area-skill".into(),
+            step_id: "장판\n\"".repeat(128), cast_sequence: 3, status_index: 1,
+            definition: "생성한 취약성".into(), modifier_source: Some(crate::game::ability::sustained::HitModifierSource {
+                copy_uuid: uuid::Uuid::from_u128(2), definition: "broken-balance".into(), rule: "성공한 기절".into(),
+            }),
+        }));
+        {
+            let options = enabled(TraceLimits { max_attempt_work: 512, ..Default::default() });
+            let _attempt = TraceAttempt::enter(options).unwrap();
+            let mut trace = OptionalTrace::new(options); trace.record(&row);
+            assert_eq!(trace.view().gap.unwrap().reason, TraceGapReason::WorkLimit);
+            assert!(trace.view().ndjson.is_empty());
+        }
+        let options = enabled(TraceLimits::default());
+        let _attempt = TraceAttempt::enter(options).unwrap();
+        let mut trace = OptionalTrace::new(options); trace.record(&row);
+        assert!(trace.view().gap.is_none());
+        let saved: serde_json::Value = serde_json::from_slice(trace.view().ndjson).unwrap();
+        assert_eq!(saved["area_source"]["definition"], "생성한 취약성");
+        assert_eq!(saved["area_source"]["step_id"], "장판\n\"".repeat(128));
+        assert!(saved["source"].is_null() && saved.get("authored").is_none());
     }
 }

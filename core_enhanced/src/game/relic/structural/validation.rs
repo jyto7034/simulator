@@ -115,6 +115,7 @@ pub(crate) fn validate_rules(
                     NumericProgram::default().include(*operation, descriptor)?;
                 }
                 RelicRuleActionDef::Recipe(recipe) => match recipe {
+                    StructuralRecipeDef::ChannelHealthUpkeep { policy } => policy.validate().map_err(|e| invalid(&e))?,
                     StructuralRecipeDef::SupportSelectionPattern { range, .. } => {
                         range.validate().map_err(|e| invalid(&e))?
                     }
@@ -225,7 +226,7 @@ pub(crate) fn shield(d: &PersonalShieldGrantDef) -> Result<(), RelicPlanError> {
         support.validate(true).map_err(|e| invalid(&e))?;
     }
     if d.duration_ms == 0
-        || (d.support.is_none() && matches!(
+        || (d.support.as_ref().and_then(|s| s.range.as_ref()).is_none() && matches!(
             d.recipients,
             PersonalShieldRecipientsDef::PlayerEmployeesAtRelease { radius_units: 0 }
                 | PersonalShieldRecipientsDef::SelectedPlayerEmployeeAtRelease {

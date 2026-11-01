@@ -24,11 +24,25 @@ fn prepared_volley_world_fixture(deploy: bool, defeat: bool) -> (GameCore, Uuid,
     )))
     .unwrap();
     let fragment = fragments.fragments[0].clone();
-    let mut data = game_data_with_pve_equipment_and_active_skill_fragments(
+    // These are declared dependencies of the graph, not equipped modifiers.
+    // Keep them explicit so missing references still fail whole-data validation.
+    let modifier_ids = [
+        "long-breath",
+        "widened-horizon",
+        "double-harvest",
+        "unbroken-trance",
+        "deep-wedge",
+        "king-of-greed-stunning-treasures",
+        "king-of-greed-endless-treasury",
+    ];
+    let relics = unowned_graph_modifier_relics(&modifier_ids);
+    let mut data = game_data_builder_with_pve_equipment_and_active_skill_fragments(
         vec![],
         native.skills,
         vec![fragment.clone()],
-    );
+    )
+    .with_relics(relics)
+    .build_arc();
     let db = Arc::get_mut(&mut data).unwrap();
     let pve = Arc::make_mut(&mut db.pve_data);
     let encounter = pve

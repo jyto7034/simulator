@@ -1,0 +1,86 @@
+{
+  "purpose": "Explicit acceptance values only, not release balance or runtime defaults. World may lower capacity or use standalone enemy setup explicitly.",
+  "values": {
+    "capacity": 100,
+    "infection-chance": {
+      "denominator": 1,
+      "numerator": 100
+    },
+    "periodic-coefficient": {
+      "denominator": 1,
+      "numerator": 1
+    },
+    "spread_radius_units": 2000000,
+    "spread_limit": 1,
+    "periodic_interval_ms": 1000,
+    "power-growth_per_second": {
+      "denominator": 1,
+      "numerator": 10
+    },
+    "power-cap": {
+      "denominator": 1,
+      "numerator": 100
+    },
+    "power-decay_per_second": {
+      "denominator": 1,
+      "numerator": 2
+    },
+    "power-grace_ms": 1000,
+    "burst-coefficient": {
+      "denominator": 1,
+      "numerator": 1
+    },
+    "modifier-hastened-pulse": {
+      "denominator": 1,
+      "numerator": 50
+    },
+    "modifier-explosion-vulnerability": {
+      "denominator": 1,
+      "numerator": 20
+    },
+    "modifier-growth-medium": {
+      "denominator": 1,
+      "numerator": 50
+    },
+    "fragment-rarity": "Common",
+    "fragment-equip-limit": "OwnedCopies",
+    "fragment-compatibility": {},
+    "recovery-interval-ms": 1000,
+    "recovery-per-target": 10,
+    "recovery-cap": 15,
+    "kill-resonance": {
+      "moment": "Live",
+      "root": {
+        "Const": {
+          "value": 7,
+          "unit": "Magnitude"
+        }
+      }
+    },
+    "weapon-name": "검증용 방패",
+    "weapon-rarity": "ALEPH",
+    "weapon-price": 0,
+    "weapon-duplicate": true,
+    "weapon-attack": 0,
+    "weapon-block": 1,
+    "weapon-defense-focus": {
+      "block_capacity_bonus": 0,
+      "incoming_damage_reduction_percent": 0
+    },
+    "weapon-damage-type": "Physical",
+    "weapon-interval": 1800,
+    "weapon-windup": 280,
+    "armor-rarity": "ALEPH",
+    "armor-price": 0,
+    "armor-duplicate": true,
+    "armor-MaxHealth": 0,
+    "armor-Defense": 0,
+    "accessory-rarity": "ALEPH",
+    "accessory-price": 0,
+    "accessory-duplicate": true,
+    "relic-rarity": "Rare",
+    "relic-allow-duplicates": true,
+    "relic-incompatible-with": [],
+    "relic-dismantle-dust": 1
+  }
+}

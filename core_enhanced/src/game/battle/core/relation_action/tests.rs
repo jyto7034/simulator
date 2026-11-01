@@ -28,8 +28,22 @@ fn fixture(
     UnitInstanceId,
     UnitInstanceId,
 ) {
+    fixture_with_source(bloom, equipped, false)
+}
+fn fixture_with_source(
+    bloom: bool, equipped: &[usize], authored: bool,
+) -> (BattleCore, BattleExecutionState, UnitInstanceId, UnitInstanceId, UnitInstanceId) {
     let doc = crate::authoring::node_graph::tests::relation_action_fixture(bloom);
-    let (mut c, s, a, e, b) = fixture_graph(&RELICS, equipped, doc);
+    let (c, s, a, e, b) = if authored {
+        super::super::boss_runtime::tests::compiled_action_fixture::fixture_content_with_weapon(
+            &RELICS, equipped, crate::authoring::composition::owned_action_tests::content(doc), |_| {})
+    } else { fixture_graph(&RELICS, equipped, doc) };
+    configure_relation_fixture(c, s, a, e, b)
+}
+
+fn configure_relation_fixture(
+    mut c: BattleCore, s: BattleExecutionState, a: UnitInstanceId, e: UnitInstanceId, b: UnitInstanceId,
+) -> (BattleCore, BattleExecutionState, UnitInstanceId, UnitInstanceId, UnitInstanceId) {
     c.units.get_mut(&b).unwrap().fragment_source = None;
     c.units.get_mut(&b).unwrap().skill_id = None;
     Arc::make_mut(&mut c.scenario).terminal_outcomes =
@@ -129,6 +143,57 @@ fn relation_action_runtime_normal_consumption_and_post_stage_wounds() {
             }
         )));
         assert!(!c.resonance_use_has_obligations(a));
+    }
+}
+
+#[test]
+fn composition_owned_relation_keeps_release_stock_and_redeployment_lifetimes() {
+    for bloom in [false, true] {
+        let (mut c, mut s, a, e, b) = fixture_with_source(bloom, &[], true);
+        relation(&mut c, a, b, 0);
+        c.step_battle_execution_until(&mut s, 4000).unwrap();
+        assert_eq!(owner(&c, a).stock, 4);
+        // Detaching the relation preserves earned stock and invalidates its timer.
+        relation(&mut c, a, b, 4000);
+        cast(&mut c, a, bloom, 4000);
+        c.step_battle_execution_until(&mut s, 4001).unwrap();
+        assert!(c.resonance_use_has_obligations(a));
+        if !bloom {
+            assert!(owner(&c, a).active.as_ref().unwrap().waiting_basic);
+            assert_eq!(owner(&c, a).stock, 4);
+            attack(&mut c, a, e, 4100);
+        }
+        c.step_battle_execution_until(&mut s, 6101).unwrap();
+        assert_eq!(owner(&c, a).stock, 0);
+        assert!(owner(&c, a).active.is_none());
+        assert!(!c.resonance_use_has_obligations(a));
+        assert!(c.units[&e].stats.current_health < 10000);
+        relation(&mut c, a, b, 6200);
+        c.step_battle_execution_until(&mut s, 7200).unwrap();
+        assert_eq!(owner(&c, a).stock, 1);
+        c.apply_live_command(BattleLiveCommand::WithdrawUnit { unit_id: a, time_ms: 7200 }).unwrap();
+        assert_eq!(owner(&c, a).stock, 1);
+        assert!(owner(&c, a).relation.is_none());
+        c.step_battle_execution_until(&mut s, 9200).unwrap();
+        assert_eq!(owner(&c, a).stock, 1);
+        assert!(!c.resonance_use_has_obligations(a));
+        let copy = key(&c, a);
+        let owned = c.units[&a].source_owned_uuid;
+        let draft = c.scenario.groups.iter().flat_map(|group| &group.spawns)
+            .find(|spawn| spawn.draft.owned_uuid == owned).unwrap().draft.clone();
+        let crate::game::battle::core::sim::BattleLiveCommandOutcome::UnitDeployed { unit_id: redeployed } =
+            c.apply_live_command(BattleLiveCommand::DeployPlayerUnit {
+                draft, position: Position::new(2, 1),
+                tile_kind: crate::game::battle::types::TacticalTileKind::Ground,
+                facing: FacingDirection::Right, instance_salt: 6242,
+                time_ms: 9200, current_hp_policy: None,
+            }).unwrap() else { panic!() };
+        assert_eq!(key(&c, redeployed), copy);
+        assert_eq!(owner(&c, redeployed).stock, 1);
+        assert!(owner(&c, redeployed).relation.is_none());
+        relation(&mut c, redeployed, b, 9300);
+        c.step_battle_execution_until(&mut s, 10300).unwrap();
+        assert_eq!(owner(&c, redeployed).stock, 2);
     }
 }
 #[test]
@@ -789,3 +854,207 @@ fn relation_action_runtime_retarget_does_not_put_completed_stage_wounds_on_an_un
     assert_eq!(c.units[&b].stats.current_health, 9900);
     assert_eq!(c.hit_damage_taken_percent(b).unwrap(), 5);
 }
+
+#[test]
+fn composition_owned_relation_damage_origin_preserves_basic_authority_and_observer_parity() {
+    for bloom in [false, true] {
+        let (mut plain, mut plain_state, a, e, _) = fixture_with_source(bloom, &[], true);
+        stock(&mut plain, a, 4);
+        let mut observed = plain.clone();
+        let mut observed_state = plain_state.clone();
+        observed.enable_authoring_observation();
+        for (core, state) in [
+            (&mut plain, &mut plain_state),
+            (&mut observed, &mut observed_state),
+        ] {
+            cast(core, a, bloom, 0);
+            core.step_battle_execution_until(state, 1).unwrap();
+            if !bloom {
+                attack(core, a, e, 100);
+                let hit_at = 100 + u64::from(core.units[&a].basic_attack.windup_ms);
+                core.step_battle_execution_until(state, hit_at).unwrap();
+                let fact = core.runtime_fact_summary().latest_damage.as_ref().unwrap();
+                assert!(fact.source.cast.is_none());
+                assert!(fact.source.fragment.is_none());
+                assert!(fact.source.authored.is_none());
+                assert!(fact.source.action.is_some());
+                // Public facts intentionally strip execution capabilities.
+                assert!(fact.source.delivery.is_none());
+                let active = owner(core, a).active.as_ref().unwrap();
+                let source = &active.snapshot.as_ref().unwrap().fact_source;
+                assert_eq!(source.action.as_ref(), fact.source.action.as_ref());
+                assert!(source.delivery.is_some());
+            }
+            core.step_battle_execution_until(state, 2001).unwrap();
+            assert_eq!(owner(core, a).stock, 0);
+            assert!(owner(core, a).active.is_none());
+        }
+        assert_eq!(
+            plain.units[&e].stats.current_health,
+            observed.units[&e].stats.current_health
+        );
+        assert_eq!(
+            plain.event_queue_debug_snapshot(),
+            observed.event_queue_debug_snapshot()
+        );
+        assert_eq!(
+            serde_json::to_value(plain.runtime_fact_summary()).unwrap(),
+            serde_json::to_value(observed.runtime_fact_summary()).unwrap()
+        );
+        let obs = observed.authoring_observation().unwrap().unwrap();
+        let hp = obs
+            .latest_nonzero_sourced_hp
+            .as_ref()
+            .expect("authored release HP witness");
+        assert_eq!(hp.fragment.as_ref().unwrap().copy_uuid, key(&observed, a));
+        assert_eq!(hp.source.as_ref().unwrap().cast.skill_id, "r11_aura");
+        assert_eq!(hp.source_unit, Some(a));
+        assert_eq!(hp.target_unit, e);
+        assert!(!hp.source.as_ref().unwrap().authored.source_file.is_empty());
+        let hp_events = observed.event_log.entries.iter().filter(|entry| matches!(
+            entry.event, crate::game::battle::event_log::BattleLogEvent::HpChanged { delta, .. } if delta != 0
+        )).count();
+        assert_eq!(
+            obs.nonzero_hp_applications, hp_events as u64,
+            "each HP mutation observed once"
+        );
+        if !bloom {
+            assert!(matches!(
+                hp.change,
+                super::super::authoring_observation::AppliedChange::Hp {
+                    reason: crate::game::battle::event_log::HpChangeReason::BasicAttack,
+                    ..
+                }
+            ));
+        }
+    }
+}
+
+#[test]
+fn composition_owned_relation_damage_origin_cancellation_restores_and_retries() {
+    use crate::authoring::{CancellationToken, ExecutionLimits, ExecutionPhase};
+    for (bloom, site) in [false, true].into_iter().flat_map(|bloom| {
+        ["sustained_observation_source", "relation_strike_damage"].map(|site| (bloom, site))
+    }) {
+        let (mut c, mut state, a, e, _) = fixture_with_source(bloom, &[], true);
+        c.enable_authoring_observation();
+        stock(&mut c, a, 4);
+        cast(&mut c, a, bloom, 0);
+        c.step_battle_execution_until(&mut state, 1).unwrap();
+        if !bloom {
+            attack(&mut c, a, e, 100);
+        }
+        // BattleCore commits separate timestamps; only the failing timestamp
+        // rolls back. Prepare immediately before that timestamp.
+        let hit_at = if bloom {
+            100
+        } else {
+            100 + u64::from(c.units[&a].basic_attack.windup_ms)
+        };
+        c.step_battle_execution_until(&mut state, hit_at - 1)
+            .unwrap();
+        let before = (
+            c.transaction_debug_snapshot(),
+            c.event_queue_debug_snapshot(),
+            serde_json::to_value(c.authoring_observation().unwrap()).unwrap(),
+            format!("{state:?}"),
+        );
+        let token = CancellationToken::default();
+        let result = control::with_test_cancellation(site, 1, || {
+            control::run(
+                &ExecutionLimits::default(),
+                &token,
+                ExecutionPhase::TrialExecution,
+                || c.step_battle_execution_until(&mut state, 2001),
+            )
+        });
+        assert!(token.is_cancelled() && result.is_err(), "{result:?}");
+        assert_eq!(
+            before,
+            (
+                c.transaction_debug_snapshot(),
+                c.event_queue_debug_snapshot(),
+                serde_json::to_value(c.authoring_observation().unwrap()).unwrap(),
+                format!("{state:?}")
+            )
+        );
+        c.step_battle_execution_until(&mut state, 2001).unwrap();
+        assert!(c
+            .authoring_observation()
+            .unwrap()
+            .unwrap()
+            .latest_nonzero_sourced_hp
+            .is_some());
+        assert_eq!(owner(&c, a).stock, 0);
+    }
+}
+
+#[test]
+fn composition_owned_relation_damage_origin_retained_refusal_restores_observation() {
+    use crate::game::battle::runtime_control as native;
+    let (mut c, mut state, a, e, _) = fixture_with_source(false, &[], true);
+    c.enable_authoring_observation();
+    stock(&mut c, a, 4);
+    cast(&mut c, a, false, 0);
+    c.step_battle_execution_until(&mut state, 1).unwrap();
+    attack(&mut c, a, e, 100);
+    let hit_at = 100 + u64::from(c.units[&a].basic_attack.windup_ms);
+    c.step_battle_execution_until(&mut state, hit_at - 1)
+        .unwrap();
+    let (mut probe, mut probe_state) = (c.clone(), state.clone());
+    let (result, admissions) = native::observe_retained_admissions(|| {
+        probe.step_battle_execution_until(&mut probe_state, hit_at)
+    });
+    result.unwrap();
+    let required = admissions
+        .iter()
+        .find(|(site, _, _)| *site == "sustained_observation_source")
+        .unwrap()
+        .2;
+    let limit = c.runtime_facts.limits.max_retained_bytes;
+    // A smaller total limit may reject an earlier fact-storage admission:
+    // scratch reservation also depends on the available budget. The contract
+    // here is typed refusal and full timestamp rollback, not a fixed fault site.
+    c.runtime_facts.limits.max_retained_bytes = required - 1;
+    let before = (
+        c.transaction_debug_snapshot(),
+        c.event_queue_debug_snapshot(),
+        serde_json::to_value(c.authoring_observation().unwrap()).unwrap(),
+        format!("{state:?}"),
+    );
+    let error = c
+        .step_battle_execution_until(&mut state, hit_at)
+        .unwrap_err();
+    assert!(
+        matches!(
+            error,
+            GameError::BattleRuntimeFault(native::BattleRuntimeFault {
+                code: native::RuntimeFaultCode::RetainedByteLimit,
+                ..
+            })
+        ),
+        "{error:?}"
+    );
+    assert_eq!(
+        before,
+        (
+            c.transaction_debug_snapshot(),
+            c.event_queue_debug_snapshot(),
+            serde_json::to_value(c.authoring_observation().unwrap()).unwrap(),
+            format!("{state:?}")
+        )
+    );
+    c.runtime_facts.limits.max_retained_bytes = limit;
+    c.step_battle_execution_until(&mut state, hit_at).unwrap();
+    assert_eq!(
+        c.units[&e].stats.current_health,
+        probe.units[&e].stats.current_health
+    );
+    assert_eq!(
+        serde_json::to_value(c.authoring_observation().unwrap()).unwrap(),
+        serde_json::to_value(probe.authoring_observation().unwrap()).unwrap()
+    );
+}
+
+#[path = "canonical_tests.rs"]
+mod canonical;

@@ -81,8 +81,9 @@ fn controlled_external_resource_publication_work_boundary_returns_error_without_
         let identity = held.token().identity().clone();
         let receipt = held.token().source_receipt().clone();
         let mut limits = AuthoringLimits::default();
-        // Find the public FinalValidation -> GeneratedSetup boundary from actual
-        // errors. No constructor charge count or implementation hook is used.
+        // Resource publication precedes support-conversion reference validation.
+        // Find that public boundary from actual errors, without charge counts
+        // or implementation hooks. Later validation must not move this probe.
         let mut low = 1;
         let mut high = held.validation_usage().work;
         while low < high {
@@ -92,7 +93,10 @@ fn controlled_external_resource_publication_work_boundary_returns_error_without_
                 Ok(_) => high = middle,
                 Err(AuthoringError::Execution { diagnostic }) => {
                     assert_eq!(diagnostic.code, "authoring_work_limit");
-                    if diagnostic.phase == ExecutionPhase::GeneratedSetup {
+                    if diagnostic.phase == ExecutionPhase::GeneratedSetup
+                        || (diagnostic.phase == ExecutionPhase::FinalValidation
+                            && diagnostic.site.starts_with("support_conversion_reference_"))
+                    {
                         high = middle;
                     } else {
                         low = middle + 1;
@@ -121,7 +125,8 @@ fn controlled_external_resource_publication_work_boundary_returns_error_without_
         }
         limits.execution.max_work = low;
         let accepted_prefix = failure(attempt(&fixture, &limits));
-        assert_eq!(accepted_prefix.phase, ExecutionPhase::GeneratedSetup);
+        assert_eq!(accepted_prefix.phase, ExecutionPhase::FinalValidation);
+        assert!(accepted_prefix.site.starts_with("support_conversion_reference_"), "{accepted_prefix:?}");
         assert_eq!(accepted_prefix.code, "authoring_work_limit");
         let retry = attempt(&fixture, &AuthoringLimits::default()).unwrap();
         assert_eq!(retry.token().identity(), &identity);

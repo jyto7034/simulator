@@ -157,15 +157,12 @@ impl FlowState {
                 .and_then(|n| n.checked_add(std::mem::size_of::<Self>())),
             "flow_state_storage",
         )?;
-        let scoped = plan.nodes.iter().any(|node| {
-            matches!(
-                &node.kind,
-                CompiledFlowNodeKind::Branch {
-                    condition: CompiledFlowCondition::EffectCompare { .. },
-                    ..
-                }
-            )
-        });
+        let mut scoped = false;
+        for node in &plan.nodes {
+            if let CompiledFlowNodeKind::Branch { condition, .. } = &node.kind {
+                scoped |= references_effect(condition, None)?;
+            }
+        }
         if scoped {
             crate::game::battle::runtime_control::admit_retained_growth(
                 0,
@@ -304,8 +301,13 @@ impl FlowState {
         control::charge(results.len() as u64 + 1, "flow_effect_scope_record")?;
         // Do not allocate witness history for unrelated effects.
         control::charge(self.plan.nodes.len() as u64, "flow_effect_scope_selection")?;
-        if !self.plan.nodes.iter().any(|node| matches!(&node.kind,
-            CompiledFlowNodeKind::Branch { condition: CompiledFlowCondition::EffectCompare { effect: site, .. }, .. } if site == effect)) {
+        let mut selected = false;
+        for node in &self.plan.nodes {
+            if let CompiledFlowNodeKind::Branch { condition, .. } = &node.kind {
+                selected |= references_effect(condition, Some(effect))?;
+            }
+        }
+        if !selected {
             return Ok(());
         }
         crate::authoring::control::charge_serialized(effect, "flow_effect_scope_key")?;
@@ -331,7 +333,9 @@ impl FlowState {
         Ok(())
     }
     fn condition(&self, condition: &CompiledFlowCondition) -> Result<bool, GameError> {
+        control::charge(1, "flow_condition")?;
         match condition {
+            CompiledFlowCondition::Logic(logic) => logic.evaluate(|child| self.condition(child)),
             CompiledFlowCondition::Always(value) => Ok(*value),
             CompiledFlowCondition::EffectCompare {
                 producer,
@@ -647,12 +651,19 @@ impl BattleCore {
         self.cancel_structured_flows_selected(actor, now, reason, false);
     }
     pub(in crate::game::battle::core) fn cancel_hostile_structured_flows(
-        &mut self, actor: crate::game::battle::ids::UnitInstanceId, now: u64,
+        &mut self,
+        actor: crate::game::battle::ids::UnitInstanceId,
+        now: u64,
         reason: crate::game::battle::runtime_facts::ActionCancelReason,
-    ) { self.cancel_structured_flows_selected(actor, now, reason, true); }
+    ) {
+        self.cancel_structured_flows_selected(actor, now, reason, true);
+    }
     fn cancel_structured_flows_selected(
-        &mut self, actor: crate::game::battle::ids::UnitInstanceId, now: u64,
-        reason: crate::game::battle::runtime_facts::ActionCancelReason, hostile_only: bool,
+        &mut self,
+        actor: crate::game::battle::ids::UnitInstanceId,
+        now: u64,
+        reason: crate::game::battle::runtime_facts::ActionCancelReason,
+        hostile_only: bool,
     ) {
         if control::charge(self.active_skill_casts.len() as u64, "flow_cancel_scan").is_err() {
             return;
@@ -663,7 +674,12 @@ impl BattleCore {
                 .iter()
                 .filter(|(_, cast)| {
                     cast.caster_instance_id == actor
-                        && (!hostile_only || self.game_data.skill_data.get_by_id(cast.skill_id.as_str()).is_some_and(Self::hostile_attack_skill))
+                        && (!hostile_only
+                            || self
+                                .game_data
+                                .skill_data
+                                .get_by_id(cast.skill_id.as_str())
+                                .is_some_and(Self::hostile_attack_skill))
                         && !cast.allow_dead_caster
                         && !cast.control_cancelled
                         && cast
@@ -676,44 +692,64 @@ impl BattleCore {
             let Some(seq) = next else {
                 break;
             };
-            if control::charge(self.active_skill_casts.len() as u64 + 1, "flow_cancel_next")
-                .is_err()
-            {
+            if self.cancel_structured_flow(seq, now, reason).is_err() {
                 return;
             }
-            let mut flow = self
-                .active_skill_casts
-                .get_mut(&seq)
-                .expect("selected flow owner")
-                .flow
-                .take();
-            let closed = if let Some(flow) = flow.as_mut() {
-                flow.complete = true;
-                flow.cancel_sides(self, seq, now)
-            } else {
-                Ok(())
-            };
-            if closed.is_err() {
-                self.active_skill_casts
-                    .get_mut(&seq)
-                    .expect("selected flow owner")
-                    .flow = flow;
-                return;
-            }
-            let cast = self
-                .active_skill_casts
-                .get_mut(&seq)
-                .expect("selected flow owner");
-            cast.flow = flow;
-            cast.control_cancelled = true;
-            cast.deferred_steps.clear();
-            cast.step_progress.retain(|_, progress| progress.started);
-            // Released carriers retain their cast context and actual leases.
-            cast.total_steps = cast.step_progress.len();
-            let action = cast.fact_source.action.clone();
-            self.cancel_pending_action(action.as_ref(), now, reason);
-            self.cleanup_finished_skill_cast(seq);
         }
+    }
+
+    /// Cancel this control owner without cancelling other casts or revoking
+    /// payloads that were already released by it.
+    pub(in crate::game::battle::core) fn cancel_structured_flow(
+        &mut self,
+        seq: u64,
+        now: u64,
+        reason: crate::game::battle::runtime_facts::ActionCancelReason,
+    ) -> Result<(), GameError> {
+        let Some(cast) = self.active_skill_casts.get(&seq) else {
+            return Ok(());
+        };
+        if cast.control_cancelled || cast.flow.is_none() {
+            return Ok(());
+        }
+        control::charge(self.active_skill_casts.len() as u64 + 1, "flow_cancel_next")?;
+        let mut flow = self
+            .active_skill_casts
+            .get_mut(&seq)
+            .expect("selected flow owner")
+            .flow
+            .take();
+        let closed = if let Some(flow) = flow.as_mut() {
+            flow.complete = true;
+            flow.cancel_sides(self, seq, now)
+        } else {
+            Ok(())
+        };
+        self.active_skill_casts
+            .get_mut(&seq)
+            .expect("selected flow owner")
+            .flow = flow;
+        closed?;
+        let cast = self
+            .active_skill_casts
+            .get_mut(&seq)
+            .expect("selected flow owner");
+        cast.control_cancelled = true;
+        cast.deferred_steps.clear();
+        cast.step_progress.retain(|_, progress| progress.started);
+        // Released carriers retain their cast context and actual leases.
+        cast.total_steps = cast.step_progress.len();
+        let action = cast.fact_source.action.clone();
+        if let Some(action) = &action {
+            self.runtime_facts.terminal(
+                action,
+                crate::game::battle::runtime_facts::ActionTerminalKind::Cancelled(reason),
+                now,
+            )?;
+        }
+        self.cleanup_finished_skill_cast(seq);
+        control::poll("flow_cancelled")?;
+        crate::game::battle::runtime_control::poll()
     }
 
     pub(in crate::game::battle::core) fn wake_skill_flow(&mut self, cast: u64, now: u64) {
@@ -823,5 +859,26 @@ impl BattleCore {
         operation?;
         self.cleanup_finished_skill_cast(cast);
         Ok(())
+    }
+}
+
+fn references_effect(
+    condition: &CompiledFlowCondition,
+    effect: Option<&EffectSite>,
+) -> Result<bool, GameError> {
+    control::charge(1, "flow_condition_effect_reference")?;
+    match condition {
+        CompiledFlowCondition::EffectCompare { effect: site, .. } => {
+            Ok(effect.is_none_or(|effect| effect == site))
+        }
+        CompiledFlowCondition::Logic(logic) => {
+            for child in logic.children() {
+                if references_effect(child, effect)? {
+                    return Ok(true);
+                }
+            }
+            Ok(false)
+        }
+        _ => Ok(false),
     }
 }

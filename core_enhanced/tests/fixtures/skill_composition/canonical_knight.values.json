@@ -1,0 +1,117 @@
+{
+  "purpose": "Technical acceptance values only; never production balance defaults.",
+  "values": {
+    "capacity": 100,
+    "blessing-period-ms": 1000,
+    "blessing-reduction-percent": {
+      "denominator": 1,
+      "numerator": 25
+    },
+    "control-vulnerability-percent": 10,
+    "cooldown-reduction-percent": {
+      "denominator": 1,
+      "numerator": 20
+    },
+    "shield-increase-percent": {
+      "denominator": 1,
+      "numerator": 50
+    },
+    "base-widened-0017f4fc-c45b-44c8-b3a6-e0b962ba436c": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "base-despair-selection": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "base-first-power": 100,
+    "base-atangho-power": 100,
+    "base-estocada-power": 100,
+    "base-desvio-power": 100,
+    "base-execution-power": 100,
+    "base-atangho-wait-ms": 100,
+    "base-estocada-wait-ms": 100,
+    "base-execution-wait-ms": 100,
+    "execution-count": 3,
+    "execution-total-ms": 600,
+    "bloom-widened-f7140439-6656-41b3-ae98-9b87550aa065": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "bloom-widened-7e86d685-a4ea-4b56-9b21-3d5679bdaf9b": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "bloom-selection": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "bloom-large-power": 100,
+    "bloom-normal-area": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "bloom-small-power": 100,
+    "bloom-despair-power": 100,
+    "bloom-despair-area": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "bloom-large-wait-ms": 100,
+    "bloom-small-interval-ms": 100,
+    "bloom-base-duration-ms": 2000,
+    "bloom-per-stock-duration-ms": 500,
+    "rarity": "Common",
+    "equip_limit": "OwnedCopies",
+    "bloom-recipe": {
+      "enkephalin": 1,
+      "materials": []
+    },
+    "relic-rarity": "Common",
+    "relic-allow-duplicates": false,
+    "relic-incompatible-with": [],
+    "relic-dismantle-dust": 1
+  }
+}

@@ -59,6 +59,19 @@ fn authored_variant(unrestrained: bool, choices: usize) -> ValidatedGameData {
     authored_route(unrestrained, choices, false)
 }
 fn authored_route(unrestrained: bool, choices: usize, only_gate_path: bool) -> ValidatedGameData {
+    authored_route_with_choices(unrestrained, Some(choices), only_gate_path)
+}
+fn authored_route_with_choices(unrestrained: bool, choices: Option<usize>, only_gate_path: bool) -> ValidatedGameData {
+    authored_route_with_repeat(unrestrained, choices, only_gate_path, false)
+}
+fn authored_route_with_repeat(unrestrained: bool, choices: Option<usize>, only_gate_path: bool, repeat_wolf: bool) -> ValidatedGameData {
+    authored_route_with_source_consumer(unrestrained, choices, only_gate_path, repeat_wolf,
+        |sources| GameDataBase::load_live_sources(sources).expect("supported authored U17 route"))
+}
+fn authored_route_with_source_consumer(
+    unrestrained: bool, choices: Option<usize>, only_gate_path: bool, repeat_wolf: bool,
+    consume: impl FnOnce(GameplayRonSourceSet<'_>) -> ValidatedGameData,
+) -> ValidatedGameData {
     let mut sources = GameplayRonSourceSet::embedded();
     let mut maps: FacilityTemplateDatabase = ron::de::from_str(sources.facility_templates).unwrap();
     let layout = &mut maps.layouts[0];
@@ -127,6 +140,13 @@ fn authored_route(unrestrained: bool, choices: usize, only_gate_path: bool) -> V
         activity_id: activity.into(),
     })
     .collect();
+    if repeat_wolf {
+        for reservation in &mut room.reservations {
+            if ["4", "5"].contains(&reservation.slot_id.as_str()) {
+                reservation.activity_id = "u17_boss".into();
+            }
+        }
+    }
     room.elite_slots.clear();
     room.omen_slot = None;
     room.safe_access_slots.clear();
@@ -151,6 +171,13 @@ fn authored_route(unrestrained: bool, choices: usize, only_gate_path: bool) -> V
         .allowed_categories;
     if !categories.contains(&MapNodeCategory::Boss) {
         categories.push(MapNodeCategory::Boss);
+    }
+    if repeat_wolf {
+        for slot in &mut template.slots {
+            if ["4", "5"].contains(&slot.id.as_str()) && !slot.allowed_categories.contains(&MapNodeCategory::Boss) {
+                slot.allowed_categories.push(MapNodeCategory::Boss);
+            }
+        }
     }
     template.connections = (1..=9)
         .flat_map(|i| {
@@ -187,9 +214,15 @@ fn authored_route(unrestrained: bool, choices: usize, only_gate_path: bool) -> V
         .as_mut()
         .unwrap();
     revival.catalyst_amount = 2;
-    revival.stage_2.equipment_choices.truncate(choices);
-    revival.stage_3.equipment_choices.truncate(choices);
-    if choices == 1 {
+    if let Some(count) = choices {
+        // Technical progression coverage keeps three distinct choices independently
+        // of the official wolf policy, which now offers only its accessory.
+        let mut candidates = vec!["placeholder_big_bad_wolf_accessory".into(), "standard_armor".into(), "justitia".into()];
+        candidates.truncate(count);
+        revival.stage_2.equipment_choices = candidates.clone();
+        revival.stage_3.equipment_choices = candidates;
+    }
+    if choices == Some(1) {
         // Separately authored same-kind revival may disable the base encounter's
         // natural progression; the hatch owner still owns its stage resolution.
         let mut alternate = pve
@@ -282,7 +315,7 @@ fn authored_route(unrestrained: bool, choices: usize, only_gate_path: bool) -> V
         sources.run_policy.to_owned()
     };
     sources.run_policy = &run_policy;
-    if let (Ok(directory), false, 3) = (std::env::var("U17_EXPORT_CONTENT"), unrestrained, choices)
+    if let (Ok(directory), false, Some(3)) = (std::env::var("U17_EXPORT_CONTENT"), unrestrained, choices)
     {
         let root = std::path::Path::new(&directory);
         std::fs::create_dir_all(root.join("data")).unwrap();
@@ -293,7 +326,7 @@ fn authored_route(unrestrained: bool, choices: usize, only_gate_path: bool) -> V
             std::fs::write(path, text).unwrap();
         }
     }
-    GameDataBase::load_live_sources(sources).expect("supported authored U17 route")
+    consume(sources)
 }
 fn start(core: &mut GameCore, player: Uuid) {
     core.execute(
@@ -417,7 +450,21 @@ fn deploy(c: &mut GameCore, p: Uuid) {
     }
 }
 fn win(c: &mut GameCore, p: Uuid) {
+    win_with_deployed_consumer(c, p, |_| ());
+}
+fn win_with_deployed_consumer(c: &mut GameCore, p: Uuid, inspect: impl FnOnce(&GameCore)) {
+    win_with_advance_consumer(c, p, inspect, |core| {
+        core.advance_active_battle_by(250).unwrap();
+    });
+}
+fn win_with_advance_consumer(
+    c: &mut GameCore,
+    p: Uuid,
+    inspect: impl FnOnce(&GameCore),
+    mut advance: impl FnMut(&mut GameCore),
+) {
     deploy(c, p);
+    inspect(c);
     for tick in 0..300 {
         if c.state.active_battle.is_none() {
             break;
@@ -508,7 +555,7 @@ fn win(c: &mut GameCore, p: Uuid) {
                 );
             }
         }
-        c.advance_active_battle_by(250).unwrap();
+        advance(c);
     }
     assert!(
         matches!(c.get_state(), GameState::CombatResult { .. }),
@@ -542,7 +589,7 @@ fn u17_public_boss_hatch_two_and_three_reward_choices_without_debug_grants() {
             core.state
                 .skill_fragments
                 .count(&"fragment_big_bad_wolf_trace".into()),
-            1
+            0
         );
         assert_eq!(
             core.run_state()
@@ -731,7 +778,7 @@ fn u17_public_boss_hatch_two_and_three_reward_choices_without_debug_grants() {
             core.state
                 .skill_fragments
                 .count(&"fragment_big_bad_wolf_trace".into()),
-            1
+            0
         );
         assert!(core.run_state().unwrap().revival.eggs.is_empty());
     }
@@ -1166,3 +1213,112 @@ fn u17_public_single_choice_alternate_encounter_keeps_stage_owner() {
     core.execute(player, PlayerBehavior::ClaimReward).unwrap();
     assert_eq!(core.state.inventory.equipments.len(), before + 1);
 }
+
+#[test]
+fn optional_fragment_official_wolf_reward_survives_continue_and_accessory_claim_once() {
+    let mut core = GameCore::new(authored_route_with_choices(false, None, false), 17001);
+    let player = Uuid::from_u128(17001);
+    start(&mut core, player);
+    let initial_fragments = serde_json::to_value(&core.state.skill_fragments).unwrap();
+    enter(&mut core, player, "1");
+    win(&mut core, player);
+    assert_eq!(serde_json::to_value(&core.state.skill_fragments).unwrap(), initial_fragments);
+    assert!(core.run_state().unwrap().completed_reward_source_ids.contains("normal_boss_big_bad_wolf"));
+    assert_eq!(core.run_state().unwrap().revival.eggs.get("normal_boss_big_bad_wolf"), Some(&RevivalStage::Stage2));
+    super::continuation_contract::assert_fresh_application_next(&core, player,
+        &[json!({"type":"complete_combat_result"})]);
+    let saved = core.export_active_run_checkpoint().unwrap().unwrap();
+    let mut fresh = core_with_profile_for_continue(&core, 17002);
+    fresh.continue_from_active_run_checkpoint(player, &saved.core_payload_json, saved.loads_used, saved.run_peak_certified_power).unwrap();
+    core = fresh;
+    core.execute(player, PlayerBehavior::CompleteCombatResult).unwrap();
+    assert_eq!(serde_json::to_value(&core.state.skill_fragments).unwrap(), initial_fragments);
+    buy_catalysts(&mut core, player);
+    for (slot, stage, parts) in [("6", RevivalStage::Stage2, 2), ("7", RevivalStage::Stage3, 6)] {
+        let node = hatch_stage(&mut core, player, slot, stage);
+        let choices = &core.revival_snapshot().unwrap().hatched_nodes[&node].equipment_choices;
+        assert_eq!(choices.len(), 1);
+        confirm(&mut core, player);
+        win(&mut core, player);
+        assert_eq!(serde_json::to_value(&core.state.skill_fragments).unwrap(), initial_fragments);
+        assert_eq!(core.state.inventory.equipment_materials.amount("part_big_bad_wolf"), parts);
+        core.execute(player, PlayerBehavior::CompleteCombatResult).unwrap();
+        let candidates = core.state.active_node_content.as_ref().unwrap().as_reward().unwrap().rewards.clone();
+        assert_eq!(candidates.len(), 1);
+        let reward_id = candidates[0].uuid;
+        core.execute(player, PlayerBehavior::SelectReward { reward_id }).unwrap();
+        let count = core.state.inventory.equipments.iter().filter(|e| e.meta.id == "placeholder_big_bad_wolf_accessory").count();
+        core.execute(player, PlayerBehavior::ClaimReward).unwrap();
+        assert_eq!(core.state.inventory.equipments.iter().filter(|e| e.meta.id == "placeholder_big_bad_wolf_accessory").count(), count + 1);
+        assert!(!core.state.inventory.equipments.iter().any(|e| matches!(e.meta.id.as_str(), "placeholder_big_bad_wolf_weapon" | "placeholder_big_bad_wolf_armor")));
+        let inventory = core.get_inventory_snapshot_json().unwrap();
+        let saved = core.export_active_run_checkpoint().unwrap().unwrap();
+        let mut fresh = core_with_profile_for_continue(&core, 17003);
+        fresh.continue_from_active_run_checkpoint(player, &saved.core_payload_json, saved.loads_used, saved.run_peak_certified_power).unwrap();
+        core = fresh;
+        assert!(core.execute(player, PlayerBehavior::ClaimReward).is_err());
+        assert_eq!(core.get_inventory_snapshot_json().unwrap(), inventory);
+        core.execute(player, PlayerBehavior::ExitReward).unwrap();
+    }
+    assert_eq!(serde_json::to_value(&core.state.skill_fragments).unwrap(), initial_fragments);
+    assert!(core.run_state().unwrap().revival.eggs.is_empty());
+}
+
+#[test]
+fn optional_fragment_public_repeat_after_continue_keeps_first_ledger_and_egg() {
+    let mut core = GameCore::new(authored_route_with_repeat(false, None, false, true), 17001);
+    let player = Uuid::from_u128(17001);
+    start(&mut core, player);
+    let fragments = serde_json::to_value(&core.state.skill_fragments).unwrap();
+    let dust = core.state.crafting_resources.equipment_dust;
+    enter(&mut core, player, "1");
+    win(&mut core, player);
+    let ordinary_salvage = core.state.crafting_resources.equipment_dust - dust;
+    let eggs = core.run_state().unwrap().revival.eggs.clone();
+    assert_eq!(eggs.get("normal_boss_big_bad_wolf"), Some(&RevivalStage::Stage2));
+    core.execute(player, PlayerBehavior::CompleteCombatResult).unwrap();
+    let saved = core.export_active_run_checkpoint().unwrap().unwrap();
+    let mut fresh = core_with_profile_for_continue(&core, 17002);
+    fresh.continue_from_active_run_checkpoint(player, &saved.core_payload_json, saved.loads_used, saved.run_peak_certified_power).unwrap();
+    core = fresh;
+    for slot in ["4", "5"] {
+        let dust = core.state.crafting_resources.equipment_dust;
+        enter(&mut core, player, slot);
+        win(&mut core, player);
+        assert_eq!(core.state.crafting_resources.equipment_dust, dust + ordinary_salvage + 10);
+        assert_eq!(serde_json::to_value(&core.state.skill_fragments).unwrap(), fragments);
+        assert_eq!(core.run_state().unwrap().revival.eggs, eggs);
+        assert_eq!(core.run_state().unwrap().completed_reward_source_ids.len(), 1);
+        core.execute(player, PlayerBehavior::CompleteCombatResult).unwrap();
+        let before = core.get_inventory_snapshot_json().unwrap();
+        assert!(core.execute(player, PlayerBehavior::CompleteCombatResult).is_err());
+        assert_eq!(core.get_inventory_snapshot_json().unwrap(), before);
+    }
+}
+
+#[path = "canonical_little_red_equipment.rs"]
+mod canonical_little_red_equipment;
+
+#[path = "canonical_wolf_equipment.rs"]
+mod canonical_wolf_equipment;
+
+#[path = "variant_hatch.rs"]
+mod variant_hatch;
+
+#[path = "canonical_funeral.rs"]
+mod canonical_funeral;
+
+#[path = "canonical_presence.rs"]
+mod canonical_presence;
+
+#[path = "canonical_channel.rs"]
+mod canonical_channel;
+
+#[path = "canonical_overlay.rs"]
+mod canonical_overlay;
+
+#[path = "canonical_mountain.rs"]
+mod canonical_mountain;
+
+#[path = "canonical_greed.rs"]
+mod canonical_greed;

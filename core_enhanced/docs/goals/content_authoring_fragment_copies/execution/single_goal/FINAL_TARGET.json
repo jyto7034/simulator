@@ -1,7 +1,0 @@
-{
-  "manifest": "core_enhanced/docs/goals/content_authoring_fragment_copies/execution/single_goal/target/r06_r07_integrated_001/MANIFEST.json",
-  "sha256": "22b61c4eb0518fcc11209eaf00e415a4f8b6f283c73037d9a04e8e5c168df59a",
-  "source_digest": "714195327ec0df7facc60d1aafe721e6e26c1296494b39cff593232c45365e6f",
-  "R06_manifest_sha256": "0b6938d77cc6cded598b2b01e51d41bf7e651dd66e8acf2f695a1cf3b5fd44f1",
-  "status": "R06·R07 구현·자체 검증 종료 / 최종 통합 target 동결 / 독립 감사 요청 대기"
-}

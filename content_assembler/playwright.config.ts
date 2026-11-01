@@ -47,14 +47,17 @@ export default defineConfig({
       use: { viewport: { width, height }, colorScheme },
     })),
   ),
-  webServer: {
-    command: "npm run dev -- --host 127.0.0.1 --port 1422 --strictPort",
-    // Vite's strictPort fails if another process owns the port. Wait for this
-    // process's ready output: unavailable loopback HTTP probes can stall in WSL.
-    wait: { stdout: /Local:.*http:\/\/127\.0\.0\.1:1422\// },
-    env: { TAURI_DEV_HOST: "" },
-    // Never inspect a stale server or an unrelated app already using this port.
-    reuseExistingServer: false,
-    timeout: 30_000,
-  },
+  webServer:
+    process.env.CONTENT_ASSEMBLER_UI_TRANSPORT === "pipe"
+      ? undefined
+      : {
+          command: "npm run dev -- --host 127.0.0.1 --port 1422 --strictPort",
+          // Vite's strictPort fails if another process owns the port. Wait for this
+          // process's ready output: unavailable loopback HTTP probes can stall in WSL.
+          wait: { stdout: /Local:.*http:\/\/127\.0\.0\.1:1422\// },
+          env: { TAURI_DEV_HOST: "" },
+          // Never inspect a stale server or an unrelated app already using this port.
+          reuseExistingServer: false,
+          timeout: 30_000,
+        },
 });

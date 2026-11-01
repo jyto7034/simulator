@@ -6,7 +6,7 @@ use crate::{
         ability::{paired_areas::*, SkillHitTargetFilter},
         battle::{
             damage::{DamageModifiers, DamageSource, DamageType},
-            event_log::{HpChangeReason, SkillCastTarget},
+            event_log::SkillCastTarget,
             tile_range::FacingDirection,
             types::{BattleUnitRole, BattleUnitSourceIdentity, BattleUnitThreatClass},
         },
@@ -446,13 +446,13 @@ impl BattleCore {
         let mut remaining = amount;
         while remaining > 0 {
             let part = remaining.min(i32::MAX as u32);
-            self.apply_hp_delta_and_record(
+            self.apply_direct_heal_with_observation_origin(
                 Some(p.caster),
                 target,
                 part as i32,
                 now,
-                HpChangeReason::Command,
-            );
+                Some(&p.source),
+            )?;
             control::poll("paired_heal_segment")?;
             remaining -= part;
         }
@@ -608,6 +608,21 @@ impl BattleCore {
                 false,
             )
             .ok_or(GameError::InvalidAction)?;
+        let damage_targets: Vec<_> = targets
+            .iter()
+            .copied()
+            .filter(|target| {
+                self.units.get(target).is_some_and(|u| {
+                    u.threat_class == BattleUnitThreatClass::Boss
+                        || matches!(
+                            u.source_identity,
+                            BattleUnitSourceIdentity::Abnormality { .. }
+                        )
+                })
+            })
+            .collect();
+        let area_percent =
+            self.area_damage_percent(p.caster, p.side, &p.source, &damage_targets, now)?;
         // This is one committed area occurrence: killing its caster does not skip later members.
         for target in targets {
             let Some(u) = self.units.get(&target).filter(|u| u.is_active()) else {
@@ -619,18 +634,25 @@ impl BattleCore {
                     BattleUnitSourceIdentity::Abnormality { .. }
                 )
             {
-                let damage = (u128::from(u.stats.max_health) * u128::from(percent))
-                    .div_ceil(100)
+                let damage = ((u128::from(u.stats.max_health) * u128::from(percent)) / 100)
                     .min(u128::from(u32::MAX)) as u32;
                 let mut snapshot = controlled_clone(&template)?;
+                snapshot.modifiers.damage_amp_percent = snapshot
+                    .modifiers
+                    .damage_amp_percent
+                    .saturating_add(area_percent);
                 snapshot.base_damage = damage;
                 snapshot.fact_source = controlled_clone(&p.source)?;
-                self.execute_committed_damage(super::super::damage_runtime::CommittedDamageInput {
-                    target_id: target,
-                    source_snapshot: snapshot,
-                    committed_at_ms: now,
-                    policy: super::super::damage_runtime::CommittedDamagePolicy::GeneralCommand,
-                });
+                self.execute_damage_with_observation_origin(
+                    super::super::damage_runtime::CommittedDamageInput {
+                        target_id: target,
+                        source_snapshot: snapshot,
+                        committed_at_ms: now,
+                        policy: super::super::damage_runtime::CommittedDamagePolicy::GeneralCommand,
+                    },
+                    false,
+                    Some(&p.source),
+                );
             } else if u.owner == p.side
                 || matches!(
                     u.source_identity,

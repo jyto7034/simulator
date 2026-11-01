@@ -654,7 +654,7 @@ AbnormalityDatabase(
             defense: 50,
             magic_resist: 35,
             threat_class: boss,
-            response_complete_skill_fragment_id: Some("fragment_big_bad_wolf_trace"),
+            response_complete_skill_fragment_id: None,
             movement: (speed_units_per_ms: 1700),
             basic_attack: (
                 range_policy: pattern,

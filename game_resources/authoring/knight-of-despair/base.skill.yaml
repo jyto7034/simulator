@@ -1,0 +1,464 @@
+# Current Knight of Despair design; unresolved values require explicit author decisions.
+# Known ownership, action ordering, stock and relic contracts follow fragment.md / synergies.md.
+# Strike.power is native base damage, not an implicit attack percentage.
+definitions: []
+id: knight-blessing-base
+skills:
+- admission:
+    capacity:
+      Unresolved: capacity
+    cost: All
+    requirement: Full
+  body:
+    Action:
+      delivery:
+        Literal:
+          Delivery: Instant
+      effects:
+      - Append:
+          effects:
+            Shared: blessing-program
+      id: entry
+      target:
+        Literal:
+          Target: SelfUnit
+      wait: Released
+  cast_targeting:
+    Explicit:
+      air_capable: false
+      reach: pattern
+      selection: self
+      target: SelfUnit
+      target_range: null
+  focus_permissions:
+    allows_basic_attack: true
+    allows_move: true
+  id: fragment_knight_blessing_base
+  kind: Untargeted
+  name: 절망의 기사
+  prepare_ms: 0
+values:
+- name: blessing-program
+  value:
+    Effects:
+    - id: action
+      op:
+        RelationAction:
+          program:
+            active:
+              definition: de41c7cd-4cb7-43ef-a4e3-053deb0b1784
+              interrupt_on_silence: false
+              manual_stop: false
+              next_basic: false
+              plan: 23
+              protected: false
+              selector:
+                definition: dfa0cd36-345d-4e1b-8307-6ceb465c7005
+                pattern:
+                  Unresolved: base-despair-selection
+              self_damage: null
+            admission:
+              capacity:
+                Unresolved: capacity
+              cost: All
+              requirement: Full
+            definition: 134aaf96-0bd7-4c76-9e95-d35700df4e84
+            initial_stock: 0
+            menu_entry: blessing
+            mode_damage_percent:
+              denominator: 1
+              numerator: 5
+            mode_definition: b1105460-d2ad-4397-88e7-89904484e55d
+            modifiers:
+            - change:
+                Gain:
+                  factor:
+                    denominator: 1
+                    numerator: 2
+              id: 29e752cd-b2d3-4be4-b64c-260cc18e674c
+              relic_definition: double-harvest
+            - change:
+                StatusCount:
+                  definition: 8198039e-f695-41ea-886a-ecf5ba650170
+                  factor:
+                    denominator: 1
+                    numerator: 2
+              id: 2d373fde-b672-40f7-a1e8-9f5bfae6a698
+              relic_definition: deep-imprint
+            - change: UnlimitedStock
+              id: 3a46e293-444e-49a4-bf20-1571b9709298
+              relic_definition: bottomless-cup
+            - change:
+                PrimaryArea:
+                  definition: 496afc24-8a4e-4891-9ba8-4bfd3202af81
+              id: 40beae18-4189-41d2-9979-21cf8ce5e9fe
+              relic_definition: widened-horizon
+            - change:
+                Retarget:
+                  distance_units: 1000000
+                  entry: 637889d4-f84f-4c84-bad7-1cce63eba4cc
+              id: 455d48d0-a966-40ec-af85-f093e02c2b72
+              relic_definition: next
+            - change:
+                Retarget:
+                  distance_units: 1000000
+                  entry: de41c7cd-4cb7-43ef-a4e3-053deb0b1784
+              id: 4f780ef4-442b-45a7-ad51-2445d8cd1eeb
+              relic_definition: next
+            - change:
+                PrimaryArea:
+                  definition: 727f1bd9-26af-4cc7-bc6d-e958c4e336b9
+              id: 5198c8d6-373f-444f-b260-583af37d993a
+              relic_definition: widened-horizon
+            - change:
+                ControlVulnerability:
+                  definition: d732b3db-d13f-43e9-8d3a-c4d09663ec38
+                  duration_ms: 5000
+                  percent:
+                    Unresolved: control-vulnerability-percent
+              id: 555a3350-827c-49d1-a3a4-522f70267c8a
+              relic_definition: broken-balance
+            - change:
+                PrimaryArea:
+                  definition: 8e7f4634-09b5-406f-b9db-838faa934fc1
+              id: 5ff14d25-c648-482c-8884-903edadb1ca6
+              relic_definition: widened-horizon
+            - change:
+                Period:
+                  definition: 100f3ccb-acd5-4b22-a398-4a151fe5c98a
+                  negative: true
+                  percent:
+                    Unresolved: cooldown-reduction-percent
+              id: 6f92dffb-ec96-4af5-b882-26ab5128f7bb
+              relic_definition: hasty-second-hand
+            - change:
+                Multihit:
+                  cap:
+                    denominator: 1
+                    numerator: 20
+                  entry: 637889d4-f84f-4c84-bad7-1cce63eba4cc
+                  step:
+                    denominator: 1
+                    numerator: 2
+              id: 7259301e-bac1-432f-a13d-ad148f628cee
+              relic_definition: deep-wedge
+            - change:
+                Shield:
+                  percent:
+                    Unresolved: shield-increase-percent
+              id: 750dbc7c-90b1-4044-b266-fd0fd5dc3581
+              relic_definition: layered-shell
+            - change:
+                Range:
+                  definition: 0017f4fc-c45b-44c8-b3a6-e0b962ba436c
+                  pattern:
+                    Unresolved: base-widened-0017f4fc-c45b-44c8-b3a6-e0b962ba436c
+              id: 770b9bfc-bcf3-4cd7-95ea-eb70142d8ce5
+              relic_definition: widened-horizon
+            - change: Protection
+              id: a86d6481-3d8e-4086-a086-3dca4c154bc4
+              relic_definition: unbroken-trance
+            - change:
+                Multihit:
+                  cap:
+                    denominator: 1
+                    numerator: 20
+                  entry: de41c7cd-4cb7-43ef-a4e3-053deb0b1784
+                  step:
+                    denominator: 1
+                    numerator: 2
+              id: df1dffeb-0721-4fb8-8c6a-c40601fd7520
+              relic_definition: deep-wedge
+            - change:
+                PrimaryArea:
+                  definition: 574e591e-5488-44e3-8f65-94c3c7e0ea2d
+              id: e9c1648c-d8fa-43d5-b2b3-bd15a5a2614d
+              relic_definition: widened-horizon
+            - change:
+                PrimaryArea:
+                  definition: 5185a395-ed24-49cc-9e57-5a7bb7cca498
+              id: f0742514-4123-4cfc-93cc-0f10133afc62
+              relic_definition: widened-horizon
+            normal:
+              definition: 637889d4-f84f-4c84-bad7-1cce63eba4cc
+              interrupt_on_silence: false
+              manual_stop: false
+              next_basic: true
+              plan: 21
+              protected: false
+              selector: null
+              self_damage: null
+            period_ms:
+              Unresolved: blessing-period-ms
+            periodic_gain: 1
+            plans:
+            - definition: 574e591e-5488-44e3-8f65-94c3c7e0ea2d
+              op:
+                Strike:
+                  after:
+                  - count:
+                      Constant: 1
+                    definition: d732b3db-d13f-43e9-8d3a-c4d09663ec38
+                    duration_ms: 1000
+                    kind: Stun
+                    percent:
+                      denominator: 1
+                      numerator: 0
+                  damage_type: Physical
+                  power:
+                    Unresolved: base-first-power
+                  ramp:
+                    denominator: 1
+                    numerator: 0
+                  range: null
+                  target: Primary
+            - definition: c4fac754-089e-457a-8775-79eaf3970d20
+              op:
+                Wait:
+                  duration_ms:
+                    Unresolved: base-atangho-wait-ms
+            - definition: 8e7f4634-09b5-406f-b9db-838faa934fc1
+              op:
+                Strike:
+                  after:
+                  - count:
+                      Constant: 1
+                    definition: 9dcacc40-0722-47e5-85be-629122faa894
+                    duration_ms: 3000
+                    kind: BasicLock
+                    percent:
+                      denominator: 1
+                      numerator: 0
+                  damage_type: Physical
+                  power:
+                    Unresolved: base-atangho-power
+                  ramp:
+                    denominator: 1
+                    numerator: 0
+                  range: null
+                  target: Primary
+            - definition: c6cbb5a4-430c-4a21-a282-ceb90eca0abc
+              op:
+                Sequence:
+                  first: 1
+                  next: 2
+            - definition: f2f12cc1-4290-4ce0-85e6-0e5501212c53
+              op:
+                Spend:
+                  after:
+                    count: Paid
+                    definition: 8198039e-f695-41ea-886a-ecf5ba650170
+                    duration_ms: 5000
+                    kind: Vulnerability
+                    percent:
+                      denominator: 1
+                      numerator: 5
+                  amount:
+                    Quotient:
+                      count: StartStock
+                      divisor: 4
+                      minimum: 1
+                  body: 3
+            - definition: d0fc6056-4941-4d57-84fb-b49c670e655b
+              op:
+                Wait:
+                  duration_ms:
+                    Unresolved: base-estocada-wait-ms
+            - definition: 727f1bd9-26af-4cc7-bc6d-e958c4e336b9
+              op:
+                Strike:
+                  after: []
+                  damage_type: Physical
+                  power:
+                    Unresolved: base-estocada-power
+                  ramp:
+                    denominator: 1
+                    numerator: 0
+                  range: null
+                  target: Primary
+            - definition: 624f0fc8-73c6-48d2-b6fb-28d05a8a77fa
+              op:
+                Sequence:
+                  first: 5
+                  next: 6
+            - definition: d5a91923-d6aa-4288-a26f-b786c7a21222
+              op:
+                Spend:
+                  after:
+                    count: Paid
+                    definition: 8198039e-f695-41ea-886a-ecf5ba650170
+                    duration_ms: 5000
+                    kind: Vulnerability
+                    percent:
+                      denominator: 1
+                      numerator: 5
+                  amount:
+                    Quotient:
+                      count: StartStock
+                      divisor: 4
+                      minimum: 1
+                  body: 7
+            - definition: 2185554b-8fda-44ab-9401-9e3c8d7d5611
+              op:
+                Stance:
+                  duration_ms: 1000
+                  reduction:
+                    denominator: 1
+                    numerator: 20
+            - definition: 0b6f534c-73a0-4e68-b9be-d58cf12429d6
+              op:
+                Strike:
+                  after:
+                  - count:
+                      Constant: 1
+                    definition: d732b3db-d13f-43e9-8d3a-c4d09663ec38
+                    duration_ms: 1000
+                    kind: Stun
+                    percent:
+                      denominator: 1
+                      numerator: 0
+                  damage_type: Physical
+                  power:
+                    Unresolved: base-desvio-power
+                  ramp:
+                    denominator: 1
+                    numerator: 0
+                  range:
+                    definition: 0017f4fc-c45b-44c8-b3a6-e0b962ba436c
+                    pattern:
+                      include_anchor_tile: false
+                      rows:
+                      - X
+                      - X
+                      - '@'
+                  target: ForwardArea
+            - definition: 49a3b9c0-21ce-45be-8aea-6f4b85ff3f49
+              op:
+                Sequence:
+                  first: 9
+                  next: 10
+            - definition: dbfeedf0-5fff-4501-9d1c-f0fd12c53331
+              op:
+                Spend:
+                  after:
+                    count: Paid
+                    definition: 8198039e-f695-41ea-886a-ecf5ba650170
+                    duration_ms: 5000
+                    kind: Vulnerability
+                    percent:
+                      denominator: 1
+                      numerator: 5
+                  amount:
+                    Quotient:
+                      count: StartStock
+                      divisor: 4
+                      minimum: 1
+                  body: 11
+            - definition: d0c9fb67-5370-42ff-a419-87238f61697d
+              op:
+                Wait:
+                  duration_ms:
+                    Unresolved: base-execution-wait-ms
+            - definition: 5185a395-ed24-49cc-9e57-5a7bb7cca498
+              op:
+                Strike:
+                  after: []
+                  damage_type: Physical
+                  power:
+                    Unresolved: base-execution-power
+                  ramp:
+                    denominator: 1
+                    numerator: 0
+                  range: null
+                  target: Primary
+            - definition: 049e80e5-6901-42bd-a3da-d406d7d9c032
+              op:
+                Repeat:
+                  body: 14
+                  count:
+                    Constant:
+                      Unresolved: execution-count
+                  time_ms:
+                    Unresolved: execution-total-ms
+                  timing: FixedTotal
+            - definition: 612043e5-6993-41c2-be7d-c9c3f18a170c
+              op:
+                Sequence:
+                  first: 13
+                  next: 15
+            - definition: 92cd1bc1-4622-434b-8341-1a4f26d3a1fc
+              op:
+                Spend:
+                  after:
+                    count: Paid
+                    definition: 8198039e-f695-41ea-886a-ecf5ba650170
+                    duration_ms: 5000
+                    kind: Vulnerability
+                    percent:
+                      denominator: 1
+                      numerator: 5
+                  amount:
+                    Quotient:
+                      count: StartStock
+                      divisor: 4
+                      minimum: 1
+                  body: 16
+            - definition: fa908348-2eaa-4bc6-9ded-05806afab0c1
+              op:
+                Sequence:
+                  first: 12
+                  next: 17
+            - definition: 02a7e037-929b-472a-870f-8dafce5d81f8
+              op:
+                Sequence:
+                  first: 8
+                  next: 18
+            - definition: 2266a58f-90d2-416a-bfe6-5550074670dd
+              op:
+                Sequence:
+                  first: 4
+                  next: 19
+            - definition: 839cac2d-a4d3-45a8-a273-5bac13f980fc
+              op:
+                Sequence:
+                  first: 0
+                  next: 20
+            - definition: 496afc24-8a4e-4891-9ba8-4bfd3202af81
+              op:
+                Strike:
+                  after: []
+                  damage_type: Physical
+                  power:
+                    Unresolved: base-execution-power
+                  ramp:
+                    denominator: 1
+                    numerator: 10
+                  range: null
+                  target: Primary
+            - definition: 268649aa-5bdc-4438-8aca-eaeab637a7b1
+              op:
+                Repeat:
+                  body: 22
+                  count:
+                    Sum:
+                      first:
+                        Constant:
+                          Unresolved: execution-count
+                      second: StartStock
+                  time_ms:
+                    Unresolved: execution-total-ms
+                  timing: FixedTotal
+            reduction:
+              Unresolved: blessing-reduction-percent
+            relation_definition: bbd53a9b-e450-48e9-8154-7001e04507d3
+            selection_range: null
+            shield_duration_ms: 15000
+            shield_percent:
+              denominator: 1
+              numerator: 50
+            shield_threshold: 10
+            stock_capacity: 4
+            stock_definition: e8971e42-4b2b-4872-9876-d5f5913e3f0f
+      origin: Original
+      tags: []
+version: 1

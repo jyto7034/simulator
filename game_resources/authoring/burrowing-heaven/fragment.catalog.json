@@ -1,0 +1,48 @@
+{
+  "id": "fragment_burrowing_heaven_trace",
+  "uuid": "730e8400-e29b-41d4-a716-446655440025",
+  "name": "빨간 눈의 집중 장판 (가칭)",
+  "description": "고정 장판의 체류 둔화·기절과 진입 피해 증폭. 집중 종료 시 종속 효과를 정리한다.",
+  "rarity": {
+    "Unresolved": "fragment-rarity"
+  },
+  "equip_limit": {
+    "Unresolved": "fragment-equip-limit"
+  },
+  "origin": {
+    "Abnormality": {
+      "abnormality_id": "o-04-72_burrowing_heaven"
+    }
+  },
+  "sources": [
+    {
+      "AbnormalityContainment": {
+        "abnormality_id": "o-04-72_burrowing_heaven"
+      }
+    }
+  ],
+  "dependencies": [
+    {
+      "SourceAbnormality": {
+        "abnormality_id": "o-04-72_burrowing_heaven"
+      }
+    }
+  ],
+  "compatibility": {
+    "allowed_weapon_archetypes": [
+      "Staff"
+    ]
+  },
+  "effect": {
+    "ActiveSkill": {
+      "forms": {
+        "base": {
+          "skill_id": "fragment_burrowing_heaven_red_eye",
+          "resonance_max": {
+            "Unresolved": "capacity"
+          }
+        }
+      }
+    }
+  }
+}

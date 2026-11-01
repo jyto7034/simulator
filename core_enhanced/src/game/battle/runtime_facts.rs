@@ -260,7 +260,7 @@ crate::authoring::clone_shape::struct_shape!(MobileEffectOrigin {
     copy,
     definition
 });
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub(crate) struct ExtendedSourceObservation {
     independent_object: Option<Arc<IndependentObjectOriginSnapshot>>,
     reinput: Option<Arc<CommittedReinputContext>>,
@@ -271,6 +271,7 @@ pub(crate) struct ExtendedSourceObservation {
     guard_release: Option<Arc<crate::game::ability::guard_charge::GuardReleaseOrigin>>,
     mobile_effect: Option<Arc<MobileEffectOrigin>>,
     causal: Option<Arc<super::core::relic_causal::CausalSourceData>>,
+    cast_damage: Option<Arc<super::skill_source::CastDamageSnapshot>>,
 }
 crate::authoring::clone_shape::struct_shape!(ExtendedSourceObservation {
     independent_object,
@@ -281,7 +282,8 @@ crate::authoring::clone_shape::struct_shape!(ExtendedSourceObservation {
     status_transition,
     guard_release,
     mobile_effect,
-    causal
+    causal,
+    cast_damage
 });
 
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
@@ -291,6 +293,9 @@ pub struct RuntimeFactSource {
     pub(crate) use_control: bool,
     /// Runtime-only provenance; authored data cannot forge a reaction.
     pub(crate) reaction: bool,
+    /// Native chain permission; the actual copy is already in `equipment`.
+    /// Keep rare provenance flags in the source's existing inline padding.
+    pub(crate) death_burst: bool,
     pub flow: Option<Arc<FlowOccurrence>>,
     pub actor: Option<UnitInstanceId>,
     pub equipment: Option<EquipmentSourceSnapshot>,
@@ -307,6 +312,7 @@ crate::authoring::clone_shape::struct_shape!(RuntimeFactSource {
     extended_observation,
     use_control,
     reaction,
+    death_burst,
     flow,
     actor,
     equipment,
@@ -329,6 +335,8 @@ impl Serialize for RuntimeFactSource {
             independent_object: Option<&'a Arc<IndependentObjectOriginSnapshot>>,
             #[serde(skip_serializing_if = "std::ops::Not::not")]
             reaction: bool,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            death_burst: Option<Uuid>,
             #[serde(skip_serializing_if = "Option::is_none")]
             reinput: Option<&'a Arc<CommittedReinputContext>>,
             #[serde(skip_serializing_if = "Option::is_none")]
@@ -356,10 +364,13 @@ impl Serialize for RuntimeFactSource {
             causal: Option<&'a Arc<super::core::relic_causal::CausalContext>>,
             #[serde(skip_serializing_if = "Option::is_none")]
             causal_cause: Option<&'a Arc<super::core::relic_causal::CausalCauseObservation>>,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            cast_damage: Option<&'a Arc<super::skill_source::CastDamageSnapshot>>,
         }
         Observation {
             independent_object: self.independent_object(),
             reaction: self.reaction,
+            death_burst: self.death_burst_copy(),
             reinput: self.reinput(),
             regular_support: self.regular_support(),
             status_transition: self.status_transition(),
@@ -376,12 +387,31 @@ impl Serialize for RuntimeFactSource {
             relic_effective: self.relic_effective(),
             causal: self.causal().and_then(|c| c.context.as_ref()),
             causal_cause: self.causal().and_then(|c| c.cause.as_ref()),
+            cast_damage: self.cast_damage(),
         }
         .serialize(serializer)
     }
 }
 
 impl RuntimeFactSource {
+    pub fn cast_damage(&self) -> Option<&Arc<super::skill_source::CastDamageSnapshot>> {
+        self.extended_observation.as_ref().and_then(|s| s.cast_damage.as_ref())
+    }
+    pub(crate) fn with_cast_damage(&self, capture: Option<Arc<super::skill_source::CastDamageSnapshot>>) -> Result<Self, crate::game::behavior::GameError> {
+        if capture.is_none() && self.cast_damage().is_none() { return Ok(self.clone()); }
+        super::runtime_control::admit_retained_growth(0,
+            Some(std::mem::size_of::<ExtendedSourceObservation>() + 64), "cast_damage_source")?;
+        let mut value = self.clone();
+        let mut extended = self.extended_observation.as_deref().cloned().unwrap_or_default();
+        extended.cast_damage = capture;
+        value.extended_observation = Some(Arc::new(extended));
+        Ok(value)
+    }
+    pub(crate) fn death_burst_copy(&self) -> Option<Uuid> {
+        self.death_burst
+            .then(|| self.equipment.and_then(|e| e.persistent_copy_uuid))
+            .flatten()
+    }
     pub(crate) fn extended_observation(
         independent_object: Option<Arc<IndependentObjectOriginSnapshot>>,
         reinput: Option<Arc<CommittedReinputContext>>,
@@ -404,6 +434,7 @@ impl RuntimeFactSource {
             guard_release: None,
             mobile_effect: None,
             causal: None,
+            cast_damage: None,
         })))
     }
 
@@ -429,6 +460,7 @@ impl RuntimeFactSource {
             guard_release: self.guard_release().cloned(),
             mobile_effect: self.mobile_effect().cloned(),
             causal: self.causal().cloned(),
+            cast_damage: self.cast_damage().cloned(),
         }));
         Ok(source)
     }
@@ -483,6 +515,7 @@ impl RuntimeFactSource {
             guard_release: self.guard_release().cloned(),
             mobile_effect: self.mobile_effect().cloned(),
             causal,
+            cast_damage: self.cast_damage().cloned(),
         }));
         Ok(source)
     }
@@ -513,6 +546,7 @@ impl RuntimeFactSource {
             guard_release: self.guard_release().cloned(),
             mobile_effect: self.mobile_effect().cloned(),
             causal: self.causal().cloned(),
+            cast_damage: self.cast_damage().cloned(),
         }));
         Ok(value)
     }
@@ -523,7 +557,7 @@ impl RuntimeFactSource {
         super::runtime_control::admit_retained_growth(0, std::mem::size_of::<ExtendedSourceObservation>().checked_add(std::mem::size_of_val(&origin)+128).and_then(|n|n.checked_add(origin.definition.capacity())).and_then(|n|n.checked_add(origin.relic_definition.capacity())), "guard_release_origin")?;
         let mut value=self.clone();
         value.extended_observation=Some(Arc::new(ExtendedSourceObservation {
-            independent_object:self.independent_object().cloned(),reinput:self.reinput().cloned(),relic_numeric:self.relic_numeric().cloned(),relic_effective:self.relic_effective().cloned(),regular_support:self.regular_support().cloned(),status_transition:self.status_transition().cloned(),mobile_effect:self.mobile_effect().cloned(),guard_release:Some(Arc::new(origin)),causal:self.causal().cloned(),
+            independent_object:self.independent_object().cloned(),reinput:self.reinput().cloned(),relic_numeric:self.relic_numeric().cloned(),relic_effective:self.relic_effective().cloned(),regular_support:self.regular_support().cloned(),status_transition:self.status_transition().cloned(),mobile_effect:self.mobile_effect().cloned(),guard_release:Some(Arc::new(origin)),causal:self.causal().cloned(),cast_damage:self.cast_damage().cloned(),
         }));
         Ok(value)
     }
@@ -554,6 +588,7 @@ impl RuntimeFactSource {
             status_transition: Some(Arc::new(origin)),
             guard_release: self.guard_release().cloned(),
             causal: self.causal().cloned(),
+            cast_damage: self.cast_damage().cloned(),
         }));
         Ok(value)
     }
@@ -600,6 +635,7 @@ impl RuntimeFactSource {
             guard_release: self.guard_release().cloned(),
             mobile_effect: Some(Arc::new(origin)),
             causal: self.causal().cloned(),
+            cast_damage: self.cast_damage().cloned(),
         }));
         Ok(value)
     }
@@ -633,6 +669,7 @@ impl RuntimeFactSource {
             guard_release: self.guard_release().cloned(),
             mobile_effect: self.mobile_effect().cloned(),
             causal: self.causal().cloned(),
+            cast_damage: self.cast_damage().cloned(),
         }));
         Ok(value)
     }
@@ -666,6 +703,7 @@ impl RuntimeFactSource {
             guard_release: self.guard_release().cloned(),
             mobile_effect: self.mobile_effect().cloned(),
             causal: self.causal().cloned(),
+            cast_damage: self.cast_damage().cloned(),
         }));
         Ok(value)
     }
@@ -687,11 +725,11 @@ impl RuntimeFactSource {
         let has_other = self.independent_object().is_some() || self.reinput().is_some()
             || self.relic_effective().is_some() || self.regular_support().is_some()
             || self.status_transition().is_some() || self.mobile_effect().is_some()
-            || self.guard_release().is_some() || self.causal().is_some();
+            || self.guard_release().is_some() || self.causal().is_some() || self.cast_damage().is_some();
         value.extended_observation = if has_other {
             super::runtime_control::admit_retained_growth(0, Some(std::mem::size_of::<ExtendedSourceObservation>()+64), "extended_source_observation")?;
             Some(Arc::new(ExtendedSourceObservation {
-                independent_object:self.independent_object().cloned(),reinput:self.reinput().cloned(),relic_numeric:None,relic_effective:self.relic_effective().cloned(),regular_support:self.regular_support().cloned(),status_transition:self.status_transition().cloned(),mobile_effect:self.mobile_effect().cloned(),guard_release:self.guard_release().cloned(),causal:self.causal().cloned(),
+                independent_object:self.independent_object().cloned(),reinput:self.reinput().cloned(),relic_numeric:None,relic_effective:self.relic_effective().cloned(),regular_support:self.regular_support().cloned(),status_transition:self.status_transition().cloned(),mobile_effect:self.mobile_effect().cloned(),guard_release:self.guard_release().cloned(),causal:self.causal().cloned(),cast_damage:self.cast_damage().cloned(),
             }))
         } else { None };
         Ok(value)
@@ -712,6 +750,7 @@ impl RuntimeFactSource {
             && self.mobile_effect().is_none()
             && self.guard_release().is_none()
             && self.causal().is_none()
+            && self.cast_damage().is_none()
         {
             value.extended_observation = None;
             return Ok(value);
@@ -731,6 +770,7 @@ impl RuntimeFactSource {
             guard_release: self.guard_release().cloned(),
             mobile_effect: self.mobile_effect().cloned(),
             causal: self.causal().cloned(),
+            cast_damage: self.cast_damage().cloned(),
         }));
         Ok(value)
     }
@@ -872,6 +912,9 @@ impl RuntimeFactSource {
         if let Some(support) = self.regular_support() {
             bytes = bytes.checked_add(support.retained_extent()?)?;
         }
+        if let Some(capture) = self.cast_damage() {
+            bytes = bytes.checked_add(capture.retained_extent()?)?;
+        }
         if let Some(cast) = &self.cast {
             bytes = bytes
                 .checked_add(std::mem::size_of::<SkillCastExecutionSource>())?
@@ -924,6 +967,8 @@ impl RuntimeFactSource {
             value = value.without_reinput()?;
         }
         value.reaction = false;
+        value.death_burst = false;
+        if value.cast_damage().is_some() { value = value.with_cast_damage(None)?; }
         value.flow = None;
         Ok(value)
     }
@@ -947,13 +992,16 @@ crate::authoring::clone_shape::struct_shape!(DamageSegmentFact {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct ShieldAbsorptionFact {
+    /// Local calculation component; absent preserves aggregate legacy receipts.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub component_index: Option<u32>,
     pub activation: u64,
     pub absorbed: u32,
     pub remaining: u32,
     pub source: Arc<RuntimeFactSource>,
 }
 crate::authoring::clone_shape::struct_shape!(ShieldAbsorptionFact {
-    activation,
+    component_index,    activation,
     absorbed,
     remaining,
     source
@@ -1002,9 +1050,14 @@ crate::authoring::clone_shape::struct_shape!(PassiveGuardFact {
     source
 });
 
+fn is_zero_u32(value: &u32) -> bool { *value == 0 }
+
 #[derive(Debug, Clone, Default, Serialize)]
 pub struct ProtectionReceipt {
     pub mitigated_damage: u32,
+    /// HP damage rescheduled after shields; not absorbed or permanently prevented.
+    #[serde(default, skip_serializing_if = "is_zero_u32")]
+    pub deferred: u32,
     pub absorbed: u32,
     pub prevented: u32,
     #[serde(flatten)]
@@ -1012,9 +1065,23 @@ pub struct ProtectionReceipt {
 }
 crate::authoring::clone_shape::struct_shape!(ProtectionReceipt {
     mitigated_damage,
+    deferred,
     absorbed,
     prevented,
     details
+});
+
+/// A charged equipment copy prevented part of a post-shield HP packet.
+#[derive(Debug, Clone, Serialize)]
+pub struct IdleHpGuardFact {
+    pub source: RuntimeFactSource,
+    pub charged_since_ms: u64,
+    pub recharge_ms: u32,
+    pub reduction_percent: u8,
+    pub prevented: u32,
+}
+crate::authoring::clone_shape::struct_shape!(IdleHpGuardFact {
+    source, charged_since_ms, recharge_ms, reduction_percent, prevented
 });
 
 /// Optional protection payload; ordinary hits allocate no detail record.
@@ -1024,12 +1091,15 @@ pub struct ProtectionDetails {
     pub survival: Option<Box<SurvivalPreventionFact>>,
     pub deflection: Option<Box<DeflectionFact>>,
     pub passive_guard: Option<Box<PassiveGuardFact>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub idle_hp_guard: Option<Box<IdleHpGuardFact>>,
 }
 crate::authoring::clone_shape::struct_shape!(ProtectionDetails {
     shields,
     survival,
     deflection,
-    passive_guard
+    passive_guard,
+    idle_hp_guard
 });
 impl std::ops::Deref for ProtectionReceipt {
     type Target = ProtectionDetails;
@@ -1039,11 +1109,16 @@ impl std::ops::Deref for ProtectionReceipt {
             survival: None,
             deflection: None,
             passive_guard: None,
+            idle_hp_guard: None,
         };
         self.details.as_deref().unwrap_or(&EMPTY)
     }
 }
 impl ProtectionReceipt {
+    pub(crate) fn primary_absorbed(&self) -> u32 {
+        self.shields.iter().filter(|s| s.component_index.is_none_or(|i| i == 0))
+            .fold(0, |sum: u32, s| sum.saturating_add(s.absorbed))
+    }
     pub(crate) fn details_mut(
         &mut self,
     ) -> Result<&mut ProtectionDetails, crate::game::behavior::GameError> {
@@ -1060,12 +1135,14 @@ impl ProtectionReceipt {
     // Preserve the established ordinary-damage wire shape. Protected strikes
     // retain their complete receipt; a plain hit has no protection outcome.
     fn is_plain(&self) -> bool {
-        self.absorbed == 0
+        self.deferred == 0
+            && self.absorbed == 0
             && self.prevented == 0
             && self.shields.is_empty()
             && self.survival.is_none()
             && self.deflection.is_none()
             && self.passive_guard.is_none()
+            && self.idle_hp_guard.is_none()
     }
     pub(crate) fn retained_extent(&self) -> Option<usize> {
         let mut bytes = self
@@ -1079,6 +1156,10 @@ impl ProtectionReceipt {
             bytes = bytes
                 .checked_add(shield.source.retained_extent()?)?
                 .checked_add(64)?;
+        }
+        if let Some(guard) = &self.idle_hp_guard {
+            bytes = bytes.checked_add(guard.source.retained_extent()?)?
+                .checked_add(std::mem::size_of::<IdleHpGuardFact>() + 64)?;
         }
         if let Some(guard) = &self.passive_guard {
             bytes = bytes
@@ -1299,6 +1380,9 @@ crate::authoring::clone_shape::struct_shape!(PredeathBuffSnapshot {
 pub struct PredeathSnapshot {
     pub victim: UnitInstanceId,
     pub owner: crate::game::enums::Side,
+    /// The blocking authority at death preparation, before death cleanup can
+    /// release the engagement. This is independent of the lethal attacker.
+    pub blocker: Option<UnitInstanceId>,
     pub hp_before_lethal: u32,
     pub position: Option<crate::game::resources::Position>,
     pub buffs: Vec<PredeathBuffSnapshot>,
@@ -1306,6 +1390,7 @@ pub struct PredeathSnapshot {
 crate::authoring::clone_shape::struct_shape!(PredeathSnapshot {
     victim,
     owner,
+    blocker,
     hp_before_lethal,
     position,
     buffs
@@ -1314,6 +1399,7 @@ crate::authoring::clone_shape::struct_shape!(PredeathSnapshot {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum DeathCause {
+    Transformation,
     Ordinary,
     Corrosion,
 }
@@ -1735,6 +1821,24 @@ mod u07_source_storage_tests {
                 "optional mask {mask}"
             );
         }
+    }
+
+    #[test]
+    fn runtime_facts_death_burst_permission_reuses_equipment_copy_and_clears_for_new_actor() {
+        let mut source = fixture();
+        source.reaction = true;
+        source.death_burst = true;
+        let copy = Uuid::from_u128(4);
+        assert_eq!(source.death_burst_copy(), Some(copy));
+        assert_eq!(serde_json::to_value(&source).unwrap()["death_burst"], copy.to_string());
+        let cloned = crate::authoring::clone_shape::controlled_clone(&source).unwrap();
+        assert_eq!(cloned.death_burst_copy(), Some(copy));
+        assert_eq!(source.without_reinput().unwrap().death_burst_copy(), Some(copy));
+        let independent = source.independent_origin().unwrap();
+        assert_eq!(independent.equipment, source.equipment);
+        assert_eq!(independent.death_burst_copy(), None);
+        assert!(!independent.reaction);
+        assert!(serde_json::to_value(&independent).unwrap().get("death_burst").is_none());
     }
 
     #[test]

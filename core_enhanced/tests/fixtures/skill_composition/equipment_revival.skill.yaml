@@ -1,0 +1,21 @@
+# First two survivals only; terminal hostile transformation is a separate follow-up.
+version: 2
+id: employee-revival-fixture
+resources:
+  - { id: revival_total, owner: Employee, lifetime: Run, initial: 0, cap: 3 }
+  - { id: revival_used, owner: Employee, lifetime: Attempt, initial: 0, cap: 1 }
+values:
+  - name: mimicry-revival
+    value:
+      DefenseProgram:
+        EmployeeRevival:
+          cumulative: revival_total
+          battle_used: revival_used
+          max_revivals: 2
+          restore_percent: 50
+          invulnerable_ms: 1000
+equipment_defenses:
+  - equipment: r11_accessory
+    program: { Shared: mimicry-revival }
+definitions: []
+skills: []

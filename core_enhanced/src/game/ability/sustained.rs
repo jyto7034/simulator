@@ -5,6 +5,9 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub enum SustainedEffectDef {
+    State { duration_ms: u32, program: std::sync::Arc<super::state_program::StateProgram> },
+    /// One normal attack owns this program from binding through result settlement.
+    PreparedState { numerator: u64, denominator: u64, program: std::sync::Arc<super::state_program::StateProgram> },
     HitStatus { duration_ms: u32, profile: HitStatusProfile },
     PreparedBasic {
         profile: PreparedBasicProfile,
@@ -83,7 +86,29 @@ pub struct HitStatusProfile {
     pub vulnerability: Option<HitVulnerability>,
 }
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum HitStatusKind { Slow { percent:u32 }, Freeze, Stun, Root, BasicLock, DamageTaken { percent: u32 }, StackDamageTaken { per_stack: super::marks::MarkRatio, stacks:u32 } }
+#[serde(deny_unknown_fields)]
+pub enum HitStatusKind { BasicAttackSlow { percent: u32 }, Slow { percent:u32 }, Freeze, Stun, Root, BasicLock, DamageTaken { percent: u32 }, StackDamageTaken { per_stack: super::marks::MarkRatio, stacks:u32 }, SourceDirectDamageTaken { per_stack_percent: u32, stacks: u32, max_stacks: u32 },
+    /// One finite counter per source copy and target. Reaching the threshold
+    /// consumes it and attempts ordinary control; the counter alone is not CC.
+    ThresholdControl { stacks: u32, threshold: u32, control: ThresholdControlKind, control_ms: u32 },
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum ThresholdControlKind { Stun, Root }
+crate::authoring::clone_shape::copy_shape!(ThresholdControlKind);
+/// An observed transition, never a second owner of the live counter.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+pub struct HitCounterOutcome {
+    pub before: u32,
+    pub added: u32,
+    pub after: u32,
+    pub threshold: u32,
+    pub control: ThresholdControlKind,
+    pub triggered: bool,
+    pub control_applied: bool,
+    pub counter_expires_at_ms: Option<u64>,
+    pub control_expires_at_ms: Option<u64>,
+}
+crate::authoring::clone_shape::copy_shape!(HitCounterOutcome);
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct HitVulnerability { pub definition: String, pub percent: u32, pub duration_ms: u32,
@@ -99,7 +124,27 @@ crate::authoring::clone_shape::struct_shape!(HitModifierSource { copy_uuid, defi
 crate::authoring::clone_shape::struct_shape!(HitStatusProfile { definition, kind, modifier_source, vulnerability });
 crate::authoring::clone_shape::copy_shape!(HitStatusKind);
 crate::authoring::clone_shape::struct_shape!(HitVulnerability { definition, percent, duration_ms, modifier_source });
+impl HitVulnerability {
+    /// Authored definitions cannot claim a contribution from an equipped copy.
+    /// Runtime profiles and diagnostic snapshots retain the captured observation.
+    pub(crate) fn validate_authored_provenance(&self) -> Result<(), String> {
+        if self.modifier_source.is_some() {
+            return Err("modifier_source is runtime-only; authored vulnerability cannot name an equipped contribution".into());
+        }
+        Ok(())
+    }
+}
 impl HitStatusProfile {
+    pub(crate) fn validate_authored_provenance(&self) -> Result<(), String> {
+        if self.modifier_source.is_some() {
+            return Err("modifier_source is runtime-only; authored status cannot name an equipped contribution".into());
+        }
+        if let Some(vulnerability) = &self.vulnerability {
+            vulnerability.validate_authored_provenance()
+                .map_err(|reason| format!("vulnerability.{reason}"))?;
+        }
+        Ok(())
+    }
     pub(crate) fn retained_extent(&self)->Option<usize> {
         let source=|s:&Option<HitModifierSource>|s.as_ref().map_or(Some(0),|s|s.definition.capacity().checked_add(s.rule.capacity()));
         self.definition.capacity().checked_add(source(&self.modifier_source)?)?.checked_add(self.vulnerability.as_ref().map_or(Some(0),|v|v.definition.capacity().checked_add(source(&v.modifier_source)?))?)
@@ -109,7 +154,21 @@ impl HitStatusProfile {
         for s in [self.modifier_source.as_ref(), self.vulnerability.as_ref().and_then(|v|v.modifier_source.as_ref())].into_iter().flatten() { if s.copy_uuid.is_nil() || !identity(&s.definition) || !identity(&s.rule) {return Err("Invalid hit modifier source observation".into());} }
         if !identity(&self.definition) || matches!(self.kind,HitStatusKind::DamageTaken{percent} if percent==0||percent>i32::MAX as u32) {return Err("Invalid hit status identity or percentage".into());}
         if matches!(self.kind, HitStatusKind::Slow{percent} if percent==0||percent>100) { return Err("Invalid hit slow percentage".into()); }
+        if matches!(self.kind, HitStatusKind::BasicAttackSlow { percent } if !(1..=99).contains(&percent)) {
+            return Err("Basic attack slow requires percentage in 1..99".into());
+        }
         if let HitStatusKind::StackDamageTaken{per_stack,stacks}=self.kind { if per_stack.denominator==0||stacks==0 {return Err("Invalid stacked damage status".into());} }
+        if let HitStatusKind::SourceDirectDamageTaken { per_stack_percent, stacks, max_stacks } = self.kind {
+            if per_stack_percent == 0 || stacks == 0 || max_stacks == 0 || stacks > max_stacks
+                || u64::from(per_stack_percent) * u64::from(max_stacks) > i32::MAX as u64 {
+                return Err("Source direct damage requires positive stacks within a cap and total percent within i32".into());
+            }
+        }
+        if let HitStatusKind::ThresholdControl { stacks, threshold, control_ms, .. } = self.kind {
+            if stacks == 0 || threshold == 0 || threshold > 1000 || stacks > threshold || control_ms == 0 {
+                return Err("Threshold control requires stacks in 1..threshold, threshold in 1..1000 and positive control_ms".into());
+            }
+        }
         if let Some(v)=&self.vulnerability {
             if !self.kind.is_hard_control() || !identity(&v.definition)||v.duration_ms==0||v.percent==0||v.percent>i32::MAX as u32 {return Err("Vulnerability requires a stun and bounded positive duration/percentage".into());}
         }
@@ -161,6 +220,14 @@ pub struct TargetStateProfile {
     pub defense_percent: u32,
     pub attack_speed_points: u32,
     pub hp_floor_one: bool,
+    #[serde(default)]
+    pub damage_invulnerable: bool,
+    #[serde(default)]
+    pub basic_attack_locked: bool,
+    #[serde(default)]
+    pub active_skill_locked: bool,
+    #[serde(default)]
+    pub received_heal_percent: u32,
     pub end_on_source_exit: bool,
 }
 crate::authoring::clone_shape::struct_shape!(TargetStateProfile {
@@ -169,8 +236,28 @@ crate::authoring::clone_shape::struct_shape!(TargetStateProfile {
     defense_percent,
     attack_speed_points,
     hp_floor_one,
+    damage_invulnerable,
+    basic_attack_locked,
+    active_skill_locked,
+    received_heal_percent,
     end_on_source_exit
 });
+/// Properties of the granted finite state, not a reconstructed global status.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct TargetStateProperties {
+    pub damage_invulnerable: bool,
+    pub basic_attack_locked: bool,
+    pub active_skill_locked: bool,
+    pub received_heal_percent: u32,
+}
+crate::authoring::clone_shape::copy_shape!(TargetStateProperties);
+impl From<&TargetStateProfile> for TargetStateProperties {
+    fn from(p: &TargetStateProfile) -> Self {
+        Self { damage_invulnerable: p.damage_invulnerable, basic_attack_locked: p.basic_attack_locked,
+            active_skill_locked: p.active_skill_locked, received_heal_percent: p.received_heal_percent }
+    }
+}
 impl TargetStateProfile {
     pub fn validate(&self) -> Result<(), String> {
         if self.definition.trim().is_empty()
@@ -179,13 +266,18 @@ impl TargetStateProfile {
                 self.attack_percent,
                 self.defense_percent,
                 self.attack_speed_points,
+                self.received_heal_percent,
             ]
             .into_iter()
             .any(|v| v > 10000)
             || (self.attack_percent == 0
                 && self.defense_percent == 0
                 && self.attack_speed_points == 0
-                && !self.hp_floor_one)
+                && !self.hp_floor_one
+                && !self.damage_invulnerable
+                && !self.basic_attack_locked
+                && !self.active_skill_locked
+                && self.received_heal_percent == 0)
         {
             return Err("TargetState requires a bounded definition and a nonempty positive profile in 0..10000".into());
         }
@@ -384,22 +476,7 @@ impl BasicAttackOverlayProfile {
                 .delivery
                 .try_validate_basic_attack_consumer_contract()
                 .map_err(|e| e.cause.to_owned()),
-            DeliveryDef::Projectile {
-                allow_targetless_cast,
-                max_range_tiles,
-                max_lifetime_ms,
-                collision,
-                ..
-            } => {
-                if *allow_targetless_cast
-                    || max_range_tiles.is_none()
-                    || max_lifetime_ms.is_none()
-                    || collision.hit_targets != SkillHitTargetFilter::Enemies
-                {
-                    return Err("directional basic overlay requires a locked aim, finite range/lifetime and enemy collision".into());
-                }
-                Ok(())
-            }
+            DeliveryDef::Projectile { .. } => self.delivery.try_validate_directional_basic_attack_contract().map_err(|e|e.cause.to_owned()),
             DeliveryDef::TileArea { footprint, area } => {
                 footprint.validate()?;
                 area.try_validate_runtime_contract()?;
@@ -424,6 +501,9 @@ impl BasicAttackOverlayProfile {
         }
     }
     pub(crate) fn apply(&self, basic: &mut crate::game::data::abnormality_data::BasicAttackDef) {
+        if matches!(basic.action, crate::game::data::abnormality_data::BasicAttackAction::DamageTargets { .. } | crate::game::data::abnormality_data::BasicAttackAction::DamageCone { .. } | crate::game::data::abnormality_data::BasicAttackAction::DamageOccupiedTiles | crate::game::data::abnormality_data::BasicAttackAction::DamageTileAfterDelay { .. }) {
+            basic.action = crate::game::data::abnormality_data::BasicAttackAction::Damage;
+        }
         basic.range_policy = self.range_policy;
         basic.defense_tile_range = self.defense_tile_range.clone();
         basic.delivery = self.delivery.clone();
@@ -443,7 +523,25 @@ pub struct ChannelAuraDef {
     pub basic_speed_points: u32,
     #[serde(default, skip_serializing_if = "SupportCoefficientScope::is_legacy")]
     pub basic_scope: SupportCoefficientScope,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub health_upkeep: Option<ChannelHealthUpkeep>,
 }
+/// A lethal HP payment owned by a finite channel, never a damage effect.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ChannelHealthUpkeep {
+    pub interval_ms: u32,
+    pub max_health_percent: u32,
+}
+impl ChannelHealthUpkeep {
+    pub fn validate(&self) -> Result<(), String> {
+        if self.interval_ms == 0 || !(1..=100).contains(&self.max_health_percent) {
+            return Err("channel HP upkeep requires positive interval and max HP percent in 1..100".into());
+        }
+        Ok(())
+    }
+}
+crate::authoring::clone_shape::copy_shape!(ChannelHealthUpkeep);
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub enum SupportCoefficientScope {
     #[default]
@@ -464,7 +562,8 @@ crate::authoring::clone_shape::struct_shape!(ChannelAuraDef {
     support,
     basic_damage_percent,
     basic_speed_points,
-    basic_scope
+    basic_scope,
+    health_upkeep
 });
 impl ChannelAuraDef {
     pub(crate) fn precedes(&self, activation: u64, other: &Self, other_activation: u64) -> bool {
@@ -476,8 +575,28 @@ impl ChannelAuraDef {
     }
 }
 impl SustainedEffectDef {
+    pub(crate) fn validate_authored_provenance(&self) -> Result<(), String> {
+        match self {
+            Self::HitStatus { profile, .. } => profile.validate_authored_provenance()
+                .map_err(|reason| format!("HitStatus.profile.{reason}")),
+            Self::BasicAttackOverlay { profile, .. } => profile.delivery.validate_authored_provenance()
+                .map_err(|reason| format!("BasicAttackOverlay.profile.delivery.{reason}")),
+            // State program profiles are checked by their shared compiler.
+            _ => Ok(()),
+        }
+    }
     pub fn validate(&self) -> Result<(), String> {
         match self {
+            Self::PreparedState { numerator, denominator, program } => {
+                if *numerator == 0 || *denominator == 0 || *numerator > 9_007_199_254_740_991 || *denominator > 9_007_199_254_740_991 {
+                    return Err("PreparedState requires a positive exact ratio".into());
+                }
+                program.compile_prepared(None, &crate::game::value_expr::ExprLimits::default()).map(|_| ())
+            }
+            Self::State { duration_ms, program } => {
+                if *duration_ms == 0 { return Err("State requires positive duration".into()); }
+                program.validate()
+            }
             Self::HitStatus { duration_ms, profile } => { if *duration_ms==0 {return Err("Hit status requires positive duration".into());} profile.validate() },
             Self::PreparedBasic { profile } => profile.validate(),
             Self::ReactiveHeal {
@@ -600,7 +719,7 @@ impl SustainedEffectDef {
                 if *duration_ms == 0
                     || aura.family.trim().is_empty()
                     || aura.family.len() > 128
-                    || (aura.support.is_none() && aura.radius_units == 0)
+                    || (aura.support.as_ref().and_then(|s| s.range.as_ref()).is_none() && aura.radius_units == 0)
                     || aura.basic_damage_percent > 10000
                     || aura.basic_speed_points > 10000
                 {
@@ -609,6 +728,7 @@ impl SustainedEffectDef {
                 if let Some(support) = &aura.support {
                     support.validate(false)?;
                 }
+                if let Some(upkeep) = &aura.health_upkeep { upkeep.validate()?; }
                 Ok(())
             }
             Self::Modifiers {
@@ -631,6 +751,7 @@ impl SustainedEffectDef {
     }
     pub(crate) fn is_hostile(&self) -> bool {
         match self {
+            Self::State { .. } | Self::PreparedState { .. } => false,
             Self::Control { .. } | Self::HitStatus { .. } => true,
             Self::Parry { .. }
             | Self::TargetState { .. }
@@ -660,7 +781,7 @@ pub(crate) fn compose(
     base: crate::game::stats::UnitStats,
     modifiers: impl Iterator<Item = StatModifier>,
 ) -> crate::game::stats::UnitStats {
-    let mut totals = [[0i128; 2]; 6];
+    let mut totals = [[0i128; 2]; 7];
     for m in modifiers {
         let index = match m.stat {
             StatId::Attack => 0,
@@ -669,7 +790,7 @@ pub(crate) fn compose(
             StatId::MagicResist => 3,
             StatId::AttackIntervalMs => 4,
             StatId::MoveSpeedUnitsPerMs => 5,
-            StatId::MaxHealth => continue,
+            StatId::MaxHealth => 6,
         };
         totals[index][usize::from(m.kind == StatModifierKind::Percent)] += i128::from(m.value);
     }
@@ -678,6 +799,7 @@ pub(crate) fn compose(
         (flat + flat * totals[index][1] / 100).clamp(min, max)
     };
     let mut result = base;
+    result.set_max_health(apply(6, base.max_health.into(), 0, i32::MAX.into()) as u32);
     result.attack = apply(0, base.attack.into(), 0, u32::MAX.into()) as u32;
     result.spell_power = apply(1, base.spell_power.into(), 0, u32::MAX.into()) as u32;
     result.defense = apply(2, base.defense.into(), i32::MIN.into(), i32::MAX.into()) as i32;
@@ -769,6 +891,8 @@ pub struct SustainedEffectView {
     pub target_state: Option<TargetStateProfile>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub reactive_heal: Option<ReactiveHealView>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub state: Option<super::state_program::StateView>,
     pub members: Vec<crate::game::battle::ids::UnitInstanceId>,
     pub authored_site: Option<super::authoring::EffectSite>,
     pub skill_id: Option<super::SkillId>,
@@ -787,6 +911,8 @@ pub struct SustainedEffectsSnapshot {
     pub active: Vec<SustainedEffectView>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub prepared_basics: Vec<PreparedBasicView>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub equipment_states: Vec<super::equipment_state::EquipmentStateView>,
     #[serde(default)]
     pub passive_guards: Vec<PassiveGuardView>,
 }
@@ -794,6 +920,8 @@ pub struct SustainedEffectsSnapshot {
 /// One activation owns this pool; members never own a copy of its balance.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ShieldPoolView {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub damage_type: Option<crate::game::battle::damage::DamageType>,
     pub capacity: u32,
     pub remaining: u32,
     pub priority: i32,
@@ -948,6 +1076,19 @@ pub struct PreparedBasicView {
     pub rewarded: bool,
     pub superseded: bool,
     pub fragment_copy_uuid: Option<uuid::Uuid>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub state: Option<super::state_program::StateView>,
 }
 
-impl HitStatusKind { pub fn is_hard_control(self)->bool {matches!(self,Self::Stun|Self::Freeze)} }
+impl HitStatusKind {
+    pub fn is_hard_control(self) -> bool { matches!(self, Self::Stun | Self::Freeze) }
+    pub fn basic_speed_reduction(self) -> Option<u32> {
+        match self { Self::BasicAttackSlow { percent } => Some(percent), _ => None }
+    }
+}
+
+impl HitStatusKind {
+    pub(crate) fn damage_taken_increase(self) -> Option<u32> {
+        match self { Self::DamageTaken { percent } => Some(percent), _ => None }
+    }
+}

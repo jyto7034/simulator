@@ -47,6 +47,13 @@ pub struct EffectSource {
     pub origin: EffectOrigin,
 }
 
+crate::authoring::clone_shape::enum_shape!(EffectOrigin {
+    units: [Original], tuples: [], records: [Added { source_definition_id }]
+});
+crate::authoring::clone_shape::struct_shape!(EffectSource {
+    source_file, site, field_path, origin_definition_id, origin
+});
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct AuthoredSkillEffect {

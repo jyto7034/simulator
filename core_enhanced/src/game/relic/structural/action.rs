@@ -101,14 +101,14 @@ pub(super) fn resolve(
                     return Err(RelicPlanError::new(FaultCode::StructuralWriteConflict,"Different support footprints target the same effect"));
                 }
             }
-            compiler::admit_serialized_copy(m, work)?;
+            compiler::admit_owned_copy(m, work)?;
             let contribution = PlanContribution {
                 copy_uuid: copy.copy_uuid,
                 definition_id: copy.definition_id.clone(),
                 variant: copy.variant,
-                rule_id: format!("action-{}-{}", provider, m.id),
+                rule_id: m.contribution_rule_id(provider),
             };
-            compiler::admit_serialized_copy(&contribution, work)?;
+            compiler::admit_owned_copy(&contribution, work)?;
             let mut targets = Vec::new();
             let mut sites = Vec::new();
             for e in plan
@@ -126,6 +126,7 @@ pub(super) fn resolve(
                         steps.contains(&site.action.action_id)
                     }
                     ActionChange::SupportRange { step, effect, .. }
+                    | ActionChange::SupportRadius { step, effect, .. }
                     | ActionChange::TauntDamage { step, effect, .. }
                     | ActionChange::Duration { step, effect, .. }
                     | ActionChange::ControlVulnerability { step, effect, .. } => {
@@ -133,14 +134,17 @@ pub(super) fn resolve(
                     }
                     ActionChange::ProtectInterruption => true,
                 };
-                if selected && matches!(m.change, ActionChange::SupportRange { .. }) && e.recipes.iter().any(|r| matches!(r, authoring::StructuralRecipeDef::FixedRecipientSupport)) {
+                if selected && matches!(m.change, ActionChange::SupportRange { .. } | ActionChange::SupportRadius { .. }) && e.recipes.iter().any(|r| matches!(r, authoring::StructuralRecipeDef::FixedRecipientSupport | authoring::StructuralRecipeDef::PersonalShieldSingle { .. })) {
                     continue;
                 }
                 if !selected {
                     continue;
                 }
+                if e.operation == authoring::EffectOperation::Damage {
+                    sites.push(site.clone());
+                }
                 if let ActionChange::Range { pattern, .. } = &m.change {
-                    compiler::admit_serialized_copy(e.delivery.as_ref(), work)?;
+                    compiler::admit_owned_copy(e.delivery.as_ref(), work)?;
                     let mut delivery = (*e.delivery).clone();
                     let DeliveryDef::TileArea { footprint, .. } = &mut delivery else {
                         return Err(RelicPlanError::new(
@@ -149,12 +153,9 @@ pub(super) fn resolve(
                         ));
                     };
                     *footprint = pattern.clone();
-                    e.delivery = std::sync::Arc::new(delivery);
+                    compiler::edit_effect(e, work)?.delivery = std::sync::Arc::new(delivery);
                 }
-                if e.operation == authoring::EffectOperation::Damage {
-                    sites.push(site.clone());
-                }
-                compiler::admit_serialized_copy(&e.key, work)?;
+                compiler::admit_owned_copy(&e.key, work)?;
                 targets.push(EffectiveEffectAddressDto {
                     provider_index: provider,
                     effect: e.key.clone(),
@@ -168,10 +169,17 @@ pub(super) fn resolve(
                 ActionChange::ProtectInterruption => !skill.steps.is_empty(),
                 _ => false,
             };
-            if targets.is_empty() && matches!(m.change, ActionChange::SupportRange { .. }) {
+            if targets.is_empty() && matches!(m.change, ActionChange::SupportRange { .. } | ActionChange::SupportRadius { .. }) {
                 work.reserve(Some(std::mem::size_of::<RelicRuleStateDto>()), "support_range_dormant_receipt")?;
                 plan.rules.push(RelicRuleStateDto { contribution, state:RelicRuleState::Dormant { reason:RelicDormantReason::NoMatchingEffect }, targets });
                 continue;
+            }
+            if plan.action_modifiers.iter().any(|prior| prior.provider == provider && match (&prior.change, &m.change) {
+                (ActionChange::SupportRange { step: a, effect: b, .. }, ActionChange::SupportRadius { step, effect, .. })
+                | (ActionChange::SupportRadius { step: a, effect: b, .. }, ActionChange::SupportRange { step, effect, .. }) => a == step && b == effect,
+                _ => false,
+            }) {
+                return Err(RelicPlanError::new(FaultCode::StructuralWriteConflict, "Support mask replacement and radius increase target the same effect"));
             }
             if targets.is_empty() && !action_only {
                 return Err(RelicPlanError::new(
@@ -217,7 +225,7 @@ pub(super) fn resolve(
             });
         }
     }
-    Ok(())
+    apply_support_radii(plan, work)
 }
 pub(super) fn apply(
     skill: &mut SkillDef,
@@ -228,19 +236,20 @@ pub(super) fn apply(
     for m in modifiers.iter().filter(|m| m.provider == provider) {
         work.charge(1, "action_modifier_lower")?;
         match &m.change {
+            ActionChange::SupportRadius { .. } => (), // resolved into the common numeric property
             ActionChange::SupportRange { step, effect, pattern } => {
                 let e = skill.steps.iter_mut().find(|s| &s.id==step).and_then(|s| s.effects.iter_mut().find(|e| &e.id==effect)).ok_or_else(|| RelicPlanError::new(FaultCode::InvalidReference,"Support range site unavailable"))?;
                 let SkillEffectDef::Sustained { definition:SustainedEffectDef::ChannelAura { aura, .. } } = &mut e.op else { return Err(RelicPlanError::new(FaultCode::InvalidReference,"Support range requires channel aura")); };
                 let support = aura.support.as_mut().ok_or_else(|| RelicPlanError::new(FaultCode::InvalidReference,"Support range policy unavailable"))?;
-                compiler::admit_serialized_copy(pattern,work)?;
-                support.range = std::sync::Arc::new(pattern.clone());
+                compiler::admit_owned_copy(pattern,work)?;
+                support.range = Some(std::sync::Arc::new(pattern.clone()));
             }
             ActionChange::Area { step, change } => area::apply(skill, provider, modifiers, m, step, change, work)?,
             ActionChange::ProtectInterruption => {
                 let p = skill.action_policy.as_mut().ok_or_else(|| {
                     RelicPlanError::new(FaultCode::InvalidReference, "Action policy unavailable")
                 })?;
-                compiler::admit_serialized_copy(p.as_ref(), work)?;
+                compiler::admit_owned_copy(p.as_ref(), work)?;
                 std::sync::Arc::make_mut(p).external_interrupt_protected = true;
             }
             ActionChange::Range { steps, pattern } => {
@@ -251,7 +260,7 @@ pub(super) fn apply(
                             "Action range requires tile area",
                         ));
                     };
-                    compiler::admit_serialized_copy(pattern, work)?;
+                    compiler::admit_owned_copy(pattern, work)?;
                     *footprint = pattern.clone();
                 }
             }
@@ -371,6 +380,42 @@ pub(super) fn apply(
             }
             ActionChange::Multihit { .. } => (),
         }
+    }
+    Ok(())
+}
+
+/// Resolve radius after ordinary numeric programs, so explanation and lowering
+/// consume the same final value. Original base/program and action receipts stay.
+fn apply_support_radii(plan: &mut EffectivePlanComponents, work: &mut Work) -> Result<(), RelicPlanError> {
+    let modifiers = &plan.action_modifiers;
+    work.charge(modifiers.len(), "support_radius_modifiers")?;
+    for m in modifiers {
+        let ActionChange::SupportRadius { step, effect, .. } = &m.change else { continue; };
+        work.charge(modifiers.len(), "support_radius_contributions")?;
+        let mut matching = modifiers.iter().filter_map(|other| match &other.change {
+            ActionChange::SupportRadius { step: s, effect: e, percent } if other.provider == m.provider && s == step && e == effect => Some((other, *percent)),
+            _ => None,
+        });
+        let (first, percent) = matching.next().ok_or_else(|| RelicPlanError::new(FaultCode::InvalidReference, "Support radius contribution missing"))?;
+        if !std::ptr::eq(first, m) { continue; }
+        let sum = matching.try_fold(u64::from(percent), |sum, (_, p)| sum.checked_add(u64::from(p)))
+            .and_then(|n| n.checked_add(100))
+            .ok_or_else(|| RelicPlanError::new(FaultCode::OutOfRange, "Support radius percentage overflow"))?;
+        work.charge(plan.effects.len(), "support_radius_effects")?;
+        let e = plan.effects.iter_mut().find(|e| e.original && e.present && e.provider == m.provider
+            && matches!(&e.key, EffectiveEffectKey::Original { site } if &site.action.action_id == step && &site.effect_id == effect))
+            .ok_or_else(|| RelicPlanError::new(FaultCode::InvalidReference, "Support radius site unavailable"))?;
+        let e = super::compiler::edit_effect(e, work)?;
+        work.charge(e.properties.len(), "support_radius_properties")?;
+        let property = e.properties.iter_mut().find(|p| p.property == authoring::RelicProperty::SupportAreaRadius)
+            .ok_or_else(|| RelicPlanError::new(FaultCode::InvalidReference, "Support radius property unavailable"))?;
+        let Some(authoring::TypedRelicValue::DataUnits(radius)) = property.final_value else {
+            return Err(RelicPlanError::new(FaultCode::InvalidReference, "Support radius requires resolved distance units"));
+        };
+        let radius = u64::try_from(radius).ok().and_then(|n| n.checked_mul(sum))
+            .and_then(|n| u32::try_from(n.div_ceil(100)).ok())
+            .ok_or_else(|| RelicPlanError::new(FaultCode::OutOfRange, "Modified support radius overflows distance units"))?;
+        property.final_value = Some(authoring::TypedRelicValue::DataUnits(i64::from(radius)));
     }
     Ok(())
 }

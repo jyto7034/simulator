@@ -165,6 +165,14 @@ pub struct RunResourceResult {
 }
 
 impl RunResourceResult {
+    /// Compare admitted stored balances without exposing either mutable timeline.
+    pub(crate) fn balance_changed(&self, resource: &ResourceId, owner: ResourceOwner) -> bool {
+        let lookup = |state: &RunResourceState| state.entries.binary_search_by(|entry|
+            (&entry.resource, entry.owner).cmp(&(resource, owner))
+        ).ok().map(|index| state.entries[index].balance);
+        lookup(&self.before) != lookup(&self.after)
+    }
+
     pub(crate) fn retained_extent(&self) -> Result<usize, ResourceError> {
         let before = self.before.retained_extent()?;
         let after = self.after.retained_extent()?;

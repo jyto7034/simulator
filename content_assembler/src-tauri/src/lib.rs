@@ -3,6 +3,22 @@ mod content;
 
 #[cfg(feature = "desktop")]
 #[tauri::command]
+async fn run_composition(input: serde_json::Value) -> Result<serde_json::Value, String> {
+    tauri::async_runtime::spawn_blocking(move || compiler::run_composition(input))
+        .await
+        .map_err(|error| error.to_string())?
+}
+
+#[cfg(feature = "desktop")]
+#[tauri::command]
+async fn compile_composition(input: serde_json::Value) -> Result<serde_json::Value, String> {
+    tauri::async_runtime::spawn_blocking(move || compiler::compile_composition(input))
+        .await
+        .map_err(|error| error.to_string())?
+}
+
+#[cfg(feature = "desktop")]
+#[tauri::command]
 async fn compile_graph(input: serde_json::Value) -> Result<serde_json::Value, String> {
     tauri::async_runtime::spawn_blocking(move || compiler::compile(input))
         .await
@@ -34,7 +50,12 @@ fn content_files(
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![content_files, compile_graph])
+        .invoke_handler(tauri::generate_handler![
+            content_files,
+            compile_graph,
+            compile_composition,
+            run_composition
+        ])
         .run(tauri::generate_context!())
         .expect("failed to run content assembler");
 }

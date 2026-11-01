@@ -79,6 +79,9 @@ pub struct PackManifest {
 impl PackManifest {
     pub const SUPPORTED_CAPABILITIES: &'static [&'static str] = &[
         "gameplay_catalogs_v2",
+        "optional_encounter_fragment_v1",
+        "revival_variant_first_rewards_v1",
+        "skill_composition_yaml_v1",
         "expedition_lifecycle_v1",
         "literal_effect_authoring_v1",
         "boss_runtime_v1",
@@ -149,6 +152,15 @@ impl PackManifest {
                     "duplicate required capability",
                 ));
             }
+        }
+        if self.files.iter().any(|file| {
+            file.kind == CatalogKind::Skills
+                && file.path.to_string_lossy().ends_with(".skill.yaml")
+        }) && !self.required_capabilities.iter().any(|cap| cap == "skill_composition_yaml_v1") {
+            return Err(error(
+                "required_capabilities",
+                "YAML Skills catalogs require skill_composition_yaml_v1",
+            ));
         }
         Ok(())
     }

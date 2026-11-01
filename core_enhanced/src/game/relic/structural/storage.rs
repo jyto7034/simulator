@@ -42,9 +42,11 @@ fn overflow() -> RelicPlanError {
         "effective retained storage overflow",
     )
 }
-struct Extent<'a> {
+pub(super) struct Extent<'a> {
     bytes: usize,
     work: &'a mut Work,
+    shared_pointees: bool,
+    comparison: bool,
 }
 impl Extent<'_> {
     fn scan(&mut self) -> Result<(), RelicPlanError> {
@@ -67,7 +69,7 @@ impl Extent<'_> {
 }
 // Inline values are already priced by their enclosing struct/enum/container.
 // These visitors add only dynamic allocations reachable from those values.
-trait Heap {
+pub(super) trait Heap {
     fn heap(&self, meter: &mut Extent<'_>) -> Result<(), RelicPlanError>;
 }
 impl<T: Heap> Heap for Vec<T> {
@@ -83,15 +85,40 @@ impl<T: Heap> Heap for Vec<T> {
         Ok(())
     }
 }
+// Borrowed values at a copy boundary are copied into owned containers/DTOs.
+impl<T: Heap + ?Sized> Heap for &T {
+    fn heap(&self, meter: &mut Extent<'_>) -> Result<(), RelicPlanError> {
+        meter.scan()?;
+        meter.allocation(Some(std::mem::size_of_val(*self)))?;
+        (**self).heap(meter)
+    }
+}
+impl<T: Heap> Heap for [T] {
+    fn heap(&self, meter: &mut Extent<'_>) -> Result<(), RelicPlanError> {
+        meter
+            .work
+            .charge(self.len(), "effective_retained_members")?;
+        for value in self {
+            value.heap(meter)?;
+        }
+        Ok(())
+    }
+}
 impl Heap for String {
     fn heap(&self, meter: &mut Extent<'_>) -> Result<(), RelicPlanError> {
         meter.scan()?;
+        if meter.comparison {
+            meter.work.charge(self.len(), "effective_comparison_text")?;
+        }
         meter.allocation(Some(self.capacity()))
     }
 }
 impl<T: Heap> Heap for Arc<T> {
     fn heap(&self, meter: &mut Extent<'_>) -> Result<(), RelicPlanError> {
         meter.scan()?;
+        if !meter.shared_pointees {
+            return Ok(());
+        }
         meter.allocation(Some(size_of::<T>()))?;
         (**self).heap(meter)
     }
@@ -143,6 +170,7 @@ macro_rules! text_id {
         impl Heap for $ty {
             fn heap(&self, meter: &mut Extent<'_>) -> Result<(), RelicPlanError> {
                 meter.scan()?;
+                if meter.comparison { meter.work.charge(self.retained_text_capacity(), "effective_comparison_text")?; }
                 meter.allocation(Some(self.retained_text_capacity()))
             }
         }
@@ -249,8 +277,8 @@ fields!(TileRangePattern; [rows]; [include_anchor_tile]);
 fields!(BasicAttackOverlayProfile; [defense_tile_range, delivery, line]; [range_policy, followup_on_input]);
 fields!(crate::game::ability::sustained::BasicLineProfile; [piercing]; [length_units, width_units, power, weapon_effects, piercing_relics]);
 fields!(crate::game::ability::sustained::BasicPiercingRule; [relic_definition]; [increment_percent, cap_percent]);
-fields!(ChannelAuraDef; [family, support]; [priority, prefer_strongest, radius_units, basic_damage_percent, basic_speed_points, basic_scope]);
-fields!(super::support::SupportPolicyDef; [range, conversion]; []);
+fields!(ChannelAuraDef; [family, support]; [priority, prefer_strongest, radius_units, basic_damage_percent, basic_speed_points, basic_scope, health_upkeep]);
+fields!(super::support::SupportPolicyDef; [range, conversion, conversions]; []);
 fields!(super::support::SupportConversionDef; [relic_definition, selection_range, replacement]; [variant]);
 impl Heap for super::support::SupportReplacementDef {
     fn heap(&self, m: &mut Extent<'_>) -> Result<(), RelicPlanError> {
@@ -340,6 +368,7 @@ impl Heap for StructuralRecipeDef {
         m.scan()?;
         match self {
             Self::SupportSelectionPattern { range, .. } => range.heap(m),
+            Self::ChannelHealthUpkeep { .. } => Ok(()),
             Self::DamageFootprint { footprint } => footprint.heap(m),
             Self::PersonalShieldSingle { initial_amount } => initial_amount.heap(m),
             Self::FixedRecipientSupport
@@ -489,13 +518,24 @@ impl Heap for SustainedEffectDef {
     fn heap(&self, m: &mut Extent<'_>) -> Result<(), RelicPlanError> {
         m.scan()?;
         match self {
+            Self::State { program, .. } | Self::PreparedState { program, .. } => program.heap(m),
             Self::PreparedBasic { profile } => {
                 profile.definition.heap(m)?;
-                if let Some(reward) = &profile.kill_reward { reward.profile.definition.heap(m)?; }
+                if let Some(reward) = &profile.kill_reward {
+                    reward.profile.definition.heap(m)?;
+                }
                 Ok(())
             }
             Self::IndependentShield { .. } => Ok(()),
-            Self::HitStatus { profile, .. } => { profile.definition.heap(m)?; profile.modifier_source.heap(m)?; if let Some(v)=&profile.vulnerability {v.definition.heap(m)?;v.modifier_source.heap(m)?;} Ok(()) },
+            Self::HitStatus { profile, .. } => {
+                profile.definition.heap(m)?;
+                profile.modifier_source.heap(m)?;
+                if let Some(v) = &profile.vulnerability {
+                    v.definition.heap(m)?;
+                    v.modifier_source.heap(m)?;
+                }
+                Ok(())
+            }
             Self::TargetState { profile, .. } => profile.definition.heap(m),
             Self::ReactiveHeal { profile, .. } => profile.definition.heap(m),
             Self::Parry {
@@ -507,7 +547,10 @@ impl Heap for SustainedEffectDef {
                 counter_skill,
                 guard_charge,
                 ..
-            } => { counter_skill.heap(m)?; guard_charge.heap(m) },
+            } => {
+                counter_skill.heap(m)?;
+                guard_charge.heap(m)
+            }
             Self::SegmentedShield {
                 duration_ms: _,
                 pool,
@@ -550,31 +593,124 @@ impl Heap for SustainedEffectDef {
         }
     }
 }
+impl Heap for crate::game::ability::state_program::StateProgram {
+    fn heap(&self, m: &mut Extent<'_>) -> Result<(), RelicPlanError> {
+        m.scan()?;
+        self.id.heap(m)?;
+        self.basic_attack.heap(m)?;
+        self.fields.heap(m)?;
+        self.handlers.heap(m)
+    }
+}
+impl Heap for crate::game::ability::state_program::StateField {
+    fn heap(&self, m: &mut Extent<'_>) -> Result<(), RelicPlanError> {
+        m.scan()?;
+        self.name.heap(m)?;
+        match &self.value {
+            crate::game::ability::state_program::StateFieldDef::Integer { unit, .. } => {
+                unit.heap(m)
+            }
+            crate::game::ability::state_program::StateFieldDef::Bool(_) => Ok(()),
+        }
+    }
+}
+impl Heap for crate::game::ability::state_program::StateHandler {
+    fn heap(&self, m: &mut Extent<'_>) -> Result<(), RelicPlanError> {
+        m.scan()?;
+        self.id.heap(m)?;
+        self.body.heap(m)
+    }
+}
+impl Heap for crate::game::ability::state_program::StateOp {
+    fn heap(&self, m: &mut Extent<'_>) -> Result<(), RelicPlanError> {
+        use crate::game::ability::state_program::StateOp;
+        m.scan()?;
+        match self {
+            StateOp::Set { field, value } => {
+                field.heap(m)?;
+                value.heap(m)
+            }
+            StateOp::SetBool { field, .. } => field.heap(m),
+            StateOp::AddCastDamage { percent } => percent.heap(m),
+            StateOp::Chance { percent, then_ops, else_ops } => {
+                percent.heap(m)?; then_ops.heap(m)?; else_ops.heap(m)
+            },
+            StateOp::HealOwner { amount } | StateOp::GrantOwnerResonance { amount } => amount.heap(m),
+            StateOp::ApplyOwnerState {
+                duration, profile, ..
+            } => {
+                duration.heap(m)?;
+                profile.definition.heap(m)
+            }
+            StateOp::ApplyEventTargetStatus { duration, profile } => {
+                duration.heap(m)?;
+                profile.definition.heap(m)?;
+                profile.modifier_source.heap(m)?;
+                profile.vulnerability.heap(m)
+            }
+            StateOp::Resources { operations } => operations.heap(m),
+            StateOp::End => Ok(()),
+            StateOp::EndAndInvoke { skill } => skill.heap(m),
+            StateOp::If {
+                condition,
+                then_ops,
+                else_ops,
+            } => {
+                condition.heap(m)?;
+                then_ops.heap(m)?;
+                else_ops.heap(m)
+            }
+        }
+    }
+}
 impl Heap for SkillEffectDef {
     fn heap(&self, m: &mut Extent<'_>) -> Result<(), RelicPlanError> {
         m.scan()?;
         match self {
-            Self::GuardCounter {program} => program.heap(m),
-            Self::StatusStrike {program} => program.heap(m),
-            Self::FusionPlacement {program} => program.heap(m),
-            Self::PairedAreas {program} => program.heap(m),
-            Self::PreparedVolley {program} => program.heap(m),
-            Self::InputPlan {program} => program.heap(m),
-            Self::RelationAction {program} => program.heap(m),
-            Self::CounterChannel {program,root,..} => {root.heap(m)?;program.heap(m)}
+            Self::GuardCounter { program } => program.heap(m),
+            Self::StatusStrike { program } => program.heap(m),
+            Self::FusionPlacement { program } => program.heap(m),
+            Self::PairedAreas { program } => program.heap(m),
+            Self::PreparedVolley { program } => program.heap(m),
+            Self::InputPlan { program } => program.heap(m),
+            Self::RelationAction { program } => program.heap(m),
+            Self::CounterChannel { program, root, .. } => {
+                root.heap(m)?;
+                program.heap(m)
+            }
             Self::TileBurst { program } => {
                 m.allocation(Some(std::mem::size_of_val(program.as_ref())))?;
                 program.range.heap(m)?;
-                if let crate::game::ability::tile_burst::TileBurstSource::WeaponStacks {weapon,key,conversion,..} = &program.source {
+                if let crate::game::ability::tile_burst::TileBurstSource::WeaponStacks {
+                    weapon,
+                    key,
+                    conversion,
+                    ..
+                } = &program.source
+                {
                     weapon.heap(m)?;
                     key.heap(m)?;
-                    if let Some(c) = conversion { c.relic_definition.heap(m)?; c.range.heap(m)?; }
+                    if let Some(c) = conversion {
+                        c.relic_definition.heap(m)?;
+                        c.range.heap(m)?;
+                    }
                 }
-                m.allocation(program.modifiers.capacity().checked_mul(std::mem::size_of::<crate::game::ability::marks::MarkModifier>()))?;
+                m.allocation(
+                    program
+                        .modifiers
+                        .capacity()
+                        .checked_mul(
+                            std::mem::size_of::<crate::game::ability::marks::MarkModifier>(),
+                        ),
+                )?;
                 for modifier in &program.modifiers {
                     modifier.id.heap(m)?;
                     modifier.relic_definition.heap(m)?;
-                    if let crate::game::ability::marks::MarkChange::Range {pattern} = &modifier.change { pattern.heap(m)?; }
+                    if let crate::game::ability::marks::MarkChange::Range { pattern } =
+                        &modifier.change
+                    {
+                        pattern.heap(m)?;
+                    }
                 }
                 Ok(())
             }
@@ -582,11 +718,22 @@ impl Heap for SkillEffectDef {
                 m.allocation(Some(std::mem::size_of_val(program.as_ref())))?;
                 program.marks.definition.heap(m)?;
                 program.explosion.range.heap(m)?;
-                m.allocation(program.modifiers.capacity().checked_mul(std::mem::size_of::<crate::game::ability::marks::MarkModifier>()))?;
+                m.allocation(
+                    program
+                        .modifiers
+                        .capacity()
+                        .checked_mul(
+                            std::mem::size_of::<crate::game::ability::marks::MarkModifier>(),
+                        ),
+                )?;
                 for modifier in &program.modifiers {
                     modifier.id.heap(m)?;
                     modifier.relic_definition.heap(m)?;
-                    if let crate::game::ability::marks::MarkChange::Range { pattern } = &modifier.change { pattern.heap(m)?; }
+                    if let crate::game::ability::marks::MarkChange::Range { pattern } =
+                        &modifier.change
+                    {
+                        pattern.heap(m)?;
+                    }
                 }
                 Ok(())
             }
@@ -638,6 +785,8 @@ impl Heap for FlowCondition {
     fn heap(&self, m: &mut Extent<'_>) -> Result<(), RelicPlanError> {
         m.scan()?;
         match self {
+            Self::Predicate(call) => call.heap(m),
+            Self::Logic(logic) => logic.heap(m),
             Self::Always(_) => Ok(()),
             Self::Compare {
                 node_id,
@@ -706,6 +855,7 @@ impl Heap for CompiledFlowCondition {
     fn heap(&self, m: &mut Extent<'_>) -> Result<(), RelicPlanError> {
         m.scan()?;
         match self {
+            Self::Logic(logic) => logic.heap(m),
             Self::Always(_)
             | Self::Compare {
                 producer: _,
@@ -786,6 +936,11 @@ impl Heap for ValueRef {
     fn heap(&self, m: &mut Extent<'_>) -> Result<(), RelicPlanError> {
         m.scan()?;
         match self {
+            Self::StateField { name, unit } => {
+                name.heap(m)?;
+                unit.heap(m)
+            }
+            Self::EventHpLost | Self::RelationCount { .. } => Ok(()),
             Self::Stat {
                 subject: _,
                 stat: _,
@@ -814,7 +969,7 @@ impl Heap for FiniteSource {
         match self {
             Self::AuthoredMembers(values) => values.heap(m),
             Self::ResolvedTargetsWhere(predicates) => predicates.heap(m),
-            Self::ResolvedTargets => Ok(()),
+            Self::ResolvedTargets | Self::StateOwnerDotTargets => Ok(()),
         }
     }
 }
@@ -880,6 +1035,22 @@ impl Heap for ValueExprCatalog {
             site.heap(m)?;
             entry.plan().heap(m)?;
         }
+        let states = self.states();
+        if !states.is_empty() {
+            let nodes = 1_usize.checked_add(states.len().saturating_sub(1) / 5);
+            let bytes = size_of::<(
+                EffectSite,
+                Arc<crate::game::ability::state_program::CompiledStateProgram>,
+            )>()
+            .checked_mul(11)
+            .and_then(|n| n.checked_add(12 * size_of::<usize>() + 128));
+            m.add(nodes.and_then(|n| bytes.and_then(|b| n.checked_mul(b))))?;
+            for (site, program) in states {
+                m.scan()?;
+                site.heap(m)?;
+                m.allocation(program.retained_bytes.checked_add(2 * size_of::<usize>()))?;
+            }
+        }
         Ok(())
     }
 }
@@ -887,7 +1058,12 @@ pub(super) fn measure_causal_program(
     program: &super::causal::EffectiveCausalProgram,
     work: &mut Work,
 ) -> Result<usize, RelicPlanError> {
-    let mut meter = Extent { bytes: 0, work };
+    let mut meter = Extent {
+        bytes: 0,
+        work,
+        shared_pointees: true,
+        comparison: false,
+    };
     meter.scan()?;
     meter.allocation(Some(size_of::<super::causal::EffectiveCausalProgram>()))?;
     program.heap(&mut meter)?;
@@ -899,7 +1075,12 @@ pub(super) fn measure(
     generation: &ContentIdentity,
     work: &mut Work,
 ) -> Result<usize, RelicPlanError> {
-    let mut meter = Extent { bytes: 0, work };
+    let mut meter = Extent {
+        bytes: 0,
+        work,
+        shared_pointees: true,
+        comparison: false,
+    };
     meter.scan()?;
     meter.allocation(Some(size_of::<EmployeeEffectivePlan>()))?;
     // Preserve the existing identity/shared-canonical-generation convention.
@@ -910,19 +1091,257 @@ pub(super) fn measure(
     Ok(meter.bytes)
 }
 
+// Extents belong to the immutable originals held by PreparedProviders. They
+// price the complete pointee on EVERY owning edge; reuse avoids walking that
+// same immutable owner again, not charging less retained memory for sharing.
+pub(super) struct PreparedStorage {
+    providers: usize,
+    effects: Vec<usize>,
+    execution: Vec<usize>,
+}
+impl PreparedStorage {
+    pub(super) fn new(
+        providers: &Arc<Vec<ProspectiveProvider>>,
+        effects: &[super::SharedEffect],
+        execution: &[EffectiveProviderPlan],
+        work: &mut Work,
+    ) -> Result<Self, RelicPlanError> {
+        work.reserve(
+            effects
+                .len()
+                .checked_add(execution.len())
+                .and_then(|n| n.checked_mul(size_of::<usize>()))
+                .and_then(|n| n.checked_add(size_of::<Self>() + 128)),
+            "publication_storage_proof",
+        )?;
+        fn heap_bytes(value: &impl Heap, work: &mut Work) -> Result<usize, RelicPlanError> {
+            let mut meter = Extent {
+                bytes: 0,
+                work,
+                shared_pointees: true,
+                comparison: false,
+            };
+            value.heap(&mut meter)?;
+            Ok(meter.bytes)
+        }
+        let mut effect_extents = Vec::with_capacity(effects.len());
+        for effect in effects {
+            effect_extents.push(heap_bytes(effect, work)?);
+        }
+        let mut execution_extents = Vec::with_capacity(execution.len());
+        for provider in execution {
+            execution_extents.push(heap_bytes(provider, work)?);
+        }
+        Ok(Self {
+            providers: heap_bytes(providers, work)?,
+            effects: effect_extents,
+            execution: execution_extents,
+        })
+    }
+
+    pub(super) fn measure(
+        &self,
+        plan: &EffectivePlanComponents,
+        generation: &ContentIdentity,
+        work: &mut Work,
+        original_providers: &Arc<Vec<ProspectiveProvider>>,
+        original_effects: &[super::SharedEffect],
+        original_execution: &[EffectiveProviderPlan],
+    ) -> Result<usize, RelicPlanError> {
+        let mut meter = Extent {
+            bytes: 0,
+            work,
+            shared_pointees: true,
+            comparison: false,
+        };
+        meter.scan()?;
+        meter.allocation(Some(size_of::<EmployeeEffectivePlan>()))?;
+        meter.allocation(Some(size_of::<ContentIdentity>()))?;
+        generation.semantic_sha256.heap(&mut meter)?;
+        // Keep this exhaustive, like Heap's declaration, including serde-skipped
+        // owners. A newly retained field must be priced in both paths.
+        let EffectivePlanComponents {
+            employee_uuid: _,
+            providers,
+            copies,
+            effects,
+            grants,
+            execution,
+            causal_rules,
+            wedge_rules,
+            action_modifiers,
+            rules,
+            fingerprint,
+            usage: _,
+            retained_bytes: _,
+        } = plan;
+        meter.scan()?;
+        meter.work.charge(1, "publication_storage_identity")?;
+        if Arc::ptr_eq(providers, original_providers) {
+            meter.add(Some(self.providers))?;
+        } else {
+            providers.heap(&mut meter)?;
+        }
+        copies.heap(&mut meter)?;
+        meter.scan()?;
+        meter.allocation(
+            effects
+                .capacity()
+                .checked_mul(size_of::<super::SharedEffect>()),
+        )?;
+        meter
+            .work
+            .charge(effects.len(), "effective_retained_members")?;
+        for (index, effect) in effects.iter().enumerate() {
+            meter.work.charge(1, "publication_storage_identity")?;
+            if original_effects
+                .get(index)
+                .is_some_and(|old| Arc::ptr_eq(old, effect))
+            {
+                meter.add(Some(*self.effects.get(index).ok_or_else(overflow)?))?;
+            } else {
+                effect.heap(&mut meter)?;
+            }
+        }
+        grants.heap(&mut meter)?;
+        meter.scan()?;
+        meter.allocation(
+            execution
+                .capacity()
+                .checked_mul(size_of::<EffectiveProviderPlan>()),
+        )?;
+        meter
+            .work
+            .charge(execution.len(), "effective_retained_members")?;
+        for (index, provider) in execution.iter().enumerate() {
+            meter.work.charge(1, "publication_storage_identity")?;
+            if original_execution
+                .get(index)
+                .is_some_and(|old| same_provider_storage(old, provider))
+            {
+                meter.add(Some(*self.execution.get(index).ok_or_else(overflow)?))?;
+            } else {
+                provider.heap(&mut meter)?;
+            }
+        }
+        causal_rules.heap(&mut meter)?;
+        wedge_rules.heap(&mut meter)?;
+        action_modifiers.heap(&mut meter)?;
+        rules.heap(&mut meter)?;
+        fingerprint.heap(&mut meter)?;
+        Ok(meter.bytes)
+    }
+}
+fn same_provider_storage(a: &EffectiveProviderPlan, b: &EffectiveProviderPlan) -> bool {
+    use super::support::SelectedSupportReach;
+    let EffectiveProviderPlan {
+        skill,
+        flow,
+        amounts,
+        effects,
+        selected_recipient_reach,
+        selected_recipient_excludes_caster,
+    } = a;
+    Arc::ptr_eq(skill, &b.skill)
+        && Arc::ptr_eq(flow, &b.flow)
+        && Arc::ptr_eq(amounts, &b.amounts)
+        && Arc::ptr_eq(effects, &b.effects)
+        && *selected_recipient_excludes_caster == b.selected_recipient_excludes_caster
+        && match (selected_recipient_reach, &b.selected_recipient_reach) {
+            (None, None) => true,
+            (Some(SelectedSupportReach::Radius(a)), Some(SelectedSupportReach::Radius(b))) => {
+                a == b
+            }
+            (
+                Some(SelectedSupportReach::Pattern {
+                    range: a,
+                    end_on_exit: x,
+                }),
+                Some(SelectedSupportReach::Pattern {
+                    range: b,
+                    end_on_exit: y,
+                }),
+            ) => Arc::ptr_eq(a, b) && x == y,
+            _ => false,
+        }
+}
+
+// The same exhaustive visitor prices copy admission and retained ownership.
+// Shared pointees remain conservatively priced per edge, even for Arc clones.
+pub(super) fn admit_owned_copy<T: Heap + ?Sized>(
+    value: &T,
+    work: &mut Work,
+) -> Result<(), RelicPlanError> {
+    let mut meter = Extent {
+        bytes: 0,
+        work,
+        shared_pointees: true,
+        comparison: false,
+    };
+    meter.allocation(Some(std::mem::size_of_val(value)))?;
+    value.heap(&mut meter)?;
+    let bytes = meter.bytes;
+    work.reserve(Some(bytes), "relic_structural_owned_copy")
+}
+
+// A derived Clone duplicates owned containers but only increments Arc handles.
+// This admission is for that operation alone. Later COW mutations must admit
+// their pointee before detaching; completed-plan measurement still traverses
+// every shared owning edge, including serde-skipped data.
+pub(super) fn admit_shared_clone<T: Heap + ?Sized>(
+    value: &T,
+    work: &mut Work,
+) -> Result<(), RelicPlanError> {
+    let mut meter = Extent {
+        bytes: 0,
+        work,
+        shared_pointees: false,
+        comparison: false,
+    };
+    meter.allocation(Some(std::mem::size_of_val(value)))?;
+    value.heap(&mut meter)?;
+    let bytes = meter.bytes;
+    work.reserve(Some(bytes), "relic_structural_shared_clone")
+}
+
 fields!(crate::game::ability::action::ActionPolicy; [modifiers]; [external_interrupt_protected]);
 fields!(crate::game::ability::action::ActionModifier; [id, relic_definition, change]; [variant]);
 impl Heap for crate::game::ability::action::ActionChange {
-    fn heap(&self,m:&mut Extent<'_>)->Result<(),RelicPlanError> {
+    fn heap(&self, m: &mut Extent<'_>) -> Result<(), RelicPlanError> {
         use crate::game::ability::action::ActionChange::*;
         m.scan()?;
         match self {
-            Area{step,change}=>{step.heap(m)?;match change { crate::game::ability::action::AreaChange::RampRate{reached_rules,..}=>reached_rules.heap(m), _=>Ok(()) }},
-            SupportRange{step,effect,pattern}=>{step.heap(m)?;effect.heap(m)?;pattern.heap(m)},
-            Range{steps,pattern}=>{steps.heap(m)?;pattern.heap(m)},
-            Multihit{steps,..}=>steps.heap(m),
-            TauntDamage{step,effect,..}|Duration{step,effect,..}|ControlVulnerability{step,effect,..}=>{step.heap(m)?;effect.heap(m)},
-            ProtectInterruption=>Ok(()),
+            Area { step, change } => {
+                step.heap(m)?;
+                match change {
+                    crate::game::ability::action::AreaChange::RampRate {
+                        reached_rules, ..
+                    } => reached_rules.heap(m),
+                    _ => Ok(()),
+                }
+            }
+            SupportRange {
+                step,
+                effect,
+                pattern,
+            } => {
+                step.heap(m)?;
+                effect.heap(m)?;
+                pattern.heap(m)
+            }
+            Range { steps, pattern } => {
+                steps.heap(m)?;
+                pattern.heap(m)
+            }
+            Multihit { steps, .. } => steps.heap(m),
+            SupportRadius { step, effect, .. }
+            | TauntDamage { step, effect, .. }
+            | Duration { step, effect, .. }
+            | ControlVulnerability { step, effect, .. } => {
+                step.heap(m)?;
+                effect.heap(m)
+            }
+            ProtectInterruption => Ok(()),
         }
     }
 }
@@ -930,33 +1349,76 @@ impl Heap for crate::game::ability::action::ActionChange {
 fields!(crate::game::ability::sustained::HitModifierSource; [definition, rule]; [copy_uuid]);
 
 impl Heap for crate::game::ability::counter_channel::CounterChannelDef {
-    fn heap(&self,m:&mut Extent<'_>)->Result<(),RelicPlanError>{
+    fn heap(&self, m: &mut Extent<'_>) -> Result<(), RelicPlanError> {
         use crate::game::ability::counter_channel::*;
-        fn range(r:&CounterRange,m:&mut Extent<'_>)->Result<(),RelicPlanError>{r.definition.heap(m)?;r.pattern.heap(m)}
+        fn range(r: &CounterRange, m: &mut Extent<'_>) -> Result<(), RelicPlanError> {
+            r.definition.heap(m)?;
+            r.pattern.heap(m)
+        }
         self.definition.heap(m)?;
-        m.allocation(self.entries.capacity().checked_mul(size_of::<CounterEntry>()))?;
+        m.allocation(
+            self.entries
+                .capacity()
+                .checked_mul(size_of::<CounterEntry>()),
+        )?;
         for e in &self.entries {
-            m.scan()?;e.key.heap(m)?;e.selection_range.heap(m)?;
+            m.scan()?;
+            e.key.heap(m)?;
+            e.selection_range.heap(m)?;
             m.allocation(e.phases.capacity().checked_mul(size_of::<CounterPhase>()))?;
             for p in &e.phases {
-                m.scan()?;p.definition.heap(m)?;
-                match &p.range {PhaseRange::Fixed(r)=>range(r,m)?,PhaseRange::Consumed(v)=>{
-                    m.allocation(v.capacity().checked_mul(size_of::<(u32,CounterRange)>()))?;
-                    for (_,r) in v {m.scan()?;range(r,m)?;}
-                }}
+                m.scan()?;
+                p.definition.heap(m)?;
+                match &p.range {
+                    PhaseRange::Fixed(r) => range(r, m)?,
+                    PhaseRange::Consumed(v) => {
+                        m.allocation(v.capacity().checked_mul(size_of::<(u32, CounterRange)>()))?;
+                        for (_, r) in v {
+                            m.scan()?;
+                            range(r, m)?;
+                        }
+                    }
+                }
                 m.allocation(p.queries.capacity().checked_mul(size_of::<PhaseQuery>()))?;
-                for q in &p.queries {m.scan()?;q.definition.heap(m)?;
-                    if let PhaseEffect::Damage{amount,..}|PhaseEffect::Heal{amount}=&q.effect {amount.definition.heap(m)?;}
+                for q in &p.queries {
+                    m.scan()?;
+                    q.definition.heap(m)?;
+                    if let PhaseEffect::Damage { amount, .. } | PhaseEffect::Heal { amount } =
+                        &q.effect
+                    {
+                        amount.definition.heap(m)?;
+                    }
                 }
             }
         }
-        m.allocation(self.modifiers.capacity().checked_mul(size_of::<CounterModifier>()))?;
-        for modifier in &self.modifiers {m.scan()?;modifier.id.heap(m)?;modifier.relic_definition.heap(m)?;
+        m.allocation(
+            self.modifiers
+                .capacity()
+                .checked_mul(size_of::<CounterModifier>()),
+        )?;
+        for modifier in &self.modifiers {
+            m.scan()?;
+            modifier.id.heap(m)?;
+            modifier.relic_definition.heap(m)?;
             match &modifier.change {
-                CounterChange::Range{definition,pattern}=>{definition.heap(m)?;pattern.heap(m)?;},
-                CounterChange::Healing{definition,..}=>definition.heap(m)?,
-                CounterChange::HealBuff{definition,profile,..}=>{definition.heap(m)?;profile.definition.heap(m)?;},
-                CounterChange::Protection{entry}=>entry.heap(m)?,_=>{}
+                CounterChange::Range {
+                    definition,
+                    pattern,
+                } => {
+                    definition.heap(m)?;
+                    pattern.heap(m)?;
+                }
+                CounterChange::Healing { definition, .. } => definition.heap(m)?,
+                CounterChange::HealBuff {
+                    definition,
+                    profile,
+                    ..
+                } => {
+                    definition.heap(m)?;
+                    profile.definition.heap(m)?;
+                }
+                CounterChange::Protection { entry } => entry.heap(m)?,
+                _ => {}
             }
         }
         Ok(())
@@ -970,21 +1432,53 @@ fields!(crate::game::ability::relation_action::RelationActionEntry; [definition,
 fields!(crate::game::ability::relation_action::RelationActionModifier; [id,relic_definition,change]; []);
 fields!(crate::game::ability::relation_action::RelationActionDef; [definition,stock_definition,relation_definition,mode_definition,menu_entry,selection_range,normal,active,plans,modifiers]; [admission,initial_stock,stock_capacity,period_ms,periodic_gain,reduction,shield_threshold,shield_percent,shield_duration_ms,mode_damage_percent]);
 impl Heap for crate::game::ability::relation_action::ActionCount {
-    fn heap(&self,m:&mut Extent<'_>)->Result<(),RelicPlanError> {
+    fn heap(&self, m: &mut Extent<'_>) -> Result<(), RelicPlanError> {
         use crate::game::ability::relation_action::ActionCount::*;
-        match self {Quotient{count,..}=>count.heap(m),Sum{first,second}=>{first.heap(m)?;second.heap(m)},_=>Ok(())}
+        match self {
+            Quotient { count, .. } => count.heap(m),
+            Sum { first, second } => {
+                first.heap(m)?;
+                second.heap(m)
+            }
+            _ => Ok(()),
+        }
     }
 }
 impl Heap for crate::game::ability::relation_action::ActionPlan {
-    fn heap(&self,m:&mut Extent<'_>)->Result<(),RelicPlanError> {
+    fn heap(&self, m: &mut Extent<'_>) -> Result<(), RelicPlanError> {
         use crate::game::ability::relation_action::ActionPlan::*;
-        match self {Strike{range,after,..}=>{range.heap(m)?;after.heap(m)},Repeat{count,..}|Timed{count,..}=>count.heap(m),Spend{amount,after,..}=>{amount.heap(m)?;after.heap(m)},_=>Ok(())}
+        match self {
+            Strike { range, after, .. } => {
+                range.heap(m)?;
+                after.heap(m)
+            }
+            Repeat { count, .. } | Timed { count, .. } => count.heap(m),
+            Spend { amount, after, .. } => {
+                amount.heap(m)?;
+                after.heap(m)
+            }
+            _ => Ok(()),
+        }
     }
 }
 impl Heap for crate::game::ability::relation_action::RelationActionChange {
-    fn heap(&self,m:&mut Extent<'_>)->Result<(),RelicPlanError> {
+    fn heap(&self, m: &mut Extent<'_>) -> Result<(), RelicPlanError> {
         use crate::game::ability::relation_action::RelationActionChange::*;
-        match self {Range{definition,pattern}=>{definition.heap(m)?;pattern.heap(m)},Period{definition,..}|StatusCount{definition,..}|PrimaryArea{definition}|ControlVulnerability{definition,..}=>definition.heap(m),Multihit{entry,..}|Retarget{entry,..}=>entry.heap(m),_=>Ok(())}
+        match self {
+            Range {
+                definition,
+                pattern,
+            } => {
+                definition.heap(m)?;
+                pattern.heap(m)
+            }
+            Period { definition, .. }
+            | StatusCount { definition, .. }
+            | PrimaryArea { definition }
+            | ControlVulnerability { definition, .. } => definition.heap(m),
+            Multihit { entry, .. } | Retarget { entry, .. } => entry.heap(m),
+            _ => Ok(()),
+        }
     }
 }
 
@@ -994,13 +1488,23 @@ fields!(crate::game::ability::input_plan::ShotProjectileDef; [definition,after];
 fields!(crate::game::ability::input_plan::ShotModifier; [id,relic_definition,requires,change]; []);
 fields!(crate::game::ability::input_plan::InputPlanDef; [definition,normal,enhanced,cohort,placement_range,normal_projectile,enhanced_projectile,modifiers]; [admission,stock_interval_ms,stock_gain,allow_duplicates]);
 impl Heap for crate::game::ability::input_plan::ShotChange {
-    fn heap(&self,m:&mut Extent<'_>)->Result<(),RelicPlanError> {
+    fn heap(&self, m: &mut Extent<'_>) -> Result<(), RelicPlanError> {
         use crate::game::ability::input_plan::ShotChange::*;
         match self {
-            KillGain{..}=>Ok(()),Wound{profiles,..}=>profiles.heap(m),
-            WoundGrant{definition,..}|ControlVulnerability{definition,..}=>definition.heap(m),
-            Status{profile,status}=>{profile.heap(m)?;status.heap(m)},Push{profile,..}=>profile.heap(m),
-            Explosion{profile,range,..}=>{profile.heap(m)?;range.heap(m)},
+            KillGain { .. } => Ok(()),
+            Wound { profiles, .. } => profiles.heap(m),
+            WoundGrant { definition, .. } | ControlVulnerability { definition, .. } => {
+                definition.heap(m)
+            }
+            Status { profile, status } => {
+                profile.heap(m)?;
+                status.heap(m)
+            }
+            Push { profile, .. } => profile.heap(m),
+            Explosion { profile, range, .. } => {
+                profile.heap(m)?;
+                range.heap(m)
+            }
         }
     }
 }
@@ -1011,16 +1515,30 @@ fields!(crate::game::ability::prepared_volley::HomingImpactDef; [definition,area
 fields!(crate::game::ability::prepared_volley::VolleyModifier; [id,relic_definition,change]; []);
 fields!(crate::game::ability::prepared_volley::PreparedVolleyDef; [definition,ledger,mark_definition,policy,selection_range,projectile,modifiers]; [admission,mark_duration_ms,recovery,selection_air]);
 impl Heap for crate::game::ability::prepared_volley::VolleyChange {
- fn heap(&self,m:&mut Extent<'_>)->Result<(),RelicPlanError>{use crate::game::ability::prepared_volley::VolleyChange::*;match self{Area{pattern}=>pattern.heap(m),Status{status}=>status.heap(m),_=>Ok(())}}
+    fn heap(&self, m: &mut Extent<'_>) -> Result<(), RelicPlanError> {
+        use crate::game::ability::prepared_volley::VolleyChange::*;
+        match self {
+            Area { pattern } => pattern.heap(m),
+            Status { status } => status.heap(m),
+            _ => Ok(()),
+        }
+    }
 }
 
 fields!(crate::game::ability::paired_areas::PairedAreasDef; [definition,selection_range,first,second,intersection,modifiers]; [admission,duration_ms,interval_ms,healing,transfer_percent]);
 fields!(crate::game::ability::paired_areas::PairModifier; [id,relic_definition,change]; []);
 impl Heap for crate::game::ability::paired_areas::PairChange {
- fn heap(&self,m:&mut Extent<'_>)->Result<(),RelicPlanError>{use crate::game::ability::paired_areas::PairChange::*;match self{Range{pattern,..}|CoincidentBurst{pattern,..}=>pattern.heap(m),HealBuff{profile,..}=>profile.definition.heap(m),_=>Ok(())}}
+    fn heap(&self, m: &mut Extent<'_>) -> Result<(), RelicPlanError> {
+        use crate::game::ability::paired_areas::PairChange::*;
+        match self {
+            Range { pattern, .. } | CoincidentBurst { pattern, .. } => pattern.heap(m),
+            HealBuff { profile, .. } => profile.definition.heap(m),
+            _ => Ok(()),
+        }
+    }
 }
 
-fields!(crate::game::ability::sustained::TargetStateProfile; [definition]; [attack_percent,defense_percent,attack_speed_points,hp_floor_one,end_on_source_exit]);
+fields!(crate::game::ability::sustained::TargetStateProfile; [definition]; [attack_percent,defense_percent,attack_speed_points,hp_floor_one,damage_invulnerable,basic_attack_locked,active_skill_locked,received_heal_percent,end_on_source_exit]);
 
 fields!(crate::game::ability::mobile_effect::FusionPlacementDef; [definition,selection_range,tiers,seed]; [admission,primary,adjacent,max_units,max_tiles]);
 fields!(crate::game::ability::mobile_effect::FusionTier; [profile]; [minimum]);
@@ -1028,8 +1546,24 @@ fields!(crate::game::ability::mobile_effect::FusionSeed; [definition,relic_defin
 fields!(crate::game::ability::mobile_effect::SeedDurationModifier; [id,relic_definition]; [negative,percent]);
 fields!(crate::game::ability::mobile_effect::MobileProfile; [definition,detection,range,power,modifiers]; [motion,damage_type,speed_units_per_second,delay_ms,lifetime_ms]);
 fields!(crate::game::ability::mobile_effect::MobileModifier; [id,relic_definition,change]; []);
-impl Heap for crate::game::ability::mobile_effect::MobilePower {fn heap(&self,m:&mut Extent<'_>)->Result<(),RelicPlanError>{use crate::game::ability::mobile_effect::MobilePower::*;match self{Weapon{..}=>Ok(()),Add{base,..}|Fusion{base,..}=>base.heap(m)}}}
-impl Heap for crate::game::ability::mobile_effect::MobileChange {fn heap(&self,m:&mut Extent<'_>)->Result<(),RelicPlanError>{use crate::game::ability::mobile_effect::MobileChange::*;match self{Range{pattern}=>pattern.heap(m),_=>Ok(())}}}
+impl Heap for crate::game::ability::mobile_effect::MobilePower {
+    fn heap(&self, m: &mut Extent<'_>) -> Result<(), RelicPlanError> {
+        use crate::game::ability::mobile_effect::MobilePower::*;
+        match self {
+            Weapon { .. } => Ok(()),
+            Add { base, .. } | Fusion { base, .. } => base.heap(m),
+        }
+    }
+}
+impl Heap for crate::game::ability::mobile_effect::MobileChange {
+    fn heap(&self, m: &mut Extent<'_>) -> Result<(), RelicPlanError> {
+        use crate::game::ability::mobile_effect::MobileChange::*;
+        match self {
+            Range { pattern } => pattern.heap(m),
+            _ => Ok(()),
+        }
+    }
+}
 
 fields!(crate::game::ability::status_strike::StatusStrikeDef; [definition,range,range_modifiers,power,from,to,mobile,death]; [admission,damage_type,owned_damage,limit]);
 fields!(crate::game::ability::status_strike::ReactiveStatusDef; [definition,modifiers]; [kind,duration_ms,refresh]);
@@ -1038,3 +1572,100 @@ fields!(crate::game::ability::status_strike::StatusDeathMobileDef; [definition,r
 
 fields!(crate::game::ability::guard_charge::GuardChargeDef; [definition,relic_definition,range]; [capacity,primary,splash]);
 fields!(crate::game::ability::guard_charge::GuardCounterDef; [charge]; [weapon,damage_type]);
+
+fields!(ContentIdentity; [semantic_sha256]; [contract]);
+fields!(crate::game::data::relic_data::RelicDamageEffect; [id, selector]; [flat, percent]);
+fields!(RelicRuleDef; [id, selector, when, apply]; []);
+fields!(CausalSubscriptionDef; [source, payload]; [event]);
+impl Heap for RelicRuleActionDef {
+    fn heap(&self, m: &mut Extent<'_>) -> Result<(), RelicPlanError> {
+        m.scan()?;
+        match self {
+            Self::Grant(v) => v.heap(m),
+            Self::Subscribe(v) => v.heap(m),
+            Self::Periodic { payload, .. } => payload.heap(m),
+            Self::Recipe(v) => v.heap(m),
+            Self::Wedge { .. } | Self::Edit { .. } => Ok(()),
+        }
+    }
+}
+
+fields!(crate::game::ability::sustained::HitVulnerability; [definition, modifier_source]; [percent, duration_ms]);
+
+// Bound a typed equality check before traversing it. Includes fields skipped
+// by serialization, shared pointees and the text contents compared by Eq.
+pub(super) fn admit_comparison<T: Heap + ?Sized>(
+    value: &T,
+    work: &mut Work,
+) -> Result<(), RelicPlanError> {
+    let mut meter = Extent {
+        bytes: 0,
+        work,
+        shared_pointees: true,
+        comparison: true,
+    };
+    value.heap(&mut meter)
+}
+
+impl<T: Heap> Heap for crate::game::ability::condition::ConditionLogic<T> {
+    fn heap(&self, m: &mut Extent<'_>) -> Result<(), RelicPlanError> {
+        m.scan()?;
+        match self {
+            Self::All(items) | Self::Any(items) => items.heap(m),
+            Self::Not(item) => item.heap(m),
+        }
+    }
+}
+impl Heap for crate::game::ability::state_program::StateCondition {
+    fn heap(&self, m: &mut Extent<'_>) -> Result<(), RelicPlanError> {
+        m.scan()?;
+        match self {
+            Self::Always(_) | Self::EventVictimHadOwnerDot => Ok(()),
+            Self::Predicate(call) => call.heap(m),
+            Self::Compare { left, right, .. } => {
+                left.heap(m)?;
+                right.heap(m)
+            }
+            Self::Bool { field, .. } => field.heap(m),
+            Self::Logic(logic) => logic.heap(m),
+        }
+    }
+}
+
+impl Heap for crate::game::ability::condition::PredicateCall {
+    fn heap(&self, m: &mut Extent<'_>) -> Result<(), RelicPlanError> {
+        m.scan()?;
+        self.name.heap(m)?;
+        self.arguments.heap(m)
+    }
+}
+impl Heap for crate::game::ability::condition::PredicateNamedArgument {
+    fn heap(&self, m: &mut Extent<'_>) -> Result<(), RelicPlanError> {
+        m.scan()?;
+        self.name.heap(m)?;
+        self.value.heap(m)
+    }
+}
+impl Heap for crate::game::ability::condition::PredicateArgument {
+    fn heap(&self, m: &mut Extent<'_>) -> Result<(), RelicPlanError> {
+        m.scan()?;
+        match self {
+            Self::Literal(value) => value.heap(m),
+            Self::Parameter(name) | Self::Unresolved(name) => name.heap(m),
+        }
+    }
+}
+impl Heap for crate::game::ability::condition::PredicateValue {
+    fn heap(&self, m: &mut Extent<'_>) -> Result<(), RelicPlanError> {
+        m.scan()?;
+        match self {
+            Self::Amount(value) => value.heap(m),
+            Self::BoolField(field) => field.heap(m),
+            Self::FlowResult(result) => {
+                result.node_id.heap(m)?;
+                result.effect_id.heap(m)
+            }
+            Self::FlowLiteral(_) => Ok(()),
+        }
+    }
+}

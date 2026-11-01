@@ -1,9 +1,0 @@
-{
-  "initial_verifier": "core_enhanced/docs/goals/content_authoring_r08_r12_runtime/execution/single_goal/verify_sealed_target.py",
-  "initial_verifier_sha256": "936bece3729cac2d238908086e397e2036a001a3a055caf18275e2f89855e26c",
-  "exit_code": 1,
-  "assertion": "member.isfile() and member.name in expected",
-  "cause": "RECORDS.tar.gz contains legitimate tar hard links for source archives deduplicated by run.py. Member counts match; hard links need explicit resolution, not exclusion.",
-  "correction": "verify.py accepts only manifest-listed equal-size/equal-hash hard-link targets, resolves contents, and checks all bytes.",
-  "frozen_artifacts_modified": false
-}

@@ -68,7 +68,7 @@ pub(super) fn weapon_amount(numerator: u64, denominator: u64) -> AmountExpr {
                 denominator.into(),
                 ValueUnit::Scalar,
             ))),
-            rounding: Rounding::Ceil,
+            rounding: Rounding::Floor,
         },
     )
 }

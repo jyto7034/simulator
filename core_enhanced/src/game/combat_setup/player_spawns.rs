@@ -169,7 +169,7 @@ pub(crate) fn skill_fragment_compatibility_profile_for_employee_with_item_slot(
 ) -> Result<UnitCombatProfile, GameError> {
     let mut profile =
         employee.combat_profile_for_battle(&game_data.skill_fragment_data, skill_fragments)?;
-    let mut weapon_profile = None;
+    let mut equipped_weapon = None;
     for equipped in item_slot.iter() {
         let owned = inventory
             .equipments
@@ -187,20 +187,14 @@ pub(crate) fn skill_fragment_compatibility_profile_for_employee_with_item_slot(
         if equipment.equipment_type != crate::game::data::equipment_data::EquipmentType::Weapon {
             continue;
         }
-        let next = equipment.weapon_profile.as_ref().ok_or_else(|| {
-            GameError::InvalidStaticData(format!(
-                "weapon equipment '{}' is missing weapon_profile",
-                equipment.id
-            ))
-        })?;
-        if weapon_profile.replace(next).is_some() {
+        if equipped_weapon.replace((equipment.uuid, owned.weapon_stage)).is_some() {
             return Err(GameError::InvalidStaticData(
                 "employee loadout contains multiple equipped weapons".to_string(),
             ));
         }
     }
-    if let Some(weapon_profile) = weapon_profile {
-        profile.apply_weapon_profile(weapon_profile)?;
+    if let Some((definition, stage)) = equipped_weapon {
+        profile.apply_equipped_weapon_profile(game_data, definition, stage)?;
     }
     Ok(profile)
 }

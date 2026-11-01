@@ -2981,9 +2981,9 @@ PveWaveData(id:"stress_wave_5",activation:(trigger_id:"stress_wave_5",priority:0
         ),
         PveEncounterRewardSource(
             reward_source_id: "normal_boss_big_bad_wolf", encounter_id: "suppress_big_bad_wolf",
-            fragment_id: "fragment_big_bad_wolf_trace", first_equipment_ids: [],
+            fragment_id: None, first_equipment_ids: [],
             repeat_rewards: [GrantEquipmentDust(amount: 10)],
-            revival: Some((catalyst_material_id: "revival_catalyst", catalyst_amount: 1, part_material_id: "part_big_bad_wolf", stage_2: (encounter_id: "suppress_big_bad_wolf", stat_multiplier_percent: 140, rewards: [GrantEquipmentMaterial(material_id: "part_big_bad_wolf", amount: 2)], equipment_choices: ["placeholder_big_bad_wolf_weapon", "placeholder_big_bad_wolf_armor", "placeholder_big_bad_wolf_accessory"]), stage_3: (encounter_id: "suppress_big_bad_wolf", stat_multiplier_percent: 180, rewards: [GrantEquipmentMaterial(material_id: "part_big_bad_wolf", amount: 4)], equipment_choices: ["placeholder_big_bad_wolf_weapon", "placeholder_big_bad_wolf_armor", "placeholder_big_bad_wolf_accessory"]))),
+            revival: Some((catalyst_material_id: "revival_catalyst", catalyst_amount: 1, part_material_id: "part_big_bad_wolf", stage_2: (encounter_id: "suppress_big_bad_wolf", stat_multiplier_percent: 140, rewards: [GrantEquipmentMaterial(material_id: "part_big_bad_wolf", amount: 2)], equipment_choices: ["placeholder_big_bad_wolf_accessory"]), stage_3: (encounter_id: "suppress_big_bad_wolf", stat_multiplier_percent: 180, rewards: [GrantEquipmentMaterial(material_id: "part_big_bad_wolf", amount: 4)], equipment_choices: ["placeholder_big_bad_wolf_accessory"]))),
         ),
         PveEncounterRewardSource(
             reward_source_id: "normal_boss_burrowing_heaven", encounter_id: "suppress_burrowing_heaven",

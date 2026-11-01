@@ -6,7 +6,7 @@ pub(super) fn bind(
 ) -> Result<(SustainedEffectDef, SkillDef), String> {
     plan.validate()?;
     let mut counter = parent.clone();
-    counter.id = format!("{}:counter", parent.id).into();
+    counter.id = format!("{}__counter", parent.id).into();
     counter.resonance_admission = None;
     counter.kind = SkillKind::Targeted;
     counter.cast_targeting = SkillCastTargetingDef::Explicit {

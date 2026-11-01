@@ -141,6 +141,7 @@ pub(super) const fn behavior_owner(action: ActionKind) -> ApplicationOwner {
         | ActionKind::PreviewSkillTarget
         | ActionKind::PreviewTacticalCommand
         | ActionKind::ActivateSkill
+        | ActionKind::SelectSkillRelation
         | ActionKind::StressCombatAct
         | ActionKind::RetreatBattle
         | ActionKind::PauseBattle
@@ -554,7 +555,7 @@ mod tests {
 
     #[test]
     fn every_behavior_kind_has_exactly_one_application_owner() {
-        assert_eq!(ActionKind::ALL.len(), 87);
+        assert_eq!(ActionKind::ALL.len(), 88);
         for action in ActionKind::ALL {
             let route = ApplicationRoute::Behavior(*action);
             assert_eq!(route.owner(), behavior_owner(*action));

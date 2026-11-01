@@ -1,0 +1,204 @@
+[
+  {
+    "id": "placeholder_funeral_butterfly_weapon",
+    "uuid": "e2000000-0000-0000-0000-000000000020",
+    "content_family": "t-02-99_funeral_dying_butterflies",
+    "name": {
+      "Unresolved": "equipment-weapon-name"
+    },
+    "equipment_type": "Weapon",
+    "rarity": {
+      "Unresolved": "weapon-rarity"
+    },
+    "price": {
+      "Unresolved": "weapon-price"
+    },
+    "allow_duplicate_equip": {
+      "Unresolved": "weapon-allow_duplicate_equip"
+    },
+    "bound": false,
+    "cannot_unequip_reason": "equipment_bound",
+    "triggered_effects": {},
+    "ability_activations": [],
+    "weapon_profile": {
+      "action": "Damage",
+      "attack": {
+        "Unresolved": "weapon-attack"
+      },
+      "spell_power": 0,
+      "range_role": "Ranged",
+      "weapon_archetype": "Gun",
+      "deployment_affinity": "platform_only",
+      "block_capacity": 0,
+      "ground_defense_focus": null,
+      "platform_rest": {
+        "hp_recovery_per_tick": {
+          "Unresolved": "weapon-rest_hp"
+        }
+      },
+      "damage_type": {
+        "Unresolved": "weapon-damage-type"
+      },
+      "targeting_profile": {
+        "Unresolved": "weapon-targeting"
+      },
+      "air_capable": true,
+      "defense_tile_range": {
+        "Unresolved": "weapon-range"
+      },
+      "interval_ms": {
+        "Unresolved": "base-interval_ms"
+      },
+      "windup_ms": {
+        "Unresolved": "base-windup_ms"
+      },
+      "ranged_reposition_ms": {
+        "Unresolved": "weapon-reposition_ms"
+      },
+      "delivery": {
+        "Projectile": {
+          "speed_units_per_ms": {
+            "Unresolved": "base-speed_units_per_ms"
+          },
+          "hit_policy": "DirectionalCollision",
+          "max_range_tiles": {
+            "Unresolved": "base-max_range_tiles"
+          },
+          "max_lifetime_ms": {
+            "Unresolved": "base-max_lifetime_ms"
+          },
+          "collision": {
+            "radius_units": {
+              "Unresolved": "base-projectile-radius"
+            },
+            "piercing": false
+          }
+        }
+      },
+      "mark_weapon": {
+        "evolution": {
+          "fragment": "fragment_funeral_butterfly_eulogy",
+          "form": "bloom",
+          "base": "paired-pistols",
+          "upgraded": "minigun"
+        },
+        "key": "butterflies",
+        "filter": {
+          "air": true,
+          "boss": true,
+          "abnormality": true,
+          "summon": false,
+          "temporary": false
+        },
+        "base": {
+          "chance_percent": {
+            "numerator": 100,
+            "denominator": 1
+          },
+          "amount": {
+            "Unresolved": "pistols-stack-amount"
+          },
+          "multiplier": {
+            "numerator": 1,
+            "denominator": 1
+          }
+        },
+        "upgraded": {
+          "chance_percent": {
+            "numerator": 100,
+            "denominator": 1
+          },
+          "amount": 1,
+          "multiplier": {
+            "numerator": 1,
+            "denominator": 1
+          }
+        },
+        "modifiers": [
+          {
+            "relic_definition": "deep-imprint",
+            "multiplier": {
+              "numerator": 2,
+              "denominator": 1
+            }
+          }
+        ]
+      }
+    },
+    "event_check_modifiers": [],
+    "event_choice_keys": []
+  },
+  {
+    "id": "placeholder_funeral_butterfly_armor",
+    "uuid": "e2000000-0000-0000-0000-000000000120",
+    "content_family": "t-02-99_funeral_dying_butterflies",
+    "name": "마지막 유언 (가칭)",
+    "equipment_type": "Armor",
+    "rarity": {
+      "Unresolved": "armor-rarity"
+    },
+    "price": {
+      "Unresolved": "armor-price"
+    },
+    "allow_duplicate_equip": {
+      "Unresolved": "armor-allow_duplicate_equip"
+    },
+    "bound": false,
+    "cannot_unequip_reason": "equipment_bound",
+    "triggered_effects": {
+      "Permanent": [
+        {
+          "target": "SelfUnit",
+          "effect": {
+            "Modifier": {
+              "stat": "MaxHealth",
+              "kind": "Flat",
+              "value": {
+                "Unresolved": "armor-MaxHealth"
+              }
+            }
+          }
+        },
+        {
+          "target": "SelfUnit",
+          "effect": {
+            "Modifier": {
+              "stat": "Defense",
+              "kind": "Flat",
+              "value": {
+                "Unresolved": "armor-Defense"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ability_activations": [],
+    "weapon_profile": null,
+    "event_check_modifiers": [],
+    "event_choice_keys": []
+  },
+  {
+    "id": "placeholder_funeral_butterfly_accessory",
+    "uuid": "e2000000-0000-0000-0000-000000000220",
+    "content_family": "t-02-99_funeral_dying_butterflies",
+    "name": "장례의 잔향 (가칭)",
+    "equipment_type": "Accessory",
+    "rarity": {
+      "Unresolved": "accessory-rarity"
+    },
+    "price": {
+      "Unresolved": "accessory-price"
+    },
+    "allow_duplicate_equip": {
+      "Unresolved": "accessory-allow_duplicate_equip"
+    },
+    "bound": false,
+    "cannot_unequip_reason": "equipment_bound",
+    "triggered_effects": {},
+    "ability_activations": [],
+    "weapon_profile": null,
+    "event_check_modifiers": [],
+    "event_choice_keys": []
+  }
+]

@@ -47,6 +47,8 @@ pub struct RelicDamageEffect {
 pub enum RelicPenalty {
     DefenseFlat { amount: i32 },
     MagicResistFlat { amount: i32 },
+    /// Benefits and HP payments are paired in provider-authored support conversions.
+    AuthoredSupportUpkeep,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -67,6 +69,10 @@ pub struct RelicDefinition {
     pub description: String,
     pub rarity: String,
     pub allow_duplicates: bool,
+    /// Normal effects are supplied by explicit bindings on equipped providers
+    /// (for example ActionPolicy). This declaration grants no effect by itself.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub provider_authored: bool,
     #[serde(default)]
     pub incompatible_with: Vec<String>,
     pub effects: Vec<RelicDamageEffect>,
@@ -110,6 +116,7 @@ crate::authoring::clone_shape::struct_shape!(RelicDefinition {
     description,
     rarity,
     allow_duplicates,
+    provider_authored,
     incompatible_with,
     effects,
     rules,
@@ -227,10 +234,10 @@ impl RelicDatabase {
                     ));
                 }
             }
-            if definition.effects.is_empty() && definition.rules.is_empty() {
+            if definition.effects.is_empty() && definition.rules.is_empty() && !definition.provider_authored {
                 return Err(fail(
                     "effects/rules",
-                    "at least one numeric effect or structural rule is required",
+                    "at least one numeric effect, structural rule, or explicit provider_authored declaration is required",
                 ));
             }
             if !definition.effects.is_empty() {
@@ -240,7 +247,11 @@ impl RelicDatabase {
             crate::game::relic::structural::validate_rules(&definition.id, &definition.rules)
                 .map_err(|cause| fail("rules", &cause.to_string()))?;
             if let Some(variant) = &definition.corruption {
-                if variant.effects.is_empty() && variant.rules.is_empty() {
+                let support_upkeep = variant.penalties.contains(&RelicPenalty::AuthoredSupportUpkeep);
+                if support_upkeep && (variant.penalties.len() != 1 || !variant.effects.is_empty() || !variant.rules.is_empty()) {
+                    return Err(fail("corruption", "authored support upkeep requires only paired provider conversions, without independent effects/rules/flat penalties"));
+                }
+                if variant.effects.is_empty() && variant.rules.is_empty() && !support_upkeep {
                     return Err(fail(
                         "corruption.effects/rules",
                         "at least one effect or rule is required",
@@ -256,11 +267,12 @@ impl RelicDatabase {
                     || variant.penalties.iter().any(|penalty| match penalty {
                         RelicPenalty::DefenseFlat { amount }
                         | RelicPenalty::MagicResistFlat { amount } => *amount >= 0,
+                        RelicPenalty::AuthoredSupportUpkeep => false,
                     })
                 {
                     return Err(fail(
                         "corruption.penalties",
-                        "a corruption requires authored negative flat penalties",
+                        "a corruption requires authored negative flat penalties or paired support upkeep",
                     ));
                 }
             }

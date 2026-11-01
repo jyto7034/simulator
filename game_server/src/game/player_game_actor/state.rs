@@ -481,6 +481,7 @@ pub(crate) fn battle_payload(
 ) -> Result<Option<BattleApplicationPayload>, PlayerGameActorError> {
     use ApplicationResultKind::{
         BattleAdvanced, BattleEngagementStanceChanged, BattlePlaybackChanged, BattleSkillActivated,
+        BattleRelationSelected,
         BattleSkillTargetingFocusChanged, BattleState, BattleUnitDeployed,
         BattleUnitTacticallyRelocated, BattleUnitWithdrawn, BattleUnitsTacticallySwapped,
     };
@@ -496,6 +497,7 @@ pub(crate) fn battle_payload(
             | BattleUnitsTacticallySwapped
             | BattleSkillTargetingFocusChanged
             | BattleSkillActivated
+            | BattleRelationSelected
     ) {
         return Ok(None);
     }
@@ -988,6 +990,7 @@ mod tests {
                 counter_channels: Default::default(),
                 relation_actions: Default::default(),
                 input_plans: Default::default(),
+                shared_cohorts: Default::default(),
                 prepared_volleys: Default::default(),
                 mobile_effects: Default::default(),
                 paired_areas: Default::default(),
@@ -1094,6 +1097,82 @@ mod tests {
             !mapped.send_state_snapshot,
             "battle side-message command results must not request a trailing state_snapshot"
         );
+    }
+
+    #[test]
+    fn relation_selection_result_uses_ack_and_preserves_battle_checkpoint() {
+        let battle_uuid = Uuid::from_u128(0xB4771E);
+        let employee_uuid = Uuid::from_u128(7);
+        let unit_instance_id = game_core::game::battle::ids::UnitInstanceId::from(employee_uuid);
+        let mut update = dummy_battle_update(battle_uuid, 3_000, 12, None);
+        update.checkpoint.relation_actions.owners.push(
+            game_core::game::ability::relation_action::RelationOwnerSnapshot {
+                source_copy: Uuid::from_u128(8),
+                caster: unit_instance_id,
+                stock: 2,
+                capacity: Some(4),
+                active_mode: false,
+                mode_reserved: false,
+                shield_used: false,
+                target: Some(unit_instance_id),
+                generation: Some(3),
+                next_gain_ms: Some(4_000),
+                menu_entry: "blessing".into(),
+                menu_available: true,
+                eligible_targets: vec![unit_instance_id],
+                pending: false,
+                active: None,
+                applied_modifiers: Vec::new(),
+            },
+        );
+        let expected = serde_json::to_value(&update).unwrap();
+        let result = result!(BattleRelationSelected {
+            battle_uuid,
+            encounter_id: "relation_trial".to_string(),
+            node_type: CombatNodeType::Defense,
+            mission_variant: CombatMissionVariant::Defense,
+            battle_update: update,
+            employee_uuid,
+            unit_instance_id,
+            entry: "blessing".to_string(),
+        });
+        assert_eq!(
+            serde_json::to_value(battle_update_from_behavior_result(&result).unwrap()).unwrap(),
+            expected
+        );
+        assert_eq!(
+            behavior_result_payload(result.clone()).unwrap_err().code,
+            "battle_update_transport_required"
+        );
+        let mapped = behavior_result_to_command_result(
+            "relation-1".into(),
+            result,
+            BattleSideMessageKind::BattleUpdate,
+        )
+        .unwrap();
+        let PlayerGameServerMessage::CommandResult {
+            request_id,
+            ok,
+            result_type,
+            payload,
+        } = mapped.response
+        else {
+            panic!("command acknowledgement missing")
+        };
+        assert_eq!(request_id, "relation-1");
+        assert!(ok);
+        assert_eq!(result_type, "CommandAccepted");
+        assert_eq!(payload["accepted_at_battle_time_ms"], 3_000);
+        assert_eq!(
+            payload["battle_state_revision"],
+            expected["battle_state_revision"]
+        );
+        assert!(!mapped.send_state_snapshot);
+        assert_eq!(mapped.side_messages.len(), 1);
+        let PlayerGameServerMessage::BattleUpdate(update) = &mapped.side_messages[0] else {
+            panic!("battle update missing")
+        };
+        assert_eq!(serde_json::to_value(update).unwrap(), expected);
     }
 
     #[test]

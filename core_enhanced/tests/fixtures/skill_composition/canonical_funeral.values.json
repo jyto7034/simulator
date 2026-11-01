@@ -1,0 +1,125 @@
+{
+  "purpose": "Explicit technical completion; never shipping balance or implicit loader defaults.",
+  "values": {
+    "base-name": "Technical Funeral base",
+    "capacity": 100,
+    "burst-power": 10,
+    "burst-delay_ms": 100,
+    "burst-damage_type": "True",
+    "explosion-percent": {
+      "denominator": 1,
+      "numerator": 50
+    },
+    "bloom-name": "Technical Funeral bloom",
+    "stack-divisor": 3,
+    "stack-rank_bonus_percent": {
+      "denominator": 1,
+      "numerator": 50
+    },
+    "stack-interval_ms": 100,
+    "orb-threshold": 6,
+    "orb-base_power": 10,
+    "orb-power_per_stack": {
+      "denominator": 1,
+      "numerator": 2
+    },
+    "orb-range": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXXXX",
+        "XXXXXXX",
+        "XXX@XXX",
+        "XXXXXXX",
+        "XXXXXXX"
+      ]
+    },
+    "orb-presentation_ms": 500,
+    "base-interval_ms": 1000,
+    "base-windup_ms": 200,
+    "base-speed_units_per_ms": 10000,
+    "base-max_range_tiles": 6,
+    "base-max_lifetime_ms": 1500,
+    "base-projectile-radius": 125000,
+    "upgraded-interval_ms": 250,
+    "upgraded-windup_ms": 50,
+    "minigun-push": 100000,
+    "upgraded-speed_units_per_ms": 10000,
+    "upgraded-max_range_tiles": 6,
+    "upgraded-max_lifetime_ms": 1500,
+    "upgraded-projectile-radius": 125000,
+    "LastWill-range": {
+      "include_anchor_tile": false,
+      "rows": [
+        "XXX",
+        "XXX",
+        ".@."
+      ]
+    },
+    "LastWill-attack_percent": 300,
+    "LastWill-damage_type": "Magic",
+    "death_burst-delay_ms": 500,
+    "death_burst-range": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXX",
+        "X@X",
+        "XXX"
+      ]
+    },
+    "death_burst-attack_percent": 100,
+    "death_burst-damage_type": "Magic",
+    "fragment-rarity": "Rare",
+    "fragment-equip-limit": "OwnedCopies",
+    "fragment-compatibility": {
+      "allowed_range_roles": [
+        "Ranged"
+      ],
+      "allowed_weapon_archetypes": [
+        "Gun"
+      ]
+    },
+    "bloom-recipe": {
+      "enkephalin": 1,
+      "materials": [
+        {
+          "material_id": "part_funeral_butterfly",
+          "amount": 2
+        }
+      ]
+    },
+    "equipment-weapon-name": "Technical paired pistols",
+    "weapon-rarity": "HE",
+    "weapon-price": 0,
+    "weapon-allow_duplicate_equip": true,
+    "weapon-attack": 0,
+    "weapon-damage-type": "Physical",
+    "weapon-targeting": "DefaultForward",
+    "weapon-rest_hp": 0,
+    "weapon-range": {
+      "include_anchor_tile": false,
+      "rows": [
+        "XXX",
+        "XXX",
+        "XXX",
+        "XXX",
+        "XXX",
+        "XXX",
+        ".@."
+      ]
+    },
+    "weapon-reposition_ms": 0,
+    "pistols-stack-amount": 2,
+    "armor-rarity": "HE",
+    "armor-price": 0,
+    "armor-allow_duplicate_equip": true,
+    "armor-MaxHealth": 0,
+    "armor-Defense": 0,
+    "accessory-rarity": "HE",
+    "accessory-price": 0,
+    "accessory-allow_duplicate_equip": true,
+    "relic-rarity": "Rare",
+    "relic-allow-duplicates": true,
+    "relic-incompatible-with": [],
+    "relic-dismantle-dust": 1
+  }
+}

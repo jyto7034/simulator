@@ -16,13 +16,19 @@ fn r12_live_cross_fixture(later: bool, structured: bool, trauma: u32, authored: 
     r12_live_cross_deployment_fixture(later,structured,trauma,authored,guard,hostile,boss,true)
 }
 fn r12_live_cross_deployment_fixture(later: bool, structured: bool, trauma: u32, authored: Option<&str>, guard: bool, hostile: bool, boss: bool, deploy:bool) -> (GameCore, Uuid, Uuid) {
+    r12_live_cross_deployment_fixture_with_data(later, structured, trauma, authored, guard, hostile, boss, deploy, |builder| builder)
+}
+// Authored consumers supply explicit catalog dependencies before whole-data
+// validation. Existing callers keep the same validated default builder.
+fn r12_live_cross_deployment_fixture_with_data(later: bool, structured: bool, trauma: u32, authored: Option<&str>, guard: bool, hostile: bool, boss: bool, deploy:bool, configure_data: impl FnOnce(GameDataBuilder) -> GameDataBuilder) -> (GameCore, Uuid, Uuid) {
     let skills = SkillDatabase::from_ron("r09/world_skills.ron", &include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/r08/skills.ron")).replace(" steps:", if structured { " flow: Some(Repeat(id: \"r09_flow\", count: 3, interval_ms: 10, body: Action(id: \"r09_action\", step_id: \"hit\", wait: EffectsSettled))), steps:" } else { " steps:" }).replace("selection: automatic_unit, target: EnemySingle(rule: Nearest)", "selection: self, target: SelfUnit").replace("reach: global", "reach: pattern").replace("Damage(amount: 100, damage_type: True)", "Heal(amount: 100)")).unwrap();
     let skills = if structured && trauma == 0 { SkillDatabase::from_ron("r10/world_result.ron", include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/r10/world_result.ron"))).unwrap() } else { skills };
     let skills = authored.map(|ron| SkillDatabase::from_ron("r11/world.ron", ron).unwrap()).unwrap_or(skills);
     let fragments: SkillFragmentDatabase = ron::de::from_str(include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/r09/fragments.ron"))).unwrap();
     let fragments = if guard { ron::de::from_str(&include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/r09/fragments.ron")).replace("ActiveSkill(forms:", "ActiveSkill(passive_guard: Some((reduction_percent: 30, reflection_chance_percent: 100, reflection_percent: 50)), forms:")).unwrap() } else { fragments };
     let fragment = fragments.fragments[0].clone();
-    let mut core = GameCore::new(game_data_with_pve_equipment_and_active_skill_fragments(vec![], skills.skills.clone(), vec![fragment.clone()]), 909);
+    let data = configure_data(game_data_builder_with_pve_equipment_and_active_skill_fragments(vec![], skills.skills.clone(), vec![fragment.clone()])).build_arc();
+    let mut core = GameCore::new(data, 909);
     // The terminal/future-wave cases exercise ordinary corrosion deaths. Boss
     // cases below deliberately retain their abnormality and percentage damage.
     if trauma >= 80 && !hostile && !boss {

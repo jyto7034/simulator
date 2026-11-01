@@ -1,9 +1,0 @@
-{
-  "agent": "/root/u08_finalizer_author",
-  "role": "supplementary test/comparator author; not independent auditor",
-  "session_id": "01a1108b-e9b4-70a3-9759-675a99682210",
-  "model": "gpt-6-astra",
-  "effort": "high",
-  "verified_from": "actual session turn_context",
-  "scope": "new finalizer tools and own preparation evidence only"
-}

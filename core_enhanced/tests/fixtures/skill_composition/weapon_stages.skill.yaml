@@ -1,0 +1,36 @@
+# Explicit prototype values. The equipped copy's permanent stage selects a shot.
+version: 1
+id: weapon-stages-fixture
+values:
+  - name: funeral_shots
+    value:
+      AttackProgram:
+        reactions: []
+        weapon_stages:
+          base:
+            interval_ms: 1000
+            windup_ms: 200
+            push_distance_units: 0
+            delivery:
+              Projectile:
+                speed_units_per_ms: 10000
+                hit_policy: DirectionalCollision
+                max_range_tiles: 6
+                max_lifetime_ms: 1500
+                collision: { radius_units: 125000, piercing: false }
+          upgraded:
+            interval_ms: 250
+            windup_ms: 50
+            push_distance_units: 100000
+            delivery:
+              Projectile:
+                speed_units_per_ms: 10000
+                hit_policy: DirectionalCollision
+                max_range_tiles: 6
+                max_lifetime_ms: 1500
+                collision: { radius_units: 125000, piercing: true }
+equipment_attacks:
+  - equipment: r11_weapon
+    program: { Shared: funeral_shots }
+definitions: []
+skills: []

@@ -1,0 +1,42 @@
+{
+  "relics": [
+    {
+      "id": "taunted-enemy-damage-reduction",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a150",
+      "name": "도전자의 갑주",
+      "description": "자신이 도발한 적에게 받는 피해 감소.",
+      "rarity": {
+        "Unresolved": "rarity"
+      },
+      "allow_duplicates": {
+        "Unresolved": "allow_duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": [],
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "dismantle_equipment_dust"
+      }
+    },
+    {
+      "id": "taunted-enemy-basic-attack-boost",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a151",
+      "name": "응징의 표식",
+      "description": "자신이 도발한 적에게 주는 직접 기본 공격 피해 증가.",
+      "rarity": {
+        "Unresolved": "rarity"
+      },
+      "allow_duplicates": {
+        "Unresolved": "allow_duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": [],
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "dismantle_equipment_dust"
+      }
+    }
+  ]
+}

@@ -676,7 +676,7 @@ fn parry_graph_binds_guard_and_counter_and_preserves_ron() {
         native.get_by_id("parry").unwrap().fragment_guard(),
         Some(program.guard)
     );
-    assert!(native.get_by_id("parry:counter").is_some());
+    assert!(native.get_by_id("parry__counter").is_some());
     assert!(PortableGraph::from_ron(&ron.replace("window_ms: 30", "window_ms: 0")).is_err());
 }
 
@@ -1195,7 +1195,7 @@ fn attack_overlay_graph_preserves_direct_weapon_profile_reinput_and_conditional_
     assert_eq!(program.cap,Some(45));
     let native=loaded.load_native().unwrap();
     assert!(native.skills.iter().any(|s|s.id.as_str()=="overlay"));
-    assert!(native.skills.iter().any(|s|s.id.as_str()=="overlay::finish"));
+    assert!(native.skills.iter().any(|s|s.id.as_str()=="overlay__finish"));
 }
 #[test]
 fn attack_overlay_graph_rejects_detached_or_expired_followup_and_inexact_dimensions() {
@@ -1525,4 +1525,24 @@ fn support_modifier_targets_are_explicit_and_do_not_accept_selection_range_expan
     let edge=doc["edges"].as_array_mut().unwrap().iter_mut().find(|e|e["target"]["node"]==range_modifier&&e["target"]["port"]=="target").unwrap();
     edge["source"]=selection;
     assert!(compile(&doc.to_string(),"support".into()).is_err());
+}
+
+#[test]
+fn generated_child_skills_preserve_global_and_namespaced_catalog_keys() {
+    let mut invalid = Vec::new();
+    for root in ["shared-root", "fixture::shared-root"] {
+        for (label, graph) in [
+            ("counter", counter_channel_fixture(false)),
+            ("parry", parry_fixture()),
+            ("overlay", attack_overlay_fixture()),
+        ] {
+            let native = compile(&graph.to_string(), root.into()).unwrap().load_native().unwrap();
+            for skill in &native.skills {
+                if crate::game::data::content_pack::canonical_key_parts(skill.id.as_str()).is_none() {
+                    invalid.push((label, skill.id.clone()));
+                }
+            }
+        }
+    }
+    assert!(invalid.is_empty(), "Generated keys rejected by full publication: {invalid:?}");
 }

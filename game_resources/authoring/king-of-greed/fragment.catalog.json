@@ -1,0 +1,48 @@
+{
+  "id": "fragment_king_of_greed_trace",
+  "uuid": "730e8400-e29b-41d4-a716-446655440009",
+  "name": "황금의 지평선 (가칭)",
+  "description": "재고와 가용 신용으로 보구를 준비해 순차 사출한다. 대출 보구는 피해가 증가하며 회수량과 다음 전투 지급량은 파편 사본별 미상환 원금을 먼저 상환한다.",
+  "rarity": {
+    "Unresolved": "fragment-rarity"
+  },
+  "equip_limit": {
+    "Unresolved": "fragment-equip-limit"
+  },
+  "origin": {
+    "Abnormality": {
+      "abnormality_id": "o-01-64_king_of_greed"
+    }
+  },
+  "sources": [
+    {
+      "AbnormalityContainment": {
+        "abnormality_id": "o-01-64_king_of_greed"
+      }
+    }
+  ],
+  "dependencies": [
+    {
+      "SourceAbnormality": {
+        "abnormality_id": "o-01-64_king_of_greed"
+      }
+    }
+  ],
+  "compatibility": {
+    "allowed_weapon_archetypes": {
+      "Unresolved": "fragment-compatible-weapons"
+    }
+  },
+  "effect": {
+    "ActiveSkill": {
+      "forms": {
+        "base": {
+          "skill_id": "fragment_king_of_greed_horizon",
+          "resonance_max": {
+            "Unresolved": "capacity"
+          }
+        }
+      }
+    }
+  }
+}

@@ -234,6 +234,8 @@ impl BattleCore {
                     SkillHitTargetFilter::Enemies,
                     false,
                 );
+                let area_percent = self.area_damage_percent(e.owner, e.side,
+                    &e.source, &targets, now)?;
                 for target in targets {
                     self.execute_mobile_hit(super::super::mobile_effect::MobileDamageInput {
                         profile: &e.profile,
@@ -253,6 +255,7 @@ impl BattleCore {
                             death_origin: e.death.clone(),
                         },
                         capture: None,
+                        area_percent,
                         target,
                         now,
                     })?;

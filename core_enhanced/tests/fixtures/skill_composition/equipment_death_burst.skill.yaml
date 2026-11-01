@@ -1,0 +1,19 @@
+# Explicit prototype values, not release balance or final presentation assets.
+version: 1
+id: funeral-echo-fixture
+resources: []
+values:
+  - name: funeral_echo
+    value:
+      AttackProgram:
+        reactions: []
+        death_burst:
+          delay_ms: 500
+          range: { include_anchor_tile: true, rows: [XXX, X@X, XXX] }
+          attack_percent: 100
+          damage_type: Magic
+equipment_attacks:
+  - equipment: r11_accessory
+    program: { Shared: funeral_echo }
+definitions: []
+skills: []

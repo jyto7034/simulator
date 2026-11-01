@@ -354,7 +354,7 @@ impl BattleCore {
         &mut self,
         attacker_instance_id: UnitInstanceId,
         target_id: UnitInstanceId,
-        source_snapshot: DamageSourceSnapshot,
+        mut source_snapshot: DamageSourceSnapshot,
         delivery: crate::game::battle::event_log::AttackDelivery,
         current_time_ms: u64,
     ) -> bool {
@@ -376,11 +376,17 @@ impl BattleCore {
             .units
             .get(&attacker_instance_id)
             .is_some_and(|unit| unit.is_active());
-        if attacker_live && !self.is_basic_attack_target_in_range(attacker_instance_id, target_id) {
+        if attacker_live && !self.is_basic_attack_target_in_range_at(attacker_instance_id, target_id, current_time_ms) {
             return false;
         }
 
         match self.release_relation_basic(&source_snapshot, target_id, current_time_ms) { Ok(true) => return true, Err(_) => return false, Ok(false) => () }
+        match self.release_equipment_magazine(&mut source_snapshot, current_time_ms) {
+            Ok(true) => (), _ => return false,
+        }
+
+        if self.capture_release_gap(&mut source_snapshot, current_time_ms).is_err() { return false; }
+
         if let Some(line) = self.basic_line_profile(attacker_instance_id) {
             if control::charge_serialized(line,"basic_line_profile_copy").is_err()
                 || crate::game::battle::runtime_control::admit_retained_growth(0,
@@ -396,14 +402,46 @@ impl BattleCore {
                 return false;
             }
         }
+        if let Some((delay_ms, air_capable)) = self.units.get(&attacker_instance_id).and_then(|unit| {
+            if let crate::game::data::abnormality_data::BasicAttackAction::DamageTileAfterDelay { delay_ms } = unit.basic_attack.action {
+                Some((delay_ms, unit.basic_attack.air_capable))
+            } else { None }
+        }) {
+            return self.release_basic_delayed_tile(target_id, source_snapshot, delay_ms, air_capable, current_time_ms).unwrap_or(false);
+        }
         let area = self.units.get(&attacker_instance_id).and_then(|u| {
+            if let crate::game::data::abnormality_data::BasicAttackAction::DamageArea { footprint, secondary_percent } = &u.basic_attack.action {
+                if !matches!(u.basic_attack.delivery, DeliveryDef::Instant) { return None; }
+                return Some((footprint.clone(), crate::game::ability::SkillTileAreaDeliveryDef {
+                    mode: crate::game::ability::SkillTileAreaMode::ReleaseQuery,
+                    anchor: crate::game::ability::SkillAreaAnchorSource::CastTarget,
+                    tile_origin: crate::game::ability::SkillTileAreaOrigin::Anchor,
+                    ..Default::default()
+                }, u.basic_attack.air_capable, *secondary_percent));
+            }
             if let DeliveryDef::TileArea { footprint, area } = &u.basic_attack.delivery {
-                Some((footprint.clone(), area.clone(), u.basic_attack.air_capable))
+                Some((footprint.clone(), area.clone(), u.basic_attack.air_capable, 100))
             } else {
                 None
             }
         });
-        if let Some((footprint, area, air_capable)) = area {
+        let cone = self.units.get(&attacker_instance_id).and_then(|unit| {
+            if let crate::game::data::abnormality_data::BasicAttackAction::DamageCone { length_tiles, end_half_width_tiles } = unit.basic_attack.action {
+                Some((length_tiles, end_half_width_tiles, unit.basic_attack.air_capable))
+            } else { None }
+        });
+        let occupied_tiles = self.units.get(&attacker_instance_id).is_some_and(|unit| matches!(unit.basic_attack.action,
+            crate::game::data::abnormality_data::BasicAttackAction::DamageOccupiedTiles));
+        let area_targets = if occupied_tiles {
+            let Ok(Some((tiles, targets, air_capable))) = self.collect_basic_occupied_tiles(attacker_instance_id, current_time_ms) else { return false; };
+            self.record_event_log(current_time_ms, crate::game::battle::event_log::BattleLogEvent::BasicAttackTilesReleased {
+                attacker_instance_id, affected_tiles: tiles,
+            });
+            Some((targets, air_capable, 100))
+        } else if let Some((length, half_width, air_capable)) = cone {
+            let Ok(Some(targets)) = self.collect_basic_cone_targets(attacker_instance_id, target_id, length, half_width, source_snapshot.source_side, current_time_ms) else { return false; };
+            Some((targets, air_capable, 100))
+        } else if let Some((footprint, area, air_capable, secondary_percent)) = area {
             let anchor = match area.tile_origin {
                 crate::game::ability::SkillTileAreaOrigin::Caster => {
                     self.live_unit_projected_tile(attacker_instance_id)
@@ -434,6 +472,15 @@ impl BattleCore {
                 SkillHitTargetFilter::Enemies,
                 false,
             );
+            Some((targets, air_capable, secondary_percent))
+        } else { None };
+        if let Some((mut targets, air_capable, secondary_percent)) = area_targets {
+            targets.retain(|target| self.single_target_can_target_unit(*target, air_capable));
+            let percent = match self.area_damage_percent(attacker_instance_id, source_snapshot.source_side,
+                &source_snapshot.fact_source, &targets, current_time_ms) {
+                Ok(percent) => percent, Err(_) => return false,
+            };
+            source_snapshot.modifiers.damage_amp_percent = source_snapshot.modifiers.damage_amp_percent.saturating_add(percent);
             self.grant_basic_attack_release_resonance(attacker_instance_id, current_time_ms);
             if self.release_prepared_basic(&source_snapshot).is_err() { return false; }
             if self
@@ -443,31 +490,9 @@ impl BattleCore {
                 return false;
             }
             let occurrence_id = source_snapshot.crit_roll_identity.source_instance_id;
-            let mut actual_hp_loss = 0;
-            for target in targets {
-                if !self.single_target_can_target_unit(target, air_capable) {
-                    continue;
-                }
-                let Ok(snapshot) =
-                    crate::authoring::clone_shape::controlled_clone(&source_snapshot)
-                else {
-                    return false;
-                };
-                let Some(summary) = self.execute_committed_damage(CommittedDamageInput {
-                    target_id: target,
-                    source_snapshot: snapshot,
-                    committed_at_ms: current_time_ms,
-                    policy: CommittedDamagePolicy::BasicAttack {
-                        occurrence_id,
-                        occurrence_time_ms: current_time_ms,
-                    },
-                }) else {
-                    return false;
-                };
-                if Self::add_basic_hp_loss(&mut actual_hp_loss, summary.actual_hp_loss).is_err() {
-                    return false;
-                }
-            }
+            let Ok(actual_hp_loss) = self.apply_basic_area_targets(targets, target_id,
+                &source_snapshot, secondary_percent, air_capable, occurrence_id, current_time_ms)
+            else { return false; };
             if self
                 .finish_basic_lifesteal(&source_snapshot, actual_hp_loss, current_time_ms)
                 .is_err()
@@ -536,7 +561,7 @@ impl BattleCore {
                     max_lifetime_ms,
                     max_kills,
                     max_pierces,
-                    collision,
+                    mut collision,
                     ..
                 } = basic.delivery
                 else {
@@ -567,8 +592,19 @@ impl BattleCore {
                     let Ok(base) = prepared.apply(launch_source_snapshot.base_damage) else { return false; };
                     launch_source_snapshot.base_damage = base;
                 }
+                if let Some(m) = &source_snapshot.magazine {
+                    collision.piercing = m.enhanced;
+                    collision.despawn_on_hit = Some(!m.enhanced);
+                    collision.max_hits = Some(if m.enhanced { m.program.magazine.as_ref().unwrap().enhanced_max_hits.expect("validated enhanced round") } else { 1 });
+                }
+                launch_source_snapshot.magazine = source_snapshot.magazine;
+                launch_source_snapshot.basic_primary = source_snapshot.basic_primary;
                 launch_source_snapshot.prepared_basic = source_snapshot.prepared_basic;
+                launch_source_snapshot.state_basic_capture = source_snapshot.state_basic_capture;
                 launch_source_snapshot.weapon_growth = source_snapshot.weapon_growth;
+                launch_source_snapshot.equipment_attack = source_snapshot.equipment_attack;
+                launch_source_snapshot.equipment_hits = source_snapshot.equipment_hits;
+                launch_source_snapshot.release_gap = source_snapshot.release_gap;
                 launch_source_snapshot.presence_capture = source_snapshot.presence_capture;
                 launch_source_snapshot.weapon_mark_capture = source_snapshot.weapon_mark_capture;
                 launch_source_snapshot.fact_source = source_snapshot.fact_source;
@@ -579,8 +615,8 @@ impl BattleCore {
                         range_tiles: max_range_tiles.unwrap_or(1),
                         lifetime_ms: max_lifetime_ms.unwrap_or(1),
                         collision,
-                        max_kills,
-                        max_pierces,
+                        max_kills: if launch_source_snapshot.magazine.is_some() { None } else { max_kills },
+                        max_pierces: if launch_source_snapshot.magazine.is_some() { None } else { max_pierces },
                         kills: 0,
                         hit_unit_ids: Vec::new(),
                     });
@@ -590,7 +626,18 @@ impl BattleCore {
                 {
                     return false;
                 }
+                if let crate::game::data::abnormality_data::BasicAttackAction::DamageTargets { max_targets } = basic.action {
+                    return self.release_basic_projectile_targets(
+                        attacker_instance_id, target_id, max_targets, basic.air_capable,
+                        speed_units_per_ms, launch_source_snapshot, current_time_ms,
+                    ).unwrap_or(false);
+                }
+                let area = match self.capture_basic_projectile_area(attacker_instance_id, &basic.action) {
+                    Ok(area) => area, Err(_) => return false,
+                };
                 self.spawn_basic_attack_projectile(ProjectileLaunch {
+                    area,
+                    batch_id: None,
                     fired_at_ms: current_time_ms,
                     attacker_instance_id,
                     attacker_owner_at_launch: launch_source_snapshot.source_side,
@@ -676,7 +723,6 @@ impl BattleCore {
         total
     }
 
-    #[cfg(test)]
     pub(in crate::game::battle::core) fn process_skill_commands(
         &mut self,
         commands: Vec<super::types::SkillCommand>,
@@ -722,6 +768,7 @@ impl BattleCore {
                     extended_observation,
                     use_control: false,
                     flow: flow_occurrence,
+                    death_burst: false,
                     reaction,
                     actor: Some(caster),
                     equipment,
@@ -844,7 +891,11 @@ impl BattleCore {
                     max_triggers_per_battle,
                     allow_dead_caster,
                 } => {
-                    if self.channel_active(caster_id) {
+                    // Reactive equipped effects keep their own proc lifetime
+                    // during a channel. Unit skill starts still require the
+                    // actor's control slot; equipment provenance comes from
+                    // the collected binding, not the event's counterpart.
+                    if self.channel_active(caster_id) && equipment_source.is_none() {
                         continue;
                     }
                     // A proc counterpart is an event hint, never an accepted
@@ -1019,6 +1070,13 @@ impl BattleCore {
                     }
 
                     let before = target.stats;
+                    if super::equipment_defense::harmful_stat_modifier(&modifier) {
+                        if let Some(caster) = modifier_source_instance_id {
+                            match self.block_equipment_skill(target_id, caster, None, current_time_ms) {
+                                Ok(true) => continue, Ok(false) => {}, Err(_) => break,
+                            }
+                        }
+                    }
                     let after = self.apply_permanent_with_sustained(target_id, before, modifier);
                     let prepared_death = if after.current_health == 0
                         && after.current_health != before.current_health
@@ -1108,6 +1166,20 @@ impl BattleCore {
                     target_id,
                 } => {
                     if self.current_action_interrupt_protected(target_id) {continue;}
+                    if !self.units.get(&target_id).is_some_and(|u| u.is_active()) { continue; }
+                    let interruptible = self.units[&target_id].pending_skill_cast.is_some()
+                        || self.resonance_use_has_obligations(target_id) || self.channel_active(target_id)
+                        || self.active_skill_casts.values().any(|cast| cast.caster_instance_id == target_id
+                            && !cast.allow_dead_caster && !cast.control_cancelled
+                            && cast.flow.as_ref().is_some_and(|flow| !flow.complete || flow.has_pending_sides()));
+                    if interruptible {
+                        match self.sustained_invulnerable(target_id, current_time_ms) {
+                            Ok(true) => continue, Ok(false) => {}, Err(_) => break,
+                        }
+                        match self.block_equipment_skill(target_id, source_id, None, current_time_ms) {
+                            Ok(true) => continue, Ok(false) => {}, Err(_) => break,
+                        }
+                    }
                     self.cancel_resonance_use_control(target_id);
                     if self
                         .stop_channel_with_reason(
@@ -1181,13 +1253,9 @@ impl BattleCore {
                         .map(|unit| unit.stats.current_health)
                         .unwrap_or(0);
 
-                    self.apply_hp_delta_and_record(
-                        source_id,
-                        target_id,
-                        delta,
-                        current_time_ms,
-                        HpChangeReason::Command,
-                    );
+                    if self.apply_direct_heal_and_record(source_id, target_id, delta, current_time_ms).is_err() {
+                        return summary;
+                    }
 
                     let hp_after = self
                         .units
@@ -1207,6 +1275,13 @@ impl BattleCore {
                     amount,
                     allow_autocast_when_full,
                 } => {
+                    if amount < 0 && self.units.get(&target_id).is_some_and(|u| u.is_active() && u.resonance_current > 0) {
+                        if let Some(caster) = modifier_source_instance_id {
+                            match self.block_equipment_skill(target_id, caster, None, current_time_ms) {
+                                Ok(true) => continue, Ok(false) => {}, Err(_) => break,
+                            }
+                        }
+                    }
                     // Observe the command's actual mutation, not passive gain or
                     // cast reset. Ordinary gameplay takes the existing path.
                     let observation = if self.authoring_observation.is_some() {
@@ -1283,6 +1358,18 @@ impl BattleCore {
                     duration_ms,
                 } => {
                     if !self.stress_allied_effect_allowed(Some(caster_id), target_id) { continue; }
+                    // Buff commands become finite events after this strike scope
+                    // ends. Intercept at admission so an attached buff cannot
+                    // escape its damage hit's block receipt.
+                    if duration_ms == 0 || !self.units.get(&target_id).is_some_and(|u| u.is_active()) { continue; }
+                    let Some(kind) = self.game_data.buff_data.get(buff_id).map(|b| b.kind) else { continue; };
+                    if kind == crate::game::battle::buffs::BuffKind::Stun
+                        && self.units[&target_id].target_traits.contains(&crate::game::battle::types::UnitTargetTrait::StunImmune) { continue; }
+                    match self.block_equipment_skill(target_id, caster_id, None, current_time_ms) {
+                        Ok(true) => continue,
+                        Ok(false) => {},
+                        Err(_) => break,
+                    }
                     let source = if self.authoring_observation.is_some() {
                         if control::charge(1, "authoring_buff_source").is_err() {
                             break;
@@ -1435,11 +1522,17 @@ mod tests {
         time_ms: u64,
     ) -> DamageSourceSnapshot {
         DamageSourceSnapshot {
+            basic_primary: None,
             fact_source: Default::default(),
             skill_cast_source: None,
             value_expr_capture: None,
             prepared_basic: None,
+            state_basic_capture: None,
             weapon_growth: None,
+            equipment_attack: None,
+            equipment_hits: None,
+            release_gap: None,
+            magazine: None,
             presence_capture: None,
             reactive_capture: None,
             mobile_capture: None,
@@ -1499,6 +1592,8 @@ mod tests {
         let target_id = crate::game::battle::ids::UnitInstanceId::from(Uuid::from_u128(42));
 
         core.spawn_basic_attack_projectile(super::ProjectileLaunch {
+            area: None,
+            batch_id: None,
             spatial: None,
             fired_at_ms: 100,
             attacker_instance_id: attacker_id,
@@ -2084,6 +2179,8 @@ mod tests {
         core.projectiles.insert(
             projectile_id,
             ProjectileRecord {
+                area: None,
+                batch_id: None,
                 spatial: None,
                 fired_at_ms: 0,
                 last_reevaluation_ms: 0,
@@ -2160,6 +2257,8 @@ mod tests {
         core.projectiles.insert(
             projectile_id,
             ProjectileRecord {
+                area: None,
+                batch_id: None,
                 spatial: None,
                 fired_at_ms: 0,
                 last_reevaluation_ms: 0,
@@ -2320,6 +2419,8 @@ mod tests {
             basic.projectiles.insert(
                 projectile_id,
                 ProjectileRecord {
+                    area: None,
+                    batch_id: None,
                     spatial: None,
                     fired_at_ms: 0,
                     last_reevaluation_ms: 0,
@@ -2470,6 +2571,8 @@ mod tests {
         core.projectiles.insert(
             projectile_id,
             ProjectileRecord {
+                area: None,
+                batch_id: None,
                 spatial: None,
                 fired_at_ms: 0,
                 last_reevaluation_ms: 0,
@@ -2547,6 +2650,8 @@ mod tests {
         core.projectiles.insert(
             projectile_id,
             ProjectileRecord {
+                area: None,
+                batch_id: None,
                 spatial: None,
                 fired_at_ms: 0,
                 last_reevaluation_ms: 0,
@@ -2635,6 +2740,8 @@ mod tests {
         core.projectiles.insert(
             projectile_id,
             ProjectileRecord {
+                area: None,
+                batch_id: None,
                 spatial: None,
                 fired_at_ms: 0,
                 last_reevaluation_ms: 0,
@@ -2696,6 +2803,8 @@ mod tests {
         core.projectiles.insert(
             projectile_id,
             ProjectileRecord {
+                area: None,
+                batch_id: None,
                 spatial: None,
                 fired_at_ms: 0,
                 last_reevaluation_ms: 0,
@@ -2755,6 +2864,8 @@ mod tests {
         core.projectiles.insert(
             projectile_id,
             ProjectileRecord {
+                area: None,
+                batch_id: None,
                 spatial: None,
                 fired_at_ms: 0,
                 last_reevaluation_ms: 0,
@@ -2816,6 +2927,8 @@ mod tests {
         core.projectiles.insert(
             projectile_id,
             ProjectileRecord {
+                area: None,
+                batch_id: None,
                 spatial: None,
                 fired_at_ms: 0,
                 last_reevaluation_ms: 0,
@@ -3110,6 +3223,7 @@ mod tests {
             resonance_lock_ms: 0,
             resonance_use: None,
             next_resonance_pulse_ms: None,
+            equipment_resonance_gain: None,
             next_action_time: 0,
             pending_cast: false,
             pending_cast_cause: None,
@@ -6037,6 +6151,7 @@ mod tests {
                 resonance_lock_ms: 0,
                 resonance_use: None,
                 next_resonance_pulse_ms: None,
+                equipment_resonance_gain: None,
                 next_action_time: 0,
                 pending_cast: false,
                 pending_cast_cause: None,
@@ -6092,6 +6207,7 @@ mod tests {
                 resonance_lock_ms: 0,
                 resonance_use: None,
                 next_resonance_pulse_ms: None,
+                equipment_resonance_gain: None,
                 next_action_time: 0,
                 pending_cast: false,
                 pending_cast_cause: None,
@@ -6110,6 +6226,8 @@ mod tests {
         core.projectiles.insert(
             projectile_id,
             ProjectileRecord {
+                area: None,
+                batch_id: None,
                 spatial: None,
                 fired_at_ms: 0,
                 last_reevaluation_ms: 0,
@@ -6280,6 +6398,7 @@ mod tests {
                 resonance_lock_ms: 0,
                 resonance_use: None,
                 next_resonance_pulse_ms: None,
+                equipment_resonance_gain: None,
                 next_action_time: 0,
                 pending_cast: false,
                 pending_cast_cause: None,
@@ -7446,6 +7565,8 @@ mod tests {
         core.projectiles.insert(
             projectile_id,
             ProjectileRecord {
+                area: None,
+                batch_id: None,
                 spatial: None,
                 fired_at_ms: 0,
                 last_reevaluation_ms: 0,

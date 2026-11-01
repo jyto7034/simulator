@@ -74,15 +74,17 @@ try{
  await page.getByLabel('검색어',{exact:true}).fill('__no_result__');await page.waitForFunction(()=>document.querySelector('[role="status"]')?.textContent.includes('0개'));
  assert.equal(await page.locator('.document-result,.action-result').count(),0);
  await go('/scenes/');assert.equal(await page.locator('.scene-card').count(),meta.scenes.length);await expect(page.locator('main [role=status]')).toContainText(meta.scenes.reduce((n,s)=>n+s.actions.length,0)+'개 행동');
- await page.getByLabel('행동 결정 상태 필터').selectOption('pending');await expect(page.locator('main [role=status]')).toContainText('1개 행동');
+ await page.getByLabel('행동 결정 상태 필터').selectOption('pending');await expect(page.locator('main [role=status]')).toContainText(meta.scenes.reduce((n,s)=>n+s.actions.filter(a=>a.status==='pending').length,0)+'개 행동');
  for(const s of meta.scenes){
   await go('/scenes/'+s.id+'/');assert.equal(await page.locator('.action-row').count(),s.actions.length);
   for(let i=0;i<s.images.length;i++){
    if(s.images.length>1)await page.getByRole('button',{name:/^시안 선택:/}).nth(i).click();
    await page.locator('#scene-image').evaluate(im=>im.decode());assert(await page.locator('#scene-image').evaluate(im=>im.naturalWidth>0));
   }
+  if(s.images.length){
   const opener=page.getByRole('button',{name:'시안 크게 보기',exact:true});await opener.click();await page.getByRole('dialog').waitFor();
   await page.keyboard.press('Escape');await expect(page.getByRole('dialog')).toHaveCount(0);await expect(opener).toBeFocused();
+  }else{await expect(page.locator('#scene-image')).toHaveCount(0);await expect(page.locator('.scene-no-image')).toBeVisible();}
  }
  await go('/search/?q='+encodeURIComponent('교대'));await page.locator('.action-result').first().waitFor();
  await go('/scenes/battle-focus/#action-swap');await page.locator('.highlight').waitFor();
@@ -145,7 +147,7 @@ try{
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);await page.keyboard.press('Escape');
  await viewControls.getByRole('button',{name:'카드',exact:true}).click();await page.screenshot({path:path.join(artifacts,'relics-cards-mobile.png'),fullPage:true,animations:'disabled'});
  // Every collection keeps all three views; encyclopedia profiles stay compact without clipping.
- const collections=[...meta.categories.map(c=>({route:'/categories/'+c.id+'/',label:c.title,count:meta.pages.filter(p=>p.category===c.id&&(!p.index||p.id==='content/tags/README')&&(c.id!=='abnormalities'||p.part==='README'||p.id.startsWith('content/tools/'))).length,document:true})),{route:'/screens/',label:'화면',count:74},{route:'/scenes/',label:'장면',count:8},{route:'/search/?q='+encodeURIComponent('교대'),label:'검색 결과'},...meta.scenes.map(s=>({route:'/scenes/'+s.id+'/',label:'플레이어 행동',count:s.actions.length}))];
+ const collections=[...meta.categories.map(c=>({route:'/categories/'+c.id+'/',label:c.title,count:meta.pages.filter(p=>p.category===c.id&&(!p.index||p.id==='content/tags/README')&&(c.id!=='abnormalities'||p.part==='README'||p.id.startsWith('content/tools/'))).length,document:true})),{route:'/screens/',label:'화면',count:74},{route:'/scenes/',label:'장면',count:meta.scenes.length},{route:'/search/?q='+encodeURIComponent('교대'),label:'검색 결과'},...meta.scenes.map(s=>({route:'/scenes/'+s.id+'/',label:'플레이어 행동',count:s.actions.length}))];
  for(const collection of collections){
   await page.setViewportSize({width:1440,height:1100});await go(collection.route);
   const controls=page.getByRole('group',{name:collection.label+' 보기 방식'});await controls.waitFor();
@@ -259,6 +261,6 @@ try{
  await privatePage.goto(home+'/');await expect(privatePage.getByRole('button',{name:'다크 테마',exact:true})).toHaveAttribute('aria-pressed','true');
  await privatePage.getByRole('button',{name:'다크 테마',exact:true}).click();await expect(privatePage.locator('html')).toHaveAttribute('data-theme','light');await restricted.close();
  assert.deepEqual(errors,[]);assert.deepEqual(consoleErrors,[]);assert.deepEqual(failed,[]);assert.deepEqual(requests,[]);
- const report={status:'PASS',documents:meta.pages.length,actions:61,images:25,staticRoutes:true,readableWithoutJavaScript:true,deepLinks:true,collectionViews:['cards','table','list','persisted','filtered','inline-preview'],collectionCount:collections.length,tags:{pages:66,classificationOnly:3,checks:['AND','OR','relationships','URL','history','three-views','source-boundaries']},cards:{encyclopedia:'content-sized profiles under 330px',otherCollections:448,equalWidths:true,alignedFooters:true},themes:['light','dark','system','persisted','storage-disabled','print'],viewports:['1440×1100','390×844'],externalRequests:requests,errors,consoleErrors,failed,mobileOverflow:overflow};
+ const report={status:'PASS',documents:meta.pages.length,actions:meta.scenes.reduce((n,s)=>n+s.actions.length,0),images:meta.scenes.reduce((n,s)=>n+s.images.length,0),staticRoutes:true,readableWithoutJavaScript:true,deepLinks:true,collectionViews:['cards','table','list','persisted','filtered','inline-preview'],collectionCount:collections.length,tags:{pages:66,classificationOnly:3,checks:['AND','OR','relationships','URL','history','three-views','source-boundaries']},cards:{encyclopedia:'content-sized profiles under 330px',otherCollections:448,equalWidths:true,alignedFooters:true},themes:['light','dark','system','persisted','storage-disabled','print'],viewports:['1440×1100','390×844'],externalRequests:requests,errors,consoleErrors,failed,mobileOverflow:overflow};
  await fs.writeFile(path.join(artifacts,'browser-report.json'),JSON.stringify(report,null,2)+'\n');console.log(report);
 }finally{await browser?.close();await new Promise(resolve=>server.close(resolve));}

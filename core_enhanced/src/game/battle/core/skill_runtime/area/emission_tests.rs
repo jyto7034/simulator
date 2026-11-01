@@ -413,3 +413,75 @@ fn scheduled_area_impact_footprint_is_separate_from_search_range() {
     assert_eq!(core.units[&enemy].stats.current_health, 850);
     assert_eq!(core.units[&ally].stats.current_health, 1000);
 }
+
+#[test]
+fn scheduled_area_observation_records_actual_start_replacement_and_child_expiry() {
+    use crate::authoring::AreaChange;
+    use crate::game::ability::sustained::SustainedEndReason;
+    let (mut core, mut state, actor, _, _) = fixture();
+    core.enable_authoring_observation();
+    core.bind_authoring_observation(
+        crate::game::battle::core::authoring_observation::ObservationKey {
+            entry_ordinal: 1,
+            battle_uuid: Uuid::from_u128(0xb31),
+        },
+    )
+    .unwrap();
+    begin(&mut core, actor);
+    core.step_battle_execution_until(&mut state, 1).unwrap();
+    let started = core
+        .authoring_observation()
+        .unwrap()
+        .unwrap()
+        .latest_area
+        .as_ref()
+        .unwrap()
+        .clone();
+    assert_eq!(started.change, AreaChange::Started);
+    assert!(started.before.is_none() && started.after.is_none());
+    assert_eq!(started.time_ms, 1);
+    let emitter = core
+        .active_areas
+        .values()
+        .find(|a| a.emission.is_some())
+        .unwrap();
+    let id = emitter.area_id;
+    let step = emitter.step_id.clone();
+    core.runtime_transaction(|core| {
+        core.replace_area_emitter(actor, &"scheduled".into(), &step, 50)
+    })
+    .unwrap();
+    let stopped = core
+        .authoring_observation()
+        .unwrap()
+        .unwrap()
+        .latest_area
+        .as_ref()
+        .unwrap();
+    assert_eq!(stopped.area_id, id);
+    assert_eq!(
+        stopped.change,
+        AreaChange::Ended {
+            reason: SustainedEndReason::Replaced
+        }
+    );
+    assert_eq!(core.active_areas.len(), 1);
+    core.step_battle_execution_until(&mut state, 402).unwrap();
+    let ended = core
+        .authoring_observation()
+        .unwrap()
+        .unwrap()
+        .latest_area
+        .as_ref()
+        .unwrap();
+    assert_eq!(ended.area_id, started.area_id);
+    assert_eq!(
+        ended.change,
+        AreaChange::Ended {
+            reason: SustainedEndReason::Expired
+        }
+    );
+    assert!(core.active_areas.is_empty());
+}
+
+include!("canonical_rudolta_tests.inc.rs");

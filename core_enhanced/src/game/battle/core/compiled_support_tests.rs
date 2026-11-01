@@ -41,6 +41,30 @@ mod compiled_support {
             .unwrap()
             .load_native()
             .unwrap();
+        fixture_from_native(native, equipped, third)
+    }
+    fn fixture_from_native(
+        native: SkillDatabase,
+        equipped: bool,
+        third: bool,
+    ) -> (BattleCore, BattleExecutionState, UnitInstanceId, UnitInstanceId) {
+        fixture_from_native_with_weapon(native, equipped, third, |_| {})
+    }
+    fn fixture_from_native_with_weapon(
+        native: SkillDatabase,
+        equipped: bool,
+        third: bool,
+        configure_weapon: impl FnOnce(&mut crate::game::data::equipment_data::EquipmentMetadata),
+    ) -> (BattleCore, BattleExecutionState, UnitInstanceId, UnitInstanceId) {
+        fixture_from_native_with_catalog(native, equipped, third, configure_weapon, |_| {})
+    }
+    fn fixture_from_native_with_catalog(
+        native: SkillDatabase,
+        equipped: bool,
+        third: bool,
+        configure_weapon: impl FnOnce(&mut crate::game::data::equipment_data::EquipmentMetadata),
+        configure_relics: impl FnOnce(&mut RelicDatabase),
+    ) -> (BattleCore, BattleExecutionState, UnitInstanceId, UnitInstanceId) {
         let mut skills = SkillDatabase::from_ron("fixture", R08_SKILLS)
             .unwrap()
             .skills;
@@ -55,11 +79,12 @@ mod compiled_support {
         )
         .unwrap();
         let mut relics: RelicDatabase = ron::de::from_str(r#"(relics:[(id:"single-target-conversion",uuid:"00000000-0000-0000-0000-00000000c501",name:"Conversion fixture",description:"Only the graph owns this support recipe",rarity:"fixture",allow_duplicates:true,effects:[(id:"unrelated_damage",selector:(all_tags:["unrelated_fixture_damage"]),percent:1)],dismantle_equipment_dust:1)])"#).unwrap();
-        for (id, uuid) in [("long-breath", 0xc502), ("resonator", 0xc503)] {
+        for (id, uuid) in [("long-breath", 0xc502), ("resonator", 0xc503), ("taunted-enemy-damage-reduction", 0xc504), ("taunted-enemy-basic-attack-boost", 0xc505)] {
             let mut relic = relics.relics[0].clone();
             relic.id = id.into(); relic.uuid = Uuid::from_u128(uuid);
             relics.relics.push(relic);
         }
+        configure_relics(&mut relics);
         let (mut core, state, actor, ally) = r12_fragment_equipped_effect_core_with_data(
             &authored,
             |scenario| {
@@ -85,7 +110,7 @@ mod compiled_support {
                         });
                 }
             },
-            |_| {},
+            configure_weapon,
             Some(fragments),
             |builder| builder.with_relics(relics),
         );
@@ -189,6 +214,41 @@ mod compiled_support {
             .filter(|r| r.target == target && r.personal_grant.is_some())
             .filter_map(|r| r.shield.map(|s| s.remaining))
             .collect()
+    }
+    #[test]
+    fn personal_shield_composition_uses_release_snapshot_and_independent_native_pools() {
+        let source = include_str!(concat!(env!("CARGO_MANIFEST_DIR"),
+            "/tests/fixtures/skill_composition/personal_shield.skill.yaml"))
+            .replace("authored-personal-shield", "r11_aura")
+            .replace("Milliseconds: 6000", "Milliseconds: 200");
+        let artifact = crate::authoring::composition::compile_yaml(&source).unwrap();
+        let native = artifact.load_native().unwrap();
+        let (mut core, mut state, actor, ally) = fixture_from_native(native, false, false);
+        cast(&mut core, actor, None, 0);
+        core.units.get_mut(&actor).unwrap().stats.max_health = 1500;
+        core.step_battle_execution_until(&mut state, 1).unwrap();
+        assert_eq!(shields(&core, actor), vec![300]);
+        assert_eq!(shields(&core, ally), vec![300]);
+        assert!(!core.resonance_use_has_obligations(actor));
+        hit(&mut core, ally, 100, 2);
+        assert_eq!(shields(&core, actor), vec![300]);
+        assert_eq!(shields(&core, ally), vec![200]);
+        assert_eq!(core.units[&ally].stats.current_health, 1000);
+        place(&mut core, ally, 7, 3);
+        core.units.get_mut(&actor).unwrap().stats.max_health = 2000;
+        core.units.get_mut(&actor).unwrap().resonance_current = 100;
+        cast(&mut core, actor, None, 3);
+        core.step_battle_execution_until(&mut state, 4).unwrap();
+        assert_eq!(shields(&core, actor), vec![400]);
+        assert_eq!(shields(&core, ally), vec![200]);
+        place(&mut core, ally, 3, 1);
+        core.reconcile_sustained(5).unwrap();
+        assert_eq!(shields(&core, ally), vec![200]);
+        core.step_battle_execution_until(&mut state, 201).unwrap();
+        assert!(shields(&core, ally).is_empty());
+        assert_eq!(shields(&core, actor), vec![400]);
+        core.step_battle_execution_until(&mut state, 204).unwrap();
+        assert!(shields(&core, actor).is_empty());
     }
     #[test]
     fn compiled_support_personal_shields_are_independent_and_release_unlocks() {
@@ -634,5 +694,13 @@ mod compiled_support {
         core.step_battle_execution_until(&mut state,251).unwrap();
         assert!(!core.channel_active(actor));
     }
+
+    include!("composition_channel_support_tests.rs");
+    include!("composition_channel_upkeep_tests.rs");
+    include!("composition_duration_modifier_tests.rs");
+    include!("composition_support_radius_tests.rs");
+    include!("composition_control_tests.rs");
+    include!("composition_taunt_damage_tests.rs");
+    include!("composition_range_tests.rs");
 
 }

@@ -67,7 +67,8 @@ pub(crate) fn employee_has_structural_rules(
                 RelicPlanError::new(FaultCode::InvalidReference, "missing relic definition")
             })?;
         if !validation::rules_for(definition, copy.variant).is_empty()
-            || support::declares_conversion_for(data, &copy.definition_id, copy.variant)? {
+            || support::declares_conversion_for(data, &copy.definition_id, copy.variant)?
+            || action::declares(data, &copy.definition_id, copy.variant)? {
             return Ok(true);
         }
     }
@@ -225,20 +226,20 @@ pub(crate) struct EffectivePlanInput<'a> {
     pub inventory: &'a RelicInventory,
     pub providers: &'a [ProspectiveProvider],
 }
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct PlanContribution {
     pub copy_uuid: Uuid,
     pub definition_id: String,
     pub variant: RelicVariant,
     pub rule_id: String,
 }
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub enum PropertyBase {
     Literal(TypedRelicValue),
     RuntimeExpression,
     Structural,
 }
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct EffectiveProperty {
     pub property: RelicProperty,
     pub base: PropertyBase,
@@ -246,7 +247,7 @@ pub struct EffectiveProperty {
     pub final_value: Option<TypedRelicValue>,
     pub contributions: Vec<PlanContribution>,
 }
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum EffectBody {
     Original {
         skill_id: SkillId,
@@ -255,7 +256,9 @@ pub(crate) enum EffectBody {
     },
     Granted(Arc<authoring::GrantedEffectDef>),
 }
-#[derive(Debug, Clone, Serialize)]
+pub(crate) type SharedEffect = Arc<EffectiveEffect>;
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub(crate) struct EffectiveEffect {
     pub key: EffectiveEffectKey,
     pub provider: usize,
@@ -295,7 +298,7 @@ impl std::ops::Deref for EmployeeEffectivePlan {
 /// Pure producer output. It cannot construct a published generation or an
 /// executable runtime binding; publication can inspect this before minting its
 /// validated owner, and the ordinary compiler pins it only after validation.
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub(crate) struct EffectiveGrant {
     pub provider: usize,
     pub contribution: PlanContribution,
@@ -305,9 +308,9 @@ pub(crate) struct EffectiveGrant {
 #[derive(Clone)]
 pub(crate) struct EffectivePlanComponents {
     pub employee_uuid: Uuid,
-    pub providers: Vec<ProspectiveProvider>,
+    pub providers: Arc<Vec<ProspectiveProvider>>,
     pub copies: Vec<super::OwnedRelic>,
-    pub effects: Vec<EffectiveEffect>,
+    pub effects: Vec<SharedEffect>,
     pub grants: Vec<EffectiveGrant>,
     pub execution: Vec<execution::EffectiveProviderPlan>,
     pub causal_rules: Vec<causal::EffectiveCausalRule>,

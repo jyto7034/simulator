@@ -1,16 +1,15 @@
 fn input_plan_world_fixture(deploy: bool) -> (GameCore, Uuid, Uuid) {
-    let mut doc = crate::authoring::node_graph::tests::input_plan_fixture();
-    for n in doc["nodes"].as_array_mut().unwrap() {
-        if n["kind"] == "skill-stock" && n["title"].as_str().unwrap().contains("일반") {
-            n["values"]["initial"] = json!(1);
-        }
-    }
-    let native = crate::authoring::node_graph::compile(&doc.to_string(), "r08_strike".into())
+    use crate::authoring::composition::canonical_input_plan_tests as canonical;
+    let mut doc = canonical::resolved();
+    doc["skills"][0]["id"] = json!("r08_strike");
+    canonical::program(&mut doc)["normal"]["initial"] = json!(1);
+    let native = crate::authoring::composition::compile_json(&doc.to_string())
         .unwrap()
-        .load_content()
+        .load_native()
         .unwrap();
-    let ron = ron::ser::to_string(&native.skills).unwrap();
-    r12_live_cross_deployment_fixture(false, false, 0, Some(&ron), false, true, false, deploy)
+    let ron = ron::ser::to_string(&native).unwrap();
+    r12_live_cross_deployment_fixture_with_data(false, false, 0, Some(&ron), false, true, false, deploy,
+        |builder| builder.with_relics(canonical::relics()))
 }
 #[test]
 fn input_plan_world_equipped_undeployed_copy_generates_stock_and_hostile_without_reset_on_deploy() {

@@ -1,0 +1,20 @@
+# Prototype support reaction; equipment stats are separate release balance.
+version: 1
+id: heal-barrier-composition-fixture
+equipment_supports:
+  - equipment: r11_weapon
+    program: { Shared: critical-ally-support }
+values:
+  - name: critical-ally-support
+    value:
+      SupportProgram:
+        heal_percent: 25
+        shield_percent: 25
+        direct_heal_barrier:
+          hp_threshold_percent: 50
+          actual_heal_percent: 25
+          duration_ms: 5000
+          cooldown_ms: 8000
+          priority: 0
+definitions: []
+skills: []

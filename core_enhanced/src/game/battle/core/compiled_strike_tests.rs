@@ -1,6 +1,12 @@
 mod compiled_strike {
     use super::*;
-    use crate::{authoring::node_graph::tests::strike_fixture, game::battle::{core::sim::{BattleExecutionState, BattleLiveCommand}, damage::BattleCommand}};
+    use crate::{
+        authoring::node_graph::tests::strike_fixture,
+        game::battle::{
+            core::sim::{BattleExecutionState, BattleLiveCommand},
+            damage::BattleCommand,
+        },
+    };
     const RELICS: [&str; 5] = [
         "deep-wedge",
         "widened-horizon",
@@ -20,7 +26,16 @@ mod compiled_strike {
         fixture_graph(equipped, strike_fixture())
     }
     use super::compiled_action_fixture::{cast, hit, place};
-    fn fixture_graph(equipped: &[usize], doc: serde_json::Value) -> (BattleCore, BattleExecutionState, UnitInstanceId, UnitInstanceId, UnitInstanceId) {
+    fn fixture_graph(
+        equipped: &[usize],
+        doc: serde_json::Value,
+    ) -> (
+        BattleCore,
+        BattleExecutionState,
+        UnitInstanceId,
+        UnitInstanceId,
+        UnitInstanceId,
+    ) {
         super::compiled_action_fixture::fixture_graph(&RELICS, equipped, doc)
     }
     #[test]
@@ -215,7 +230,7 @@ mod compiled_strike {
         }
     }
     #[test]
-    fn compiled_strike_rounding_keeps_fractional_hp_ratio_and_duration() {
+    fn compiled_strike_final_floor_keeps_fractional_hp_ratio_and_duration() {
         let mut doc = strike_fixture();
         for n in doc["nodes"].as_array_mut().unwrap() {
             if n["kind"] == "skill-weapon-power" {
@@ -228,7 +243,7 @@ mod compiled_strike {
         let (mut core, mut state, actor, enemy, _) = fixture_graph(&[4], doc);
         cast(&mut core, actor, 0);
         core.step_battle_execution_until(&mut state, 1).unwrap();
-        assert_eq!(core.units[&enemy].stats.current_health, 899);
+        assert_eq!(core.units[&enemy].stats.current_health, 900);
         core.step_battle_execution_until(&mut state, 102).unwrap();
         assert!(core
             .unit_control_state(enemy, 102)
@@ -240,7 +255,7 @@ mod compiled_strike {
             .unwrap()
             .hard_cc_active());
         core.step_battle_execution_until(&mut state, 201).unwrap();
-        assert_eq!(core.units[&enemy].stats.current_health, 676);
+        assert_eq!(core.units[&enemy].stats.current_health, 680);
     }
     #[test]
     fn compiled_strike_wedge_caps_and_resets_at_new_cast() {

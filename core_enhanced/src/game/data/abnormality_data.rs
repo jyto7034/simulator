@@ -93,26 +93,103 @@ impl Default for MovementDef {
 pub enum BasicAttackAction {
     #[default]
     Damage,
+    /// One homing basic projectile per distinct target selected at release.
+    DamageTargets { max_targets: u32 },
+    /// One area around the primary target at instant release or projectile impact. The base hit and an
+    /// equipment program's additive growth have independently authored ratios.
+    DamageArea {
+        footprint: TileRangePattern,
+        secondary_percent: u32,
+    },
+    /// A triangular footprint aimed at the primary target's tile at release.
+    /// Every eligible target receives the same base damage once.
+    DamageCone {
+        length_tiles: u32,
+        end_half_width_tiles: u32,
+    },
+    /// Instant strikes at every eligible enemy-occupied tile in weapon range.
+    DamageOccupiedTiles,
+    /// Fix the primary target tile at release; hit its current occupants after the delay.
+    DamageTileAfterDelay { delay_ms: u32 },
     Heal {
         flat: u32,
         spell_power_percent: u32,
         footprint: Option<TileRangePattern>,
     },
+    /// Re-select injured allies at release by HP ratio, missing HP, then identity.
+    /// Each selected target receives the full amount.
+    HealLowestHealth {
+        flat: u32,
+        spell_power_percent: u32,
+        max_targets: u32,
+    },
 }
 
 impl BasicAttackAction {
     pub fn is_damage(&self) -> bool {
+        matches!(self, Self::Damage | Self::DamageTargets { .. } | Self::DamageArea { .. } | Self::DamageCone { .. } | Self::DamageOccupiedTiles | Self::DamageTileAfterDelay { .. })
+    }
+
+    pub fn is_default_damage(&self) -> bool {
         matches!(self, Self::Damage)
     }
 
     pub fn is_heal(&self) -> bool {
-        matches!(self, Self::Heal { .. })
+        matches!(self, Self::Heal { .. } | Self::HealLowestHealth { .. })
     }
 
     pub(crate) fn validate_delivery(
         &self,
         delivery: &DeliveryDef,
     ) -> Result<(), BasicAttackValidationError> {
+        if let Self::DamageTargets { max_targets } = self {
+            if !matches!(delivery, DeliveryDef::Projectile { hit_policy: crate::game::ability::ProjectileHitPolicy::TargetLocked, .. }) {
+                return Err(BasicAttackValidationError::new("action", "DamageTargets requires target-only Projectile delivery"));
+            }
+            if !(1..=128).contains(max_targets) {
+                return Err(BasicAttackValidationError::new("action.max_targets", "damage target count must be in 1..=128"));
+            }
+        }
+        if let Self::DamageTileAfterDelay { delay_ms } = self {
+            if !matches!(delivery, DeliveryDef::Instant) {
+                return Err(BasicAttackValidationError::new("action", "DamageTileAfterDelay requires Instant delivery"));
+            }
+            if *delay_ms == 0 {
+                return Err(BasicAttackValidationError::new("action.delay_ms", "delayed tile impact requires a positive delay"));
+            }
+        }
+        if matches!(self, Self::DamageOccupiedTiles) && !matches!(delivery, DeliveryDef::Instant) {
+            return Err(BasicAttackValidationError::new("action", "DamageOccupiedTiles requires Instant delivery"));
+        }
+        if let Self::HealLowestHealth { max_targets, .. } = self {
+            if !matches!(delivery, DeliveryDef::Instant) {
+                return Err(BasicAttackValidationError::new("action", "HealLowestHealth requires Instant delivery"));
+            }
+            // An authored fan-out bound, in addition to runtime candidate/work budgets.
+            if !(1..=128).contains(max_targets) {
+                return Err(BasicAttackValidationError::new("action.max_targets", "heal target count must be in 1..=128"));
+            }
+        }
+        if let Self::DamageCone { length_tiles, end_half_width_tiles } = self {
+            if !matches!(delivery, DeliveryDef::Instant) {
+                return Err(BasicAttackValidationError::new("action", "DamageCone requires Instant delivery"));
+            }
+            if *length_tiles == 0 {
+                return Err(BasicAttackValidationError::new("action.length_tiles", "cone length must be positive"));
+            }
+            if *end_half_width_tiles == 0 || end_half_width_tiles > length_tiles {
+                return Err(BasicAttackValidationError::new("action.end_half_width_tiles", "cone end half width must be in 1..=length_tiles"));
+            }
+        }
+        if let Self::DamageArea { footprint, .. } = self {
+            if !matches!(delivery, DeliveryDef::Instant | DeliveryDef::Projectile { hit_policy: crate::game::ability::ProjectileHitPolicy::TargetLocked, .. }) {
+                return Err(BasicAttackValidationError::new("action", "DamageArea requires Instant or target-locked Projectile delivery"));
+            }
+            footprint.validate().map_err(|cause| BasicAttackValidationError::new("action.footprint", cause))?;
+            if !footprint.include_anchor_tile {
+                return Err(BasicAttackValidationError::new("action.footprint.include_anchor_tile", "DamageArea must include the primary target tile"));
+            }
+        }
         if let Self::Heal { footprint, .. } = self {
             if !matches!(delivery, DeliveryDef::Instant) {
                 return Err(BasicAttackValidationError::new(
@@ -133,7 +210,7 @@ impl BasicAttackAction {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct BasicAttackDef {
-    #[serde(default, skip_serializing_if = "BasicAttackAction::is_damage")]
+    #[serde(default, skip_serializing_if = "BasicAttackAction::is_default_damage")]
     pub action: BasicAttackAction,
     #[serde(default)]
     pub range_policy: TileRangePolicy,
@@ -160,7 +237,7 @@ pub struct BasicAttackDef {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct AuthoredBasicAttackDef {
-    #[serde(default, skip_serializing_if = "BasicAttackAction::is_damage")]
+    #[serde(default, skip_serializing_if = "BasicAttackAction::is_default_damage")]
     action: BasicAttackAction,
     range_policy: TileRangePolicy,
     defense_tile_range: RequiredOption<TileRangePattern>,
@@ -337,7 +414,7 @@ pub struct AbnormalityMetadata {
     #[serde(default = "default_abnormality_threat_class")]
     pub threat_class: BattleUnitThreatClass,
 
-    /// 이 환상체의 run-local response completion이 처음 달성될 때 지급할 고유 스킬 파편.
+    /// 이 환상체의 첫 run-local response completion 파편. None이면 파편을 지급하지 않는다.
     #[serde(default)]
     pub response_complete_skill_fragment_id: Option<SkillFragmentId>,
 
@@ -593,6 +670,75 @@ mod tests {
             error.cause,
             "TileArea delivery is skill-only for a basic-attack consumer"
         );
+    }
+
+    #[test]
+    fn basic_occupied_tiles_contract_roundtrip_and_invalid_delivery() {
+        let mut basic = BasicAttackDef { action: BasicAttackAction::DamageOccupiedTiles, ..Default::default() };
+        basic.try_validate_runtime_contract().unwrap();
+        let encoded = ron::ser::to_string(&basic).unwrap();
+        let reopened: BasicAttackDef = ron::de::from_str(&encoded).unwrap();
+        assert!(matches!(reopened.action, BasicAttackAction::DamageOccupiedTiles));
+        assert!(reopened.action.is_damage());
+        basic.delivery = ron::de::from_str("Projectile(speed_units_per_ms:6000)").unwrap();
+        assert_eq!(basic.try_validate_runtime_contract().unwrap_err().cause, "DamageOccupiedTiles requires Instant delivery");
+    }
+
+    #[test]
+    fn basic_cone_contract_roundtrip_and_invalid_inputs() {
+        let mut basic = BasicAttackDef {
+            action: BasicAttackAction::DamageCone { length_tiles: 5, end_half_width_tiles: 2 },
+            ..Default::default()
+        };
+        basic.try_validate_runtime_contract().unwrap();
+        let encoded = ron::ser::to_string(&basic).unwrap();
+        assert!(encoded.contains("DamageCone"));
+        let reopened: BasicAttackDef = ron::de::from_str(&encoded).unwrap();
+        assert!(matches!(reopened.action, BasicAttackAction::DamageCone { length_tiles: 5, end_half_width_tiles: 2 }));
+        assert!(reopened.action.is_damage());
+        for (length, width, field) in [(0,1,"action.length_tiles"),(5,0,"action.end_half_width_tiles"),(5,6,"action.end_half_width_tiles")] {
+            basic.action = BasicAttackAction::DamageCone { length_tiles: length, end_half_width_tiles: width };
+            assert_eq!(basic.try_validate_runtime_contract().unwrap_err().field_suffix, field);
+        }
+        basic.action = reopened.action;
+        basic.delivery = DeliveryDef::TileArea { footprint: TileRangePattern { include_anchor_tile: true, rows: vec!["@".into()] }, area: Default::default() };
+        assert_eq!(basic.try_validate_runtime_contract().unwrap_err().cause, "DamageCone requires Instant delivery");
+    }
+
+    #[test]
+    fn basic_damage_area_contract_roundtrip_and_invalid_inputs() {
+        let mut basic = BasicAttackDef {
+            action: BasicAttackAction::DamageArea {
+                footprint: TileRangePattern { include_anchor_tile: true, rows: vec!["X@X".into()] },
+                secondary_percent: 40,
+            },
+            ..Default::default()
+        };
+        basic.try_validate_runtime_contract().unwrap();
+        let encoded = ron::ser::to_string(&basic).unwrap();
+        assert!(encoded.contains("DamageArea"), "non-default damage action must not be omitted");
+        let reopened: BasicAttackDef = ron::de::from_str(&encoded).unwrap();
+        assert!(matches!(reopened.action, BasicAttackAction::DamageArea { secondary_percent: 40, .. }));
+        assert!(reopened.action.is_damage());
+        assert!(!reopened.action.is_heal());
+        basic.delivery = DeliveryDef::TileArea { footprint: TileRangePattern {include_anchor_tile:true, rows:vec!["@".into()]}, area:Default::default() };
+        assert_eq!(basic.try_validate_runtime_contract().unwrap_err().cause, "DamageArea requires Instant or target-locked Projectile delivery");
+        basic.delivery = ron::de::from_str("Projectile(speed_units_per_ms:10000)").unwrap();
+        basic.try_validate_runtime_contract().unwrap();
+        let encoded = ron::ser::to_string(&basic).unwrap();
+        let restored: BasicAttackDef = ron::de::from_str(&encoded).unwrap();
+        restored.try_validate_runtime_contract().unwrap();
+        basic.delivery = ron::de::from_str("Projectile(speed_units_per_ms:10000,hit_policy:DirectionalCollision,max_range_tiles:Some(6),max_lifetime_ms:Some(1000))").unwrap();
+        assert_eq!(basic.try_validate_runtime_contract().unwrap_err().field_suffix, "action");
+        basic.delivery = DeliveryDef::Instant;
+        let BasicAttackAction::DamageArea { footprint, .. } = &mut basic.action else { unreachable!() };
+        footprint.include_anchor_tile = false;
+        assert_eq!(basic.try_validate_runtime_contract().unwrap_err().field_suffix, "action.footprint.include_anchor_tile");
+        let BasicAttackAction::DamageArea { footprint, .. } = &mut basic.action else { unreachable!() };
+        footprint.include_anchor_tile = true;
+        footprint.rows = vec!["XX".into()];
+        assert_eq!(basic.try_validate_runtime_contract().unwrap_err().field_suffix, "action.footprint");
+        assert!(!ron::ser::to_string(&BasicAttackDef::default()).unwrap().contains("action:"));
     }
 
     #[test]

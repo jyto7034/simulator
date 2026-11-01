@@ -833,7 +833,7 @@ fn frame_reference_node(
     Ok(0)
 }
 
-fn evaluation_host_admission(
+pub(in crate::game::battle::core) fn evaluation_host_admission(
     plan: &CompiledAmountPlan,
     node_index: usize,
     work: u64,
@@ -1151,7 +1151,7 @@ impl BattleCore {
                     total_predicate_count = total_predicate_count
                         .checked_add(match source {
                             FiniteSource::ResolvedTargetsWhere(predicates) => predicates.len(),
-                            FiniteSource::AuthoredMembers(_) | FiniteSource::ResolvedTargets => 0,
+                            FiniteSource::AuthoredMembers(_) | FiniteSource::ResolvedTargets | FiniteSource::StateOwnerDotTargets => 0,
                         })
                         .ok_or_else(|| {
                             fault(
@@ -1552,7 +1552,7 @@ impl BattleCore {
     ) -> Result<bool, ValueExprFault> {
         let predicates = match spec.source {
             FiniteSource::ResolvedTargetsWhere(predicates) => predicates.as_slice(),
-            FiniteSource::AuthoredMembers(_) | FiniteSource::ResolvedTargets => &[],
+            FiniteSource::AuthoredMembers(_) | FiniteSource::ResolvedTargets | FiniteSource::StateOwnerDotTargets => &[],
         };
         for predicate in predicates {
             let passes = match predicate {
@@ -2995,8 +2995,7 @@ impl BattleCore {
         Ok(result)
     }
 
-    #[cfg(test)]
-    fn build_value_expr_frame(
+    pub(in crate::game::battle::core) fn build_value_expr_frame(
         &self,
         plan: &CompiledAmountPlan,
         source: &RuntimeFactSource,
@@ -3086,12 +3085,19 @@ impl BattleCore {
             crate::authoring::control::charge(1, "value_expr_frame_read")
                 .map_err(|error| control_fault(plan, error, "frame read"))?;
             let value = match reference {
+                ValueRef::RelationCount { subject, relation } => {
+                    let unit = self.value_expr_unit(plan, *subject, source, target, node_index)?;
+                    let value = self.relation_count(unit.instance_id, *relation)
+                        .map_err(|error| control_fault(plan, error, "relation count"))?;
+                    TypedInteger::new(i128::from(value), ValueUnit::Count)
+                }
                 ValueRef::Stat { subject, stat } => {
                     let unit = self.value_expr_unit(plan, *subject, source, target, node_index)?;
                     match stat {
                         StatSelector::Attack => {
                             TypedInteger::new(i128::from(unit.stats.attack), ValueUnit::Magnitude)
                         }
+                        StatSelector::Defense => TypedInteger::new(i128::from(unit.stats.defense), ValueUnit::Magnitude),
                         StatSelector::SpellPower => TypedInteger::new(
                             i128::from(unit.stats.spell_power),
                             ValueUnit::Magnitude,
@@ -3191,6 +3197,10 @@ impl BattleCore {
                         })?
                         .value(plan, source, effect_index, selector, field, node_index)?,
                 },
+                ValueRef::StateField { .. } | ValueRef::EventHpLost => {
+                    return Err(fault(plan, ValueExprFaultCode::MissingContext, node_index,
+                        "ordinary effect has no state-program owner"));
+                }
                 ValueRef::AggregateMember { .. } => continue,
             };
             frame

@@ -834,7 +834,7 @@ fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
                 PveEncounterRewardSource {
                     reward_source_id: "source_low_risk".to_string(),
                     encounter_id: "low_risk_encounter".to_string(),
-                    fragment_id: SkillFragmentId::from("fragment_low_risk_abno"),
+                    fragment_id: Some(SkillFragmentId::from("fragment_low_risk_abno")),
                     first_equipment_ids: vec!["standard_armor".to_owned()],
                     repeat_rewards: vec![RewardEffect::GrantEquipmentDust { amount: 5 }],
                     revival: None,
@@ -842,10 +842,11 @@ fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
                 PveEncounterRewardSource {
                     reward_source_id: "source_boss_risk".to_string(),
                     encounter_id: "boss_risk_encounter".to_string(),
-                    fragment_id: SkillFragmentId::from("fragment_boss_risk_abno"),
+                    fragment_id: Some(SkillFragmentId::from("fragment_boss_risk_abno")),
                     first_equipment_ids: vec!["standard_armor".to_owned()],
                     repeat_rewards: vec![RewardEffect::GrantEquipmentDust { amount: 10 }],
                     revival: Some(crate::game::revival::BossRevivalPolicy {
+                        variant: None,
                         catalyst_material_id: "revival_catalyst".into(), catalyst_amount: 1, part_material_id: "part_big_bad_wolf".into(),
                         stage_2: fixture_revival_stage("boss_risk_encounter", 140, 2),
                         stage_3: fixture_revival_stage("boss_risk_encounter", 180, 4),
@@ -854,7 +855,7 @@ fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
                 PveEncounterRewardSource {
                     reward_source_id: "source_final_boss_risk".to_string(),
                     encounter_id: "final_boss_risk_encounter".to_string(),
-                    fragment_id: SkillFragmentId::from("fragment_final_boss_risk_abno"),
+                    fragment_id: Some(SkillFragmentId::from("fragment_final_boss_risk_abno")),
                     first_equipment_ids: vec!["standard_armor".to_owned()],
                     repeat_rewards: vec![RewardEffect::GrantEquipmentDust { amount: 20 }],
                     revival: None,
@@ -862,7 +863,7 @@ fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
                 PveEncounterRewardSource {
                     reward_source_id: "source_elite_risk".to_string(),
                     encounter_id: "elite_risk_encounter".to_string(),
-                    fragment_id: SkillFragmentId::from("fragment_elite_risk_abno"),
+                    fragment_id: Some(SkillFragmentId::from("fragment_elite_risk_abno")),
                     first_equipment_ids: vec!["standard_armor".to_owned()],
                     repeat_rewards: vec![RewardEffect::GrantEquipmentDust { amount: 5 }],
                     revival: None,
@@ -870,7 +871,7 @@ fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
                 PveEncounterRewardSource {
                     reward_source_id: "source_elite_survival".to_string(),
                     encounter_id: "elite_survival_timer_encounter".to_string(),
-                    fragment_id: SkillFragmentId::from("fragment_ambush_risk_abno"),
+                    fragment_id: Some(SkillFragmentId::from("fragment_ambush_risk_abno")),
                     first_equipment_ids: vec!["standard_armor".to_owned()],
                     repeat_rewards: vec![RewardEffect::GrantEquipmentDust { amount: 5 }],
                     revival: None,
@@ -878,7 +879,7 @@ fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
                 PveEncounterRewardSource {
                     reward_source_id: "source_defense".to_string(),
                     encounter_id: "defense_encounter".to_string(),
-                    fragment_id: SkillFragmentId::from("fragment_defense_risk_abno"),
+                    fragment_id: Some(SkillFragmentId::from("fragment_defense_risk_abno")),
                     first_equipment_ids: vec!["standard_armor".to_owned()],
                     repeat_rewards: vec![RewardEffect::GrantEquipmentDust { amount: 5 }],
                     revival: None,
@@ -886,7 +887,7 @@ fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
                 PveEncounterRewardSource {
                     reward_source_id: "source_defense_route".to_string(),
                     encounter_id: "defense_route_encounter".to_string(),
-                    fragment_id: SkillFragmentId::from("fragment_defense_route_abno"),
+                    fragment_id: Some(SkillFragmentId::from("fragment_defense_route_abno")),
                     first_equipment_ids: vec!["standard_armor".to_owned()],
                     repeat_rewards: vec![RewardEffect::GrantEquipmentDust { amount: 5 }],
                     revival: None,
@@ -894,7 +895,7 @@ fn game_data_with_pve_encounters() -> Arc<GameDataBase> {
                 PveEncounterRewardSource {
                     reward_source_id: "source_defense_corridor".to_string(),
                     encounter_id: "defense_corridor_encounter".to_string(),
-                    fragment_id: SkillFragmentId::from("fragment_defense_corridor_abno"),
+                    fragment_id: Some(SkillFragmentId::from("fragment_defense_corridor_abno")),
                     first_equipment_ids: vec!["standard_armor".to_owned()],
                     repeat_rewards: vec![RewardEffect::GrantEquipmentDust { amount: 5 }],
                     revival: None,
@@ -1463,8 +1464,27 @@ fn game_data_with_equipment_and_skill_fragments(
 fn game_data_with_pve_equipment_and_active_skill_fragments(
     equipment: Vec<EquipmentMetadata>,
     skills: Vec<SkillDef>,
-    mut fragments: Vec<SkillFragmentMetadata>,
+    fragments: Vec<SkillFragmentMetadata>,
 ) -> Arc<GameDataBase> {
+    game_data_builder_with_pve_equipment_and_active_skill_fragments(equipment, skills, fragments)
+        .build_arc()
+}
+
+fn unowned_graph_modifier_relics(ids: &[&str]) -> crate::game::data::relic_data::RelicDatabase {
+    let rows: Vec<_> = ids.iter().enumerate().map(|(index, id)| {
+        format!(r#"(id:"{id}",uuid:"{}",name:"Modifier fixture",description:"Unowned graph dependency",rarity:"fixture",allow_duplicates:true,effects:[(id:"unused",selector:(all_tags:["unused_fixture"]),percent:1)],dismantle_equipment_dust:1)"#,
+            Uuid::from_u128(0xd100 + index as u128))
+    }).collect();
+    ron::de::from_str(&format!("(relics:[{}])", rows.join(","))).unwrap()
+}
+
+// Callers with explicit catalog dependencies must provide them before the
+// builder validates the complete database.
+fn game_data_builder_with_pve_equipment_and_active_skill_fragments(
+    equipment: Vec<EquipmentMetadata>,
+    skills: Vec<SkillDef>,
+    mut fragments: Vec<SkillFragmentMetadata>,
+) -> GameDataBuilder {
     let base = game_data_with_pve_encounters();
     fragments.extend(base.skill_fragment_data.fragments.iter().cloned());
     GameDataBuilder::empty()
@@ -1482,7 +1502,6 @@ fn game_data_with_pve_equipment_and_active_skill_fragments(
         .with_pve_data(base.pve_data.clone())
         .with_skills(SkillDatabase::new(skills))
         .with_skill_fragments(SkillFragmentDatabase::new(fragments))
-        .build_arc()
 }
 
 fn game_data_with_pve_and_consumables(consumables: Vec<ConsumableMetadata>) -> Arc<GameDataBase> {

@@ -5,6 +5,9 @@ use super::{
 };
 
 pub(crate) fn provider_matches(p: &ProviderPredicateDef, actual: &ProspectiveProvider) -> bool {
+    provider_matches_parts([p.equipment_id.as_deref(), p.fragment_id.as_deref(), p.form_id.as_deref()], actual)
+}
+fn provider_matches_parts(expected: [Option<&str>; 3], actual: &ProspectiveProvider) -> bool {
     let (equipment, fragment, form) = match actual {
         ProspectiveProvider::Fragment(f) => (
             None,
@@ -15,13 +18,9 @@ pub(crate) fn provider_matches(p: &ProviderPredicateDef, actual: &ProspectivePro
             (Some(definition_id.as_str()), None, None)
         }
     };
-    p.equipment_id
-        .as_deref()
-        .is_none_or(|id| equipment == Some(id))
-        && p.fragment_id
-            .as_deref()
-            .is_none_or(|id| fragment == Some(id))
-        && p.form_id.as_deref().is_none_or(|id| form == Some(id))
+    expected[0].is_none_or(|id| equipment == Some(id))
+        && expected[1].is_none_or(|id| fragment == Some(id))
+        && expected[2].is_none_or(|id| form == Some(id))
 }
 pub(crate) fn matches(
     selector: &StructuralSelectorDef,
@@ -30,25 +29,24 @@ pub(crate) fn matches(
     presence: bool,
     work: &mut Work,
 ) -> Result<bool, RelicPlanError> {
-    let bytes = selector
-        .provider
-        .equipment_id
-        .as_ref()
-        .map_or(0, String::len)
-        + selector
-            .provider
-            .fragment_id
-            .as_ref()
-            .map_or(0, String::len)
-        + selector.provider.form_id.as_ref().map_or(0, String::len);
+    if !charged_provider_matches([selector.provider.equipment_id.as_deref(), selector.provider.fragment_id.as_deref(), selector.provider.form_id.as_deref()], &providers[node.provider], work)? {
+        return Ok(false);
+    }
+    effect_matches(&selector.effect, node, presence, work)
+}
+fn charged_provider_matches(expected: [Option<&str>; 3], actual: &ProspectiveProvider, work: &mut Work) -> Result<bool, RelicPlanError> {
+    let bytes = expected.iter().flatten().try_fold(0usize, |n, s| n.checked_add(s.len())).ok_or_else(overflow)?;
     work.charge(
         bytes.checked_add(1).ok_or_else(overflow)?,
         "relic_structural_provider_match",
     )?;
-    if !provider_matches(&selector.provider, &providers[node.provider]) {
-        return Ok(false);
-    }
-    effect_matches(&selector.effect, node, presence, work)
+    Ok(provider_matches_parts(expected, actual))
+}
+// Legacy numeric rules already own these immutable selectors. Borrow their
+// leaves instead of reconstructing an identical owned selector per context.
+pub(super) fn legacy_matches(selector: &crate::game::data::relic_data::RelicDamageSelector, node: &EffectiveEffect, providers: &[ProspectiveProvider], work: &mut Work) -> Result<bool, RelicPlanError> {
+    if !charged_provider_matches([selector.equipment_id.as_deref(), selector.fragment_id.as_deref(), selector.form_id.as_deref()], &providers[node.provider], work)? { return Ok(false); }
+    effect_matches_parts(&selector.all_tags, Some(EffectOperation::Damage), None, node, true, work)
 }
 fn effect_matches(
     p: &EffectPredicateDef,
@@ -56,11 +54,14 @@ fn effect_matches(
     presence: bool,
     work: &mut Work,
 ) -> Result<bool, RelicPlanError> {
+    effect_matches_parts(&p.all_tags, p.op, p.has_property, node, presence, work)
+}
+fn effect_matches_parts(all_tags: &[String], operation: Option<EffectOperation>, property: Option<RelicProperty>, node: &EffectiveEffect, presence: bool, work: &mut Work) -> Result<bool, RelicPlanError> {
     work.charge(1, "relic_structural_predicate")?;
-    if p.op.is_some_and(|op| op != node.operation) {
+    if operation.is_some_and(|op| op != node.operation) {
         return Ok(false);
     }
-    for tag in &p.all_tags {
+    for tag in all_tags {
         let bytes = node
             .tags
             .iter()
@@ -71,12 +72,12 @@ fn effect_matches(
             return Ok(false);
         }
     }
-    Ok(!presence || p.has_property.is_none_or(|p| node.has_property(p)))
+    Ok(!presence || property.is_none_or(|p| node.has_property(p)))
 }
 fn condition(
     c: &RelicConditionDef,
     target: Option<usize>,
-    nodes: &[EffectiveEffect],
+    nodes: &[super::SharedEffect],
     providers: &[ProspectiveProvider],
     work: &mut Work,
 ) -> Result<bool, RelicPlanError> {
@@ -116,7 +117,7 @@ fn condition(
 }
 fn enabled(
     b: &Binding<'_>,
-    nodes: &[EffectiveEffect],
+    nodes: &[super::SharedEffect],
     providers: &[ProspectiveProvider],
     work: &mut Work,
 ) -> Result<bool, RelicPlanError> {
@@ -183,6 +184,7 @@ fn reads<'a>(c: &'a RelicConditionDef, negative: bool, out: &mut Vec<Read<'a>>) 
 }
 fn changes(recipe: &StructuralRecipeDef, p: RelicProperty) -> bool {
     match recipe {
+        StructuralRecipeDef::ChannelHealthUpkeep { .. } => false,
         StructuralRecipeDef::SupportSelectionPattern { .. } => false,
         StructuralRecipeDef::FixedRecipientSupport
         | StructuralRecipeDef::PersonalShieldSingle { .. } => p == RelicProperty::SupportAreaRadius,
@@ -196,7 +198,7 @@ fn changes(recipe: &StructuralRecipeDef, p: RelicProperty) -> bool {
 /// Edge direction: reader -> producer. Strict edges require an earlier stratum.
 fn strata(
     bindings: &[Binding<'_>],
-    nodes: &[EffectiveEffect],
+    nodes: &[super::SharedEffect],
     providers: &[ProspectiveProvider],
     work: &mut Work,
 ) -> Result<Vec<usize>, RelicPlanError> {
@@ -294,7 +296,7 @@ fn strata(
 }
 pub(crate) fn solve(
     bindings: &mut [Binding<'_>],
-    nodes: &mut [EffectiveEffect],
+    nodes: &mut [super::SharedEffect],
     providers: &[ProspectiveProvider],
     work: &mut Work,
 ) -> Result<(), RelicPlanError> {
@@ -311,7 +313,7 @@ pub(crate) fn solve(
                 b.active = true;
                 changed = true;
                 for &n in &b.granted {
-                    nodes[n].present = true;
+                    super::compiler::edit_effect(&mut nodes[n], work)?.present = true;
                 }
             }
             if !changed {
@@ -323,7 +325,7 @@ pub(crate) fn solve(
                 if let (Some(target), RelicRuleActionDef::Recipe(recipe)) =
                     (b.target, &b.rule.apply)
                 {
-                    nodes[target].include_recipe(recipe, &b.contribution, work)?;
+                    super::compiler::edit_effect(&mut nodes[target], work)?.include_recipe(recipe, &b.contribution, work)?;
                 }
             }
         }

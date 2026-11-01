@@ -554,6 +554,7 @@ enum WireFiniteSource {
     AuthoredMembers(BoundedMembers),
     ResolvedTargets,
     ResolvedTargetsWhere(BoundedResolvedPredicates),
+    StateOwnerDotTargets,
 }
 
 impl<'de> Deserialize<'de> for FiniteSource {
@@ -564,6 +565,7 @@ impl<'de> Deserialize<'de> for FiniteSource {
         Ok(match WireFiniteSource::deserialize(deserializer)? {
             WireFiniteSource::AuthoredMembers(members) => Self::AuthoredMembers(members.0),
             WireFiniteSource::ResolvedTargets => Self::ResolvedTargets,
+            WireFiniteSource::StateOwnerDotTargets => Self::StateOwnerDotTargets,
             WireFiniteSource::ResolvedTargetsWhere(predicates) => {
                 Self::ResolvedTargetsWhere(predicates.0)
             }

@@ -636,9 +636,14 @@ impl BattleCore {
         if area.emission.is_some() {
             self.replace_area_emitter(caster_instance_id, &skill_id, &step_id, time_ms)?;
         }
+        let channel_started_at = if matches!(area.mode, crate::game::ability::SkillTileAreaMode::ChannelGround { .. }) {
+            Some(self.channel_started_at(caster_instance_id, time_ms)?.unwrap_or(time_ms))
+        } else { None };
         self.active_areas.insert(
             area_id,
             AreaRuntime {
+                channel_started_at,
+                source_generation: self.content_identity.clone(),
                 mode: area.mode,
                 ground_status: area.ground_status.map(|program| Box::new(ground_status::GroundAreaState::new(program, area_declared_seq))),
                 emission: area.emission,
@@ -693,6 +698,7 @@ impl BattleCore {
                 spawned_area_id: Some(area_id),
             },
         );
+        crate::game::battle::core::area_observation::record(&mut self.authoring_observation, &self.active_areas[&area_id], time_ms, crate::game::battle::core::area_observation::AreaChange::Started, None)?;
         control::poll("registered_area_context")?;
 
         let cause = crate::game::battle::event_log::BattleEventCause::Parent {
@@ -1005,9 +1011,9 @@ impl BattleCore {
     pub(in crate::game::battle::core) fn finish_skill_area_at(
         &mut self, area_id: Uuid, now: u64,
     ) -> Result<(), crate::game::behavior::GameError> {
-        self.finish_skill_area_at_with_resume(area_id, now, true)
+        self.finish_skill_area_at_with_reason(area_id, now, true, crate::game::ability::sustained::SustainedEndReason::Expired)
     }
-    pub(super) fn finish_skill_area_at_with_resume(&mut self, area_id:Uuid, now:u64, resume_basic:bool) -> Result<(), crate::game::behavior::GameError> {
+    pub(super) fn finish_skill_area_at_with_reason(&mut self, area_id:Uuid, now:u64, resume_basic:bool, reason:crate::game::ability::sustained::SustainedEndReason) -> Result<(), crate::game::behavior::GameError> {
         let Some(runtime) = self.active_areas.remove(&area_id) else {
             return Ok(());
         };
@@ -1031,9 +1037,20 @@ impl BattleCore {
             self.event_queue.push(BattleEvent::AttackStart { time_ms: now, attacker_instance_id: runtime.caster_instance_id, target_instance_id: None, schedule_next: true, cause: Default::default() });
         }
         self.close_source_resource_delivery(runtime.source_snapshot.fact_source.resource_delivery().map(std::sync::Arc::as_ref))?;
-        if let Some(ticket) = runtime.source_snapshot.fact_source.delivery {
+        if let Some(ticket) = &runtime.source_snapshot.fact_source.delivery {
             self.runtime_facts
                 .close_delivery(&ticket, now)?;
+        }
+        crate::game::battle::core::area_observation::record(&mut self.authoring_observation, &runtime, now, crate::game::battle::core::area_observation::AreaChange::Ended { reason }, runtime.ground_status.as_ref().map(|g| g.membership()))?;
+        if self.game_data.equipment_state_catalog().has_owner_stun_end
+            && !matches!(reason, crate::game::ability::sustained::SustainedEndReason::Terminal
+                | crate::game::ability::sustained::SustainedEndReason::SourceUnavailable
+                | crate::game::ability::sustained::SustainedEndReason::TargetUnavailable) {
+            if let Some(ground) = &runtime.ground_status {
+                for target in ground.stun_targets()? {
+                    self.dispatch_equipment_stun_end(runtime.caster_instance_id, target, now)?;
+                }
+            }
         }
         control::poll("area_expired")?;
         Ok(())

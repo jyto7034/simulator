@@ -1,6 +1,7 @@
 //! Private, generation-local lowering. Public DTOs never contain these owners.
 //! Structural addresses remain lossless; short local aliases only index the
 //! ordinary skill/Flow executor and never identify a relic copy by themselves.
+use super::support::SelectedSupportReach;
 use super::{
     authoring::*, compiler, EffectBody, EffectiveEffect, EffectivePlanComponents, FaultCode,
     RelicPlanError, Work,
@@ -17,19 +18,19 @@ use crate::game::{
     value_expr::ValueExprCatalog,
 };
 use std::{collections::BTreeMap, sync::Arc};
-use super::support::SelectedSupportReach;
 
 #[derive(Clone)]
 pub(crate) struct EffectiveProviderPlan {
     pub skill: Arc<SkillDef>,
     pub flow: Arc<CompiledSkillFlow>,
     pub amounts: Arc<ValueExprCatalog>,
-    pub effects: Vec<(EffectSite, usize)>,
+    pub effects: Arc<Vec<(EffectSite, usize)>>,
     /// Selection is fixed at cast acceptance; this is authored data-unit reach,
     /// not a TileRangePattern or an increased shared protection radius.
     pub selected_recipient_reach: Option<SelectedSupportReach>,
     pub selected_recipient_excludes_caster: bool,
 }
+
 fn error(cause: impl Into<String>) -> RelicPlanError {
     RelicPlanError::new(FaultCode::InvalidReference, cause)
 }
@@ -95,21 +96,37 @@ fn overlay(
                 authored_reach_units: _,
             } = definition.recipients
             {
-                reach = Some(super::support::selection_recipe(effect).unwrap_or_else(|| super::support::shield_reach(definition)));
+                reach = Some(
+                    super::support::selection_recipe(effect)
+                        .unwrap_or_else(|| super::support::shield_reach(definition)),
+                );
                 if let Some(SelectedSupportReach::Pattern { range, .. }) = &reach {
-                    definition.support = Some(super::support::SupportPolicyDef { range: Arc::clone(range), conversion: None });
+                    definition.support = Some(super::support::SupportPolicyDef {
+                        range: Some(Arc::clone(range)),
+                        conversion: None,
+                        conversions: Vec::new(),
+                    });
                 }
             }
         }
         SkillEffectDef::Sustained {
             definition: SustainedEffectDef::ChannelAura { aura, .. },
         } => {
+            if let Some(policy) = effect.recipes.iter().find_map(|r| match r {
+                StructuralRecipeDef::ChannelHealthUpkeep { policy } => Some(*policy),
+                _ => None,
+            }) {
+                aura.health_upkeep = Some(policy);
+            }
             if effect
                 .recipes
                 .iter()
                 .any(|r| matches!(r, StructuralRecipeDef::FixedRecipientSupport))
             {
-                reach = Some(super::support::selection_recipe(effect).unwrap_or(SelectedSupportReach::Radius(aura.radius_units)));
+                reach = Some(
+                    super::support::selection_recipe(effect)
+                        .unwrap_or(SelectedSupportReach::Radius(aura.radius_units)),
+                );
             }
             if let Some(radius) = value(effect, RelicProperty::SupportAreaRadius) {
                 aura.radius_units = radius;
@@ -126,7 +143,9 @@ fn overlay(
         _ => {}
     }
     if super::support::selection_recipe(effect).is_some() && reach.is_none() {
-        return Err(error("support selection pattern requires an executable selected support consumer"));
+        return Err(error(
+            "support selection pattern requires an executable selected support consumer",
+        ));
     }
     Ok(reach)
 }
@@ -186,40 +205,7 @@ fn rename_flow(
         .get(raw.id())
         .ok_or_else(|| error("unknown local Flow node"))?
         .clone();
-    let rename_condition = |condition: &FlowCondition| -> Result<FlowCondition, RelicPlanError> {
-        Ok(match condition {
-            FlowCondition::Always(v) => FlowCondition::Always(*v),
-            FlowCondition::Compare {
-                node_id,
-                metric,
-                comparison,
-                value,
-            } => FlowCondition::Compare {
-                node_id: nodes.get(node_id).unwrap_or(node_id).clone(),
-                metric: *metric,
-                comparison: *comparison,
-                value: *value,
-            },
-            FlowCondition::EffectCompare {
-                node_id,
-                effect_id,
-                metric,
-                comparison,
-                value,
-            } => {
-                let local_effect = producer_steps
-                    .get(node_id)
-                    .and_then(|step| effects.get(&(step.clone(), effect_id.clone())));
-                FlowCondition::EffectCompare {
-                    node_id: nodes.get(node_id).unwrap_or(node_id).clone(),
-                    effect_id: local_effect.unwrap_or(effect_id).clone(),
-                    metric: *metric,
-                    comparison: *comparison,
-                    value: *value,
-                }
-            }
-        })
-    };
+
     Ok(match raw {
         SkillFlowDef::Action { step_id, wait, .. } => SkillFlowDef::Action {
             id,
@@ -254,7 +240,7 @@ fn rename_flow(
             ..
         } => SkillFlowDef::Branch {
             id,
-            condition: rename_condition(condition)?,
+            condition: rename_condition(condition, nodes, effects, producer_steps, work)?,
             then_node: Box::new(rename_flow(
                 then_node,
                 nodes,
@@ -387,7 +373,7 @@ fn rename_amount(
         Ok(())
     }
     let rewrite = |amount: &crate::game::value_expr::AmountExpr, work: &mut Work| {
-        compiler::admit_serialized_copy(amount, work)?;
+        compiler::admit_owned_copy(amount, work)?;
         let mut replacement = amount.clone();
         walk(&mut replacement.root, aliases, work)?;
         Ok::<_, RelicPlanError>(replacement)
@@ -414,14 +400,14 @@ pub(super) fn validate_grant_flow(
     data: &GameDataBase,
     work: &mut Work,
 ) -> Result<(), RelicPlanError> {
-    compiler::admit_serialized_copy(original, work)?;
-    compiler::admit_serialized_copy(&steps, work)?;
-    compiler::admit_serialized_copy(raw, work)?;
+    compiler::admit_owned_copy(original, work)?;
+    compiler::admit_owned_copy(&steps, work)?;
+    compiler::admit_owned_copy(raw, work)?;
     let original_flow = data
         .skill_data
         .compiled_flow(original.id.as_str())
         .map_err(error)?;
-    compiler::admit_serialized_copy(original_flow.as_ref(), work)?;
+    compiler::admit_owned_copy(original_flow.as_ref(), work)?;
     let mut skill = original.clone();
     let anchor = skill
         .steps
@@ -518,6 +504,7 @@ pub(super) fn lower(
     plan: &EffectivePlanComponents,
     data: &GameDataBase,
     work: &mut Work,
+    prepared: Option<(&[super::SharedEffect], &[EffectiveProviderPlan])>,
 ) -> Result<Vec<EffectiveProviderPlan>, RelicPlanError> {
     work.reserve(
         plan.providers
@@ -527,24 +514,53 @@ pub(super) fn lower(
     )?;
     let mut execution = Vec::with_capacity(plan.providers.len());
     for (provider, binding) in plan.providers.iter().enumerate() {
+        if let Some((effects, baseline)) = prepared {
+            if unchanged_provider(plan, provider, effects, work)? {
+                let cached = baseline
+                    .get(provider)
+                    .ok_or_else(|| error("prepared lowering provider missing"))?;
+                super::storage::admit_shared_clone(cached, work)?;
+                execution.push(cached.clone());
+                continue;
+            }
+        }
         let original = data
             .skill_data
             .get_by_id(binding.skill_id())
             .ok_or_else(|| error("provider skill unavailable"))?;
-        compiler::admit_serialized_copy(original, work)?;
+        super::storage::admit_shared_clone(original, work)?;
         let mut skill = original.clone();
-        super::action::apply(&mut skill,provider,&plan.action_modifiers,work)?;
+        super::action::apply(&mut skill, provider, &plan.action_modifiers, work)?;
         let original_flow = data
             .skill_data
             .compiled_flow(skill.id.as_str())
             .map_err(error)?;
-        compiler::admit_serialized_copy(original_flow.as_ref(), work)?;
-        let mut used_steps: Vec<_> = skill.steps.iter().map(|step| step.id.clone()).collect();
-        let mut used_nodes: Vec<_> = original_flow
-            .nodes
-            .iter()
-            .map(|node| node.id.clone())
-            .collect();
+        let has_finite_grant = plan.grants.iter().any(|grant| {
+            grant.provider == provider
+                && matches!(grant.body.as_ref(), GrantBodyDef::FiniteFlow { .. })
+        });
+        let mut used_steps = Vec::new();
+        let mut used_nodes = Vec::new();
+        if has_finite_grant {
+            work.reserve(
+                skill
+                    .steps
+                    .len()
+                    .checked_add(original_flow.nodes.len())
+                    .and_then(|n| n.checked_mul(std::mem::size_of::<String>())),
+                "effective_alias_tables",
+            )?;
+            used_steps.reserve_exact(skill.steps.len());
+            used_nodes.reserve_exact(original_flow.nodes.len());
+            for step in &skill.steps {
+                compiler::admit_owned_copy(&step.id, work)?;
+                used_steps.push(step.id.clone());
+            }
+            for node in &original_flow.nodes {
+                compiler::admit_owned_copy(&node.id, work)?;
+                used_nodes.push(node.id.clone());
+            }
+        }
         let mut address = Vec::new();
         let mut branches = Vec::new();
         let mut selected_recipient_reach = None;
@@ -607,7 +623,7 @@ pub(super) fn lower(
                             work,
                         )?;
                         let effective = &plan.effects[index];
-                        compiler::admit_serialized_copy(declared, work)?;
+                        compiler::admit_owned_copy(declared, work)?;
                         let id = aliases[&declared.id].clone();
                         let mut effect =
                             AuthoredSkillEffect::new(id, compiler::primitive(&declared.op));
@@ -621,8 +637,8 @@ pub(super) fn lower(
                     }
                 }
                 GrantBodyDef::FiniteFlow { steps, flow, .. } => {
-                    compiler::admit_serialized_copy(steps, work)?;
-                    compiler::admit_serialized_copy(flow, work)?;
+                    compiler::admit_owned_copy(steps, work)?;
+                    compiler::admit_owned_copy(flow, work)?;
                     let mut step_names = BTreeMap::new();
                     let mut effect_names = BTreeMap::new();
                     for step in steps {
@@ -697,12 +713,27 @@ pub(super) fn lower(
                 true,
             );
         }
-        let flow = Arc::new(
-            (*original_flow)
-                .clone()
-                .attach_branches(&skill.steps, &branches)
-                .map_err(|e| error(format!("{}.{}: {}", skill.id, e.path, e.cause)))?,
-        );
+        work.charge(
+            skill
+                .steps
+                .iter()
+                .try_fold(1usize, |n, s| n.checked_add(s.id.len() + 1))
+                .ok_or_else(|| error("flow reuse comparison overflow"))?,
+            "effective_flow_reuse_check",
+        )?;
+        let flow = if branches.is_empty()
+            && original_flow.matches_source(skill.flow.as_ref(), &skill.steps)
+        {
+            Arc::clone(&original_flow)
+        } else {
+            compiler::admit_owned_copy(original_flow.as_ref(), work)?;
+            Arc::new(
+                (*original_flow)
+                    .clone()
+                    .attach_branches(&skill.steps, &branches)
+                    .map_err(|e| error(format!("{}.{}: {}", skill.id, e.path, e.cause)))?,
+            )
+        };
         let single_recipe_sites: Vec<_> = address
             .iter()
             .filter(|(_, index)| {
@@ -712,6 +743,25 @@ pub(super) fn lower(
             })
             .map(|(site, _)| site.clone())
             .collect();
+        // Equipped declarations have already been resolved into plan receipts.
+        // Keep the executable flag, not declarations whose original group
+        // target may now be a converted selected-recipient effect.
+        if let Some(policy) = &skill.action_policy {
+            let crate::game::ability::action::ActionPolicy {
+                external_interrupt_protected,
+                modifiers,
+            } = policy.as_ref();
+            if !modifiers.is_empty() {
+                work.reserve(
+                    Some(std::mem::size_of::<crate::game::ability::action::ActionPolicy>() + 64),
+                    "effective_resolved_action_policy",
+                )?;
+                skill.action_policy = Some(Arc::new(crate::game::ability::action::ActionPolicy {
+                    external_interrupt_protected: *external_interrupt_protected,
+                    modifiers: Vec::new(),
+                }));
+            }
+        }
         let database = SkillDatabase::from_bound_effective_plan(
             skill,
             Arc::clone(&flow),
@@ -743,19 +793,65 @@ pub(super) fn lower(
         work.reserve(
             address
                 .len()
-                .checked_mul(std::mem::size_of::<(EffectSite, usize)>()),
+                .checked_mul(std::mem::size_of::<(EffectSite, usize)>())
+                .and_then(|n| n.checked_add(std::mem::size_of::<Vec<(EffectSite, usize)>>() + 64)),
             "effective_address_map",
         )?;
         execution.push(EffectiveProviderPlan {
             skill: Arc::new(database.skills.into_iter().next().unwrap()),
             flow,
             amounts: Arc::new(amounts),
-            effects: address,
+            effects: Arc::new(address),
             selected_recipient_reach,
             selected_recipient_excludes_caster,
         });
     }
     Ok(execution)
+}
+// Compare the complete inputs consumed by this provider's lowering. Exact
+// indices preserve effective effect addresses; Eq also covers non-serde body
+// and amount capabilities. Other providers and all global rules were already
+// resolved by the caller and are never omitted from validation.
+fn unchanged_provider(
+    plan: &EffectivePlanComponents,
+    provider: usize,
+    baseline: &[super::SharedEffect],
+    work: &mut Work,
+) -> Result<bool, RelicPlanError> {
+    work.charge(
+        plan.grants
+            .len()
+            .checked_add(plan.action_modifiers.len())
+            .and_then(|n| n.checked_add(plan.effects.len()))
+            .and_then(|n| n.checked_add(baseline.len()))
+            .ok_or_else(|| error("prepared lowering comparison overflow"))?,
+        "effective_prepared_scan",
+    )?;
+    if plan.grants.iter().any(|g| g.provider == provider)
+        || plan.action_modifiers.iter().any(|m| m.provider == provider)
+    {
+        return Ok(false);
+    }
+    let mut found = 0usize;
+    for (index, effect) in plan
+        .effects
+        .iter()
+        .enumerate()
+        .filter(|(_, e)| e.provider == provider)
+    {
+        let Some(original) = baseline.get(index).filter(|e| e.provider == provider) else {
+            return Ok(false);
+        };
+        work.charge(1, "effective_shared_identity")?;
+        if !Arc::ptr_eq(effect, original) {
+            super::storage::admit_comparison(effect, work)?;
+            if effect != original {
+                return Ok(false);
+            }
+        }
+        found += 1;
+    }
+    Ok(found == baseline.iter().filter(|e| e.provider == provider).count())
 }
 fn find_generated(
     plan: &EffectivePlanComponents,
@@ -771,4 +867,113 @@ fn find_generated(
             anchor, local_action_id, local_effect_id } if *relic_copy_uuid == grant.contribution.copy_uuid &&
             grant_rule_id == &grant.contribution.rule_id && anchor == &grant.anchor && local_action_id == action && local_effect_id == effect))
         .ok_or_else(|| error("active generated effect has no finite identity"))
+}
+
+#[cfg(test)]
+mod prepared_lowering_tests {
+    use super::*;
+
+    #[test]
+    fn publication_prepared_lowering_reuses_only_exact_original_inputs_including_hidden_fields() {
+        let (data, granted) = crate::game::battle::core::relic_structural_tests::prepared_plan();
+        let mut plan = granted.components.clone();
+        plan.grants.clear();
+        plan.effects.retain(|e| e.original);
+        plan.execution.clear();
+        let baseline = plan.effects.clone();
+        let mut work = Work::new(u64::MAX);
+        let fresh = lower(&plan, data.database(), &mut work, None).unwrap();
+        let mut work = Work::new(u64::MAX);
+        let reused = lower(&plan, data.database(), &mut work, Some((&baseline, &fresh))).unwrap();
+        assert_eq!(fresh.len(), reused.len());
+        assert!(Arc::ptr_eq(&fresh[0].skill, &reused[0].skill));
+        assert!(Arc::ptr_eq(&fresh[0].amounts, &reused[0].amounts));
+        assert_eq!(fresh[0].effects, reused[0].effects);
+        let unchanged = |p: &EffectivePlanComponents| {
+            unchanged_provider(p, 0, &baseline, &mut Work::new(u64::MAX)).unwrap()
+        };
+        assert!(unchanged(&plan));
+        let wire = serde_json::to_value(&plan.effects).unwrap();
+        let mut hidden_body = plan.clone();
+        let EffectBody::Original { effect, .. } =
+            &mut Arc::make_mut(&mut hidden_body.effects[0]).body
+        else {
+            unreachable!()
+        };
+        *effect += 1;
+        assert_eq!(serde_json::to_value(&hidden_body.effects).unwrap(), wire);
+        assert!(!unchanged(&hidden_body));
+        let mut hidden_capability = plan.clone();
+        Arc::make_mut(&mut hidden_capability.effects[0])
+            .amount_capabilities
+            .deadline = !hidden_capability.effects[0].amount_capabilities.deadline;
+        assert_eq!(
+            serde_json::to_value(&hidden_capability.effects).unwrap(),
+            wire
+        );
+        assert!(!unchanged(&hidden_capability));
+        let mut removed = plan.clone();
+        Arc::make_mut(&mut removed.effects[0]).present = false;
+        assert!(!unchanged(&removed));
+        let mut moved_address = plan.clone();
+        let mut unrelated = moved_address.effects[0].clone();
+        Arc::make_mut(&mut unrelated).provider = 1;
+        moved_address.effects.insert(0, unrelated);
+        assert!(!unchanged(&moved_address));
+        let mut with_grant = plan.clone();
+        with_grant.grants = granted.grants.clone();
+        assert!(!unchanged(&with_grant));
+        assert!(
+            unchanged(&plan),
+            "rejected candidates leave the baseline unchanged"
+        );
+    }
+}
+
+fn rename_condition(
+    condition: &FlowCondition,
+    nodes: &BTreeMap<String, String>,
+    effects: &BTreeMap<(String, String), String>,
+    producer_steps: &BTreeMap<String, String>,
+    work: &mut Work,
+) -> Result<FlowCondition, RelicPlanError> {
+    work.charge(1, "effective_condition_lower")?;
+    Ok(match condition {
+        FlowCondition::Predicate(_) => return Err(error("unresolved authored predicate")),
+        FlowCondition::Logic(logic) => {
+            FlowCondition::Logic(logic.try_map(|_, child| {
+                rename_condition(child, nodes, effects, producer_steps, work)
+            })?)
+        }
+        FlowCondition::Always(v) => FlowCondition::Always(*v),
+        FlowCondition::Compare {
+            node_id,
+            metric,
+            comparison,
+            value,
+        } => FlowCondition::Compare {
+            node_id: nodes.get(node_id).unwrap_or(node_id).clone(),
+            metric: *metric,
+            comparison: *comparison,
+            value: *value,
+        },
+        FlowCondition::EffectCompare {
+            node_id,
+            effect_id,
+            metric,
+            comparison,
+            value,
+        } => {
+            let local_effect = producer_steps
+                .get(node_id)
+                .and_then(|step| effects.get(&(step.clone(), effect_id.clone())));
+            FlowCondition::EffectCompare {
+                node_id: nodes.get(node_id).unwrap_or(node_id).clone(),
+                effect_id: local_effect.unwrap_or(effect_id).clone(),
+                metric: *metric,
+                comparison: *comparison,
+                value: *value,
+            }
+        }
+    })
 }

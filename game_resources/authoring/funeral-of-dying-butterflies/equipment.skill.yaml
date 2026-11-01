@@ -1,0 +1,84 @@
+# Current content structure; unresolved values are not release defaults.
+version: 1
+id: funeral-equipment
+values:
+- name: funeral_shots
+  value:
+    AttackProgram:
+      reactions: []
+      weapon_stages:
+        base:
+          interval_ms:
+            Unresolved: base-interval_ms
+          windup_ms:
+            Unresolved: base-windup_ms
+          push_distance_units: 0
+          delivery:
+            Projectile:
+              speed_units_per_ms:
+                Unresolved: base-speed_units_per_ms
+              hit_policy: DirectionalCollision
+              max_range_tiles:
+                Unresolved: base-max_range_tiles
+              max_lifetime_ms:
+                Unresolved: base-max_lifetime_ms
+              collision:
+                radius_units:
+                  Unresolved: base-projectile-radius
+                piercing: false
+        upgraded:
+          interval_ms:
+            Unresolved: upgraded-interval_ms
+          windup_ms:
+            Unresolved: upgraded-windup_ms
+          push_distance_units:
+            Unresolved: minigun-push
+          delivery:
+            Projectile:
+              speed_units_per_ms:
+                Unresolved: upgraded-speed_units_per_ms
+              hit_policy: DirectionalCollision
+              max_range_tiles:
+                Unresolved: upgraded-max_range_tiles
+              max_lifetime_ms:
+                Unresolved: upgraded-max_lifetime_ms
+              collision:
+                radius_units:
+                  Unresolved: upgraded-projectile-radius
+                piercing: true
+- name: farewell
+  value:
+    DefenseProgram:
+      LastWill:
+        range:
+          Unresolved: LastWill-range
+        attack_percent:
+          Unresolved: LastWill-attack_percent
+        damage_type:
+          Unresolved: LastWill-damage_type
+- name: funeral_echo
+  value:
+    AttackProgram:
+      reactions: []
+      death_burst:
+        delay_ms:
+          Unresolved: death_burst-delay_ms
+        range:
+          Unresolved: death_burst-range
+        attack_percent:
+          Unresolved: death_burst-attack_percent
+        damage_type:
+          Unresolved: death_burst-damage_type
+equipment_attacks:
+- equipment: placeholder_funeral_butterfly_weapon
+  program:
+    Shared: funeral_shots
+- equipment: placeholder_funeral_butterfly_accessory
+  program:
+    Shared: funeral_echo
+definitions: []
+skills: []
+equipment_defenses:
+- equipment: placeholder_funeral_butterfly_armor
+  program:
+    Shared: farewell

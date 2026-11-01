@@ -142,7 +142,11 @@ impl ActiveBattleSession {
                 .roster
                 .get_mut(&employee_uuid)
                 .expect("employee incapacitations were prevalidated");
-            employee.apply_incapacitation(post_battle_policy.incapacitation_trauma);
+            if self.battle.units[&unit_instance_id].lifecycle == crate::game::battle::core::types::RuntimeUnitLifecycle::PermanentlyDead {
+                employee.condition.physical_damage = crate::game::employee::MAX_PHYSICAL_DAMAGE;
+            } else {
+                employee.apply_incapacitation(post_battle_policy.incapacitation_trauma);
+            }
             self.employee_attempt
                 .processed_incapacitations
                 .insert(unit_instance_id);
@@ -541,6 +545,14 @@ impl GameCore {
             } else { None };
             battle.configure_performance_bonus(primary_abnormality_id.as_deref());
             battle.set_effective_owner(self.capture_structural_battle_owner()?)?;
+            for employee in roster.iter() {
+                for equipped in employee.loadout.item_slot.iter() {
+                    let owned = inventory.equipments.get_item(&equipped.instance_uuid)
+                        .ok_or(GameError::InventoryItemNotFound)?;
+                    if owned.meta.uuid != equipped.base_uuid { return Err(GameError::InvalidAction); }
+                    battle.register_equipment_cohort(employee.uuid, equipped.instance_uuid, equipped.base_uuid, 0)?;
+                }
+            }
             for employee in roster.iter(){
                 let Some(copy_uuid)=employee.skill_fragments.active_copy_uuid() else {continue;};
                 let copy=skill_fragments.get(&copy_uuid).ok_or(GameError::InvalidAction)?;
@@ -820,6 +832,22 @@ impl GameCore {
             &mut staged.grant_state.inventory,
             &mut staged.grant_state.skill_fragments,
         )?;
+        // A form's progress and presentation change in the same terminal
+        // transaction. Publish the changed copy through the ordinary inventory
+        // diff as well as subsequent inventory/employee snapshots.
+        if let Some(resources) = &battle.typed_resource_result {
+            for owned in staged.grant_state.inventory.equipments.iter() {
+                let Some(forms) = self.game_data.equipment_attack_catalog().by_equipment
+                    .get(&owned.meta.uuid).and_then(|p| p.victory_forms.as_ref()) else { continue; };
+                if !resources.balance_changed(&forms.confirmed, crate::game::resource::ResourceOwner::EquipmentCopy(owned.instance_uuid)) { continue; }
+                let item = InventoryItemDto::Equipment(self.equipment_item_dto(owned));
+                if let Some(updated) = staged.condition_inventory_diff.updated.iter_mut().find(|item| item.uuid() == owned.instance_uuid) {
+                    *updated = item;
+                } else {
+                    staged.condition_inventory_diff.updated.push(item);
+                }
+            }
+        }
         if staged.grant_state.roster.is_empty() {
             return Ok(());
         }
@@ -902,7 +930,7 @@ impl GameCore {
                     .get_item(&item_uuid)
                     .ok_or(GameError::InventoryItemNotFound)?;
                 diff.updated.push(InventoryItemDto::Equipment(
-                    crate::game::resources::EquipmentItemDto::from_owned_equipment(owned),
+                    self.equipment_item_dto(owned),
                 ));
             }
         }
@@ -2936,6 +2964,45 @@ impl GameCore {
         })
     }
 
+    pub(super) fn handle_select_skill_relation(
+        &mut self,
+        employee_uuid: Uuid,
+        entry: String,
+        target: crate::game::battle::ids::UnitInstanceId,
+        source_command_id: Option<&str>,
+        after_seq: u64,
+    ) -> Result<BehaviorResult, GameError> {
+        let roster = self.roster()?.clone();
+        let active = self.state.active_battle.as_mut().ok_or(GameError::InvalidAction)?;
+        active.ensure_battle_projection_commit_available()?;
+        let unit_id = active.live_deployment.as_ref()
+            .and_then(|deployment| deployment.deployed_units.get(&employee_uuid))
+            .map(|deployed| deployed.unit_instance_id)
+            .ok_or(GameError::UnitNotFound)?;
+        active.battle.apply_live_command_with_source_command_id_in_candidate(
+            BattleLiveCommand::SelectRelation {
+                unit_id,
+                entry: entry.clone(),
+                target,
+                time_ms: active.execution.last_event_time_ms(),
+            },
+            source_command_id,
+        )?;
+        active.apply_live_signals_to_tactical_resource();
+        active.commit_battle_projection()?;
+        let battle_update = active.battle_update_dto_after_or_resync(after_seq, &roster)?;
+        Ok(BehaviorResult::BattleRelationSelected {
+            battle_uuid: active.battle_uuid,
+            encounter_id: active.encounter_id.clone(),
+            node_type: active.node_type,
+            mission_variant: active.mission_variant,
+            battle_update,
+            employee_uuid,
+            unit_instance_id: unit_id,
+            entry,
+        })
+    }
+
     pub(super) fn handle_input_plan_command(&mut self,battle_uuid:Uuid,revision:u64,employee_uuid:Uuid,input:Option<crate::game::ability::input_plan::ShotCommitInput>,cancel:Option<u64>,source_command_id:Option<&str>,after_seq:u64)->Result<BehaviorResult,GameError>{
         let roster=self.roster()?.clone();
         let active=self.state.active_battle.as_mut().ok_or(GameError::InvalidAction)?;
@@ -3254,9 +3321,11 @@ impl GameCore {
         let mut progression = crate::authoring::clone_shape::controlled_clone(&self.run_state()?.encounter_progression)?;
         if let Some(hatched) = progression.revival.nodes.get(&node_id).cloned() {
             let source = self.game_data.pve_data.reward_sources.iter().find(|s| s.reward_source_id == hatched.reward_source_id).ok_or(GameError::InvalidAction)?;
-            let stage = source.revival.as_ref().ok_or(GameError::InvalidAction)?.stage(hatched.stage);
+            let policy = source.revival.as_ref().ok_or(GameError::InvalidAction)?;
+            let stage = policy.stage(hatched.stage);
             if stage.encounter_id != battle.encounter_id { return Err(GameError::InvalidAction); }
-            let rewards = stage.rewards.clone();
+            crate::authoring::control::charge_serialized(policy, "revival_victory_rewards")?;
+            let rewards = policy.victory_rewards(hatched.stage);
             progression.revival.resolve(node_id, true)?;
             return Ok(EncounterVictoryPlan { progression_after: Some(progression), reward_effects: rewards });
         }
@@ -3359,6 +3428,7 @@ impl GameCore {
             skill_fragment_diffs.extend(granted.skill_fragment_diffs);
             employee_experience_diffs.extend(granted.employee_experience_diffs);
         }
+        crate::authoring::control::poll("encounter_victory_rewards_staged")?;
         let enkephalin = staged.grant_state.enkephalin.amount;
         let employee_changes = Self::employee_outcome_changes_from_roster(
             &staged.grant_state.roster,

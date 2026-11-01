@@ -1,7 +1,0 @@
-{
-  "previous_manifest": "core_enhanced/docs/goals/core_basic_relic_rewards/execution/single_goal/test_parts/g11_inputs001/manifest.json",
-  "previous_sha256": "563e0945e3601e9d12ff5f255ff48437990a98b076d6f8d005076cb55db0bb13",
-  "current_source": "game_resources",
-  "profiles": "byte-identical; public Return source_result/source_trace receipts retained",
-  "content": "fresh package of current complete official authored sources; no mutation of historical pack"
-}

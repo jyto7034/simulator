@@ -403,6 +403,7 @@ pub enum UnitTargetTrait {
     TauntImmune,
     SlowImmune,
     StunImmune,
+    RootImmune,
 }
 
 impl MobilityKind {
@@ -662,6 +663,31 @@ impl UnitCombatProfile {
         self.weapon_profile = Some(weapon_profile.clone());
         Ok(())
     }
+
+    /// Both deployment and safe-zone compatibility read the real copy's stage.
+    pub(crate) fn apply_equipped_weapon_profile(
+        &mut self,
+        game_data: &GameDataBase,
+        definition: Uuid,
+        stage: crate::game::ability::weapon_marks::WeaponStage,
+    ) -> Result<(), GameError> {
+        let item = game_data.equipment_data.get_by_uuid(&definition)
+            .ok_or(GameError::MissingResource("EquipmentMetadata"))?;
+        let base = item.weapon_profile.as_ref().ok_or_else(|| {
+            GameError::InvalidStaticData(format!(
+                "weapon equipment '{}' is missing weapon_profile", item.id
+            ))
+        })?;
+        if let Some(stages) = game_data.equipment_attack_catalog().by_equipment
+            .get(&definition).and_then(|p| p.weapon_stages.as_ref())
+        {
+            let mut selected = crate::authoring::clone_shape::controlled_clone(base)?;
+            stages.definition.shot(stage).apply(&mut selected);
+            self.apply_weapon_profile(&selected)
+        } else {
+            self.apply_weapon_profile(base)
+        }
+    }
 }
 
 pub fn checked_scale_attack_interval_ms(
@@ -750,7 +776,7 @@ impl BattleUnitDraft {
         }?;
 
         if matches!(&self.source, BattleUnitSource::Employee(_)) {
-            let mut weapon_profile: Option<&WeaponCombatProfile> = None;
+            let mut equipped_weapon = None;
             for binding in &self.equipped_items {
                 let item = game_data
                     .equipment_data
@@ -759,21 +785,15 @@ impl BattleUnitDraft {
                 if item.equipment_type != EquipmentType::Weapon {
                     continue;
                 }
-                let next_profile = item.weapon_profile.as_ref().ok_or_else(|| {
-                    GameError::InvalidStaticData(format!(
-                        "weapon equipment '{}' is missing weapon_profile",
-                        item.id
-                    ))
-                })?;
-                if weapon_profile.is_some() {
+                if equipped_weapon.is_some() {
                     return Err(GameError::InvalidStaticData(
                         "battle unit draft contains multiple equipped weapons".to_string(),
                     ));
                 }
-                weapon_profile = Some(next_profile);
+                equipped_weapon = Some((item.uuid, binding.weapon_stage));
             }
-            let weapon_profile = weapon_profile.ok_or(GameError::WeaponRequired)?;
-            profile.apply_weapon_profile(weapon_profile)?;
+            let (definition, stage) = equipped_weapon.ok_or(GameError::WeaponRequired)?;
+            profile.apply_equipped_weapon_profile(game_data, definition, stage)?;
         }
 
         if let Some(source) = &profile.fragment_source {

@@ -76,7 +76,10 @@ impl BattleStartPlan {
         )?;
         let reserved_count = reserved_count.ok_or(GameError::InvalidAction)?;
         let mut meter = crate::authoring::control::CloneMeter::default();
-        meter.scan_storage(cells)?;
+        // The borrowed count pass above already proved this flat Copy extent.
+        // There is no recursive clone-shape traversal here: reserve its slots
+        // and charge the one materialization pass without billing a second scan.
+        meter.add_storage(cells);
         meter.finish("object_preview_domain", "object_preview_domain_copy")?;
         let sort_work = (reserved_count as u64)
             .saturating_mul(u64::from(usize::BITS - reserved_count.leading_zeros()) + 1);
@@ -230,19 +233,18 @@ mod u07_preview_accounting_tests {
             enemy_stat_scale: Default::default(),
         };
         let before = serde_json::to_string(&preview).unwrap();
-        // Six borrowed records; seven cells admitted/scanned/copied; reserve
+        // Six borrowed records; seven flat Copy cells admitted and copied;
         // four endpoints at sixteen sort units; three extra ground visits;
         // three path cells at three scan/sort units each, plus three storage
         // admission units (no active waves required).
         for (requested, site) in [
             (6, "object_preview_domain_count"),
             (13, "object_preview_domain"),
-            (20, "owned_clone_scan"),
-            (27, "object_preview_domain_copy"),
-            (43, "object_preview_domain_sort"),
-            (46, "object_preview_domain_copy_sort"),
-            (55, "burst_path_union"),
-            (58, "burst_path_union"),
+            (20, "object_preview_domain_copy"),
+            (36, "object_preview_domain_sort"),
+            (39, "object_preview_domain_copy_sort"),
+            (48, "burst_path_union"),
+            (51, "burst_path_union"),
         ] {
             let (short, admissions) = native::observe_retained_admissions(|| {
                 native::run(
@@ -266,7 +268,7 @@ mod u07_preview_accounting_tests {
         }
         let plan = native::run(
             RuntimeFactLimits {
-                max_work: 58,
+                max_work: 51,
                 ..Default::default()
             },
             || BattleStartPlan::from_resolved_preview(&preview),

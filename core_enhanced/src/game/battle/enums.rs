@@ -27,7 +27,7 @@ pub enum BattleEvent {
     },
     SpawnGroup {
         time_ms: u64,
-        group_id: ScenarioGroupId,
+        group_id: std::sync::Arc<ScenarioGroupId>,
         cause: BattleEventCause,
     },
     AttackStart {
@@ -55,6 +55,14 @@ pub enum BattleEvent {
         target_instance_id: UnitInstanceId,
         attack_epoch: u64,
         kind: AttackKind,
+        cause: BattleEventCause,
+    },
+    BasicAttackTileImpact {
+        time_ms: u64,
+        release_id: Uuid,
+        source_snapshot: DamageSourceSnapshot,
+        tile: crate::game::resources::Position,
+        air_capable: bool,
         cause: BattleEventCause,
     },
     BasicAttackProjectileAdvance {
@@ -120,6 +128,11 @@ pub enum BattleEvent {
         time_ms: u64,
         activation: u64,
     },
+    DeferredDamageTick { time_ms: u64, debt: u64 },
+    EquipmentDeathBurst { time_ms: u64, id: u64 },
+    EquipmentStateTick { time_ms: u64, activation: u64 },
+    MagazineReload { time_ms: u64, equipment: super::core::equipment_magazine::MagazineKey },
+    ChannelUpkeep { time_ms: u64, activation: u64 },
     SkillFlowWake {
         time_ms: u64,
         cast_seq: u64,
@@ -228,7 +241,7 @@ pub enum BattleEvent {
     /// Internal absolute-time/deadline wake for the post-bucket Wave evaluator.
     WaveTriggerWake {
         time_ms: u64,
-        trigger_id: String,
+        trigger_id: std::sync::Arc<String>,
     },
 }
 
@@ -268,6 +281,7 @@ crate::authoring::clone_shape::enum_shape!(BattleEvent {
             kind,
             cause
         },
+        BasicAttackTileImpact { time_ms, release_id, source_snapshot, tile, air_capable, cause },
         BasicAttackProjectileAdvance {
             time_ms,
             projectile_id,
@@ -330,6 +344,11 @@ crate::authoring::clone_shape::enum_shape!(BattleEvent {
             time_ms,
             activation
         },
+        DeferredDamageTick { time_ms, debt },
+        EquipmentDeathBurst { time_ms, id },
+        EquipmentStateTick { time_ms, activation },
+        MagazineReload { time_ms, equipment },
+        ChannelUpkeep { time_ms, activation },
         SkillFlowWake {
             time_ms,
             cast_seq,
@@ -436,6 +455,46 @@ crate::authoring::clone_shape::enum_shape!(BattleEvent {
 impl Eq for BattleEvent {}
 
 impl BattleEvent {
+    /// The queue and candidate snapshots share this immutable identifier.
+    /// It is not a persisted or externally serialized event representation.
+    pub(crate) fn spawn_group(
+        time_ms: u64,
+        group_id: ScenarioGroupId,
+        cause: BattleEventCause,
+    ) -> Result<Self, crate::game::behavior::GameError> {
+        super::runtime_control::admit_retained_growth(
+            0,
+            group_id.retained_extent(),
+            "spawn_group_id_owner",
+        )?;
+        Ok(Self::SpawnGroup {
+            time_ms,
+            group_id: std::sync::Arc::new(group_id),
+            cause,
+        })
+    }
+
+    pub(crate) fn wave_trigger_id_extent(capacity: usize) -> Option<usize> {
+        std::mem::size_of::<String>()
+            .checked_add(128)?
+            .checked_add(capacity)
+    }
+    pub(crate) fn wave_trigger_wake(
+        time_ms: u64,
+        trigger_id: &str,
+    ) -> Result<Self, crate::game::behavior::GameError> {
+        super::runtime_control::admit_retained_growth(
+            0,
+            Self::wave_trigger_id_extent(trigger_id.len()),
+            "wave_trigger_id_owner",
+        )?;
+        crate::authoring::control::charge(trigger_id.len() as u64, "wave_trigger_id_copy")?;
+        Ok(Self::WaveTriggerWake {
+            time_ms,
+            trigger_id: std::sync::Arc::new(trigger_id.to_owned()),
+        })
+    }
+
     /// 이벤트 발생 시간(ms)
     pub fn time_ms(&self) -> u64 {
         match self {
@@ -445,6 +504,7 @@ impl BattleEvent {
             | BattleEvent::SpawnGroup { time_ms, .. }
             | BattleEvent::AttackResolve { time_ms, .. }
             | BattleEvent::BasicHealResolve { time_ms, .. }
+            | BattleEvent::BasicAttackTileImpact { time_ms, .. }
             | BattleEvent::BasicAttackProjectileAdvance { time_ms, .. }
             | BattleEvent::SkillProjectileAdvance { time_ms, .. }
             | BattleEvent::SkillProjectileImpact { time_ms, .. }
@@ -458,6 +518,11 @@ impl BattleEvent {
             | BattleEvent::TileBurstWave { time_ms, .. }
             | BattleEvent::PresenceTick { time_ms, .. }
             | BattleEvent::SustainedExpiry { time_ms, .. }
+            | BattleEvent::EquipmentDeathBurst { time_ms, .. }
+            | BattleEvent::EquipmentStateTick { time_ms, .. }
+            | BattleEvent::DeferredDamageTick { time_ms, .. }
+            | BattleEvent::MagazineReload { time_ms, .. }
+            | BattleEvent::ChannelUpkeep { time_ms, .. }
             | BattleEvent::SkillFlowWake { time_ms, .. }
             | BattleEvent::CorrosionBoundary { time_ms }
             | BattleEvent::ResonancePulse { time_ms, .. }
@@ -498,6 +563,7 @@ impl BattleEvent {
             BattleEvent::BasicAttackProjectileAdvance { .. } => 1,
             BattleEvent::SkillProjectileAdvance { .. } => 2,
             BattleEvent::SkillProjectileImpact { .. } => 3,
+            BattleEvent::BasicAttackTileImpact { .. } => 3,
             BattleEvent::SkillAreaTick { .. } => 4,
             // 버프 틱/적용을 먼저 처리하고, 시전 종료, 공격, 시전 시작, 만료 순으로 처리
             BattleEvent::ApplyBuff { .. } => 5,
@@ -522,11 +588,16 @@ impl BattleEvent {
             BattleEvent::BossSummonWake { .. } => 18,
             BattleEvent::RelationGain { .. } | BattleEvent::RelationActionTick { .. } | BattleEvent::CounterGain { .. } | BattleEvent::CounterChannelTick { .. } | BattleEvent::TileBurstWave { .. } | BattleEvent::PresenceTick { .. } => 6,
             BattleEvent::SustainedExpiry { .. } => 0,
+            BattleEvent::DeferredDamageTick { .. } | BattleEvent::EquipmentDeathBurst { .. } => 6,
+            BattleEvent::MagazineReload { .. } => 6,
+            BattleEvent::ChannelUpkeep { .. } => 6,
             BattleEvent::SkillFlowWake { .. } => 16,
             BattleEvent::CorrosionBoundary { .. } => 19,
             BattleEvent::WaveTriggerWake { .. } => 19,
             // Observe releases and expiry at this battle-second boundary first.
             BattleEvent::ResonancePulse { .. } => 20,
+            // Observe committed damage, expiry and corrosion before recovery.
+            BattleEvent::EquipmentStateTick { .. } => 21,
         }
     }
 
@@ -539,6 +610,7 @@ impl BattleEvent {
             BattleEvent::BasicAttackProjectileAdvance { .. } => 1,
             BattleEvent::SkillProjectileAdvance { .. } => 2,
             BattleEvent::SkillProjectileImpact { .. } => 3,
+            BattleEvent::BasicAttackTileImpact { .. } => 38,
             BattleEvent::SkillAreaTick { .. } => 4,
             BattleEvent::ApplyBuff { .. } => 5,
             BattleEvent::BuffTick { .. } => 6,
@@ -554,6 +626,11 @@ impl BattleEvent {
             BattleEvent::IndependentObjectExpiry { .. } => 28,
             BattleEvent::StatusMobileTick {..} | BattleEvent::MobileEffectsTick {..} | BattleEvent::PairedAreaTick {..} | BattleEvent::PreparedVolleyTick {..} | BattleEvent::VolleyFlightTick {..} | BattleEvent::ShotFlightTick {..} | BattleEvent::ShotStockTick {..} | BattleEvent::HostileCohortTick {..} | BattleEvent::RelationGain { .. } | BattleEvent::RelationActionTick { .. } | BattleEvent::CounterGain { .. } | BattleEvent::CounterChannelTick { .. } | BattleEvent::TileBurstWave { .. } | BattleEvent::PresenceTick { .. } => 32,
             BattleEvent::SustainedExpiry { .. } => 24,
+            BattleEvent::EquipmentDeathBurst { .. } => 36,
+            BattleEvent::EquipmentStateTick { .. } => 37,
+            BattleEvent::DeferredDamageTick { .. } => 34,
+            BattleEvent::MagazineReload { .. } => 35,
+            BattleEvent::ChannelUpkeep { .. } => 33,
             BattleEvent::SkillFlowWake { .. } => 23,
             BattleEvent::CorrosionBoundary { .. } => 22,
             BattleEvent::ResonancePulse { .. } => 25,
@@ -598,6 +675,10 @@ impl Ord for BattleEvent {
                     .cmp(&self.variant_discriminator())
             })
             .then_with(|| match (self, other) {
+                (BattleEvent::BasicAttackTileImpact { release_id: a, .. }, BattleEvent::BasicAttackTileImpact { release_id: b, .. }) => b.cmp(a),
+                (BattleEvent::EquipmentStateTick { activation: a, .. }, BattleEvent::EquipmentStateTick { activation: b, .. }) => b.cmp(a),
+                (BattleEvent::EquipmentDeathBurst { id: a, .. }, BattleEvent::EquipmentDeathBurst { id: b, .. }) => b.cmp(a),
+                (BattleEvent::DeferredDamageTick { debt: a, .. }, BattleEvent::DeferredDamageTick { debt: b, .. }) => b.cmp(a),
                 (
                     BattleEvent::ResonancePulse {
                         unit_instance_id: a,
@@ -926,11 +1007,17 @@ mod tests {
 
     fn test_damage_snapshot(source_id: UnitInstanceId) -> DamageSourceSnapshot {
         DamageSourceSnapshot {
+            basic_primary: None,
             fact_source: Default::default(),
             skill_cast_source: None,
             value_expr_capture: None,
             prepared_basic: None,
+            state_basic_capture: None,
             weapon_growth: None,
+            equipment_attack: None,
+            equipment_hits: None,
+            release_gap: None,
+            magazine: None,
             presence_capture: None,
             reactive_capture: None,
             mobile_capture: None,
@@ -986,12 +1073,12 @@ mod tests {
             (
                 BattleEvent::SpawnGroup {
                     time_ms: 10,
-                    group_id: ScenarioGroupId::new("group"),
+                    group_id: ScenarioGroupId::new("group").into(),
                     cause: system,
                 },
                 BattleEvent::SpawnGroup {
                     time_ms: 10,
-                    group_id: ScenarioGroupId::new("group"),
+                    group_id: ScenarioGroupId::new("group").into(),
                     cause: period,
                 },
             ),
@@ -1320,11 +1407,11 @@ mod tests {
             (
                 BattleEvent::WaveTriggerWake {
                     time_ms: 10,
-                    trigger_id: "wave_a".to_string(),
+                    trigger_id: "wave_a".to_string().into(),
                 },
                 BattleEvent::WaveTriggerWake {
                     time_ms: 10,
-                    trigger_id: "wave_b".to_string(),
+                    trigger_id: "wave_b".to_string().into(),
                 },
             ),
         ]
@@ -1532,7 +1619,7 @@ mod tests {
 
         heap.push(BattleEvent::SpawnGroup {
             time_ms: 10,
-            group_id: ScenarioGroupId::new("wave"),
+            group_id: ScenarioGroupId::new("wave").into(),
             cause,
         });
         heap.push(BattleEvent::BasicAttackProjectileAdvance {

@@ -377,7 +377,7 @@ impl BattleCore {
                 }
             }
         }
-        let base = (u128::from(p.power) * (100 * denominator + bonus)).div_ceil(100 * denominator);
+        let base = (u128::from(p.power) * (100 * denominator + bonus)) / (100 * denominator);
         let mut snapshot = controlled_clone(&f.source)?;
         snapshot.base_damage = u32::try_from(base).map_err(|_| GameError::InvalidAction)?;
         snapshot.committed_at_ms = now;
@@ -391,12 +391,16 @@ impl BattleCore {
             &mut self.runtime_fact_source,
             controlled_clone(&f.source.fact_source)?,
         );
-        let summary = self.execute_committed_damage(CommittedDamageInput {
-            target_id: target,
-            source_snapshot: snapshot,
-            committed_at_ms: now,
-            policy: CommittedDamagePolicy::GeneralCommand,
-        });
+        let summary = self.execute_damage_with_observation_origin(
+            CommittedDamageInput {
+                target_id: target,
+                source_snapshot: snapshot,
+                committed_at_ms: now,
+                policy: CommittedDamagePolicy::GeneralCommand,
+            },
+            false,
+            Some(&f.source.fact_source),
+        );
         self.runtime_fact_source = prior;
         control::poll("shot_direct_damage")?;
         let effective = summary.as_ref().is_some_and(|s| s.accepted_hit_count > 0);
@@ -507,7 +511,7 @@ impl BattleCore {
                         let tiles = range
                             .affected_tiles(position.project_to_tile(), FacingDirection::Up)
                             .map_err(GameError::InvalidStaticData)?;
-                        let targets = self.collect_tile_area_targets_at(
+                        let mut targets = self.collect_tile_area_targets_at(
                             now,
                             f.source.source_side,
                             f.caster,
@@ -515,16 +519,28 @@ impl BattleCore {
                             SkillHitTargetFilter::Enemies,
                             false,
                         );
+                        targets.retain(|target| self.single_target_can_target_unit(*target, *air));
+                        let area_percent = self.area_damage_percent(
+                            f.caster,
+                            f.source.source_side,
+                            &f.source.fact_source,
+                            &targets,
+                            now,
+                        )?;
                         for target in targets {
                             if !self.single_target_can_target_unit(target, *air) {
                                 continue;
                             }
                             let mut snapshot = controlled_clone(&f.source)?;
+                            snapshot.modifiers.damage_amp_percent = snapshot
+                                .modifiers
+                                .damage_amp_percent
+                                .saturating_add(area_percent);
                             snapshot.base_damage = u32::try_from(
                                 (u128::from(*power)
                                     * (100 * u128::from(bonus.denominator)
                                         + u128::from(bonus.numerator)))
-                                .div_ceil(100 * u128::from(bonus.denominator)),
+                                    / (100 * u128::from(bonus.denominator)),
                             )
                             .map_err(|_| GameError::InvalidAction)?;
                             snapshot.damage_type = *damage_type;
@@ -601,7 +617,7 @@ impl BattleCore {
             cause: Some(cause),
         })))
     }
-    fn push_shot_target(
+    pub(in crate::game::battle::core) fn push_shot_target(
         &mut self,
         caster: UnitInstanceId,
         target: UnitInstanceId,
@@ -620,39 +636,69 @@ impl BattleCore {
         if u.body.radius > 0.5 || self.sustained_invulnerable(target, now)? {
             return Ok(());
         }
-        let from = u.body.position;
+        let from = self
+            .sample_unit_body_at(target, now)
+            .ok_or(GameError::InvalidAction)?
+            .position;
         let radius = u.body.radius;
         let mut to = from;
         let steps = (distance / 0.25).ceil() as u32;
-        control::charge(
-            u64::from(steps).saturating_mul(self.units.len() as u64 + 1),
-            "shot_push_trace",
-        )?;
-        for step in 1..=steps {
-            let candidate = from + direction * (step as f32 * 0.25).min(distance);
+        let can_move = |start: WorldVec2, candidate: WorldVec2| -> Result<bool, GameError> {
+            control::charge(self.units.len() as u64 + 1, "shot_push_trace")?;
             let min = WorldVec2::new(candidate.x - radius, candidate.y - radius).project_to_tile();
             let max = WorldVec2::new(candidate.x + radius, candidate.y + radius).project_to_tile();
             if (min.x..=max.x).any(|x| {
                 (min.y..=max.y).any(|y| !self.battlefield.is_walkable_tile(Position::new(x, y)))
             }) {
-                break;
+                return Ok(false);
             }
             if self
                 .units
                 .values()
                 .filter(|other| other.instance_id != target && other.is_active())
                 .any(|other| {
-                    !ProjectileMotionWindow::fixed_trajectory(0, 1, to, candidate, 0, 1, 1)
+                    let position = self
+                        .sample_unit_body_at(other.instance_id, now)
+                        .map_or(other.body.position, |body| body.position);
+                    !ProjectileMotionWindow::fixed_trajectory(0, 1, start, candidate, 0, 1, 1)
                         .resolve([ProjectileCollisionCandidate {
                             id: other.instance_id,
-                            target_start: other.body.position,
-                            target_end: other.body.position,
+                            target_start: position,
+                            target_end: position,
                             reach: radius + other.body.radius,
                         }])
                         .ordered_impacts
                         .is_empty()
                 })
             {
+                return Ok(false);
+            }
+            Ok(true)
+        };
+        for step in 1..=steps {
+            let candidate = from + direction * (step as f32 * 0.25).min(distance);
+            if !can_move(to, candidate)? {
+                // Preserve the reachable part of a blocked segment, including
+                // pushes shorter than the coarse sweep step. Reuse the same
+                // terrain/body predicate and bound refinement to data precision.
+                let mut low = to;
+                let mut high = candidate;
+                let precision = 1.0 / super::super::movement::types::DATA_UNITS_PER_WORLD;
+                for _ in 0..20 {
+                    if low.distance_squared(high) <= precision * precision {
+                        break;
+                    }
+                    let middle = low + (high - low) * 0.5;
+                    if middle == low || middle == high {
+                        break;
+                    }
+                    if can_move(to, middle)? {
+                        low = middle;
+                    } else {
+                        high = middle;
+                    }
+                }
+                to = low;
                 break;
             }
             to = candidate;
@@ -790,7 +836,6 @@ impl BattleCore {
         self.sustained.input_plans.pending = None;
         self.sustained.input_plans.disconnected = false;
         self.sustained.input_plans.wounds.clear();
-        self.sustained.input_plans.cohorts.clear();
         self.sustained.input_plans.next_flight_tick = None;
         self.event_queue.discard_input_plan_events()?;
         Ok(())

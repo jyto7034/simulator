@@ -30,6 +30,7 @@ impl BattleCore {
             "relation_activation_storage",
         )?;
         let active = Active {
+            channel_started_at: None,
             id,
             admitted,
             source,
@@ -111,7 +112,8 @@ impl BattleCore {
         {
             return Ok(false);
         }
-        let source = controlled_clone(source)?;
+        let mut source = controlled_clone(source)?;
+        self.capture_release_gap(&mut source, now)?;
         let facing = self.units[&source.source_id]
             .facing_direction
             .unwrap_or(FacingDirection::Up);
@@ -180,6 +182,7 @@ impl BattleCore {
             snapshot.fact_source = controlled_clone(&a.source)?;
         }
         a.start_stock = stock;
+        a.channel_started_at = Some(self.channel_started_at(caster, now)?.unwrap_or(now));
         a.waiting_basic = false;
         a.primary_position = a
             .admitted
@@ -502,8 +505,8 @@ impl BattleCore {
             let (interval, percent, damage_type) = Self::relation_entry(&p, &a.admitted)
                 .self_damage
                 .ok_or(GameError::InvalidAction)?;
-            let fragment = self.sustained.relations.owners[&key].fragment.clone();
-            self.relation_self_damage(caster, &fragment, percent, 1, damage_type, false, now)?;
+            let source = self.sustained.relations.owners[&key].intrinsic_source();
+            self.relation_self_damage(caster, source, percent, 1, damage_type, false, now)?;
             if !self.relation_activation_exists(key, id) {
                 return Ok(());
             }

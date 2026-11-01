@@ -1,8 +1,0 @@
-{
-  "stopped_session": 50579,
-  "exit_code": 130,
-  "reason": "unbuffered serde_json trace makes many small writes on Windows mounted filesystem; move disposable output to Linux tmp and preserve raw partial trace",
-  "trace_bytes": 4430497,
-  "mtime_ns": 1791965814891612800,
-  "time": 1791965870.3183174
-}

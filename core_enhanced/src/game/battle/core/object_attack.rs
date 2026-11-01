@@ -123,11 +123,17 @@ impl BattleCore {
         for (index, target) in targets.into_iter().enumerate() {
             source.admit_owner("trap_damage_source")?;
             let snapshot = DamageSourceSnapshot {
+                basic_primary: None,
                 fact_source: source.clone(),
                 skill_cast_source: source.cast.clone(),
                 value_expr_capture: None,
             prepared_basic: None,
+            state_basic_capture: None,
             weapon_growth: None,
+            equipment_attack: None,
+            equipment_hits: None,
+            release_gap: None,
+            magazine: None,
             presence_capture: None,
             reactive_capture: None,
             mobile_capture: None,

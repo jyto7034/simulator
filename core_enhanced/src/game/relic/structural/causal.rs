@@ -85,7 +85,7 @@ pub(crate) fn owner_provider_matches(
 }
 fn static_condition(
     c: &RelicConditionDef,
-    effects: &[super::EffectiveEffect],
+    effects: &[super::SharedEffect],
     providers: &[super::ProspectiveProvider],
     has_event_effect: bool,
     work: &mut Work,
@@ -168,7 +168,7 @@ fn static_condition(
 }
 pub(super) fn rule_state(
     rule: &RelicRuleDef,
-    effects: &[super::EffectiveEffect],
+    effects: &[super::SharedEffect],
     providers: &[super::ProspectiveProvider],
     work: &mut Work,
 ) -> Result<super::dto::RelicRuleState, RelicPlanError> {
@@ -381,8 +381,8 @@ fn compile_program(
     data: &GameDataBase,
     work: &mut Work,
 ) -> Result<Arc<EffectiveCausalProgram>, RelicPlanError> {
-    compiler::admit_serialized_copy(p, work)?;
-    compiler::admit_serialized_copy(c, work)?;
+    compiler::admit_owned_copy(p, work)?;
+    compiler::admit_owned_copy(c, work)?;
     let identity_input = (c.copy_uuid, &c.rule_id, id, namespace);
     let identity_bytes = compiler::serialized_size(&identity_input, work)?;
     work.reserve(
@@ -508,12 +508,12 @@ fn compile_program(
     // This upper bound covers the synthesized IDs/source paths and default
     // Flow AST as well as the raw payload. The native Flow compiler separately
     // preflights its node/action tables before allocating them.
-    compiler::admit_serialized_copy(&skill, work)?;
+    compiler::admit_owned_copy(&skill, work)?;
     let flow = Arc::new(
         CompiledSkillFlow::compile(skill.flow.as_ref(), &skill.steps)
             .map_err(|e| invalid(format!("causal flow {}: {}", e.path, e.cause)))?,
     );
-    compiler::admit_serialized_copy(flow.as_ref(), work)?;
+    compiler::admit_owned_copy(flow.as_ref(), work)?;
     let db =
         SkillDatabase::from_bound_effective_plan(skill, Arc::clone(&flow), &data.skill_data, &[])
             .map_err(|e| invalid(format!("causal skill contract: {e:?}")))?;
@@ -538,6 +538,7 @@ fn compile_program(
         Some(std::mem::size_of::<EffectiveCausalProgram>() + 128),
         "causal_program_owner",
     )?;
+    work.reserve(Some(std::mem::size_of::<Vec<(EffectSite,usize)>>() + 64), "effective_causal_address_owner")?;
     let mut program = EffectiveCausalProgram {
         id: id.into(),
         site_kind:match namespace.0{"program"=>0,"branch"=>1,"continuation"=>2,_=>return Err(invalid("unknown private causal namespace"))},
@@ -555,7 +556,7 @@ fn compile_program(
             ),
             flow,
             amounts: Arc::new(amounts),
-            effects: Vec::new(),
+            effects: Arc::new(Vec::new()),
             selected_recipient_reach: None,
             selected_recipient_excludes_caster: false,
         },
@@ -578,7 +579,7 @@ pub(super) fn compile_rule(
         } => (None, Default::default(), Some(*interval_ms), payload),
         _ => return Err(invalid("not a subscriber or periodic rule")),
     };
-    compiler::admit_serialized_copy(rule, work)?;
+    compiler::admit_owned_copy(rule, work)?;
     let mut programs = Vec::new();
     let kind = match payload {
         CausalPayloadDef::Program(p) => {

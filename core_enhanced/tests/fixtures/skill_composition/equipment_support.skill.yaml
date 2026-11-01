@@ -1,0 +1,14 @@
+# N02 브로치: 다른 아군 회복/보호막 각각 25%. 장비 ID는 검증용 연결이다.
+version: 1
+id: equipment-support-fixture
+values:
+  - name: other-ally-support
+    value:
+      SupportProgram:
+        heal_percent: 25
+        shield_percent: 25
+equipment_supports:
+  - equipment: r11_weapon
+    program: { Shared: other-ally-support }
+definitions: []
+skills: []

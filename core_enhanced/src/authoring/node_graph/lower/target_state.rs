@@ -92,6 +92,10 @@ impl<'a> Lower<'a> {
     ) -> Result<(u32, TargetStateProfile), Diagnostic> {
         let duration_ms = self.positive_duration(state, "duration")?;
         let mut profile = TargetStateProfile {
+        damage_invulnerable: false,
+        basic_attack_locked: false,
+        active_skill_locked: false,
+        received_heal_percent: 0,
             definition: format!("{}:{state}", self.doc.document),
             attack_percent: 0,
             defense_percent: 0,

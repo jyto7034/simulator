@@ -24,11 +24,13 @@ pub(crate) struct PresenceCapture {
     pub fragment: Arc<FragmentSourceSnapshot>,
     pub program: Arc<PresenceBurstProgram>,
     pub applied: Vec<AppliedMarkModifier>,
+    pub authored: Option<Arc<crate::game::ability::authoring::EffectSource>>,
 }
 crate::authoring::clone_shape::struct_shape!(PresenceCapture {
     fragment,
     program,
-    applied
+    applied,
+    authored
 });
 impl PresenceCapture {
     pub(crate) fn retained_extent(&self) -> Option<usize> {
@@ -45,6 +47,12 @@ impl PresenceCapture {
                 .capacity()
                 .checked_mul(std::mem::size_of::<MarkModifier>())?,
         )?;
+        if self.authored.is_some() {
+            n = n.checked_add(RuntimeFactSource {
+                authored: self.authored.clone(),
+                ..Default::default()
+            }.retained_extent()?)?;
+        }
         for m in &self.program.modifiers {
             n = n
                 .checked_add(m.id.capacity())?
@@ -249,10 +257,10 @@ impl BattleCore {
                 if selected.is_some() {
                     return Err(GameError::InvalidAction);
                 }
-                selected = Some(program);
+                selected = Some((program, effect.source().cloned()));
             }
         }
-        let Some(program) = selected else {
+        let Some((program, authored)) = selected else {
             return Ok(());
         };
         let mut program = (**program).clone();
@@ -303,6 +311,7 @@ impl BattleCore {
             fragment,
             program: Arc::new(program),
             applied,
+            authored,
         };
         crate::game::battle::runtime_control::admit_retained_growth(
             0,
@@ -320,6 +329,28 @@ impl BattleCore {
                     .as_ref()
                     .is_some_and(|f| f.as_ref() == r.capture.fragment.as_ref())
         })
+    }
+    /// Borrow the existing network authority; the caller supplies common target
+    /// liveness/hostility filtering and deduplication across DOT implementations.
+    pub(super) fn visit_owned_presence_dot_targets(
+        &self,
+        owner: UnitInstanceId,
+        mut visit: impl FnMut(UnitInstanceId) -> Result<(), GameError>,
+    ) -> Result<(), GameError> {
+        control::charge(self.sustained.presence.networks.len() as u64, "owned_dot_presence_scan")?;
+        for network in self.sustained.presence.networks.values() {
+            if network.caster != owner
+                || network.capture.program.marks.periodic_coefficient.numerator == 0
+                || !self.presence_source_live(network)
+            {
+                continue;
+            }
+            control::charge(network.hosts.len() as u64, "owned_dot_presence_hosts")?;
+            for host in network.hosts.keys() {
+                visit(*host)?;
+            }
+        }
+        Ok(())
     }
     fn presence_eligible(&self, r: &Network, target: UnitInstanceId) -> bool {
         let Some(c) = self.units.get(&r.caster) else { return false; };
@@ -620,6 +651,7 @@ impl BattleCore {
         )?;
         let caster = r.caster;
         let fragment = r.capture.fragment.clone();
+        let authored = r.capture.authored.clone();
         let damage_type = p.periodic_damage_type;
         let interval = p.periodic_interval_ms;
         let prior = std::mem::replace(
@@ -627,6 +659,7 @@ impl BattleCore {
             RuntimeFactSource {
                 actor: Some(caster),
                 fragment: Some(fragment),
+                authored,
                 reaction: true,
                 ..Default::default()
             },
@@ -854,6 +887,7 @@ impl BattleCore {
             .ok_or(GameError::InvalidAction)?
             .owner;
         let mut hits = Vec::new();
+        let mut batch_ends = Vec::new();
         let mut wave: BTreeMap<UnitInstanceId, u32> = BTreeMap::new();
         for (host, center) in &p.centers {
             let tiles = p
@@ -898,10 +932,12 @@ impl BattleCore {
                 if !host_hit {
                     hits.push((*host, p.host_damage));
                 }
+                batch_ends.push(hits.len());
             }
         }
         if p.capture.program.explosion.dedup == ExplosionDedup::Wave {
             hits.extend(wave);
+            batch_ends.push(hits.len());
         }
         crate::game::battle::runtime_control::admit_retained_growth(
             0,
@@ -909,32 +945,43 @@ impl BattleCore {
                 .checked_mul(std::mem::size_of::<(UnitInstanceId, u32)>()),
             "presence_burst_hits",
         )?;
+        crate::game::battle::runtime_control::admit_retained_growth(0,
+            batch_ends.capacity().checked_mul(std::mem::size_of::<usize>()), "presence_burst_batches")?;
+        let source = crate::authoring::clone_shape::controlled_clone(&self.runtime_fact_source)?;
         let old_suppression = std::mem::replace(&mut self.sustained.presence.suppress_spread, true);
         let result = (|| {
             let mut result = super::types::SkillStepResult::default();
             result.resolved_target_count = hits.len();
-            for (target, amount) in hits {
+            let mut batch_start = 0;
+            for batch_end in batch_ends {
+                let batch = &hits[batch_start..batch_end];
+                let targets: Vec<_> = batch.iter().map(|(target, _)| *target).collect();
+                let area_percent = self.area_damage_percent(caster, owner, &source, &targets, now)?;
+                for &(target, amount) in batch {
                 if amount == 0 || !self.units.get(&target).is_some_and(|u| u.is_active()) {
                     continue;
                 }
+                control::charge(p.centers.len() as u64, "presence_burst_dot_capture")?;
+                let consumed_owner_dot = p.capture.program.marks.periodic_coefficient.numerator > 0
+                    && p.centers.iter().any(|(host, _)| *host == target);
                 if let Some(snapshot) = self.damage_source_snapshot_for_unit(
                     caster,
                     target,
                     DamageSource::Ability,
                     p.capture.program.explosion.damage_type,
                     amount,
-                    DamageModifiers::default(),
+                    DamageModifiers { damage_amp_percent: area_percent, ..Default::default() },
                     0,
                     now,
                     false,
                 ) {
                     if let Some(summary) =
-                        self.execute_committed_damage(super::damage_runtime::CommittedDamageInput {
+                        self.execute_damage_with_observation_origin(super::damage_runtime::CommittedDamageInput {
                             target_id: target,
                             source_snapshot: snapshot,
                             committed_at_ms: now,
                             policy: super::damage_runtime::CommittedDamagePolicy::GeneralCommand,
-                        })
+                        }, consumed_owner_dot, Some(&source))
                     {
                         result.actual_hp_loss =
                             result.actual_hp_loss.saturating_add(summary.actual_hp_loss);
@@ -945,6 +992,8 @@ impl BattleCore {
                     }
                 }
                 control::poll("presence_burst_damage")?;
+                }
+                batch_start = batch_end;
             }
             Ok(result)
         })();

@@ -1,6 +1,0 @@
-{
-  "before_sha256": "74fa88971b087039ab2b6fe25f980e38b96347f02b7cf420b96ff713c2a3bb7a",
-  "after_sha256": "f29e4e28c89715e80e615f175cae1161ef359172c64b70c76c4292ec4e5437c8",
-  "preserved_before": "baseline/ROADMAP_STATUS_BEFORE.md",
-  "reason": "Closed F02 audit followed by authorized correction; predecessor target intentionally historical"
-}

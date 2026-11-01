@@ -46,6 +46,7 @@ crate::authoring::clone_shape::struct_shape!(Pending {
 });
 #[derive(Debug, Clone)]
 struct Active {
+    channel_started_at: u64,
     id: u64,
     admitted: Pending,
     snapshot: DamageSourceSnapshot,
@@ -57,6 +58,7 @@ struct Active {
     healed: bool,
 }
 crate::authoring::clone_shape::struct_shape!(Active {
+    channel_started_at,
     id,
     admitted,
     snapshot,
@@ -364,6 +366,10 @@ impl BattleCore {
             self.schedule_counter_gain(key, now)?;
         }
         control::poll("counter_channel_admitted")
+    }
+    pub(super) fn counter_channel_started_at(&self, caster: UnitInstanceId) -> Option<u64> {
+        let active = self.sustained.counters.owners.get(&self.counter_key(caster)?)?.active.as_ref()?;
+        Some(active.channel_started_at)
     }
     pub(super) fn counter_channel_active(&self, caster: UnitInstanceId, pause_only: bool) -> bool {
         self.counter_key(caster)

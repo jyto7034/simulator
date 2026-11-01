@@ -33,6 +33,10 @@ impl<'a> Lower<'a> {
         let intersection = self.consumer(pair, "pair", "skill-pair-intersection", "pair")?;
         let buff = self.input(intersection, "buff", "skill-attack-speed-buff")?;
         let profile = TargetStateProfile {
+        damage_invulnerable: false,
+        basic_attack_locked: false,
+        active_skill_locked: false,
+        received_heal_percent: 0,
             definition: format!("{}:{buff}", self.doc.document),
             attack_percent: 0,
             defense_percent: 0,

@@ -1,0 +1,264 @@
+// KEEP:representation:header 비교 fixture, 출시값 아님
+{
+  "schema": "representation-study-only/v1",
+  "executable": false,
+  "note": "작성 표현 보존 시험. 이 문서는 실행 지원을 주장하지 않는다. 모든 변경값은 비교용 fixture이다.",
+  "values": {
+    "PC.v.duration": {
+      "type": "Milliseconds",
+      "Unresolved": "원문 지속시간 미정"
+// KEEP:representation:interior 원본 주석 보존
+    },
+    "PC.v.coefficient": {
+      "type": "Scalar",
+      "Unresolved": "원문 보호량 계수 미정"
+    },
+    "PC.v.ringComposition": {
+      "Unresolved": "PC.U5 생성량 합성 순서 미정"
+    },
+    "QH.v.heartCap": {
+      "type": "Count",
+      "fixture": 6
+    },
+    "QH.v.gainPeriod": {
+      "type": "Milliseconds",
+      "fixture": 15000
+    }
+  },
+  "states": [
+    {
+      "id": "PC.shield",
+      "owner": [
+        "sourceEmployee",
+        "sourceDeployment",
+        "sourceCopy",
+        "targetDeployment"
+      ],
+      "fields": [
+        "maxAmount",
+        "remaining",
+        "expiresAt",
+        "ended"
+      ],
+      "initial": {
+        "maxAmount": {
+          "Ref": "PC.amount.final"
+        },
+        "remaining": {
+          "Ref": "PC.amount.final"
+        },
+        "expiresAt": {
+          "Ref": "PC.v.duration"
+        },
+        "ended": false
+      },
+      "ends": [
+        "depleted",
+        "expired",
+        "sourceWithdrawal",
+        "targetWithdrawal",
+        "sourceDeath",
+        "targetDeath",
+        "battleEnd"
+      ],
+      "survives": [
+        "movement",
+        "outOfRange",
+        "hardCC",
+        "silence"
+      ]
+    },
+    {
+      "id": "HG.active",
+      "owner": [
+        "employee",
+        "deployment",
+        "sourceCopy",
+        "activation"
+      ],
+      "fields": [
+        "startedAt",
+        "expiresAt",
+        "contributionHandle",
+        "ended"
+      ],
+      "ends": [
+        "expired",
+        "manualConsumption",
+        "withdrawal",
+        "actualDeath",
+        "battleEnd"
+      ],
+      "cleanup": [
+        "ownContribution",
+        "reentryRight",
+        "resonanceGainLock"
+      ],
+      "releasedAttacks": "keepReleaseSnapshot",
+      "resetAttackClock": false
+    },
+    {
+      "id": "QH.owner",
+      "owner": [
+        "sourceCopy",
+        "employeeDeployment"
+      ],
+      "initial": {
+        "hearts": 0,
+        "gainElapsed": 0,
+        "rememberedTile": null,
+        "mode": "normal",
+        "pendingAuto": false,
+        "currentCast": null
+      },
+      "cap": {
+        "Ref": "QH.v.heartCap"
+      },
+      "clock": {
+        "period": {
+          "Ref": "QH.v.gainPeriod"
+        },
+        "runsDuring": [
+          "regularCast",
+          "hardCC",
+          "silence"
+        ],
+        "stopsDuring": [
+          "pendingAuto",
+          "hysteric",
+          "pause",
+          "undeployed"
+        ]
+      },
+      "resetOn": [
+        "newBattle",
+        "redeployment"
+      ],
+      "preserveOn": [
+        "tacticalMove"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "id": "QH.reserve",
+      "when": "hearts reaches shared cap",
+      "set": {
+        "pendingAuto": true
+      },
+      "waitFor": [
+        "currentActionFinishedOrCleaned",
+        "actionAdmission"
+      ],
+      "forbidden": [
+        "duplicateAuto",
+        "manualReserveBypass"
+      ]
+    },
+    {
+      "id": "QH.auto.end",
+      "on": [
+        "naturalCompletion",
+        "actualForcedCancel"
+      ],
+      "set": {
+        "hearts": 0,
+        "gainElapsed": 0,
+        "mode": "normal"
+      },
+      "restartExcept": [
+        "death",
+        "withdrawal",
+        "battleEnd"
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "id": "A1.input",
+      "owner": [
+        "battle",
+        "sourceCopy",
+        "inputSession"
+      ],
+      "tentative": [
+        "layout",
+        "aim",
+        "previousSpeed",
+        "pauseOwnership"
+      ],
+      "commitTogether": [
+        "resonance",
+        "allSpears",
+        "rememberedLayout",
+        "releaseIntents",
+        "releaseOwnPause"
+      ],
+      "requestKey": "idempotent",
+      "disconnect": "retainFrozenSession",
+      "cancel": "discardTentativeAndRestorePreviousSpeed"
+    },
+    {
+      "id": "A2.transfer",
+      "snapshot": [
+        "bothMemberships",
+        "positions"
+      ],
+      "order": [
+        "allBaseHealing",
+        "directionBudgets",
+        "bothDeficitSnapshots",
+        "allocate",
+        "transfer"
+      ],
+      "excess": "maxHPOverflowOnly",
+      "retransmit": false,
+      "amplifyAgain": false,
+      "carry": false,
+      "rate": {
+        "Unresolved": "원문 전달률 미정"
+      }
+    },
+    {
+      "id": "A3.promotion",
+      "owner": "selectedWeaponCopy",
+      "transaction": [
+        "cost",
+        "unlock",
+        "permanentProfile",
+        "receipt"
+      ],
+      "duplicate": "existingReceipt",
+      "futureCopies": "unchanged",
+      "markStore": [
+        "weaponCopy",
+        "battle"
+      ]
+    },
+    {
+      "id": "A4.spread",
+      "trigger": "confirmedHostDeath",
+      "dedupe": [
+        "deathId",
+        "sourceCopy"
+      ],
+      "prevention": "noConfirmedDeathNoSpread",
+      "newHosts": "noRetransmitInSameTransaction",
+      "radius": {
+        "Unresolved": "원문 전파반경 미정"
+      }
+    },
+    {
+      "id": "A5.debt",
+      "owner": [
+        "expedition",
+        "sourceCopy"
+      ],
+      "settle": "oncePerTerminalBattleId",
+      "debt": "max(0,-R)",
+      "borrowed": "retainEvenAfterRepayment",
+      "retreat": "restoreEntrySnapshot",
+      "positiveCarry": false
+    }
+  ]
+}

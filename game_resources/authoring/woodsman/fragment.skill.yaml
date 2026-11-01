@@ -1,0 +1,441 @@
+# Current authored design; Unresolved leaves are not executable defaults.
+# See the corresponding abnormalities/*/fragment.md and synergies.md policies.
+# Manual self activation uses automatic eligible-enemy admission, then current caster areas.
+# The first base footprint must stay within Chebyshev 2; pull distance is separate.
+version: 1
+id: woodsman-three-strikes
+values:
+- name: gather-power
+  value:
+    Amount:
+      moment: Snapshot
+      root:
+        Ratio:
+          numerator:
+            Mul:
+              value:
+                Read:
+                  Stat:
+                    subject: Source
+                    stat: Attack
+              scalar:
+                Const:
+                  value:
+                    Unresolved: gather-percent
+                  unit: Scalar
+          denominator:
+            Const:
+              value: 100
+              unit: Scalar
+          rounding: Floor
+- name: stun-power
+  value:
+    Amount:
+      moment: Snapshot
+      root:
+        Ratio:
+          numerator:
+            Mul:
+              value:
+                Read:
+                  Stat:
+                    subject: Source
+                    stat: Attack
+              scalar:
+                Const:
+                  value:
+                    Unresolved: stun-percent
+                  unit: Scalar
+          denominator:
+            Const:
+              value: 100
+              unit: Scalar
+          rounding: Floor
+- name: finisher-power
+  value:
+    Amount:
+      moment: Live
+      root:
+        Ratio:
+          numerator:
+            Mul:
+              value:
+                Ratio:
+                  numerator:
+                    Mul:
+                      value:
+                        Read:
+                          Stat:
+                            subject: Source
+                            stat: Attack
+                      scalar:
+                        Const:
+                          value:
+                            Unresolved: split-percent
+                          unit: Scalar
+                  denominator:
+                    Const:
+                      value: 100
+                      unit: Scalar
+                  rounding: Floor
+              scalar:
+                Add:
+                - Mul:
+                    value:
+                      Ratio:
+                        numerator:
+                          Read:
+                            HitPoints:
+                              subject: Target
+                              field: Max
+                        denominator:
+                          Const:
+                            value: 1
+                            unit: Magnitude
+                        rounding: Floor
+                    scalar:
+                      Const:
+                        value: 100
+                        unit: Scalar
+                - Clamp:
+                    value:
+                      Mul:
+                        value:
+                          Ratio:
+                            numerator:
+                              Read:
+                                HitPoints:
+                                  subject: Target
+                                  field: Missing
+                            denominator:
+                              Const:
+                                value: 1
+                                unit: Magnitude
+                            rounding: Floor
+                        scalar:
+                          Const:
+                            value:
+                              Unresolved: missing-hp-percent
+                            unit: Scalar
+                    min:
+                      Const:
+                        value: 0
+                        unit: Scalar
+                    max:
+                      Mul:
+                        value:
+                          Ratio:
+                            numerator:
+                              Read:
+                                HitPoints:
+                                  subject: Target
+                                  field: Max
+                            denominator:
+                              Const:
+                                value: 1
+                                unit: Magnitude
+                            rounding: Floor
+                        scalar:
+                          Const:
+                            value:
+                              Unresolved: missing-hp-cap
+                            unit: Scalar
+          denominator:
+            Mul:
+              value:
+                Ratio:
+                  numerator:
+                    Read:
+                      HitPoints:
+                        subject: Target
+                        field: Max
+                  denominator:
+                    Const:
+                      value: 1
+                      unit: Magnitude
+                  rounding: Floor
+              scalar:
+                Const:
+                  value: 100
+                  unit: Scalar
+          rounding: Floor
+- name: gather-area
+  value:
+    Delivery:
+      TileArea:
+        footprint:
+          Unresolved: gather-footprint
+        area:
+          anchor: Caster
+          tile_origin: Caster
+          tracking: GroundFixed
+          hit_targets: Enemies
+- name: gather-expanded
+  value:
+    TilePattern:
+      Unresolved: gather-expanded
+- name: stun-area
+  value:
+    Delivery:
+      TileArea:
+        footprint:
+          Unresolved: stun-footprint
+        area:
+          anchor: Caster
+          tile_origin: Caster
+          tracking: GroundFixed
+          hit_targets: Enemies
+- name: stun-expanded
+  value:
+    TilePattern:
+      Unresolved: stun-expanded
+- name: split-area
+  value:
+    Delivery:
+      TileArea:
+        footprint:
+          Unresolved: split-footprint
+        area:
+          anchor: Caster
+          tile_origin: Caster
+          tracking: GroundFixed
+          hit_targets: Enemies
+- name: split-expanded
+  value:
+    TilePattern:
+      Unresolved: split-expanded
+- name: pull
+  value:
+    Effects:
+    - id: pull
+      attached_to: damage
+      op:
+        Pull:
+          max_distance_tiles:
+            Unresolved: pull-distance
+- name: stun
+  value:
+    Effects:
+    - id: stun
+      attached_to: damage
+      op:
+        Sustained:
+          definition:
+            HitStatus:
+              duration_ms:
+                Unresolved: stun-duration
+              profile:
+                definition: woodsman-stun
+                kind: Stun
+- name: none
+  value:
+    Effects: []
+- name: vulnerability
+  value:
+    Count:
+      Unresolved: vulnerability-percent
+definitions:
+- name: area-impact
+  parameters:
+  - name: power
+    value_type: Amount
+  - name: delivery
+    value_type: Delivery
+  - name: after
+    value_type: Effects
+  - name: expanded
+    value_type: TilePattern
+  body:
+    Action:
+      id: hit
+      target:
+        Literal:
+          Target: CastTarget
+      delivery:
+        Parameter: delivery
+      effects:
+      - Damage:
+          id: damage
+          tags:
+          - damage
+          - area
+          - multi-hit
+          amount:
+            Parameter: power
+          damage_type: Physical
+      - Append:
+          effects:
+            Parameter: after
+      wait: Released
+      modifiers:
+      - id: expanded-range
+        relic_definition: widened-horizon
+        variant: Normal
+        change:
+          Range:
+            pattern:
+              Parameter: expanded
+- name: stunning-impact
+  parameters:
+  - name: power
+    value_type: Amount
+  - name: delivery
+    value_type: Delivery
+  - name: after
+    value_type: Effects
+  - name: expanded
+    value_type: TilePattern
+  body:
+    Action:
+      id: hit
+      target:
+        Literal:
+          Target: CastTarget
+      delivery:
+        Parameter: delivery
+      effects:
+      - Damage:
+          id: damage
+          tags:
+          - damage
+          - area
+          - multi-hit
+          amount:
+            Parameter: power
+          damage_type: Physical
+      - Append:
+          effects:
+            Parameter: after
+      wait: Released
+      modifiers:
+      - id: expanded-range
+        relic_definition: widened-horizon
+        variant: Normal
+        change:
+          Range:
+            pattern:
+              Parameter: expanded
+      - id: longer-stun
+        relic_definition: long-breath
+        variant: Normal
+        change:
+          Duration:
+            effect: stun
+            percent:
+              Literal:
+                Count: 25
+      - id: stun-vulnerability
+        relic_definition: broken-balance
+        variant: Normal
+        change:
+          ControlVulnerability:
+            effect: stun
+            percent:
+              Shared: vulnerability
+            duration:
+              Literal:
+                Milliseconds: 5000
+skills:
+- id: fragment_woodsman_three_strikes
+  name: 나무꾼 범위 3연타
+  kind: Targeted
+  cast_targeting:
+    Explicit:
+      selection: automatic_unit
+      target:
+        EnemySingle:
+          rule: RouteProgress
+      reach: pattern
+      target_range:
+        Unresolved: admission-footprint
+      air_capable: true
+  prepare_ms:
+    Unresolved: prepare-duration
+  focus_permissions:
+    allows_move: false
+    allows_basic_attack: false
+  admission:
+    capacity:
+      Unresolved: capacity
+    requirement: Full
+    cost: All
+  body:
+    Sequence:
+      id: three-strikes
+      children:
+      - Call:
+          id: gather
+          definition: area-impact
+          arguments:
+          - name: power
+            value:
+              Shared: gather-power
+          - name: delivery
+            value:
+              Shared: gather-area
+          - name: after
+            value:
+              Shared: pull
+          - name: expanded
+            value:
+              Shared: gather-expanded
+      - Wait:
+          id: before-stun
+          duration:
+            Literal:
+              Milliseconds:
+                Unresolved: before-stun
+      - Call:
+          id: stun
+          definition: stunning-impact
+          arguments:
+          - name: power
+            value:
+              Shared: stun-power
+          - name: delivery
+            value:
+              Shared: stun-area
+          - name: after
+            value:
+              Shared: stun
+          - name: expanded
+            value:
+              Shared: stun-expanded
+      - Wait:
+          id: before-split
+          duration:
+            Literal:
+              Milliseconds:
+                Unresolved: before-split
+      - Call:
+          id: split
+          definition: area-impact
+          arguments:
+          - name: power
+            value:
+              Shared: finisher-power
+          - name: delivery
+            value:
+              Shared: split-area
+          - name: after
+            value:
+              Shared: none
+          - name: expanded
+            value:
+              Shared: split-expanded
+  modifiers:
+  - id: same-cast-hits
+    relic_definition: deep-wedge
+    variant: Normal
+    change:
+      Multihit:
+        increment_percent:
+          Literal:
+            Count: 2
+        cap_percent:
+          Literal:
+            Count: 20
+  - id: unbroken-cast
+    relic_definition: unbroken-trance
+    variant: Normal
+    change: ProtectInterruption

@@ -27,9 +27,21 @@ pub(crate) fn pattern_extent(range: &TileRangePattern) -> Option<usize> {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct SupportPolicyDef {
-    pub range: Arc<TileRangePattern>,
+    /// When absent, use the effect's authored circular radius. A present field
+    /// keeps its original unwrapped pattern wire representation, including RON.
+    #[serde(default, skip_serializing_if = "Option::is_none", serialize_with = "serialize_pattern", deserialize_with = "deserialize_pattern")]
+    pub range: Option<Arc<TileRangePattern>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub conversion: Option<SupportConversionDef>,
+    /// Multiple mutually exclusive inventory variants; singular input remains supported.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub conversions: Vec<SupportConversionDef>,
+}
+fn serialize_pattern<S: serde::Serializer>(value: &Option<Arc<TileRangePattern>>, serializer: S) -> Result<S::Ok, S::Error> {
+    value.as_ref().ok_or_else(|| serde::ser::Error::custom("absent support pattern must be omitted"))?.serialize(serializer)
+}
+fn deserialize_pattern<'de, D: serde::Deserializer<'de>>(deserializer: D) -> Result<Option<Arc<TileRangePattern>>, D::Error> {
+    Arc::<TileRangePattern>::deserialize(deserializer).map(Some)
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -48,9 +60,11 @@ pub enum SupportReplacementDef {
     RegularBasic {
         damage_percent: u32,
         speed_points: u32,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        health_upkeep: Option<crate::game::ability::sustained::ChannelHealthUpkeep>,
     },
 }
-crate::authoring::clone_shape::struct_shape!(SupportPolicyDef { range, conversion });
+crate::authoring::clone_shape::struct_shape!(SupportPolicyDef { range, conversion, conversions });
 crate::authoring::clone_shape::struct_shape!(SupportConversionDef {
     relic_definition,
     variant,
@@ -64,15 +78,23 @@ crate::authoring::clone_shape::enum_shape!(SupportReplacementDef {
         PersonalShield { amount },
         RegularBasic {
             damage_percent,
-            speed_points
+            speed_points,
+            health_upkeep
         }
     ]
 });
 
 impl SupportPolicyDef {
+    pub fn variants(&self) -> impl Iterator<Item = &SupportConversionDef> {
+        self.conversion.iter().chain(self.conversions.iter())
+    }
     pub fn validate(&self, shield: bool) -> Result<(), String> {
-        self.range.validate()?;
-        if let Some(conversion) = &self.conversion {
+        if let Some(range) = &self.range { range.validate()?; }
+        if self.conversions.len() > 32 { return Err("support allows at most 32 conversion alternatives".into()); }
+        for (index, conversion) in self.variants().enumerate() {
+            if self.variants().take(index).any(|c| c.relic_definition == conversion.relic_definition && c.variant == conversion.variant) {
+                return Err("duplicate support conversion relic and variant".into());
+            }
             if !super::validation::valid_id(&conversion.relic_definition) {
                 return Err("support conversion requires a bounded relic definition".into());
             }
@@ -82,7 +104,10 @@ impl SupportPolicyDef {
                 SupportReplacementDef::RegularBasic {
                     damage_percent,
                     speed_points,
-                } if !shield && *damage_percent <= 10000 && *speed_points <= 10000 => (),
+                    health_upkeep,
+                } if !shield && *damage_percent <= 10000 && *speed_points <= 10000 => {
+                    if let Some(upkeep) = health_upkeep { upkeep.validate()?; }
+                },
                 _ => return Err("support conversion replacement does not match its effect".into()),
             }
         }
@@ -128,9 +153,9 @@ pub(crate) fn selection_recipe(effect: &super::EffectiveEffect) -> Option<Select
 }
 
 pub(crate) fn shield_reach(definition: &PersonalShieldGrantDef) -> SelectedSupportReach {
-    if let Some(support) = &definition.support {
+    if let Some(range) = definition.support.as_ref().and_then(|s| s.range.as_ref()) {
         return SelectedSupportReach::Pattern {
-            range: Arc::clone(&support.range),
+            range: Arc::clone(range),
             end_on_exit: false,
         };
     }
@@ -158,9 +183,8 @@ pub(crate) fn declares_conversion_for(
             )
             .map_err(super::RelicPlanError::control)?;
             for effect in &step.effects {
-                if policy(&effect.op)
-                    .and_then(|p| p.conversion.as_ref())
-                    .is_some_and(|c| c.relic_definition == definition && c.variant == variant)
+                if policy(&effect.op).is_some_and(|p| p.variants()
+                    .any(|c| c.relic_definition == definition && c.variant == variant))
                 {
                     return Ok(true);
                 }
@@ -170,9 +194,48 @@ pub(crate) fn declares_conversion_for(
     Ok(false)
 }
 
+pub(crate) fn preview_conversions(
+    data: &crate::game::data::GameDataBase,
+    definition: &str,
+    variant: RelicVariant,
+) -> Result<Vec<crate::game::relic::SupportConversionPreviewDto>, crate::game::behavior::GameError> {
+    use crate::authoring::clone_shape::controlled_clone;
+    let mut result = Vec::new();
+    for skill in &data.skill_data.skills {
+        crate::authoring::control::charge(1, "support_preview_skill")?;
+        for step in &skill.steps {
+            crate::authoring::control::charge(step.effects.len() as u64, "support_preview_effects")?;
+            for effect in &step.effects {
+                let Some(policy) = policy(&effect.op) else { continue };
+                crate::authoring::control::charge(policy.variants().count() as u64, "support_preview_variants")?;
+                for conversion in policy.variants().filter(|c| c.relic_definition == definition && c.variant == variant) {
+                    crate::game::relic::allocation::admit_owned_projection(
+                        &(&skill.id, &step.id, &effect.id, conversion), "support_preview_copy")?;
+                    crate::game::battle::runtime_control::admit_retained_growth(0,
+                        Some(std::mem::size_of::<crate::game::relic::SupportConversionPreviewDto>()), "support_preview_entry")?;
+                    result.reserve_exact(1);
+                    result.push(crate::game::relic::SupportConversionPreviewDto {
+                        skill_id: controlled_clone(&skill.id)?, step_id: controlled_clone(&step.id)?,
+                        effect_id: controlled_clone(&effect.id)?, conversion: controlled_clone(conversion)?,
+                    });
+                }
+            }
+        }
+    }
+    Ok(result)
+}
+
 pub(crate) fn validate_references(
     data: &crate::game::data::GameDataBase,
 ) -> Result<(), super::RelicPlanError> {
+    crate::authoring::control::charge(data.relic_data.relics.len() as u64, "support_penalty_reference_scan").map_err(super::RelicPlanError::control)?;
+    for definition in &data.relic_data.relics {
+        if definition.corruption.as_ref().is_some_and(|v| v.penalties.contains(&crate::game::data::relic_data::RelicPenalty::AuthoredSupportUpkeep))
+            && !declares_conversion_for(data, &definition.id, RelicVariant::Corrupt)? {
+            return Err(super::RelicPlanError::new(super::FaultCode::InvalidReference,
+                "authored support upkeep requires a real corrupt support conversion"));
+        }
+    }
     for skill in &data.skill_data.skills {
         crate::authoring::control::charge(1, "support_conversion_reference_skill")
             .map_err(super::RelicPlanError::control)?;
@@ -183,10 +246,12 @@ pub(crate) fn validate_references(
             )
             .map_err(super::RelicPlanError::control)?;
             for effect in &step.effects {
-                let Some(conversion) = policy(&effect.op).and_then(|p| p.conversion.as_ref())
+                let Some(policy) = policy(&effect.op)
                 else {
                     continue;
                 };
+                crate::authoring::control::charge(policy.variants().count() as u64, "support_variant_references").map_err(super::RelicPlanError::control)?;
+                for conversion in policy.variants() {
                 let definition = data
                     .relic_data
                     .get_by_id(&conversion.relic_definition)
@@ -202,6 +267,12 @@ pub(crate) fn validate_references(
                         "support conversion references an unavailable corrupt variant",
                     ));
                 }
+                if conversion.variant == RelicVariant::Corrupt && definition.corruption.as_ref().is_some_and(|v| v.penalties.contains(&crate::game::data::relic_data::RelicPenalty::AuthoredSupportUpkeep))
+                    && !matches!(&conversion.replacement, SupportReplacementDef::RegularBasic { health_upkeep: Some(_), .. }) {
+                    return Err(super::RelicPlanError::new(super::FaultCode::InvalidReference,
+                        "every corrupt conversion for authored support upkeep must pair its benefit with HP upkeep"));
+                }
+                }
             }
         }
     }
@@ -214,7 +285,7 @@ pub(super) fn apply_conversions(
         &crate::game::relic::OwnedRelic,
         &crate::game::data::relic_data::RelicDefinition,
     )],
-    effects: &mut [super::EffectiveEffect],
+    effects: &mut [super::SharedEffect],
     work: &mut super::Work,
 ) -> Result<Vec<super::dto::RelicRuleStateDto>, super::RelicPlanError> {
     use super::{dto::*, EffectBody, PlanContribution};
@@ -236,20 +307,21 @@ pub(super) fn apply_conversions(
                 "support conversion provider unavailable",
             )
         })?;
-        let Some(conversion) =
-            policy(&skill.steps[*step].effects[*index].op).and_then(|p| p.conversion.as_ref())
+        let Some(policy) = policy(&skill.steps[*step].effects[*index].op)
         else {
             continue;
         };
-        work.charge(copies.len(), "support_conversion_equipped_copy")?;
+        work.charge(copies.len().checked_mul(policy.variants().count()).ok_or_else(||
+            super::RelicPlanError::new(super::FaultCode::InvalidReference, "support variant work overflow"))?, "support_conversion_equipped_copy")?;
         // Copies are sorted by UUID. The authored 'once' policy selects one real
         // equipped copy, with that copy retained in normal contribution receipts.
-        let Some((copy, definition)) = copies.iter().find(|(copy, _)| {
-            copy.definition_id == conversion.relic_definition && copy.variant == conversion.variant
+        let Some((copy, definition, conversion)) = copies.iter().find_map(|(copy, definition)| {
+            policy.variants().find(|c| copy.definition_id == c.relic_definition && copy.variant == c.variant)
+                .map(|c| (*copy, *definition, c))
         }) else {
             continue;
         };
-        super::compiler::admit_serialized_copy(conversion, work)?;
+        super::compiler::admit_owned_copy(conversion, work)?;
         let site_bytes = super::compiler::serialized_size(&effect.key, work)?;
         work.reserve(Some(site_bytes + 128), "support_conversion_identity")?;
         let encoded = serde_json::to_vec(&effect.key).map_err(|e| {
@@ -271,6 +343,7 @@ pub(super) fn apply_conversions(
             variant: copy.variant,
             rule_id: id,
         };
+        let effect = super::compiler::edit_effect(effect, work)?;
         effect.include_recipe(
             &StructuralRecipeDef::SupportSelectionPattern {
                 range: Arc::clone(&conversion.selection_range),
@@ -293,12 +366,16 @@ pub(super) fn apply_conversions(
             SupportReplacementDef::RegularBasic {
                 damage_percent,
                 speed_points,
+                health_upkeep,
             } => {
                 effect.include_recipe(
                     &StructuralRecipeDef::FixedRecipientSupport,
                     &contribution,
                     work,
                 )?;
+                if let Some(upkeep) = health_upkeep {
+                    effect.include_recipe(&StructuralRecipeDef::ChannelHealthUpkeep { policy: *upkeep }, &contribution, work)?;
+                }
                 effect.include_recipe(
                     &StructuralRecipeDef::RegularBasicSupport {
                         damage_percent: *damage_percent,
@@ -316,7 +393,7 @@ pub(super) fn apply_conversions(
             ),
             "support_conversion_receipt",
         )?;
-        super::compiler::admit_serialized_copy(&effect.key, work)?;
+        super::compiler::admit_owned_copy(&effect.key, work)?;
         states.push(RelicRuleStateDto {
             contribution,
             state: RelicRuleState::Active,

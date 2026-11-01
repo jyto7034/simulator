@@ -1,0 +1,129 @@
+{
+  "purpose": "Explicit technical test completion only. Not release values, final weapon footprint/target cap, compatibility, power curve or transformation design.",
+  "values": {
+    "capacity": 100,
+    "hello-duration-ms": 2000,
+    "hello-length_units": 6500000,
+    "hello-width_units": 500000,
+    "hello-power": 40,
+    "piercing-increment_percent": 25,
+    "piercing-cap_percent": 50,
+    "finish-footprint": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXXXXXX",
+        "XXXXXXXXX",
+        "XXXXXXXXX",
+        "XXXXXXXXX",
+        "XXXX@XXXX",
+        "XXXXXXXXX",
+        "XXXXXXXXX",
+        "XXXXXXXXX",
+        "XXXXXXXXX"
+      ]
+    },
+    "finish-power-expression": {
+      "Clamp": {
+        "max": {
+          "Const": {
+            "unit": "Magnitude",
+            "value": 45
+          }
+        },
+        "min": {
+          "Const": {
+            "unit": "Magnitude",
+            "value": 0
+          }
+        },
+        "value": {
+          "Add": [
+            {
+              "Const": {
+                "unit": "Magnitude",
+                "value": 10
+              }
+            },
+            {
+              "Mul": {
+                "scalar": {
+                  "Ratio": {
+                    "denominator": {
+                      "Const": {
+                        "unit": "Milliseconds",
+                        "value": 1000
+                      }
+                    },
+                    "numerator": {
+                      "Mul": {
+                        "scalar": {
+                          "Const": {
+                            "unit": "Scalar",
+                            "value": 20
+                          }
+                        },
+                        "value": {
+                          "Read": {
+                            "Time": "RemainingTime"
+                          }
+                        }
+                      }
+                    },
+                    "rounding": "Floor"
+                  }
+                },
+                "value": {
+                  "Const": {
+                    "unit": "Magnitude",
+                    "value": 1
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "fragment-rarity": "Common",
+    "fragment-equip-limit": "OwnedCopies",
+    "fragment-compatible-weapons": [
+      "Sword"
+    ],
+    "lifesteal-max-heal": 17,
+    "transformation-definition": "o-06-20_nothing_there",
+    "weapon-rarity": "ALEPH",
+    "weapon-price": 0,
+    "weapon-duplicate": true,
+    "weapon-area-action": {
+      "DamageCone": {
+        "length_tiles": 2,
+        "end_half_width_tiles": 1
+      }
+    },
+    "weapon-attack": 0,
+    "weapon-defense-focus": {
+      "block_capacity_bonus": 1,
+      "incoming_damage_reduction_percent": 10
+    },
+    "weapon-targeting": "DefaultForward",
+    "weapon-footprint": {
+      "include_anchor_tile": false,
+      "rows": [
+        ".X.",
+        ".@.",
+        "..."
+      ]
+    },
+    "weapon-interval-ms": 1500,
+    "weapon-windup-ms": 200,
+    "armor-rarity": "ALEPH",
+    "armor-price": 0,
+    "armor-duplicate": true,
+    "armor-MaxHealth": 0,
+    "armor-Defense": 0,
+    "armor-MagicResist": 0,
+    "accessory-rarity": "ALEPH",
+    "accessory-price": 0,
+    "accessory-duplicate": true
+  }
+}

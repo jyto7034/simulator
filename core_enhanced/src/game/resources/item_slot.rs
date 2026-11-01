@@ -200,6 +200,15 @@ impl ItemSlot {
         }
     }
 
+    /// Undo a known last Any3 insertion without searching earlier slots.
+    /// A mismatched instance or another layout leaves the slots unchanged.
+    pub(crate) fn remove_last_any3(&mut self, expected: Uuid) -> Option<EquippedRef> {
+        let SlotLayout::Any3 { items } = &mut self.layout else { return None; };
+        if items.last().is_some_and(|item| item.instance_uuid == expected) {
+            items.pop()
+        } else { None }
+    }
+
     pub fn remove_by_instance(&mut self, instance_uuid: Uuid) -> Option<EquippedRef> {
         match &mut self.layout {
             SlotLayout::ByType {

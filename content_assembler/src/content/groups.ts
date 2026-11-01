@@ -12,8 +12,10 @@ export const emptyGroups = (): GraphGroups => ({
 });
 export const groupsFilename = ".graph-groups.json";
 
-export function contentName(value: unknown): string {
-  const suffix = ".node-graph.json";
+export function contentName(
+  value: unknown,
+  suffix: ".node-graph.json" | ".skill.yaml" = ".node-graph.json",
+): string {
   if (
     typeof value !== "string" ||
     !value.endsWith(suffix) ||
@@ -25,7 +27,7 @@ export function contentName(value: unknown): string {
     /^(con|prn|aux|nul|com[0-9]|lpt[0-9])\./i.test(value)
   )
     throw new Error(
-      "파일 이름을 확인하세요. 폴더 경로 없이 .node-graph.json 이름을 사용하세요.",
+      `파일 이름을 확인하세요. 폴더 경로 없이 ${suffix} 이름을 사용하세요.`,
     );
   return value;
 }

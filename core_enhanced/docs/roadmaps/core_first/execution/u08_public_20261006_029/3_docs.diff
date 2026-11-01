@@ -1,9 +1,0 @@
---- core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md before029
-+++ core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md after029
-@@ -1,4 +1,6 @@
- # Core 우선 게임 로직·공개 콘텐츠 제작·모드 지원 통합 개발 로드맵
-+
-+**2026-10-06 U08 제품 교정 인수·시험 이관029:** 한 파일 compiler 교정의 작은 검사가 통과했다. [시험 이관](execution/u08_public_20261006_029/RECORD.ko.md)에 따라 main Astra가 5파일/9selector를 보강한다. 새 통합007·전체U08 독립감사·U09는 아직 미완료다. 아래028은 교정 전 이력이다.
- 
- **2026-10-06 U08 R06 사전 검증 교정028:** 공개 RON의 혼합unit Sum/Max에 외부 능력치 참조를 더하면 validation이 성공하는 결함을 재현했다. [교정 인수](execution/u08_public_20261006_028/RECORD.ko.md)에 따라 기존 거부 요건을 유지해 compiler를 교정하고 관측 공백을 보강한다. 통합006의 Core default/fixtures 각각1958PASS는 보존하며 나머지54역할은 미시작이다. U08 전체 완료·독립 감사·U09 진입은 아직 아니다. 아래027은 교정 전 인수 이력이다.
- 

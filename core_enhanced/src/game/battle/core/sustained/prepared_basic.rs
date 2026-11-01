@@ -9,7 +9,7 @@ use crate::game::{
 
 #[derive(Debug, Clone)]
 pub(super) struct PreparedRecord {
-    caster: UnitInstanceId,
+    pub(super) caster: UnitInstanceId,
     profile: PreparedBasicProfile,
     pub(super) source: RuntimeFactSource,
     bound: Option<ActionHandle>,
@@ -17,6 +17,8 @@ pub(super) struct PreparedRecord {
     released: bool,
     rewarded: bool,
     superseded: bool,
+    pub(super) state: Option<super::state_program::StateRecord>,
+    primary: Option<UnitInstanceId>,
 }
 crate::authoring::clone_shape::struct_shape!(PreparedRecord {
     caster,
@@ -26,7 +28,9 @@ crate::authoring::clone_shape::struct_shape!(PreparedRecord {
     epoch,
     released,
     rewarded,
-    superseded
+    superseded,
+    state,
+    primary
 });
 impl PreparedRecord {
     pub(super) fn retained_extent(&self) -> Option<usize> {
@@ -34,6 +38,11 @@ impl PreparedRecord {
             .retained_extent()?
             .checked_add(std::mem::size_of::<Self>() + 160)?
             .checked_add(self.profile.definition.capacity())?
+            .checked_add(
+                self.state
+                    .as_ref()
+                    .map_or(Some(0), |s| s.retained_extent())?,
+            )?
             .checked_add(
                 self.profile
                     .kill_reward
@@ -47,6 +56,7 @@ impl BattleCore {
         &mut self,
         caster: UnitInstanceId,
         profile: PreparedBasicProfile,
+        state: Option<super::state_program::StateRecord>,
         now: u64,
     ) -> Result<(), GameError> {
         self.reconcile_prepared_basics(now)?;
@@ -65,6 +75,8 @@ impl BattleCore {
             released: false,
             rewarded: false,
             superseded: false,
+            state,
+            primary: None,
         };
         crate::game::battle::runtime_control::admit_retained_growth(
             0,
@@ -197,6 +209,7 @@ impl BattleCore {
         &mut self,
         snapshot: &mut DamageSourceSnapshot,
         epoch: u64,
+        primary: UnitInstanceId,
         now: u64,
     ) -> Result<(), GameError> {
         self.reconcile_prepared_basics(now)?;
@@ -235,6 +248,7 @@ impl BattleCore {
         let record = self.sustained.prepared.get_mut(&id).unwrap();
         record.bound = Some(action.clone());
         record.epoch = epoch;
+        record.primary = Some(primary);
         control::poll("prepared_basic_bound")
     }
     pub(in crate::game::battle::core) fn release_prepared_basic(
@@ -258,6 +272,7 @@ impl BattleCore {
     pub(in crate::game::battle::core) fn prepared_basic_kill(
         &mut self,
         snapshot: &DamageSourceSnapshot,
+        victim: UnitInstanceId,
         now: u64,
     ) -> Result<(), GameError> {
         if snapshot.source != DamageSource::BasicAttack
@@ -281,6 +296,17 @@ impl BattleCore {
             || record.bound.as_ref() != snapshot.fact_source.action.as_ref()
         {
             return Ok(());
+        }
+        if record.state.is_some() {
+            let primary = record.primary == Some(victim);
+            let action = record.bound.as_ref().unwrap().ordinal().0;
+            return self.run_state_event(
+                capture.activation,
+                super::state_program::StateEventInput::BasicAttackKill(
+                    primary, action, victim, snapshot.source_side,
+                ),
+                now,
+            );
         }
         let Some(reward) = record.profile.kill_reward.as_ref() else {
             return Ok(());
@@ -330,6 +356,7 @@ impl BattleCore {
                     rewarded: r.rewarded,
                     superseded: r.superseded,
                     fragment_copy_uuid: r.source.fragment.as_ref().map(|f| f.copy_uuid),
+                    state: r.state.as_ref().map(|s| s.view()),
                 })
             })
             .collect()

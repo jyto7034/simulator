@@ -1,0 +1,128 @@
+{
+  "relics": [
+    {
+      "id": "hasty-second-hand",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a105",
+      "name": "성급한 초침",
+      "description": "파편의 명시적인 provider modifier가 적용 대상과 변경을 소유한다.",
+      "rarity": {
+        "Unresolved": "relic-rarity"
+      },
+      "allow_duplicates": {
+        "Unresolved": "relic-allow-duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": {
+        "Unresolved": "relic-incompatible-with"
+      },
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "relic-dismantle-dust"
+      }
+    },
+    {
+      "id": "bottomless-cup",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a106",
+      "name": "밑 빠진 잔",
+      "description": "파편의 명시적인 provider modifier가 적용 대상과 변경을 소유한다.",
+      "rarity": {
+        "Unresolved": "relic-rarity"
+      },
+      "allow_duplicates": {
+        "Unresolved": "relic-allow-duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": {
+        "Unresolved": "relic-incompatible-with"
+      },
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "relic-dismantle-dust"
+      }
+    },
+    {
+      "id": "double-harvest",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a107",
+      "name": "두 겹의 수확",
+      "description": "파편의 명시적인 provider modifier가 적용 대상과 변경을 소유한다.",
+      "rarity": {
+        "Unresolved": "relic-rarity"
+      },
+      "allow_duplicates": {
+        "Unresolved": "relic-allow-duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": {
+        "Unresolved": "relic-incompatible-with"
+      },
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "relic-dismantle-dust"
+      }
+    },
+    {
+      "id": "deep-imprint",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a108",
+      "name": "깊은 각인",
+      "description": "파편의 명시적인 provider modifier가 적용 대상과 변경을 소유한다.",
+      "rarity": {
+        "Unresolved": "relic-rarity"
+      },
+      "allow_duplicates": {
+        "Unresolved": "relic-allow-duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": {
+        "Unresolved": "relic-incompatible-with"
+      },
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "relic-dismantle-dust"
+      }
+    },
+    {
+      "id": "layered-shell",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a109",
+      "name": "겹친 외피",
+      "description": "파편의 명시적인 provider modifier가 적용 대상과 변경을 소유한다.",
+      "rarity": {
+        "Unresolved": "relic-rarity"
+      },
+      "allow_duplicates": {
+        "Unresolved": "relic-allow-duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": {
+        "Unresolved": "relic-incompatible-with"
+      },
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "relic-dismantle-dust"
+      }
+    },
+    {
+      "id": "next",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a110",
+      "name": "다음.",
+      "description": "파편의 명시적인 provider modifier가 적용 대상과 변경을 소유한다.",
+      "rarity": "Rare",
+      "allow_duplicates": {
+        "Unresolved": "relic-allow-duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": {
+        "Unresolved": "relic-incompatible-with"
+      },
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "relic-dismantle-dust"
+      }
+    }
+  ]
+}

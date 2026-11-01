@@ -1,9 +1,12 @@
 use super::*;
-use crate::game::resources::Position;
+use crate::game::battle::core::boss_runtime::tests::compiled_action_fixture::{
+    assert_fragment_trace_origin, enable_complete_trace, hp_trace_rows, primary_fragment_input,
+};
 use crate::game::battle::core::{
-    boss_runtime::tests::compiled_action_fixture::{cast, fixture_graph, hit, place},
+    boss_runtime::tests::compiled_action_fixture::{cast, fixture_content_with_weapon, hit, place},
     sim::BattleExecutionState,
 };
+use crate::game::resources::Position;
 const RELICS: [&str; 6] = [
     "hastened-pulse",
     "growth-medium",
@@ -21,16 +24,36 @@ fn fixture(
     UnitInstanceId,
     UnitInstanceId,
 ) {
-    let (mut c, s, a, e, b) = fixture_graph(
+    let (mut c, s, a, e, b) = fixture_content_with_weapon(
         &RELICS,
         mods,
-        crate::authoring::node_graph::tests::presence_fixture(),
+        crate::authoring::composition::canonical_presence_tests::battle_content(),
+        |_| {},
     );
     place(&mut c, e, 3, 1);
     c.units.get_mut(&e).unwrap().stats.current_health = 10000;
     c.units.get_mut(&e).unwrap().stats.max_health = 10000;
     (c, s, a, e, b)
 }
+fn fixture_graph(
+    relics: &[&str],
+    mods: &[usize],
+    graph: serde_json::Value,
+) -> (
+    BattleCore,
+    BattleExecutionState,
+    UnitInstanceId,
+    UnitInstanceId,
+    UnitInstanceId,
+) {
+    fixture_content_with_weapon(
+        relics,
+        mods,
+        crate::authoring::composition::owned_action_tests::content(graph),
+        |_| {},
+    )
+}
+
 fn key(c: &BattleCore, a: UnitInstanceId) -> uuid::Uuid {
     c.units[&a].fragment_source.as_ref().unwrap().copy_uuid
 }
@@ -167,29 +190,51 @@ fn presence_runtime_periodic_samples_continuous_power_and_cadence_modifier_does_
 fn presence_runtime_signed_period_changes_match_authored_time_contract() {
     for (percent, interval) in [(-50.0, 500), (50.0, 1500), (100.0, 2000), (-99.999, 1)] {
         let mut doc = crate::authoring::node_graph::tests::presence_fixture();
-        doc["nodes"].as_array_mut().unwrap().iter_mut()
-            .find(|n| n["kind"] == "skill-modifier-duration").unwrap()["values"]["percent"] = serde_json::json!(percent);
+        doc["nodes"]
+            .as_array_mut()
+            .unwrap()
+            .iter_mut()
+            .find(|n| n["kind"] == "skill-modifier-duration")
+            .unwrap()["values"]["percent"] = serde_json::json!(percent);
         let (mut c, mut s, a, e, _) = fixture_graph(&RELICS, &[0, 0], doc);
         place(&mut c, e, 3, 1);
         strike(&mut c, a, e, 10, 1);
         let network = &c.sustained.presence.networks[&key(&c, a)];
         assert_eq!(network.capture.program.marks.periodic_interval_ms, interval);
-        assert_eq!(network.capture.applied.len(), 1, "one authored contribution despite two equipped copies");
+        assert_eq!(
+            network.capture.applied.len(),
+            1,
+            "one authored contribution despite two equipped copies"
+        );
         if interval >= 500 {
             let hp = c.units[&e].stats.current_health;
-            c.step_battle_execution_until(&mut s, 10 + u64::from(interval) - 1).unwrap();
+            c.step_battle_execution_until(&mut s, 10 + u64::from(interval) - 1)
+                .unwrap();
             assert_eq!(c.units[&e].stats.current_health, hp);
-            c.step_battle_execution_until(&mut s, 10 + u64::from(interval)).unwrap();
+            c.step_battle_execution_until(&mut s, 10 + u64::from(interval))
+                .unwrap();
             assert_eq!(hp - c.units[&e].stats.current_health, interval / 100);
         }
     }
 }
 #[test]
 fn presence_period_changes_sum_before_one_ceiling_and_reject_nonpositive_result() {
-    let ratio = |n, d| MarkRatio { numerator: n, denominator: d };
-    assert_eq!(modified_period(1001, &[(true, ratio(25, 1)), (true, ratio(25, 1))]).unwrap(), 501);
-    assert_eq!(modified_period(1001, &[(false, ratio(50, 1)), (true, ratio(25, 1))]).unwrap(), 1252);
-    assert_eq!(modified_period(1001, &[(true, ratio(1, 3)), (false, ratio(1, 3))]).unwrap(), 1001);
+    let ratio = |n, d| MarkRatio {
+        numerator: n,
+        denominator: d,
+    };
+    assert_eq!(
+        modified_period(1001, &[(true, ratio(25, 1)), (true, ratio(25, 1))]).unwrap(),
+        501
+    );
+    assert_eq!(
+        modified_period(1001, &[(false, ratio(50, 1)), (true, ratio(25, 1))]).unwrap(),
+        1252
+    );
+    assert_eq!(
+        modified_period(1001, &[(true, ratio(1, 3)), (false, ratio(1, 3))]).unwrap(),
+        1001
+    );
     assert!(modified_period(1000, &[(true, ratio(60, 1)), (true, ratio(40, 1))]).is_err());
 }
 #[test]
@@ -507,7 +552,8 @@ fn presence_runtime_immediate_release_still_runs_corrosion_start_gate_first() {
 }
 
 #[test]
-fn presence_runtime_fractional_bonuses_add_before_rounding_and_authored_blast_dedup_is_supported() {
+fn presence_runtime_fractional_bonuses_add_before_final_floor_and_authored_blast_dedup_is_supported(
+) {
     let mut doc = crate::authoring::node_graph::tests::presence_fixture();
     for n in doc["nodes"].as_array_mut().unwrap() {
         if n["kind"] == "skill-explosion-rule" {
@@ -552,7 +598,10 @@ fn presence_runtime_moving_host_uses_admission_position_and_takes_own_burst_once
                     },
                 )]);
                 c.run_test_movement_tick(1000, 50, &goals);
-                assert_eq!(c.sample_unit_body_at(e, now).unwrap().projected_tile(), Position::new(tile, 1));
+                assert_eq!(
+                    c.sample_unit_body_at(e, now).unwrap().projected_tile(),
+                    Position::new(tile, 1)
+                );
                 assert_eq!(c.units[&e].body.projected_tile(), Position::new(4, 1));
                 let near = enemy(&mut c, e, tile, 1);
                 let other = enemy(&mut c, e, if tile == 3 { 4 } else { 3 }, 1);
@@ -560,9 +609,16 @@ fn presence_runtime_moving_host_uses_admission_position_and_takes_own_burst_once
                 let near_hp = c.units[&near].stats.current_health;
                 let other_hp = c.units[&other].stats.current_health;
                 cast(&mut c, a, now);
-                assert_eq!(c.sustained.presence.pending[0].centers[0].1, Position::new(tile, 1));
+                assert_eq!(
+                    c.sustained.presence.pending[0].centers[0].1,
+                    Position::new(tile, 1)
+                );
                 c.step_battle_execution_until(&mut s, now).unwrap();
-                assert_eq!(hp - c.units[&e].stats.current_health, 30, "mods {mods:?}, time {now}, radius {radius}");
+                assert_eq!(
+                    hp - c.units[&e].stats.current_health,
+                    30,
+                    "mods {mods:?}, time {now}, radius {radius}"
+                );
                 assert_eq!(near_hp - c.units[&near].stats.current_health, 10);
                 assert_eq!(c.units[&other].stats.current_health, other_hp);
             }
@@ -575,14 +631,22 @@ fn presence_runtime_spread_samples_both_moving_host_and_candidate_at_hit_time() 
     use crate::game::battle::core::movement::types::{MovementGoal, WorldVec2};
     for moving_host in [true, false] {
         let mut doc = crate::authoring::node_graph::tests::presence_fixture();
-        doc["nodes"].as_array_mut().unwrap().iter_mut()
-            .find(|n| n["kind"] == "skill-mark-spread").unwrap()["values"]["radius"] = serde_json::json!(0.25);
+        doc["nodes"]
+            .as_array_mut()
+            .unwrap()
+            .iter_mut()
+            .find(|n| n["kind"] == "skill-mark-spread")
+            .unwrap()["values"]["radius"] = serde_json::json!(0.25);
         let (mut c, mut s, a, e, _) = fixture_graph(&RELICS, &[], doc);
         place(&mut c, e, 3, 1);
         let candidate = enemy(&mut c, e, 6, 1);
         strike(&mut c, a, e, 1, 1);
         c.step_battle_execution_until(&mut s, 1000).unwrap();
-        let (moving, stationary) = if moving_host { (e, candidate) } else { (candidate, e) };
+        let (moving, stationary) = if moving_host {
+            (e, candidate)
+        } else {
+            (candidate, e)
+        };
         for id in [moving, stationary] {
             let unit = c.units.get_mut(&id).unwrap();
             unit.body.radius = 0.01;
@@ -590,15 +654,293 @@ fn presence_runtime_spread_samples_both_moving_host_and_candidate_at_hit_time() 
             unit.body.position = WorldVec2::new(if id == moving { 3.99 } else { 3.75 }, 1.5);
         }
         c.units.get_mut(&moving).unwrap().body.move_speed = 2.0;
-        c.units.get_mut(&moving).unwrap().stats.move_speed_units_per_ms = 2_000;
+        c.units
+            .get_mut(&moving)
+            .unwrap()
+            .stats
+            .move_speed_units_per_ms = 2_000;
         let goals = std::collections::HashMap::from([(
             moving,
-            MovementGoal::MoveToPoint { point: WorldVec2::new(7.5, 1.5), stop_radius: 0.1 },
+            MovementGoal::MoveToPoint {
+                point: WorldVec2::new(7.5, 1.5),
+                stop_radius: 0.1,
+            },
         )]);
         c.run_test_movement_tick(1000, 50, &goals);
         assert!(c.units[&moving].body.position.x - c.units[&stationary].body.position.x > 0.25);
         strike(&mut c, a, e, 1001, 1);
-        assert!(c.sustained.presence.networks[&key(&c, a)].hosts.contains_key(&candidate), "moving host: {moving_host}");
+        assert!(
+            c.sustained.presence.networks[&key(&c, a)]
+                .hosts
+                .contains_key(&candidate),
+            "moving host: {moving_host}"
+        );
         assert_eq!(hosts(&c, a), 2);
     }
+}
+
+#[test]
+fn composition_dot_recovery_presence_and_buff_share_live_membership_after_death_and_burst() {
+    use crate::authoring::composition;
+    use crate::game::data::GameDataBuilder;
+    let native = composition::canonical_presence_tests::battle_content();
+    let armor = composition::compile_yaml(
+        &composition::canonical_presence_tests::equipment_fixture("armor"),
+    )
+    .unwrap();
+    let buffs=ron::de::from_str(r#"(buffs:[(name:"recovery_dot",kind:PeriodicDamage(damage_per_tick:1,damage_type:True),tick_interval_ms:1000,max_stacks:1,reapply_policy:RefreshDuration)])"#).unwrap();
+    let (mut c,mut s,a,e,b)=crate::game::battle::core::boss_runtime::tests::compiled_action_fixture::fixture_content_with_data(
+        &RELICS,&[],native,|_|{},crate::game::resource::ResourceCatalog {resources:vec![]},
+        |builder:GameDataBuilder|builder.with_buffs(buffs).with_equipment_states(armor.equipment_states().to_vec()), |_|{});
+    place(&mut c, e, 3, 1);
+    c.units.get_mut(&e).unwrap().stats.max_health = 10000;
+    c.units.get_mut(&e).unwrap().stats.current_health = 10000;
+    c.units.get_mut(&a).unwrap().stats.current_health = 400;
+    let e2 = enemy(&mut c, e, 6, 1);
+    let e3 = enemy(&mut c, e, 6, 3);
+    for (owner, target) in [(a, e), (a, e2), (b, e3)] {
+        c.process_event_for_test(
+            BattleEvent::ApplyBuff {
+                time_ms: 0,
+                caster_instance_id: owner,
+                target_instance_id: target,
+                buff_id: crate::game::battle::buffs::BuffId::from_name("recovery_dot"),
+                duration_ms: 3000,
+                cause: Default::default(),
+            },
+            0,
+        )
+        .unwrap();
+    }
+    strike(&mut c, a, e, 10, 1);
+    assert_eq!(
+        power(&c, a, 10),
+        0,
+        "a new live spore need not have accrued damage yet"
+    );
+    assert_eq!(
+        c.owned_dot_targets(a, 10, 10).unwrap(),
+        [e, e2].into_iter().collect()
+    );
+    c.step_battle_execution_until(&mut s, 1000).unwrap();
+    assert_eq!(c.units[&a].stats.current_health, 415);
+    hit(&mut c, b, e2, 20000, 1001);
+    assert!(c.units[&e2].lifecycle.is_dead());
+    c.step_battle_execution_until(&mut s, 2000).unwrap();
+    assert_eq!(
+        c.units[&a].stats.current_health, 425,
+        "dead recipient is removed before next recovery"
+    );
+    cast(&mut c, a, 2010);
+    assert_eq!(hosts(&c, a), 0);
+    assert_eq!(
+        c.owned_dot_targets(a, 2010, 10).unwrap(),
+        [e].into_iter().collect(),
+        "consuming spores retains a distinct own DOT"
+    );
+    c.step_battle_execution_until(&mut s, 3000).unwrap();
+    assert!(c.owned_dot_targets(a, 3000, 10).unwrap().is_empty());
+    assert_eq!(
+        c.units[&a].stats.current_health, 425,
+        "consumed spores and expired own buff stop recovery"
+    );
+}
+
+#[test]
+fn composition_dot_kill_presence_burst_captures_hosts_pays_after_cost_and_rolls_back() {
+    use crate::authoring::{composition, control};
+    use crate::game::data::GameDataBuilder;
+    let native = composition::canonical_presence_tests::battle_content();
+    let accessory = composition::compile_yaml(
+        &composition::canonical_presence_tests::equipment_fixture("accessory"),
+    )
+    .unwrap();
+    let (mut c,mut s,a,e,_)=crate::game::battle::core::boss_runtime::tests::compiled_action_fixture::fixture_content_with_data(
+        &RELICS,&[3,5],native,|_|{},crate::game::resource::ResourceCatalog{resources:vec![]},
+        |builder:GameDataBuilder|builder.with_equipment_states(accessory.equipment_states().to_vec()), |_|{});
+    place(&mut c, e, 3, 1);
+    let e2 = enemy(&mut c, e, 4, 1);
+    let nearby = enemy(&mut c, e, 5, 1);
+    for id in [e, e2, nearby] {
+        c.units.get_mut(&id).unwrap().stats.current_health = 10000;
+    }
+    strike(&mut c, a, e, 10, 1);
+    strike(&mut c, a, e2, 10, 1);
+    assert_eq!(hosts(&c, a), 2);
+    c.step_battle_execution_until(&mut s, 1009).unwrap();
+    for id in [e, e2, nearby] {
+        c.units.get_mut(&id).unwrap().stats.current_health = 1;
+    }
+    c.enable_authoring_observation();
+    cast(&mut c, a, 1010);
+    assert_eq!(c.units[&a].resonance_current, 0, "cost paid before release");
+    assert_eq!(
+        hosts(&c, a),
+        0,
+        "consumed network is not queried after release"
+    );
+    let before = (
+        c.transaction_debug_snapshot(),
+        c.event_queue_debug_snapshot(),
+        format!("{s:?}"),
+        serde_json::to_value(&c.authoring_observation).unwrap(),
+    );
+    let token = control::CancellationToken::default();
+    let result = control::with_test_cancellation("equipment_reward_settled", 1, || {
+        control::run(
+            &control::ExecutionLimits::default(),
+            &token,
+            control::ExecutionPhase::TrialExecution,
+            || c.step_battle_execution_until(&mut s, 1010),
+        )
+    });
+    assert!(result.is_err() && token.is_cancelled());
+    assert_eq!(
+        (
+            c.transaction_debug_snapshot(),
+            c.event_queue_debug_snapshot(),
+            format!("{s:?}"),
+            serde_json::to_value(&c.authoring_observation).unwrap()
+        ),
+        before
+    );
+    c.step_battle_execution_until(&mut s, 1010).unwrap();
+    for id in [e, e2, nearby] {
+        assert!(c.units[&id].lifecycle.is_dead(), "{id:?}");
+    }
+    assert_eq!(
+        c.units[&a].resonance_current, 14,
+        "two infected hosts, not the uninfected area victim or repeated overlap"
+    );
+    assert_eq!(hosts(&c, a), 0);
+    assert!(c.sustained.presence.pending.is_empty());
+    let views = c.sustained_effect_snapshot().unwrap().equipment_states;
+    assert_eq!(
+        views.iter().find(|v| v.owner == a).unwrap().state.events,
+        3,
+        "three typed deaths; authored condition accepts only the two captured hosts"
+    );
+}
+
+#[test]
+fn presence_periodic_damage_keeps_authored_fragment_origin_without_inventing_cast() {
+    let (mut c, mut s, a, e, _) = fixture(&[]);
+    let copy = primary_fragment_input(&c, a);
+    strike(&mut c, a, e, 10, 1);
+    let hp = c.units[&e].stats.current_health;
+    let (_trace, trace_from) = enable_complete_trace(&mut c);
+    c.step_battle_execution_until(&mut s, 1010).unwrap();
+    assert_eq!(hp - c.units[&e].stats.current_health, 10);
+    let observation = c.authoring_observation.as_ref().unwrap();
+    let witness = observation
+        .latest_nonzero_sourced_hp
+        .as_ref()
+        .unwrap_or_else(|| {
+            panic!(
+                "actual periodic damage lost authored origin: {:?}",
+                observation.latest
+            )
+        });
+    assert!(
+        witness.source.is_none(),
+        "intrinsic periodic tick is not a cast"
+    );
+    assert_eq!(
+        witness
+            .authored
+            .as_ref()
+            .unwrap()
+            .site
+            .action
+            .definition_id
+            .as_str(),
+        "r11_aura"
+    );
+    assert_eq!(witness.fragment.as_ref().unwrap().copy_uuid, copy);
+    assert_eq!(
+        witness.fragment.as_ref().unwrap().definition_id.as_str(),
+        "r09_fragment"
+    );
+    assert_eq!(witness.change.hp_delta(), -10);
+    assert_eq!(witness.target_unit, e);
+    assert_eq!(witness.time_ms, 1010);
+    let rows = hp_trace_rows(&c, trace_from);
+    assert_eq!(rows.len(), 1);
+    assert_fragment_trace_origin(&rows[0], a, None);
+}
+
+#[test]
+fn presence_periodic_observation_off_and_saturated_trace_preserve_damage_and_cleanup() {
+    use crate::authoring::trace::{TraceAttempt, TraceLimits, TraceOptions};
+    let (base, state, a, e, _) = fixture(&[]);
+    let copy = primary_fragment_input(&base, a);
+    let mut outcomes = vec![];
+    for mode in 0..3 {
+        let (mut c, mut s) = (base.clone(), state.clone());
+        let options = TraceOptions {
+            limits: (mode == 2).then_some(TraceLimits {
+                max_bytes: 1,
+                max_row_bytes: 1,
+                ..Default::default()
+            }),
+        };
+        if mode > 0 {
+            c.enable_authoring_observation_with_trace(options);
+        } else {
+            c.authoring_observation = None;
+        }
+        let _attempt = TraceAttempt::enter(options).unwrap();
+        strike(&mut c, a, e, 10, 1);
+        c.step_battle_execution_until(&mut s, 2010).unwrap();
+        assert_eq!(c.units[&e].stats.current_health, 9969);
+        if mode > 0 {
+            let witness = c
+                .authoring_observation
+                .as_ref()
+                .unwrap()
+                .latest_nonzero_sourced_hp
+                .as_ref()
+                .unwrap();
+            assert!(witness.source.is_none());
+            assert_eq!(witness.fragment.as_ref().unwrap().copy_uuid, copy);
+        }
+        cast(&mut c, a, 2010);
+        c.step_battle_execution_until(&mut s, 2010).unwrap();
+        assert_eq!(c.units[&e].stats.current_health, 9909);
+        if mode > 0 {
+            let witness = c
+                .authoring_observation
+                .as_ref()
+                .unwrap()
+                .latest_nonzero_sourced_hp
+                .as_ref()
+                .unwrap();
+            assert!(
+                witness.source.is_some(),
+                "admitted detonation has a real cast"
+            );
+            assert_eq!(witness.fragment.as_ref().unwrap().copy_uuid, copy);
+            assert_eq!(witness.change.hp_delta(), -60);
+        }
+        c.step_battle_execution_until(&mut s, 3010).unwrap();
+        assert_eq!(
+            c.units[&e].stats.current_health, 9909,
+            "consumed network has no further ticks"
+        );
+        assert_eq!(hosts(&c, a), 0);
+        assert!(c.sustained.presence.pending.is_empty());
+        if mode == 2 {
+            let trace = c.authoring_trace.view();
+            assert!(trace.gap.as_ref().is_some_and(|g| g.dropped_rows > 0));
+            assert!(trace.ndjson.is_empty());
+        }
+        outcomes.push((
+            c.units[&e].stats.current_health,
+            hosts(&c, a),
+            c.event_queue_debug_snapshot(),
+            serde_json::to_value(&c.event_log).unwrap(),
+        ));
+    }
+    assert_eq!(outcomes[0], outcomes[1]);
+    assert_eq!(outcomes[1], outcomes[2]);
 }

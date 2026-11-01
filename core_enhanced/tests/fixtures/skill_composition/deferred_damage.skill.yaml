@@ -1,0 +1,17 @@
+# N04 붉은 흉터 초기값. 실제 World는 별도 방어구 사본에 바인딩한다.
+version: 1
+id: deferred-damage-fixture
+values:
+  - name: scar-defense
+    value:
+      DefenseProgram:
+        DeferredDamage:
+          defer_percent: 30
+          duration_ms: 5000
+          tick_ms: 1000
+          kill_clear_percent: 50
+equipment_defenses:
+  - equipment: r11_weapon
+    program: { Shared: scar-defense }
+definitions: []
+skills: []

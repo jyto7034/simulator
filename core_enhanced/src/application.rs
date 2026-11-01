@@ -186,6 +186,7 @@ define_application_command_kinds!(
     PreviewSkillTarget,
     PreviewTacticalCommand,
     ActivateSkill,
+    SelectSkillRelation,
     RetreatBattle,
     PauseBattle,
     ResumeBattle,
@@ -415,6 +416,7 @@ define_application_result_kinds!(
     BattleUnitsTacticallySwapped,
     BattleSkillTargetingFocusChanged,
     BattleSkillActivated,
+    BattleRelationSelected,
     RewardState,
     DealerState,
     Ok,
@@ -598,6 +600,7 @@ fn application_result_kind(result: &BehaviorResult) -> ApplicationResultKind {
             K::BattleSkillTargetingFocusChanged
         }
         BehaviorResult::BattleSkillActivated { .. } => K::BattleSkillActivated,
+        BehaviorResult::BattleRelationSelected { .. } => K::BattleRelationSelected,
         BehaviorResult::RewardState { .. } => K::RewardState,
         BehaviorResult::DealerState { .. } => K::DealerState,
         BehaviorResult::Ok => K::Ok,
@@ -910,6 +913,11 @@ pub struct ApplicationCheckpoint {
 }
 
 impl ApplicationCheckpoint {
+    /// The current Core writer format. Storage hosts may preserve these opaque
+    /// bytes; Core still validates the full payload and retained generation.
+    pub const FORMAT_VERSION: u32 = GameCore::active_run_checkpoint_format_version();
+
+
     pub fn new(core_payload_json: Vec<u8>, loads_used: u8, run_peak_certified_power: u64) -> Self {
         Self {
             core_payload_json: core_payload_json.into(),
@@ -1853,8 +1861,8 @@ mod tests {
 
     #[test]
     fn command_kind_is_exactly_bijective_with_all_domain_actions() {
-        assert_eq!(ApplicationCommandKind::ALL.len(), 87);
-        assert_eq!(ActionKind::ALL.len(), 87);
+        assert_eq!(ApplicationCommandKind::ALL.len(), 88);
+        assert_eq!(ActionKind::ALL.len(), 88);
         for domain in ActionKind::ALL {
             let application = ApplicationCommandKind::from_domain(*domain);
             assert_eq!(application.into_domain(), *domain);

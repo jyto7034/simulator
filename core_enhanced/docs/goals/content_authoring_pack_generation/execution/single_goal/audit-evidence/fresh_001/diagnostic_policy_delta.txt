@@ -1,1 +1,0 @@
-extra_waves: [(id: "audit_missing_spawn_zone", activation: (trigger_id: "audit_missing_spawn_zone", priority: 0, primary: AtTimeMs(time_ms: 5000)), spawn_zone_ids: ["audit_missing_spawn_zone"], route_id: Some("defense_main"), required_for_victory: true, source: Manual([CorrodedEmployee(profile_id: "corroded_guard", tier: I, count: 1)]))]

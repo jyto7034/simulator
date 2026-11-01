@@ -649,7 +649,7 @@ impl GameCore {
             .iter()
             .map(|owned| InventoryEquipmentSnapshotDto {
                 instance_uuid: owned.instance_uuid,
-                item: crate::game::resources::EquipmentItemDto::from_owned_equipment(owned),
+                item: self.equipment_item_dto(owned),
                 equipped_to: owned.equipped_to,
             })
             .collect::<Vec<_>>();
@@ -857,13 +857,15 @@ impl GameCore {
                         .iter()
                         .map(|equipped| {
                             let equipment = inventory.equipments.get_item(&equipped.instance_uuid);
+                            let form = equipment.and_then(|owned| self.equipment_form_view(owned));
                             EmployeeEquippedItemSnapshotDto {
                                 weapon_stage: equipment.map(|item| item.weapon_stage).unwrap_or_default(),
                                 instance_uuid: equipped.instance_uuid,
                                 base_uuid: equipped.base_uuid,
                                 equipment_type: equipped.equipment_type,
                                 definition_id: equipment.map(|item| item.meta.id.clone()),
-                                name: equipment.map(|item| item.meta.name.clone()),
+                                name: form.as_ref().map(|f| f.name.clone()).or_else(|| equipment.map(|item| item.meta.name.clone())),
+                                form,
                                 weapon_profile: equipment
                                     .and_then(|item| item.meta.weapon_profile.clone()),
                                 bound: equipment.map(|item| item.meta.bound).unwrap_or(false),

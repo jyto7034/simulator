@@ -1,0 +1,19 @@
+# H99 커다란 선물자루: 확률100%/1000ms는 검증 입력이며 출시 수치가 아니다.
+version: 1
+id: chance-stun-fixture
+values:
+  - name: gift-sack-hit
+    value:
+      AttackProgram:
+        reactions: []
+        on_hit_status:
+          chance_percent: 100
+          duration_ms: 1000
+          profile:
+            definition: gift-sack-stun
+            kind: Stun
+equipment_attacks:
+  - equipment: h99_gift_sack
+    program: { Shared: gift-sack-hit }
+definitions: []
+skills: []

@@ -15,7 +15,9 @@ export type ContentRequest =
   | { operation: "read"; name: string }
   | { operation: "save"; name: string; json: string; expected: string | null };
 
-async function request(input: ContentRequest): Promise<unknown> {
+async function request(
+  input: ContentRequest & { kind?: "node-graph" | "composition" },
+): Promise<unknown> {
   if (isTauri()) return invoke("content_files", { input });
   const response = await fetch("/__content/files", {
     method: "POST",
@@ -38,8 +40,10 @@ async function request(input: ContentRequest): Promise<unknown> {
   return result;
 }
 
-export async function listContent(): Promise<ContentListing> {
-  const result = await request({ operation: "list" });
+export async function listContent(
+  kind: "node-graph" | "composition" = "node-graph",
+): Promise<ContentListing> {
+  const result = await request({ operation: "list", kind });
   if (
     !result ||
     typeof result !== "object" ||
@@ -61,9 +65,11 @@ export async function listContent(): Promise<ContentListing> {
 
 export async function contentFile(
   input: Exclude<ContentRequest, { operation: "list" | "save-groups" }>,
+  kind: "node-graph" | "composition" = "node-graph",
 ): Promise<ContentFile> {
-  if (input.operation === "save") parseDocument(input.json);
-  const result = await request(input);
+  if (input.operation === "save" && kind === "node-graph")
+    parseDocument(input.json);
+  const result = await request({ ...input, kind });
   if (
     !result ||
     typeof result !== "object" ||

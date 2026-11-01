@@ -6,7 +6,7 @@ pub(super) fn scale(value: u64, factor: MarkRatio) -> Result<u32, GameError> {
         return Err(GameError::InvalidAction);
     }
     u32::try_from(
-        (u128::from(value) * u128::from(factor.numerator)).div_ceil(u128::from(factor.denominator)),
+        (u128::from(value) * u128::from(factor.numerator)) / u128::from(factor.denominator),
     )
     .map_err(|_| GameError::InvalidAction)
 }

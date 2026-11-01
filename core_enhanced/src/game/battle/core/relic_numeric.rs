@@ -126,6 +126,7 @@ pub(crate) fn penalize_employee_stats(
         for penalty in &variant.penalties {
             crate::authoring::control::charge(1, "relic_penalty")?;
             match penalty {
+                RelicPenalty::AuthoredSupportUpkeep => {}, // Selected finite support owns payment.
                 RelicPenalty::DefenseFlat { amount } => {
                     defense = defense
                         .checked_add(i128::from(*amount))

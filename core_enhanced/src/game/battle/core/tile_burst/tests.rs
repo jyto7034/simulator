@@ -1,6 +1,6 @@
 use super::*;
 use crate::game::battle::core::{
-    boss_runtime::tests::compiled_action_fixture::{cast, fixture_graph, hit, place},
+    boss_runtime::tests::compiled_action_fixture::{cast, fixture_content_with_weapon, hit, place},
     sim::{BattleExecutionState, BattleLiveCommand},
 };
 const RELICS: [&str; 5] = [
@@ -25,10 +25,16 @@ fn tile_burst_moving_stacks_use_admission_and_death_time_positions() {
         unit.blockable = false;
         let goals = std::collections::HashMap::from([(
             e,
-            MovementGoal::MoveToPoint { point: WorldVec2::new(7.5, 1.5), stop_radius: 0.1 },
+            MovementGoal::MoveToPoint {
+                point: WorldVec2::new(7.5, 1.5),
+                stop_radius: 0.1,
+            },
         )]);
         c.run_test_movement_tick(1000, 50, &goals);
-        assert_eq!(c.sample_unit_body_at(e, 1001).unwrap().projected_tile(), Position::new(3, 1));
+        assert_eq!(
+            c.sample_unit_body_at(e, 1001).unwrap().projected_tile(),
+            Position::new(3, 1)
+        );
         assert_eq!(c.units[&e].body.projected_tile(), Position::new(4, 1));
         if dies {
             hit(&mut c, b, e, 20000, 1001);
@@ -56,10 +62,11 @@ fn fixture(
     UnitInstanceId,
     UnitInstanceId,
 ) {
-    let (mut c, s, a, e, b) = fixture_graph(
+    let (mut c, s, a, e, b) = fixture_content_with_weapon(
         &RELICS,
         mods,
-        crate::authoring::node_graph::tests::tile_burst_fixture(form),
+        crate::authoring::composition::canonical_funeral_tests::battle_fixture_content(form),
+        |_| {},
     );
     place(&mut c, e, 3, 1);
     c.units.get_mut(&e).unwrap().stats.current_health = 10000;
@@ -176,7 +183,8 @@ fn tile_burst_weapon_lethal_grant_transfers_all_once_and_other_damage_cannot_gra
     let pool = &c.sustained.weapon_marks.pools[&(copy(&c, a), "butterflies".into())];
     assert!(pool.units.is_empty());
     assert_eq!(pool.tiles[&(3, 1)], 8);
-    c.runtime_transaction(|c| c.weapon_mark_death(e, 12)).unwrap();
+    c.runtime_transaction(|c| c.weapon_mark_death(e, 12))
+        .unwrap();
     assert_eq!(stacks(&c, a), 8);
 }
 #[test]
@@ -530,4 +538,126 @@ fn tile_burst_unrepresentable_rank_refuses_before_cost_and_keeps_stack_store() {
         ),
         before
     );
+}
+
+#[test]
+fn tile_burst_released_damage_keeps_cast_fragment_and_authored_source_after_owner_exit() {
+    for form in ["", "-bloom", "-orb"] {
+        let orb = form == "-orb";
+        let (mut c, mut s, a, e, _) = fixture(form, if orb { &[4] } else { &[] });
+        c.enable_authoring_observation();
+        if !form.is_empty() {
+            for time in 1..=if orb { 3 } else { 1 } {
+                strike(&mut c, a, e, 1, time);
+            }
+        }
+        cast(&mut c, a, 10);
+        c.step_battle_execution_until(&mut s, 10).unwrap();
+        let hp = c.units[&e].stats.current_health;
+        if orb {
+            c.advance_forced_pause_host_elapsed(500).unwrap();
+        } else {
+            c.apply_live_command(BattleLiveCommand::WithdrawUnit {
+                unit_id: a,
+                time_ms: 11,
+            })
+            .unwrap();
+            c.step_battle_execution_until(&mut s, 210).unwrap();
+        }
+        assert_eq!(
+            hp - c.units[&e].stats.current_health,
+            if orb {
+                22
+            } else if form.is_empty() {
+                10
+            } else {
+                20
+            }
+        );
+        let observed = c
+            .authoring_observation
+            .as_ref()
+            .unwrap()
+            .latest_nonzero_sourced_hp
+            .as_ref()
+            .unwrap();
+        let source = observed.source.as_ref().unwrap_or_else(|| {
+            panic!("released {form} hit lost cast/fragment source: {observed:?}")
+        });
+        assert_eq!(source.cast.skill_id.as_str(), "r11_aura");
+        assert_eq!(source.cast.caster_instance_id, a);
+        assert_eq!(
+            source.authored.site.action.definition_id.as_str(),
+            "r11_aura"
+        );
+        let fragment = observed
+            .fragment
+            .as_ref()
+            .expect("the actual accepted fragment copy survives release");
+        assert_eq!(fragment.definition_id.as_str(), "r09_fragment");
+        assert_eq!(fragment.skill_id.as_str(), "r11_aura");
+        assert!(observed.change.hp_delta() < 0);
+    }
+}
+
+#[test]
+fn tile_burst_source_observation_off_and_saturated_trace_preserve_damage_and_cleanup() {
+    use crate::authoring::trace::{TraceAttempt, TraceLimits, TraceOptions};
+    for form in ["", "-bloom", "-orb"] {
+        let orb = form == "-orb";
+        let (base, state, a, e, _) = fixture(form, if orb { &[4] } else { &[] });
+        let mut outcomes = vec![];
+        for mode in 0..3 {
+            let (mut c, mut s) = (base.clone(), state.clone());
+            let options = TraceOptions {
+                limits: (mode == 2).then_some(TraceLimits {
+                    max_bytes: 1,
+                    max_row_bytes: 1,
+                    ..Default::default()
+                }),
+            };
+            if mode > 0 {
+                c.enable_authoring_observation_with_trace(options);
+            } else {
+                c.authoring_observation = None;
+            }
+            let _attempt = TraceAttempt::enter(options).unwrap();
+            if !form.is_empty() {
+                for time in 1..=if orb { 3 } else { 1 } {
+                    strike(&mut c, a, e, 1, time);
+                }
+            }
+            cast(&mut c, a, 10);
+            c.step_battle_execution_until(&mut s, 10).unwrap();
+            if orb {
+                c.advance_forced_pause_host_elapsed(500).unwrap();
+            } else {
+                c.step_battle_execution_until(&mut s, 210).unwrap();
+            }
+            if mode > 0 {
+                let o = c
+                    .authoring_observation
+                    .as_ref()
+                    .unwrap()
+                    .latest_nonzero_sourced_hp
+                    .as_ref()
+                    .unwrap();
+                assert!(o.source.is_some() && o.fragment.is_some());
+            }
+            if mode == 2 {
+                let trace = c.authoring_trace.view();
+                assert!(trace.gap.as_ref().is_some_and(|g| g.dropped_rows > 0));
+                assert!(trace.ndjson.is_empty());
+            }
+            outcomes.push((
+                c.units[&e].stats.current_health,
+                c.weapon_marks_snapshot().unwrap(),
+                c.tile_bursts_snapshot().unwrap(),
+                c.event_queue_debug_snapshot(),
+                serde_json::to_value(&c.event_log).unwrap(),
+            ));
+        }
+        assert_eq!(outcomes[0], outcomes[1], "{form}: observer enabled");
+        assert_eq!(outcomes[1], outcomes[2], "{form}: optional trace saturated");
+    }
 }

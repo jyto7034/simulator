@@ -1,0 +1,149 @@
+# 현행 작성 원본. 미정 출시값은 별도 시험 입력과 구분합니다.
+version: 2
+id: mountain-approach-control
+values:
+- name: approach-control
+  value:
+    Effects:
+    - id: control
+      op:
+        Sustained:
+          definition:
+            Control:
+              duration_ms:
+                Unresolved: control-duration-ms
+              kind:
+                ApproachTaunt:
+                  profile:
+                    speed_percent:
+                      Unresolved: speed-percent
+                    attack_range_units: 1000000
+- name: taken-reduction
+  value:
+    Count:
+      Unresolved: taken-reduction
+- name: basic-bonus
+  value:
+    Count:
+      Unresolved: basic-bonus
+- name: enlarged-mask
+  value:
+    TilePattern:
+      Unresolved: enlarged-mask
+- name: longer-control
+  value:
+    Count: 25
+definitions:
+- name: apply-control
+  parameters:
+  - name: effects
+    value_type: Effects
+  - name: taken
+    value_type: Count
+  - name: basic
+    value_type: Count
+  - name: mask
+    value_type: TilePattern
+  - name: extra-time
+    value_type: Count
+  body:
+    Action:
+      id: apply
+      target:
+        Literal:
+          Target: SelfUnit
+      delivery:
+        Literal:
+          Delivery:
+            TileArea:
+              footprint:
+                Unresolved: control-footprint
+              area:
+                mode: ReleaseQuery
+                anchor: Caster
+                tile_origin: Caster
+                hit_targets: Enemies
+                include_caster: false
+      effects:
+      - Append:
+          effects:
+            Parameter: effects
+      modifiers:
+      - id: reduce-taken
+        relic_definition: taunted-enemy-damage-reduction
+        variant: Normal
+        change:
+          TauntDamage:
+            effect: control
+            taken_percent:
+              Parameter: taken
+            basic_percent:
+              Literal:
+                Count: 0
+      - id: boost-basic
+        relic_definition: taunted-enemy-basic-attack-boost
+        variant: Normal
+        change:
+          TauntDamage:
+            effect: control
+            taken_percent:
+              Literal:
+                Count: 0
+            basic_percent:
+              Parameter: basic
+      - id: expand-range
+        relic_definition: widened-horizon
+        variant: Normal
+        change:
+          Range:
+            pattern:
+              Parameter: mask
+      - id: extend-control
+        relic_definition: long-breath
+        variant: Normal
+        change:
+          Duration:
+            effect: control
+            percent:
+              Parameter: extra-time
+      wait: Released
+skills:
+- id: fragment_mountain_smiling_bodies_chorus
+  name: 시체들의 합창 (가칭)
+  kind: Untargeted
+  cast_targeting:
+    Explicit:
+      selection: self
+      target: SelfUnit
+      reach: pattern
+      air_capable: true
+  prepare_ms:
+    Unresolved: prepare-ms
+  focus_permissions:
+    allows_move: true
+    allows_basic_attack: true
+  admission:
+    capacity:
+      Unresolved: capacity
+    requirement: Full
+    cost: All
+  body:
+    Call:
+      id: control
+      definition: apply-control
+      arguments:
+      - name: effects
+        value:
+          Shared: approach-control
+      - name: taken
+        value:
+          Shared: taken-reduction
+      - name: basic
+        value:
+          Shared: basic-bonus
+      - name: mask
+        value:
+          Shared: enlarged-mask
+      - name: extra-time
+        value:
+          Shared: longer-control

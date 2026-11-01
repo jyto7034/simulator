@@ -2,7 +2,7 @@
 //! emitter retires only its own continuations; released child areas retain their
 //! original action and delivery ownership.
 use super::*;
-use crate::game::behavior::GameError;
+use crate::game::{behavior::GameError, ability::sustained::SustainedEndReason};
 
 impl AreaRuntime {
     pub(in crate::game::battle::core) fn emission_extent(&self) -> Option<usize> {
@@ -42,7 +42,7 @@ impl BattleCore {
             let Some(id) = self.active_areas.keys().min().copied() else {
                 return Ok(());
             };
-            self.stop_skill_area_with_resume(id, now, false)?;
+            self.stop_skill_area_with_resume(id, now, false, SustainedEndReason::Terminal)?;
         }
     }
 
@@ -67,7 +67,7 @@ impl BattleCore {
             let Some(id) = ended else {
                 return Ok(());
             };
-            self.stop_skill_area(id, now)?;
+            self.stop_skill_area_with_reason(id, now, SustainedEndReason::SourceUnavailable)?;
         }
     }
 
@@ -102,14 +102,14 @@ impl BattleCore {
             let Some(id) = previous else {
                 return Ok(());
             };
-            self.stop_skill_area(id, now)?;
+            self.stop_skill_area_with_reason(id, now, SustainedEndReason::Replaced)?;
         }
     }
 
-    pub(in crate::game::battle::core) fn stop_skill_area(&mut self, id: Uuid, now: u64) -> Result<(), GameError> {
-        self.stop_skill_area_with_resume(id, now, true)
+    pub(in crate::game::battle::core) fn stop_skill_area_with_reason(&mut self,id:Uuid,now:u64,reason:SustainedEndReason) -> Result<(),GameError> {
+        self.stop_skill_area_with_resume(id, now, true, reason)
     }
-    fn stop_skill_area_with_resume(&mut self,id:Uuid,now:u64,resume_basic:bool)->Result<(),GameError> {
+    fn stop_skill_area_with_resume(&mut self,id:Uuid,now:u64,resume_basic:bool,reason:SustainedEndReason)->Result<(),GameError> {
         while let Some(queued) = self.event_queue.take_area_event(id)? {
             if queued.close_delivery_on_dispatch {
                 let source = queued.fact_source.into_owned()?;
@@ -121,7 +121,7 @@ impl BattleCore {
                 }
             }
         }
-        self.finish_skill_area_at_with_resume(id, now, resume_basic)?;
+        self.finish_skill_area_at_with_reason(id, now, resume_basic, reason)?;
         control::poll("area_emitter_stopped")
     }
 
@@ -136,7 +136,7 @@ impl BattleCore {
             .get(&runtime.caster_instance_id)
             .is_some_and(|u| u.is_active())
         {
-            return self.stop_skill_area(runtime.area_id, now);
+            return self.stop_skill_area_with_reason(runtime.area_id, now, SustainedEndReason::SourceUnavailable);
         }
         let tiles = self
             .valid_tile_area_tiles(&runtime.tile_range, runtime.tile_anchor, runtime.facing)

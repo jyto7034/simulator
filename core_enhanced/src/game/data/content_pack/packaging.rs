@@ -18,6 +18,18 @@ pub fn package_official(
     new_pack_directory: &Path,
     limits: &InputLimits,
 ) -> Result<PackageReceipt, LiveRonError> {
+    package_official_with_skill_files(source_root, new_pack_directory, &[], limits)
+}
+
+/// Include explicitly selected, root-relative Skills catalogs in the same
+/// captured and validated candidate. Source files are copied byte for byte;
+/// authored YAML is compiled by the loader before any output is created.
+pub fn package_official_with_skill_files(
+    source_root: &Path,
+    new_pack_directory: &Path,
+    skill_files: &[PathBuf],
+    limits: &InputLimits,
+) -> Result<PackageReceipt, LiveRonError> {
     let manifest = PackManifest {
         pack_id: "official".into(),
         pack_version: "1".into(),
@@ -34,6 +46,10 @@ pub fn package_official(
                 kind: *kind,
                 path: kind.official_path().into(),
             })
+            .chain(skill_files.iter().map(|path| CatalogFile {
+                kind: CatalogKind::Skills,
+                path: path.clone(),
+            }))
             .collect(),
         operations: vec![],
     };
@@ -115,6 +131,9 @@ pub fn package_official(
 mod tests {
     use super::*;
     use std::{fs, os::unix::fs::symlink};
+
+    #[path = "authored_tests.rs"]
+    mod authored;
 
     struct SourceFixture(PathBuf);
     impl SourceFixture {

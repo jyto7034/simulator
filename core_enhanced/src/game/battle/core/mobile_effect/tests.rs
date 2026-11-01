@@ -506,3 +506,125 @@ fn fusion_placement_runtime_policy_cadence_count_cap_and_expiry_win_detection() 
     assert!(c.sustained.mobile.effects.is_empty());
     assert_eq!(c.units[&e].stats.current_health, 1000);
 }
+
+#[test]
+fn integration_mobile_delayed_hp_keeps_original_cast_and_fragment() {
+    let (mut c, mut s, a, e, _) = fixture(false, &[], |_| {});
+    let mut off = controlled_clone(&c).unwrap();
+    let mut off_s = s.clone();
+    c.enable_authoring_observation();
+    let copy = c.units[&a].fragment_source.as_ref().unwrap().copy_uuid;
+    place(&mut c, e, 4, 2);
+    cast(&mut c, a, Position::new(3, 2), 0).unwrap();
+    step(&mut c, &mut s, 0);
+    c.withdraw_unit(a, 50).unwrap();
+    step(&mut c, &mut s, 200);
+    assert_eq!(c.units[&e].stats.current_health, 900);
+    let observations = c.authoring_observation().unwrap().unwrap();
+    let hp = observations.latest_nonzero_sourced_hp.as_ref().unwrap();
+    assert_eq!(hp.target_unit, e);
+    assert_eq!(hp.fragment.as_ref().unwrap().copy_uuid, copy);
+    assert_eq!(hp.source.as_ref().expect("independent mobile retains cast provenance").cast.skill_id.as_str(), "r11_aura");
+    place(&mut off, e, 4, 2);
+    cast(&mut off, a, Position::new(3, 2), 0).unwrap();
+    step(&mut off, &mut off_s, 0);
+    off.withdraw_unit(a, 50).unwrap();
+    step(&mut off, &mut off_s, 200);
+    assert_eq!(c.units[&e].stats.current_health, off.units[&e].stats.current_health);
+    assert_eq!(serde_json::to_value(&c.event_log.entries).unwrap(), serde_json::to_value(&off.event_log.entries).unwrap());
+    assert_eq!(serde_json::to_value(c.runtime_fact_snapshot().unwrap()).unwrap(), serde_json::to_value(off.runtime_fact_snapshot().unwrap()).unwrap());
+}
+
+#[test]
+fn integration_mobile_same_skill_two_copies_interleaved_and_same_time_keep_each_origin() {
+    use crate::authoring::{control, CancellationToken, ExecutionLimits, ExecutionPhase};
+    use crate::authoring::trace::{TraceAttempt, TraceLimits, TraceOptions};
+    for delay in [0, 50] {
+        let (base, base_state, _, enemy, _) = fixture(false, &[], |_| {});
+        let mut native = None;
+        for observe in [false, true] {
+            // Clone the same admitted input so HashMap debug iteration order
+            // does not become a false observation-mode difference. Expected
+            // actor/copy/cast/time/damage values below remain independent.
+            let mut c = controlled_clone(&base).unwrap();
+            let mut s = base_state.clone();
+            // Independent fixture input: player_0/1 use owned IDs 2/3 and
+            // fragment copies d200/d201, assigned before BattleCore admission.
+            let actor = |owned| c.units.values().find(|u| u.source_owned_uuid == Uuid::from_u128(owned)).unwrap().instance_id;
+            let a = actor(2);
+            let b = actor(3);
+            assert_eq!(c.units[&a].fragment_source.as_ref().unwrap().copy_uuid, Uuid::from_u128(0xd200));
+            assert_eq!(c.units[&b].fragment_source.as_ref().unwrap().copy_uuid, Uuid::from_u128(0xd201));
+            assert_eq!(c.skill_cast_seq, 0, "fixture has not cast a skill");
+            c.units.get_mut(&b).unwrap().stats.attack = 200;
+            place(&mut c, enemy, 4, 2);
+            let options = TraceOptions { limits: Some(TraceLimits::default()) };
+            if observe { c.enable_authoring_observation_with_trace(options); }
+            let _trace = observe.then(|| TraceAttempt::enter(options).unwrap());
+            cast(&mut c, a, Position::new(3, 2), 0).unwrap();
+            step(&mut c, &mut s, 0);
+            cast(&mut c, b, Position::new(3, 2), delay).unwrap();
+            step(&mut c, &mut s, 100);
+            c.withdraw_unit(a, 100).unwrap();
+            assert_eq!(c.units[&enemy].stats.current_health, 1000);
+            // Public stepping commits complete timestamps. Place the rollback
+            // comparison immediately before the failing timestamp, not before
+            // earlier successful movement/mobile ticks.
+            step(&mut c, &mut s, 199);
+            if observe {
+                let before = (
+                    c.transaction_debug_snapshot(), c.event_queue_debug_snapshot(),
+                    serde_json::to_value(c.authoring_observation().unwrap()).unwrap(),
+                    c.authoring_trace.view().ndjson.to_vec(), format!("{s:?}"),
+                );
+                let cancel = CancellationToken::default();
+                let result = control::with_test_cancellation("mobile_explosion_damage", 1, ||
+                    control::run(&ExecutionLimits::default(), &cancel, ExecutionPhase::TrialExecution,
+                        || c.step_battle_execution_until(&mut s, 200)));
+                assert!(cancel.is_cancelled() && result.is_err(), "{result:?}");
+                assert_eq!(before, (
+                    c.transaction_debug_snapshot(), c.event_queue_debug_snapshot(),
+                    serde_json::to_value(c.authoring_observation().unwrap()).unwrap(),
+                    c.authoring_trace.view().ndjson.to_vec(), format!("{s:?}"),
+                ));
+            }
+            step(&mut c, &mut s, 200 + delay);
+            assert_eq!(c.units[&enemy].stats.current_health, 700);
+            if observe {
+                let trace = c.authoring_trace.view();
+                assert!(trace.gap.is_none(), "all applications must be retained");
+                let rows: Vec<serde_json::Value> = std::str::from_utf8(trace.ndjson).unwrap()
+                    .lines().map(|row| serde_json::from_str(row).unwrap())
+                    .filter(|row: &serde_json::Value| row["change"]["channel"] == "hp"
+                        && row["target_unit"] == serde_json::json!(enemy)
+                        && row["change"]["before"].as_u64().unwrap() > row["change"]["after"].as_u64().unwrap())
+                    .collect();
+                assert_eq!(rows.len(), 2, "every HP application, not only the latest: {rows:?}");
+                for (actor, copy, cast_seq, time, damage) in [
+                    (a, 0xd200, 0, 200, 100),
+                    (b, 0xd201, 1, 200 + delay, 200),
+                ] {
+                    let matching: Vec<_> = rows.iter().filter(|row| row["source_unit"] == serde_json::json!(actor)).collect();
+                    assert_eq!(matching.len(), 1, "{rows:?}");
+                    let row = matching[0];
+                    assert_eq!(row["time_ms"], time);
+                    assert_eq!(row["change"]["before"].as_u64().unwrap() - row["change"]["after"].as_u64().unwrap(), damage);
+                    assert_eq!(row["fragment"]["copy_uuid"], Uuid::from_u128(copy).to_string());
+                    assert_eq!(row["fragment"]["definition_id"], "r09_fragment");
+                    assert_eq!(row["source"]["caster_instance_id"], serde_json::json!(actor));
+                    assert_eq!(row["source"]["cast_seq"], cast_seq);
+                    assert_eq!(row["source"]["skill_id"], "r11_aura");
+                    assert_eq!(row["source"]["authored"]["source_file"], "r11/effect.ron");
+                    assert_eq!(row["source"]["authored"]["field_path"], "skills[1].steps[0].effects[0]");
+                    assert!(row["equipment"].is_null(), "fragment effect does not borrow the ambient weapon");
+                }
+            }
+            let outcome = (
+                c.transaction_debug_snapshot(), c.event_queue_debug_snapshot(),
+                serde_json::to_value(c.runtime_fact_snapshot().unwrap()).unwrap(),
+                c.event_log.to_json_string().unwrap(), format!("{s:?}"),
+            );
+            if let Some(expected) = &native { assert_eq!(expected, &outcome); } else { native = Some(outcome); }
+        }
+    }
+}

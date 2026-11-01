@@ -1,0 +1,133 @@
+[
+  {
+    "id": "placeholder_king_of_greed_weapon",
+    "uuid": "e3000000-0000-0000-0000-000000000002",
+    "content_family": "o-01-64_king_of_greed",
+    "name": "황금 장궁 (가칭)",
+    "equipment_type": "Weapon",
+    "rarity": {
+      "Unresolved": "weapon-rarity"
+    },
+    "price": {
+      "Unresolved": "weapon-price"
+    },
+    "allow_duplicate_equip": {
+      "Unresolved": "weapon-duplicate"
+    },
+    "triggered_effects": {},
+    "ability_activations": [],
+    "weapon_profile": {
+      "action": {
+        "DamageTileAfterDelay": {
+          "delay_ms": {
+            "Unresolved": "weapon-delay-ms"
+          }
+        }
+      },
+      "attack": {
+        "Unresolved": "weapon-attack"
+      },
+      "spell_power": 0,
+      "range_role": "Ranged",
+      "weapon_archetype": "Bow",
+      "block_capacity": 0,
+      "deployment_affinity": "platform_only",
+      "ground_defense_focus": null,
+      "platform_rest": {
+        "Unresolved": "weapon-platform-rest"
+      },
+      "damage_type": {
+        "Unresolved": "weapon-damage-type"
+      },
+      "targeting_profile": {
+        "Unresolved": "weapon-targeting"
+      },
+      "air_capable": true,
+      "defense_tile_range": {
+        "Unresolved": "weapon-footprint"
+      },
+      "interval_ms": {
+        "Unresolved": "weapon-interval-ms"
+      },
+      "windup_ms": {
+        "Unresolved": "weapon-windup-ms"
+      },
+      "delivery": "Instant"
+    }
+  },
+  {
+    "id": "placeholder_king_of_greed_armor",
+    "uuid": "e3000000-0000-0000-0000-000000000102",
+    "content_family": "o-01-64_king_of_greed",
+    "name": "황금광",
+    "equipment_type": "Armor",
+    "rarity": {
+      "Unresolved": "armor-rarity"
+    },
+    "price": {
+      "Unresolved": "armor-price"
+    },
+    "allow_duplicate_equip": {
+      "Unresolved": "armor-duplicate"
+    },
+    "triggered_effects": {
+      "Permanent": [
+        {
+          "target": "SelfUnit",
+          "effect": {
+            "Modifier": {
+              "stat": "MaxHealth",
+              "kind": "Flat",
+              "value": {
+                "Unresolved": "armor-MaxHealth"
+              }
+            }
+          }
+        },
+        {
+          "target": "SelfUnit",
+          "effect": {
+            "Modifier": {
+              "stat": "Defense",
+              "kind": "Flat",
+              "value": {
+                "Unresolved": "armor-Defense"
+              }
+            }
+          }
+        },
+        {
+          "target": "SelfUnit",
+          "effect": {
+            "Modifier": {
+              "stat": "MagicResist",
+              "kind": "Flat",
+              "value": {
+                "Unresolved": "armor-MagicResist"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ability_activations": []
+  },
+  {
+    "id": "placeholder_king_of_greed_accessory",
+    "uuid": "e3000000-0000-0000-0000-000000000202",
+    "content_family": "o-01-64_king_of_greed",
+    "name": "탐욕의 팔찌 (가칭)",
+    "equipment_type": "Accessory",
+    "rarity": {
+      "Unresolved": "accessory-rarity"
+    },
+    "price": {
+      "Unresolved": "accessory-price"
+    },
+    "allow_duplicate_equip": {
+      "Unresolved": "accessory-duplicate"
+    },
+    "triggered_effects": {},
+    "ability_activations": []
+  }
+]

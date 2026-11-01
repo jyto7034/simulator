@@ -136,7 +136,7 @@ impl BattleCore {
         let caster = self.sustained.relations.owners[&key].caster;
         a.last_strike_primary = a.admitted.primary;
         let primary_area=p.modifiers.iter().any(|m|matches!(&m.change,RelationActionChange::PrimaryArea{definition} if definition==&p.plans[index].definition));
-        let targets = if *target == PlanTarget::Primary && !primary_area {
+        let mut targets = if *target == PlanTarget::Primary && !primary_area {
             a.admitted.primary.into_iter().collect::<Vec<_>>()
         } else {
             let (origin, facing) = match target {
@@ -179,6 +179,11 @@ impl BattleCore {
                 false,
             )
         };
+        targets.retain(|target| self.single_target_can_target_unit(*target, false));
+        let area_percent = if *target != PlanTarget::Primary || primary_area {
+            let snapshot = a.snapshot.as_ref().ok_or(GameError::InvalidAction)?;
+            self.area_damage_percent(caster, snapshot.source_side, &snapshot.fact_source, &targets, now)?
+        } else { 0 };
         for target in targets {
             if !self.relation_activation_exists(key, a.id) {
                 break;
@@ -219,6 +224,7 @@ impl BattleCore {
             }
             let mut snapshot =
                 controlled_clone(a.snapshot.as_ref().ok_or(GameError::InvalidAction)?)?;
+            snapshot.modifiers.damage_amp_percent = snapshot.modifiers.damage_amp_percent.saturating_add(area_percent);
             snapshot.base_damage = program::scale(
                 u64::from(*power),
                 ratio_sum(
@@ -257,12 +263,12 @@ impl BattleCore {
                 target,
                 a.hit_index,
             );
-            let summary = self.execute_committed_damage(CommittedDamageInput {
+            let summary = self.execute_damage_with_observation_origin(CommittedDamageInput {
                 target_id: target,
                 source_snapshot: snapshot,
                 committed_at_ms: now,
                 policy,
-            });
+            }, false, Some(&a.source));
             control::poll("relation_strike_damage")?;
             if let Some(summary) = summary {
                 a.actual_hp_loss = a
@@ -402,11 +408,7 @@ impl BattleCore {
         }
         let caster = o.caster;
         let duration_ms = o.program.shield_duration_ms;
-        let source = RuntimeFactSource {
-            actor: Some(caster),
-            fragment: Some(o.fragment.clone()),
-            ..Default::default()
-        };
+        let source = o.intrinsic_source();
         self.sustained
             .relations
             .owners
@@ -476,7 +478,7 @@ impl BattleCore {
     pub(super) fn relation_self_damage(
         &mut self,
         caster: UnitInstanceId,
-        fragment: &Arc<FragmentSourceSnapshot>,
+        source: RuntimeFactSource,
         percent: MarkRatio,
         count: u32,
         damage_type: DamageType,
@@ -505,11 +507,7 @@ impl BattleCore {
                 false,
             )
             .ok_or(GameError::InvalidAction)?;
-        snapshot.fact_source = RuntimeFactSource {
-            actor: Some(caster),
-            fragment: Some(fragment.clone()),
-            ..Default::default()
-        };
+        snapshot.fact_source = source;
         self.execute_committed_damage(CommittedDamageInput {
             target_id: caster,
             source_snapshot: snapshot,

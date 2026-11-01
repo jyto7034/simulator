@@ -332,7 +332,7 @@ fn live_little_red_boss_runtime_preserves_existing_production_content() {
 }
 
 #[test]
-fn live_weapon_catalog_is_exact_and_every_tactical_profile_matches_approved_values() {
+fn live_registered_weapon_profiles_preserve_defaults_and_authored_exceptions() {
     let game_data = common::load_game_data_from_ron();
     let mut represented_archetypes = BTreeSet::new();
     let mut archetype_counts = BTreeMap::<String, usize>::new();
@@ -350,58 +350,115 @@ fn live_weapon_catalog_is_exact_and_every_tactical_profile_matches_approved_valu
         *archetype_counts
             .entry(format!("{:?}", profile.weapon_archetype))
             .or_default() += 1;
-        let expected = match profile.weapon_archetype {
-            WeaponArchetype::Shield => 3,
-            WeaponArchetype::Sword | WeaponArchetype::Spear => 1,
-            WeaponArchetype::Bow | WeaponArchetype::Gun | WeaponArchetype::Staff => 0,
+        // The generic first-content guidelines are defaults, not restrictions on
+        // authored archetype/affinity pairs. These exceptions follow the current
+        // content pages (H63/H73/H74/H81/H84/H87/H90/H93). Their numeric prototype
+        // values guard the registered catalog, not release balance or completion
+        // of still-pending canonical source migration.
+        let expected = match item.id.as_str() {
+            "frost_splinter" => (
+                WeaponArchetype::Sword,
+                0,
+                DeploymentAffinity::PlatformOnly,
+                None,
+                Some(3),
+            ),
+            "placeholder_king_of_greed_weapon" => (
+                WeaponArchetype::Bow,
+                0,
+                DeploymentAffinity::PlatformOnly,
+                None,
+                Some(3),
+            ),
+            "placeholder_melting_love_weapon" => (
+                WeaponArchetype::Shield,
+                1,
+                DeploymentAffinity::GroundOnly,
+                Some((0, 0)),
+                None,
+            ),
+            "placeholder_warm_hearted_woodsman_weapon" => (
+                WeaponArchetype::Sword,
+                2,
+                DeploymentAffinity::GroundOnly,
+                Some((0, 10)),
+                None,
+            ),
+            "placeholder_schadenfreude_weapon" => (
+                WeaponArchetype::Sword,
+                2,
+                DeploymentAffinity::GroundOnly,
+                Some((0, 0)),
+                None,
+            ),
+            "porccubus_pleasure" | "black_swan_umbrella" => (
+                WeaponArchetype::Shield,
+                3,
+                DeploymentAffinity::GroundOnly,
+                Some((0, 0)),
+                None,
+            ),
+            "placeholder_clouded_monk_weapon" => (
+                WeaponArchetype::Staff,
+                0,
+                DeploymentAffinity::PlatformOnly,
+                None,
+                Some(0),
+            ),
+            _ => match profile.weapon_archetype {
+                WeaponArchetype::Staff => (
+                    WeaponArchetype::Staff,
+                    0,
+                    DeploymentAffinity::PlatformOnly,
+                    None,
+                    Some(3),
+                ),
+                WeaponArchetype::Bow | WeaponArchetype::Gun => (
+                    profile.weapon_archetype,
+                    0,
+                    DeploymentAffinity::GroundOnly,
+                    Some((0, 10)),
+                    None,
+                ),
+                WeaponArchetype::Sword | WeaponArchetype::Spear => (
+                    profile.weapon_archetype,
+                    1,
+                    DeploymentAffinity::GroundOnly,
+                    Some((1, 10)),
+                    None,
+                ),
+                WeaponArchetype::Shield => (
+                    WeaponArchetype::Shield,
+                    3,
+                    DeploymentAffinity::GroundOnly,
+                    Some((1, 10)),
+                    None,
+                ),
+            },
         };
-        assert_eq!(
-            profile.block_capacity, expected,
-            "live weapon '{}' must explicitly use its approved authoring guideline",
-            item.id
+        let actual = (
+            profile.weapon_archetype,
+            profile.block_capacity,
+            profile.deployment_affinity,
+            profile.ground_defense_focus.map(|focus| {
+                (
+                    focus.block_capacity_bonus,
+                    focus.incoming_damage_reduction_percent,
+                )
+            }),
+            profile.platform_rest.map(|rest| rest.hp_recovery_per_tick),
         );
-        match profile.weapon_archetype {
-            WeaponArchetype::Staff => {
-                assert_eq!(
-                    profile.deployment_affinity,
-                    DeploymentAffinity::PlatformOnly
-                );
-                assert!(profile.ground_defense_focus.is_none());
-                let rest = profile
-                    .platform_rest
-                    .expect("Staff must author Platform Rest");
-                assert_eq!(rest.hp_recovery_per_tick, 3);
-            }
-            WeaponArchetype::Bow | WeaponArchetype::Gun => {
-                assert_eq!(profile.deployment_affinity, DeploymentAffinity::GroundOnly);
-                let focus = profile
-                    .ground_defense_focus
-                    .expect("Bow/Gun must author Ground DefenseFocus");
-                assert_eq!(focus.block_capacity_bonus, 0);
-                assert_eq!(focus.incoming_damage_reduction_percent, 10);
-                assert!(profile.platform_rest.is_none());
-            }
-            WeaponArchetype::Sword | WeaponArchetype::Spear | WeaponArchetype::Shield => {
-                assert_eq!(profile.deployment_affinity, DeploymentAffinity::GroundOnly);
-                let focus = profile
-                    .ground_defense_focus
-                    .expect("melee Ground weapon must author DefenseFocus");
-                assert_eq!(focus.block_capacity_bonus, 1);
-                assert_eq!(focus.incoming_damage_reduction_percent, 10);
-                assert!(profile.platform_rest.is_none());
-            }
-        }
+        assert_eq!(actual, expected, "registered weapon '{}'", item.id);
         represented_archetypes.insert(format!("{:?}", profile.weapon_archetype));
     }
 
-    assert_eq!(weapon_count, 35);
+    assert_eq!(weapon_count, 38);
     assert_eq!(
         archetype_counts,
         BTreeMap::from([
-            ("Bow".to_string(), 1),
+            ("Bow".to_string(), 2),
             ("Gun".to_string(), 2),
-            ("Shield".to_string(), 2),
-            ("Spear".to_string(), 1),
+            ("Shield".to_string(), 5),
             ("Staff".to_string(), 18),
             ("Sword".to_string(), 11),
         ])
@@ -431,7 +488,6 @@ fn live_weapon_catalog_is_exact_and_every_tactical_profile_matches_approved_valu
             "Bow".to_string(),
             "Gun".to_string(),
             "Shield".to_string(),
-            "Spear".to_string(),
             "Staff".to_string(),
             "Sword".to_string(),
         ])
@@ -1128,14 +1184,15 @@ fn live_encounter_sources_resolve_fragments_without_ordinary_reward_bypass() {
 
     assert_eq!(game_data.pve_data.reward_sources.len(), 29);
     for source in &game_data.pve_data.reward_sources {
+        let Some(source_fragment) = &source.fragment_id else { continue };
         assert!(
             game_data
                 .skill_fragment_data
-                .get_by_id(&source.fragment_id)
+                .get_by_id(source_fragment)
                 .is_some(),
             "encounter source '{}' grants missing fragment '{}'",
             source.reward_source_id,
-            source.fragment_id.as_str()
+            source_fragment.as_str()
         );
         assert!(game_data
             .reward_data
@@ -1144,7 +1201,7 @@ fn live_encounter_sources_resolve_fragments_without_ordinary_reward_bypass() {
             .all(|reward| reward.effects.iter().all(|effect| !matches!(
                 effect,
                 RewardEffect::GrantSkillFragment { fragment_id }
-                    if fragment_id == &source.fragment_id
+                    if fragment_id == source_fragment
             ))));
     }
 
@@ -1737,7 +1794,7 @@ fn live_pve_scenario_authoring_contracts_drive_preview_data() {
         .get_reward_source_by_encounter_id("suppress_freischutz")
         .expect("freischutz should have an encounter reward source");
     assert_eq!(
-        freischutz_source.fragment_id.as_str(),
+        freischutz_source.fragment_id.as_ref().unwrap().as_str(),
         "fragment_freischutz_black_round"
     );
     assert!(freischutz_source.repeat_rewards.is_empty());

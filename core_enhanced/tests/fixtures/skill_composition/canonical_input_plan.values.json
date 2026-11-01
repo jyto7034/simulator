@@ -1,0 +1,98 @@
+{
+  "purpose": "Explicit technical acceptance completion; not release balance or default publication.",
+  "values": {
+    "capacity": 100,
+    "stock_interval_ms": 1000,
+    "placement_range": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "normal-capacity": 8,
+    "enhanced-capacity": 8,
+    "cohort-attack_interval_ms": 1000,
+    "cohort-attack_range": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "cohort-hp": 300,
+    "cohort-interval_ms": 5000,
+    "cohort-leak": 1,
+    "cohort-magic_defense": 0,
+    "cohort-physical_defense": 0,
+    "cohort-power": 20,
+    "cohort-speed": {
+      "denominator": 1,
+      "numerator": 1
+    },
+    "normal_projectile-lifetime_ms": 3000,
+    "normal_projectile-max_hits": 3,
+    "normal_projectile-power": 100,
+    "normal_projectile-range": {
+      "denominator": 1,
+      "numerator": 10
+    },
+    "normal_projectile-speed": {
+      "denominator": 1,
+      "numerator": 5
+    },
+    "normal_projectile-width": {
+      "denominator": 2,
+      "numerator": 1
+    },
+    "enhanced_projectile-lifetime_ms": 3000,
+    "enhanced_projectile-max_hits": 3,
+    "enhanced_projectile-power": 150,
+    "enhanced_projectile-range": {
+      "denominator": 1,
+      "numerator": 10
+    },
+    "enhanced_projectile-speed": {
+      "denominator": 1,
+      "numerator": 5
+    },
+    "enhanced_projectile-width": {
+      "denominator": 2,
+      "numerator": 1
+    },
+    "wound-cap": 5,
+    "wound-duration_ms": 1000,
+    "push-tiles": {
+      "denominator": 1,
+      "numerator": 1
+    },
+    "explosion-air": true,
+    "explosion-damage_type": "Magic",
+    "explosion-power": 100,
+    "explosion-range": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "stun-duration": 1000,
+    "control-vulnerability-percent": 10,
+    "rarity": "Common",
+    "equip_limit": "OwnedCopies",
+    "compatibility": {},
+    "relic-rarity": "Common",
+    "relic-allow-duplicates": false,
+    "relic-incompatible-with": [],
+    "relic-dismantle-dust": 1
+  }
+}

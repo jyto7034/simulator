@@ -7,7 +7,7 @@ pub(super) fn bind(
 ) -> Result<(SustainedEffectDef, SkillDef), String> {
     plan.validate()?;
     let mut child = parent.clone();
-    child.id = format!("{}::finish", parent.id).into();
+    child.id = format!("{}__finish", parent.id).into();
     child.resonance_admission = None;
     child.use_lifetime = SkillUseLifetime::Action;
     // All operands are validated integers. Time is captured by the committed
@@ -22,7 +22,7 @@ pub(super) fn bind(
                 scalar: constant(plan.per_second.into(), ValueUnit::Scalar),
             }),
             denominator: constant(1000, ValueUnit::Milliseconds),
-            rounding: Rounding::Ceil,
+            rounding: Rounding::Floor,
         }),
     };
     let mut root = ValueExpr::Add(vec![

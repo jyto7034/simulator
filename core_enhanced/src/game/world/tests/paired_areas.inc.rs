@@ -1,22 +1,21 @@
 fn paired_areas_world_fixture() -> (GameCore, Uuid, Uuid, Position) {
-    let native = crate::authoring::node_graph::compile(
-        &crate::authoring::node_graph::tests::paired_areas_fixture().to_string(),
-        "r08_strike".into(),
-    )
-    .unwrap()
-    .load_native()
-    .unwrap();
+    let mut document = crate::authoring::composition::canonical_pair_tests::resolved();
+    document["skills"][0]["id"] = serde_json::json!("r08_strike");
+    let native = crate::authoring::composition::compile_json(&document.to_string())
+        .unwrap().load_native().unwrap();
     let fragments: SkillFragmentDatabase = ron::de::from_str(include_str!(concat!(
         env!("CARGO_MANIFEST_DIR"),
         "/tests/fixtures/r09/fragments.ron"
     )))
     .unwrap();
     let fragment = fragments.fragments[0].clone();
-    let data = game_data_with_pve_equipment_and_active_skill_fragments(
+    let data = game_data_builder_with_pve_equipment_and_active_skill_fragments(
         vec![],
         native.skills,
         vec![fragment.clone()],
-    );
+    )
+    .with_relics(crate::authoring::composition::canonical_pair_tests::relics())
+    .build_arc();
     let mut c = GameCore::new(data, 0xabc99);
     let p = Uuid::from_u128(0xabc99);
     start_new_game_with_default_starters(&mut c, p);

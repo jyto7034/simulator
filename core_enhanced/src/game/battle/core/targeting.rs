@@ -172,11 +172,32 @@ impl BattleCore {
         self.is_basic_attack_target_in_range_with_policy(attacker_instance_id, target_id, &policy)
     }
 
+    pub(super) fn is_basic_attack_target_in_range_at(
+        &self,
+        attacker_instance_id: UnitInstanceId,
+        target_id: UnitInstanceId,
+        time_ms: u64,
+    ) -> bool {
+        let Some(attacker) = self.units.get(&attacker_instance_id) else { return false; };
+        let policy = self.basic_attack_range_policy_for_unit(attacker);
+        self.is_basic_attack_target_in_range_with_policy_at(attacker_instance_id, target_id, &policy, Some(time_ms))
+    }
+
     fn is_basic_attack_target_in_range_with_policy(
         &self,
         attacker_instance_id: UnitInstanceId,
         target_id: UnitInstanceId,
         policy: &BasicAttackRangePolicy<'_>,
+    ) -> bool {
+        self.is_basic_attack_target_in_range_with_policy_at(attacker_instance_id, target_id, policy, None)
+    }
+
+    fn is_basic_attack_target_in_range_with_policy_at(
+        &self,
+        attacker_instance_id: UnitInstanceId,
+        target_id: UnitInstanceId,
+        policy: &BasicAttackRangePolicy<'_>,
+        time_ms: Option<u64>,
     ) -> bool {
         if !self.approach_taunt_attack_allowed(attacker_instance_id, target_id) { return false; }
         if self.units.get(&target_id).is_some_and(|target| {
@@ -187,6 +208,15 @@ impl BattleCore {
         }
         if !self.single_target_can_target_unit(target_id, policy.air_capable) {
             return false;
+        }
+
+        if self.units.get(&attacker_instance_id).is_some_and(|unit| matches!(unit.basic_attack.action,
+            crate::game::data::abnormality_data::BasicAttackAction::DamageOccupiedTiles | crate::game::data::abnormality_data::BasicAttackAction::DamageTileAfterDelay { .. })) {
+            return self.basic_occupied_tile_in_range(attacker_instance_id, target_id, policy, time_ms);
+        }
+
+        if let Some(crate::game::data::abnormality_data::BasicAttackAction::DamageCone { length_tiles, .. }) = self.units.get(&attacker_instance_id).map(|unit| &unit.basic_attack.action) {
+            return self.basic_cone_primary_in_range(attacker_instance_id, target_id, *length_tiles, policy, time_ms);
         }
 
         if self
@@ -206,6 +236,10 @@ impl BattleCore {
             return true;
         }
 
+        if self.units.get(&attacker_instance_id).is_some_and(|unit| matches!(unit.basic_attack.action,
+            crate::game::data::abnormality_data::BasicAttackAction::DamageTargets { .. })) {
+            return self.basic_occupied_tile_in_range(attacker_instance_id, target_id, policy, time_ms);
+        }
         if let Some(line) = self.basic_line_profile(attacker_instance_id) {
             return self.line_target_in_range(attacker_instance_id,target_id,line);
         }
@@ -306,10 +340,12 @@ impl BattleCore {
                 self.is_basic_attack_useful_target(attacker_instance_id, unit.instance_id)
             })
             .map(|unit| unit.instance_id)
-            .min_by(|a, b| self.compare_targeting_profile_candidate(targeting_profile, *a, *b))
+            .min_by(|a, b| self.equipment_prioritizes_cohort(attacker_instance_id, *b)
+                .cmp(&self.equipment_prioritizes_cohort(attacker_instance_id, *a))
+                .then_with(|| self.compare_targeting_profile_candidate(targeting_profile, *a, *b)))
     }
 
-    fn compare_targeting_profile_candidate(
+    pub(super) fn compare_targeting_profile_candidate(
         &self,
         profile: TargetingProfile,
         left: UnitInstanceId,
@@ -317,6 +353,10 @@ impl BattleCore {
     ) -> Ordering {
         match profile {
             TargetingProfile::DefaultForward => self.compare_default_forward_target(left, right),
+            TargetingProfile::HighestRouteProgress => self
+                .enemy_route_progress(right)
+                .total_cmp(&self.enemy_route_progress(left))
+                .then_with(|| self.compare_enemy_spawn_order(left, right)),
             TargetingProfile::AirFirst => self
                 .compare_air_first_target(left, right)
                 .then_with(|| self.compare_default_forward_target(left, right)),
@@ -595,6 +635,7 @@ mod tests {
             resonance_lock_ms: 0,
             resonance_use: None,
             next_resonance_pulse_ms: None,
+            equipment_resonance_gain: None,
             next_action_time: 0,
             pending_cast: false,
             pending_cast_cause: None,
@@ -889,6 +930,7 @@ mod tests {
         );
     }
     mod basic_heal_tests {
+        include!("priority_heal_tests.inc.rs");
         use super::*;
         use crate::game::{
             battle::{

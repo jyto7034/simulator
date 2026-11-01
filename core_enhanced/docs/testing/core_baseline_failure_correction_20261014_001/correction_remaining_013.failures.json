@@ -1,6 +1,0 @@
-[
-  {
-    "test": "authoring::trial::tests::u09_structural::families::rv003_external_representatives_and_cross_relic_closure_consume_normal_public_commands",
-    "failure": "U09_EXTERNAL_FAMILY closure normal_reward_equip_query_cast_and_real_consumer=true\n\nthread 'authoring::trial::tests::u09_structural::families::rv003_external_representatives_and_cross_relic_closure_consume_normal_public_commands' (314) panicked at core_enhanced/src/authoring/trial/tests/u09_structural/families.rs:281:13:\nassertion failed: original_pointer.ends_with(\"/cells/3\")\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n"
-  }
-]

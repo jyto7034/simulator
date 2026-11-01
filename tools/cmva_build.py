@@ -56,7 +56,7 @@ def main():
         help='Build only mod_launcher while retaining the supported package/feature graph')
     parser.add_argument('--with-worker', action='store_true',
         help='Build mod_launcher with selected plain probes in the same prepared invocation')
-    parser.add_argument('--probe-bin', choices=['native_fault_gap','worker_boundaries','approved_lifecycle','public_lifecycle','normal_host_lifecycle','u14_deterrence_host','u15_economy_host','u164_stress_host'], action='append',
+    parser.add_argument('--probe-bin', choices=['native_fault_gap','worker_boundaries','approved_lifecycle','normal_save','prepare_registry','prepare_lab_registry','prepare_workload_fixture','prepare_workloads','public_lifecycle','normal_host_lifecycle','u14_deterrence_host','u15_economy_host','u164_stress_host'], action='append',
         help='Build only the required independent diagnostic probe with the supported plain graph')
     parser.add_argument('--package-official', action='store_true',
         help='Build package_official_content alone or with selected probes using the supported plain graph')

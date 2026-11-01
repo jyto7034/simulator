@@ -1,0 +1,98 @@
+# N10-a conditional taunt damage fixture. All coefficients and geometry are test values.
+version: 1
+id: taunt-damage-fixture
+values:
+  - name: approach-control
+    value:
+      Effects:
+        - id: control
+          op:
+            Sustained:
+              definition:
+                Control:
+                  duration_ms: 1501
+                  kind:
+                    ApproachTaunt:
+                      profile:
+                        speed_percent: 100
+                        attack_range_units: 1000000
+  - name: taken-reduction
+    value: { Count: 20 }
+  - name: basic-bonus
+    value: { Count: 30 }
+definitions:
+  - name: apply-control
+    parameters:
+      - name: effects
+        value_type: Effects
+      - name: taken
+        value_type: Count
+      - name: basic
+        value_type: Count
+    body:
+      Action:
+        id: apply
+        target: { Literal: { Target: SelfUnit } }
+        delivery:
+          Literal:
+            Delivery:
+              TileArea:
+                footprint:
+                  include_anchor_tile: true
+                  rows: [XXXXXXXXXXX, XXXXXXXXXXX, XXXXXXXXXXX, XXXXXXXXXXX, XXXXXXXXXXX, XXXXX@XXXXX, XXXXXXXXXXX, XXXXXXXXXXX, XXXXXXXXXXX, XXXXXXXXXXX, XXXXXXXXXXX]
+                area:
+                  mode: ReleaseQuery
+                  anchor: Caster
+                  tile_origin: Caster
+                  hit_targets: Enemies
+                  include_caster: false
+        effects:
+          - Append:
+              effects: { Parameter: effects }
+        modifiers:
+          - id: reduce-taken
+            relic_definition: taunted-enemy-damage-reduction
+            variant: Normal
+            change:
+              TauntDamage:
+                effect: control
+                taken_percent: { Parameter: taken }
+                basic_percent: { Literal: { Count: 0 } }
+          - id: boost-basic
+            relic_definition: taunted-enemy-basic-attack-boost
+            variant: Normal
+            change:
+              TauntDamage:
+                effect: control
+                taken_percent: { Literal: { Count: 0 } }
+                basic_percent: { Parameter: basic }
+        wait: Released
+skills:
+  - id: authored-taunt-damage
+    name: 도발 관계 피해 계수 검사
+    kind: Untargeted
+    cast_targeting:
+      Explicit:
+        selection: self
+        target: SelfUnit
+        reach: pattern
+        air_capable: true
+    prepare_ms: 0
+    focus_permissions:
+      allows_move: true
+      allows_basic_attack: true
+    admission:
+      capacity: 100
+      requirement: Full
+      cost: All
+    body:
+      Call:
+        id: control
+        definition: apply-control
+        arguments:
+          - name: effects
+            value: { Shared: approach-control }
+          - name: taken
+            value: { Shared: taken-reduction }
+          - name: basic
+            value: { Shared: basic-bonus }

@@ -1,0 +1,160 @@
+{
+  "description": "Explicit H117 acceptance completion. Not shipping balance; shared cohort values match fragment test completion.",
+  "values": {
+    "capacity": 100,
+    "stock_interval_ms": 1000,
+    "placement_range": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "normal-capacity": 8,
+    "enhanced-capacity": 8,
+    "cohort-attack_interval_ms": 1000,
+    "cohort-attack_range": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "cohort-hp": 300,
+    "cohort-interval_ms": 5000,
+    "cohort-leak": 1,
+    "cohort-magic_defense": 0,
+    "cohort-physical_defense": 0,
+    "cohort-power": 20,
+    "cohort-speed": {
+      "denominator": 1,
+      "numerator": 1
+    },
+    "normal_projectile-lifetime_ms": 3000,
+    "normal_projectile-max_hits": 3,
+    "normal_projectile-power": 100,
+    "normal_projectile-range": {
+      "denominator": 1,
+      "numerator": 10
+    },
+    "normal_projectile-speed": {
+      "denominator": 1,
+      "numerator": 5
+    },
+    "normal_projectile-width": {
+      "denominator": 2,
+      "numerator": 1
+    },
+    "enhanced_projectile-lifetime_ms": 3000,
+    "enhanced_projectile-max_hits": 3,
+    "enhanced_projectile-power": 150,
+    "enhanced_projectile-range": {
+      "denominator": 1,
+      "numerator": 10
+    },
+    "enhanced_projectile-speed": {
+      "denominator": 1,
+      "numerator": 5
+    },
+    "enhanced_projectile-width": {
+      "denominator": 2,
+      "numerator": 1
+    },
+    "wound-cap": 5,
+    "wound-duration_ms": 1000,
+    "push-tiles": {
+      "denominator": 1,
+      "numerator": 1
+    },
+    "explosion-air": true,
+    "explosion-damage_type": "Magic",
+    "explosion-power": 100,
+    "explosion-range": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "stun-duration": 1000,
+    "control-vulnerability-percent": 10,
+    "rarity": "Common",
+    "equip_limit": "OwnedCopies",
+    "compatibility": {},
+    "relic-rarity": "Common",
+    "relic-allow-duplicates": false,
+    "relic-incompatible-with": [],
+    "relic-dismantle-dust": 1,
+    "little_red_bounty_pending-cap": 2,
+    "little_red_bounty_confirmed-cap": 4,
+    "weapon-reload_ms": 3000,
+    "weapon-normal_percent": 100,
+    "weapon-enhanced_primary_percent": 150,
+    "weapon-enhanced_secondary_percent": 100,
+    "weapon-enhanced_max_hits": 8,
+    "scar-defer_percent": 30,
+    "scar-duration_ms": 5000,
+    "scar-tick_ms": 1000,
+    "scar-kill_clear_percent": 50,
+    "bounty-tiers": [
+      {
+        "threshold": 2,
+        "attack": 10
+      },
+      {
+        "threshold": 4,
+        "attack": 25
+      }
+    ],
+    "weapon-name": "붉은 두건 weapon 검증용",
+    "weapon-rarity": "WAW",
+    "weapon-price": 0,
+    "weapon-allow_duplicate_equip": true,
+    "weapon-attack": 100,
+    "weapon-rest_hp": 1,
+    "weapon-targeting": "DefaultForward",
+    "weapon-range": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXXXXXXXXXX",
+        "XXXXXXXXXXXXX",
+        "XXXXXXXXXXXXX",
+        "XXXXXXXXXXXXX",
+        "XXXXXXXXXXXXX",
+        "XXXXXXXXXXXXX",
+        "XXXXXX@XXXXXX",
+        "XXXXXXXXXXXXX",
+        "XXXXXXXXXXXXX",
+        "XXXXXXXXXXXXX",
+        "XXXXXXXXXXXXX",
+        "XXXXXXXXXXXXX",
+        "XXXXXXXXXXXXX"
+      ]
+    },
+    "weapon-interval_ms": 1000,
+    "weapon-windup_ms": 200,
+    "weapon-reposition_ms": 0,
+    "weapon-projectile_speed": 10000,
+    "weapon-projectile_range": 6,
+    "weapon-projectile_lifetime": 1500,
+    "weapon-projectile_radius": 125000,
+    "armor-rarity": "WAW",
+    "armor-price": 0,
+    "armor-allow_duplicate_equip": true,
+    "armor-MaxHealth": 80,
+    "armor-Defense": 5,
+    "accessory-name": "붉은 두건 accessory 검증용",
+    "accessory-rarity": "WAW",
+    "accessory-price": 0,
+    "accessory-allow_duplicate_equip": true
+  }
+}

@@ -70,6 +70,17 @@ impl GameCore {
         let activate_skill = deployment_action(
             if deployment.as_ref().is_some_and(|state| {
                 state.deployed_units.iter().any(|unit| {
+                    // A targeting focus may belong to a nondefault authored
+                    // menu entry. Validate that exact entry through the same
+                    // admission gate used by the public command handler.
+                    if let Some(focus) = active.tactical_focus.as_ref() {
+                        return focus.caster_unit_instance_id == unit.unit_instance_id
+                            && active.battle.validate_manual_skill_targeting_focus(
+                                active.execution.last_event_time_ms(),
+                                unit.unit_instance_id,
+                                &focus.skill_id,
+                            ).is_ok();
+                    }
                     if !unit.skill_readiness.eligibility.enabled {
                         return false;
                     }
@@ -84,6 +95,17 @@ impl GameCore {
                         _ => active.tactical_focus.is_none(),
                     }
                 })
+            }) {
+                BattleActionEvaluation::Enabled
+            } else {
+                BattleActionEvaluation::Disabled(ActionDisabledReasonCode::NoEligiblePayload)
+            },
+        );
+        let select_relation = deployment_action(
+            if active.battle.relation_actions_snapshot()?.owners.iter().any(|owner| {
+                owner.menu_available && !owner.eligible_targets.is_empty()
+                    && deployment.as_ref().is_some_and(|state| state.deployed_units.iter()
+                        .any(|unit| unit.unit_instance_id == owner.caster))
             }) {
                 BattleActionEvaluation::Enabled
             } else {
@@ -293,6 +315,7 @@ impl GameCore {
                 ordinary(BattleActionEvaluation::Enabled),
             ),
             (ActionKind::ActivateSkill, activate_skill),
+            (ActionKind::SelectSkillRelation, select_relation),
             (ActionKind::AdvanceVisualNovel, advance_visual_novel),
             (
                 ActionKind::SelectVisualNovelChoice,

@@ -881,3 +881,7 @@ fn u06_starter_all_six_copies_transfer_by_weapon_compatibility() {
             .unwrap();
     }
 }
+
+include!("priority_heal_world.inc.rs");
+
+include!("queen_bee_basic_world.inc.rs");

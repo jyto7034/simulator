@@ -1,0 +1,23 @@
+{
+  "relics": [
+    {
+      "id": "tightening-shackles",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a140",
+      "name": "조여오는 족쇄",
+      "description": "작성 provider의 명시적인 체류 제어 진행 가속. 집중 상한과 공명은 바꾸지 않는다.",
+      "rarity": {
+        "Unresolved": "rarity"
+      },
+      "allow_duplicates": {
+        "Unresolved": "allow_duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": [],
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "dismantle_equipment_dust"
+      }
+    }
+  ]
+}

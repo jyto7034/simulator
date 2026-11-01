@@ -1,0 +1,35 @@
+# E09 threshold and increase are explicit verification values, not release balance.
+version: 2
+id: high-hp-damage-fixture
+values:
+  - name: high-hp-damage
+    value:
+      AttackProgram:
+        reactions: []
+        conditional_damage:
+          damage_filter:
+            damage_types: [Physical, Magic]
+            scope: Wearer
+          condition:
+            Compare:
+              left:
+                moment: Live
+                root:
+                  Mul:
+                    value: { Read: { HitPoints: { subject: Source, field: Current } } }
+                    scalar: { Const: { value: 100, unit: Scalar } }
+              comparison: AtLeast
+              right:
+                moment: Live
+                root:
+                  Mul:
+                    value: { Read: { HitPoints: { subject: Source, field: Max } } }
+                    scalar: { Const: { value: 80, unit: Scalar } }
+          percent:
+            moment: Live
+            root: { Const: { value: 20, unit: Scalar } }
+equipment_attacks:
+  - equipment: placeholder_clouded_monk_armor
+    program: { Shared: high-hp-damage }
+definitions: []
+skills: []

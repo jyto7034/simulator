@@ -155,7 +155,6 @@ impl BattleCore {
                     block_radius_units,
                     blockable: combat_profile.blockable,
                     mobility_kind: combat_profile.mobility_kind,
-                    #[cfg(any(test, debug_assertions, feature = "test-fixtures"))]
                     target_traits: combat_profile.target_traits.clone(),
                     facing_direction: (group.side == Side::Player)
                         .then_some(crate::game::battle::tile_range::FacingDirection::Right),
@@ -173,6 +172,7 @@ impl BattleCore {
                     resonance_lock_ms,
                     resonance_use: None,
                     next_resonance_pulse_ms: None,
+                    equipment_resonance_gain: None,
                     next_action_time: 0,
                     pending_cast: false,
                     pending_cast_cause: None,
@@ -368,6 +368,10 @@ impl BattleCore {
         time_ms: u64,
         current_hp_policy: Option<super::sim::BattleDeployCurrentHpPolicy>,
     ) -> Result<UnitInstanceId, GameError> {
+        if self.units.values().any(|u| u.source_owned_uuid == draft.owned_uuid
+            && u.lifecycle == RuntimeUnitLifecycle::PermanentlyDead) {
+            return Err(GameError::InvalidAction);
+        }
         self.validate_player_tactical_destination(position, None)?;
         self.validate_field_work_cell_destination(position, tile_kind)?;
         let employee_uuid = draft.owned_uuid;
@@ -505,6 +509,7 @@ impl BattleCore {
         if let Some(unit) = self.units.get_mut(&unit_id) {
             unit.resonance_use = None;
             unit.next_resonance_pulse_ms = None;
+            unit.equipment_resonance_gain = None;
         }
         self.cancel_uses_with_unavailable_targets(time_ms)?;
         if let Some(resources) = self.runtime_facts.resources.as_mut() {

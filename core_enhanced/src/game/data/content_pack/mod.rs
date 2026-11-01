@@ -2,12 +2,14 @@
 
 pub(crate) mod canonical;
 mod packaging;
+mod composition_preview;
+pub(crate) use composition_preview::{capture_composition_base, load_composition_preview, CompositionPublication};
 mod raw;
 mod resolver;
 mod schema;
 mod snapshot;
 
-pub use packaging::{package_official, PackageReceipt};
+pub use packaging::{package_official, package_official_with_skill_files, PackageReceipt};
 pub use raw::{CatalogKind, DefinitionKey, DefinitionKind, DefinitionSource};
 pub use resolver::{WriterKind as DefinitionWriteKind, WriterReceipt as DefinitionWriter};
 pub(crate) use schema::canonical_key_parts;

@@ -1,0 +1,269 @@
+# Current base form only; bloom remains deferred.
+# Unknown values require an explicit completion; technical inputs are not release balance.
+definitions: []
+id: little-red-input-plan
+skills:
+- admission:
+    capacity:
+      Unresolved: capacity
+    cost: All
+    requirement: Full
+  body:
+    Action:
+      delivery:
+        Literal:
+          Delivery: Instant
+      effects:
+      - Append:
+          effects:
+            Shared: planned-volley
+      id: entry
+      target:
+        Literal:
+          Target: SelfUnit
+      wait: Released
+  cast_targeting:
+    Explicit:
+      air_capable: false
+      reach: pattern
+      selection: self
+      target: SelfUnit
+      target_range: null
+  focus_permissions:
+    allows_basic_attack: false
+    allows_move: false
+  id: fragment_little_red_volley
+  kind: Untargeted
+  name: 붉은 두건의 창 사격
+  prepare_ms: 0
+values:
+- name: planned-volley
+  value:
+    Effects:
+    - id: volley
+      op:
+        InputPlan:
+          program:
+            admission:
+              capacity:
+                Unresolved: capacity
+              cost: All
+              requirement: Full
+            allow_duplicates: false
+            cohort:
+              attack_interval_ms:
+                Unresolved: cohort-attack_interval_ms
+              attack_range:
+                Unresolved: cohort-attack_range
+              block: 1
+              damage_type: Physical
+              definition: 0f40965e-31f1-40b6-b56f-87990f0b9879
+              hp:
+                Unresolved: cohort-hp
+              interval_ms:
+                Unresolved: cohort-interval_ms
+              kill_gain: 1
+              leak:
+                Unresolved: cohort-leak
+              magic_defense:
+                Unresolved: cohort-magic_defense
+              physical_defense:
+                Unresolved: cohort-physical_defense
+              power:
+                Unresolved: cohort-power
+              speed:
+                Unresolved: cohort-speed
+              weakness_family: f-01-57_little_red
+              weakness_percent:
+                denominator: 1
+                numerator: 50
+            definition: 3d921a07-8c0d-4b4d-b640-fe29ed6d72df
+            enhanced:
+              capacity:
+                Unresolved: enhanced-capacity
+              definition: 1ba2ca65-2810-4e54-92a3-78343b309ac2
+              initial: 0
+            enhanced_projectile:
+              after:
+              - count:
+                  Constant: 1
+                definition: a2692e72-cb94-4e0f-8f9a-194d4f602846
+                duration_ms: 2000
+                kind: Root
+                percent:
+                  denominator: 1
+                  numerator: 0
+              air: true
+              damage_type: Physical
+              definition: 6e99eb51-012f-40a4-bb98-97702657009c
+              lifetime_ms:
+                Unresolved: enhanced_projectile-lifetime_ms
+              max_hits:
+                Unresolved: enhanced_projectile-max_hits
+              obstacle_stop: true
+              power:
+                Unresolved: enhanced_projectile-power
+              range:
+                Unresolved: enhanced_projectile-range
+              speed:
+                Unresolved: enhanced_projectile-speed
+              width:
+                Unresolved: enhanced_projectile-width
+            modifiers:
+            - change:
+                WoundGrant:
+                  definition: 25d0d18a-47af-4d14-a19d-8db301d91cac
+                  factor:
+                    denominator: 1
+                    numerator: 2
+              id: 087e57ab-c6e9-4ead-a9ba-763566810110
+              relic_definition: deep-imprint
+              requires:
+              - little-red-puncture-wound
+            - change:
+                Wound:
+                  amount: 1
+                  cap:
+                    Unresolved: wound-cap
+                  duration_ms:
+                    Unresolved: wound-duration_ms
+                  percent:
+                    denominator: 1
+                    numerator: 30
+                  profiles:
+                  - 6e99eb51-012f-40a4-bb98-97702657009c
+                  - d7ef2cb2-7a19-4fe5-81e6-6b9538d43a60
+              id: 25d0d18a-47af-4d14-a19d-8db301d91cac
+              relic_definition: little-red-puncture-wound
+              requires: []
+            - change:
+                Push:
+                  profile: 6e99eb51-012f-40a4-bb98-97702657009c
+                  tiles:
+                    Unresolved: push-tiles
+              id: 286848e8-8e86-46af-8ebc-efc8da5a6182
+              relic_definition: little-red-slug-round
+              requires: []
+            - change:
+                KillGain:
+                  factor:
+                    denominator: 1
+                    numerator: 2
+              id: 64997ac7-2611-4edf-a5d4-b645963a2425
+              relic_definition: double-harvest
+              requires: []
+            - change:
+                Explosion:
+                  air:
+                    Unresolved: explosion-air
+                  bonus:
+                    denominator: 1
+                    numerator: 0
+                  damage_type:
+                    Unresolved: explosion-damage_type
+                  power:
+                    Unresolved: explosion-power
+                  profile: 6e99eb51-012f-40a4-bb98-97702657009c
+                  range:
+                    Unresolved: explosion-range
+              id: 758ad688-5993-4e43-ae69-bc3ac1d2d853
+              relic_definition: little-red-incendiary-round
+              requires: []
+            - change:
+                Status:
+                  profile: 6e99eb51-012f-40a4-bb98-97702657009c
+                  status:
+                    count:
+                      Constant: 1
+                    definition: 9f181986-3e90-464b-8553-2dcedf5cd40b
+                    duration_ms:
+                      Unresolved: stun-duration
+                    kind: Stun
+                    percent:
+                      denominator: 1
+                      numerator: 0
+              id: a376af84-a1f0-4aa5-bbb5-6d123e44835a
+              relic_definition: little-red-slug-round
+              requires: []
+            - change:
+                Explosion:
+                  air:
+                    Unresolved: explosion-air
+                  bonus:
+                    denominator: 1
+                    numerator: 0
+                  damage_type:
+                    Unresolved: explosion-damage_type
+                  power:
+                    Unresolved: explosion-power
+                  profile: d7ef2cb2-7a19-4fe5-81e6-6b9538d43a60
+                  range:
+                    Unresolved: explosion-range
+              id: d9ed003b-2eb8-408a-a2c9-39173db2494b
+              relic_definition: little-red-incendiary-round
+              requires: []
+            - change:
+                Status:
+                  profile: d7ef2cb2-7a19-4fe5-81e6-6b9538d43a60
+                  status:
+                    count:
+                      Constant: 1
+                    definition: 9f181986-3e90-464b-8553-2dcedf5cd40b
+                    duration_ms:
+                      Unresolved: stun-duration
+                    kind: Stun
+                    percent:
+                      denominator: 1
+                      numerator: 0
+              id: ec090c70-ae5b-459a-a1ff-146bd945b16f
+              relic_definition: little-red-slug-round
+              requires: []
+            - change:
+                ControlVulnerability:
+                  definition: 9f181986-3e90-464b-8553-2dcedf5cd40b
+                  duration_ms: 5000
+                  percent:
+                    Unresolved: control-vulnerability-percent
+              id: ef6e86c8-1a6a-4543-b206-a722d6551013
+              relic_definition: broken-balance
+              requires:
+              - little-red-slug-round
+            - change:
+                Push:
+                  profile: d7ef2cb2-7a19-4fe5-81e6-6b9538d43a60
+                  tiles:
+                    Unresolved: push-tiles
+              id: f42d4e63-5ace-487e-a2fe-8f4e91d9aa1e
+              relic_definition: little-red-slug-round
+              requires: []
+            normal:
+              capacity:
+                Unresolved: normal-capacity
+              definition: a0517d69-3b3e-4d96-a986-cc4570725e46
+              initial: 0
+            normal_projectile:
+              after: []
+              air: true
+              damage_type: Physical
+              definition: d7ef2cb2-7a19-4fe5-81e6-6b9538d43a60
+              lifetime_ms:
+                Unresolved: normal_projectile-lifetime_ms
+              max_hits:
+                Unresolved: normal_projectile-max_hits
+              obstacle_stop: true
+              power:
+                Unresolved: normal_projectile-power
+              range:
+                Unresolved: normal_projectile-range
+              speed:
+                Unresolved: normal_projectile-speed
+              width:
+                Unresolved: normal_projectile-width
+            placement_range:
+              Unresolved: placement_range
+            stock_gain: 1
+            stock_interval_ms:
+              Unresolved: stock_interval_ms
+      origin: Original
+      tags: []
+version: 1

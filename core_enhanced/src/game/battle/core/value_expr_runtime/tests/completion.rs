@@ -293,7 +293,7 @@ fn r06_c14_actual_i128_trace_is_exact_in_both_query_documents() {
 
 #[test]
 fn r06_spell_power_and_points_snapshot_live_frames_use_original_inputs() {
-    for stat in [StatSelector::SpellPower, StatSelector::AttackSpeedPoints] {
+    for stat in [StatSelector::SpellPower, StatSelector::AttackSpeedPoints, StatSelector::Defense] {
         for moment in [EvalMoment::Snapshot, EvalMoment::Live] {
             let p = plan(
                 moment,
@@ -305,6 +305,7 @@ fn r06_spell_power_and_points_snapshot_live_frames_use_original_inputs() {
             );
             let (mut core, actor, _) = core_with_units(vec![]);
             core.units.get_mut(&actor).unwrap().stats.spell_power = 20;
+            core.units.get_mut(&actor).unwrap().stats.defense = -10;
             core.units
                 .get_mut(&actor)
                 .unwrap()
@@ -321,6 +322,7 @@ fn r06_spell_power_and_points_snapshot_live_frames_use_original_inputs() {
                 )
                 .unwrap();
             core.units.get_mut(&actor).unwrap().stats.spell_power = 35;
+            core.units.get_mut(&actor).unwrap().stats.defense = 25;
             core.units
                 .get_mut(&actor)
                 .unwrap()
@@ -333,6 +335,8 @@ fn r06_spell_power_and_points_snapshot_live_frames_use_original_inputs() {
                     .unwrap()
             };
             let expected = match (stat, moment) {
+                (StatSelector::Defense, EvalMoment::Snapshot) => -10,
+                (StatSelector::Defense, _) => 25,
                 (StatSelector::SpellPower, EvalMoment::Snapshot) => 20,
                 (StatSelector::SpellPower, _) => 35,
                 (_, EvalMoment::Snapshot) => 150,

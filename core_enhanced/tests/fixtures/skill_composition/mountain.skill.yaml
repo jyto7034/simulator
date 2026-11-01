@@ -1,0 +1,265 @@
+# Integration fixture: explicit test geometry and balance, not release content.
+version: 1
+id: mountain-combination-fixture
+values:
+- name: approach-control
+  value:
+    Effects:
+    - id: control
+      op:
+        Sustained:
+          definition:
+            Control:
+              duration_ms: 2001
+              kind:
+                ApproachTaunt:
+                  profile:
+                    speed_percent: 100
+                    attack_range_units: 1000000
+- name: taken-reduction
+  value:
+    Count: 20
+- name: basic-bonus
+  value:
+    Count: 30
+- name: enlarged-mask
+  value:
+    TilePattern:
+      include_anchor_tile: true
+      rows:
+      - XXXX
+      - X@XX
+      - XXXX
+      - XXXX
+- name: longer-control
+  value:
+    Count: 25
+- name: mass-growth
+  value:
+    AttackProgram:
+      reactions:
+      - id: ordinary-kill
+        event:
+          PrimaryBasicKill:
+            eligibility: EncounterCombatant
+            threat: normal
+        body:
+        - Resources:
+            operations:
+            - resource: weapon_mass
+              owner: SourceEquipment
+              operation:
+                Grant: 2
+      - id: elite-kill
+        event:
+          PrimaryBasicKill:
+            eligibility: EncounterCombatant
+            threat: elite
+        body:
+        - Resources:
+            operations:
+            - resource: weapon_mass
+              owner: SourceEquipment
+              operation:
+                Grant: 5
+      - id: boss-kill
+        event:
+          PrimaryBasicKill:
+            eligibility: EncounterCombatant
+            threat: boss
+        body:
+        - Resources:
+            operations:
+            - resource: weapon_mass
+              owner: SourceEquipment
+              operation:
+                Grant: 9
+      - id: harvest-ordinary-kill
+        event:
+          PrimaryBasicKill:
+            eligibility: EncounterCombatant
+            threat: normal
+        body:
+        - Resources:
+            operations:
+            - resource: weapon_mass
+              owner: SourceEquipment
+              operation:
+                Grant: 2
+        requires_relic: double-harvest
+      - id: harvest-elite-kill
+        event:
+          PrimaryBasicKill:
+            eligibility: EncounterCombatant
+            threat: elite
+        body:
+        - Resources:
+            operations:
+            - resource: weapon_mass
+              owner: SourceEquipment
+              operation:
+                Grant: 5
+        requires_relic: double-harvest
+      - id: harvest-boss-kill
+        event:
+          PrimaryBasicKill:
+            eligibility: EncounterCombatant
+            threat: boss
+        body:
+        - Resources:
+            operations:
+            - resource: weapon_mass
+              owner: SourceEquipment
+              operation:
+                Grant: 9
+        requires_relic: double-harvest
+      bonus:
+        amount:
+          moment: Snapshot
+          root:
+            Mul:
+              value:
+                Const:
+                  value: 10
+                  unit: Magnitude
+              scalar:
+                Ratio:
+                  numerator:
+                    Read:
+                      Resource:
+                        resource: weapon_mass
+                        owner: SourceEquipment
+                        field: Balance
+                  denominator:
+                    Const:
+                      value: 1
+                      unit:
+                        Resource: weapon_mass
+                  rounding: Floor
+        secondary_percent: 40
+definitions:
+- name: apply-control
+  parameters:
+  - name: effects
+    value_type: Effects
+  - name: taken
+    value_type: Count
+  - name: basic
+    value_type: Count
+  - name: mask
+    value_type: TilePattern
+  - name: extra-time
+    value_type: Count
+  body:
+    Action:
+      id: apply
+      target:
+        Literal:
+          Target: SelfUnit
+      delivery:
+        Literal:
+          Delivery:
+            TileArea:
+              footprint:
+                include_anchor_tile: true
+                rows:
+                - XXX
+                - X@X
+                - XXX
+              area:
+                mode: ReleaseQuery
+                anchor: Caster
+                tile_origin: Caster
+                hit_targets: Enemies
+                include_caster: false
+      effects:
+      - Append:
+          effects:
+            Parameter: effects
+      modifiers:
+      - id: reduce-taken
+        relic_definition: taunted-enemy-damage-reduction
+        variant: Normal
+        change:
+          TauntDamage:
+            effect: control
+            taken_percent:
+              Parameter: taken
+            basic_percent:
+              Literal:
+                Count: 0
+      - id: boost-basic
+        relic_definition: taunted-enemy-basic-attack-boost
+        variant: Normal
+        change:
+          TauntDamage:
+            effect: control
+            taken_percent:
+              Literal:
+                Count: 0
+            basic_percent:
+              Parameter: basic
+      - id: expand-range
+        relic_definition: widened-horizon
+        variant: Normal
+        change:
+          Range:
+            pattern:
+              Parameter: mask
+      - id: extend-control
+        relic_definition: long-breath
+        variant: Normal
+        change:
+          Duration:
+            effect: control
+            percent:
+              Parameter: extra-time
+      wait: Released
+skills:
+- id: authored-mountain
+  name: 시체들의 합창과 무기 성장 조합
+  kind: Untargeted
+  cast_targeting:
+    Explicit:
+      selection: self
+      target: SelfUnit
+      reach: pattern
+      air_capable: true
+  prepare_ms: 0
+  focus_permissions:
+    allows_move: true
+    allows_basic_attack: true
+  admission:
+    capacity: 100
+    requirement: Full
+    cost: All
+  body:
+    Call:
+      id: control
+      definition: apply-control
+      arguments:
+      - name: effects
+        value:
+          Shared: approach-control
+      - name: taken
+        value:
+          Shared: taken-reduction
+      - name: basic
+        value:
+          Shared: basic-bonus
+      - name: mask
+        value:
+          Shared: enlarged-mask
+      - name: extra-time
+        value:
+          Shared: longer-control
+resources:
+- id: weapon_mass
+  owner: EquipmentCopy
+  lifetime: Run
+  initial: 0
+  cap: 4294967295
+equipment_attacks:
+- equipment: r11_weapon
+  program:
+    Shared: mass-growth

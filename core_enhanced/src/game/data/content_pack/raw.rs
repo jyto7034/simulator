@@ -194,6 +194,10 @@ definitions! {
     CorrodedWavePreset(CorrodedWavePreset) => (CorrodedWavePresets, "presets", IndependentString, |value: &CorrodedWavePreset| value.id.as_str().to_owned()),
     Employee(EmployeeDefinition) => (Employees, "definitions", IndependentString, |value: &EmployeeDefinition| value.employee_definition_id.as_str().to_owned()),
     Equipment(EquipmentMetadata) => (Equipment, "items", IndependentString, |value: &EquipmentMetadata| value.id.as_str().to_owned()),
+    EquipmentAttack(crate::game::ability::equipment_attack::EquipmentAttackBinding) => (Equipment, "equipment_attacks", ReferenceKey, |value: &crate::game::ability::equipment_attack::EquipmentAttackBinding| value.equipment.clone()),
+    EquipmentDefense(crate::game::ability::equipment_defense::EquipmentDefenseBinding) => (Equipment, "equipment_defenses", ReferenceKey, |value: &crate::game::ability::equipment_defense::EquipmentDefenseBinding| value.equipment.clone()),
+    EquipmentSupport(crate::game::ability::equipment_support::EquipmentSupportBinding) => (Equipment, "equipment_supports", ReferenceKey, |value: &crate::game::ability::equipment_support::EquipmentSupportBinding| value.equipment.clone()),
+    EquipmentState(crate::game::ability::equipment_state::EquipmentStateBinding) => (Equipment, "equipment_states", ReferenceKey, |value: &crate::game::ability::equipment_state::EquipmentStateBinding| value.equipment.clone()),
     EquipmentMaterial(EquipmentMaterialMetadata) => (Equipment, "materials", IndependentString, |value: &EquipmentMaterialMetadata| value.id.as_str().to_owned()),
     DismantleRecipe(EquipmentDismantleRecipeMetadata) => (Equipment, "dismantle_recipes", ReferenceKey, |value: &EquipmentDismantleRecipeMetadata| value.equipment_id.as_str().to_owned()),
     EnhancementRecipe(EquipmentEnhancementRecipeMetadata) => (Equipment, "enhancement_recipes", ReferenceKey, |value: &EquipmentEnhancementRecipeMetadata| value.equipment_id.as_str().to_owned()),
@@ -439,6 +443,18 @@ impl CatalogKind {
             Self::Equipment => {
                 let catalog: EquipmentDatabase =
                     parse_live_ron(source_file, "content_pack", input)?;
+                for (index, value) in catalog.equipment_attacks.into_iter().enumerate() {
+                    push(RawDefinition::EquipmentAttack(value), format!("equipment_attacks[{index}]"))?;
+                }
+                for (index, value) in catalog.equipment_defenses.into_iter().enumerate() {
+                    push(RawDefinition::EquipmentDefense(value), format!("equipment_defenses[{index}]"))?;
+                }
+                for (index, value) in catalog.equipment_supports.into_iter().enumerate() {
+                    push(RawDefinition::EquipmentSupport(value), format!("equipment_supports[{index}]"))?;
+                }
+                for (index, value) in catalog.equipment_states.into_iter().enumerate() {
+                    push(RawDefinition::EquipmentState(value), format!("equipment_states[{index}]"))?;
+                }
                 for (index, value) in catalog.items.into_iter().enumerate() {
                     push(RawDefinition::Equipment(value), format!("items[{index}]"))?;
                 }
@@ -475,13 +491,28 @@ impl CatalogKind {
                 }
             }
             Self::Skills => {
-                let catalog: RawSkillDatabase =
-                    super::super::skill_data::RawSkillDatabase::from_ron_with_limits(
+                let (catalog, resources, equipment_attacks, equipment_defenses, equipment_supports, equipment_states) =
+                    RawSkillDatabase::from_ron_with_companions(
                         source_file,
                         input,
                         &limits.value_expr,
                         limits.max_nesting,
                     )?;
+                for (index, value) in equipment_attacks.into_iter().enumerate() {
+                    push(RawDefinition::EquipmentAttack(value), format!("equipment_attacks[{index}]"))?;
+                }
+                for (index, value) in equipment_defenses.into_iter().enumerate() {
+                    push(RawDefinition::EquipmentDefense(value), format!("equipment_defenses[{index}]"))?;
+                }
+                for (index, value) in equipment_supports.into_iter().enumerate() {
+                    push(RawDefinition::EquipmentSupport(value), format!("equipment_supports[{index}]"))?;
+                }
+                for (index, value) in equipment_states.into_iter().enumerate() {
+                    push(RawDefinition::EquipmentState(value), format!("equipment_states[{index}]"))?;
+                }
+                for (index, value) in resources.into_iter().enumerate() {
+                    push(RawDefinition::Resource(value), format!("resources[{index}]"))?;
+                }
                 for (index, value) in catalog.range_presets.into_iter().enumerate() {
                     push(
                         RawDefinition::SkillRangePreset(value),
@@ -773,6 +804,10 @@ pub(super) fn assemble(
     let mut raw_corroded_wave_preset: Vec<CorrodedWavePreset> = Default::default();
     let mut raw_employee: Vec<EmployeeDefinition> = Default::default();
     let mut raw_equipment: Vec<EquipmentMetadata> = Default::default();
+    let mut raw_equipment_attack = Vec::new();
+    let mut raw_equipment_defense = Vec::new();
+    let mut raw_equipment_support = Vec::new();
+    let mut raw_equipment_state = Vec::new();
     let mut raw_equipment_material: Vec<EquipmentMaterialMetadata> = Default::default();
     let mut raw_dismantle_recipe: Vec<EquipmentDismantleRecipeMetadata> = Default::default();
     let mut raw_enhancement_recipe: Vec<EquipmentEnhancementRecipeMetadata> = Default::default();
@@ -864,6 +899,22 @@ pub(super) fn assemble(
             }
             RawDefinition::Equipment(value) => {
                 raw_equipment.push(value);
+            }
+            RawDefinition::EquipmentAttack(mut value) => {
+                value.source = Some((located.source.source_file.clone(), located.source.field_path.clone()));
+                raw_equipment_attack.push(value);
+            }
+            RawDefinition::EquipmentDefense(mut value) => {
+                value.source = Some((located.source.source_file.clone(), located.source.field_path.clone()));
+                raw_equipment_defense.push(value);
+            }
+            RawDefinition::EquipmentSupport(mut value) => {
+                value.source = Some((located.source.source_file.clone(), located.source.field_path.clone()));
+                raw_equipment_support.push(value);
+            }
+            RawDefinition::EquipmentState(mut value) => {
+                value.source = Some((located.source.source_file.clone(), located.source.field_path.clone()));
+                raw_equipment_state.push(value);
             }
             RawDefinition::EquipmentMaterial(value) => {
                 raw_equipment_material.push(value);
@@ -1012,6 +1063,11 @@ pub(super) fn assemble(
             e.cause,
         ))
     })?;
+    let mut equipment = EquipmentDatabase::with_all(raw_equipment, raw_equipment_material, raw_dismantle_recipe, raw_enhancement_recipe);
+    equipment.equipment_attacks = raw_equipment_attack;
+    equipment.equipment_defenses = raw_equipment_defense;
+    equipment.equipment_supports = raw_equipment_support;
+    equipment.equipment_states = raw_equipment_state;
     Ok(ParsedGameplayRon {
         shops: ShopDatabase::from_raw_parts(raw_shop_preset, raw_shop, raw_shop_pool),
         rewards: RewardDatabase::from_raw_parts(
@@ -1043,12 +1099,7 @@ pub(super) fn assemble(
         corroded_employees: corroded_employees,
         corroded_wave_presets: CorrodedWavePresetDatabase::from_raw_parts(raw_corroded_wave_preset),
         employee_definitions: EmployeeDefinitionDatabase::from_raw_parts(raw_employee),
-        equipment: EquipmentDatabase::with_all(
-            raw_equipment,
-            raw_equipment_material,
-            raw_dismantle_recipe,
-            raw_enhancement_recipe,
-        ),
+        equipment,
         consumables: ConsumableDatabase::from_raw_parts(raw_consumable),
         buffs: BuffDatabase::from_raw_parts(raw_buff),
         skills: skills,

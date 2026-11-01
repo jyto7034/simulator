@@ -17,6 +17,10 @@ fn advance_to_resource_terminal_boundary(core: &mut GameCore) {
 use super::*;
 use crate::game::data::content_pack::tests::ExternalFixture;
 use crate::game::resource::{ResourceLifetime, ResourceOwner};
+include!("cohort_bounty.inc.rs");
+include!("employee_revival.inc.rs");
+include!("employee_metamorphosis.inc.rs");
+include!("equipment_forms.inc.rs");
 
 #[test]
 fn cmrp_external_world_active_terminal_and_pending_keep_effective_owner_limits() {
@@ -269,7 +273,7 @@ fn external_resource_fixture_options(
     fixture
 }
 
-fn start_resource_battle(data: Arc<GameDataBase>) -> (GameCore, Uuid, Uuid, Position) {
+fn start_resource_battle(data: impl Into<crate::game::data::ValidatedGameData>) -> (GameCore, Uuid, Uuid, Position) {
     let mut core = GameCore::new(data, 0xCA05_101);
     let player = Uuid::from_u128(1);
     start_new_game_with_default_starters(&mut core, player);
@@ -460,8 +464,12 @@ fn external_ron_executes_each_lifetime_with_actual_employee_and_copy_sources() {
 
 #[test]
 fn external_ron_second_cost_shortage_preserves_actual_timestamp_candidate() {
-    let (mut core, _, _, _) =
+    let (core, _, _, _) =
         start_resource_battle(external_resource_data(ResourceLifetime::Run, true));
+    verify_resource_cost_refusal(core);
+}
+
+fn verify_resource_cost_refusal(mut core: GameCore) {
     let mut rejected = false;
     for _ in 0..2000 {
         let before = battle_advance_atomic_snapshot(&core);
@@ -612,12 +620,16 @@ fn actual_withdraw_redeploy_resets_deployment_but_preserves_attempt_and_run() {
 
 #[test]
 fn actual_retreat_restores_run_resource_entry_timeline_and_attempt_identity() {
-    let (mut core, player, _, _) = start_resource_battle(external_resource_data_options(
+    let (core, player, _, _) = start_resource_battle(external_resource_data_options(
         ResourceLifetime::Run,
         false,
         true,
         false,
     ));
+    verify_run_resource_retreat(core, player);
+}
+
+fn verify_run_resource_retreat(mut core: GameCore, player: Uuid) {
     let before = core.run_resources().unwrap().clone();
     advance_to_resource_cost(&mut core, 2);
     assert_eq!(core.battle_typed_resources().unwrap().entries().count(), 2);
@@ -637,8 +649,21 @@ fn actual_retreat_restores_run_resource_entry_timeline_and_attempt_identity() {
 
 #[test]
 fn actual_run_result_failure_retry_and_fresh_public_checkpoint_preserve_nonempty_values() {
-    let data = external_resource_data_options(ResourceLifetime::Run, false, true, true);
-    let (mut core, player, _, _) = start_resource_battle(data.clone());
+    verify_run_resource_checkpoint(external_resource_data_options(ResourceLifetime::Run, false, true, true));
+}
+
+fn verify_run_resource_checkpoint(data: impl Into<crate::game::data::ValidatedGameData>) -> (crate::application::ApplicationCheckpoint, Value, Value) {
+    let data = data.into();
+    let (mut core, player, employee, _) = start_resource_battle(data.clone());
+    // This oracle comes from the admitted roster/inventory before the resource
+    // producer runs, never from its cost receipt or persisted resource owner.
+    let copies: Vec<_> = core.state.inventory.equipments.iter()
+        .filter(|item| item.equipped_to == Some(employee)
+            && item.meta.id == "standard_training_sword")
+        .map(|item| item.instance_uuid).collect();
+    assert_eq!(copies.len(), 1);
+    let copy = copies[0];
+    let identities = json!({"employee": employee, "equipment_copy": copy});
     advance_to_resource_cost(&mut core, 2);
     advance_to_resource_terminal_boundary(&mut core);
     assert!(core.run_resources().unwrap().entries.is_empty());
@@ -689,6 +714,14 @@ fn actual_run_result_failure_retry_and_fresh_public_checkpoint_preserve_nonempty
     assert_eq!(core.run_resources(), Some(&confirmed));
     let committed = core.run_resources().unwrap().clone();
     assert_eq!(committed.entries.len(), 2);
+    for (resource, owner) in [
+        ("employee_meter", ResourceOwner::Employee(employee)),
+        ("copy_meter", ResourceOwner::EquipmentCopy(copy)),
+    ] {
+        let entry = committed.entries.iter().find(|entry| entry.resource.as_str() == resource).unwrap();
+        assert_eq!(entry.owner, owner);
+        assert_eq!((entry.balance, entry.revision), (5, 2));
+    }
     assert!(committed.entries.iter().all(|entry| entry.balance == 5));
     assert_eq!(committed.revision, root.revision + 1);
     assert!(core
@@ -750,6 +783,7 @@ fn actual_run_result_failure_retry_and_fresh_public_checkpoint_preserve_nonempty
         "old_contract",
         "missing_root",
         "bad_checksum",
+        "payload_checksum",
     ] {
         let mut bad = document.clone();
         let entries = &mut bad["continuation"]["current"]["typed_resources"]["entries"];
@@ -774,27 +808,43 @@ fn actual_run_result_failure_retry_and_fresh_public_checkpoint_preserve_nonempty
                     .remove("typed_resources");
             }
             "bad_checksum" => {}
+            // Keep this value valid for the resource contract: rejection must
+            // come from the unrefreshed checksum, not a cap/owner violation.
+            "payload_checksum" => entries[0]["balance"] = json!(4),
             _ => unreachable!(),
         }
         // Missing required fields are rejected by the strict codec before its
         // typed checksum helper can construct a payload.
-        if fault != "missing_root" {
+        if !matches!(fault, "missing_root" | "bad_checksum" | "payload_checksum") {
             refresh_active_run_checksum(&mut bad);
         }
         if fault == "bad_checksum" {
-            bad["checkpoint_sha256"] = json!("0".repeat(64));
+            bad["continuation_sha256"] = json!("0".repeat(64));
+            assert_eq!(bad["continuation"], document["continuation"]);
+        }
+        if matches!(fault, "bad_checksum" | "payload_checksum") {
+            assert_eq!(
+                bad.as_object().unwrap().keys().collect::<Vec<_>>(),
+                document.as_object().unwrap().keys().collect::<Vec<_>>(),
+                "checksum counterexamples must preserve the valid envelope"
+            );
         }
         let invalid = crate::application::ApplicationCheckpoint::new(
             serde_json::to_vec(&bad).unwrap(),
             checkpoint.loads_used(),
             checkpoint.run_peak_certified_power(),
         );
-        assert!(
-            destination
-                .continue_from_active_run_checkpoint(player, &invalid)
-                .is_err(),
-            "{fault}"
-        );
+        let error = destination
+            .continue_from_active_run_checkpoint(player, &invalid)
+            .expect_err(fault);
+        if matches!(fault, "bad_checksum" | "payload_checksum") {
+            assert_eq!(error.code(), "invalid_static_data");
+            assert_eq!(
+                error.details().as_value()["reason"],
+                json!("active-run continuation SHA-256 mismatch"),
+                "checksum rejection must reach the digest comparison: {error:?}"
+            );
+        }
         assert!(
             destination.run_resources().is_none(),
             "{fault} must not publish a Run"
@@ -909,6 +959,7 @@ fn actual_run_result_failure_retry_and_fresh_public_checkpoint_preserve_nonempty
     assert!(mismatch.run_resources().is_none());
     assert_eq!(profile_snapshot(&mismatch), preserved_profile);
     assert_eq!(source.run_resources(), Some(&committed));
+    (checkpoint, serde_json::to_value(profile).unwrap(), identities)
 }
 
 #[test]
@@ -2494,4 +2545,66 @@ fn runtime_safety_checkpoint_restore_uses_current_host_profile_and_preserves_ori
         .unwrap();
     assert!(accepted.run_resources().is_some());
     assert_eq!(checkpoint.core_payload_json(), original);
+}
+
+
+#[test]
+fn composition_resource_world_publication_retreat_result_retry_and_checkpoint_restore() {
+    use crate::game::data::content_pack::{CatalogFile, CatalogKind, PackManifest, DefinitionKind};
+    let fixture = external_resource_fixture_options(ResourceLifetime::Run, false, true, true);
+    // Remove the legacy producer; all three declarations and the triggered skill
+    // must now come from the portable authoring artifact on disk.
+    fixture.write("official/data/resources/base.ron", "(resources: [])");
+    let path = "official/data/skills/base.ron";
+    let mut skills = crate::game::data::skill_data::RawSkillDatabase::from_ron(path, &fixture.read(path)).unwrap();
+    skills.skills.retain(|skill| skill.id.as_str() != "r05_resource_probe");
+    fixture.write(path, ron::ser::to_string(&skills).unwrap());
+    let source = include_str!("../../../../tests/fixtures/skill_composition/resources.skill.yaml")
+        .replace("authored-run-cost", "r05_resource_probe");
+    let artifact = crate::authoring::composition::compile_yaml(&source).unwrap();
+    let authored_path = "data/skills/resources.skill-composition.ron";
+    fixture.write(&format!("official/{authored_path}"), artifact.to_ron().unwrap());
+    let mut manifest: PackManifest = ron::de::from_str(&fixture.read("official/pack.ron")).unwrap();
+    manifest.files.push(CatalogFile { kind: CatalogKind::Skills, path: authored_path.into() });
+    fixture.manifest("official", manifest);
+    let generation = fixture.load();
+    for (index, resource) in artifact.resources().iter().enumerate() {
+        let (_, origin) = generation.source_metadata().unwrap().definitions().iter()
+            .find(|(key, _)| key.kind == DefinitionKind::Resource && key.id == resource.id.as_str()).unwrap();
+        assert_eq!(origin.source_file, format!("official/{authored_path}"));
+        assert_eq!(origin.field_path, format!("resources[{index}]"));
+    }
+    let (core, player, _, _) = start_resource_battle(generation.clone());
+    verify_run_resource_retreat(core, player);
+    let (checkpoint, profile, identities) = verify_run_resource_checkpoint(generation);
+    if let Some(directory) = std::env::var_os("RESOURCE_CHECKPOINT_FIXTURE_DIR") {
+        fn copy_tree(from: &std::path::Path, to: &std::path::Path) {
+            std::fs::create_dir_all(to).unwrap();
+            for entry in std::fs::read_dir(from).unwrap() {
+                let entry = entry.unwrap();
+                if entry.file_type().unwrap().is_dir() { copy_tree(&entry.path(), &to.join(entry.file_name())); }
+                else { std::fs::copy(entry.path(), to.join(entry.file_name())).unwrap(); }
+            }
+        }
+        let directory = std::path::PathBuf::from(directory);
+        assert!(!directory.exists(), "fixture export must preserve earlier evidence");
+        copy_tree(fixture.root(), &directory.join("content"));
+        std::fs::write(directory.join("checkpoint.json"), serde_json::to_vec_pretty(&json!({
+            "core_payload_json": checkpoint.core_payload_json(),
+            "loads_used": checkpoint.loads_used(),
+            "run_peak_certified_power": checkpoint.run_peak_certified_power()
+        })).unwrap()).unwrap();
+        std::fs::write(directory.join("profile.json"), serde_json::to_vec_pretty(&profile).unwrap()).unwrap();
+        std::fs::write(directory.join("resource-identities.json"), serde_json::to_vec_pretty(&identities).unwrap()).unwrap();
+        std::fs::write(directory.join("selection.json"), serde_json::to_vec_pretty(&fixture.selection()).unwrap()).unwrap();
+    }
+    let insufficient = source.replace(
+        "resource: copy_meter, owner: SourceEquipment, operation: { Consume: 2 }",
+        "resource: copy_meter, owner: SourceEquipment, operation: { Consume: 99 }",
+    );
+    assert_ne!(insufficient, source);
+    let artifact = crate::authoring::composition::compile_yaml(&insufficient).unwrap();
+    fixture.write(&format!("official/{authored_path}"), artifact.to_ron().unwrap());
+    let (core, _, _, _) = start_resource_battle(fixture.load());
+    verify_resource_cost_refusal(core);
 }

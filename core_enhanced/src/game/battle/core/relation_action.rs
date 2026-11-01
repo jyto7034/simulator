@@ -86,6 +86,7 @@ enum Continuation {
 }
 #[derive(Debug, Clone)]
 struct Active {
+    channel_started_at: Option<u64>,
     id: u64,
     admitted: Pending,
     source: RuntimeFactSource,
@@ -106,6 +107,7 @@ struct Active {
     hit_index: u32,
 }
 crate::authoring::clone_shape::struct_shape!(Active {
+    channel_started_at,
     id,
     admitted,
     source,
@@ -137,6 +139,7 @@ impl crate::authoring::clone_shape::CloneShape for Continuation {
 struct Owner {
     caster: UnitInstanceId,
     fragment: Arc<FragmentSourceSnapshot>,
+    authored: Option<Arc<crate::game::ability::authoring::EffectSource>>,
     program: Arc<RelationActionDef>,
     applied: Vec<AppliedMarkModifier>,
     stock: u32,
@@ -150,6 +153,7 @@ struct Owner {
 crate::authoring::clone_shape::struct_shape!(Owner {
     caster,
     fragment,
+    authored,
     program,
     applied,
     stock,
@@ -160,6 +164,24 @@ crate::authoring::clone_shape::struct_shape!(Owner {
     pending,
     active
 });
+impl Owner {
+    // Autonomous callbacks belong to this registered provider, not the hit or
+    // cast that happened to trigger reconciliation.
+    fn intrinsic_source(&self) -> RuntimeFactSource {
+        RuntimeFactSource {
+            actor: Some(self.caster),
+            fragment: Some(self.fragment.clone()),
+            authored: self.authored.clone(),
+            ..Default::default()
+        }
+    }
+}
+fn relation_authored_extent(
+    authored: &Option<Arc<crate::game::ability::authoring::EffectSource>>,
+) -> Option<usize> {
+    if authored.is_none() { return Some(0); }
+    RuntimeFactSource { authored: authored.clone(), ..Default::default() }.retained_extent()
+}
 #[derive(Debug, Clone, Default)]
 pub(super) struct RelationActionState {
     next: u64,
@@ -199,6 +221,7 @@ impl RelationActionState {
         for o in self.owners.values() {
             n = n
                 .checked_add(o.fragment.retained_extent()?)?
+                .checked_add(relation_authored_extent(&o.authored)?)?
                 .checked_add(program::extent(&o.program)?)?
                 .checked_add(
                     o.applied
@@ -232,13 +255,13 @@ const ZERO: MarkRatio = MarkRatio {
     denominator: 1,
 };
 impl BattleCore {
-    fn relation_declaration(skill: &SkillDef) -> Option<&Arc<RelationActionDef>> {
+    fn relation_declaration(skill: &SkillDef) -> Option<(&Arc<RelationActionDef>, Option<&Arc<crate::game::ability::authoring::EffectSource>>)> {
         skill
             .steps
             .iter()
             .flat_map(|s| &s.effects)
             .find_map(|e| match &e.op {
-                SkillEffectDef::RelationAction { program } => Some(program),
+                SkillEffectDef::RelationAction { program } => Some((program, e.source())),
                 _ => None,
             })
     }
@@ -270,6 +293,14 @@ impl BattleCore {
         } else {
             &p.normal
         }
+    }
+    pub(super) fn relation_replaces_next_basic(&self, caster: UnitInstanceId) -> bool {
+        self.relation_key(caster).and_then(|key| self.sustained.relations.owners.get(&key))
+            .is_some_and(|o| o.active.as_ref().is_some_and(|a| a.waiting_basic))
+    }
+    pub(super) fn relation_action_started_at(&self, caster: UnitInstanceId) -> Option<u64> {
+        let active = self.sustained.relations.owners.get(&self.relation_key(caster)?)?.active.as_ref()?;
+        active.channel_started_at
     }
     pub(super) fn relation_action_active(&self, caster: UnitInstanceId) -> bool {
         self.relation_key(caster)
@@ -432,16 +463,18 @@ impl BattleCore {
             {
                 continue;
             }
-            let Some(def) = self
+            let Some((def, authored)) = self
                 .current_skill_view(&fragment.skill_id, caster, &Default::default())
                 .and_then(Self::relation_declaration)
             else {
                 continue;
             };
+            let authored = authored.cloned();
             let (program, applied) = self.relation_program(caster, def)?;
             crate::game::battle::runtime_control::admit_retained_growth(
                 0,
                 program::extent(&program)
+                    .and_then(|n| n.checked_add(relation_authored_extent(&authored)?))
                     .and_then(|n| n.checked_add(std::mem::size_of::<Owner>() + 128)),
                 "relation_owner",
             )?;
@@ -449,6 +482,7 @@ impl BattleCore {
             if let Some(o) = self.sustained.relations.owners.get_mut(&fragment.copy_uuid) {
                 o.caster = caster;
                 o.fragment = fragment;
+                o.authored = authored;
                 o.program = Arc::new(program);
                 o.applied = applied;
             } else {
@@ -457,6 +491,7 @@ impl BattleCore {
                     Owner {
                         caster,
                         fragment,
+                        authored,
                         stock: program.initial_stock,
                         program: Arc::new(program),
                         applied,
@@ -512,7 +547,7 @@ impl BattleCore {
         }
         let percent = o.program.mode_damage_percent;
         let stock = o.stock;
-        let fragment = o.fragment.clone();
+        let source = o.intrinsic_source();
         let o = self.sustained.relations.owners.get_mut(&key).unwrap();
         o.mode = true;
         o.reserved_mode = false;
@@ -521,7 +556,7 @@ impl BattleCore {
             .discard_relation_events(Some(key), true, false)?;
         self.relation_self_damage(
             caster,
-            &fragment,
+            source,
             percent,
             stock,
             crate::game::battle::damage::DamageType::True,

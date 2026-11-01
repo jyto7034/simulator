@@ -1,0 +1,14 @@
+# Prototype cap only; the 25 percent follows the Mimicry weapon agreement.
+version: 2
+id: equipment-lifesteal-fixture
+values:
+  - name: mimicry-lifesteal
+    value:
+      AttackProgram:
+        reactions: []
+        basic_lifesteal: { percent: 25, max_heal: 17 }
+equipment_attacks:
+  - equipment: r11_weapon
+    program: { Shared: mimicry-lifesteal }
+definitions: []
+skills: []

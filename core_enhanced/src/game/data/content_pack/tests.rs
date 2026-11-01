@@ -1105,7 +1105,7 @@ fn external_final_buff_reward_and_registration_references_reject_without_publica
     let mut pve: PveEncounterDatabase = ron::de::from_str(&fixture.read(pve_path)).unwrap();
     let mut missing_encounter = pve.clone();
     missing_encounter.reward_sources[0].encounter_id = "missing_registered_encounter".into();
-    pve.reward_sources[0].fragment_id = "missing_registered_fragment".into();
+    pve.reward_sources[0].fragment_id = Some("missing_registered_fragment".into());
     for (path, bad_input, cause_fragment) in [
         (skill_path, bad_skill, "missing_authoring_buff"),
         (
@@ -1802,4 +1802,128 @@ fn compiled_graph_artifact_loads_in_external_pack_and_rejects_tampering() {
         assert_eq!(error.code, "graph_artifact_invalid");
         assert!(accepted.skill_data.get_by_id("p7_compiled_use").is_some());
     }
+}
+
+#[test]
+fn composition_yaml_artifact_publishes_through_real_pack_loader_and_rejects_bad_envelopes() {
+    let fixture = ExternalFixture::official();
+    let yaml = include_str!(concat!(env!("CARGO_MANIFEST_DIR"),
+        "/tests/fixtures/skill_composition/woodsman_monk.skill.yaml"));
+    let artifact = crate::authoring::composition::compile_yaml(yaml).unwrap().to_ron().unwrap();
+    let path = "official/data/skills/authored.skill-composition.ron";
+    fixture.write(path, &artifact);
+    let mut manifest: PackManifest = ron::de::from_str(&fixture.read("official/pack.ron")).unwrap();
+    manifest.files.push(CatalogFile { kind: CatalogKind::Skills,
+        path: "data/skills/authored.skill-composition.ron".into() });
+    fixture.manifest("official", manifest);
+    let accepted = fixture.load();
+    for id in ["woodsman-authored", "monk-authored"] {
+        let skill = accepted.skill_data.get_by_id(id).unwrap();
+        assert!(!skill.steps.is_empty());
+        let provenance = accepted.source_metadata().unwrap().definitions().iter()
+            .find(|(key, _)| key.id == id).unwrap();
+        assert_eq!(provenance.1.source_file, path);
+        for effect in skill.steps.iter().flat_map(|step| &step.effects) {
+            assert_eq!(effect.source.as_ref().unwrap().source_file, path);
+        }
+    }
+    for invalid in [artifact.replacen("version: 1,", "version: 999,", 1),
+        artifact.replace("skill-composition-native", "unsupported-composition")] {
+        assert_ne!(invalid, artifact);
+        fixture.write(path, invalid);
+        let error = load(fixture.root(), &fixture.selection(), &InputLimits::default()).err().unwrap();
+        assert_eq!(error.code, "composition_artifact_invalid");
+        assert_eq!(error.source_file, path);
+        assert!(accepted.skill_data.get_by_id("monk-authored").is_some());
+    }
+}
+
+#[test]
+fn composition_preview_uses_captured_base_and_enforces_overlay_inventory_limits() {
+    let fixture = ExternalFixture::official();
+    let settings = crate::runtime_safety::RuntimeSafetySettings::embedded_shared();
+    let limits = InputLimits::default();
+    let artifact = crate::authoring::composition::compile_yaml(include_str!(concat!(env!("CARGO_MANIFEST_DIR"),
+        "/tests/fixtures/skill_composition/woodsman_monk.skill.yaml"))).unwrap();
+    let base = capture_composition_base(fixture.root(), &fixture.selection(), &limits, settings.clone()).unwrap();
+    let constrained = capture_composition_base(fixture.root(), &fixture.selection(), &limits, settings.clone()).unwrap();
+    fixture.write("official/data/skills/base.ron", "invalid content after capture");
+    let published = load_composition_preview(base, &fixture.selection(), &artifact, &limits, settings.clone()).unwrap();
+    assert!(published.token.skill_data.get_by_id("monk-authored").is_some());
+    assert!(published.token.source_receipt().files.iter().any(|f| f.path == published.artifact_path && f.sha256 == published.artifact_digest));
+    let mut low = limits;
+    low.max_packs = 1;
+    let error = load_composition_preview(constrained, &fixture.selection(), &artifact, &low, settings).err().unwrap();
+    assert_eq!(error.code, "composition_preview_invalid");
+    assert!(error.cause.contains("input limits"));
+    assert!(published.token.skill_data.get_by_id("monk-authored").is_some());
+    assert_eq!(fixture.read("official/data/skills/base.ron"), "invalid content after capture");
+}
+
+#[test]
+fn composition_resource_publication_preserves_unrelated_definitions_and_requires_explicit_replacement() {
+    let fixture = ExternalFixture::official();
+    let base_resources = "(resources:[(id:\"employee_meter\",owner:Employee,lifetime:Run,initial:1,cap:4),(id:\"unrelated\",owner:Employee,lifetime:Run,initial:2,cap:9)])";
+    fixture.write("official/data/resources/base.ron", base_resources);
+    let base = fixture.load();
+    let yaml = include_str!("../../../../tests/fixtures/skill_composition/resources.skill.yaml");
+    let artifact = crate::authoring::composition::compile_yaml(yaml).unwrap();
+    let path = "authored/resources.skill-composition.ron";
+    fixture.write(path, artifact.to_ron().unwrap());
+    let key = DefinitionKey { kind: DefinitionKind::Resource, id: "employee_meter".into() };
+    let mut manifest = PackManifest {
+        pack_id: "authored".into(), pack_version: "1".into(), namespace: PackNamespace::Global,
+        contract: ContentContract::current(),
+        required_capabilities: vec!["typed_resources_v1".into(), "structured_skill_flow_v1".into()],
+        dependencies: vec!["official".into()],
+        files: vec![CatalogFile { kind: CatalogKind::Skills, path: "resources.skill-composition.ron".into() }],
+        operations: vec![],
+    };
+    fixture.manifest("authored", manifest.clone());
+    let selection = ContentSelection { packs: vec!["official".into(), "authored".into()], winners: vec![] };
+    let error = load(fixture.root(), &selection, &InputLimits::default()).err().unwrap();
+    assert!(error.to_string().contains("employee_meter"), "{error:?}");
+    assert_eq!(base.resource_data.resources[0].cap, 4);
+    manifest.operations.push(DefinitionOperation { target: key.clone(), operation: OperationKind::Replace, after: vec!["official".into()] });
+    fixture.manifest("authored", manifest);
+    let selection = ContentSelection { winners: vec![WriterSelection { target: key, pack_id: "authored".into() }], ..selection };
+    let accepted = load(fixture.root(), &selection, &InputLimits::default()).unwrap();
+    assert_eq!(accepted.resource_data.resources.len(), 4);
+    assert_eq!(accepted.resource_data.resources.iter().find(|r| r.id.as_str() == "unrelated").unwrap().initial, 2);
+    assert_eq!(accepted.resource_data.resources.iter().find(|r| r.id.as_str() == "employee_meter").unwrap().cap, 15);
+    assert_ne!(base.identity(), accepted.identity());
+    let modified = crate::authoring::composition::compile_yaml(&yaml.replacen("initial: 7, cap: 15", "initial: 7, cap: 14", 1)).unwrap();
+    fixture.write(path, modified.to_ron().unwrap());
+    let changed = load(fixture.root(), &selection, &InputLimits::default()).unwrap();
+    assert_ne!(accepted.identity(), changed.identity());
+    assert_eq!(accepted.resource_data.resources.iter().find(|r| r.id.as_str() == "employee_meter").unwrap().cap, 15);
+
+    // An authoring trial replaces the requested resource in its isolated
+    // candidate through the same resolver, preserving captured base files.
+    let settings = crate::runtime_safety::RuntimeSafetySettings::embedded_shared();
+    let limits = InputLimits::default();
+    let captured = capture_composition_base(fixture.root(), &fixture.selection(), &limits, settings.clone()).unwrap();
+    let preview = load_composition_preview(captured, &fixture.selection(), &artifact, &limits, settings).unwrap();
+    assert_eq!(preview.token.resource_data.resources.len(), 4);
+    assert_eq!(fixture.read("official/data/resources/base.ron"), base_resources);
+    assert_eq!(preview.token.resource_data.resources.iter().find(|r| r.id.as_str() == "employee_meter").unwrap().cap, 15);
+}
+
+#[test]
+fn optional_fragment_pack_publication_preserves_none_and_rejects_mismatch_atomically() {
+    let fixture = ExternalFixture::official();
+    let accepted = fixture.load();
+    let source = accepted.pve_data.get_reward_source_by_encounter_id("suppress_big_bad_wolf").unwrap();
+    assert!(source.fragment_id.is_none());
+    let plan = crate::game::encounter_progression::EncounterProgressionState::default()
+        .plan_encounter_reward(&accepted.pve_data, "suppress_big_bad_wolf").unwrap();
+    assert!(plan.effects.is_empty());
+    let path = "official/data/pve/encounters.ron";
+    let mut pve: crate::game::data::pve_data::PveEncounterDatabase = ron::de::from_str(&fixture.read(path)).unwrap();
+    pve.reward_sources.iter_mut().find(|s| s.reward_source_id == "normal_boss_big_bad_wolf").unwrap().fragment_id = Some("fragment_big_bad_wolf_trace".into());
+    fixture.write(path, ron::ser::to_string(&pve).unwrap());
+    let error = load(fixture.root(), &fixture.selection(), &InputLimits::default()).err().unwrap();
+    assert_eq!(error.source_file, path);
+    assert!(error.field_path.as_deref().is_some_and(|p| p.ends_with("fragment_id")));
+    assert!(accepted.pve_data.get_reward_source_by_encounter_id("suppress_big_bad_wolf").unwrap().fragment_id.is_none());
 }

@@ -1,0 +1,52 @@
+# Test-only values. The actual weapon copy owns the Run balance.
+version: 1
+id: equipment-attack-fixture
+resources:
+  - { id: weapon_mass, owner: EquipmentCopy, lifetime: Run, initial: 0, cap: 4294967295 }
+values:
+  - name: mass-growth
+    value:
+      AttackProgram:
+        reactions:
+          - id: ordinary-kill
+            event:
+              PrimaryBasicKill: { eligibility: EncounterCombatant, threat: normal }
+            body:
+              - Resources:
+                  operations:
+                    - { resource: weapon_mass, owner: SourceEquipment, operation: { Grant: 2 } }
+              - HealOwner:
+                  amount: { moment: Live, root: { Const: { value: 7, unit: Magnitude } } }
+          - id: elite-kill
+            event:
+              PrimaryBasicKill: { eligibility: EncounterCombatant, threat: elite }
+            body:
+              - Resources:
+                  operations:
+                    - { resource: weapon_mass, owner: SourceEquipment, operation: { Grant: 5 } }
+          - id: boss-kill
+            event:
+              PrimaryBasicKill: { eligibility: EncounterCombatant, threat: boss }
+            body:
+              - Resources:
+                  operations:
+                    - { resource: weapon_mass, owner: SourceEquipment, operation: { Grant: 9 } }
+        bonus:
+          amount:
+            moment: Snapshot
+            root:
+              Mul:
+                value: { Const: { value: 10, unit: Magnitude } }
+                scalar:
+                  Ratio:
+                    numerator:
+                      Read:
+                        Resource: { resource: weapon_mass, owner: SourceEquipment, field: Balance }
+                    denominator: { Const: { value: 1, unit: { Resource: weapon_mass } } }
+                    rounding: Floor
+          secondary_percent: 40
+equipment_attacks:
+  - equipment: r11_weapon
+    program: { Shared: mass-growth }
+definitions: []
+skills: []

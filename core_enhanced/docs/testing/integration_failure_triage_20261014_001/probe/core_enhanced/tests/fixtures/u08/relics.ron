@@ -1,7 +1,0 @@
-// Authored probe values; no official balance, rarity, supply or penalty adoption.
-(relics: [
-    (id: "u08_probe", uuid: "00000000-0000-0000-0000-000000000808", name: "U08 probe", description: "Copy and numeric pipeline fixture", rarity: "probe", allow_duplicates: false,
-     effects: [(id: "damage", selector: (), flat: 20, percent: 20)],
-     corruption: Some((effects: [(id: "damage", selector: (), flat: 40, percent: 50)], penalties: [DefenseFlat(amount: -15), MagicResistFlat(amount: -10)])),
-     dismantle_equipment_dust: 7),
-])

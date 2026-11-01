@@ -4,7 +4,11 @@ import tailwindcss from "@tailwindcss/vite";
 import { fileURLToPath, URL } from "node:url";
 import process from "node:process";
 import { contentFilesPlugin } from "./server/content-files.ts";
-import { compilerPlugin } from "./server/compiler.ts";
+import {
+  compilerPlugin,
+  compositionCompilerLimits,
+  compositionRunLimits,
+} from "./server/compiler.ts";
 const host = process.env.TAURI_DEV_HOST;
 
 // https://vite.dev/config/
@@ -12,6 +16,16 @@ export default defineConfig(() => ({
   plugins: [
     react(),
     compilerPlugin(process.env.CONTENT_ASSEMBLER_COMPILER),
+    compilerPlugin(
+      process.env.CONTENT_ASSEMBLER_COMPOSITION_COMPILER,
+      "/__content/compile-composition",
+      compositionCompilerLimits,
+    ),
+    compilerPlugin(
+      process.env.CONTENT_ASSEMBLER_COMPOSITION_RUNNER,
+      "/__content/run-composition",
+      compositionRunLimits,
+    ),
     tailwindcss(),
     contentFilesPlugin(fileURLToPath(new URL("./content", import.meta.url))),
   ],

@@ -1158,6 +1158,14 @@ impl RuntimeFactState {
 #[derive(Debug, Clone, Copy)]
 pub(super) struct StrikeProgress {
     deflected: bool,
+    barrier_blocked: bool,
+    equipment_evaded: Option<bool>,
+    source_direct_amp: Option<i32>,
+    hit_damage_taken_amp: Option<i32>,
+    conditional_damage_amp: Option<[i32; 3]>,
+    incoming_flat: Option<super::equipment_defense::FlatAllowance>,
+    conditional_reduction: Option<(UnitInstanceId, i32)>,
+    wearer_reduction: Option<i32>,
     ordinal: StrikeOrdinal,
     next_segment: usize,
     mutations: u64,
@@ -1196,7 +1204,10 @@ impl BattleCore {
         if let Some(resources) = self.runtime_facts.resources.as_mut() {
             resources.mount_run(state, owners)?;
         }
-        Ok(())
+        self.reconcile_bounty_stats()?;
+        self.reconcile_equipment_forms()?;
+        self.reconcile_nearby_defense()?;
+        self.reconcile_ready_wait(self.sustained_observed_time())
     }
 
     pub(crate) fn capture_run_resources(
@@ -1243,6 +1254,14 @@ impl BattleCore {
                 }
                 let progress = StrikeProgress {
                     deflected: false,
+                    barrier_blocked: false,
+                    equipment_evaded: None,
+                    source_direct_amp: None,
+            hit_damage_taken_amp: None,
+                    conditional_damage_amp: None,
+                    incoming_flat: None,
+                    conditional_reduction: None,
+                    wearer_reduction: None,
                     ordinal: self.runtime_facts.strike()?,
                     next_segment: 0,
                     mutations: 0,
@@ -1257,11 +1276,121 @@ impl BattleCore {
         Ok(AdmittedStrike { target, progress })
     }
 
+    pub(super) fn strike_wearer_reduction(
+        &mut self, strike: &mut AdmittedStrike,
+        source: &crate::game::battle::damage::DamageSourceSnapshot, now: u64,
+    ) -> Result<i32, GameError> {
+        if let Some(value) = strike.progress.wearer_reduction { return Ok(value); }
+        let value = self.evaluate_wearer_reduction(strike.target, source, now, strike.ordinal().0)?;
+        strike.progress.wearer_reduction = Some(value);
+        if let Some(scope) = &mut self.runtime_strike_scope {
+            scope.targets.insert(strike.target, strike.progress);
+        }
+        Ok(value)
+    }
+
+    pub(super) fn strike_conditional_reduction(
+        &mut self, strike: &mut AdmittedStrike,
+        source: &crate::game::battle::damage::DamageSourceSnapshot, now: u64,
+    ) -> Result<i32, GameError> {
+        // Eligibility is per damage actor. An excluded component neither reads
+        // another actor's cached value nor poisons the strike's contribution.
+        if !self.incoming_conditional_eligible(strike.target, source) { return Ok(0); }
+        if let Some((actor, value)) = strike.progress.conditional_reduction {
+            if actor == source.source_id { return Ok(value); }
+        }
+        let value = self.incoming_conditional_percent(strike.target, source, now)?;
+        // A strike scope normally has one attacking actor. A distinct actor's
+        // independent segment is evaluated without overwriting that identity.
+        if strike.progress.conditional_reduction.is_none() {
+            strike.progress.conditional_reduction = Some((source.source_id, value));
+            if let Some(scope) = &mut self.runtime_strike_scope {
+                scope.targets.insert(strike.target, strike.progress);
+            }
+        }
+        Ok(value)
+    }
+
+    pub(super) fn strike_incoming_flat(
+        &mut self, strike: &mut AdmittedStrike,
+    ) -> Result<super::equipment_defense::FlatAllowance, GameError> {
+        if let Some(value) = strike.progress.incoming_flat { return Ok(value); }
+        let value = self.evaluate_incoming_flat(strike.target)?;
+        self.commit_incoming_flat(strike, value);
+        Ok(value)
+    }
+    pub(super) fn commit_incoming_flat(
+        &mut self, strike: &mut AdmittedStrike, value: super::equipment_defense::FlatAllowance,
+    ) {
+        strike.progress.incoming_flat = Some(value);
+        if let Some(scope) = &mut self.runtime_strike_scope {
+            scope.targets.insert(strike.target, strike.progress);
+        }
+    }
+
+    pub(super) fn strike_conditional_damage_per_type(
+        &mut self, strike: &mut AdmittedStrike,
+        source: &crate::game::battle::damage::DamageSourceSnapshot, now: u64,
+    ) -> Result<[i32; 3], GameError> {
+        if let Some(value) = strike.progress.conditional_damage_amp { return Ok(value); }
+        let value = self.conditional_damage_per_type(source, strike.target, now)?;
+        strike.progress.conditional_damage_amp = Some(value);
+        if let Some(scope) = &mut self.runtime_strike_scope {
+            scope.targets.insert(strike.target, strike.progress);
+        }
+        Ok(value)
+    }
+
+    pub(super) fn strike_hit_damage_taken_amp(
+        &mut self, strike: &mut AdmittedStrike,
+    ) -> Result<i32, GameError> {
+        if let Some(value) = strike.progress.hit_damage_taken_amp { return Ok(value); }
+        let value = self.hit_damage_taken_percent(strike.target)?;
+        strike.progress.hit_damage_taken_amp = Some(value);
+        if let Some(scope) = &mut self.runtime_strike_scope {
+            scope.targets.insert(strike.target, strike.progress);
+        }
+        Ok(value)
+    }
+
+    pub(super) fn strike_source_direct_amp(
+        &mut self, strike: &mut AdmittedStrike,
+        source: &crate::game::battle::damage::DamageSourceSnapshot, now: u64,
+    ) -> Result<i32, GameError> {
+        if let Some(value) = strike.progress.source_direct_amp { return Ok(value); }
+        let value = self.source_direct_hit_percent(strike.target, source, now)?;
+        strike.progress.source_direct_amp = Some(value);
+        if let Some(scope) = &mut self.runtime_strike_scope {
+            scope.targets.insert(strike.target, strike.progress);
+        }
+        Ok(value)
+    }
+
+    pub(super) fn equipment_evasion_result(strike: &AdmittedStrike) -> Option<bool> {
+        strike.progress.equipment_evaded
+    }
+    pub(super) fn mark_equipment_evasion(&mut self, strike: &mut AdmittedStrike, evaded: bool) {
+        strike.progress.equipment_evaded = Some(evaded);
+        strike.progress.deflected |= evaded;
+        if let Some(scope) = &mut self.runtime_strike_scope {
+            scope.targets.insert(strike.target, strike.progress);
+        }
+    }
     pub(super) fn mark_strike_deflected(&mut self, strike: &mut AdmittedStrike) {
         strike.progress.deflected = true;
         if let Some(scope) = &mut self.runtime_strike_scope {
             scope.targets.insert(strike.target, strike.progress);
         }
+    }
+    pub(super) fn mark_strike_barrier_blocked(&mut self, target: UnitInstanceId) -> Result<(), GameError> {
+        let mut strike = self.admit_damage_strike(target)?;
+        strike.progress.barrier_blocked = true;
+        self.mark_strike_deflected(&mut strike);
+        Ok(())
+    }
+    pub(super) fn strike_barrier_blocked(&self, target: UnitInstanceId) -> bool {
+        self.runtime_strike_scope.as_ref().and_then(|s| s.targets.get(&target))
+            .is_some_and(|p| p.barrier_blocked)
     }
     pub(super) fn strike_deflected(&self, target: UnitInstanceId) -> bool {
         self.runtime_strike_scope
@@ -1803,6 +1932,7 @@ impl BattleCore {
             add(causal.retained_extent())?;
         }
         add(self.sustained.retained_extent())?;
+        add(self.equipment_defense.retained_extent())?;
         crate::authoring::control::charge(
             self.independent_objects.entity_count() as u64,
             "independent_object_extent_scan",
@@ -1833,7 +1963,8 @@ impl BattleCore {
             .count()
             .checked_mul(super::types::BattleEquipmentSlots::retained_extent()))?;
         for unit in self.units.values() {
-            add(unit.independent_retained_extent())?;
+            add(unit.dynamic_profile_retained_extent())?;
+            if let Some(gain) = &unit.equipment_resonance_gain { add(gain.dynamic_retained_extent())?; }
             if let Some(use_state) = &unit.resonance_use {
                 add(Some(use_state.skill_id.as_str().len() + 64))?;
             }
@@ -1889,7 +2020,7 @@ impl BattleCore {
         add(self.event_queue.slot_extent())?;
         for queued in self.event_queue.iter_queued() {
             add(queued.fact_source.retained_extent())?;
-            add(Some(queued.event.payload_extent()))?;
+            add(queued.event.payload_extent())?;
             match queued.event.view().as_ref() {
                 BattleEvent::AttackResolve {
                     source_snapshot, ..
@@ -1903,7 +2034,12 @@ impl BattleCore {
         for buff in self.buffs.values() {
             add(buff.latest_application_source.retained_extent())?;
         }
+        add(super::basic_projectile_batch::batch_tree_extent(self.basic_projectile_batches.len()))?;
+        for batch in self.basic_projectile_batches.values() {
+            add(batch.retained_extent())?;
+        }
         for projectile in self.projectiles.values() {
+            if let Some(area) = &projectile.area { add(area.retained_extent())?; }
             if let Some(spatial) = &projectile.spatial {
                 add(spatial
                     .hit_unit_ids
@@ -1924,6 +2060,7 @@ impl BattleCore {
             add(area.effective_history_extent())?;
             add(area.emission_extent())?;
             add(area.ground_status.as_ref().map_or(Some(0), |g| g.retained_extent()))?;
+            add(Some(area.source_generation.as_ref().map_or(0, |g| std::mem::size_of_val(g.as_ref()) + g.semantic_sha256.capacity())))?;
         }
         for cast in self.active_skill_casts.values() {
             if let Some(flow) = &cast.flow {
@@ -1978,6 +2115,7 @@ impl BattleCore {
         // pointees survive a clone but are not copied by it. Visit only the
         // added carrier-owned fields with the same closed ownership rules.
         meter.scan_storage(self.units.len().checked_mul(12))?;
+        for unit in self.units.values() { unit.equipment_resonance_gain.visit_clone_shape(&mut meter)?; }
         meter.scan_storage(self.items.len().checked_mul(3))?;
         self.runtime_fact_source.visit_clone_shape(&mut meter)?;
         // BinaryHeap::clone copies live slots into a len-sized buffer; its
@@ -2002,7 +2140,9 @@ impl BattleCore {
             buff.latest_application_source
                 .visit_clone_shape(&mut meter)?;
         }
+        self.basic_projectile_batches.visit_clone_shape(&mut meter)?;
         for projectile in self.projectiles.values() {
+            projectile.area.visit_clone_shape(&mut meter)?;
             projectile.spatial.visit_clone_shape(&mut meter)?;
         }
         for source in self
@@ -2185,6 +2325,7 @@ impl BattleCore {
         protection: crate::game::battle::runtime_facts::ProtectionReceipt,
         admitted: AdmittedStrike,
         snapshot: &crate::game::battle::damage::DamageSourceSnapshot,
+        equipment_bonus_source: Option<RuntimeFactSource>,
         on_hit: &[crate::game::battle::cooldown::SourcedEffect],
         incoming: crate::game::battle::damage::DamageModifiers,
         hp_before: u32,
@@ -2216,6 +2357,7 @@ impl BattleCore {
             .on_attack_modifier_sources
             .len()
             .checked_add(support_count)
+            .and_then(|count| count.checked_add(usize::from(equipment_bonus_source.is_some())))
             .and_then(|count| count.checked_add(usize::from(snapshot.prepared_basic.is_some())))
             .and_then(|count| {
                 count.checked_add(
@@ -2245,8 +2387,8 @@ impl BattleCore {
                         .and_then(|e| n.checked_add(e))
                 });
         }
-        // Contributor sources have no authored payload and otherwise share the
-        // same bounded cast/action metadata. Count each owner conservatively.
+        // Ordinary OnAttack/OnHit contributors share bounded cast/action metadata.
+        // Rich authored contributors are additionally accounted below.
         let modifier_extent = modifier_source(result.attacker_id, None)
             .retained_extent()
             .and_then(|n| n.checked_mul(modifier_count.unwrap_or(0)));
@@ -2263,6 +2405,9 @@ impl BattleCore {
         }
         if let Some(prepared) = &snapshot.prepared_basic {
             extent = extent.and_then(|n| prepared.source.retained_extent().and_then(|s| n.checked_add(s)));
+        }
+        if let Some(bonus) = &equipment_bonus_source {
+            extent = extent.and_then(|n| bonus.retained_extent().and_then(|s| n.checked_add(s)));
         }
         extent = extent.and_then(|n| protection.retained_extent().and_then(|p| n.checked_add(p)));
         let extent = self.runtime_facts.reserve_fact_storage(extent)?;
@@ -2310,6 +2455,7 @@ impl BattleCore {
             }
         }
         if let Some(prepared) = &snapshot.prepared_basic { modifier_sources.push(prepared.source.clone()); }
+        if let Some(bonus) = equipment_bonus_source { modifier_sources.push(bonus); }
         let ordinal = self.runtime_facts.fact_ordinal()?;
         Ok((
             Arc::new(DamageFact {
@@ -2442,6 +2588,7 @@ impl BattleCore {
             snapshot: PredeathSnapshot {
                 victim,
                 owner: target.owner,
+                blocker: self.blocked_by(victim),
                 hp_before_lethal: target.stats.current_health,
                 position: Some(target.body.projected_tile()),
                 buffs,

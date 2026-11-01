@@ -1,0 +1,34 @@
+version: 2
+id: nearby-ally-damage-fixture
+values:
+  - name: nearby-allies
+    value:
+      AttackProgram:
+        reactions: []
+        nearby_ally_damage:
+          range: { include_anchor_tile: true, rows: ["XXXXX", "XXXXX", "XX@XX", "XXXXX", "XXXXX"] }
+          percent:
+            moment: Live
+            root:
+              Ratio:
+                numerator:
+                  Mul:
+                    value:
+                      Clamp:
+                        value:
+                          Aggregate:
+                            source: ResolvedTargets
+                            grouping: WholeSet
+                            reduction: Count
+                            outer_reduction: null
+                            member: { Const: { value: 0, unit: Scalar } }
+                        min: { Const: { value: 0, unit: Count } }
+                        max: { Const: { value: 3, unit: Count } }
+                    scalar: { Const: { value: 10, unit: Scalar } }
+                denominator: { Const: { value: 1, unit: Count } }
+                rounding: Floor
+equipment_attacks:
+  - equipment: r11_weapon
+    program: { Shared: nearby-allies }
+definitions: []
+skills: []

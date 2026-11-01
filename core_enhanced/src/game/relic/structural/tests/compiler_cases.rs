@@ -89,6 +89,7 @@ fn damage(id: &str, amount: i32, labels: &[&str]) -> AuthoredSkillEffect {
 }
 fn definition(rules: Vec<RelicRuleDef>) -> RelicDefinition {
     RelicDefinition {
+        provider_authored: false,
         id: "u09_relic".into(),
         uuid: Uuid::from_u128(9001),
         name: "U09 private compiler fixture".into(),

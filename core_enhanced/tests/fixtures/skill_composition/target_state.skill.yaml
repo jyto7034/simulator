@@ -1,0 +1,70 @@
+# E08-a test-only stats/duration. Production balance remains unresolved.
+version: 1
+id: target-state-fixture
+values:
+  - name: resolve
+    value:
+      Effects:
+        - id: sustain
+          op:
+            Sustained:
+              definition:
+                TargetState:
+                  duration_ms: 1500
+                  profile:
+                    definition: resolve
+                    attack_percent: 25
+                    defense_percent: 50
+                    attack_speed_points: 50
+                    hp_floor_one: true
+                    end_on_source_exit: true
+definitions:
+  - name: grant-state
+    parameters:
+      - name: recipient
+        value_type: Target
+      - name: effects
+        value_type: Effects
+    body:
+      Action:
+        id: grant
+        target:
+          Parameter: recipient
+        delivery:
+          Literal:
+            Delivery: Instant
+        effects:
+          - Append:
+              effects:
+                Parameter: effects
+        wait: Released
+skills:
+  - id: authored-target-state
+    name: 유한 자기 강화 검사
+    kind: Untargeted
+    cast_targeting:
+      Explicit:
+        selection: self
+        target: SelfUnit
+        reach: pattern
+        air_capable: true
+    prepare_ms: 0
+    focus_permissions:
+      allows_move: true
+      allows_basic_attack: true
+    admission:
+      capacity: 100
+      requirement: Full
+      cost: All
+    body:
+      Call:
+        id: strengthen
+        definition: grant-state
+        arguments:
+          - name: recipient
+            value:
+              Literal:
+                Target: SelfUnit
+          - name: effects
+            value:
+              Shared: resolve

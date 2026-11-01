@@ -73,19 +73,19 @@ pub(crate) fn serialized_size(
     result.map_err(|e| RelicPlanError::new(FaultCode::InvalidReference, e.to_string()))?;
     Ok(out.bytes)
 }
-/// Closed owned AST/DTO leaves only. A conservative serialized-storage bound
-/// also admits its fixed containers before cloning; native game owners are not
-/// measured through this helper.
-pub(crate) fn admit_serialized_copy(
-    value: &impl Serialize,
+pub(super) use super::storage::admit_owned_copy;
+// Mutation detaches only the selected candidate. Nested immutable Arc payloads
+// are still shared; completed-plan ownership measures every owning edge.
+pub(super) fn edit_effect<'a>(
+    effect: &'a mut super::SharedEffect,
     work: &mut Work,
-) -> Result<(), RelicPlanError> {
-    let bytes = serialized_size(value, work)?;
-    work.reserve(
-        bytes.checked_mul(size_of::<EffectiveProperty>()),
-        "relic_structural_owned_copy",
-    )
+) -> Result<&'a mut EffectiveEffect, RelicPlanError> {
+    if Arc::strong_count(effect) != 1 || Arc::weak_count(effect) != 0 {
+        super::storage::admit_shared_clone(effect.as_ref(), work)?;
+    }
+    Ok(Arc::make_mut(effect))
 }
+
 fn literal(property: RelicProperty, value: TypedRelicValue) -> EffectiveProperty {
     EffectiveProperty {
         property,
@@ -129,7 +129,7 @@ fn properties(
             if let PersonalShieldRecipientsDef::PlayerEmployeesAtRelease { radius_units } =
                 definition.recipients
             {
-                if definition.support.is_none() { p.push(literal(
+                if definition.support.as_ref().and_then(|s| s.range.as_ref()).is_none() { p.push(literal(
                     RelicProperty::SupportAreaRadius,
                     TypedRelicValue::DataUnits(i64::from(radius_units)),
                 )); }
@@ -139,7 +139,7 @@ fn properties(
         SkillEffectDef::Sustained {
             definition: SustainedEffectDef::ChannelAura { aura, .. },
         } => {
-            let mut p = if aura.support.is_none() { vec![literal(
+            let mut p = if aura.support.as_ref().and_then(|s| s.range.as_ref()).is_none() { vec![literal(
                 RelicProperty::SupportAreaRadius,
                 TypedRelicValue::DataUnits(i64::from(aura.radius_units)),
             )] } else { Vec::new() };
@@ -170,7 +170,7 @@ fn properties(
 }
 
 fn publication_effect_growth(
-    effects: &mut Vec<EffectiveEffect>,
+    effects: &mut Vec<super::SharedEffect>,
     work: &mut Work,
 ) -> Result<(), RelicPlanError> {
     if effects.len() == effects.capacity() {
@@ -182,7 +182,7 @@ fn publication_effect_growth(
         // Previous reservations still include the old buffer during growth.
         work.reserve(
             capacity
-                .checked_mul(size_of::<EffectiveEffect>())
+                .checked_mul(size_of::<super::SharedEffect>())
                 .and_then(|n| n.checked_add(64)),
             "relic_publication_effect_capacity",
         )?;
@@ -192,7 +192,7 @@ fn publication_effect_growth(
 }
 
 fn admit_publication_original_effect(
-    effects: &mut Vec<EffectiveEffect>,
+    effects: &mut Vec<super::SharedEffect>,
     skill: &crate::game::ability::SkillDef,
     step: &crate::game::ability::SkillStepDef,
     effect: &crate::game::ability::authoring::AuthoredSkillEffect,
@@ -220,7 +220,7 @@ fn admit_publication_original_effect(
         // The amount proof really constructs an owned compiled graph. Keep its
         // existing closed-expression upper bound; do not price the unrelated
         // whole authored effect as if it were cloned into EffectBody::Original.
-        admit_serialized_copy(expression, work)?;
+        admit_owned_copy(expression, work)?;
         text = text
             .checked_add(site_bytes)
             .and_then(|n| n.checked_add(skill.id.as_str().len()))
@@ -354,31 +354,38 @@ pub(super) fn amount_caps(
 ) -> Result<DeliveryCapabilities, RelicPlanError> {
     let mut caps =
         crate::game::value_expr::delivery_capabilities(skill.cast_selection(), target, delivery);
-    // The existing catalog's reinput deadline owner is a Goodbye skill reference.
-    // Retain that exact capability instead of permitting a deadline by fiat.
+    // Preserve deadline capabilities from declared reinput child references.
     for s in &data.skill_data.skills {
         for step in &s.steps {
-            work.charge(
-                step.effects
-                    .len()
-                    .checked_mul(
-                        skill
-                            .id
-                            .as_str()
-                            .len()
-                            .checked_add(1)
-                            .ok_or_else(overflow)?,
-                    )
-                    .ok_or_else(overflow)?,
-                "relic_structural_deadline_owner",
-            )?;
-            if step.effects.iter().any(|e| {
-                matches!(&e.op, SkillEffectDef::Sustained {
-                definition: SustainedEffectDef::BasicAttackOverlay { goodbye_skill: Some(id), .. }
-            } if id == &skill.id)
-            }) {
-                caps.deadline = true;
-                return Ok(caps);
+            work.charge(step.effects.len().checked_add(1).ok_or_else(overflow)?,
+                "relic_structural_deadline_owner")?;
+            for effect in &step.effects {
+                let mut owns_deadline = false;
+                if let SkillEffectDef::Sustained {
+                    definition: SustainedEffectDef::BasicAttackOverlay { goodbye_skill: Some(id), .. }
+                } = &effect.op {
+                    work.charge(skill.id.as_str().len().min(id.as_str().len()) + 1,
+                        "relic_structural_deadline_reference")?;
+                    owns_deadline = id == &skill.id;
+                }
+                if let SkillEffectDef::Sustained { definition: SustainedEffectDef::State { program, .. } } = &effect.op {
+                    // Published programs have a strict 256-operation bound. Charge
+                    // that bound before traversing nested conditional child refs.
+                    work.charge(crate::game::ability::state_program::MAX_STATE_OPERATIONS, "state_child_deadline_scan")?;
+                    let mut comparison = Ok(());
+                    program.visit_children(|id| {
+                        if comparison.is_ok() {
+                            comparison = work.charge(skill.id.as_str().len().min(id.as_str().len()) + 1,
+                                "relic_structural_deadline_reference");
+                            if comparison.is_ok() { owns_deadline |= id == &skill.id; }
+                        }
+                    });
+                    comparison?;
+                }
+                if owns_deadline {
+                    caps.deadline = true;
+                    return Ok(caps);
+                }
             }
         }
     }
@@ -419,7 +426,7 @@ fn validate_provider(
     data: &GameDataBase,
     work: &mut Work,
 ) -> Result<(), RelicPlanError> {
-    admit_serialized_copy(p, work)?;
+    admit_owned_copy(p, work)?;
     let valid = match p {
         ProspectiveProvider::Fragment(f) => {
             work.charge(
@@ -574,124 +581,291 @@ pub(crate) fn compile_effective_plan(
 pub(crate) fn compile_components(
     input: UnpublishedPlanInput<'_>,
 ) -> Result<Option<EffectivePlanComponents>, RelicPlanError> {
-    compile_components_with_basis(input, 0, false)
+    compile_components_with_basis(input, 0, false, None, None)
 }
 
-pub(super) fn compile_publication_components(
-    input: UnpublishedPlanInput<'_>,
-    retained_basis: usize,
-) -> Result<(), RelicPlanError> {
-    // Publication may use a nonsemantic fingerprint placeholder. Its proof
-    // graph is discarded here and cannot enter a runtime plan or public DTO.
-    compile_components_with_basis(input, retained_basis, true).map(|_| ())
+// This immutable base is independent of the relic loadout. It contains every
+// provider in the exact full context, with its original copy/form identities.
+// Only publication owns these caches; runtime compilers retain their contract.
+pub(super) struct PreparedProviders<'a> {
+    data: &'a GameDataBase,
+    providers: Arc<Vec<ProspectiveProvider>>,
+    effects: Vec<super::SharedEffect>,
+    execution: Vec<super::execution::EffectiveProviderPlan>,
+    storage: super::storage::PreparedStorage,
 }
 
-fn compile_components_with_basis(
-    input: UnpublishedPlanInput<'_>,
-    retained_basis: usize,
+#[cfg(test)]
+mod prepared_provider_tests {
+    use super::*;
+
+    #[test]
+    fn publication_prepared_loadout_rejects_other_inventory_employee_and_generation() {
+        let (data, old) = crate::game::battle::core::relic_structural_tests::prepared_plan();
+        let database = data.database();
+        let definition = database.relic_data.get_by_id("tb_native_relic").unwrap();
+        let inventory = crate::game::relic::RelicInventory::publication_input(old.employee_uuid,&[(definition,crate::game::relic::RelicVariant::Normal)],&database.relic_data).unwrap().unwrap();
+        let other_inventory = crate::game::relic::RelicInventory::publication_input(old.employee_uuid,&[(definition,crate::game::relic::RelicVariant::Normal)],&database.relic_data).unwrap().unwrap();
+        let other_database = crate::game::data::GameDataBuilder::from_validated(&data).build();
+        let (providers,basis)=PreparedProviders::new(database,&old.providers,0).unwrap();
+        let (loadout,reserved)=PreparedLoadout::new(database,&inventory,old.employee_uuid,basis).unwrap();
+        for mode in 0..3 {
+            let result=compile_components_with_basis(UnpublishedPlanInput{
+                data:if mode==0 {&other_database}else{database},
+                generation:data.identity(),
+                employee_uuid:if mode==1 {uuid::Uuid::from_u128(0xd279)}else{old.employee_uuid},
+                inventory:if mode==2 {&other_inventory}else{&inventory},
+                providers:&old.providers,
+            },basis+reserved,true,Some(&providers),Some(&loadout));
+            assert!(result.err().unwrap().to_string().contains("loadout input mismatch"));
+        }
+        compile_components_with_basis(UnpublishedPlanInput{data:database,generation:data.identity(),employee_uuid:old.employee_uuid,inventory:&inventory,providers:&old.providers},basis+reserved,true,Some(&providers),Some(&loadout)).unwrap().unwrap();
+    }
+
+    #[test]
+    fn publication_prepared_full_context_matches_fresh_and_keeps_cache_immutable() {
+        let (data, old) = crate::game::battle::core::relic_structural_tests::prepared_plan();
+        let database = data.database();
+        let definition = database.relic_data.get_by_id("tb_native_relic").unwrap();
+        let inventory = crate::game::relic::RelicInventory::publication_input(
+            old.employee_uuid,
+            &[(definition, crate::game::relic::RelicVariant::Normal)],
+            &database.relic_data,
+        )
+        .unwrap()
+        .unwrap();
+        let empty = crate::game::relic::RelicInventory::default();
+        let generation = data.identity();
+        let (prepared, basis) = PreparedProviders::new(database, &old.providers, 0).unwrap();
+        let original = serde_json::to_value((&prepared.providers, &prepared.effects)).unwrap();
+        for inventory in [&inventory, &empty, &inventory] {
+            let input = || UnpublishedPlanInput {
+                data: database,
+                generation,
+                employee_uuid: old.employee_uuid,
+                inventory,
+                providers: &old.providers,
+            };
+            let fresh = compile_components_with_basis(input(), basis, true, None, None).unwrap();
+            let (loadout, reserved) = PreparedLoadout::new(database, inventory, old.employee_uuid, basis).unwrap();
+            let reused = compile_components_with_basis(input(), basis + reserved, true, Some(&prepared), Some(&loadout)).unwrap();
+            assert_eq!(fresh.is_some(), reused.is_some());
+            if let (Some(a), Some(b)) = (fresh, reused) {
+                assert_eq!(
+                    serde_json::to_value((
+                        &a.providers,
+                        &a.effects,
+                        &a.grants,
+                        &a.rules,
+                        &a.action_modifiers
+                    ))
+                    .unwrap(),
+                    serde_json::to_value((
+                        &b.providers,
+                        &b.effects,
+                        &b.grants,
+                        &b.rules,
+                        &b.action_modifiers
+                    ))
+                    .unwrap()
+                );
+                // Cloning the prepared Vec removes spare capacity; semantic
+                // equivalence does not require identical allocation history.
+                assert!(b.retained_bytes <= a.retained_bytes);
+                for plan in [&a, &b] {
+                    let mut work = Work::new(u64::MAX);
+                    assert_eq!(
+                        plan.retained_bytes,
+                        super::super::storage::measure(plan, generation, &mut work).unwrap()
+                    );
+                }
+                assert_eq!(a.execution.len(), b.execution.len());
+                for (a, b) in a.execution.iter().zip(&b.execution) {
+                    assert_eq!(
+                        serde_json::to_value((&a.skill, &a.flow, &a.effects)).unwrap(),
+                        serde_json::to_value((&b.skill, &b.flow, &b.effects)).unwrap()
+                    );
+                    assert_eq!(a.amounts.len(), b.amounts.len());
+                    assert_eq!(
+                        format!("{:?}", a.amounts.states()),
+                        format!("{:?}", b.amounts.states())
+                    );
+                    for ((site_a, entry_a), (site_b, entry_b)) in
+                        a.amounts.entries().zip(b.amounts.entries())
+                    {
+                        assert_eq!(site_a, site_b);
+                        assert_eq!(entry_a.kind(), entry_b.kind());
+                        let mut left = entry_a.plan().as_ref().clone();
+                        let mut right = entry_b.plan().as_ref().clone();
+                        // Each compiler gives the amount compiler its actual
+                        // remaining work. That compile-only cap may differ.
+                        for plan in [&mut left, &mut right] {
+                            assert!(plan.cost().compile_work <= plan.limits.max_compile_work);
+                            assert!(
+                                plan.limits.max_compile_work
+                                    <= database.runtime_safety().expression().max_compile_work
+                            );
+                            plan.limits.max_compile_work = 0;
+                        }
+                        assert_eq!(format!("{left:?}"), format!("{right:?}"));
+                    }
+                    assert!(Arc::ptr_eq(
+                        &b.flow,
+                        &database
+                            .skill_data
+                            .compiled_flow(b.skill.id.as_str())
+                            .unwrap()
+                    ));
+                }
+            }
+            assert_eq!(
+                serde_json::to_value((&prepared.providers, &prepared.effects)).unwrap(),
+                original
+            );
+        }
+    }
+}
+impl<'a> PreparedProviders<'a> {
+    pub(super) fn providers(&self) -> &[ProspectiveProvider] {
+        &self.providers
+    }
+    pub(super) fn new(
+        data: &'a GameDataBase,
+        providers: &[ProspectiveProvider],
+        retained_basis: usize,
+    ) -> Result<(Self, usize), RelicPlanError> {
+        let mut work = Work::for_publication(
+            data.runtime_safety().expression().max_compile_work,
+            retained_basis,
+        );
+        let (providers, mut effects) = prepare_providers(data, providers, &mut work, true)?;
+        for shared in &mut effects {
+            let effect = edit_effect(shared, &mut work)?;
+            for property in &mut effect.properties {
+                if let PropertyBase::Literal(value) = property.base {
+                    property.final_value = Some(value);
+                }
+            }
+        }
+        // This is a private original-input lowering, not a relic proof or a
+        // published runtime plan. Whole-context rules still run for each set.
+        let baseline = EffectivePlanComponents {
+            employee_uuid: uuid::Uuid::nil(),
+            providers,
+            copies: Vec::new(),
+            effects,
+            grants: Vec::new(),
+            execution: Vec::new(),
+            causal_rules: Vec::new(),
+            wedge_rules: Vec::new(),
+            action_modifiers: Vec::new(),
+            rules: Vec::new(),
+            fingerprint: String::new(),
+            usage: CompileUsage {
+                work: 0,
+                reserved_bytes: 0,
+                candidate_count: 0,
+                binding_count: 0,
+            },
+            retained_bytes: 0,
+        };
+        let execution = super::execution::lower(&baseline, data, &mut work, None)?;
+        let storage = super::storage::PreparedStorage::new(&baseline.providers, &baseline.effects, &execution, &mut work)?;
+        Ok((
+            Self {
+                data,
+                providers: baseline.providers,
+                effects: baseline.effects,
+                execution,
+                storage,
+            },
+            work.reserved,
+        ))
+    }
+}
+fn prepare_providers(
+    data: &GameDataBase,
+    input_providers: &[ProspectiveProvider],
+    work: &mut Work,
     publication: bool,
-) -> Result<Option<EffectivePlanComponents>, RelicPlanError> {
-    if input.employee_uuid.is_nil() {
-        return Err(RelicPlanError::new(
-            FaultCode::InvalidReference,
-            "nil employee",
-        ));
-    }
-    let data = input.data;
-    let limit = data.runtime_safety().expression().max_compile_work;
-    let mut work = if publication {
-        Work::for_publication(limit, retained_basis)
-    } else {
-        Work::new(limit)
-    };
-    let slots = input.inventory.employee_slots(input.employee_uuid);
-    input
-        .inventory
-        .validate_employee_slots(&slots, &data.relic_data)
-        .map_err(RelicPlanError::control)?;
-    if publication {
-        work.reserve(
-            Some(4 * size_of::<(&super::super::OwnedRelic, &RelicDefinition)>() + 64),
-            "relic_publication_borrowed_copies",
-        )?;
-    }
-    let mut borrowed = Vec::new();
-    for id in slots.into_iter().flatten() {
-        let copy = input.inventory.get(id).ok_or_else(|| {
-            RelicPlanError::new(FaultCode::InvalidReference, "missing relic copy")
-        })?;
-        let definition = data
-            .relic_data
-            .get_by_id(&copy.definition_id)
-            .ok_or_else(|| {
-                RelicPlanError::new(FaultCode::InvalidReference, "missing relic definition")
-            })?;
-        borrowed.push((copy, definition));
-    }
-    // U08-only loadouts keep the existing numeric/original consumer path.
-    let mut structural = false;
-    for (copy, definition) in &borrowed {
-        structural |= !validation::rules_for(definition, copy.variant).is_empty()
-            || super::support::declares_conversion_for(data, &copy.definition_id, copy.variant)?
-            || super::action::declares(data, &copy.definition_id, copy.variant)?;
-    }
-    if !structural {
-        return Ok(None);
-    }
-    work.charge(9, "relic_structural_copy_order")?;
-    borrowed.sort_by_key(|(c, _)| c.copy_uuid);
-    for (c, d) in &borrowed {
-        validation::validate_rules(&d.id, validation::rules_for(d, c.variant))?;
-    }
+) -> Result<(Arc<Vec<ProspectiveProvider>>, Vec<super::SharedEffect>), RelicPlanError> {
     let mut providers = Vec::new();
     work.reserve(
-        input
-            .providers
+        input_providers
             .len()
             .checked_mul(size_of::<ProspectiveProvider>()),
         "relic_structural_providers",
     )?;
-    for p in input.providers {
-        validate_provider(p, data, &mut work)?;
+    for p in input_providers {
+        validate_provider(p, data, work)?;
         providers.push(p.clone());
     }
-    let mut provider_order = Vec::new();
-    for p in &providers {
-        let bytes = serialized_size(p, &mut work)?;
-        work.reserve(Some(bytes), "relic_structural_provider_order")?;
-        provider_order.push(
-            serde_json::to_string(p)
-                .map_err(|e| RelicPlanError::new(FaultCode::InvalidReference, e.to_string()))?,
-        );
-    }
-    let order_work = provider_order
-        .iter()
-        .try_fold(0usize, |n, s| n.checked_add(s.len()))
-        .and_then(|n| n.checked_mul(providers.len()))
-        .ok_or_else(overflow)?;
-    work.charge(order_work, "relic_structural_provider_order")?;
-    let mut ordered: Vec<_> = providers.into_iter().zip(provider_order).collect();
-    ordered.sort_by(|a, b| a.1.cmp(&b.1));
-    if ordered.windows(2).any(|w| w[0].1 == w[1].1) {
-        return Err(RelicPlanError::new(
-            FaultCode::InvalidReference,
-            "duplicate provider",
-        ));
-    }
-    let providers: Vec<_> = ordered.into_iter().map(|(p, _)| p).collect();
+    // A zero/one-provider vector is already canonical and cannot duplicate a
+    // provider. Avoid synthesizing JSON sort keys when there is no comparison.
+    let providers: Vec<_> = if providers.len() < 2 {
+        providers
+    } else {
+        work.reserve(
+            providers
+                .len()
+                .checked_mul(size_of::<String>() + size_of::<(ProspectiveProvider, String)>()),
+            "relic_structural_provider_order_storage",
+        )?;
+        let mut provider_order = Vec::with_capacity(providers.len());
+        for p in &providers {
+            let bytes = serialized_size(p, work)?;
+            work.reserve(Some(bytes), "relic_structural_provider_order")?;
+            provider_order
+                .push(serde_json::to_string(p).map_err(|e| {
+                    RelicPlanError::new(FaultCode::InvalidReference, e.to_string())
+                })?);
+        }
+        let mut ordered: Vec<_> = providers.into_iter().zip(provider_order).collect();
+        // Keep canonical JSON order AND order-independent usage in the DTO.
+        // This fixed insertion network performs the same finite comparisons
+        // for every permutation. Each comparison admits the longest key plus
+        // a possible swap before either operation; cancellation returns at once.
+        let comparison_work = ordered
+            .iter()
+            .map(|(_, key)| key.len())
+            .max()
+            .unwrap_or(0)
+            .checked_add(2)
+            .ok_or_else(overflow)?;
+        for index in 1..ordered.len() {
+            for at in (1..=index).rev() {
+                work.charge(comparison_work, "relic_structural_provider_order")?;
+                if ordered[at - 1].1 > ordered[at].1 {
+                    ordered.swap(at - 1, at);
+                }
+            }
+        }
+        for pair in ordered.windows(2) {
+            work.charge(
+                pair[0].1.len().min(pair[1].1.len()) + 1,
+                "relic_structural_provider_duplicate",
+            )?;
+            if pair[0].1 == pair[1].1 {
+                return Err(RelicPlanError::new(
+                    FaultCode::InvalidReference,
+                    "duplicate provider",
+                ));
+            }
+        }
+        ordered.into_iter().map(|(p, _)| p).collect()
+    };
     let mut effects = Vec::new();
     for (pi, p) in providers.iter().enumerate() {
         let skill = data.skill_data.get_by_id(p.skill_id()).unwrap();
         for (si, step) in skill.steps.iter().enumerate() {
-            admit_serialized_copy(&step.delivery, &mut work)?;
+            admit_owned_copy(&step.delivery, work)?;
             let delivery = Arc::new(step.delivery.clone());
-            let amount_capabilities =
-                amount_caps(data, skill, &step.target, &step.delivery, &mut work)?;
+            let amount_capabilities = amount_caps(data, skill, &step.target, &step.delivery, work)?;
             for (ei, e) in step.effects.iter().enumerate() {
                 if publication {
-                    admit_publication_original_effect(&mut effects, skill, step, e, &mut work)?;
+                    admit_publication_original_effect(&mut effects, skill, step, e, work)?;
                 } else {
-                    admit_serialized_copy(e, &mut work)?;
+                    admit_owned_copy(e, work)?;
                 }
                 let site = validation::effect_site(&skill.id, &step.id, &e.id);
                 let (operation, mut properties) = properties(&e.op, &step.delivery);
@@ -702,11 +876,12 @@ fn compile_components_with_basis(
                         operation == EffectOperation::PersonalShieldGrant,
                         data,
                         amount_capabilities,
-                        &mut work,
+                        work,
                     )?;
                     resolve_static_amount(&e.op, &mut properties, value)?;
                 }
-                effects.push(EffectiveEffect {
+                work.reserve(Some(size_of::<EffectiveEffect>() + 64), "effective_effect_owner")?;
+                effects.push(Arc::new(EffectiveEffect {
                     key: EffectiveEffectKey::Original { site: site.clone() },
                     provider: pi,
                     anchor: site.action,
@@ -725,13 +900,165 @@ fn compile_components_with_basis(
                     amount: None,
                     original: true,
                     present: true,
-                });
+                }));
             }
         }
     }
+    work.reserve(Some(size_of::<Vec<ProspectiveProvider>>() + 64), "effective_provider_identity_owner")?;
+    Ok((Arc::new(providers), effects))
+}
+
+// Only catalog publication shares this borrowed proof. The entire immutable
+// inventory, employee and generation remain its identity; each provider context
+// still resolves all conditions, grants, numeric edits and action changes.
+pub(super) struct PreparedLoadout<'a> {
+    data: &'a GameDataBase,
+    inventory: &'a crate::game::relic::RelicInventory,
+    employee: uuid::Uuid,
+    copies: Vec<(&'a crate::game::relic::OwnedRelic, &'a RelicDefinition)>,
+    structural: bool,
+}
+impl<'a> PreparedLoadout<'a> {
+    pub(super) fn new(
+        data: &'a GameDataBase,
+        inventory: &'a crate::game::relic::RelicInventory,
+        employee: uuid::Uuid,
+        retained_basis: usize,
+    ) -> Result<(Self, usize), RelicPlanError> {
+        let mut work = Work::for_publication(
+            data.runtime_safety().expression().max_compile_work,
+            retained_basis,
+        );
+        let result = prepare_loadout(data, inventory, employee, &mut work, true)?;
+        Ok((result, work.reserved))
+    }
+}
+fn prepare_loadout<'a>(
+    data: &'a GameDataBase,
+    inventory: &'a crate::game::relic::RelicInventory,
+    employee: uuid::Uuid,
+    work: &mut Work,
+    publication: bool,
+) -> Result<PreparedLoadout<'a>, RelicPlanError> {
+    let slots = inventory.employee_slots(employee);
+    inventory
+        .validate_employee_slots(&slots, &data.relic_data)
+        .map_err(RelicPlanError::control)?;
+    if publication {
+        work.reserve(
+            Some(4 * size_of::<(&super::super::OwnedRelic, &RelicDefinition)>() + 64),
+            "relic_publication_borrowed_copies",
+        )?;
+    }
+    let mut borrowed = Vec::new();
+    for id in slots.into_iter().flatten() {
+        let copy = inventory.get(id).ok_or_else(|| {
+            RelicPlanError::new(FaultCode::InvalidReference, "missing relic copy")
+        })?;
+        let definition = data
+            .relic_data
+            .get_by_id(&copy.definition_id)
+            .ok_or_else(|| {
+                RelicPlanError::new(FaultCode::InvalidReference, "missing relic definition")
+            })?;
+        borrowed.push((copy, definition));
+    }
+    // U08-only loadouts keep the existing numeric/original consumer path.
+    let mut structural = false;
+    for (copy, definition) in &borrowed {
+        structural |= !validation::rules_for(definition, copy.variant).is_empty()
+            || super::support::declares_conversion_for(data, &copy.definition_id, copy.variant)?
+            || super::action::declares(data, &copy.definition_id, copy.variant)?;
+    }
+    if structural {
+        work.charge(9, "relic_structural_copy_order")?;
+        borrowed.sort_by_key(|(c, _)| c.copy_uuid);
+        for (c, d) in &borrowed {
+            validation::validate_rules(&d.id, validation::rules_for(d, c.variant))?;
+        }
+    }
+    Ok(PreparedLoadout {
+        data,
+        inventory,
+        employee,
+        copies: borrowed,
+        structural,
+    })
+}
+
+pub(super) fn compile_publication_components(
+    input: UnpublishedPlanInput<'_>,
+    retained_basis: usize,
+    prepared: &PreparedProviders<'_>,
+    loadout: &PreparedLoadout<'_>,
+) -> Result<(), RelicPlanError> {
+    // Publication may use a nonsemantic fingerprint placeholder. Its proof
+    // graph is discarded here and cannot enter a runtime plan or public DTO.
+    compile_components_with_basis(input, retained_basis, true, Some(prepared), Some(loadout)).map(|_| ())
+}
+
+fn compile_components_with_basis(
+    input: UnpublishedPlanInput<'_>,
+    retained_basis: usize,
+    publication: bool,
+    prepared: Option<&PreparedProviders<'_>>,
+    prepared_loadout: Option<&PreparedLoadout<'_>>,
+) -> Result<Option<EffectivePlanComponents>, RelicPlanError> {
+    if input.employee_uuid.is_nil() {
+        return Err(RelicPlanError::new(
+            FaultCode::InvalidReference,
+            "nil employee",
+        ));
+    }
+    let data = input.data;
+    let limit = data.runtime_safety().expression().max_compile_work;
+    let mut work = if publication {
+        Work::for_publication(limit, retained_basis)
+    } else {
+        Work::new(limit)
+    };
+    let local_loadout;
+    let loadout = if let Some(prepared) = prepared_loadout {
+        work.charge(1, "publication_prepared_loadout_check")?;
+        if !std::ptr::eq(prepared.data, data)
+            || !std::ptr::eq(prepared.inventory, input.inventory)
+            || prepared.employee != input.employee_uuid {
+            return Err(RelicPlanError::new(FaultCode::InvalidReference, "publication loadout input mismatch"));
+        }
+        prepared
+    } else {
+        local_loadout = prepare_loadout(data, input.inventory, input.employee_uuid, &mut work, publication)?;
+        &local_loadout
+    };
+    if !loadout.structural { return Ok(None); }
+    let borrowed = &loadout.copies;
+    let (providers, mut effects) = if let Some(prepared) = prepared {
+        work.charge(1, "publication_prepared_context_check")?;
+        if !std::ptr::eq(prepared.data, data) {
+            return Err(RelicPlanError::new(
+                FaultCode::InvalidReference,
+                "publication provider generation mismatch",
+            ));
+        }
+        if !std::ptr::eq(input.providers, prepared.providers.as_slice()) {
+            let bytes = serialized_size(&input.providers, &mut work)?;
+            work.charge(bytes, "publication_prepared_context_check")?;
+            if input.providers != prepared.providers.as_slice() {
+                return Err(RelicPlanError::new(
+                    FaultCode::InvalidReference,
+                    "publication provider context mismatch",
+                ));
+            }
+        }
+        super::storage::admit_shared_clone(&prepared.providers, &mut work)?;
+        super::storage::admit_shared_clone(&prepared.effects, &mut work)?;
+        (prepared.providers.clone(), prepared.effects.clone())
+    } else {
+        prepare_providers(data, input.providers, &mut work, publication)?
+    };
     let conversion_rules = super::support::apply_conversions(data, &borrowed, &mut effects, &mut work)?;
     let mut bindings = Vec::new();
-    for (copy, d) in &borrowed {
+    for (copy, d) in borrowed {
         for rule in validation::rules_for(d, copy.variant) {
             let contribution = PlanContribution {
                 copy_uuid: copy.copy_uuid,
@@ -839,7 +1166,7 @@ fn compile_components_with_basis(
     }
     let candidate_count = effects.len();
     // Non-grant bindings use the fixed universe, including dormant generated sites.
-    for (copy, d) in &borrowed {
+    for (copy, d) in borrowed {
         for rule in validation::rules_for(d, copy.variant) {
             if matches!(
                 rule.apply,
@@ -884,7 +1211,7 @@ fn compile_components_with_basis(
             },
         ) = (b.target, &b.rule.apply)
         {
-            let e = &mut effects[target];
+            let e = edit_effect(&mut effects[target], &mut work)?;
             let descriptor = capabilities::descriptor(e.operation, *property)
                 .ok_or_else(|| unsupported("operation/property unsupported"))?;
             let p = e
@@ -900,7 +1227,7 @@ fn compile_components_with_basis(
             p.program
                 .include(*operation, descriptor)
                 .map_err(|err| err.at(&b.contribution.definition_id, &b.rule.id, "apply.Edit"))?;
-            admit_serialized_copy(&b.contribution, &mut work)?;
+            admit_owned_copy(&b.contribution, &mut work)?;
             p.contributions.push(b.contribution.clone());
         }
     }
@@ -934,7 +1261,7 @@ fn compile_components_with_basis(
                 e.amount_capabilities,
                 &mut work,
             )?;
-            let p = e
+            let p = edit_effect(e, &mut work)?
                 .properties
                 .iter_mut()
                 .find(|p| p.property == RelicProperty::PersonalShieldInitialAmount)
@@ -946,11 +1273,17 @@ fn compile_components_with_basis(
                 None => PropertyBase::RuntimeExpression,
             };
         }
-        for p in &mut e.properties {
+        for index in 0..e.properties.len() {
+            let p = &e.properties[index];
             let d = capabilities::descriptor(e.operation, p.property)
                 .ok_or_else(|| unsupported("property descriptor missing"))?;
             match p.base {
-                PropertyBase::Literal(v) => p.final_value = Some(p.program.apply(v, d)?),
+                PropertyBase::Literal(v) => {
+                    let value = Some(p.program.apply(v, d)?);
+                    if p.final_value != value {
+                        edit_effect(e, &mut work)?.properties[index].final_value = value;
+                    }
+                }
                 PropertyBase::RuntimeExpression => p.program.validate_dynamic(d)?,
                 PropertyBase::Structural => {}
             }
@@ -976,7 +1309,7 @@ fn compile_components_with_basis(
         }
     }
     let mut rules = conversion_rules;
-    for (copy, d) in &borrowed {
+    for (copy, d) in borrowed {
         for rule in validation::rules_for(d, copy.variant) {
             let mut targets = Vec::new();
             let mut matched = false;
@@ -1042,9 +1375,9 @@ fn compile_components_with_basis(
     let mut grants = Vec::new();
     for binding in bindings.iter().filter(|binding| binding.active) {
         if let RelicRuleActionDef::Grant(body) = &binding.rule.apply {
-            admit_serialized_copy(body, &mut work)?;
-            admit_serialized_copy(&binding.contribution, &mut work)?;
-            admit_serialized_copy(&binding.anchor, &mut work)?;
+            admit_owned_copy(body, &mut work)?;
+            admit_owned_copy(&binding.contribution, &mut work)?;
+            admit_owned_copy(&binding.anchor, &mut work)?;
             work.reserve(
                 Some(size_of::<super::EffectiveGrant>()),
                 "relic_structural_grant_owner",
@@ -1060,7 +1393,7 @@ fn compile_components_with_basis(
     let binding_count = bindings.len();
     let mut causal_rules = Vec::new();
     let mut wedge_rules = Vec::new();
-    for (copy, definition) in &borrowed {
+    for (copy, definition) in borrowed {
         for rule in validation::rules_for(definition, copy.variant) {
             let contribution = PlanContribution {
                 copy_uuid: copy.copy_uuid,
@@ -1093,7 +1426,7 @@ fn compile_components_with_basis(
                             _ => None,
                         })
                         .collect::<Vec<_>>();
-                    admit_serialized_copy(&sites, &mut work)?;
+                    admit_owned_copy(&sites, &mut work)?;
                     work.reserve(
                         Some(size_of::<super::causal::EffectiveWedgeRule>()),
                         "wedge_rule_owner",
@@ -1133,11 +1466,11 @@ fn compile_components_with_basis(
     };
     super::action::resolve(&mut plan,data,&mut work)?;
     if publication {
-        // Keep the final runtime fingerprint's owned 64-byte extent in this
-        // proof's storage bound, without encoding/hashing a discarded document.
+        // The proof never exposes a fingerprint. Reserve the runtime digest's
+        // full owned capacity without filling a discarded placeholder string.
+        // Completed storage measures capacity, including its allocation owner.
         work.reserve(Some(64 + 64), "relic_publication_fingerprint")?;
-        work.charge(64, "relic_publication_fingerprint")?;
-        plan.fingerprint = "0".repeat(64);
+        plan.fingerprint = String::with_capacity(64);
     } else {
         #[derive(Serialize)]
         struct Fingerprint<'a> {
@@ -1165,7 +1498,7 @@ fn compile_components_with_basis(
                 .ok_or_else(overflow)?,
             "relic_structural_fingerprint_order",
         )?;
-        let mut selected: Vec<_> = plan.effects.iter().filter(|e| e.present).collect();
+        let mut selected: Vec<_> = plan.effects.iter().filter(|e| e.present).map(AsRef::as_ref).collect();
         selected.sort_by(|a, b| (a.provider, &a.key).cmp(&(b.provider, &b.key)));
         let fingerprint = Fingerprint {
             generation: input.generation,
@@ -1187,8 +1520,29 @@ fn compile_components_with_basis(
         work.charge(bytes.div_ceil(32), "relic_structural_fingerprint_hash")?;
         plan.fingerprint = format!("{:x}", Sha256::digest(&encoded));
     }
-    plan.execution = super::execution::lower(&plan, data, &mut work)?;
-    plan.retained_bytes = super::storage::measure(&plan, input.generation, &mut work)?;
+    plan.execution = super::execution::lower(
+        &plan,
+        data,
+        &mut work,
+        prepared.map(|p| (p.effects.as_slice(), p.execution.as_slice())),
+    )?;
+    plan.retained_bytes = if let Some(prepared) = prepared {
+        prepared.storage.measure(&plan, input.generation, &mut work, &prepared.providers, &prepared.effects, &prepared.execution)?
+    } else {
+        super::storage::measure(&plan, input.generation, &mut work)?
+    };
+    // Allocation admission counts Arc cloning as a handle operation. Validate
+    // the complete conservative owner extent as well, without inventing a
+    // second allocation; actual runtime ownership is admitted at publication.
+    let completed_extent = retained_basis
+        .checked_add(plan.retained_bytes)
+        .ok_or_else(overflow)?;
+    crate::game::battle::runtime_control::admit_retained_growth(
+        completed_extent,
+        Some(completed_extent),
+        "relic_structural_completed_extent",
+    )
+    .map_err(RelicPlanError::control)?;
     plan.usage.work = work.work;
     plan.usage.reserved_bytes = work.reserved;
     crate::authoring::control::poll("relic_structural_plan_complete")
@@ -1196,7 +1550,7 @@ fn compile_components_with_basis(
     Ok(Some(plan))
 }
 fn add_granted(
-    nodes: &mut Vec<EffectiveEffect>,
+    nodes: &mut Vec<super::SharedEffect>,
     indices: &mut Vec<usize>,
     e: &GrantedEffectDef,
     provider: usize,
@@ -1211,8 +1565,8 @@ fn add_granted(
     work: &mut Work,
     publication: bool,
 ) -> Result<(), RelicPlanError> {
-    admit_serialized_copy(e, work)?;
-    admit_serialized_copy(delivery, work)?;
+    admit_owned_copy(e, work)?;
+    admit_owned_copy(delivery, work)?;
     let op = primitive(&e.op);
     validate_grant_carrier(&op, target, cast_selection, delivery)?;
     let (operation, mut properties) = properties(&op, delivery);
@@ -1243,14 +1597,14 @@ fn add_granted(
         ));
     }
     work.reserve(
-        Some(size_of::<EffectiveEffect>()),
+        Some(size_of::<EffectiveEffect>() + 64),
         "relic_structural_candidate",
     )?;
     if publication {
         publication_effect_growth(nodes, work)?;
     }
     indices.push(nodes.len());
-    nodes.push(EffectiveEffect {
+    nodes.push(Arc::new(EffectiveEffect {
         key,
         provider,
         anchor: anchor.clone(),
@@ -1265,7 +1619,7 @@ fn add_granted(
         amount: None,
         original: false,
         present: false,
-    });
+    }));
     Ok(())
 }
 impl EffectiveEffect {
@@ -1278,8 +1632,9 @@ impl EffectiveEffect {
         c: &PlanContribution,
         work: &mut Work,
     ) -> Result<(), RelicPlanError> {
-        admit_serialized_copy(r, work)?;
+        admit_owned_copy(r, work)?;
         let kind = |r: &StructuralRecipeDef| match r {
+            StructuralRecipeDef::ChannelHealthUpkeep { .. } => 5,
             StructuralRecipeDef::SupportSelectionPattern { .. } => 4,
             StructuralRecipeDef::DamageFootprint { .. } => 0,
             StructuralRecipeDef::FixedRecipientSupport => 1,
@@ -1295,6 +1650,12 @@ impl EffectiveEffect {
             }
         } else {
             match r {
+                StructuralRecipeDef::ChannelHealthUpkeep { policy } => {
+                    if self.operation != EffectOperation::ChannelAura {
+                        return Err(unsupported("HP upkeep requires ChannelAura"));
+                    }
+                    policy.validate().map_err(|e| unsupported(&e))?;
+                }
                 StructuralRecipeDef::SupportSelectionPattern { .. } => {
                     if !matches!(self.operation, EffectOperation::PersonalShieldGrant | EffectOperation::ChannelAura) {
                         return Err(unsupported("support selection pattern requires a support effect"));
@@ -1361,7 +1722,7 @@ impl EffectiveEffect {
             }
             self.recipes.push(r.clone());
         }
-        admit_serialized_copy(c, work)?;
+        admit_owned_copy(c, work)?;
         self.recipe_contributions.push(c.clone());
         Ok(())
     }
@@ -1369,7 +1730,7 @@ impl EffectiveEffect {
 fn normalize_legacy(
     borrowed: &[(&super::super::OwnedRelic, &RelicDefinition)],
     providers: &[ProspectiveProvider],
-    nodes: &mut [EffectiveEffect],
+    nodes: &mut [super::SharedEffect],
     data: &GameDataBase,
     work: &mut Work,
 ) -> Result<(), RelicPlanError> {
@@ -1384,25 +1745,11 @@ fn normalize_legacy(
             if legacy.selector.target == RelicDamageTarget::BasicAttackDamage {
                 continue;
             }
-            admit_serialized_copy(legacy, work)?;
-            let selector = StructuralSelectorDef {
-                provider: ProviderPredicateDef {
-                    equipment_id: legacy.selector.equipment_id.clone(),
-                    fragment_id: legacy.selector.fragment_id.clone(),
-                    form_id: legacy.selector.form_id.clone(),
-                },
-                effect: EffectPredicateDef {
-                    all_tags: legacy.selector.all_tags.clone(),
-                    op: Some(EffectOperation::Damage),
-                    has_property: None,
-                },
-            };
-            admit_serialized_copy(&selector, work)?;
             for n in nodes
                 .iter_mut()
                 .filter(|n| n.present && n.operation == EffectOperation::Damage)
             {
-                if !super::closure::matches(&selector, n, providers, true, work)? {
+                if !super::closure::legacy_matches(&legacy.selector, n, providers, work)? {
                     continue;
                 }
                 let damage_type = match &n.body {
@@ -1431,7 +1778,7 @@ fn normalize_legacy(
                 {
                     continue;
                 }
-                let p = n
+                let p = edit_effect(n, work)?
                     .properties
                     .iter_mut()
                     .find(|p| p.property == RelicProperty::DamageAmount)

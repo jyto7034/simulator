@@ -23,6 +23,8 @@ use crate::game::{
 
 #[derive(Debug, Clone)]
 pub(super) struct ProjectileLaunch {
+    pub(super) area: Option<std::sync::Arc<super::basic_projectile_area::BasicProjectileArea>>,
+    pub(super) batch_id: Option<Uuid>,
     pub(super) spatial: Option<super::types::BasicSpatialProjectile>,
     pub(super) fired_at_ms: u64,
     pub(super) attacker_instance_id: UnitInstanceId,
@@ -92,6 +94,8 @@ impl BattleCore {
         self.projectiles.insert(
             projectile_id,
             ProjectileRecord {
+                area: launch.area,
+                batch_id: launch.batch_id,
                 spatial: launch.spatial,
                 fired_at_ms: launch.fired_at_ms,
                 last_reevaluation_ms: launch.fired_at_ms,
@@ -135,25 +139,28 @@ impl BattleCore {
     }
 
     pub(super) fn advance_basic_attack_projectile(&mut self, time_ms: u64, projectile_id: Uuid) {
-        let Some(source) = self
+        let Some((source, batch_id)) = self
             .projectiles
             .get(&projectile_id)
-            .map(|projectile| projectile.source_snapshot.fact_source.clone())
+            .map(|projectile| (projectile.source_snapshot.fact_source.clone(), projectile.batch_id))
         else {
             return;
         };
         let ticket = source.delivery.clone();
         let prior = std::mem::replace(&mut self.runtime_fact_source, source);
-        self.advance_basic_attack_projectile_inner(time_ms, projectile_id);
-        self.runtime_fact_source = prior;
+        let mut settlement = (0, time_ms);
+        self.advance_basic_attack_projectile_inner(time_ms, projectile_id, &mut settlement);
         if !self.projectiles.contains_key(&projectile_id) {
-            if let Some(ticket) = ticket {
+            if let Some(batch_id) = batch_id {
+                let _ = self.settle_basic_projectile_member(batch_id, settlement.0, settlement.1);
+            } else if let Some(ticket) = ticket {
                 let _ = self.runtime_facts.close_delivery(&ticket, time_ms);
             }
         }
+        self.runtime_fact_source = prior;
     }
 
-    fn advance_basic_attack_projectile_inner(&mut self, time_ms: u64, projectile_id: Uuid) {
+    fn advance_basic_attack_projectile_inner(&mut self, time_ms: u64, projectile_id: Uuid, settlement: &mut (u64, u64)) {
         let Some(mut projectile) = self.projectiles.remove(&projectile_id) else {
             return;
         };
@@ -165,6 +172,7 @@ impl BattleCore {
                     .saturating_add(projectile.max_travel_ms),
             )
             .max(projectile.fired_at_ms);
+        settlement.1 = reevaluation_time_ms;
 
         if reevaluation_time_ms <= projectile.last_reevaluation_ms
             && projectile.max_travel_ms > 0
@@ -269,16 +277,24 @@ impl BattleCore {
             else {
                 return;
             };
-            let actual = self.apply_basic_attack_projectile_hit_at(
+            let actual = if let Some(area) = &projectile.area {
+                self.resolve_basic_projectile_area(&projectile, area, impact.time_ms, projectile_id, impact.id, snapshot, impact.position).unwrap_or(0)
+            } else {
+                let mut snapshot = snapshot;
+                Self::scale_magazine_collision(&mut snapshot, true);
+                self.apply_basic_attack_projectile_hit_at(
                 impact.time_ms,
                 projectile_id,
                 projectile.attacker_instance_id,
                 impact.id,
                 snapshot,
                 impact.position,
-            );
-            let _ =
-                self.finish_basic_lifesteal(&projectile.source_snapshot, actual, impact.time_ms);
+                aim - projectile.current_position,
+            ) };
+            *settlement = (actual, impact.time_ms);
+            if projectile.batch_id.is_none() {
+                let _ = self.finish_basic_lifesteal(&projectile.source_snapshot, actual, impact.time_ms);
+            }
             return;
         }
 
@@ -342,6 +358,7 @@ impl BattleCore {
         target_instance_id: UnitInstanceId,
         source_snapshot: DamageSourceSnapshot,
         impact_position: WorldVec2,
+        direction: WorldVec2,
     ) -> u64 {
         {
             let Some(target) = self.units.get(&target_instance_id) else {
@@ -379,6 +396,7 @@ impl BattleCore {
             },
         );
 
+        let Ok(stage_hit) = self.prepare_weapon_stage_hit(&source_snapshot) else { return 0; };
         let summary = self.execute_committed_damage(CommittedDamageInput {
             target_id: target_instance_id,
             source_snapshot,
@@ -388,6 +406,12 @@ impl BattleCore {
                 occurrence_time_ms: time_ms,
             },
         });
+
+        if let (Some(plan), Some(summary)) = (stage_hit, summary) {
+            if self.resolve_weapon_stage_hit(plan, target_instance_id, direction, time_ms, summary).is_err() {
+                return 0;
+            }
+        }
 
         self.schedule_pending_autocasts(time_ms);
         summary.map_or(0, |s| s.actual_hp_loss)
@@ -476,9 +500,10 @@ impl BattleCore {
                 return;
             }
             spatial.hit_unit_ids.push(impact.id);
-            let Ok(snapshot) = controlled_clone(&projectile.source_snapshot) else {
+            let Ok(mut snapshot) = controlled_clone(&projectile.source_snapshot) else {
                 return;
             };
+            Self::scale_magazine_collision(&mut snapshot, spatial.hit_unit_ids.len() == 1);
             let actual = self.apply_basic_attack_projectile_hit_at(
                 impact.time_ms,
                 id,
@@ -486,6 +511,7 @@ impl BattleCore {
                 impact.id,
                 snapshot,
                 impact.position,
+                projectile.aim - projectile.start,
             );
             if Self::add_basic_hp_loss(&mut spatial.actual_hp_loss, actual).is_err() {
                 return;

@@ -1,0 +1,443 @@
+{
+  "purpose": "Explicit technical acceptance values; not production balance or a chosen heal-buff policy.",
+  "values": {
+    "capacity": 100,
+    "base-selection-0": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "base-range-50fa6c2c-ae98-4967-bca0-ad234bfde6ff": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "base-amount-b4ff19ee-f102-414d-96ce-8a843936240e": 10,
+    "base-amount-44de2ef6-4f40-45eb-bb9a-9ae37c81d6d7": 8,
+    "base-selection-1": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "base-range-65e80341-5ec4-45ae-8f4a-026013fe8dfe": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "base-range-c61ced02-727c-43c8-9800-462addc738f9": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "base-range-21b9cca2-3986-45ea-b058-832bfcfaee12": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "base-pull-63d66ce6-eda9-46d3-888c-da0142acb540": 500000,
+    "base-amount-5fbb7bda-4098-4e46-a505-ecd2aa3a3e64": 8,
+    "base-count-percent-5fbb7bda-4098-4e46-a505-ecd2aa3a3e64": {
+      "denominator": 1,
+      "numerator": 25
+    },
+    "base-range-a923ccdd-a2a8-4a76-a987-513a75fd759e": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "base-pull-e9e51bf7-3c11-42ee-ae96-14c283d8bc59": 500000,
+    "base-amount-9f281730-34d0-4ac6-98e0-e4f16ae8865f": 10,
+    "base-hysteric-beam-duration-ms": 1000,
+    "base-range-9abb4686-a5c7-4c20-ae32-22f93533f699": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "base-amount-e3bbc3d0-a3b5-4fc0-952d-e1ffc7e55981": 10,
+    "base-widened-c61ced02-727c-43c8-9800-462addc738f9": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "base-widened-50fa6c2c-ae98-4967-bca0-ad234bfde6ff": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "healing-increase-percent": {
+      "denominator": 1,
+      "numerator": 25
+    },
+    "base-widened-a923ccdd-a2a8-4a76-a987-513a75fd759e": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "base-widened-9abb4686-a5c7-4c20-ae32-22f93533f699": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "base-widened-65e80341-5ec4-45ae-8f4a-026013fe8dfe": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "heal-buff-duration-ms": 300,
+    "base-heal-buff-profile": {
+      "active_skill_locked": false,
+      "attack_percent": 10,
+      "attack_speed_points": 0,
+      "basic_attack_locked": false,
+      "damage_invulnerable": false,
+      "defense_percent": 0,
+      "definition": "f3addd70-c95e-4416-890a-bf01d48529b0:3f2bf22d-4d5a-4eec-8ed9-41321662a32c",
+      "end_on_source_exit": false,
+      "hp_floor_one": false,
+      "received_heal_percent": 0
+    },
+    "base-widened-21b9cca2-3986-45ea-b058-832bfcfaee12": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "cooldown-reduction-percent": {
+      "denominator": 1,
+      "numerator": 20
+    },
+    "bloom-selection-0": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "bloom-range-477909a4-b476-4d5a-a15d-a024cf9879ef": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "bloom-range-978f2fda-e4b6-40c3-9071-6d7f5a309d52": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "bloom-range-989189c3-5c9e-417f-bacf-cda15cb96ee7": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "bloom-range-27806d66-67d3-41f6-b443-a42a676978fa": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "bloom-range-0937fd6c-742e-48d8-840d-4fd1654934d5": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "bloom-range-7643ea89-d010-4325-baa6-d4fe63598782": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "bloom-pull-5931650d-5e24-4b23-8e34-1afff335a391": 500000,
+    "bloom-amount-462799a5-6d71-4d10-9ce7-5956ba696ed2": 8,
+    "bloom-count-percent-462799a5-6d71-4d10-9ce7-5956ba696ed2": {
+      "denominator": 1,
+      "numerator": 25
+    },
+    "bloom-range-84e253cf-e1ad-44ef-ad5b-a36bbd11b824": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "bloom-amount-6cd4e3ba-fcfe-4f87-8f7a-be42ba4b9ce7": 10,
+    "bloom-count-percent-6cd4e3ba-fcfe-4f87-8f7a-be42ba4b9ce7": {
+      "denominator": 1,
+      "numerator": 25
+    },
+    "bloom-amount-9559c5c7-9028-4462-9b3c-b189899dc981": 8,
+    "bloom-count-percent-9559c5c7-9028-4462-9b3c-b189899dc981": {
+      "denominator": 1,
+      "numerator": 25
+    },
+    "bloom-selection-1": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "bloom-range-cfabac4b-6a7c-4772-817f-47168e862236": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "bloom-amount-c16e789b-01f9-49c4-a7de-ec46a5e2a771": 10,
+    "bloom-amount-281ec176-4610-478d-8f5c-b38a37d7d0e2": 8,
+    "bloom-range-92d46026-5fc8-4732-8b24-3a15ca6734f4": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "bloom-pull-2e4927aa-0db0-4b82-a49f-8ebe75d3d197": 500000,
+    "bloom-amount-70b36091-179f-43b4-8804-57ef6294cc44": 10,
+    "bloom-range-a6e193ab-43bc-451b-8636-6a3f6cd025cf": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "bloom-amount-3c6a508c-a72f-4a02-b498-323b591d5389": 10,
+    "bloom-widened-92d46026-5fc8-4732-8b24-3a15ca6734f4": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "bloom-widened-989189c3-5c9e-417f-bacf-cda15cb96ee7": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "bloom-widened-477909a4-b476-4d5a-a15d-a024cf9879ef": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "bloom-widened-cfabac4b-6a7c-4772-817f-47168e862236": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "bloom-widened-a6e193ab-43bc-451b-8636-6a3f6cd025cf": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "bloom-heal-buff-profile": {
+      "active_skill_locked": false,
+      "attack_percent": 10,
+      "attack_speed_points": 0,
+      "basic_attack_locked": false,
+      "damage_invulnerable": false,
+      "defense_percent": 0,
+      "definition": "a01eefcc-30ed-4ad6-ab64-57fea7e41e42:07758e8a-02af-4b2a-8a49-fe03ab2067f6",
+      "end_on_source_exit": false,
+      "hp_floor_one": false,
+      "received_heal_percent": 0
+    },
+    "bloom-widened-978f2fda-e4b6-40c3-9071-6d7f5a309d52": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "bloom-widened-7643ea89-d010-4325-baa6-d4fe63598782": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "bloom-widened-27806d66-67d3-41f6-b443-a42a676978fa": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "bloom-widened-0937fd6c-742e-48d8-840d-4fd1654934d5": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "bloom-widened-84e253cf-e1ad-44ef-ad5b-a36bbd11b824": {
+      "include_anchor_tile": true,
+      "rows": [
+        "XXXXX",
+        "XXXXX",
+        "XX@XX",
+        "XXXXX",
+        "XXXXX"
+      ]
+    },
+    "rarity": "Common",
+    "equip_limit": "OwnedCopies",
+    "compatibility": {},
+    "bloom-recipe": {
+      "enkephalin": 1,
+      "materials": []
+    },
+    "relic-rarity": "Common",
+    "relic-allow-duplicates": false,
+    "relic-incompatible-with": [],
+    "relic-dismantle-dust": 1
+  }
+}

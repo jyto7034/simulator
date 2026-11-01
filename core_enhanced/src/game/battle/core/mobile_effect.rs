@@ -677,6 +677,8 @@ impl BattleCore {
             SkillHitTargetFilter::Enemies,
             false,
         );
+        let area_percent = self.area_damage_percent(e.context.owner, e.context.side,
+            &e.context.source, &targets, now)?;
         control::poll("mobile_explosion_targets")?;
         let capture = Arc::new(MobileCapture {
             context: e.context.clone(),
@@ -701,6 +703,7 @@ impl BattleCore {
                     definition: p.definition.clone(),
                 },
                 capture: Some(capture.clone()),
+                area_percent,
                 target,
                 now,
             })?;

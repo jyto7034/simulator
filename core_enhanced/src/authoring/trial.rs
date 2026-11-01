@@ -231,6 +231,90 @@ impl std::fmt::Debug for TrialSession {
     }
 }
 impl TrialSession {
+    /// Bind a compiler-verified original to this immutable publication before
+    /// resolving its registered producer. A path/name alone is insufficient.
+    pub(crate) fn composition_origin<'a>(
+        &self,
+        artifact: &'a super::composition::Artifact,
+        source: &crate::game::ability::authoring::EffectSource,
+    ) -> Option<&'a super::composition::SourceTrace> {
+        if !self.composition_source_matches(artifact, &source.source_file) { return None; }
+        let data = self.state.content.token().database();
+        if !super::provenance::registered_skill_source(&data.skill_data, data.value_expr_catalog(), source)
+            && !super::provenance::registered_equipment_source(data, source) {
+            return None;
+        }
+        artifact.source_at(&source.field_path)
+    }
+    pub(crate) fn composition_equipment_origin<'a>(
+        &self,
+        artifact: &'a super::composition::Artifact,
+        claim: &super::provenance::EquipmentOriginClaim<'_>,
+    ) -> Option<&'a super::composition::SourceTrace> {
+        if claim.generation != Some(self.content_identity())
+            || !self.composition_source_matches(artifact, claim.source_file)
+            || !super::provenance::registered_equipment_origin(
+                self.state.content.token().database(), claim)
+        {
+            return None;
+        }
+        artifact.source_at(claim.field_path)
+    }
+
+    /// Static original identity only; neither this query nor its callers grant
+    /// execution/copy authority. An imported map cannot verify itself.
+    fn composition_source_matches(
+        &self,
+        artifact: &super::composition::Artifact,
+        source_file: &str,
+    ) -> bool {
+        use sha2::{Digest, Sha256};
+        if !artifact.is_source_verified() { return false; }
+        let token = self.state.content.token();
+        let Some(receipt) = token.source_receipt().files.iter().find(|f| f.path == source_file) else {
+            return false;
+        };
+        receipt.sha256 == artifact.source_digest()
+            || artifact.to_ron().is_ok_and(|encoded|
+                receipt.sha256 == format!("{:x}", Sha256::digest(encoded.as_bytes())))
+    }
+
+    /// Resolve the registered area delivery, not merely an existing step name.
+    pub(crate) fn composition_delivery_origin(
+        &self,
+        artifact: &super::composition::Artifact,
+        skill_id: &str,
+        step_id: &str,
+    ) -> Option<(String, String, super::composition::SourceTrace)> {
+        use crate::game::data::content_pack::{DefinitionKey, DefinitionKind};
+        let token = self.state.content.token();
+        let definition = token.source_metadata()?.source_for(&DefinitionKey {
+            kind: DefinitionKind::Skill, id: skill_id.into(),
+        })?;
+        if !self.composition_source_matches(artifact, &definition.source_file) { return None; }
+        let skill = token.database().skill_data.get_by_id(skill_id)?;
+        let index = skill.steps.iter().position(|step| step.id == step_id)?;
+        if !matches!(skill.steps[index].delivery, crate::game::ability::DeliveryDef::TileArea { .. }) {
+            return None;
+        }
+        let path = format!("{}.steps[{index}].delivery", definition.field_path);
+        let origin = artifact.source_at(&path)?.clone();
+        Some((definition.source_file.clone(), path, origin))
+    }
+
+    pub(crate) fn composition_area_effect_origin(
+        &self,
+        artifact: &super::composition::Artifact,
+        producer: &super::view::AreaEffectSource,
+    ) -> Option<(String, String, super::composition::SourceTrace)> {
+        if producer.generation.as_deref() != Some(self.content_identity())
+            || !super::provenance::registered_area_effect_source(
+                &self.state.content.token().database().skill_data, producer)
+        {
+            return None;
+        }
+        self.composition_delivery_origin(artifact, producer.skill_id.as_str(), &producer.step_id)
+    }
     pub fn lab_preparation(&self) -> Option<&super::LabPreparationReceipt> {
         self.state.lab_preparation.as_deref()
     }
@@ -1101,6 +1185,7 @@ mod tests {
     mod u09_structural;
     mod u10_causal;
     mod u11_lab_continuation;
+    mod composition;
     use super::*;
     use crate::game::data::{content_pack::tests::ExternalFixture, ValidatedGameData};
     use serde_json::json;

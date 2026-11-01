@@ -1,0 +1,89 @@
+# Current authored design; unresolved release inputs remain non-executable.
+# Native finite schedule span is (opportunities - 1) * interval + 1 ms.
+# The first opportunity is immediate; empty opportunities are still consumed.
+version: 1
+id: rudolta-malicious-gifts
+values:
+- name: gift-power
+  value:
+    Amount:
+      moment: Snapshot
+      root:
+        Ratio:
+          numerator:
+            Mul:
+              value:
+                Read:
+                  Stat:
+                    subject: Source
+                    stat: Attack
+              scalar:
+                Const:
+                  value:
+                    Unresolved: damage-percent
+                  unit: Scalar
+          denominator:
+            Const:
+              value: 100
+              unit: Scalar
+          rounding: Floor
+- name: gift-schedule
+  value:
+    Delivery:
+      TileArea:
+        footprint:
+          Unresolved: search-footprint
+        area:
+          anchor: AcceptedCastTarget
+          tile_origin: Anchor
+          tracking: GroundFixed
+          hit_targets: Enemies
+          duration_ms:
+            Unresolved: schedule-span
+          tick_interval_ms:
+            Unresolved: opportunity-interval
+          emission:
+            footprint:
+              Unresolved: impact-footprint
+            delay_ms:
+              Unresolved: fall-duration
+            include_air: true
+definitions: []
+skills:
+- id: fragment_rudolta_malicious_gifts
+  name: 악의의 선물
+  kind: Untargeted
+  cast_targeting:
+    Explicit:
+      selection: self
+      target: SelfUnit
+      reach: pattern
+      air_capable: true
+  prepare_ms:
+    Unresolved: prepare-duration
+  focus_permissions:
+    allows_move: true
+    allows_basic_attack: true
+  admission:
+    capacity:
+      Unresolved: capacity
+    requirement: Full
+    cost: All
+  body:
+    Action:
+      id: gifts
+      target:
+        Literal:
+          Target: SelfUnit
+      delivery:
+        Shared: gift-schedule
+      effects:
+      - Damage:
+          id: damage
+          tags:
+          - damage
+          - area
+          amount:
+            Shared: gift-power
+          damage_type: Physical
+      wait: Released

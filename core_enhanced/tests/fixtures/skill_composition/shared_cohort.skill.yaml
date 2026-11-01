@@ -1,0 +1,33 @@
+# Explicit test values. This accessory activates the fragment's real hostile population.
+version: 1
+id: shared-cohort-fixture
+values:
+  - name: shared_hunt
+    value:
+      AttackProgram:
+        reactions: []
+        cohort:
+          prioritize: true
+          spawn:
+            definition: 0f40965e-31f1-40b6-b56f-87990f0b9879
+            interval_ms: 5000
+            hp: 300
+            power: 20
+            speed: { numerator: 1, denominator: 1 }
+            physical_defense: 0
+            magic_defense: 0
+            block: 1
+            leak: 1
+            damage_type: Physical
+            attack_range:
+              include_anchor_tile: true
+              rows: [XXXXX, XXXXX, XX@XX, XXXXX, XXXXX]
+            attack_interval_ms: 1000
+            weakness_family: little-red
+            weakness_percent: { numerator: 50, denominator: 1 }
+            kill_gain: 1
+equipment_attacks:
+  - equipment: r11_accessory
+    program: { Shared: shared_hunt }
+definitions: []
+skills: []

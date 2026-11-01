@@ -413,11 +413,13 @@ fn f01_publication_refusal_preserves_live_catalog_loadout_resources_and_owner() 
 
 #[test]
 fn rv002_support_regular_triggered_legacy_and_released_credit_resource_isolation() {
-    for (form, regular_damage, triggered_damage, speed) in [
-        ("area", 120, 100, 15),
-        ("fixed", 140, 100, 20),
-        ("fixed_corrupt", 180, 100, 30),
-        ("legacy", 120, 120, 15),
+    // The shared speed contract rounds intervals up: at time1, a1000ms
+    // interval with15/20/30 bonus points next fires at871/835/771ms.
+    for (form, regular_damage, triggered_damage, speed, next_attack_ms) in [
+        ("area", 120, 100, 15, 871),
+        ("fixed", 140, 100, 20, 835),
+        ("fixed_corrupt", 180, 100, 30, 771),
+        ("legacy", 120, 120, 15, 871),
     ] {
         let relic = if form.starts_with("fixed") {
             let value = support_relic();
@@ -539,12 +541,12 @@ fn rv002_support_regular_triggered_legacy_and_released_credit_resource_isolation
             if regular {
                 assert_eq!(
                     battle.units[&allies[0]].next_basic_attack_ms,
-                    1 + 100000 / (100 + u64::from(speed))
+                    next_attack_ms
                 );
             }
             if regular && form == "fixed_corrupt" {
                 assert_eq!(
-                    battle.units[&allies[0]].next_basic_attack_ms, 770,
+                    battle.units[&allies[0]].next_basic_attack_ms, 771,
                     "literal 1000ms interval at 130 speed, released at time1"
                 );
             }

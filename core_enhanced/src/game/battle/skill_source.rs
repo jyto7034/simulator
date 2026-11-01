@@ -36,3 +36,44 @@ pub struct SkillEffectExecutionSource {
     pub authored: Arc<EffectSource>,
     pub cast: Arc<SkillCastExecutionSource>,
 }
+
+/// Fixed at active-use acceptance, before focus or its first damage.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize)]
+pub struct CastDamageContribution {
+    pub equipment: super::runtime_facts::EquipmentSourceSnapshot,
+    pub percent: u32,
+    pub authored: Arc<EffectSource>,
+}
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize)]
+pub struct CastDamageSnapshot {
+    pub actor: UnitInstanceId,
+    pub percent: u32,
+    pub contributors: Vec<CastDamageContribution>,
+}
+crate::authoring::clone_shape::struct_shape!(CastDamageContribution {
+    equipment,
+    percent,
+    authored
+});
+crate::authoring::clone_shape::struct_shape!(CastDamageSnapshot {
+    actor,
+    percent,
+    contributors
+});
+impl CastDamageSnapshot {
+    pub(crate) fn retained_extent(&self) -> Option<usize> {
+        let mut bytes = std::mem::size_of::<Self>().checked_add(64)?.checked_add(
+            self.contributors
+                .capacity()
+                .checked_mul(std::mem::size_of::<CastDamageContribution>())?,
+        )?;
+        for c in &self.contributors {
+            let source = super::runtime_facts::RuntimeFactSource {
+                authored: Some(c.authored.clone()),
+                ..Default::default()
+            };
+            bytes = bytes.checked_add(source.retained_extent()?)?;
+        }
+        Some(bytes)
+    }
+}

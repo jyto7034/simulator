@@ -33,10 +33,16 @@ use crate::game::{
 
 pub(crate) mod amount_observation;
 pub(crate) mod authoring_observation;
+pub(crate) mod area_observation;
 mod basic_line;
 mod basic_attack;
 mod basic_attack_projectile;
 mod basic_heal;
+mod basic_cone;
+mod basic_occupied_tiles;
+mod basic_delayed_tile;
+mod basic_projectile_batch;
+mod basic_projectile_area;
 pub(crate) mod boss_runtime;
 pub mod build;
 pub mod commands;
@@ -61,10 +67,30 @@ pub(crate) mod relic_wedge;
 mod resonance_runtime;
 mod resource_runtime;
 pub(crate) mod weapon_growth;
+pub(crate) mod equipment_attack;
+pub(crate) mod attack_continuity;
+pub(crate) mod release_gap;
+pub use release_gap::ReleaseGapView;
+pub(crate) mod equipment_primary_damage;
+pub(crate) mod area_damage;
+pub(crate) mod nearby_ally_damage;
+pub(crate) mod conditional_damage;
+pub(crate) mod direct_penetration;
+pub(crate) mod equipment_resonance_gain;
+pub(crate) mod weapon_stages;
+pub(crate) mod equipment_magazine;
+pub(crate) mod equipment_defense;
+pub(crate) mod equipment_support;
+mod death_eligibility;
 pub(crate) mod marks;
+mod dot_targets;
 pub(crate) mod counter_channel;
 pub(crate) mod relation_action;
 mod input_plan;
+pub(crate) mod shared_cohort;
+pub(crate) mod cohort_bounty;
+pub(crate) mod equipment_forms;
+pub(crate) mod equipment_death_burst;
 mod prepared_volley;
 pub(crate) mod weapon_marks;
 mod tile_burst;
@@ -126,6 +152,8 @@ enum UnitBuffRemovalCause {
 #[derive(Clone)]
 pub struct BattleCore {
     sustained: sustained::SustainedState,
+    equipment_defense: equipment_defense::EquipmentDefenseState,
+    equipment_attack_state: equipment_magazine::EquipmentAttackState,
     corrosion_freeze: Option<corrosion::CorrosionFreeze>,
     runtime_facts: runtime_facts::RuntimeFactState,
     event_queue: queue::EventQueue,
@@ -154,6 +182,7 @@ pub struct BattleCore {
     ability_proc_states: OwnedHashMap<AbilityProcKey, AbilityProcState>,
 
     projectiles: OwnedHashMap<Uuid, ProjectileRecord>,
+    basic_projectile_batches: std::collections::BTreeMap<Uuid, basic_projectile_batch::BasicProjectileBatch>,
     active_projectiles: OwnedHashMap<Uuid, ActiveProjectileRuntime>,
     active_areas: OwnedHashMap<Uuid, AreaRuntime>,
     active_movement_segments: OwnedHashMap<UnitInstanceId, ActiveMovementSegment>,
@@ -207,6 +236,8 @@ impl crate::authoring::clone_shape::CloneShape for BattleCore {
     ) -> Result<(), crate::game::behavior::GameError> {
         let Self {
             sustained,
+            equipment_defense,
+            equipment_attack_state,
             corrosion_freeze,
             runtime_strike_scope,
             runtime_effect_projection,
@@ -230,6 +261,7 @@ impl crate::authoring::clone_shape::CloneShape for BattleCore {
             active_skill_casts,
             ability_proc_states,
             projectiles,
+            basic_projectile_batches,
             active_projectiles,
             active_areas,
             active_movement_segments,
@@ -261,6 +293,8 @@ impl crate::authoring::clone_shape::CloneShape for BattleCore {
         } = self;
         meter.scan_storage(Some(1))?;
         sustained.visit_clone_shape(meter)?;
+        equipment_defense.visit_clone_shape(meter)?;
+        equipment_attack_state.visit_clone_shape(meter)?;
         corrosion_freeze.visit_clone_shape(meter)?;
         runtime_strike_scope.visit_clone_shape(meter)?;
         runtime_effect_projection.visit_clone_shape(meter)?;
@@ -295,6 +329,7 @@ impl crate::authoring::clone_shape::CloneShape for BattleCore {
         active_skill_casts.visit_clone_shape(meter)?;
         ability_proc_states.visit_clone_shape(meter)?;
         projectiles.visit_clone_shape(meter)?;
+        basic_projectile_batches.visit_clone_shape(meter)?;
         active_projectiles.visit_clone_shape(meter)?;
         active_areas.visit_clone_shape(meter)?;
         active_movement_segments.visit_clone_shape(meter)?;
@@ -339,8 +374,10 @@ impl BattleCore {
 
     pub(crate) fn transaction_debug_snapshot(&self) -> String {
         format!(
-            "sustained={:?};corrosion_freeze={:?};scenario_runtime={:?};spawn_kernel={:?};independent_objects={:?};boss_runtime={:?};units={:?};tactical_states={:?};items={:?};graveyard={:?};buffs={:?};active_skill_casts={:?};ability_proc_states={:?};projectiles={:?};active_projectiles={:?};active_areas={:?};active_movement_segments={:?};field_work_objects={:?};block_state={:?};last_movement_tick={:?};result_stats={:?};event_log_seq={};skill_cast_seq={};projectile_seq={};area_seq={};damage_source_seq={};recording_causes={:?};recording_commands={:?}",
+            "sustained={:?};equipment_defense={:?};equipment_attack_state={:?};corrosion_freeze={:?};scenario_runtime={:?};spawn_kernel={:?};independent_objects={:?};boss_runtime={:?};units={:?};tactical_states={:?};items={:?};graveyard={:?};buffs={:?};active_skill_casts={:?};ability_proc_states={:?};projectiles={:?};basic_projectile_batches={:?};active_projectiles={:?};active_areas={:?};active_movement_segments={:?};field_work_objects={:?};block_state={:?};last_movement_tick={:?};result_stats={:?};event_log_seq={};skill_cast_seq={};projectile_seq={};area_seq={};damage_source_seq={};recording_causes={:?};recording_commands={:?}",
             self.sustained,
+            self.equipment_defense,
+            self.equipment_attack_state,
             self.corrosion_freeze,
             self.scenario_runtime,
             self.spawn_kernel,
@@ -354,6 +391,7 @@ impl BattleCore {
             self.active_skill_casts,
             self.ability_proc_states,
             self.projectiles,
+            self.basic_projectile_batches,
             self.active_projectiles,
             self.active_areas,
             self.active_movement_segments,
@@ -438,6 +476,8 @@ impl BattleCore {
     ) -> Self {
         let Self {
             sustained,
+            equipment_defense,
+            equipment_attack_state,
             corrosion_freeze,
             runtime_strike_scope,
             runtime_effect_projection,
@@ -461,6 +501,7 @@ impl BattleCore {
             active_skill_casts,
             ability_proc_states,
             projectiles,
+            basic_projectile_batches,
             active_projectiles,
             active_areas,
             active_movement_segments,
@@ -498,6 +539,8 @@ impl BattleCore {
         }
         Self {
             sustained: sustained.clone(),
+            equipment_defense: equipment_defense.clone(),
+            equipment_attack_state: equipment_attack_state.clone(),
             corrosion_freeze: *corrosion_freeze,
             runtime_strike_scope: runtime_strike_scope.clone(),
             runtime_effect_projection: runtime_effect_projection.clone(),
@@ -521,6 +564,7 @@ impl BattleCore {
             active_skill_casts: active_skill_casts.clone(),
             ability_proc_states: ability_proc_states.clone(),
             projectiles: projectiles.clone(),
+            basic_projectile_batches: basic_projectile_batches.clone(),
             active_projectiles: active_projectiles.clone(),
             active_areas: active_areas.clone(),
             active_movement_segments: active_movement_segments.clone(),
@@ -615,11 +659,16 @@ impl BattleCore {
             self.graveyard.len(),
             self.buffs.len(),
             self.sustained.entity_count(),
+            self.equipment_defense.deferred.len(),
+            self.equipment_attack_state.magazines.len(),
+            self.equipment_attack_state.continuity.len(),
+            self.equipment_attack_state.release_gaps.len(),
             self.independent_objects.entity_count(),
             self.spawn_kernel.independent_entity_count()?,
             self.active_skill_casts.len(),
             self.ability_proc_states.len(),
             self.projectiles.len(),
+            self.basic_projectile_batches.len(),
             self.active_projectiles.len(),
             self.active_areas.len(),
             self.active_movement_segments.len(),
@@ -798,7 +847,10 @@ impl BattleCore {
         runtime_facts::RuntimeFactState::initial_retained_bytes_bound()?
             .checked_add(std::mem::size_of::<runtime_facts::RuntimeFactState>())?
             .checked_add(binding?)?
+            .checked_add(basic_projectile_batch::batch_tree_extent(0)?)?
             .checked_add(sustained::SustainedState::default().retained_extent()?)?
+            .checked_add(equipment_defense::EquipmentDefenseState::default().retained_extent()?)?
+            .checked_add(equipment_magazine::EquipmentAttackState::default().retained_extent()?)?
             .checked_add(independent_objects::IndependentObjectState::default().retained_extent()?)?
             .checked_add(spawn_kernel::SpawnKernelState::default().independent_retained_extent()?)?
             .checked_add(128)?
@@ -831,6 +883,8 @@ impl BattleCore {
         });
         Self {
             sustained: Default::default(),
+            equipment_defense: Default::default(),
+            equipment_attack_state: Default::default(),
             corrosion_freeze: None,
             event_queue: queue::EventQueue::new(),
             scenario: Arc::new(scenario),
@@ -851,6 +905,7 @@ impl BattleCore {
             active_skill_casts: OwnedHashMap::new(),
             ability_proc_states: OwnedHashMap::new(),
             projectiles: OwnedHashMap::new(),
+            basic_projectile_batches: std::collections::BTreeMap::new(),
             active_projectiles: OwnedHashMap::new(),
             active_areas: OwnedHashMap::new(),
             active_movement_segments: OwnedHashMap::new(),
@@ -1104,17 +1159,30 @@ impl BattleCore {
     }
 
     pub(in crate::game::battle::core) fn add_resonance(
+        &mut self, unit_instance_id: UnitInstanceId, amount: u32, now_ms: u64,
+        allow_autocast_when_full: bool,
+    ) {
+        self.add_resonance_from(unit_instance_id, amount, now_ms, allow_autocast_when_full, None);
+    }
+
+    fn add_resonance_from(
         &mut self,
         unit_instance_id: UnitInstanceId,
         amount: u32,
         now_ms: u64,
         allow_autocast_when_full: bool,
+        channel: Option<equipment_resonance_gain::ResonanceGainChannel>,
     ) {
         if amount == 0 {
             return;
         }
 
         self.reconcile_resonance_use(unit_instance_id);
+        let Some(unit) = self.units.get(&unit_instance_id) else { return; };
+        if !unit.is_active() || unit.resonance_current >= unit.resonance_max.max(1) {
+            self.units.get_mut(&unit_instance_id).unwrap().equipment_resonance_gain = None;
+            return;
+        }
         if self
             .resonance_gain_blocks(unit_instance_id, now_ms)
             .blocked()
@@ -1122,6 +1190,15 @@ impl BattleCore {
             return;
         }
 
+        let amount = if let Some(channel) = channel {
+            let unit = &self.units[&unit_instance_id];
+            let max = unit.resonance_max.max(1);
+            let before = unit.resonance_current.min(max);
+            match self.equipment_resonance_gain_amount(unit_instance_id, amount, channel, before, max, now_ms) {
+                Ok(amount) => amount,
+                Err(_) => return, // The checked admission latches the transaction fault.
+            }
+        } else { amount };
         let (before, after, max) = {
             let Some(unit) = self.units.get_mut(&unit_instance_id) else {
                 return;
@@ -1139,6 +1216,7 @@ impl BattleCore {
             }
 
             unit.resonance_current = after;
+            if after == max { unit.equipment_resonance_gain = None; }
 
             if allow_autocast_when_full
                 && unit.skill_activation_mode == crate::game::ability::SkillActivationMode::Auto
@@ -1202,11 +1280,12 @@ impl BattleCore {
         }
 
         if delta > 0 {
-            self.add_resonance(
+            self.add_resonance_from(
                 unit_instance_id,
                 delta as u32,
                 now_ms,
                 allow_autocast_when_full,
+                Some(equipment_resonance_gain::ResonanceGainChannel::Authored),
             );
             return;
         }
@@ -1249,6 +1328,10 @@ impl BattleCore {
         unit_id: UnitInstanceId,
         cause: UnitBuffRemovalCause,
     ) {
+        self.equipment_defense.remove_owner(unit_id);
+        if matches!(cause, UnitBuffRemovalCause::Died) {
+            if let Some(unit)=self.units.get(&unit_id) {self.equipment_attack_state.remove_employee(unit.source_owned_uuid);}
+        }
         let (target_reason, caster_reason) = match cause {
             UnitBuffRemovalCause::Died => (BuffExpireReason::TargetDied, BuffExpireReason::CasterDied),
             UnitBuffRemovalCause::Withdrawn => (
@@ -1366,7 +1449,7 @@ impl BattleCore {
         unit_instance_id: UnitInstanceId,
         now_ms: u64,
     ) -> Option<ActionDisabledReasonCode> {
-        if self.channel_active(unit_instance_id) {
+        if self.target_state_action_locked(unit_instance_id, Some(now_ms), false) || self.channel_active(unit_instance_id) {
             return Some(ActionDisabledReasonCode::ActionLocked);
         }
         let state = self.unit_control_state(unit_instance_id, now_ms)?;
@@ -1389,24 +1472,33 @@ impl BattleCore {
         interrupter_instance_id: UnitInstanceId,
         target_instance_id: UnitInstanceId,
     ) {
-        let protected=self.current_action_interrupt_protected(target_instance_id);
-        if !protected {
+        self.cancel_unreleased_actions_for_lock(time_ms, interrupter_instance_id, target_instance_id,
+            crate::game::battle::runtime_facts::ActionCancelReason::HardCrowdControl, true, true, true);
+    }
+    fn cancel_unreleased_actions_for_lock(
+        &mut self, time_ms: u64, interrupter_instance_id: UnitInstanceId, target_instance_id: UnitInstanceId,
+        reason: crate::game::battle::runtime_facts::ActionCancelReason,
+        cancel_basic: bool, cancel_skill: bool, respect_interrupt_protection: bool,
+    ) {
+        let protected=respect_interrupt_protection && self.current_action_interrupt_protected(target_instance_id);
+        if cancel_skill && !protected {
         self.cancel_resonance_use_control(target_instance_id);
         let _ = self.stop_channel_with_reason(
             target_instance_id,
             time_ms,
-            crate::game::ability::sustained::SustainedEndReason::HardCrowdControl,
+            if reason == crate::game::battle::runtime_facts::ActionCancelReason::HardCrowdControl { crate::game::ability::sustained::SustainedEndReason::HardCrowdControl } else { crate::game::ability::sustained::SustainedEndReason::Interrupted },
         );
         self.cancel_structured_flows(
             target_instance_id,
             time_ms,
-            crate::game::battle::runtime_facts::ActionCancelReason::HardCrowdControl,
+            reason,
         );
         }
         let (pending, cast_lock_until) = self
             .units
             .get_mut(&target_instance_id)
             .map(|unit| {
+                if cancel_basic {
                 unit.basic_attack_epoch = unit.basic_attack_epoch.wrapping_add(1);
                 if let Some(windup_until_ms) = unit.basic_attack_windup_until_ms.take() {
                     if unit.action_locks.basic_attack_until_ms == windup_until_ms {
@@ -1416,8 +1508,9 @@ impl BattleCore {
                         unit.action_locks.movement_until_ms = time_ms;
                     }
                 }
-                unit.current_target = None;
-                let pending = if protected {None} else {unit.pending_skill_cast.take()};
+                }
+                if reason == crate::game::battle::runtime_facts::ActionCancelReason::HardCrowdControl { unit.current_target = None; }
+                let pending = if protected || !cancel_skill {None} else {unit.pending_skill_cast.take()};
                 let cast_lock_until = pending.as_ref().map(|_| unit.next_action_time);
                 if pending.is_some() {
                     unit.pending_cast = unit.skill_activation_mode
@@ -1430,22 +1523,18 @@ impl BattleCore {
             .unwrap_or((None, None));
 
         let Some(pending) = pending else {
-            let _ = self.runtime_facts.cancel_unreleased_basic(
-                target_instance_id,
-                crate::game::battle::runtime_facts::ActionCancelReason::HardCrowdControl,
-                time_ms,
-            );
+            if cancel_basic { let _ = self.runtime_facts.cancel_unreleased_basic(
+                target_instance_id, reason, time_ms,
+            ); }
             return;
         };
-        let _ = self.runtime_facts.cancel_unreleased_basic(
-            target_instance_id,
-            crate::game::battle::runtime_facts::ActionCancelReason::HardCrowdControl,
-            time_ms,
-        );
+        if cancel_basic { let _ = self.runtime_facts.cancel_unreleased_basic(
+            target_instance_id, reason, time_ms,
+        ); }
         self.cancel_pending_action(
             pending.action.as_ref(),
             time_ms,
-            crate::game::battle::runtime_facts::ActionCancelReason::HardCrowdControl,
+            reason,
         );
         if let Some(cast_lock_until) = cast_lock_until {
             let focus_permissions = self
@@ -1552,6 +1641,8 @@ impl BattleCore {
 #[cfg(test)]
 mod tests {
     mod amount_order;
+    mod composition;
+    mod death_snapshot;
     use super::*;
     use crate::game::ability::{
         DeliveryDef, SkillActivationMode, SkillAreaAnchorSource, SkillAreaTracking,
@@ -1791,6 +1882,8 @@ mod tests {
         let attacker_id = UnitInstanceId::from(Uuid::from_u128(0xD170_01));
         let target_id = UnitInstanceId::from(Uuid::from_u128(0xD170_02));
         let launch = super::basic_attack_projectile::ProjectileLaunch {
+            area: None,
+            batch_id: None,
             spatial: None,
             fired_at_ms: 10,
             attacker_instance_id: attacker_id,
@@ -1803,11 +1896,17 @@ mod tests {
             guidance: super::types::ProjectileGuidance::Fixed,
             damage_type: DamageType::Physical,
             source_snapshot: DamageSourceSnapshot {
+                basic_primary: None,
                 fact_source: Default::default(),
                 skill_cast_source: None,
                 value_expr_capture: None,
             prepared_basic: None,
+            state_basic_capture: None,
             weapon_growth: None,
+            equipment_attack: None,
+            equipment_hits: None,
+            release_gap: None,
+            magazine: None,
             presence_capture: None,
             reactive_capture: None,
             mobile_capture: None,
@@ -3343,6 +3442,8 @@ mod tests {
             )
             .expect("released projectile source snapshot");
         core.spawn_basic_attack_projectile(super::basic_attack_projectile::ProjectileLaunch {
+            area: None,
+            batch_id: None,
             spatial: None,
             fired_at_ms: 0,
             attacker_instance_id: attacker_id,
@@ -3416,6 +3517,8 @@ mod tests {
             super::types::ProjectileGuidance::Fixed,
         ] {
             core.spawn_basic_attack_projectile(super::basic_attack_projectile::ProjectileLaunch {
+                area: None,
+                batch_id: None,
                 spatial: None,
                 fired_at_ms: 1_500,
                 attacker_instance_id: attacker_id,
@@ -5355,6 +5458,18 @@ mod tests {
             control::{self, CancellationToken, CloneMeter, ExecutionLimits, ExecutionPhase},
         };
         let mut unit = runtime_unit(Uuid::from_u128(19).into(), Side::Player);
+        use crate::game::battle::types::UnitTargetTrait;
+        unit.source_identity = crate::game::battle::types::BattleUnitSourceIdentity::IndependentObject {
+            definition_id: "clone-profile".into(),
+            base_uuid: unit.base_uuid,
+            creator_instance_id: unit.instance_id,
+            kind: crate::game::battle::types::IndependentUnitKind::Actor,
+        };
+        let empty_traits_extent = unit.dynamic_profile_retained_extent().unwrap();
+        let expected_traits = vec![UnitTargetTrait::StunImmune, UnitTargetTrait::SlowImmune];
+        unit.target_traits = expected_traits.clone();
+        assert_eq!(unit.dynamic_profile_retained_extent().unwrap(), empty_traits_extent
+            + unit.target_traits.capacity() * std::mem::size_of::<UnitTargetTrait>());
         unit.pending_skill_cast = Some(types::PendingSkillCast {
             start_gate_pending: false,
             reset_resonance: true,
@@ -5384,6 +5499,13 @@ mod tests {
         )
         .unwrap();
         assert_eq!(format!("{candidate:?}"), before);
+        assert_eq!(candidate.target_traits, expected_traits);
+        let mut reused = runtime_unit(unit.instance_id, Side::Player);
+        reused.target_traits = vec![UnitTargetTrait::RootImmune];
+        reused.reuse_timestamp_value(&unit);
+        assert_eq!(reused.target_traits, expected_traits);
+        reused.target_traits.clear();
+        assert_eq!(unit.target_traits, expected_traits);
         let mut copied = false;
         let failure = control::run(
             &ExecutionLimits {
@@ -5557,6 +5679,7 @@ mod tests {
             resonance_lock_ms: 0,
             resonance_use: None,
             next_resonance_pulse_ms: None,
+            equipment_resonance_gain: None,
             next_action_time: 0,
             pending_cast: false,
             pending_cast_cause: None,

@@ -2085,3 +2085,40 @@ fn correction_002_shape_is_iterative_at_default_and_extended_depth() {
     assert_eq!(result.value, TypedInteger::new(1, ValueUnit::Magnitude));
     assert_eq!(meter.usage().peak_task_frames, 1025);
 }
+
+fn dot_members_expr(grouping: Grouping) -> ValueExpr {
+    ValueExpr::Aggregate {
+        source: FiniteSource::StateOwnerDotTargets, grouping,
+        reduction: Reduction::Count, outer_reduction: None,
+        member: Box::new(ValueExpr::Const(TypedInteger::new(1,ValueUnit::Count))),
+    }
+}
+#[test]
+fn state_owner_dot_query_requires_live_state_and_whole_set() {
+    for (moment,grouping,capabilities) in [
+        (EvalMoment::Snapshot,Grouping::WholeSet,DeliveryCapabilities::all()),
+        (EvalMoment::Live,Grouping::ByOwner,DeliveryCapabilities::all()),
+        (EvalMoment::Live,Grouping::WholeSet,DeliveryCapabilities::constant_only()),
+    ] {
+        let error=compile(&AmountExpr::authored(moment,dot_members_expr(grouping)),&source(),capabilities,&ExprLimits::default()).unwrap_err();
+        assert!(error.to_string().contains("StateOwnerDotTargets"),"{error}");
+    }
+}
+#[test]
+fn state_owner_dot_query_missing_empty_dedup_order_and_dynamic_limit() {
+    let plan=compiled(dot_members_expr(Grouping::WholeSet));
+    assert!(plan.requirements().state_owner_dot_targets);
+    assert!(!plan.requirements().resolved_targets);
+    let mut meter=ExprMeter::new(ExprLimits::default()).unwrap();
+    assert!(evaluate(&plan,&EvalFrame::default(),&mut meter).is_err(),"missing context is not an empty set");
+    for members in [vec![],vec!["b","a","b"],vec!["a","b","b"]] {
+        let expected=if members.is_empty(){0}else{2};
+        let mut frame=EvalFrame::default();
+        frame.set_state_owner_dot_targets(members.into_iter().map(|identity| EvalMember {identity:identity.into(),value:None,owner:None,projected_tile:None,values:Default::default()}).collect());
+        let mut meter=ExprMeter::new(ExprLimits::default()).unwrap();
+        assert_eq!(evaluate(&plan,&frame,&mut meter).unwrap().value.value,expected);
+        let mut limits=ExprLimits::default(); limits.max_dynamic_members=1;
+        let mut meter=ExprMeter::new(limits).unwrap();
+        assert_eq!(evaluate(&plan,&frame,&mut meter).is_err(),expected==2);
+    }
+}

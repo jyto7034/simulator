@@ -63,6 +63,7 @@ pub(super) fn bind(skill: &mut SkillDef, program: &SupportProgram) -> Result<(),
             } => SupportReplacementDef::RegularBasic {
                 damage_percent,
                 speed_points,
+                health_upkeep: None,
             },
         };
         SupportConversionDef {
@@ -73,8 +74,9 @@ pub(super) fn bind(skill: &mut SkillDef, program: &SupportProgram) -> Result<(),
         }
     });
     let support = Some(SupportPolicyDef {
-        range: Arc::new(program.range.clone()),
+        range: Some(Arc::new(program.range.clone())),
         conversion,
+        conversions: Vec::new(),
     });
     let effect = match program.effect {
         SupportEffectProgram::PersonalShield { max_health_percent } => {
@@ -117,6 +119,7 @@ pub(super) fn bind(skill: &mut SkillDef, program: &SupportProgram) -> Result<(),
                         basic_damage_percent: damage_percent,
                         basic_speed_points: speed_points,
                         basic_scope: SupportCoefficientScope::RegularOnly,
+                        health_upkeep: None,
                     },
                 },
             }

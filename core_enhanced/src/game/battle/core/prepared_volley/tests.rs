@@ -1,9 +1,13 @@
+use crate::game::battle::core::boss_runtime::tests::compiled_action_fixture::{
+    primary_fragment_input, enable_complete_trace, hp_trace_rows, assert_fragment_trace_origin,
+};
 use super::*;
 use crate::game::battle::core::{
     boss_runtime::tests::compiled_action_fixture::{cast, fixture_graph, hit, place},
     sim::{BattleExecutionState, BattleLiveCommand},
 };
 use serde_json::{json, Value};
+include!("canonical_tests.inc.rs");
 const RELICS: [&str; 7] = [
     "long-breath",
     "widened-horizon",
@@ -636,4 +640,88 @@ fn prepared_volley_runtime_air_exclusion_applies_to_selection_and_impact_separat
             assert_eq!(v.settled[0].end, VolleyFlightEnd::TargetLost);
         }
     }
+}
+
+#[test]
+fn basic_delayed_tile_with_prepared_volley_preserves_stock_and_marks_for_recovery() {
+    use crate::game::battle::{enums::BattleEvent, event_log::BattleLogEvent};
+    let equipment: crate::game::data::equipment_data::EquipmentDatabase = ron::de::from_str(
+        include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/../game_resources/data/equipments/base.ron")),
+    ).unwrap();
+    let profile = equipment.get_by_id("placeholder_king_of_greed_weapon").unwrap().weapon_profile.clone().unwrap();
+    let (mut c, mut s, a, e, b) = crate::game::battle::core::boss_runtime::tests::compiled_action_fixture::fixture_graph_with_weapon(
+        &RELICS, &[], crate::authoring::node_graph::tests::prepared_volley_fixture(),
+        |weapon| weapon.weapon_profile = Some(profile),
+    );
+    c.units.get_mut(&b).unwrap().fragment_source = None;
+    c.units.get_mut(&b).unwrap().skill_id = None;
+    Arc::make_mut(&mut c.scenario).terminal_outcomes =
+        crate::game::battle::scenario::BattleScenario::fixture_survival_outcomes(120000);
+    for u in c.units.values_mut() {
+        u.stats.max_health = 10000;
+        u.stats.current_health = 10000;
+        u.stats.defense = 0;
+        u.stats.attack_interval_ms = 100000;
+        u.next_basic_attack_ms = 100000;
+        u.stats.move_speed_units_per_ms = 0;
+        u.body.move_speed = 0.0;
+    }
+    c.units.get_mut(&a).unwrap().stats.attack = 100;
+    for (id,x,y) in [(a,2,1),(e,3,1),(b,7,3)] { place(&mut c,id,x,y); }
+    c.runtime_transaction(|c| {
+        c.clear_prepared_volleys(0)?;
+        c.sustained.volleys = Default::default();
+        c.reconcile_prepared_volleys(0)
+    }).unwrap();
+    let copy = key(&c,a);
+    assert_eq!(c.sustained.volleys.owners[&copy].balance,10);
+    c.units.get_mut(&a).unwrap().next_basic_attack_ms = 10;
+    c.process_event(BattleEvent::AttackStart {time_ms:10,attacker_instance_id:a,
+        target_instance_id:Some(e),schedule_next:true,cause:Default::default()},10).unwrap();
+    step(&mut c,&mut s,610);
+    assert_eq!(c.sustained.volleys.owners[&copy].balance,10);
+    assert!(c.sustained.volleys.owners[&copy].active.is_none());
+    assert!(!c.sustained.volleys.owners[&copy].borrowed);
+    assert_eq!(c.units[&e].stats.current_health,10000);
+    step(&mut c,&mut s,1010);
+    assert_eq!(c.sustained.volleys.owners[&copy].balance,10);
+    assert!(c.units[&e].stats.current_health<10000);
+    assert!(c.sustained.volleys.marks.contains_key(&(copy,e)));
+    assert_eq!(c.event_log.entries.iter().filter(|entry| matches!(entry.event,
+        BattleLogEvent::BasicAttackTileImpacted{attacker_instance_id,..} if attacker_instance_id==a)).count(),1);
+    // The fragment's passive recovers from another actor's later kill. The bow
+    // creates no treasure and pays no stock; its ordinary owned hit can mark.
+    hit(&mut c,b,e,10000,1020);
+    assert_eq!(c.sustained.volleys.owners[&copy].balance,11);
+}
+
+#[test]
+fn integration_volley_delayed_hp_keeps_original_cast_and_fragment() {
+    let (mut c, mut s, a, e, _) = fixture(&[], |_| {});
+    let mut off = controlled_clone(&c).unwrap();
+    let mut off_s = s.clone();
+    let (_trace, trace_from) = enable_complete_trace(&mut c);
+    let copy = primary_fragment_input(&c, a);
+    cast(&mut c, a, 0);
+    step(&mut c, &mut s, 1750);
+    release(&mut c, a, 1750);
+    step(&mut c, &mut s, 3000);
+    assert_eq!(c.units[&e].stats.current_health, 9800);
+    let observations = c.authoring_observation().unwrap().unwrap();
+    let hp = observations.latest_nonzero_sourced_hp.as_ref().unwrap();
+    assert_eq!(hp.target_unit, e);
+    assert_eq!(hp.fragment.as_ref().unwrap().copy_uuid, copy);
+    assert_eq!(hp.source.as_ref().expect("released volley retains cast provenance").cast.skill_id.as_str(), "r11_aura");
+    assert_eq!(hp.source.as_ref().unwrap().cast.cast_seq, 0);
+    assert_eq!(hp.source.as_ref().unwrap().cast.caster_instance_id, a);
+    let rows = hp_trace_rows(&c, trace_from);
+    assert_eq!(rows.len(), 2);
+    for row in &rows { assert_fragment_trace_origin(row, a, Some(("r11_aura", 0))); }
+    cast(&mut off, a, 0);
+    step(&mut off, &mut off_s, 1750);
+    release(&mut off, a, 1750);
+    step(&mut off, &mut off_s, 3000);
+    assert_eq!(c.units[&e].stats.current_health, off.units[&e].stats.current_health);
+    assert_eq!(serde_json::to_value(&c.event_log.entries).unwrap(), serde_json::to_value(&off.event_log.entries).unwrap());
+    assert_eq!(serde_json::to_value(c.runtime_fact_snapshot().unwrap()).unwrap(), serde_json::to_value(off.runtime_fact_snapshot().unwrap()).unwrap());
 }

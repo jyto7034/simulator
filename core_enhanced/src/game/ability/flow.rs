@@ -38,6 +38,8 @@ pub enum FlowComparison {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub enum FlowCondition {
+    Predicate(super::condition::PredicateCall),
+    Logic(super::condition::ConditionLogic<FlowCondition>),
     Always(bool),
     Compare {
         node_id: String,
@@ -103,6 +105,7 @@ impl SkillFlowDef {
 }
 #[derive(Debug, Clone, Serialize)]
 pub enum CompiledFlowCondition {
+    Logic(super::condition::ConditionLogic<CompiledFlowCondition>),
     Always(bool),
     Compare {
         producer: usize,
@@ -199,6 +202,7 @@ fn preflight(
     raw: &SkillFlowDef,
     depth: usize,
     count: &mut usize,
+    conditions: &mut usize,
     bytes: &mut usize,
 ) -> Result<(), FlowCompileError> {
     use crate::authoring::control::{self, Resource};
@@ -227,23 +231,193 @@ fn preflight(
             branches: children, ..
         } => {
             for child in children {
-                preflight(child, depth + 1, count, bytes)?;
+                preflight(child, depth + 1, count, conditions, bytes)?;
             }
         }
         SkillFlowDef::Branch {
+            condition,
             then_node,
             else_node,
             ..
         } => {
-            preflight(then_node, depth + 1, count, bytes)?;
-            preflight(else_node, depth + 1, count, bytes)?;
+            preflight_condition(condition, 1, conditions, bytes)?;
+            preflight(then_node, depth + 1, count, conditions, bytes)?;
+            preflight(else_node, depth + 1, count, conditions, bytes)?;
         }
-        SkillFlowDef::Repeat { body, .. } => preflight(body, depth + 1, count, bytes)?,
+        SkillFlowDef::Repeat { body, .. } => preflight(body, depth + 1, count, conditions, bytes)?,
         _ => (),
     }
     Ok(())
 }
+fn preflight_condition(
+    raw: &FlowCondition,
+    depth: usize,
+    count: &mut usize,
+    bytes: &mut usize,
+) -> Result<(), FlowCompileError> {
+    use crate::authoring::control::{self, Resource};
+    control::charge(1, "flow_condition_preflight")
+        .map_err(|e| error("flow.condition", format!("{e:?}")))?;
+    *count += 1;
+    if depth > MAX_FLOW_DEPTH || *count > MAX_FLOW_NODES {
+        return Err(error(
+            "flow.condition",
+            "finite condition depth/node limit exceeded",
+        ));
+    }
+    let text = match raw {
+        FlowCondition::Predicate(_) => {
+            return Err(error("flow.condition", "unresolved authored predicate"))
+        }
+        FlowCondition::Compare { node_id, .. } => node_id.len(),
+        FlowCondition::EffectCompare {
+            node_id, effect_id, ..
+        } => node_id.len().saturating_add(effect_id.len()),
+        _ => 0,
+    };
+    let extra = if depth > 1 {
+        256usize.saturating_add(text)
+    } else {
+        0
+    };
+    control::admit(
+        Resource::MetadataBytes,
+        *bytes,
+        extra,
+        "flow_condition_storage",
+    )
+    .map_err(|e| error("flow.condition", format!("{e:?}")))?;
+    *bytes = bytes
+        .checked_add(extra)
+        .ok_or_else(|| error("flow.condition", "condition storage overflow"))?;
+    if let FlowCondition::Logic(logic) = raw {
+        if logic.children().is_empty() {
+            return Err(error("flow.condition", "boolean group must be nonempty"));
+        }
+        for child in logic.children() {
+            preflight_condition(child, depth + 1, count, bytes)?;
+        }
+    }
+    Ok(())
+}
 impl Compiler<'_> {
+    fn condition(
+        &self,
+        condition: &FlowCondition,
+        path: &str,
+        before: &Scope,
+    ) -> Result<CompiledFlowCondition, FlowCompileError> {
+        crate::authoring::control::charge(1, "flow_condition_compile")
+            .map_err(|e| error(path, format!("{e:?}")))?;
+        Ok(match condition {
+            FlowCondition::Predicate(_) => {
+                return Err(error(
+                    path,
+                    "unresolved authored predicate; compile the composition module first",
+                ))
+            }
+            FlowCondition::Logic(logic) => {
+                if logic.children().is_empty() {
+                    return Err(error(path, "boolean group must be nonempty"));
+                }
+                CompiledFlowCondition::Logic(logic.try_map(|i, child| {
+                    self.condition(
+                        child,
+                        &format!("{path}.Logic{}", logic.child_suffix(i)),
+                        before,
+                    )
+                })?)
+            }
+            FlowCondition::Always(value) => CompiledFlowCondition::Always(*value),
+            FlowCondition::EffectCompare {
+                node_id,
+                effect_id,
+                metric,
+                comparison,
+                value,
+            } => {
+                let producer = *before.get(node_id).ok_or_else(|| {
+                    error(
+                        &format!("{path}.node_id"),
+                        "effect result is unknown, forward, out of scope, or not EffectsSettled",
+                    )
+                })?;
+                let CompiledFlowNodeKind::Action { step_index, .. } = self.nodes[producer].kind
+                else {
+                    return Err(error(path, "effect result requires an Action producer"));
+                };
+                crate::authoring::control::charge(
+                    self.steps[step_index].effects.len() as u64,
+                    "flow_effect_result_reference",
+                )
+                .map_err(|e| error(path, format!("{e:?}")))?;
+                let effect = self.steps[step_index]
+                    .effects
+                    .iter()
+                    .find(|effect| effect.id == *effect_id)
+                    .and_then(|effect| effect.source())
+                    .ok_or_else(|| error(path, "unknown producer effect"))?;
+                if !matches!(
+                    (metric, value),
+                    (FlowMetric::HpLost, FlowLiteral::Hp(_))
+                        | (
+                            FlowMetric::ResolvedTargets
+                                | FlowMetric::DamagedTargets
+                                | FlowMetric::KilledTargets,
+                            FlowLiteral::Count(_)
+                        )
+                ) {
+                    return Err(error(path, "effect result/literal units do not match"));
+                }
+                crate::authoring::control::charge_serialized(
+                    &effect.site,
+                    "flow_effect_result_site",
+                )
+                .map_err(|e| error(path, format!("{e:?}")))?;
+                CompiledFlowCondition::EffectCompare {
+                    producer,
+                    effect: effect.site.clone(),
+                    metric: *metric,
+                    comparison: *comparison,
+                    value: *value,
+                }
+            }
+            FlowCondition::Compare {
+                node_id,
+                metric,
+                comparison,
+                value,
+            } => {
+                let producer = *before.get(node_id).ok_or_else(|| {
+                    error(
+                        &format!("{path}.node_id"),
+                        "result is unknown, forward, out of scope, or not EffectsSettled",
+                    )
+                })?;
+                if !matches!(
+                    (metric, value),
+                    (FlowMetric::HpLost, FlowLiteral::Hp(_))
+                        | (
+                            FlowMetric::ResolvedTargets
+                                | FlowMetric::DamagedTargets
+                                | FlowMetric::KilledTargets,
+                            FlowLiteral::Count(_)
+                        )
+                ) {
+                    return Err(error(
+                        &format!("{path}.value"),
+                        "result/literal units do not match",
+                    ));
+                }
+                CompiledFlowCondition::Compare {
+                    producer,
+                    metric: *metric,
+                    comparison: *comparison,
+                    value: *value,
+                }
+            }
+        })
+    }
     fn node(
         &mut self,
         raw: &SkillFlowDef,
@@ -420,94 +594,7 @@ impl Compiler<'_> {
                 else_node,
                 ..
             } => {
-                let condition = match condition {
-                    FlowCondition::Always(value) => CompiledFlowCondition::Always(*value),
-                    FlowCondition::EffectCompare {
-                        node_id,
-                        effect_id,
-                        metric,
-                        comparison,
-                        value,
-                    } => {
-                        let producer = *before.get(node_id).ok_or_else(|| error(
-                            &format!("{path}.condition.node_id"),
-                            "effect result is unknown, forward, out of scope, or not EffectsSettled"))?;
-                        let CompiledFlowNodeKind::Action { step_index, .. } =
-                            self.nodes[producer].kind
-                        else {
-                            return Err(error(path, "effect result requires an Action producer"));
-                        };
-                        crate::authoring::control::charge(
-                            self.steps[step_index].effects.len() as u64,
-                            "flow_effect_result_reference",
-                        )
-                        .map_err(|e| error(path, format!("{e:?}")))?;
-                        let effect = self.steps[step_index]
-                            .effects
-                            .iter()
-                            .find(|effect| effect.id == *effect_id)
-                            .and_then(|effect| effect.source())
-                            .ok_or_else(|| error(path, "unknown producer effect"))?;
-                        if !matches!(
-                            (metric, value),
-                            (FlowMetric::HpLost, FlowLiteral::Hp(_))
-                                | (
-                                    FlowMetric::ResolvedTargets
-                                        | FlowMetric::DamagedTargets
-                                        | FlowMetric::KilledTargets,
-                                    FlowLiteral::Count(_)
-                                )
-                        ) {
-                            return Err(error(path, "effect result/literal units do not match"));
-                        }
-                        crate::authoring::control::charge_serialized(
-                            &effect.site,
-                            "flow_effect_result_site",
-                        )
-                        .map_err(|e| error(path, format!("{e:?}")))?;
-                        CompiledFlowCondition::EffectCompare {
-                            producer,
-                            effect: effect.site.clone(),
-                            metric: *metric,
-                            comparison: *comparison,
-                            value: *value,
-                        }
-                    }
-                    FlowCondition::Compare {
-                        node_id,
-                        metric,
-                        comparison,
-                        value,
-                    } => {
-                        let producer = *before.get(node_id).ok_or_else(|| {
-                            error(
-                                &format!("{path}.condition.node_id"),
-                                "result is unknown, forward, out of scope, or not EffectsSettled",
-                            )
-                        })?;
-                        if !matches!(
-                            (metric, value),
-                            (FlowMetric::HpLost, FlowLiteral::Hp(_))
-                                | (
-                                    FlowMetric::ResolvedTargets
-                                        | FlowMetric::DamagedTargets
-                                        | FlowMetric::KilledTargets,
-                                    FlowLiteral::Count(_)
-                                )
-                        ) {
-                            return Err(error(
-                                &format!("{path}.condition.value"),
-                                "result/literal units do not match",
-                            ));
-                        }
-                        CompiledFlowCondition::Compare {
-                            producer,
-                            metric: *metric,
-                            comparison: *comparison,
-                            value: *value,
-                        }
-                    }
-                };
+                let condition = self.condition(condition, &format!("{path}.condition"), before)?;
                 let (yes, _, yd, yr) = self.node(
                     then_node,
                     &format!("{path}.then_node"),
@@ -628,7 +715,7 @@ impl CompiledSkillFlow {
         )
         .map_err(|e| error("steps", format!("{e:?}")))?;
         if let Some(raw) = source {
-            preflight(raw, 1, &mut 0, &mut bytes)?;
+            preflight(raw, 1, &mut 0, &mut 0, &mut bytes)?;
             let mut compiler = Compiler {
                 steps,
                 nodes: Vec::new(),
@@ -748,7 +835,7 @@ impl CompiledSkillFlow {
         let original_steps = self.step_ids.len();
         let mut bytes = 0usize;
         for (_, raw) in branches {
-            preflight(raw, 1, &mut 0, &mut bytes)?;
+            preflight(raw, 1, &mut 0, &mut 0, &mut bytes)?;
         }
         crate::authoring::control::charge(self.nodes.len() as u64, "flow_side_scope_prepare")
             .map_err(|e| error("flow", format!("{e:?}")))?;

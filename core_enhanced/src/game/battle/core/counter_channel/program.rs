@@ -91,10 +91,8 @@ pub(super) fn extent(p: &CounterChannelDef) -> Option<usize> {
     Some(n)
 }
 fn scale(base: u32, ratio: MarkRatio) -> Result<u32, GameError> {
-    u32::try_from(
-        (u128::from(base) * u128::from(ratio.numerator)).div_ceil(u128::from(ratio.denominator)),
-    )
-    .map_err(|_| GameError::InvalidAction)
+    u32::try_from((u128::from(base) * u128::from(ratio.numerator)) / u128::from(ratio.denominator))
+        .map_err(|_| GameError::InvalidAction)
 }
 pub(super) fn gain(
     p: &CounterChannelDef,

@@ -18,11 +18,28 @@ pub struct ActionModifier {
     pub variant: RelicVariant,
     pub change: ActionChange,
 }
+impl ActionModifier {
+    /// The provider position qualifies this authored rule inside one effective
+    /// plan. It is provenance, not a transferable execution capability.
+    pub(crate) fn contribution_rule_id(&self, provider: usize) -> String {
+        format!("action-{provider}-{}", self.id)
+    }
+
+    /// Static rule correspondence only. The occurrence's actual provider and
+    /// copy must come from the captured runtime plan, not this name check.
+    pub(crate) fn matches_contribution_rule_id(&self, value: &str) -> bool {
+        let Some((provider, authored)) = value.strip_prefix("action-")
+            .and_then(|tail| tail.split_once('-')) else { return false; };
+        let Ok(index) = provider.parse::<usize>() else { return false; };
+        provider == index.to_string() && authored == self.id
+    }
+}
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub enum ActionChange {
     Area { step: String, change: AreaChange },
     SupportRange { step: String, effect: String, pattern: TileRangePattern },
+    SupportRadius { step: String, effect: String, percent: u32 },
     TauntDamage { step: String, effect: String, taken_percent: u32, basic_percent: u32 },
     Range {
         steps: Vec<String>,
@@ -101,6 +118,14 @@ impl ActionPolicy {
                     .ok_or_else(|| "Unknown action modifier step".to_string())
             };
             match &m.change {
+                ActionChange::SupportRadius { step: id, effect, percent } => {
+                    if *percent == 0 || *percent > i32::MAX as u32 {
+                        return Err("Support radius percent outside positive native range".into());
+                    }
+                    if !step(id)?.effects.iter().any(|e| &e.id == effect && support_radius(&e.op).is_some()) {
+                        return Err("Support radius requires an authored circular group support effect".into());
+                    }
+                }
                 ActionChange::SupportRange { step: id, effect, pattern } => {
                     pattern.validate()?;
                     if !step(id)?.effects.iter().any(|e| &e.id == effect && matches!(&e.op, super::SkillEffectDef::Sustained { definition: super::sustained::SustainedEffectDef::ChannelAura { aura, .. } } if aura.support.is_some())) {
@@ -178,6 +203,9 @@ impl ActionPolicy {
                         if *duration_ms == 0 {
                             return Err("Vulnerability requires positive duration".into());
                         }
+                        if !matches!(&e.op, super::SkillEffectDef::Sustained { definition: super::sustained::SustainedEffectDef::HitStatus { profile, .. } } if profile.kind.is_hard_control() && profile.vulnerability.is_none()) {
+                            return Err("Vulnerability requires a stun or freeze without an existing vulnerability".into());
+                        }
                     }
                 }
                 ActionChange::ProtectInterruption => (),
@@ -185,4 +213,20 @@ impl ActionPolicy {
         }
         Ok(())
     }
+}
+
+/// Only group footprints are scalable. Converted selected-target reach is a
+/// separate policy, and a tile mask has no implied continuous radius.
+pub(crate) fn support_radius(effect: &super::SkillEffectDef) -> Option<u32> {
+    if crate::game::relic::structural::support::policy(effect)
+        .and_then(|p| p.range.as_ref()).is_some() { return None; }
+    let radius = match effect {
+        super::SkillEffectDef::Sustained { definition: super::sustained::SustainedEffectDef::ChannelAura { aura, .. } } => aura.radius_units,
+        super::SkillEffectDef::PersonalShieldGrant { definition } => match definition.recipients {
+            crate::game::relic::structural::authoring::PersonalShieldRecipientsDef::PlayerEmployeesAtRelease { radius_units } => radius_units,
+            _ => return None,
+        },
+        _ => return None,
+    };
+    (radius > 0).then_some(radius)
 }

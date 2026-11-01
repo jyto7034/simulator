@@ -1,0 +1,14 @@
+# E05 양막: 재생 20초는 위임 정책값. 장비 능력치와 피해량은 별도 원본이 소유한다.
+version: 1
+id: equipment-defense-fixture
+values:
+  - name: recharging-barrier
+    value:
+      DefenseProgram:
+        RechargingSkillBarrier:
+          recharge_ms: 20000
+equipment_defenses:
+  - equipment: r11_weapon
+    program: { Shared: recharging-barrier }
+definitions: []
+skills: []

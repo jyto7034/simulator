@@ -50,6 +50,7 @@ impl CompiledAmountEntry {
 #[derive(Debug, Clone, Default)]
 pub struct ValueExprCatalog {
     entries: BTreeMap<EffectSite, CompiledAmountEntry>,
+    states: BTreeMap<EffectSite, Arc<crate::game::ability::state_program::CompiledStateProgram>>,
 }
 
 enum AmountInput<'a> {
@@ -67,6 +68,12 @@ impl AmountInput<'_> {
 }
 
 impl ValueExprCatalog {
+    pub(crate) fn state(&self, site: &EffectSite) -> Option<&Arc<crate::game::ability::state_program::CompiledStateProgram>> {
+        self.states.get(site)
+    }
+    pub(crate) fn states(&self) -> &BTreeMap<EffectSite, Arc<crate::game::ability::state_program::CompiledStateProgram>> {
+        &self.states
+    }
     pub fn get(&self, site: &EffectSite) -> Option<&CompiledAmountEntry> {
         self.entries.get(site)
     }
@@ -84,7 +91,7 @@ impl ValueExprCatalog {
     }
 
     pub fn contains_authored_expressions(&self) -> bool {
-        self.entries
+        self.states.values().any(|state| state.has_expressions) || self.entries
             .values()
             .any(CompiledAmountEntry::is_authored_expression)
     }
@@ -113,26 +120,17 @@ impl ValueExprCatalog {
         mut budget: Option<&mut crate::game::relic::structural::Work>,
     ) -> Result<Self, crate::game::data::live_ron::LiveRonError> {
         let mut entries = BTreeMap::new();
-        let reinput_skills: std::collections::BTreeSet<_> = skills
-            .skills
-            .iter()
-            .flat_map(|s| &s.steps)
-            .flat_map(|s| &s.effects)
-            .filter_map(|e| {
-                if let SkillEffectDef::Sustained {
-                    definition:
-                        crate::game::ability::sustained::SustainedEffectDef::BasicAttackOverlay {
-                            goodbye_skill: Some(id),
-                            ..
-                        },
-                } = &e.op
-                {
-                    Some(id.as_str())
-                } else {
-                    None
+        let mut states = BTreeMap::new();
+        let mut reinput_skills = std::collections::BTreeSet::new();
+        for effect in skills.skills.iter().flat_map(|s| &s.steps).flat_map(|s| &s.effects) {
+            match &effect.op {
+                SkillEffectDef::Sustained { definition: crate::game::ability::sustained::SustainedEffectDef::BasicAttackOverlay { goodbye_skill: Some(id), .. } } => { reinput_skills.insert(id.as_str()); }
+                SkillEffectDef::Sustained { definition: crate::game::ability::sustained::SustainedEffectDef::State { program, .. } } => {
+                    program.visit_children(|id| { reinput_skills.insert(id.as_str()); });
                 }
-            })
-            .collect();
+                _ => {}
+            }
+        }
         for skill in &skills.skills {
             let flow = skills.compiled_flow(skill.id.as_str()).map_err(|cause| {
                 crate::game::data::live_ron::LiveRonError::validation(
@@ -149,6 +147,21 @@ impl ValueExprCatalog {
                     delivery_capabilities(skill.cast_selection(), &step.target, &step.delivery);
                 capabilities.deadline |= has_deadline || reinput_skills.contains(skill.id.as_str());
                 for (effect_index, effect) in step.effects.iter().enumerate() {
+                    if let SkillEffectDef::Sustained { definition: definition @ (crate::game::ability::sustained::SustainedEffectDef::State { program, .. } | crate::game::ability::sustained::SustainedEffectDef::PreparedState { program, .. }) } = &effect.op {
+                        let source = effect.source().ok_or_else(|| crate::game::data::live_ron::LiveRonError::validation(
+                            "data/skills/base.ron", "skills", Some(skill.id.to_string()),
+                            Some(format!("action.{}.effects[{effect_index}]", step.id)), "state compile requires bound EffectSource"))?;
+                        let mut selected_limits = limits.clone();
+                        if let Some(budget) = budget.as_ref() { selected_limits.max_compile_work = selected_limits.max_compile_work.min(budget.remaining()); }
+                        let compiled = if matches!(definition, crate::game::ability::sustained::SustainedEffectDef::PreparedState { .. }) { program.compile_prepared(Some(source), &selected_limits) } else { program.compile_bound(Some(source), &selected_limits) }
+                            .map_err(|e| source_error(source, e).with_phase(LiveRonPhase::Compile))?;
+                        if let Some(budget) = budget.as_mut() {
+                            budget.charge(usize::try_from(compiled.compile_work).map_err(|_| source_error(source, "state work conversion"))?, "effective_state_compile")
+                                .map_err(|e| source_error(source, e.to_string()))?;
+                        }
+                        if states.insert(source.site.clone(), compiled).is_some() { return Err(source_error(source, "duplicate state EffectSite")); }
+                        continue;
+                    }
                     let (kind, expression) = match &effect.op {
                         SkillEffectDef::Damage { amount, .. } => (
                             AmountPlanKind::Damage,
@@ -242,7 +255,7 @@ impl ValueExprCatalog {
                 }
             }
         }
-        Ok(Self { entries })
+        Ok(Self { entries, states })
     }
 
     pub(crate) fn ensure_runtime_publishable(
@@ -344,6 +357,7 @@ pub(crate) fn delivery_capabilities(
             DeliveryDef::TileArea { area, .. } => (false, true, false, true, area.is_independent()),
         };
     DeliveryCapabilities {
+        state_context: false,
         snapshot: true,
         live: true,
         target_at_release,
@@ -424,7 +438,11 @@ fn validate_references(
                     ResultSelector::CurrentActionPrefix => {}
                 }
             }
-            ValueRef::Stat { .. }
+            ValueRef::StateField { .. } | ValueRef::EventHpLost => {
+                return Err(source_error(source, "state reads require a state-program owner"));
+            }
+            ValueRef::RelationCount { .. }
+            | ValueRef::Stat { .. }
             | ValueRef::HitPoints { .. }
             | ValueRef::Time(_)
             | ValueRef::AggregateMember { .. } => {}

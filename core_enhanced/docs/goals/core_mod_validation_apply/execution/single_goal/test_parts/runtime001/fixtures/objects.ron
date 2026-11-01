@@ -1,7 +1,0 @@
-(objects:[(
- id:"u11_finite_actor",base_uuid:"c0de1100-0000-0000-0000-000000000301",
- family:"u11_object",display_name:"Independent finite actor",ttl_ms:250,max_alive:2,max_total:4,
- on_source_removed:Persist,
- kind:Actor((max_health:100,attack:10,defense:0,magic_resistance:0,movement:(),motion:Stationary,
-  mobility:ground,basic_attack:(),resonance:(),skill_id:None))
-)])

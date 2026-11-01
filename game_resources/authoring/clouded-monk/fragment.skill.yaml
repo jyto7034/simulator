@@ -1,0 +1,114 @@
+# Current authored design; Unresolved leaves are not executable defaults.
+# See the corresponding abnormalities/*/fragment.md and synergies.md policies.
+version: 1
+id: clouded-monk-burst
+values:
+- name: burst-power
+  value:
+    Amount:
+      moment: Snapshot
+      root:
+        Ratio:
+          numerator:
+            Mul:
+              value:
+                Read:
+                  Stat:
+                    subject: Source
+                    stat: Attack
+              scalar:
+                Const:
+                  value:
+                    Unresolved: burst-percent
+                  unit: Scalar
+          denominator:
+            Const:
+              value: 100
+              unit: Scalar
+          rounding: Floor
+- name: delayed-impact
+  value:
+    Delivery:
+      TileArea:
+        footprint:
+          Unresolved: impact-footprint
+        area:
+          anchor: AcceptedCastTarget
+          tile_origin: Anchor
+          tracking: GroundFixed
+          hit_targets: Enemies
+          first_tick_delay_ms:
+            Unresolved: travel-duration
+          on_hit_caster_heal_percent:
+            Unresolved: recovery-percent
+- name: none
+  value:
+    Effects: []
+definitions:
+- name: area-impact
+  parameters:
+  - name: power
+    value_type: Amount
+  - name: delivery
+    value_type: Delivery
+  - name: after
+    value_type: Effects
+  body:
+    Action:
+      id: hit
+      target:
+        Literal:
+          Target: CastTarget
+      delivery:
+        Parameter: delivery
+      effects:
+      - Damage:
+          id: damage
+          tags:
+          - damage
+          - area
+          amount:
+            Parameter: power
+          damage_type: Physical
+      - Append:
+          effects:
+            Parameter: after
+      wait: Released
+skills:
+- id: fragment_monk_hungry_burst
+  name: 아귀의 탐식
+  kind: Targeted
+  cast_targeting:
+    Explicit:
+      selection: automatic_unit
+      target:
+        EnemySingle:
+          rule: RouteProgress
+      reach: pattern
+      target_range:
+        Unresolved: admission-footprint
+      air_capable: true
+  prepare_ms:
+    Unresolved: prepare-duration
+  focus_permissions:
+    allows_move: false
+    allows_basic_attack: false
+  admission:
+    capacity:
+      Unresolved: capacity
+    requirement: Full
+    cost: All
+  body:
+    Call:
+      id: bite
+      definition: area-impact
+      arguments:
+      - name: power
+        value:
+          Shared: burst-power
+      - name: delivery
+        value:
+          Shared: delayed-impact
+      - name: after
+        value:
+          Shared: none

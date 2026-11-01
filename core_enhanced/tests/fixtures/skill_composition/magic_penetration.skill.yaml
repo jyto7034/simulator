@@ -1,0 +1,16 @@
+# MP01 technical input; this equipment exists only in the test pack.
+# No official equipment assignment or release balance is implied.
+version: 2
+id: magic-penetration-fixture
+values:
+  - name: magic-penetration
+    value:
+      AttackProgram:
+        reactions: []
+        direct_magic_penetration_percent: 25
+        direct_magic_penetration_flat: 10
+equipment_attacks:
+  - equipment: mp01_probe_accessory
+    program: { Shared: magic-penetration }
+definitions: []
+skills: []

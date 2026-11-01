@@ -1,0 +1,22 @@
+# Two survivals, then a terminal employee transformation on the next eligible battle.
+version: 2
+id: employee-metamorphosis-fixture
+resources:
+  - { id: revival_total, owner: Employee, lifetime: Run, initial: 0, cap: 3 }
+  - { id: revival_used, owner: Employee, lifetime: Attempt, initial: 0, cap: 1 }
+values:
+  - name: mimicry-revival
+    value:
+      DefenseProgram:
+        EmployeeRevival:
+          cumulative: revival_total
+          battle_used: revival_used
+          max_revivals: 2
+          restore_percent: 50
+          invulnerable_ms: 1000
+          transform_into: revival_form
+equipment_defenses:
+  - equipment: r11_accessory
+    program: { Shared: mimicry-revival }
+definitions: []
+skills: []

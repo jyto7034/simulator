@@ -1,4 +1,7 @@
 use super::*;
+use crate::game::battle::core::boss_runtime::tests::compiled_action_fixture::{
+    assert_fragment_trace_origin, hp_trace_rows, primary_fragment_input,
+};
 use crate::game::battle::core::{
     boss_runtime::tests::compiled_action_fixture::{cast, fixture_graph, place},
     sim::BattleExecutionState,
@@ -337,4 +340,151 @@ fn guard_charge_retained_boundary_is_exact_and_retry_does_not_duplicate_accumula
     hit(&mut c, e, a, 100, DamageSource::Ability, false, 0).unwrap();
     assert_eq!(stored(&c, a), 30);
     println!("guard charge retained boundary {boundary} at {site}");
+}
+
+#[test]
+fn wearer_reduction_combines_with_passive_guard_without_crediting_armor() {
+    let (mut c, _, a, e, _) = fixture(&[0], 1000);
+    let item = c
+        .items
+        .values()
+        .find(|i| i.owner_unit_instance == a)
+        .unwrap();
+    let definition = c
+        .game_data
+        .equipment_data
+        .items
+        .iter()
+        .find(|d| d.uuid == item.base_uuid)
+        .unwrap()
+        .id
+        .clone();
+    let source = include_str!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/fixtures/skill_composition/wearer_reduction.skill.yaml"
+    ))
+    .replace("placeholder_schadenfreude_armor", &definition);
+    let artifact = crate::authoring::composition::compile_yaml(&source).unwrap();
+    c.game_data = crate::game::data::GameDataBuilder::from_validated(
+        &crate::game::data::ValidatedGameData::from(std::sync::Arc::clone(&c.game_data)),
+    )
+    .with_equipment_defenses(artifact.equipment_defenses().to_vec())
+    .build_arc();
+    c.units.get_mut(&a).unwrap().stats.current_health = 500;
+    hit(&mut c, e, a, 100, DamageSource::Ability, false, 0).unwrap();
+    assert_eq!(
+        c.units[&a].stats.current_health, 480,
+        "50% armor plus30% guard"
+    );
+    assert_eq!(
+        stored(&c, a),
+        30,
+        "only the guard's own30-point contribution is stored"
+    );
+}
+
+#[test]
+fn integration_guard_counter_hp_keeps_child_cast_and_root_fragment() {
+    use crate::authoring::trace::{TraceAttempt, TraceLimits, TraceOptions};
+    let (base, state, a, e, _) = fixture(&[0], 1000);
+    let copy = primary_fragment_input(&base, a);
+    let mut native_baseline = None;
+    for options in [
+        None,
+        Some(TraceOptions::default()),
+        Some(TraceOptions {
+            limits: Some(TraceLimits::default()),
+        }),
+        Some(TraceOptions {
+            limits: Some(TraceLimits {
+                max_attempt_work: 1,
+                ..Default::default()
+            }),
+        }),
+    ] {
+        let mut c = base.clone();
+        let mut s = state.clone();
+        let trace_from = c.event_log.latest_seq();
+        if let Some(options) = options {
+            c.enable_authoring_observation_with_trace(options);
+        }
+        let _attempt = options.map(|o| TraceAttempt::enter(o).unwrap());
+        hit(&mut c, e, a, 100, DamageSource::Ability, false, 0).unwrap();
+        assert_eq!(stored(&c, a), 30);
+        cast(&mut c, a, 0);
+        c.step_battle_execution_until(&mut s, 1).unwrap();
+        let before = c.units[&e].stats.current_health;
+        hit(&mut c, e, a, 100, DamageSource::Ability, false, 1).unwrap();
+        assert_eq!(c.units[&e].stats.current_health, before - 310);
+        if options.is_some() {
+            let observations = c.authoring_observation().unwrap().unwrap();
+            let hp = observations
+                .latest_nonzero_sourced_hp
+                .as_ref()
+                .expect("counter has authored HP provenance");
+            assert_eq!(
+                hp.time_ms, 1,
+                "must observe the counter, not the earlier reflection"
+            );
+            assert_eq!(hp.change.hp_delta(), -310);
+            assert_eq!(hp.target_unit, e);
+            assert_eq!(hp.source_unit, Some(a));
+            assert_eq!(
+                hp.fragment
+                    .as_ref()
+                    .expect("child retains root fragment")
+                    .copy_uuid,
+                copy
+            );
+            assert_eq!(hp.fragment.as_ref().unwrap().skill_id, "r11_aura");
+            let effect = hp.source.as_ref().expect("counter has its own cast");
+            assert_eq!(effect.cast.skill_id.as_str(), "r11_aura__counter");
+            assert_eq!(effect.cast.caster_instance_id, a);
+            assert_eq!(effect.authored.source_file, "r11/effect.ron");
+            assert_eq!(
+                effect.cast.cast_seq, 1,
+                "root cast0 precedes the counter child1"
+            );
+        }
+        if options
+            .and_then(|o| o.limits)
+            .is_some_and(|l| l.max_attempt_work != 1)
+        {
+            let rows = hp_trace_rows(&c, trace_from);
+            let counters: Vec<_> = rows
+                .iter()
+                .filter(|row| {
+                    row["time_ms"] == 1
+                        && row["target_unit"] == serde_json::json!(e)
+                        && row["change"]["before"].as_i64().unwrap()
+                            - row["change"]["after"].as_i64().unwrap()
+                            == 310
+                })
+                .collect();
+            assert_eq!(counters.len(), 1);
+            assert_fragment_trace_origin(counters[0], a, Some(("r11_aura__counter", 1)));
+        }
+        if options
+            .and_then(|o| o.limits)
+            .is_some_and(|l| l.max_attempt_work == 1)
+        {
+            assert!(
+                c.authoring_trace.view().gap.is_some(),
+                "trace must actually saturate"
+            );
+            assert!(c.authoring_trace.view().ndjson.is_empty());
+        }
+        let native = (
+            c.transaction_debug_snapshot(),
+            c.event_queue_debug_snapshot(),
+            serde_json::to_value(c.runtime_fact_snapshot().unwrap()).unwrap(),
+            c.event_log.to_json_string().unwrap(),
+            format!("{s:?}"),
+        );
+        if let Some(expected) = &native_baseline {
+            assert_eq!(&native, expected, "observation mode {options:?}");
+        } else {
+            native_baseline = Some(native);
+        }
+    }
 }

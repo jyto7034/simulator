@@ -215,7 +215,9 @@ fn rv002_continue_reconstructs_structural_plan_from_current_generation_without_s
     assert_eq!(current.identity(), core.game_data.identity());
     assert!(!std::ptr::eq(current.database(), core.game_data.database()));
     let mut restored = GameCore::new(current.clone(), 0xdead);
-    restored.install_authoritative_player_profile(core.state.player_profile.clone()).unwrap();
+    restored
+        .install_authoritative_player_profile(core.state.player_profile.clone())
+        .unwrap();
     restored
         .continue_from_active_run_checkpoint(
             player,
@@ -258,7 +260,7 @@ fn rv002_continue_reconstructs_structural_plan_from_current_generation_without_s
 
 #[test]
 fn rv006_same_skill_two_structural_owners_keep_paused_immediate_and_delayed_results_independent() {
-    for delay in [0, 20] {
+    for (delay, second_corrupt) in [(0, true), (20, true), (20, false)] {
         let skills = SKILLS.replace("delay_ms: 0", &format!("delay_ms: {delay}"));
         let (mut core, player, first) = setup_with_skill_input(definitions(), false, &skills);
         let prototype_owner = core.game_data.skill_data.clone();
@@ -330,28 +332,44 @@ fn rv006_same_skill_two_structural_owners_keep_paused_immediate_and_delayed_resu
             crate::game::world::AdminCommand::AdminGrantRelicCorruptionCatalyst { amount: 1 },
         )
         .unwrap();
-        core.execute(
-            player,
-            PlayerBehavior::CorruptRelic {
-                copy_uuid: second_relic,
-            },
-        )
-        .unwrap();
-        assert_eq!(core.state.crafting_resources.relic_corruption_catalysts, 0);
+        if second_corrupt {
+            core.execute(
+                player,
+                PlayerBehavior::CorruptRelic {
+                    copy_uuid: second_relic,
+                },
+            )
+            .unwrap();
+        }
+        assert_eq!(
+            core.state.crafting_resources.relic_corruption_catalysts,
+            if second_corrupt { 0 } else { 1 }
+        );
         assert_eq!(
             core.state.relics.get(first_relic).unwrap().variant,
             crate::game::relic::RelicVariant::Normal
         );
         assert_eq!(
             core.state.relics.get(second_relic).unwrap().variant,
-            crate::game::relic::RelicVariant::Corrupt
+            if second_corrupt {
+                crate::game::relic::RelicVariant::Corrupt
+            } else {
+                crate::game::relic::RelicVariant::Normal
+            }
         );
         let plans = [
             query(&mut core, player, first),
             query(&mut core, player, second),
         ];
         assert_eq!(amounts(&plans[0]), vec![30, 75]);
-        assert_eq!(amounts(&plans[1]), vec![40]);
+        assert_eq!(
+            amounts(&plans[1]),
+            if second_corrupt {
+                vec![40]
+            } else {
+                vec![30, 75]
+            }
+        );
         assert_ne!(plans[0].fingerprint, plans[1].fingerprint);
         for (index, employee) in [first, second].into_iter().enumerate() {
             assert_eq!(plans[index].employee_uuid, employee);
@@ -459,13 +477,16 @@ fn rv006_same_skill_two_structural_owners_keep_paused_immediate_and_delayed_resu
             );
             core.advance_active_battle_for_server_tick(20).unwrap();
         }
-        assert_eq!(before_hp - enemy_hp(&core), 145);
+        let expected_damage = [105, if second_corrupt { 40 } else { 105 }];
+        assert_eq!(
+            u64::from(before_hp - enemy_hp(&core)),
+            expected_damage.iter().sum::<u64>()
+        );
         let battle = &core.state.active_battle.as_ref().unwrap().battle;
         for (index, actor) in actors.into_iter().enumerate() {
             let caused = &battle.actor_fact_summary(actor).unwrap().caused;
             assert_eq!(
-                caused.damage_hp_lost,
-                [105, 40][index],
+                caused.damage_hp_lost, expected_damage[index],
                 "per-actor result cannot hide a swapped or shared graph"
             );
             let source = &caused.latest_nonzero_damage.as_ref().unwrap().source;
@@ -478,6 +499,113 @@ fn rv006_same_skill_two_structural_owners_keep_paused_immediate_and_delayed_resu
             let binding = source.relic_effective().unwrap();
             assert_eq!(binding.plan.employee_uuid, [first, second][index]);
             assert_eq!(binding.plan.fingerprint, plans[index].fingerprint);
+
+            // The oracle comes from the granted copies and literal authored
+            // rules above, not from a prospective plan or the other actor.
+            // Two normal copies intentionally have identical amounts/aliases.
+            let copy = [first_relic, second_relic][index];
+            let corrupt = index == 1 && second_corrupt;
+            let authored = source.authored.as_ref().unwrap();
+            let effect = binding.effect(&authored.site).unwrap();
+            let key = if corrupt {
+                EffectiveEffectKey::Original {
+                    site: crate::game::ability::authoring::EffectSite {
+                        action: crate::game::ability::authoring::ActionSite {
+                            definition_id: "tb_strike".into(),
+                            action_id: "hit".into(),
+                        },
+                        effect_id: "original".into(),
+                    },
+                }
+            } else {
+                assert_eq!(authored.source_file, "effective:relic_structural");
+                EffectiveEffectKey::Generated {
+                    relic_copy_uuid: copy,
+                    grant_rule_id: "grant".into(),
+                    anchor: crate::game::ability::authoring::ActionSite {
+                        definition_id: "tb_strike".into(),
+                        action_id: "hit".into(),
+                    },
+                    local_action_id: "hit".into(),
+                    local_effect_id: "bonus".into(),
+                }
+            };
+            assert_eq!(effect.key, key);
+            let property = effect
+                .properties
+                .iter()
+                .find(|property| property.property == RelicProperty::DamageAmount)
+                .unwrap();
+            let rules: &[&str] = if corrupt {
+                &["corrupt_add"]
+            } else {
+                &["bonus_add", "bonus_scale"]
+            };
+            let variant = if corrupt {
+                crate::game::relic::RelicVariant::Corrupt
+            } else {
+                crate::game::relic::RelicVariant::Normal
+            };
+            let matches_contributors =
+                |rows: &[crate::game::relic::structural::PlanContribution]| {
+                    rows.len() == rules.len()
+                        && rules.iter().all(|rule| {
+                            rows.iter()
+                                .filter(|row| {
+                                    row.copy_uuid == copy
+                                        && row.definition_id == "tb_relic"
+                                        && row.variant == variant
+                                        && row.rule_id == *rule
+                                })
+                                .count()
+                                == 1
+                        })
+                };
+            assert!(matches_contributors(&property.contributions));
+            let mut wrong = property.contributions.clone();
+            wrong[0].copy_uuid = [first_relic, second_relic][1 - index];
+            assert!(
+                !matches_contributors(&wrong),
+                "same-value other-copy contribution must fail"
+            );
+            wrong = property.contributions.clone();
+            wrong.pop();
+            assert!(
+                !matches_contributors(&wrong),
+                "missing contribution must fail"
+            );
+            wrong = property.contributions.clone();
+            wrong.push(wrong[0].clone());
+            assert!(
+                !matches_contributors(&wrong),
+                "duplicate contribution must fail"
+            );
+            wrong = property.contributions.clone();
+            wrong[0].rule_id = "original_add".into();
+            assert!(
+                !matches_contributors(&wrong),
+                "different authored rule must fail"
+            );
+
+            binding.validate(core.game_data.identity(), source).unwrap();
+            let other = &battle
+                .actor_fact_summary(actors[1 - index])
+                .unwrap()
+                .caused
+                .latest_nonzero_damage
+                .as_ref()
+                .unwrap()
+                .source;
+            let mut mixed = source.as_ref().clone();
+            mixed.fragment = other.fragment.clone();
+            assert!(binding.validate(core.game_data.identity(), &mixed).is_err());
+            mixed = source.as_ref().clone();
+            mixed.actor = other.actor;
+            assert!(binding.validate(core.game_data.identity(), &mixed).is_err());
+            let mut absent_site = authored.site.clone();
+            absent_site.effect_id = "missing_effect".into();
+            assert!(binding.effect(&absent_site).is_none());
+            assert_eq!(binding.effect(&authored.site).unwrap().key, key);
         }
         for (index, employee) in [first, second].into_iter().enumerate() {
             assert_eq!(
@@ -490,6 +618,6 @@ fn rv006_same_skill_two_structural_owners_keep_paused_immediate_and_delayed_resu
             serde_json::to_vec(core.game_data.skill_data.as_ref()).unwrap(),
             prototype
         );
-        println!("RV006 same_skill=tb_strike delay={delay} normal_graph30_75_corrupt_graph40=true actor_damage105_40=true both_accepted_paused=true query_copy_source_prototype_isolated=true");
+        println!("RV006 same_skill=tb_strike delay={delay} second_corrupt={second_corrupt} actor_damage={expected_damage:?} both_accepted_paused=true exact_generated_key_and_contributions=true mixed_missing_duplicate_sources_rejected=true");
     }
 }

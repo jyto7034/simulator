@@ -258,6 +258,7 @@ mod tests {
             resonance_lock_ms: 0,
             resonance_use: None,
             next_resonance_pulse_ms: None,
+            equipment_resonance_gain: None,
             next_action_time: 0,
             pending_cast: false,
             pending_cast_cause: None,
@@ -577,6 +578,60 @@ mod tests {
     }
 
     #[test]
+    fn off_route_spawn_joins_route_before_advancing_past_obstacles() {
+        // Same free top corridor and vertical route as the actual World failure.
+        // The target is reachable without crossing either obstacle tile.
+        for start_x in [0.5, 1.5] {
+            for mobility in [MobilityKind::Ground, MobilityKind::Airborne] {
+                let mut scenario = BattleScenario::empty((8, 8));
+                scenario.tactical_plan.enemy_plan = EnemyMovementPlan::PathAlongCells {
+                    cells: (0..=5)
+                        .map(|y| Position::new(5, y))
+                        .chain([Position::new(4, 5), Position::new(4, 6)])
+                        .collect(),
+                };
+                let mut core = BattleCore::new_from_scenario(scenario, empty_game_data(), 123);
+                for tile in [Position::new(1, 1), Position::new(4, 2)] {
+                    core.battlefield.add_static_obstacle(tile).unwrap();
+                }
+                let enemy_id = UnitInstanceId::from(Uuid::from_u128(2));
+                let mut enemy = runtime_unit(2, Side::Opponent, WorldVec2::new(start_x, 0.5), None);
+                enemy.mobility_kind = mobility;
+                core.units.insert(enemy_id, enemy);
+                for tick in 0..200 {
+                    core.run_continuous_attack_movement_tick(tick * 100, 100);
+                }
+                let position = core.unit_world_position(enemy_id).unwrap();
+                assert!(
+                    position.distance(WorldVec2::new(4.5, 6.5)) < 0.15,
+                    "{mobility:?} spawn x={start_x} stopped at {position:?} instead of the route end"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn off_route_goal_joins_nearest_segment_without_restarting_route() {
+        let mut scenario = BattleScenario::empty((8, 8));
+        scenario.tactical_plan.enemy_plan = EnemyMovementPlan::PathAlongCells {
+            cells: (0..=6).map(|y| Position::new(5, y)).collect(),
+        };
+        let mut core = BattleCore::new_from_scenario(scenario, empty_game_data(), 123);
+        let enemy_id = UnitInstanceId::from(Uuid::from_u128(2));
+        for reposition_until in [0, 1000] {
+            let mut enemy = runtime_unit(2, Side::Opponent, WorldVec2::new(3.5, 3.5), None);
+            enemy.ranged_reposition_until_ms = reposition_until;
+            core.units.insert(enemy_id, enemy);
+            let goals = core.build_continuous_attack_goals();
+            assert!(matches!(
+                goals.get(&enemy_id),
+                Some(MovementGoal::MoveToPoint { point, .. })
+                    if *point == WorldVec2::new(5.5, 3.5)
+            ));
+        }
+    }
+
+    #[test]
     fn enemy_empty_path_does_not_fall_back_to_chasing_far_player() {
         let mut scenario = BattleScenario::empty((8, 4));
         scenario.tactical_plan = TacticalPlan {
@@ -866,10 +921,14 @@ mod tests {
         });
         core.units.insert(overflow_enemy_id, overflow_enemy);
 
-        let starting_seq = core.event_log_seq;
+        let starting_seq = core.event_log.latest_seq();
         core.run_continuous_attack_movement_tick(0, 50);
 
         let movement_events = core.event_log.entries_after_seq(starting_seq);
+        assert!(movement_events.iter().any(|entry| matches!(
+            entry.event, BattleLogEvent::MovementSegmentStarted { unit_instance_id, .. }
+                if unit_instance_id == overflow_enemy_id
+        )), "the observed interval must include the unblocked enemy's movement");
         assert!(
             !movement_events.iter().any(|entry| matches!(
                 entry.event,

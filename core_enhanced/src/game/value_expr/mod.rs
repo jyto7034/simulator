@@ -27,6 +27,7 @@ pub use eval::{evaluate, narrow_damage, narrow_heal};
 pub(crate) use parse::{current_parse_limits, with_parse_limits};
 pub use parse::{validate_expression_input, ExprInputError, ExprParseLimits};
 
+// New reference tags extend the language without changing existing plans.
 pub const VALUE_EXPR_COMPILER_VERSION: u32 = 1;
 pub(crate) const VALUE_EXPR_TEXT_WORK_GRANULE: usize = 32;
 
@@ -152,6 +153,7 @@ pub enum StatSelector {
     Attack,
     SpellPower,
     AttackSpeedPoints,
+    Defense,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -193,6 +195,11 @@ pub enum ResultField {
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub enum ValueRef {
+    RelationCount { subject: ValueSubject, relation: RelationCountKind },
+    /// Only a state-program adapter may bind these; ordinary damage/heal
+    /// expressions cannot acquire state authority by naming a field.
+    StateField { name: String, unit: ValueUnit },
+    EventHpLost,
     Stat {
         subject: ValueSubject,
         stat: StatSelector,
@@ -216,11 +223,17 @@ pub enum ValueRef {
     },
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+pub enum RelationCountKind { BlockingHostiles }
+
 impl ValueRef {
     pub fn unit(&self) -> ValueUnit {
         match self {
+            Self::StateField { unit, .. } => unit.clone(),
+            Self::EventHpLost => ValueUnit::Magnitude,
+            Self::RelationCount { .. } => ValueUnit::Count,
             Self::Stat {
-                stat: StatSelector::Attack | StatSelector::SpellPower,
+                stat: StatSelector::Attack | StatSelector::SpellPower | StatSelector::Defense,
                 ..
             }
             | Self::HitPoints { .. } => ValueUnit::Magnitude,
@@ -280,6 +293,9 @@ pub enum FiniteSource {
     AuthoredMembers(Vec<AuthoredMember>),
     ResolvedTargets,
     ResolvedTargetsWhere(Vec<ResolvedTargetPredicate>),
+    /// Live unique hostile DOT recipients belonging to the State recipient.
+    /// Read-only membership; it grants neither a target handle nor authority.
+    StateOwnerDotTargets,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
@@ -394,6 +410,7 @@ impl ExprLimits {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct DeliveryCapabilities {
+    pub state_context: bool,
     pub snapshot: bool,
     pub live: bool,
     pub target_at_release: bool,
@@ -410,6 +427,7 @@ pub struct DeliveryCapabilities {
 impl DeliveryCapabilities {
     pub const fn constant_only() -> Self {
         Self {
+            state_context: false,
             snapshot: true,
             live: true,
             target_at_release: false,
@@ -427,6 +445,7 @@ impl DeliveryCapabilities {
     #[cfg(test)]
     pub(crate) const fn all() -> Self {
         Self {
+            state_context: true,
             snapshot: true,
             live: true,
             target_at_release: true,
@@ -446,6 +465,7 @@ impl DeliveryCapabilities {
 pub struct ContextRequirements {
     pub references: Vec<ValueRef>,
     pub resolved_targets: bool,
+    pub state_owner_dot_targets: bool,
     pub owner_grouping: bool,
     pub projected_tile_grouping: bool,
     pub resolved_owner_relations: Vec<ResolvedOwnerRelation>,
@@ -595,6 +615,7 @@ pub struct EvalFrame {
     // battle adapter reserves its full known cardinality before inserting.
     values: Vec<(ValueRef, TypedInteger)>,
     resolved_targets: Option<Arc<Vec<EvalMember>>>,
+    state_owner_dot_targets: Option<Arc<Vec<EvalMember>>>,
     resolved_target_views: Option<Arc<Vec<PreparedResolvedTargetView>>>,
 }
 
@@ -603,6 +624,7 @@ impl EvalFrame {
         Self {
             values: Vec::with_capacity(count),
             resolved_targets: None,
+            state_owner_dot_targets: None,
             resolved_target_views: None,
         }
     }
@@ -637,6 +659,14 @@ impl EvalFrame {
 
     pub fn set_resolved_targets(&mut self, members: Vec<EvalMember>) {
         self.resolved_targets = Some(Arc::new(members));
+    }
+
+    pub fn set_state_owner_dot_targets(&mut self, members: Vec<EvalMember>) {
+        self.state_owner_dot_targets = Some(Arc::new(members));
+    }
+
+    pub(crate) fn state_owner_dot_targets(&self) -> Option<&[EvalMember]> {
+        self.state_owner_dot_targets.as_deref().map(Vec::as_slice)
     }
 
     pub(crate) fn set_resolved_targets_shared(&mut self, members: Arc<Vec<EvalMember>>) {
@@ -717,7 +747,7 @@ impl EvalFrame {
                 .checked_add(value_ref_dynamic_bytes(reference)?)?
                 .checked_add(typed_integer_dynamic_bytes(value))?;
         }
-        if let Some(members) = &self.resolved_targets {
+        for members in [&self.resolved_targets, &self.state_owner_dot_targets].into_iter().flatten() {
             bytes = bytes
                 .checked_add(std::mem::size_of::<Vec<EvalMember>>())?
                 .checked_add(
@@ -883,6 +913,10 @@ pub(crate) fn typed_integer_dynamic_bytes(value: &TypedInteger) -> usize {
 pub(crate) fn value_ref_dynamic_bytes(reference: &ValueRef) -> Option<usize> {
     let mut bytes = 0_usize;
     match reference {
+        ValueRef::StateField { name, unit } => {
+            bytes = name.len().checked_add(value_unit_dynamic_bytes(unit))?;
+        }
+        ValueRef::EventHpLost => {}
         ValueRef::Resource { resource, .. } => {
             bytes = bytes.checked_add(resource.as_str().len())?;
         }
@@ -897,7 +931,7 @@ pub(crate) fn value_ref_dynamic_bytes(reference: &ValueRef) -> Option<usize> {
         ValueRef::AggregateMember { unit } => {
             bytes = bytes.checked_add(value_unit_dynamic_bytes(unit))?;
         }
-        ValueRef::Stat { .. } | ValueRef::HitPoints { .. } | ValueRef::Time(_) => {}
+        ValueRef::RelationCount { .. } | ValueRef::Stat { .. } | ValueRef::HitPoints { .. } | ValueRef::Time(_) => {}
     }
     Some(bytes)
 }

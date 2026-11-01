@@ -3277,7 +3277,7 @@ fn live_defense_battle_state_rejects_future_since_seq() {
 }
 
 #[derive(Debug, PartialEq, Eq)]
-struct BattleAdvanceAtomicSnapshot {
+pub(super) struct BattleAdvanceAtomicSnapshot {
     run_seed: u64,
     run_payload_json: String,
     run_checkpoint_json: String,
@@ -3305,7 +3305,7 @@ struct BattleAdvanceAtomicSnapshot {
     active_battle_present: bool,
 }
 
-fn battle_advance_atomic_snapshot(core: &GameCore) -> BattleAdvanceAtomicSnapshot {
+pub(super) fn battle_advance_atomic_snapshot(core: &GameCore) -> BattleAdvanceAtomicSnapshot {
     let active = core
         .state
         .active_battle
@@ -13692,3 +13692,7 @@ include!("paired_areas.inc.rs");
 include!("fusion_placement.inc.rs");
 
 include!("status_strike.inc.rs");
+
+include!("relation_action.inc.rs");
+
+include!("counter_channel.inc.rs");

@@ -42,7 +42,7 @@ fs.mkdirSync(out,{recursive:true});
  await page.fill('#search','깨진 맹세');await page.waitForTimeout(200);const current=await page.locator('#results .listrow').count();
  assert.equal(current,0);await page.getByRole('link',{name:'아카이브에서 검색',exact:true}).click();await page.waitForTimeout(100);assert((await page.locator('h1').textContent()).includes('아카이브 검색'));assert(await page.locator('#results .listrow').count()>0);
  await go('scenes');assert.equal(await page.locator('.scene-card').count(),data.scenes.length);assert.equal(await page.locator('.action-link').count(),data.scenes.reduce((n,s)=>n+s.actions.length,0));
- await page.selectOption('#scene-status','pending');assert.equal(await page.locator('.action-link').count(),1);
+ await page.selectOption('#scene-status','pending');assert.equal(await page.locator('.action-link').count(),data.scenes.reduce((n,s)=>n+s.actions.filter(a=>a.status==='pending').length,0));
  await page.selectOption('#scene-status','');
  for(const s of data.scenes){
   await go('scene='+s.id);assert.equal(await page.locator('.action-table tbody tr').count(),s.actions.length);
@@ -50,7 +50,8 @@ fs.mkdirSync(out,{recursive:true});
    if(s.images.length>1)await page.click(`[data-image="${i}"]`);
    await page.locator('#scene-image').evaluate(im=>im.decode());assert(await page.locator('#scene-image').evaluate(im=>im.naturalWidth>0));
   }
-  await page.click('#enlarge');assert(await page.locator('#lightbox').isVisible());await page.keyboard.press('Escape');assert(!await page.locator('#lightbox').isVisible());
+  if(s.images.length){await page.click('#enlarge');assert(await page.locator('#lightbox').isVisible());await page.keyboard.press('Escape');assert(!await page.locator('#lightbox').isVisible());}
+  else {assert.equal(await page.locator('#scene-image').count(),0);assert(await page.locator('.scene-no-image').isVisible());}
  }
  const badAnchors=await page.evaluate(data=>{
   const bad=[];const parsed=Object.fromEntries(Object.entries(data.pages).map(([k,p])=>[k,new DOMParser().parseFromString(p.html,'text/html')]));

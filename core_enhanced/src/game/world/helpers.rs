@@ -86,6 +86,22 @@ impl GameCore {
         left.removed.extend(right.removed);
     }
 
+    pub(super) fn equipment_form_view(&self, owned: &crate::game::resources::OwnedEquipment) -> Option<crate::game::ability::equipment_forms::EquipmentFormView> {
+        let program = self.game_data.equipment_attack_catalog().by_equipment.get(&owned.meta.uuid)?;
+        let forms = program.victory_forms.as_ref()?;
+        let balance = self.run_resources().and_then(|run| run.entries.iter().find(|entry|
+            entry.owner == crate::game::resource::ResourceOwner::EquipmentCopy(owned.instance_uuid) && entry.resource == forms.confirmed
+        )).map_or(0, |entry| entry.balance);
+        Some(forms.view(balance))
+    }
+
+    pub(super) fn equipment_item_dto(&self, owned: &crate::game::resources::OwnedEquipment) -> crate::game::resources::EquipmentItemDto {
+        let mut dto = crate::game::resources::EquipmentItemDto::from_owned_equipment(owned);
+        dto.form = self.equipment_form_view(owned);
+        if let Some(form) = &dto.form { dto.name = form.name.clone(); }
+        dto
+    }
+
     pub(super) fn equipped_item_dtos_from_target(
         _inventory: &Inventory,
         roster: Option<&EmployeeRoster>,

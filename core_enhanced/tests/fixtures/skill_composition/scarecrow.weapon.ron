@@ -1,0 +1,17 @@
+// E11 technical profile. One round is authored; numeric balance remains open.
+// Damage, timing and footprint are verification values, not release balance.
+(
+    action: Damage,
+    attack: 100, spell_power: 0,
+    range_role: Ranged, weapon_archetype: Gun,
+    deployment_affinity: platform_only, block_capacity: 0,
+    ground_defense_focus: None, platform_rest: Some((hp_recovery_per_tick: 1)),
+    damage_type: Physical, targeting_profile: DefaultForward, air_capable: true,
+    defense_tile_range: (include_anchor_tile: true, rows: [
+        "XXXXXXXXXXXXX", "XXXXXXXXXXXXX", "XXXXXXXXXXXXX", "XXXXXXXXXXXXX",
+        "XXXXXXXXXXXXX", "XXXXXXXXXXXXX", "XXXXXX@XXXXXX", "XXXXXXXXXXXXX",
+        "XXXXXXXXXXXXX", "XXXXXXXXXXXXX", "XXXXXXXXXXXXX", "XXXXXXXXXXXXX", "XXXXXXXXXXXXX",
+    ]),
+    interval_ms: 1000, windup_ms: 200, ranged_reposition_ms: 0,
+    delivery: Projectile(speed_units_per_ms: 10000),
+)

@@ -47,7 +47,11 @@ pub(super) fn apply(
             denominator,
         } => {
             // Multiple edits of one progress clock are an explicit conflict.
-            if modifiers.iter().filter(|m| m.provider == provider && matches!(&m.change,ActionChange::Area{step:s,change:AreaChange::RampRate{status:i,..}} if s==step && i==status)).count() != 1 { return Err(error("Multiple ramp-rate writers")); }
+            if modifiers.iter().filter(|m| m.provider == provider && matches!(
+                &m.change,
+                ActionChange::Area { step: s, change: AreaChange::RampRate { status: i, reached_rules: rules, .. } }
+                    if s == step && (i == status || rules.iter().any(|rule| reached_rules.contains(rule)))
+            )).count() != 1 { return Err(error("Multiple ramp-rate writers")); }
             let p = area
                 .ground_status
                 .as_mut()
@@ -102,7 +106,7 @@ pub(super) fn apply(
                     rule: current.contribution.rule_id.clone(),
                 }),
             };
-            compiler::admit_serialized_copy(&v, work)?;
+            compiler::admit_owned_copy(&v, work)?;
             target.vulnerability = Some(v);
         }
     }

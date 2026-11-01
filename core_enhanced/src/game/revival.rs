@@ -64,15 +64,40 @@ impl RevivalStagePolicy {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
+pub struct RevivalVariantPolicy {
+    /// Both hatch stages use this explicitly authored abnormality kind.
+    pub abnormality_id: String,
+    /// Granted together on the first hatch victory (Stage2), never on Stage3.
+    pub fragment_id: crate::game::data::skill_fragment_data::SkillFragmentId,
+    pub equipment_ids: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct BossRevivalPolicy {
     pub catalyst_material_id: String,
     pub catalyst_amount: u32,
     pub part_material_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub variant: Option<RevivalVariantPolicy>,
     pub stage_2: RevivalStagePolicy,
     pub stage_3: RevivalStagePolicy,
 }
 
 impl BossRevivalPolicy {
+    /// The existing hatched node owns exactly-once victory settlement. Queries
+    /// and the result producer use the same ordered guaranteed reward bundle.
+    pub(crate) fn victory_rewards(&self, stage: RevivalStage) -> Vec<RewardEffect> {
+        let mut rewards = Vec::new();
+        if stage == RevivalStage::Stage2 {
+            if let Some(variant) = &self.variant {
+                rewards.push(RewardEffect::GrantSkillFragment { fragment_id: variant.fragment_id.clone() });
+                rewards.extend(variant.equipment_ids.iter().cloned().map(|equipment_id| RewardEffect::GrantEquipment { equipment_id }));
+            }
+        }
+        rewards.extend(self.stage(stage).rewards.iter().cloned());
+        rewards
+    }
     pub fn stage(&self, stage: RevivalStage) -> &RevivalStagePolicy {
         match stage {
             RevivalStage::Stage2 => &self.stage_2,
@@ -232,8 +257,14 @@ crate::authoring::clone_shape::struct_shape!(BossRevivalPolicy {
     catalyst_material_id,
     catalyst_amount,
     part_material_id,
+    variant,
     stage_2,
     stage_3
+});
+crate::authoring::clone_shape::struct_shape!(RevivalVariantPolicy {
+    abnormality_id,
+    fragment_id,
+    equipment_ids
 });
 crate::authoring::clone_shape::copy_shape!(RevivalStage);
 crate::authoring::clone_shape::copy_shape!(RevivalNodeTuning);

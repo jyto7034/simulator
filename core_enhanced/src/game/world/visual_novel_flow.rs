@@ -270,7 +270,8 @@ impl GameCore {
             | BehaviorResult::BattleUnitTacticallyRelocated { battle_update, .. }
             | BehaviorResult::BattleUnitsTacticallySwapped { battle_update, .. }
             | BehaviorResult::BattleSkillTargetingFocusChanged { battle_update, .. }
-            | BehaviorResult::BattleSkillActivated { battle_update, .. } => {
+            | BehaviorResult::BattleSkillActivated { battle_update, .. }
+            | BehaviorResult::BattleRelationSelected { battle_update, .. } => {
                 let action_capabilities =
                     self.project_battle_action_capabilities(visual_novel.as_ref())?;
                 attach_visual_novel_to_update(battle_update, visual_novel);

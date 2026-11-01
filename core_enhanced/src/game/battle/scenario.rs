@@ -15,6 +15,12 @@ impl ScenarioGroupId {
     pub fn new(value: impl Into<String>) -> Self {
         Self(value.into())
     }
+    pub(crate) fn retained_extent(&self) -> Option<usize> {
+        std::mem::size_of::<Self>()
+            .checked_add(64)?
+            .checked_add(self.0.capacity())?
+            .checked_add(64)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]

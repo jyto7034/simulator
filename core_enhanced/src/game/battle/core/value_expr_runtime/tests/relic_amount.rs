@@ -173,7 +173,32 @@ fn fixture(op: &str, corrupt: bool) -> (OwnerFixture, RelicInventory) {
 fn relic_literal_off_expr_snapshot_live_same_skill_two_employees_and_replay() {
     use crate::game::battle::core::commands::amount_command_observation;
     for op in ["Damage(amount: 100, damage_type: True)", "DamageExpr(amount: (moment: Snapshot, root: Const((value: 100, unit: Magnitude))), damage_type: True)", "DamageExpr(amount: (moment: Live, root: Const((value: 100, unit: Magnitude))), damage_type: True)"] {
-        let (fixture, _) = fixture(op, false);
+        let (fixture, inventory) = fixture(op, false);
+        // Expected identity comes from the input inventory, never a fact or
+        // observation produced by the numeric binding under examination.
+        let employee = fixture.core.units[&fixture.employee_a].source_owned_uuid;
+        let copy = inventory.employee_slots(employee)[2].unwrap();
+        let expected_contributions = vec![
+            crate::game::relic::numeric::RelicDamageContribution {
+                copy_uuid: copy,
+                definition_id: "u08_probe".into(),
+                variant: crate::game::relic::RelicVariant::Normal,
+                effect_id: "damage".into(),
+                flat: 20,
+                percent: 20,
+            },
+            crate::game::relic::numeric::RelicDamageContribution {
+                copy_uuid: copy,
+                definition_id: "u08_probe".into(),
+                variant: crate::game::relic::RelicVariant::Normal,
+                effect_id: "percent_second".into(),
+                flat: 0,
+                percent: 30,
+            },
+        ];
+        let matches_expected = |rows: &[crate::game::relic::numeric::RelicDamageContribution]| {
+            rows == expected_contributions.as_slice()
+        };
         for (actor, expected) in [(fixture.employee_a, 180), (fixture.employee_b, 100)] {
             for observe in [false, true] {
                 let mut core = fixture.core.clone();
@@ -193,6 +218,26 @@ fn relic_literal_off_expr_snapshot_live_same_skill_two_employees_and_replay() {
                 assert_eq!(facts.latest_damage.as_ref().unwrap().requested_damage, expected);
                 let source = &facts.latest_damage.as_ref().unwrap().source;
                 assert_eq!(source.relic_numeric().is_some(), actor == fixture.employee_a);
+                if let Some(binding) = source.relic_numeric() {
+                    assert_eq!(binding.employee_uuid, employee);
+                    assert_eq!(binding.actor, fixture.employee_a);
+                    assert!(matches_expected(&binding.contributions));
+                    // These are oracle probes, not supported runtime inputs.
+                    // Keeping the count unchanged must not hide misattribution.
+                    for fault in 0..7 {
+                        let mut bad = binding.contributions.clone();
+                        match fault {
+                            0 => bad[0].copy_uuid = Uuid::nil(),
+                            1 => bad[0].definition_id = "other_relic".into(),
+                            2 => bad[0].variant = crate::game::relic::RelicVariant::Corrupt,
+                            3 => bad[0].effect_id = "other_effect".into(),
+                            4 => bad[0].flat += 1,
+                            5 => { bad.pop(); }
+                            _ => bad[1] = bad[0].clone(),
+                        }
+                        assert!(!matches_expected(&bad), "missed contribution fault {fault}");
+                    }
+                }
                 if observe {
                     let record = core.authoring_observation.as_ref().unwrap().latest_amount.as_ref().unwrap();
                     assert_eq!(record.evaluated.value.value, 100, "original typed base stays base");
@@ -200,7 +245,7 @@ fn relic_literal_off_expr_snapshot_live_same_skill_two_employees_and_replay() {
                     let encoded = crate::authoring::encode_record_for_test(record, crate::authoring::AmountQuery::Latest { battle: crate::authoring::AmountBattle::Active }, true).unwrap();
                     let document: serde_json::Value = serde_json::from_str(&encoded).unwrap();
                     assert_eq!(document["narrowed_base_amount"]["value"], 100);
-                    if actor == fixture.employee_a { assert_eq!(document["effective_relic_amount"]["value"], 180); assert_eq!(document["relic_numeric"]["contributions"].as_array().unwrap().len(), 2); }
+                    if actor == fixture.employee_a { assert_eq!(document["effective_relic_amount"]["value"], 180); assert_eq!(document["relic_numeric"]["contributions"], serde_json::to_value(&expected_contributions).unwrap()); }
                     else { assert!(document.get("effective_relic_amount").is_none()); }
                 }
             }

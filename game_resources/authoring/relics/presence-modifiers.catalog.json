@@ -1,0 +1,67 @@
+{
+  "relics": [
+    {
+      "id": "hastened-pulse",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a130",
+      "name": "재촉하는 맥박",
+      "description": "파편의 명시적인 provider modifier가 적용 대상과 변경을 소유한다.",
+      "rarity": {
+        "Unresolved": "relic-rarity"
+      },
+      "allow_duplicates": {
+        "Unresolved": "relic-allow-duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": {
+        "Unresolved": "relic-incompatible-with"
+      },
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "relic-dismantle-dust"
+      }
+    },
+    {
+      "id": "growth-medium",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a131",
+      "name": "증식의 배양액",
+      "description": "파편의 명시적인 provider modifier가 적용 대상과 변경을 소유한다.",
+      "rarity": {
+        "Unresolved": "relic-rarity"
+      },
+      "allow_duplicates": {
+        "Unresolved": "relic-allow-duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": {
+        "Unresolved": "relic-incompatible-with"
+      },
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "relic-dismantle-dust"
+      }
+    },
+    {
+      "id": "sealed-culture",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a132",
+      "name": "밀봉된 배양병",
+      "description": "파편의 명시적인 provider modifier가 적용 대상과 변경을 소유한다.",
+      "rarity": {
+        "Unresolved": "relic-rarity"
+      },
+      "allow_duplicates": {
+        "Unresolved": "relic-allow-duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": {
+        "Unresolved": "relic-incompatible-with"
+      },
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "relic-dismantle-dust"
+      }
+    }
+  ]
+}

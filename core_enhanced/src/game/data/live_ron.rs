@@ -2734,7 +2734,7 @@ mod tests {
             .reward_sources
             .iter()
             .all(|source| source.encounter_id != ENCOUNTER_ID
-                && source.fragment_id.as_str() != FRAGMENT_ID));
+                && source.fragment_id.as_ref().is_none_or(|id| id.as_str() != FRAGMENT_ID)));
         assert!(parsed.boss_omen_chains.chains.iter().all(|chain| {
             chain.boss_encounter_id != ENCOUNTER_ID && chain.boss_abnormality_id != ABNORMALITY_ID
         }));
@@ -2823,7 +2823,7 @@ mod tests {
                     class,
                     source.reward_source_id.as_str(),
                     source.encounter_id.as_str(),
-                    source.fragment_id.as_str(),
+                    source.fragment_id.as_ref().map(|id| id.as_str()),
                     dust,
                 )
             })
@@ -2833,203 +2833,203 @@ mod tests {
                 "Elite",
                 "elite_black_swan",
                 "suppress_black_swan",
-                "fragment_black_swan_trace",
+                Some("fragment_black_swan_trace"),
                 5,
             ),
             (
                 "Elite",
                 "elite_censored",
                 "suppress_censored",
-                "fragment_censored_trace",
+                Some("fragment_censored_trace"),
                 5,
             ),
             (
                 "Elite",
                 "elite_clouded_monk",
                 "suppress_clouded_monk",
-                "fragment_clouded_monk_trace",
+                Some("fragment_clouded_monk_trace"),
                 5,
             ),
             (
                 "Elite",
                 "elite_laetitia",
                 "suppress_laetitia",
-                "fragment_laetitia_trace",
+                Some("fragment_laetitia_trace"),
                 5,
             ),
             (
                 "Elite",
                 "elite_nameless_fetus",
                 "suppress_nameless_fetus",
-                "fragment_nameless_fetus_trace",
+                Some("fragment_nameless_fetus_trace"),
                 5,
             ),
             (
                 "Elite",
                 "elite_parasite_tree",
                 "suppress_parasite_tree",
-                "fragment_parasite_tree_trace",
+                Some("fragment_parasite_tree_trace"),
                 5,
             ),
             (
                 "Elite",
                 "elite_porcubbus",
                 "suppress_porcubbus",
-                "fragment_porcubbus_trace",
+                Some("fragment_porcubbus_trace"),
                 5,
             ),
             (
                 "Elite",
                 "elite_queen_bee",
                 "suppress_queen_bee",
-                "fragment_queen_bee_trace",
+                Some("fragment_queen_bee_trace"),
                 5,
             ),
             (
                 "Elite",
                 "elite_rudolta",
                 "suppress_rudolta",
-                "fragment_rudolta_trace",
+                Some("fragment_rudolta_trace"),
                 5,
             ),
             (
                 "Elite",
                 "elite_scarecrow",
                 "suppress_scarecrow",
-                "fragment_scarecrow_trace",
+                Some("fragment_scarecrow_trace"),
                 5,
             ),
             (
                 "Elite",
                 "elite_schadenfreude",
                 "suppress_schadenfreude",
-                "fragment_schadenfreude_trace",
+                Some("fragment_schadenfreude_trace"),
                 5,
             ),
             (
                 "Elite",
                 "elite_snow_queen",
                 "suppress_snow_queen",
-                "fragment_snow_queen_trace",
+                Some("fragment_snow_queen_trace"),
                 5,
             ),
             (
                 "Elite",
                 "elite_warm_hearted_woodsman",
                 "suppress_warm_hearted_woodsman",
-                "fragment_warm_hearted_woodsman_trace",
+                Some("fragment_warm_hearted_woodsman_trace"),
                 5,
             ),
             (
                 "NormalBoss",
                 "normal_boss_big_bad_wolf",
                 "suppress_big_bad_wolf",
-                "fragment_big_bad_wolf_trace",
+                None,
                 10,
             ),
             (
                 "NormalBoss",
                 "normal_boss_burrowing_heaven",
                 "suppress_burrowing_heaven",
-                "fragment_burrowing_heaven_trace",
+                Some("fragment_burrowing_heaven_trace"),
                 10,
             ),
             (
                 "NormalBoss",
                 "normal_boss_freischutz",
                 "suppress_freischutz",
-                "fragment_freischutz_black_round",
+                Some("fragment_freischutz_black_round"),
                 0,
             ),
             (
                 "NormalBoss",
                 "normal_boss_funeral_butterfly",
                 "suppress_funeral_butterfly",
-                "fragment_funeral_butterfly_eulogy",
+                Some("fragment_funeral_butterfly_eulogy"),
                 10,
             ),
             (
                 "NormalBoss",
                 "normal_boss_king_of_greed",
                 "suppress_king_of_greed",
-                "fragment_king_of_greed_trace",
+                Some("fragment_king_of_greed_trace"),
                 10,
             ),
             (
                 "NormalBoss",
                 "normal_boss_knight_of_despair",
                 "suppress_knight_of_despair",
-                "fragment_knight_of_despair_trace",
+                Some("fragment_knight_of_despair_trace"),
                 10,
             ),
             (
                 "NormalBoss",
                 "normal_boss_little_red",
                 "suppress_little_red",
-                "fragment_little_red_trace",
+                Some("fragment_little_red_trace"),
                 10,
             ),
             (
                 "NormalBoss",
                 "normal_boss_melting_love",
                 "suppress_melting_love",
-                "fragment_melting_love_trace",
+                Some("fragment_melting_love_trace"),
                 10,
             ),
             (
                 "NormalBoss",
                 "normal_boss_mountain",
                 "suppress_mountain",
-                "fragment_mountain_smiling_bodies_trace",
+                Some("fragment_mountain_smiling_bodies_trace"),
                 10,
             ),
             (
                 "NormalBoss",
                 "normal_boss_nothing_there",
                 "suppress_nothing_there",
-                "fragment_nothing_there_trace",
+                Some("fragment_nothing_there_trace"),
                 10,
             ),
             (
                 "NormalBoss",
                 "normal_boss_queen_of_hatred",
                 "suppress_queen_of_hatred",
-                "fragment_queen_of_hatred_trace",
+                Some("fragment_queen_of_hatred_trace"),
                 10,
             ),
             (
                 "NormalBoss",
                 "normal_boss_yang",
                 "suppress_yang",
-                "fragment_yang_trace",
+                Some("fragment_yang_trace"),
                 10,
             ),
             (
                 "NormalBoss",
                 "normal_boss_yin",
                 "suppress_yin",
-                "fragment_yin_trace",
+                Some("fragment_yin_trace"),
                 10,
             ),
             (
                 "FinalBoss",
                 "final_boss_apocalypse_bird",
                 "suppress_apocalypse_bird",
-                "fragment_apocalypse_bird_trace",
+                Some("fragment_apocalypse_bird_trace"),
                 20,
             ),
             (
                 "FinalBoss",
                 "final_boss_silent_orchestra",
                 "suppress_silent_orchestra",
-                "fragment_silent_orchestra_trace",
+                Some("fragment_silent_orchestra_trace"),
                 20,
             ),
             (
                 "FinalBoss",
                 "final_boss_white_night",
                 "suppress_white_night",
-                "fragment_white_night_trace",
+                Some("fragment_white_night_trace"),
                 20,
             ),
         ]
@@ -3065,9 +3065,9 @@ mod tests {
                 }
                 2 => {
                     parsed.pve_encounters.reward_sources[0].fragment_id =
-                        crate::game::data::skill_fragment_data::SkillFragmentId::from(
+                        Some(crate::game::data::skill_fragment_data::SkillFragmentId::from(
                             "fragment_moonlit_wail_trace",
-                        );
+                        ));
                 }
                 _ => unreachable!(),
             }
@@ -3946,7 +3946,7 @@ mod tests {
     }
 
     #[test]
-    fn programmatic_basic_and_weapon_publication_reject_every_ignored_delivery_field() {
+    fn programmatic_basic_and_weapon_publication_validate_distinct_delivery_contracts() {
         for (case, delivery, suffix, cause) in basic_delivery_incompatibility_cases() {
             let mut abnormality = parse_gameplay_ron_sources(GameplayRonSourceSet::embedded())
                 .expect("live source set should parse");
@@ -3978,11 +3978,18 @@ mod tests {
                 })
                 .expect("live equipment must contain a projectile weapon");
             let item_id = equipment.equipment.items[item_index].id.clone();
+            // Spatial weapon projectiles have a supported finite consumer;
+            // abnormality basic projectiles retain the narrower legacy contract.
+            let directional = matches!(delivery, DeliveryDef::Projectile {
+                hit_policy: ProjectileHitPolicy::DirectionalCollision, .. });
             equipment.equipment.items[item_index]
                 .weapon_profile
                 .as_mut()
                 .expect("selected item must have a weapon profile")
                 .delivery = delivery;
+            let (weapon_suffix, weapon_cause) = if directional {
+                ("delivery.Projectile.max_lifetime_ms", "directional basic requires finite lifetime")
+            } else { (suffix, cause) };
             let error = match equipment.validate_domain_catalogs() {
                 Err(error) => error,
                 Ok(()) => panic!("ignored weapon delivery field must reject: {case}"),
@@ -3992,9 +3999,16 @@ mod tests {
                 "data/equipments/base.ron",
                 "equipment",
                 &item_id,
-                &format!("items[{item_index}].weapon_profile.{suffix}"),
-                cause,
+                &format!("items[{item_index}].weapon_profile.{weapon_suffix}"),
+                weapon_cause,
             );
+            if directional {
+                let DeliveryDef::Projectile { max_lifetime_ms, .. } = &mut equipment.equipment
+                    .items[item_index].weapon_profile.as_mut().unwrap().delivery else { unreachable!() };
+                *max_lifetime_ms = Some(1000);
+                equipment.validate_domain_catalogs()
+                    .expect("finite directional weapon delivery is supported");
+            }
         }
     }
 

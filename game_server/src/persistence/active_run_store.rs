@@ -188,10 +188,12 @@ fn core_version(bytes: &[u8]) -> Result<(), ActiveRunStoreError> {
     }
     let header: Header = serde_json::from_slice(bytes)
         .map_err(|error| ActiveRunStoreError::InvalidEnvelope(error.to_string()))?;
-    // The envelope preserves prior opaque writers; V16 adds paid investment and warehouse consumption.
+    // Preserve prior opaque writers and the version emitted by the linked Core.
     // Core decides whether a payload version can be resumed.
     // V13 was an independent checkpoint format, never an active-run writer.
-    if !matches!(header.version, 12 | 14 | 15 | 16 | 17) {
+    if header.version != ApplicationCheckpoint::FORMAT_VERSION
+        && !matches!(header.version, 12 | 14 | 15 | 16 | 17)
+    {
         return Err(ActiveRunStoreError::UnsupportedCoreVersion(header.version));
     }
     Ok(())
@@ -730,7 +732,7 @@ mod tests {
 
     #[test]
     fn u15_current_and_previous_core_writers_publish_and_reopen() {
-        for version in [12, 14, 15, 16] {
+        for version in [12, 14, 15, 16, 17, ApplicationCheckpoint::FORMAT_VERSION] {
             let directory = tempfile::tempdir().unwrap();
             let store = ActiveRunStore::open(directory.path()).unwrap();
             // This store owns the envelope, while Core owns the opaque payload.
@@ -744,6 +746,23 @@ mod tests {
             let store = ActiveRunStore::open(directory.path()).unwrap();
             assert!(matches!(store.load().unwrap(),ActiveRunLoad::Loaded {checkpoint: actual,..} if actual == checkpoint));
         }
+    }
+
+    #[test]
+    fn future_core_writer_is_rejected_without_replacing_the_current_checkpoint() {
+        let directory = tempfile::tempdir().unwrap();
+        let store = ActiveRunStore::open(directory.path()).unwrap();
+        let previous = checkpoint(b"previous", 0);
+        store.publish(&previous).unwrap();
+        let future = StoredCheckpoint {
+            core_payload_json: serde_json::to_vec(&serde_json::json!({
+                "version": ApplicationCheckpoint::FORMAT_VERSION + 1,
+            })).unwrap(),
+            loads_used: 1,
+            run_peak_certified_power: 100,
+        };
+        assert!(matches!(store.publish(&future), Err(ActiveRunStoreError::UnsupportedCoreVersion(_))));
+        assert!(matches!(store.load().unwrap(), ActiveRunLoad::Loaded { checkpoint, .. } if checkpoint == previous));
     }
 
     fn checkpoint(payload: &[u8], loads_used: u8) -> StoredCheckpoint {

@@ -359,6 +359,7 @@ define_action_kinds!(
     PreviewSkillTarget,
     PreviewTacticalCommand,
     ActivateSkill,
+    SelectSkillRelation,
     RetreatBattle,
     PauseBattle,
     ResumeBattle,
@@ -486,6 +487,7 @@ impl ActionKind {
             | Self::BeginSkillTargeting
             | Self::CancelSkillTargeting
             | Self::ActivateSkill
+            | Self::SelectSkillRelation
             | Self::StressCombatAct
             | Self::RetreatBattle
             | Self::PauseBattle
@@ -1174,6 +1176,8 @@ pub struct ActiveConsumableModifierSnapshotDto {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EmployeeEquippedItemSnapshotDto {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub form: Option<crate::game::ability::equipment_forms::EquipmentFormView>,
     pub weapon_stage: crate::game::ability::weapon_marks::WeaponStage,
     pub instance_uuid: Uuid,
     pub base_uuid: Uuid,
@@ -1979,6 +1983,12 @@ pub(crate) enum PlayerBehavior {
         #[serde(default)]
         target: Option<SkillCastTarget>,
     },
+    /// Select a relation menu target; selecting the current target detaches it.
+    SelectSkillRelation {
+        employee_uuid: Uuid,
+        entry: String,
+        target: UnitInstanceId,
+    },
     /// Commit the complete prepared volley against this battle and revision.
     CommitInputPlan { battle_uuid:Uuid, revision:u64, employee_uuid:Uuid, input:crate::game::ability::input_plan::ShotCommitInput },
     CancelInputPlan { battle_uuid:Uuid, revision:u64, employee_uuid:Uuid, preparation:u64 },
@@ -2095,6 +2105,7 @@ impl PlayerBehavior {
             PlayerBehavior::CancelSkillTargeting => ActionKind::CancelSkillTargeting,
             PlayerBehavior::PreviewSkillTarget { .. } => ActionKind::PreviewSkillTarget,
             PlayerBehavior::PreviewTacticalCommand { .. } => ActionKind::PreviewTacticalCommand,
+            PlayerBehavior::SelectSkillRelation { .. } => ActionKind::SelectSkillRelation,
             PlayerBehavior::CommitInputPlan {..} | PlayerBehavior::CancelInputPlan {..} | PlayerBehavior::ActivateSkill { .. } | PlayerBehavior::ReinputSustainedSkill { .. } => {
                 ActionKind::ActivateSkill
             }
@@ -2459,6 +2470,7 @@ pub struct LiveBattlePresentationEventDto {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum LiveBattlePresentationEventKindDto {
+    EmployeeTransformed { actor: UnitInstanceId, successor: UnitInstanceId, employee_uuid: Uuid, equipment_copy: Uuid, world_position: EventLogVec2 },
     CorrosionStarted {
         actor: UnitInstanceId,
         duration_ms: u64,
@@ -2603,6 +2615,23 @@ pub enum LiveBattlePresentationEventKindDto {
         kind: Option<AttackKind>,
         #[serde(default, skip_serializing_if = "Option::is_none")]
         delivery: Option<AttackDelivery>,
+    },
+    BasicAttackTileReleased {
+        release_id: Uuid,
+        attacker_instance_id: UnitInstanceId,
+        tile: Position,
+        impact_at_ms: u64,
+    },
+    BasicAttackTileImpacted {
+        release_id: Uuid,
+        attacker_instance_id: UnitInstanceId,
+        tile: Position,
+        /// Eligible distinct occupants before damage; not an actual hit count.
+        target_count: u32,
+    },
+    BasicAttackTilesReleased {
+        attacker_instance_id: UnitInstanceId,
+        affected_tiles: Vec<Position>,
     },
     BasicAttackProjectileLaunched {
         projectile_id: Uuid,
@@ -2789,6 +2818,8 @@ pub enum LiveBattlePresentationEventKindDto {
 impl From<BattleLogEvent> for LiveBattlePresentationEventKindDto {
     fn from(value: BattleLogEvent) -> Self {
         match value {
+            BattleLogEvent::EmployeeTransformed { actor, successor, employee_uuid, equipment_copy, world_position } =>
+                Self::EmployeeTransformed { actor, successor, employee_uuid, equipment_copy, world_position },
             BattleLogEvent::CorrosionStarted { actor, duration_ms } => {
                 Self::CorrosionStarted { actor, duration_ms }
             }
@@ -3020,6 +3051,12 @@ impl From<BattleLogEvent> for LiveBattlePresentationEventKindDto {
                 kind,
                 delivery,
             },
+            BattleLogEvent::BasicAttackTileReleased { release_id, attacker_instance_id, tile, impact_at_ms } =>
+                Self::BasicAttackTileReleased { release_id, attacker_instance_id, tile, impact_at_ms },
+            BattleLogEvent::BasicAttackTileImpacted { release_id, attacker_instance_id, tile, target_count } =>
+                Self::BasicAttackTileImpacted { release_id, attacker_instance_id, tile, target_count },
+            BattleLogEvent::BasicAttackTilesReleased { attacker_instance_id, affected_tiles } =>
+                Self::BasicAttackTilesReleased { attacker_instance_id, affected_tiles },
             BattleLogEvent::BasicAttackProjectileLaunched {
                 projectile_id,
                 attacker_instance_id,
@@ -3342,6 +3379,8 @@ pub struct LiveBattleStateCheckpointDto {
     pub relation_actions: crate::game::ability::relation_action::RelationActionsSnapshot,
     #[serde(default)]
     pub input_plans: crate::game::ability::input_plan::InputPlansSnapshot,
+    #[serde(default)]
+    pub shared_cohorts: crate::game::ability::hostile_cohort::SharedCohortsSnapshot,
     #[serde(default)]
     pub prepared_volleys: crate::game::ability::prepared_volley::PreparedVolleysSnapshot,
     #[serde(default)]
@@ -4006,6 +4045,18 @@ pub(crate) enum BehaviorResult {
         employee_uuid: Uuid,
         unit_instance_id: UnitInstanceId,
         skill_id: crate::game::ability::SkillId,
+    },
+
+    /// The relation menu command committed; the checkpoint contains the selected target.
+    BattleRelationSelected {
+        battle_uuid: Uuid,
+        encounter_id: String,
+        node_type: CombatNodeType,
+        mission_variant: CombatMissionVariant,
+        battle_update: LiveBattleUpdateDto,
+        employee_uuid: Uuid,
+        unit_instance_id: UnitInstanceId,
+        entry: String,
     },
 
     /// 보상 선택/수령 단계 상태
@@ -4751,7 +4802,8 @@ impl BehaviorResult {
             | BehaviorResult::BattleUnitTacticallyRelocated { battle_update, .. }
             | BehaviorResult::BattleUnitsTacticallySwapped { battle_update, .. }
             | BehaviorResult::BattleSkillTargetingFocusChanged { battle_update, .. }
-            | BehaviorResult::BattleSkillActivated { battle_update, .. } => {
+            | BehaviorResult::BattleSkillActivated { battle_update, .. }
+            | BehaviorResult::BattleRelationSelected { battle_update, .. } => {
                 let _ = battle_update;
                 Ok(CoreResultProjection::BattleUpdate)
             }
@@ -5209,7 +5261,8 @@ impl BehaviorResult {
             | BehaviorResult::BattleUnitTacticallyRelocated { battle_update, .. }
             | BehaviorResult::BattleUnitsTacticallySwapped { battle_update, .. }
             | BehaviorResult::BattleSkillTargetingFocusChanged { battle_update, .. }
-            | BehaviorResult::BattleSkillActivated { battle_update, .. } => {
+            | BehaviorResult::BattleSkillActivated { battle_update, .. }
+            | BehaviorResult::BattleRelationSelected { battle_update, .. } => {
                 BehaviorCommandResultContract::BattleUpdate(BattleUpdateCommandResultContract {
                     battle_update,
                     battle_setup_snapshot: None,
@@ -5996,6 +6049,7 @@ mod tests {
             (PreviewSkillTarget, CoreBattle, Query, false),
             (PreviewTacticalCommand, CoreBattle, Query, false),
             (ActivateSkill, CoreBattle, Gameplay, true),
+            (SelectSkillRelation, CoreBattle, Gameplay, true),
             (RetreatBattle, CoreBattle, Gameplay, true),
             (StressCombatAct, CoreBattle, Gameplay, true),
             (PauseBattle, CoreBattle, Gameplay, true),
@@ -6005,7 +6059,7 @@ mod tests {
 
         assert_eq!(
             cases.len(),
-            87,
+            88,
             "the current command vocabulary is exhaustive"
         );
         let characterized_actions = cases
@@ -6378,6 +6432,7 @@ mod tests {
                 counter_channels: Default::default(),
                 relation_actions: Default::default(),
                 input_plans: Default::default(),
+                shared_cohorts: Default::default(),
                 prepared_volleys: Default::default(),
                 mobile_effects: Default::default(),
                 paired_areas: Default::default(),
@@ -6483,7 +6538,8 @@ mod tests {
             | BehaviorResult::BattleUnitTacticallyRelocated { .. }
             | BehaviorResult::BattleUnitsTacticallySwapped { .. }
             | BehaviorResult::BattleSkillTargetingFocusChanged { .. }
-            | BehaviorResult::BattleSkillActivated { .. } => {
+            | BehaviorResult::BattleSkillActivated { .. }
+            | BehaviorResult::BattleRelationSelected { .. } => {
                 CharacterizedResultTransport::BattleUpdate
             }
             BehaviorResult::DeploymentRangePreview { .. }
@@ -6731,6 +6787,7 @@ mod tests {
                     operation: crate::game::relic::RelicOperationKind::Corrupt,
                     effects: vec![],
                     penalties: vec![],
+                    support_conversions: vec![],
                     catalyst_cost: 1,
                     equipment_dust_gained: 0,
                     irreversible: true,
@@ -7011,6 +7068,16 @@ mod tests {
                 unit_instance_id,
                 skill_id: SkillId::from("skill_b"),
             },
+            BehaviorResult::BattleRelationSelected {
+                battle_uuid,
+                encounter_id: "result_encounter".to_string(),
+                node_type: CombatNodeType::Defense,
+                mission_variant: CombatMissionVariant::Defense,
+                battle_update: characterized_battle_update(battle_uuid),
+                employee_uuid,
+                unit_instance_id,
+                entry: "blessing".to_string(),
+            },
             BehaviorResult::RewardState {
                 mode: RewardMode::ChooseOne,
                 rewards: Vec::new(),
@@ -7027,7 +7094,7 @@ mod tests {
 
     #[test]
     fn every_behavior_result_has_exact_old_command_projection_contract() {
-        const EXPECTED_RESULT_TYPES: [&str; 56] = [
+        const EXPECTED_RESULT_TYPES: [&str; 57] = [
             "RunStartFlowStarted",
             "StarterEmployeesSelected",
             "MapState",
@@ -7081,6 +7148,7 @@ mod tests {
             "BattleUnitsTacticallySwapped",
             "BattleSkillTargetingFocusChanged",
             "BattleSkillActivated",
+            "BattleRelationSelected",
             "RewardState",
             "DealerState",
             "Ok",

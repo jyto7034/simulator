@@ -6,7 +6,7 @@ use crate::game::{
             types::CommandExecutionSummary, BattleCore,
         },
         damage::{
-            apply_damage_to_unit, calculate_damage, CombatRollIdentity, CombatRollKind,
+            apply_damage_to_unit, CombatRollIdentity, CombatRollKind,
             DamageBonusSnapshot, DamageContext, DamageModifiers, DamageResult, DamageSource,
             DamageSourceSnapshot,
         },
@@ -306,10 +306,16 @@ impl BattleCore {
         };
         Some(DamageSourceSnapshot {
             fact_source,
+            basic_primary: None,
             skill_cast_source: None,
             value_expr_capture: None,
             prepared_basic: None,
+            state_basic_capture: None,
             weapon_growth: None,
+            equipment_attack: None,
+            equipment_hits: None,
+            release_gap: None,
+            magazine: None,
             presence_capture: None,
             reactive_capture: None,
             mobile_capture: None,
@@ -346,6 +352,27 @@ impl BattleCore {
         &mut self,
         input: CommittedDamageInput,
     ) -> Option<CommandExecutionSummary> {
+        self.execute_damage_with_consumed_dot(input, false)
+    }
+
+    /// Only a producer that consumed its own DOT for this damage may supply
+    /// this qualification. It does not confer ownership or equipment rights.
+    pub(super) fn execute_damage_with_consumed_dot(
+        &mut self,
+        input: CommittedDamageInput,
+        consumed_owner_dot: bool,
+    ) -> Option<CommandExecutionSummary> {
+        self.execute_damage_with_observation_origin(input, consumed_owner_dot, None)
+    }
+
+    /// Supplies immutable authored provenance only to this damage application.
+    /// Reactions, reflected hits and gameplay facts keep their own source.
+    pub(super) fn execute_damage_with_observation_origin(
+        &mut self,
+        input: CommittedDamageInput,
+        consumed_owner_dot: bool,
+        observation_origin: Option<&crate::game::battle::runtime_facts::RuntimeFactSource>,
+    ) -> Option<CommandExecutionSummary> {
         let mut input = input;
         input.source_snapshot.fact_source = input
             .source_snapshot
@@ -356,7 +383,7 @@ impl BattleCore {
             &mut self.runtime_fact_source,
             input.source_snapshot.fact_source.clone(),
         );
-        let result = self.execute_committed_damage_inner(input);
+        let result = self.execute_committed_damage_inner(input, consumed_owner_dot, observation_origin);
         self.runtime_fact_source = prior;
         result
     }
@@ -364,6 +391,8 @@ impl BattleCore {
     fn execute_committed_damage_inner(
         &mut self,
         input: CommittedDamageInput,
+        consumed_owner_dot: bool,
+        observation_origin: Option<&crate::game::battle::runtime_facts::RuntimeFactSource>,
     ) -> Option<CommandExecutionSummary> {
         let CommittedDamageInput {
             target_id,
@@ -394,20 +423,37 @@ impl BattleCore {
                 )
             })?;
 
+        if source_snapshot.source == DamageSource::Ability && source_snapshot.base_damage > 0
+            && self.block_equipment_skill(target_id, source_snapshot.source_id,
+                Some(source_snapshot.source_side), committed_at_ms).ok()? {
+            return Some(CommandExecutionSummary::default());
+        }
+
+        let mut strike = match self.admit_damage_strike(target_id) {
+            Ok(value) => value,
+            Err(_) => return None,
+        };
+
         let taunt_eligible = source_snapshot.source != DamageSource::Environment && !source_snapshot.fact_source.reaction
             && !self.units.get(&source_snapshot.source_id).is_some_and(|u| u.corroded)
             && !self.units.get(&target_id).is_some_and(|u| u.corroded);
         let (taunt_reduction, taunt_bonus) = if taunt_eligible { self.approach_taunt_damage(source_snapshot.source_id, target_id, source_snapshot.source == DamageSource::BasicAttack) } else { (0, 0) };
         target_incoming_modifiers.damage_reduction_percent = target_incoming_modifiers.damage_reduction_percent.saturating_add(taunt_reduction);
         target_incoming_modifiers.damage_amp_percent = target_incoming_modifiers.damage_amp_percent.saturating_add(taunt_bonus).saturating_add(self.shot_cohort_damage_bonus(target_id,&source_snapshot).ok()?);
-        target_incoming_modifiers.damage_amp_percent = target_incoming_modifiers.damage_amp_percent.saturating_add(self.ground_status_totals(target_id).ok()?.1).saturating_add(self.hit_damage_taken_percent(target_id).ok()?);
+        target_incoming_modifiers.damage_amp_percent = target_incoming_modifiers.damage_amp_percent.saturating_add(self.ground_status_totals(target_id).ok()?.1).saturating_add(self.strike_hit_damage_taken_amp(&mut strike).ok()?).saturating_add(self.equipment_form_damage_percent(target_id).ok()?);
         target_incoming_modifiers.damage_reduction_percent = target_incoming_modifiers
             .damage_reduction_percent
             .saturating_add(
                 self.sustained_damage_reduction(target_id, committed_at_ms)
                     .ok()?,
             )
-            .saturating_add(self.parry_reduction(target_id, committed_at_ms).ok()?);
+            .saturating_add(self.parry_reduction(target_id, committed_at_ms).ok()?)
+            .saturating_add(self.channel_opening_reduction(target_id, &source_snapshot, committed_at_ms).ok()?);
+        let conditional_reduction = self.strike_conditional_reduction(
+            &mut strike, &source_snapshot, committed_at_ms).ok()?;
+        target_incoming_modifiers.damage_reduction_percent = target_incoming_modifiers
+            .damage_reduction_percent.saturating_add(self.strike_wearer_reduction(
+                &mut strike, &source_snapshot, committed_at_ms).ok()?);
         let without_passive_guard = target_incoming_modifiers;
         let mut passive_guard = self
             .passive_parry_guard(target_id, committed_at_ms)
@@ -419,12 +465,38 @@ impl BattleCore {
                     .saturating_add(guard.policy.reduction_percent as i32);
             }
         }
-        let mut strike = match self.admit_damage_strike(target_id) {
-            Ok(value) => value,
-            Err(_) => return None,
-        };
 
+        if self.evade_equipment_basic(target_id, &source_snapshot, &mut strike, committed_at_ms).ok()? {
+            return Some(CommandExecutionSummary::default());
+        }
+
+        source_snapshot.modifiers.base_damage_amp_percent = source_snapshot.modifiers.base_damage_amp_percent
+            .saturating_add(self.strike_source_direct_amp(&mut strike, &source_snapshot, committed_at_ms).ok()?);
+        source_snapshot.modifiers.damage_amp_percent = source_snapshot.modifiers.damage_amp_percent
+            .saturating_add(self.ready_wait_damage_percent(&source_snapshot, committed_at_ms).ok()?);
+        source_snapshot.modifiers.base_damage_amp_percent = source_snapshot.modifiers.base_damage_amp_percent
+            .saturating_add(self.captured_cast_damage_percent(&source_snapshot));
+        source_snapshot.modifiers.damage_amp_percent = source_snapshot.modifiers.damage_amp_percent
+            .saturating_add(self.nearby_ally_damage_percent(&source_snapshot, target_id, committed_at_ms).ok()?);
+        let conditional_damage = self.strike_conditional_damage_per_type(
+            &mut strike, &source_snapshot, committed_at_ms).ok()?;
+        let penetration = self.direct_penetration(
+            &source_snapshot, target_id, committed_at_ms).ok()?;
+        let continuity_damage = self.attack_continuity_damage_percent(
+            &source_snapshot, target_id, committed_at_ms).ok()?;
+        let shield_beneficiary_percent = self.shield_beneficiary_damage_percent(&source_snapshot, target_id, committed_at_ms).ok()?;
+        if let Some(capture) = source_snapshot.release_gap.as_ref().filter(|_| {
+            source_snapshot.source == DamageSource::BasicAttack && source_snapshot.basic_primary.is_some()
+                && !source_snapshot.fact_source.reaction && source_snapshot.fact_source.guard_release().is_none()
+                && source_snapshot.fact_source.cast.as_ref().is_none_or(|c| c.proc_origin.is_none())
+        }) {
+            source_snapshot.modifiers.base_damage_amp_percent = source_snapshot.modifiers.base_damage_amp_percent
+                .saturating_add(capture.percent as i32);
+        }
         self.apply_weapon_growth_damage(&mut source_snapshot, target_id).ok()?;
+        let equipment_bonus_source = self.apply_equipment_attack_damage(&mut source_snapshot, target_id).ok()?;
+        source_snapshot.modifiers.base_damage_amp_percent = source_snapshot.modifiers.base_damage_amp_percent
+            .saturating_add(self.equipment_primary_damage_percent(&source_snapshot, target_id, committed_at_ms).ok()?);
         self.apply_wedge(&mut source_snapshot, target_id, strike.ordinal())
             .ok()?;
         let mut deflection = self
@@ -553,11 +625,35 @@ impl BattleCore {
                 Ok(bytes) => bytes,
                 Err(_) => return None,
             };
-        let mut result = calculate_damage(&request, &ctx);
+        let eligible_flat = accepted_hit && self.incoming_flat_eligible(target_id, &source_snapshot);
+        if eligible_flat {
+            crate::authoring::control::charge(component_bound.unwrap_or(0) as u64,
+                "incoming_flat_component_scan").ok()?;
+        }
+        let eligible_flat = eligible_flat && crate::game::battle::damage::has_attacker_physical_component(&request, &ctx);
+        let mut allowance = if eligible_flat { self.strike_incoming_flat(&mut strike).ok()? }
+            else { super::equipment_defense::FlatAllowance::default() };
+        let flat_before = allowance.remaining;
+        let attacker_support = crate::game::battle::damage::AttackerDamageSupport {
+            penetration,
+            all_types_percent: shield_beneficiary_percent,
+            per_type_percent: [
+                conditional_damage[0].saturating_add(continuity_damage),
+                conditional_damage[1].saturating_add(continuity_damage),
+                conditional_damage[2],
+            ],
+        };
+        let mut result = crate::game::battle::damage::calculate_damage_with_source_support(&request, &ctx, &mut allowance.remaining, conditional_reduction, attacker_support);
+        if eligible_flat {
+            self.commit_incoming_flat(&mut strike, allowance);
+            self.observe_incoming_flat(target_id, &source_snapshot, committed_at_ms,
+                strike.ordinal().0, allowance, flat_before).ok()?;
+            crate::authoring::control::poll("incoming_flat_applied").ok()?;
+        }
         if accepted_hit && !source_snapshot.fact_source.reaction && source_snapshot.fact_source.guard_release().is_none() && source_snapshot.source_id != target_id && source_snapshot.source_side != target_owner && matches!(source_snapshot.source,DamageSource::BasicAttack | DamageSource::Ability) {
             if let Some(guard)=passive_guard.as_mut().filter(|g|!g.reduction_suppressed) {
                 crate::authoring::control::charge(result.breakdown.len() as u64, "guard_reduction_credit").ok()?;
-                let blocked=crate::game::battle::damage::reduction_credit(&request,&ctx,&result,without_passive_guard);
+                let blocked=crate::game::battle::damage::reduction_credit_with_source_support(&request,&ctx,&result,without_passive_guard,flat_before,conditional_reduction,attacker_support);
                 guard.charge=self.accumulate_guard_charge(target_id,blocked).ok()?;
             }
         }
@@ -571,13 +667,31 @@ impl BattleCore {
             receipt.details_mut().ok()?.deflection = Some(Box::new(fact));
             receipt
         } else {
-            self.absorb_sustained_shields_policy(target_id, result.final_damage, committed_at_ms, matches!(policy, CommittedDamagePolicy::BypassShields))
+            self.absorb_shields_before_deferral(target_id, result.final_damage, &result.breakdown, committed_at_ms, matches!(policy, CommittedDamagePolicy::BypassShields))
                 .ok()?
         };
         result.final_damage = result
             .final_damage
             .saturating_sub(protection.absorbed)
             .saturating_sub(protection.prevented);
+        let idle_guard_percent = self.consume_idle_hp_guard(target_id, result.final_damage,
+            committed_at_ms, &source_snapshot.fact_source, &mut protection).ok()?;
+        result.final_damage = Self::after_idle_hp_guard(result.final_damage, idle_guard_percent);
+        protection.deferred = self.defer_equipment_damage(target_id, &source_snapshot, result.final_damage, committed_at_ms).ok()?;
+        result.final_damage -= protection.deferred;
+        let prevented_before_survival = protection.prevented;
+        if protection.deflection.is_none() {
+            self.prevent_sustained_death(target_id, result.final_damage, committed_at_ms, &mut protection).ok()?;
+            result.final_damage = result.final_damage.saturating_sub(protection.prevented - prevented_before_survival);
+        }
+        let prevented_before_revival = protection.prevented;
+        let revival = self.prepare_employee_revival(target_id, result.final_damage, committed_at_ms,
+            &source_snapshot.fact_source, &mut protection).ok()?;
+        result.final_damage = result.final_damage.saturating_sub(protection.prevented - prevented_before_revival);
+        let prevented_before_last_will = protection.prevented;
+        let last_will = self.prepare_last_will(target_id, result.final_damage, committed_at_ms,
+            &source_snapshot.fact_source, &mut protection).ok()?;
+        result.final_damage = result.final_damage.saturating_sub(protection.prevented - prevented_before_last_will);
         result.target_remaining_hp = target_current_hp.saturating_sub(result.final_damage);
         result.target_killed = target_current_hp > 0 && result.target_remaining_hp == 0;
         // One roll per target strike, on its first positive HP-loss segment.
@@ -605,7 +719,7 @@ impl BattleCore {
                     ReflectionOutcome::Missed
                 } else if guard.reflected_base == 0 {
                     ReflectionOutcome::RoundedToZero
-                } else if result.target_remaining_hp == 0 {
+                } else if result.target_remaining_hp == 0 || last_will.is_some() {
                     ReflectionOutcome::OwnerDefeated
                 } else if !self
                     .units
@@ -642,13 +756,14 @@ impl BattleCore {
         // consume that order; an appended bonus cannot claim the prepared kill.
         let prepared_direct_kill = target_current_hp > 0 && result.target_remaining_hp == 0
             && result.breakdown.first().is_some_and(|base|
-                base.final_damage.saturating_sub(protection.absorbed) >= target_current_hp);
+                self.immediate_primary_after_deferral(target_id, Self::after_idle_hp_guard(base.final_damage.saturating_sub(protection.primary_absorbed()), idle_guard_percent), &source_snapshot).ok().is_some_and(|base| base >= target_current_hp));
 
         let damage_fact = match self.prepare_damage_fact(
             &result,
             protection,
             strike,
             &source_snapshot,
+            equipment_bonus_source,
             &on_hit_effects,
             target_incoming_modifiers,
             target_current_hp,
@@ -657,6 +772,8 @@ impl BattleCore {
             Ok(value) => value,
             Err(_) => return None,
         };
+        let first_target_strike = damage_fact.1;
+        let committed_strike = damage_fact.0.strike;
         self.runtime_facts.release_fact_storage(formula_storage);
         let actual_damage = target_current_hp.saturating_sub(result.target_remaining_hp);
         if actual_damage > 0 {
@@ -665,6 +782,11 @@ impl BattleCore {
         }
         let killed_target = target_current_hp > 0 && result.target_remaining_hp == 0;
 
+        let equipment_kill = if killed_target || last_will.is_some() {
+            self.capture_equipment_kill(
+                &source_snapshot, target_id, consumed_owner_dot, prepared_direct_kill, committed_at_ms,
+            ).ok()?
+        } else { None };
         if matches!(policy, CommittedDamagePolicy::BasicAttack { .. }) {
             self.grant_basic_attack_damage_dealt_resonance(
                 source_snapshot.source_id,
@@ -675,7 +797,10 @@ impl BattleCore {
         if effective_hit { self.weapon_mark_hit(&source_snapshot, target_id).ok()?; }
         if effective_hit { self.presence_hit(&source_snapshot, target_id, killed_target, committed_at_ms).ok()?; }
         self.volley_damage_mark(&source_snapshot,target_id,actual_damage,committed_at_ms).ok()?;
-        self.apply_damage_result_and_record(
+        let adaptive_type = if accepted_hit && first_target_strike {
+            self.adaptive_shield_target_type(&source_snapshot, target_id)
+        } else { None };
+        self.apply_damage_result_and_record_with_origin(
             Some(source_snapshot.source_id),
             &result,
             damage_fact,
@@ -684,19 +809,44 @@ impl BattleCore {
                 CommittedDamagePolicy::BasicAttack { .. } => HpChangeReason::BasicAttack,
                 CommittedDamagePolicy::GeneralCommand | CommittedDamagePolicy::BypassShields => HpChangeReason::Command,
             },
+            observation_origin,
         );
 
+        let transformed = if let Some(plan) = revival {
+            self.resolve_employee_revival(plan, committed_at_ms).ok()?
+        } else { false };
+        let killed_target = if let Some(plan) = last_will {
+            self.resolve_last_will(plan, &source_snapshot, committed_at_ms).ok()?;
+            self.units.get(&target_id).is_some_and(|u| u.lifecycle.is_dead())
+        } else { killed_target };
+        if actual_damage > 0 && !killed_target && !transformed {
+            self.release_overheal_reserve(target_id, &source_snapshot.fact_source, committed_at_ms).ok()?;
+        }
+        if let Some(damage_type) = adaptive_type {
+            self.adaptive_shield_after_hit(&source_snapshot, target_id, damage_type, committed_at_ms).ok()?;
+        }
+        if accepted_hit && first_target_strike && !killed_target && !transformed {
+            self.equipment_attack_hit(&source_snapshot, target_id, committed_at_ms, committed_strike).ok()?;
+        }
         if killed_target && self.units.get(&target_id).is_some_and(|u| u.lifecycle.is_dead()) {
-            self.shot_cohort_death(target_id, source_snapshot.source_side, committed_at_ms).ok()?;
+            if let Some(capture) = equipment_kill {
+                self.dispatch_equipment_kill(capture, committed_at_ms).ok()?;
+            }
+            self.shot_cohort_death(target_id, &source_snapshot, committed_at_ms).ok()?;
+            self.equipment_form_kill(&source_snapshot, target_id, committed_at_ms).ok()?;
+            self.equipment_death_burst_kill(&source_snapshot, target_id, committed_at_ms).ok()?;
         }
         self.relation_shields_after_damage(target_id, committed_at_ms).ok()?;
         if prepared_direct_kill && matches!(policy, CommittedDamagePolicy::BasicAttack { .. }) {
-            self.prepared_basic_kill(&source_snapshot, committed_at_ms).ok()?;
+            self.authored_state_basic_kill(&source_snapshot, target_id, committed_at_ms).ok()?;
+            self.prepared_basic_kill(&source_snapshot, target_id, committed_at_ms).ok()?;
             self.weapon_growth_kill(&source_snapshot, target_id, committed_at_ms).ok()?;
+            self.equipment_attack_kill(&source_snapshot, target_id, committed_at_ms).ok()?;
         }
-        if actual_damage > 0 && !killed_target {
+        if actual_damage > 0 && !killed_target && !transformed {
             self.owned_damage_status(&source_snapshot,target_id,committed_at_ms).ok()?;
             self.reactive_heal_after_damage(target_id, &source_snapshot, committed_at_ms).ok()?;
+            self.authored_state_after_damage(target_id, &source_snapshot, actual_damage, committed_at_ms).ok()?;
         }
         if let Some(fact) = &mut pending_counter {
             self.execute_parry_counter(fact, source_snapshot.source_id, committed_at_ms)
@@ -860,6 +1010,24 @@ impl BattleCore {
         time_ms: u64,
         reason: HpChangeReason,
     ) {
+        self.apply_damage_result_and_record_with_origin(
+            source_instance_id, result, damage_fact, time_ms, reason, None,
+        );
+    }
+
+    fn apply_damage_result_and_record_with_origin(
+        &mut self,
+        source_instance_id: Option<UnitInstanceId>,
+        result: &DamageResult,
+        damage_fact: (
+            std::sync::Arc<crate::game::battle::runtime_facts::DamageFact>,
+            bool,
+            bool,
+        ),
+        time_ms: u64,
+        reason: HpChangeReason,
+        observation_origin: Option<&crate::game::battle::runtime_facts::RuntimeFactSource>,
+    ) {
         let target_instance_id = result.target_id;
         let (target_owner, hp_before) = {
             let Some(target) = self.units.get(&target_instance_id) else {
@@ -871,6 +1039,9 @@ impl BattleCore {
             (target.owner, target.stats.current_health)
         };
 
+        if hp_before > 0 && result.final_damage > 0 {
+            if self.reset_idle_hp_guard_damage(target_instance_id, time_ms).is_err() { return; }
+        }
         let prepared_death = if hp_before.saturating_sub(result.final_damage) == 0 {
             match self.prepare_death_fact(source_instance_id, target_instance_id, time_ms) {
                 Ok(value) => value,
@@ -879,7 +1050,11 @@ impl BattleCore {
         } else {
             None
         };
-        let reservation = match self.reserve_authoring_observation() {
+        let reserved = match observation_origin {
+            Some(origin) => self.reserve_authoring_observation_for_effect(origin, None),
+            None => self.reserve_authoring_observation(),
+        };
+        let reservation = match reserved {
             Ok(reservation) => reservation,
             Err(_) => return,
         };
@@ -998,6 +1173,32 @@ impl BattleCore {
         time_ms: u64,
         reason: HpChangeReason,
     ) {
+        self.apply_hp_delta_with_reserve(source_instance_id, target_instance_id, delta, time_ms, reason, true);
+    }
+
+    pub(in crate::game::battle::core) fn apply_hp_delta_with_reserve(
+        &mut self,
+        source_instance_id: Option<UnitInstanceId>,
+        target_instance_id: UnitInstanceId,
+        delta: i32,
+        time_ms: u64,
+        reason: HpChangeReason,
+        store_overheal: bool,
+    ) {
+        self.apply_hp_delta_with_observation_origin(source_instance_id, target_instance_id,
+            delta, time_ms, reason, store_overheal, None);
+    }
+
+    pub(super) fn apply_hp_delta_with_observation_origin(
+        &mut self,
+        source_instance_id: Option<UnitInstanceId>,
+        target_instance_id: UnitInstanceId,
+        delta: i32,
+        time_ms: u64,
+        reason: HpChangeReason,
+        store_overheal: bool,
+        observation_origin: Option<&crate::game::battle::runtime_facts::RuntimeFactSource>,
+    ) {
         let (target_owner, hp_before, max_health) = {
             let Some(target) = self.units.get(&target_instance_id) else {
                 return;
@@ -1020,7 +1221,11 @@ impl BattleCore {
         let reservation = if delta == 0 {
             None
         } else {
-            match self.reserve_authoring_observation() {
+            let reserved = match observation_origin {
+                Some(origin) => self.reserve_authoring_observation_for_effect(origin, None),
+                None => self.reserve_authoring_observation(),
+            };
+            match reserved {
                 Ok(value) => value,
                 Err(_) => return,
             }
@@ -1032,7 +1237,15 @@ impl BattleCore {
         } else {
             hp_before.saturating_sub(delta.unsigned_abs())
         };
-        let prepared_death = if hp_after == 0 {
+        let revival = if hp_after == 0 {
+            let incoming = self.runtime_fact_source.clone();
+            match self.prepare_employee_revival(target_instance_id, delta.unsigned_abs(), time_ms,
+                &incoming, &mut Default::default()) {
+                Ok(plan) => plan,
+                Err(_) => return,
+            }
+        } else { None };
+        let prepared_death = if hp_after == 0 && revival.is_none() {
             match self.prepare_death_fact(source_instance_id, target_instance_id, time_ms) {
                 Ok(value) => value,
                 Err(_) => return,
@@ -1063,6 +1276,10 @@ impl BattleCore {
         };
 
         target.stats.current_health = hp_after;
+        if delta > 0 && store_overheal {
+            let overheal = (delta as u32).saturating_sub(hp_after.saturating_sub(hp_before));
+            if self.store_overheal_reserve(target_instance_id, overheal, time_ms).is_err() { return; }
+        }
 
         let applied_delta = hp_after as i32 - hp_before as i32;
         self.commit_authoring_observation(
@@ -1104,6 +1321,10 @@ impl BattleCore {
             );
         }
 
+        if let Some(plan) = revival {
+            if self.resolve_employee_revival(plan, time_ms).is_err() { return; }
+            return;
+        }
         if hp_after == 0
             && self
                 .independent_objects
@@ -1140,6 +1361,7 @@ impl BattleCore {
         time_ms: u64,
         prepared_death: Option<super::runtime_facts::PreparedDeath>,
     ) -> bool {
+        if self.reconcile_overheal_reserves().is_err() { return false; }
         if hp_before == hp_after {
             return false;
         }
@@ -1203,7 +1425,8 @@ impl BattleCore {
 
 impl BattleCore {
     /// A payment changes HP and emits CostFact directly. It never enters damage,
-    /// healing, shield, parry or HP-floor arbitration.
+    /// healing, shield, parry or HP-floor arbitration. Employee revival may
+    /// restore HP after the full lethal payment; it never discounts that cost.
     pub(super) fn pay_health_cost(
         &mut self,
         caster: UnitInstanceId,
@@ -1239,7 +1462,11 @@ impl BattleCore {
         }
         let after = before - amount;
         let reservation = self.reserve_authoring_observation()?;
-        let prepared = if after == 0 {
+        let revival = if after == 0 {
+            let incoming = self.runtime_fact_source.clone();
+            self.prepare_employee_revival(caster, amount, now, &incoming, &mut Default::default())?
+        } else { None };
+        let prepared = if after == 0 && revival.is_none() {
             self.prepare_death_fact(Some(caster), caster, now)?
         } else {
             None
@@ -1285,6 +1512,7 @@ impl BattleCore {
                 feedback_tags: Vec::new(),
             },
         );
+        if let Some(plan) = revival { self.resolve_employee_revival(plan, now)?; }
         if let Some(prepared) = prepared {
             self.finalize_prepared_death(Some(caster), caster, owner, now, prepared, None);
         }
@@ -1325,11 +1553,12 @@ impl BattleCore {
         {
             return Ok(());
         }
+        let authored = self.equipment_basic_lifesteal(snapshot)?;
         crate::authoring::control::charge(
-            snapshot.basic_lifesteal.len() as u64,
+            snapshot.basic_lifesteal.len() as u64 + u64::from(authored.is_some()),
             "basic_lifesteal_settlement",
         )?;
-        for lifesteal in &snapshot.basic_lifesteal {
+        for lifesteal in snapshot.basic_lifesteal.iter().chain(authored.as_ref()) {
             let heal = ((u128::from(actual_hp_loss) * u128::from(lifesteal.percent) / 100)
                 .min(u128::from(lifesteal.max_heal))) as u32;
             if heal == 0 {

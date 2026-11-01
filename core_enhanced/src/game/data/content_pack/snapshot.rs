@@ -440,8 +440,16 @@ impl Inventory {
         if self.total_bytes > limits.max_total_bytes {
             return Err(error(path, "aggregate byte limit exceeded"));
         }
-        check_nesting(path, &bytes, limits.max_nesting)?;
-        if catalog_kind == Some(CatalogKind::Skills) {
+        let authored_yaml = catalog_kind == Some(CatalogKind::Skills)
+            && path.ends_with(".skill.yaml");
+        // YAML comments, scalars and indentation are not RON lexical tokens.
+        // Its event parser applies the host nesting and compiler source limits.
+        // File/aggregate byte limits remain acquisition's responsibility; the
+        // lowered RON still receives per-expression limits before publication.
+        if !authored_yaml {
+            check_nesting(path, &bytes, limits.max_nesting)?;
+        }
+        if catalog_kind == Some(CatalogKind::Skills) && !authored_yaml {
             crate::game::value_expr::validate_expression_input(
                 &bytes,
                 limits.value_expr.max_input_bytes,

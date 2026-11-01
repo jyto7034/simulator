@@ -12,6 +12,7 @@ pub(in crate::game::battle::core) struct MobileDamageInput<'a> {
     pub capture: Option<Arc<MobileCapture>>,
     pub target: UnitInstanceId,
     pub now: u64,
+    pub area_percent: i32,
 }
 impl BattleCore {
     pub(in crate::game::battle::core) fn execute_mobile_hit(
@@ -30,6 +31,7 @@ impl BattleCore {
             capture,
             target,
             now,
+            area_percent,
         } = input;
         let mut power = p
             .power
@@ -50,17 +52,18 @@ impl BattleCore {
             power = super::super::marks::modified_period(power, &percentages)?;
         }
         let mut snapshot = controlled_clone(template)?;
+        snapshot.modifiers.damage_amp_percent = snapshot.modifiers.damage_amp_percent.saturating_add(area_percent);
         snapshot.base_damage = power;
         snapshot.damage_type = p.damage_type;
         snapshot.mobile_capture = capture;
         snapshot.fact_source = snapshot.fact_source.with_mobile_effect(origin)?;
         let outcome =
-            self.execute_committed_damage(super::super::damage_runtime::CommittedDamageInput {
+            self.execute_damage_with_observation_origin(super::super::damage_runtime::CommittedDamageInput {
                 target_id: target,
                 source_snapshot: snapshot,
                 committed_at_ms: now,
                 policy: super::super::damage_runtime::CommittedDamagePolicy::GeneralCommand,
-            });
+            }, false, Some(source));
         control::poll("mobile_explosion_damage")?;
         if outcome.is_some_and(|r| r.actual_hp_loss > 0)
             && self.units.get(&target).is_some_and(|u| u.is_active())

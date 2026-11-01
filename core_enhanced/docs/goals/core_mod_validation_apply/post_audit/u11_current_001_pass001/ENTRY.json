@@ -1,8 +1,0 @@
-{
-  "timestamp": "2026-10-11T23:32:01.115856+00:00",
-  "target": "core_enhanced/docs/goals/core_mod_validation_apply/execution/single_goal/target/u11_current_001",
-  "manifest_sha256": "fb6d1175c268e6ca87a0288d53fb57e509537757c5ef40fa986cca57a996c76c",
-  "source_sha256": "638eab584d31b2a98890a44bd9292126cf6cb1f0c03a812dd36060d535b89746",
-  "independent_reviewer": "/root/u11_independent_audit001",
-  "role": "read-only final audit; no prior Goal planning, implementation, test writing or execution participation"
-}

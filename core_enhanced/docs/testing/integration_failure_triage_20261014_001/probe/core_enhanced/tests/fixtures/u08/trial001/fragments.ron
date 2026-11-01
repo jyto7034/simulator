@@ -1,6 +1,0 @@
-(fragments: [
-    (id: "u08_trial_fragment", uuid: "a508e100-0000-0000-0000-000000000101",
-     name: "External trial fragment", description: "Normal reward provider",
-     rarity: Rare, equip_limit: OwnedCopies, sources: [RareReward],
-     effect: ActiveSkill(forms: {"base": (skill_id: "u08_trial_damage", resonance_max: 1)})),
-])

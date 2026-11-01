@@ -1,0 +1,55 @@
+{
+  "id": "fragment_queen_of_hatred_trace",
+  "uuid": "730e8400-e29b-41d4-a716-446655440008",
+  "name": "증오의 여왕",
+  "description": "광선·하트·수동 블랙홀과 자동 히스테릭. 미정 수치는 별도 실행용 시험 사본에서만 명시한다.",
+  "rarity": {
+    "Unresolved": "rarity"
+  },
+  "equip_limit": {
+    "Unresolved": "equip_limit"
+  },
+  "origin": {
+    "Abnormality": {
+      "abnormality_id": "o-01-04_queen_of_hatred"
+    }
+  },
+  "sources": [
+    {
+      "AbnormalityContainment": {
+        "abnormality_id": "o-01-04_queen_of_hatred"
+      }
+    }
+  ],
+  "dependencies": [
+    {
+      "SourceAbnormality": {
+        "abnormality_id": "o-01-04_queen_of_hatred"
+      }
+    }
+  ],
+  "compatibility": {
+    "Unresolved": "compatibility"
+  },
+  "effect": {
+    "ActiveSkill": {
+      "forms": {
+        "base": {
+          "skill_id": "fragment_hatred_love_base",
+          "resonance_max": {
+            "Unresolved": "capacity"
+          }
+        },
+        "bloom": {
+          "skill_id": "fragment_hatred_love_bloom",
+          "resonance_max": {
+            "Unresolved": "capacity"
+          },
+          "bloom_recipe": {
+            "Unresolved": "bloom-recipe"
+          }
+        }
+      }
+    }
+  }
+}

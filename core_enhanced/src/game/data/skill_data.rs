@@ -1,3 +1,5 @@
+mod effect_catalog_references;
+
 use std::{
     collections::{HashMap, HashSet},
     sync::OnceLock,
@@ -521,38 +523,25 @@ impl SkillDatabase {
                 charge(1, "resource_reference_step")?;
                 for (effect_index, effect) in step.effects.iter().enumerate() {
                     charge(1, "resource_reference_effect")?;
-                    if let SkillEffectDef::Resources { operations } = &effect.op {
-                        for (index, operation) in operations.iter().enumerate() {
-                            charge(
-                                catalog.resources.len() as u64 + 1,
-                                "resource_reference_lookup",
-                            )?;
-                            let path = format!("skills[{skill_index}].steps[{step_index}].effects[{effect_index}].op.Resources.operations[{index}]");
-                            let definition = catalog
-                                .resources
-                                .iter()
-                                .find(|def| def.id == operation.resource)
-                                .ok_or_else(|| {
-                                    super::DataValidationError::at(
-                                        skill.id.as_str(),
-                                        format!("{path}.resource"),
-                                        format!(
-                                            "unknown resource '{}'",
-                                            operation.resource.as_str()
-                                        ),
-                                    )
-                                })?;
-                            definition
-                                .validate_selector(operation.owner)
-                                .map_err(|error| {
-                                    super::DataValidationError::at(
-                                        skill.id.as_str(),
-                                        format!("{path}.owner"),
-                                        error.to_string(),
-                                    )
-                                })?;
-                        }
-                    }
+                    let mut check = |operation: &crate::game::resource::ResourceOperation| -> Result<(), (String, String)> {
+                        charge(catalog.resources.len() as u64 + 1, "resource_reference_lookup")
+                            .map_err(|e| ("resource".into(), e.cause))?;
+                        let definition = catalog.resources.iter().find(|def| def.id == operation.resource)
+                            .ok_or_else(|| ("resource".into(), format!("unknown resource '{}'", operation.resource.as_str())))?;
+                        definition.validate_selector(operation.owner)
+                            .map_err(|e| ("owner".into(), e.to_string()))
+                    };
+                    let path = format!("skills[{skill_index}].steps[{step_index}].effects[{effect_index}].op");
+                    let result = match &effect.op {
+                        SkillEffectDef::Resources { operations } => operations.iter().enumerate().try_for_each(|(i, op)|
+                            check(op).map_err(|(p, cause)| (format!("{path}.Resources.operations[{i}].{p}"), cause))),
+                        SkillEffectDef::Sustained { definition: crate::game::ability::sustained::SustainedEffectDef::State { program, .. } } =>
+                            program.check_resources(&mut check).map_err(|(p, cause)| (format!("{path}.Sustained.definition.State.program.{p}"), cause)),
+                        SkillEffectDef::Sustained { definition: crate::game::ability::sustained::SustainedEffectDef::PreparedState { program, .. } } =>
+                            program.check_resources(&mut check).map_err(|(p, cause)| (format!("{path}.Sustained.definition.PreparedState.program.{p}"), cause)),
+                        _ => Ok(()),
+                    };
+                    result.map_err(|(p, cause)| super::DataValidationError::at(skill.id.as_str(), p, cause))?;
                 }
             }
         }
@@ -855,9 +844,27 @@ impl RawSkillDatabase {
         limits: &crate::game::value_expr::ExprParseLimits,
         max_nesting: usize,
     ) -> Result<Self, super::live_ron::LiveRonError> {
+        Self::from_ron_with_companions(source_file, input, limits, max_nesting)
+            .map(|(skills, _, _, _, _, _)| skills)
+    }
+
+    /// Composition envelopes carry skills, resources and equipment bindings.
+    /// Publication consumes all projections in the same candidate.
+    pub(crate) fn from_ron_with_companions(
+        source_file: &str,
+        input: &str,
+        limits: &crate::game::value_expr::ExprParseLimits,
+        max_nesting: usize,
+    ) -> Result<(Self, Vec<crate::game::resource::ResourceDefinition>, Vec<crate::game::ability::equipment_attack::EquipmentAttackBinding>, Vec<crate::game::ability::equipment_defense::EquipmentDefenseBinding>, Vec<crate::game::ability::equipment_support::EquipmentSupportBinding>, Vec<crate::game::ability::equipment_state::EquipmentStateBinding>), super::live_ron::LiveRonError> {
+        let mut resources = Vec::new();
+        let mut equipment_attacks = Vec::new();
+        let mut equipment_defenses = Vec::new();
+        let mut equipment_supports = Vec::new();
+        let mut equipment_states = Vec::new();
         // The extension is an explicit format discriminator; malformed graph IR
         // must never fall back to the ordinary skill catalog parser.
         let lowered;
+        let composition;
         let input = if source_file.ends_with(".skill-graph.ron") {
             let graph: crate::authoring::node_graph::PortableGraph =
                 parse_value_expr_bounded(source_file, input, limits, max_nesting)?;
@@ -867,8 +874,41 @@ impl RawSkillDatabase {
                 ).with_phase(super::live_ron::LiveRonPhase::Compile)
                  .with_code("graph_artifact_invalid"))?;
             lowered.as_str()
+        } else if source_file.ends_with(".skill-composition.ron")
+            || source_file.ends_with(".skill.yaml")
+        {
+            composition = if source_file.ends_with(".skill.yaml") {
+                crate::authoring::composition::compile_yaml_with_nesting(input, max_nesting).map_err(|diagnostic| {
+                    let mut error = super::live_ron::LiveRonError::validation(
+                        source_file,
+                        "skills",
+                        (!diagnostic.document.is_empty()).then_some(&diagnostic.document),
+                        Some(&diagnostic.source.definition),
+                        diagnostic.to_string(),
+                    ).with_phase(super::live_ron::LiveRonPhase::Compile)
+                     .with_code("composition_source_invalid");
+                    error.actual = Some(serde_json::json!(diagnostic));
+                    error
+                })?
+            } else {
+                parse_value_expr_bounded::<crate::authoring::composition::Artifact>(
+                    source_file, input, limits, max_nesting,
+                )?
+            };
+            resources = composition.resources().to_vec();
+            equipment_attacks = composition.equipment_attacks().to_vec();
+            equipment_defenses = composition.equipment_defenses().to_vec();
+            equipment_supports = composition.equipment_supports().to_vec();
+            equipment_states = composition.equipment_states().to_vec();
+            composition.validated_native_ron().map_err(|cause| {
+                super::live_ron::LiveRonError::validation(
+                    source_file, "skills", None::<String>, Some("composition"), cause.to_string(),
+                ).with_phase(super::live_ron::LiveRonPhase::Compile)
+                 .with_code("composition_artifact_invalid")
+            })?
         } else { input };
         parse_value_expr_bounded(source_file, input, limits, max_nesting)
+            .map(|skills| (skills, resources, equipment_attacks, equipment_defenses, equipment_supports, equipment_states))
             .map_err(|error| enrich_parse_error(input, error))
     }
 
@@ -1082,6 +1122,24 @@ fn validate_skill_buff_references(
 fn validate_skill_contracts(
     skills: &[SkillDef],
 ) -> Result<(), crate::game::data::DataValidationError> {
+    // Only authored catalogs enter this wrapper. Effective plans have already
+    // bound real equipped contributions and use the contextual validator below.
+    for (skill_index, skill) in skills.iter().enumerate() {
+        for (step_index, step) in skill.steps.iter().enumerate() {
+            let path = format!("skills[{skill_index}].steps[{step_index}]");
+            step.delivery.validate_authored_provenance().map_err(|reason| {
+                super::DataValidationError::at(skill.id.as_str(), format!("{path}.delivery"), reason)
+            })?;
+            for (effect_index, effect) in step.effects.iter().enumerate() {
+                if let SkillEffectDef::Sustained { definition } = &effect.op {
+                    definition.validate_authored_provenance().map_err(|reason| {
+                        super::DataValidationError::at(skill.id.as_str(),
+                            format!("{path}.effects[{effect_index}].op.Sustained.definition"), reason)
+                    })?;
+                }
+            }
+        }
+    }
     validate_skill_contracts_with_context(skills, skills, &[])
 }
 fn validate_skill_contracts_with_context(
@@ -1477,6 +1535,27 @@ fn validate_skill_contracts_with_context(
                         definition.validate().map_err(|message| {
                             error(format!("{effect_path}.op.Sustained"), message)
                         })?;
+                        if let crate::game::ability::sustained::SustainedEffectDef::State { program, .. } = definition {
+                            if (program.has_manual_input() || program.basic_attack.is_some())
+                                && (!matches!(step.target, SkillTarget::SelfUnit) || !matches!(step.delivery, DeliveryDef::Instant)) {
+                                return Err(error(format!("{effect_path}.op.Sustained.State"), "manual input/basic attack state requires an Instant SelfUnit producer".into()));
+                            }
+                            if program.has_manual_input() {
+                                let count = skill.steps.iter().flat_map(|s| &s.effects).filter(|e| matches!(&e.op,
+                                    SkillEffectDef::Sustained { definition: crate::game::ability::sustained::SustainedEffectDef::State { program, .. } } if program.has_manual_input()
+                                )).count();
+                                if count != 1 || skill.cast_selection() != SkillCastSelection::SelfUnit {
+                                    return Err(error(format!("{effect_path}.op.Sustained.State"), "manual input requires one state producer and self selection".into()));
+                                }
+                            }
+                            program.check_children(|id| {
+                                let child = references.iter().find(|s| &s.id == id);
+                                if id == &skill.id || child.is_none_or(|s| !crate::game::ability::state_program::immediate_child(s)) {
+                                    return Err(format!("EndAndInvoke child '{id}' requires a distinct existing zero-focus, zero-cost Action-lifetime skill with one immediate zero-delay Action using damage, heal, pull, personal shield or hit status effects"));
+                                }
+                                Ok(())
+                            }).map_err(|(path, message)| error(format!("{effect_path}.op.Sustained.State.program.{path}"), message))?;
+                        }
                         if let crate::game::ability::sustained::SustainedEffectDef::SegmentedShield { pool, .. } = definition {
                             if skill.flow.is_some()
                                 || !matches!(step.repeat, crate::game::ability::SkillStepRepeat::Once)
@@ -1544,6 +1623,7 @@ fn validate_skill_contracts_with_context(
                         if matches!(
                             definition,
                             crate::game::ability::sustained::SustainedEffectDef::PreparedBasic { .. }
+                        | crate::game::ability::sustained::SustainedEffectDef::PreparedState { .. }
                             | crate::game::ability::sustained::SustainedEffectDef::Parry { .. }
                             | crate::game::ability::sustained::SustainedEffectDef::ChannelAura { .. }
                             | crate::game::ability::sustained::SustainedEffectDef::BasicAttackOverlay { .. }
@@ -1729,6 +1809,7 @@ fn validate_skill_contracts_with_context(
         // A finite beneficial effect or owned channel is part of the skill use. Hostile statuses,
         // periodic damage and permanent changes retain their independent owners.
         let finite_use_effect = |effect: &SkillEffectDef| match effect {
+            SkillEffectDef::Sustained { definition: crate::game::ability::sustained::SustainedEffectDef::State { program, .. } } => program.owns_use,
             SkillEffectDef::ShieldExpr { .. } | SkillEffectDef::PreparedVolley { .. } | SkillEffectDef::InputPlan { .. } | SkillEffectDef::RelationAction { .. } | SkillEffectDef::CounterChannel { .. } => true,
             SkillEffectDef::Sustained { definition } => {
                 !definition.is_hostile()
@@ -1736,6 +1817,7 @@ fn validate_skill_contracts_with_context(
                         definition,
                         crate::game::ability::sustained::SustainedEffectDef::SegmentedShield { .. }
                         | crate::game::ability::sustained::SustainedEffectDef::PreparedBasic { .. }
+                        | crate::game::ability::sustained::SustainedEffectDef::PreparedState { .. }
                     )
             }
             _ => false,
@@ -2506,7 +2588,7 @@ mod tests {
         assert_single_ron_defect(
             &unknown_selection_control,
             &unknown_cast_selection,
-            "unknown variant `player_cursor_unit`, expected one of `self`, `automatic_unit`, `player_unit`, `player_tile`",
+            "unknown variant `player_cursor_unit`, expected one of `self`, `automatic_unit`, `player_unit`, `player_tile`, `player_tile_pair`, `player_direction`",
         );
 
         let missing_rule_control = complete_enemy_skill_database_ron("missing_selection_rule");

@@ -23,7 +23,7 @@ impl AttackOverlayProgram {
             return Err("Overlay requires positive duration.".into());
         }
         let maximum = u64::from(self.base)
-            + (u64::from(self.per_second) * u64::from(self.duration_ms)).div_ceil(1000);
+            + (u64::from(self.per_second) * u64::from(self.duration_ms)) / 1000;
         if self.cap.map_or(maximum, |c| maximum.min(c.into())) > u32::MAX.into() {
             return Err("Finish power exceeds native magnitude.".into());
         }

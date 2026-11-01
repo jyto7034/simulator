@@ -19,7 +19,9 @@ pub enum MobilePower {
     },
 }
 impl MobilePower {
-    pub fn validate(&self) -> Result<(), String> { self.validate_depth(0) }
+    pub fn validate(&self) -> Result<(), String> {
+        self.validate_depth(0)
+    }
     fn validate_depth(&self, depth: usize) -> Result<(), String> {
         if depth > 32 {
             return Err("Mobile power expression is too deep".into());
@@ -48,7 +50,7 @@ impl MobilePower {
     pub(crate) fn resolve(&self, attack: u32, units: u32) -> Result<u32, String> {
         let value = match self {
             Self::Weapon { coefficient: r } => {
-                (u128::from(attack) * u128::from(r.numerator)).div_ceil(u128::from(r.denominator))
+                (u128::from(attack) * u128::from(r.numerator)) / u128::from(r.denominator)
             }
             Self::Add { base, amount } => {
                 u128::from(base.resolve(attack, units)?) + u128::from(*amount)
@@ -67,7 +69,7 @@ impl MobilePower {
                 u128::from(base.resolve(attack, units)?)
                     .checked_mul(factor)
                     .ok_or("Fusion power overflow")?
-                    .div_ceil(denominator)
+                    / denominator
             }
         };
         u32::try_from(value).map_err(|_| "Mobile power exceeds u32".into())
@@ -382,9 +384,31 @@ impl crate::authoring::clone_shape::CloneShape for MobileChange {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct MobileDeathOrigin {pub target:crate::game::battle::ids::UnitInstanceId,pub relic:super::sustained::HitModifierSource,pub states:Vec<crate::game::battle::runtime_facts::StatusPredecessor>}
-crate::authoring::clone_shape::struct_shape!(MobileDeathOrigin{target,relic,states});
-impl MobileDeathOrigin {pub(crate) fn retained_extent(&self)->Option<usize>{let mut n=std::mem::size_of::<Self>().checked_add(64)?.checked_add(self.relic.definition.capacity())?.checked_add(self.relic.rule.capacity())?.checked_add(self.states.capacity().checked_mul(std::mem::size_of::<crate::game::battle::runtime_facts::StatusPredecessor>())?)?;for s in &self.states{n=n.checked_add(s.retained_extent()?)?;}Some(n)}}
+pub struct MobileDeathOrigin {
+    pub target: crate::game::battle::ids::UnitInstanceId,
+    pub relic: super::sustained::HitModifierSource,
+    pub states: Vec<crate::game::battle::runtime_facts::StatusPredecessor>,
+}
+crate::authoring::clone_shape::struct_shape!(MobileDeathOrigin {
+    target,
+    relic,
+    states
+});
+impl MobileDeathOrigin {
+    pub(crate) fn retained_extent(&self) -> Option<usize> {
+        let mut n = std::mem::size_of::<Self>()
+            .checked_add(64)?
+            .checked_add(self.relic.definition.capacity())?
+            .checked_add(self.relic.rule.capacity())?
+            .checked_add(self.states.capacity().checked_mul(std::mem::size_of::<
+                crate::game::battle::runtime_facts::StatusPredecessor,
+            >())?)?;
+        for s in &self.states {
+            n = n.checked_add(s.retained_extent()?)?;
+        }
+        Some(n)
+    }
+}
 /// Immediate parent effect and the equipped relic copy responsible for a death seed.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct MobileSeedOrigin {
@@ -406,7 +430,12 @@ impl MobileSeedOrigin {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum MobilePhaseView {
-    Chasing { x_milli:i64, y_milli:i64, target:Option<crate::game::battle::ids::UnitInstanceId>, explodes_at_ms:u64 },
+    Chasing {
+        x_milli: i64,
+        y_milli: i64,
+        target: Option<crate::game::battle::ids::UnitInstanceId>,
+        explodes_at_ms: u64,
+    },
     Waiting,
     Leaping {
         destination: crate::game::resources::Position,
@@ -418,7 +447,7 @@ pub enum MobilePhaseView {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct MobileEffectView {
     #[serde(default)]
-    pub death_origin:Option<std::sync::Arc<MobileDeathOrigin>>,
+    pub death_origin: Option<std::sync::Arc<MobileDeathOrigin>>,
     #[serde(default)]
     pub seed_origin: Option<std::sync::Arc<MobileSeedOrigin>>,
     pub activation: u64,

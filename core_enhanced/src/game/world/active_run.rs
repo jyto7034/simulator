@@ -151,6 +151,11 @@ where
 }
 
 impl GameCore {
+    pub(crate) const fn active_run_checkpoint_format_version() -> u32 {
+        ACTIVE_RUN_CORE_PAYLOAD_VERSION
+    }
+
+
     pub(crate) fn inspect_checkpoint_requirements(bytes: &[u8], max_bytes: usize) -> Result<crate::game::data::content_pack::ContentIdentity, GameError> {
         continuation::inspect_requirements(bytes, max_bytes)
     }

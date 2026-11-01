@@ -38,7 +38,7 @@ use crate::{
     },
 };
 
-pub const BATTLE_EVENT_LOG_VERSION: u32 = 32;
+pub const BATTLE_EVENT_LOG_VERSION: u32 = 34;
 pub const BATTLE_HISTORY_MAX_EVENTS: usize = 8_192;
 pub const BATTLE_HISTORY_MAX_ENCODED_BYTES: usize = 4 * 1024 * 1024;
 pub const BATTLE_HISTORY_MAX_SPAN_MS: u64 = 180_000;
@@ -232,6 +232,7 @@ fn owned_payload_shape(entry: &BattleEventLogEntry) -> (usize, usize) {
                 0,
             )
         }
+        BattleLogEvent::BasicAttackTilesReleased { affected_tiles, .. } => (0, affected_tiles.len()),
         BattleLogEvent::SkillAreaDeclared {
             skill_id,
             step_id,
@@ -290,7 +291,8 @@ fn owned_payload_shape(entry: &BattleEventLogEntry) -> (usize, usize) {
                 .map_or(0, Vec::len)
                 .saturating_add(feedback_tags.len()),
         ),
-        BattleLogEvent::CorrosionStarted { .. }
+        BattleLogEvent::EmployeeTransformed { .. }
+        | BattleLogEvent::CorrosionStarted { .. }
         | BattleLogEvent::CorrosionEnded { .. }
         | BattleLogEvent::BattleStart { .. }
         | BattleLogEvent::ItemSpawned { .. }
@@ -305,6 +307,8 @@ fn owned_payload_shape(entry: &BattleEventLogEntry) -> (usize, usize) {
         | BattleLogEvent::AttackStart { .. }
         | BattleLogEvent::AttackResolve { .. }
         | BattleLogEvent::AttackMiss { .. }
+        | BattleLogEvent::BasicAttackTileReleased { .. }
+        | BattleLogEvent::BasicAttackTileImpacted { .. }
         | BattleLogEvent::BasicAttackProjectileLaunched { .. }
         | BattleLogEvent::BasicAttackProjectileImpacted { .. }
         | BattleLogEvent::AutoCastEnd { .. }
@@ -1056,6 +1060,13 @@ pub enum BattleSkillAreaShape {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum BattleLogEvent {
+    EmployeeTransformed {
+        actor: UnitInstanceId,
+        successor: UnitInstanceId,
+        employee_uuid: Uuid,
+        equipment_copy: Uuid,
+        world_position: EventLogVec2,
+    },
     CorrosionStarted {
         actor: UnitInstanceId,
         duration_ms: u64,
@@ -1200,6 +1211,24 @@ pub enum BattleLogEvent {
         kind: Option<AttackKind>,
         #[serde(default, skip_serializing_if = "Option::is_none")]
         delivery: Option<AttackDelivery>,
+    },
+    /// Fixed release-time tiles; consumers must not follow the targets.
+    BasicAttackTileReleased {
+        release_id: Uuid,
+        attacker_instance_id: UnitInstanceId,
+        tile: Position,
+        impact_at_ms: u64,
+    },
+    BasicAttackTileImpacted {
+        release_id: Uuid,
+        attacker_instance_id: UnitInstanceId,
+        tile: Position,
+        /// Eligible distinct occupants before damage; not an actual hit count.
+        target_count: u32,
+    },
+    BasicAttackTilesReleased {
+        attacker_instance_id: UnitInstanceId,
+        affected_tiles: Vec<Position>,
     },
     BasicAttackProjectileLaunched {
         projectile_id: Uuid,

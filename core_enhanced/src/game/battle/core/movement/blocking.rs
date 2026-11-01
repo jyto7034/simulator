@@ -426,6 +426,20 @@ impl BattleCore {
         self.apply_block_target_preferences();
     }
 
+    /// Read the unique current enemy-to-blocker authority; capacity demand is not a count.
+    pub(in crate::game::battle::core) fn relation_count(
+        &self, subject: UnitInstanceId, relation: crate::game::value_expr::RelationCountKind,
+    ) -> Result<u32, crate::game::behavior::GameError> {
+        use crate::game::value_expr::RelationCountKind;
+        let Some(owner) = self.units.get(&subject).filter(|u| u.is_active() && u.is_combatant() && u.stats.current_health > 0) else { return Ok(0); };
+        match relation { RelationCountKind::BlockingHostiles => {
+            crate::authoring::control::charge(self.block_state.enemy_to_blocker.len() as u64, "blocking_hostiles_relation")?;
+            let count = self.block_state.enemy_to_blocker.iter().filter(|(enemy, blocker)| **blocker == subject
+                && self.units.get(*enemy).is_some_and(|u| u.is_active() && u.is_combatant() && u.stats.current_health > 0 && u.owner != owner.owner)).count();
+            u32::try_from(count).map_err(|_| crate::game::battle::runtime_control::invariant("blocking_hostiles_count_overflow"))
+        } }
+    }
+
     pub(in crate::game::battle::core) fn blocked_by(
         &self,
         enemy_id: UnitInstanceId,

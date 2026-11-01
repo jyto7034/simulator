@@ -17,10 +17,19 @@ pub(super) struct QueuedEvent {
     pub(super) fact_source: QueuedFactSource,
 }
 
-/// Small periodic events do not reserve the largest BattleEvent variant in
+/// Small events do not reserve the largest BattleEvent variant in
 /// every heap/bucket slot. All comparisons still use the original event value.
 #[derive(Debug, Clone)]
 pub(super) enum PackedEvent {
+    WaveTriggerWake {
+        time_ms: u64,
+        trigger_id: Arc<String>,
+    },
+    SpawnGroup {
+        time_ms: u64,
+        group_id: Arc<crate::game::battle::scenario::ScenarioGroupId>,
+        cause: crate::game::battle::event_log::BattleEventCause,
+    },
     MovementTick {
         time_ms: u64,
     },
@@ -47,6 +56,38 @@ impl crate::authoring::clone_shape::CloneShape for PackedEvent {
 impl PackedEvent {
     fn new(event: BattleEvent) -> Result<Self, crate::game::behavior::GameError> {
         Ok(match event {
+            BattleEvent::WaveTriggerWake {
+                time_ms,
+                trigger_id,
+            } => {
+                crate::game::battle::runtime_control::admit_retained_growth(
+                    0,
+                    BattleEvent::wave_trigger_id_extent(trigger_id.capacity()),
+                    "queued_wave_trigger_payload",
+                )?;
+                Self::WaveTriggerWake {
+                    time_ms,
+                    trigger_id,
+                }
+            }
+            BattleEvent::SpawnGroup {
+                time_ms,
+                group_id,
+                cause,
+            } => {
+                // A caller may supply its own raw event. Admit this retained
+                // owner even when it did not use the internal constructor.
+                crate::game::battle::runtime_control::admit_retained_growth(
+                    0,
+                    group_id.retained_extent(),
+                    "queued_spawn_group_payload",
+                )?;
+                Self::SpawnGroup {
+                    time_ms,
+                    group_id,
+                    cause,
+                }
+            }
             BattleEvent::ContinuousMovementTick { time_ms } => Self::MovementTick { time_ms },
             BattleEvent::AttackStart {
                 time_ms,
@@ -73,6 +114,22 @@ impl PackedEvent {
     }
     pub(super) fn view(&self) -> Cow<'_, BattleEvent> {
         match self {
+            Self::WaveTriggerWake {
+                time_ms,
+                trigger_id,
+            } => Cow::Owned(BattleEvent::WaveTriggerWake {
+                time_ms: *time_ms,
+                trigger_id: Arc::clone(trigger_id),
+            }),
+            Self::SpawnGroup {
+                time_ms,
+                group_id,
+                cause,
+            } => Cow::Owned(BattleEvent::SpawnGroup {
+                time_ms: *time_ms,
+                group_id: Arc::clone(group_id),
+                cause: *cause,
+            }),
             Self::MovementTick { time_ms } => {
                 Cow::Owned(BattleEvent::ContinuousMovementTick { time_ms: *time_ms })
             }
@@ -94,14 +151,21 @@ impl PackedEvent {
     }
     fn time_ms(&self) -> u64 {
         match self {
-            Self::MovementTick { time_ms } | Self::AttackStart { time_ms, .. } => *time_ms,
+            Self::WaveTriggerWake { time_ms, .. }
+            | Self::SpawnGroup { time_ms, .. }
+            | Self::MovementTick { time_ms }
+            | Self::AttackStart { time_ms, .. } => *time_ms,
             Self::Large(event) => event.time_ms(),
         }
     }
-    pub(super) fn payload_extent(&self) -> usize {
+    pub(super) fn payload_extent(&self) -> Option<usize> {
         match self {
-            Self::Large(_) => std::mem::size_of::<BattleEvent>() + 64,
-            _ => 0,
+            Self::WaveTriggerWake { trigger_id, .. } => {
+                BattleEvent::wave_trigger_id_extent(trigger_id.capacity())
+            }
+            Self::SpawnGroup { group_id, .. } => group_id.retained_extent(),
+            Self::Large(_) => std::mem::size_of::<BattleEvent>().checked_add(64),
+            _ => Some(0),
         }
     }
     pub(super) fn into_owned(self) -> Result<BattleEvent, crate::game::behavior::GameError> {
@@ -111,6 +175,22 @@ impl PackedEvent {
         };
         use crate::game::battle::runtime_control as native;
         match self {
+            Self::WaveTriggerWake {
+                time_ms,
+                trigger_id,
+            } => Ok(BattleEvent::WaveTriggerWake {
+                time_ms,
+                trigger_id,
+            }),
+            Self::SpawnGroup {
+                time_ms,
+                group_id,
+                cause,
+            } => Ok(BattleEvent::SpawnGroup {
+                time_ms,
+                group_id,
+                cause,
+            }),
             Self::Large(event) => match Arc::try_unwrap(event) {
                 Ok(event) => Ok(event),
                 Err(event) => {
@@ -135,7 +215,8 @@ impl PackedEvent {
                         BattleEvent::AttackResolve {
                             source_snapshot, ..
                         }
-                        | BattleEvent::SkillProjectileImpact {
+                        | BattleEvent::BasicAttackTileImpact { source_snapshot, .. }
+            | BattleEvent::SkillProjectileImpact {
                             source_snapshot, ..
                         } => source_snapshot.admit_fact_owner()?,
                         _ => {}
@@ -197,6 +278,7 @@ impl std::ops::Deref for QueuedFactSource {
             extended_observation: None,
             use_control: false,
             reaction: false,
+            death_burst: false,
             flow: None,
             actor: None,
             equipment: None,
@@ -640,6 +722,7 @@ impl EventQueue {
             BattleEvent::AttackResolve {
                 source_snapshot, ..
             }
+            | BattleEvent::BasicAttackTileImpact { source_snapshot, .. }
             | BattleEvent::SkillProjectileImpact {
                 source_snapshot, ..
             } => {
@@ -782,6 +865,17 @@ impl EventQueue {
         self.0.retain(|q| !matches!(q.event.view().as_ref(), BattleEvent::SkillAreaTick { area_id, .. } if *area_id == area));
         Ok(())
     }
+    pub(super) fn take_basic_tile_impact(
+        &mut self,
+    ) -> Result<Option<QueuedEvent>, crate::game::behavior::GameError> {
+        control::charge(self.0.len() as u64, "basic_tile_end_queue_scan")?;
+        let selected = self.0.iter().filter(|q| matches!(q.event.view().as_ref(),
+            BattleEvent::BasicAttackTileImpact { .. })).max();
+        let Some(selected) = selected else { return Ok(None); };
+        let owned = crate::authoring::clone_shape::controlled_clone(selected)?;
+        self.0.retain(|q| q != &owned);
+        Ok(Some(owned))
+    }
     pub(super) fn take_area_event(
         &mut self, area: uuid::Uuid,
     ) -> Result<Option<QueuedEvent>, crate::game::behavior::GameError> {
@@ -809,9 +903,14 @@ impl EventQueue {
         control::charge(self.0.len()as u64,"prepared_volley_queue_scan")?;
         self.0.retain(|q|match q.event.view().as_ref(){BattleEvent::PreparedVolleyTick{source,..}=>!owner.is_none_or(|o|o==*source),BattleEvent::VolleyFlightTick{..}=>!flights,_=>true});Ok(())
     }
+    pub(super) fn discard_shared_cohort_events(&mut self) -> Result<(),crate::game::behavior::GameError> {
+        control::charge(self.0.len() as u64, "shared_cohort_queue_scan")?;
+        self.0.retain(|q| !matches!(q.event.view().as_ref(), BattleEvent::HostileCohortTick{..}));
+        Ok(())
+    }
     pub(super) fn discard_input_plan_events(&mut self)->Result<(),crate::game::behavior::GameError>{
         control::charge(self.0.len()as u64,"shot_queue_scan")?;
-        self.0.retain(|q|!matches!(q.event.view().as_ref(),BattleEvent::ShotStockTick{..}|BattleEvent::HostileCohortTick{..}|BattleEvent::ShotFlightTick{..}));Ok(())
+        self.0.retain(|q|!matches!(q.event.view().as_ref(),BattleEvent::ShotStockTick{..}|BattleEvent::ShotFlightTick{..}));Ok(())
     }
     pub(super) fn take_immediate_action_event(&mut self,action:&crate::game::battle::runtime_facts::ActionHandle,caster:crate::game::battle::ids::UnitInstanceId,start_seq:u64,cast:Option<u64>,now:u64)->Result<Option<QueuedEvent>,crate::game::behavior::GameError>{
         control::charge(self.0.len()as u64,"shot_immediate_action_queue")?;
@@ -825,6 +924,11 @@ impl EventQueue {
             BattleEvent::RelationActionTick { source, .. } => !(channels && owner.is_none_or(|o| o == *source)),
             _ => true,
         });
+        Ok(())
+    }
+    pub(super) fn discard_equipment_death_bursts(&mut self, ids: Option<&std::collections::BTreeSet<u64>>) -> Result<(), crate::game::behavior::GameError> {
+        control::charge(self.0.len() as u64, "death_burst_queue_scan")?;
+        self.0.retain(|q| !matches!(q.event.view().as_ref(), BattleEvent::EquipmentDeathBurst { id, .. } if ids.is_none_or(|ids| ids.contains(id))));
         Ok(())
     }
     pub(super) fn discard_tile_bursts(&mut self) -> Result<(), crate::game::behavior::GameError> {
@@ -842,7 +946,7 @@ impl EventQueue {
         activation: u64,
     ) -> Result<(), crate::game::behavior::GameError> {
         control::charge(self.0.len() as u64, "sustained_expiry_queue_scan")?;
-        self.0.retain(|q| !matches!(q.event.view().as_ref(), BattleEvent::SustainedExpiry { activation: id, .. } if *id == activation));
+        self.0.retain(|q| !matches!(q.event.view().as_ref(), BattleEvent::SustainedExpiry { activation: id, .. } | BattleEvent::ChannelUpkeep { activation: id, .. } | BattleEvent::EquipmentStateTick { activation: id, .. } if *id == activation));
         Ok(())
     }
     pub(super) fn discard_independent_form_starts(
@@ -877,5 +981,194 @@ impl EventQueue {
     #[cfg(test)]
     pub(super) fn is_empty(&self) -> bool {
         self.0.is_empty()
+    }
+}
+
+#[cfg(test)]
+mod spawn_packing_tests {
+    use super::*;
+    use crate::authoring::{
+        clone_shape::controlled_clone, control, CancellationToken, ExecutionLimits, ExecutionPhase,
+    };
+    use crate::game::battle::{
+        event_log::BattleEventCause,
+        runtime_control::{self as native, RuntimeFactLimits, RuntimeFaultCode},
+        scenario::ScenarioGroupId,
+    };
+
+    #[test]
+    fn compact_spawn_queue_preserves_raw_order_shares_ids_and_releases_forks() {
+        let spawn = |time, id: &str| {
+            BattleEvent::spawn_group(time, ScenarioGroupId::new(id), BattleEventCause::default())
+                .unwrap()
+        };
+        let long = spawn(10, &"group".repeat(1000));
+        let BattleEvent::SpawnGroup { group_id, .. } = &long else {
+            unreachable!()
+        };
+        let weak = Arc::downgrade(group_id);
+        let events = vec![
+            spawn(10, "z"),
+            spawn(10, "a"),
+            long,
+            BattleEvent::ContinuousMovementTick { time_ms: 10 },
+            spawn(9, "earlier"),
+            BattleEvent::wave_trigger_wake(10, "wave-z").unwrap(),
+            BattleEvent::wave_trigger_wake(10, "wave-a").unwrap(),
+        ];
+        let mut raw: BinaryHeap<_> = events.iter().cloned().collect();
+        let mut queue = EventQueue::new();
+        for event in events {
+            queue.push(event);
+        }
+        assert!(
+            queue
+                .iter_queued()
+                .filter(|q| matches!(q.event, PackedEvent::SpawnGroup { .. }))
+                .count()
+                == 4
+        );
+        let (fork, _) = control::run(
+            &ExecutionLimits::default(),
+            &CancellationToken::default(),
+            ExecutionPhase::TrialExecution,
+            || controlled_clone(&queue),
+        )
+        .unwrap();
+        let mut fork = fork.unwrap();
+        while let Some(expected) = raw.pop() {
+            for q in [&mut queue, &mut fork] {
+                let actual = q.pop().unwrap().event.into_owned().unwrap();
+                if let (
+                    BattleEvent::SpawnGroup { group_id: a, .. },
+                    BattleEvent::SpawnGroup { group_id: b, .. },
+                ) = (&actual, &expected)
+                {
+                    assert!(Arc::ptr_eq(a, b));
+                }
+                if let (
+                    BattleEvent::WaveTriggerWake { trigger_id: a, .. },
+                    BattleEvent::WaveTriggerWake { trigger_id: b, .. },
+                ) = (&actual, &expected)
+                {
+                    assert!(Arc::ptr_eq(a, b));
+                }
+                assert_eq!(actual, expected);
+            }
+        }
+        assert_eq!(queue.len(), 0);
+        assert_eq!(fork.len(), 0);
+        assert!(weak.upgrade().is_none());
+        let small = PackedEvent::new(spawn(0, "small")).unwrap();
+        assert!(small.payload_extent().unwrap() < std::mem::size_of::<BattleEvent>());
+    }
+
+    #[test]
+    fn compact_spawn_owner_and_queue_admit_full_long_id_before_acceptance() {
+        let id = ScenarioGroupId::new("bounded-group".repeat(1000));
+        let extent = id.retained_extent().unwrap();
+        for (cap, good) in [(extent - 1, false), (extent, true)] {
+            let result = native::run(
+                RuntimeFactLimits {
+                    max_retained_bytes: cap,
+                    ..Default::default()
+                },
+                || BattleEvent::spawn_group(7, id.clone(), BattleEventCause::default()),
+            );
+            if good {
+                result.unwrap();
+            } else {
+                assert!(
+                    matches!(result, Err(crate::game::behavior::GameError::BattleRuntimeFault(f))
+                if f.code == RuntimeFaultCode::RetainedByteLimit && f.site == "spawn_group_id_owner")
+                );
+            }
+        }
+        let event = BattleEvent::spawn_group(7, id, BattleEventCause::default()).unwrap();
+        for (cap, good) in [(extent - 1, false), (extent, true)] {
+            let result = native::run(
+                RuntimeFactLimits {
+                    max_retained_bytes: cap,
+                    ..Default::default()
+                },
+                || PackedEvent::new(event.clone()),
+            );
+            if good {
+                assert_eq!(result.unwrap().payload_extent(), Some(extent));
+            } else {
+                assert!(
+                    matches!(result, Err(crate::game::behavior::GameError::BattleRuntimeFault(f))
+                if f.code == RuntimeFaultCode::RetainedByteLimit && f.site == "queued_spawn_group_payload")
+                );
+            }
+        }
+        let run = || {
+            control::run(
+                &ExecutionLimits::default(),
+                &CancellationToken::default(),
+                ExecutionPhase::TrialExecution,
+                || PackedEvent::new(event.clone()),
+            )
+        };
+        let cancelled = control::with_test_cancellation("queued_spawn_group_payload", 1, run);
+        assert_eq!(cancelled.err().unwrap().code, "authoring_cancelled");
+        run().unwrap().0.unwrap();
+    }
+    #[test]
+    fn compact_wave_owner_and_queue_admit_full_id_and_release_after_cancellation() {
+        let id = "bounded-wave".repeat(1000);
+        let extent = BattleEvent::wave_trigger_id_extent(id.len()).unwrap();
+        for (cap, good) in [(extent - 1, false), (extent, true)] {
+            let result = native::run(
+                RuntimeFactLimits {
+                    max_retained_bytes: cap,
+                    ..Default::default()
+                },
+                || BattleEvent::wave_trigger_wake(7, &id),
+            );
+            if good {
+                result.unwrap();
+            } else {
+                assert!(
+                    matches!(result, Err(crate::game::behavior::GameError::BattleRuntimeFault(f))
+                if f.code == RuntimeFaultCode::RetainedByteLimit && f.site == "wave_trigger_id_owner")
+                );
+            }
+        }
+        let event = BattleEvent::wave_trigger_wake(7, &id).unwrap();
+        let BattleEvent::WaveTriggerWake { trigger_id, .. } = &event else {
+            unreachable!()
+        };
+        let weak = Arc::downgrade(trigger_id);
+        for (cap, good) in [(extent - 1, false), (extent, true)] {
+            let result = native::run(
+                RuntimeFactLimits {
+                    max_retained_bytes: cap,
+                    ..Default::default()
+                },
+                || PackedEvent::new(event.clone()),
+            );
+            if good {
+                assert_eq!(result.unwrap().payload_extent(), Some(extent));
+            } else {
+                assert!(
+                    matches!(result, Err(crate::game::behavior::GameError::BattleRuntimeFault(f))
+                if f.code == RuntimeFaultCode::RetainedByteLimit && f.site == "queued_wave_trigger_payload")
+                );
+            }
+        }
+        let run = || {
+            control::run(
+                &ExecutionLimits::default(),
+                &CancellationToken::default(),
+                ExecutionPhase::TrialExecution,
+                || PackedEvent::new(event.clone()),
+            )
+        };
+        let cancelled = control::with_test_cancellation("queued_wave_trigger_payload", 1, run);
+        assert_eq!(cancelled.err().unwrap().code, "authoring_cancelled");
+        run().unwrap().0.unwrap();
+        drop(event);
+        assert!(weak.upgrade().is_none());
     }
 }

@@ -1,3 +1,0 @@
-(rewards: [
-(id: "u09_public_supply", uuid: "a509e100-0000-0000-0000-000000000301", name: "U09 external supply", description: "Normal victory rewards", icon: "u09_public", effects: [GrantRelic(relic_id: "u09_public_relic"), GrantSkillFragment(fragment_id: "u09_public_fragment")]),
-], pools: [], equipment_pools: [])

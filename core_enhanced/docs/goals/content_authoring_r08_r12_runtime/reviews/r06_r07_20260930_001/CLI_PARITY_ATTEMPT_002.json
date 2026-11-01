@@ -1,6 +1,0 @@
-{
-  "result": "analysis helper failed",
-  "exit_code": 1,
-  "reason": "AttributeError: nullable public_result was None; no product invocation or mutation",
-  "correction": "003 handles nullable envelope; explicit preview list set comparison only"
-}

@@ -14,8 +14,24 @@ use crate::{
 
 impl BattleCore {
     pub(super) fn skill_preserves_basic_clock(skill: &crate::game::ability::SkillDef) -> bool {
-        Self::relation_action_skill(skill) || skill.steps.iter().flat_map(|s|&s.effects).any(|e| matches!(&e.op,
-            crate::game::ability::SkillEffectDef::Sustained { definition:crate::game::ability::sustained::SustainedEffectDef::BasicAttackOverlay {profile,..} } if profile.line.is_some()))
+        use crate::game::ability::{sustained::SustainedEffectDef, SkillEffectDef};
+        Self::relation_action_skill(skill)
+            || skill
+                .steps
+                .iter()
+                .flat_map(|s| &s.effects)
+                .any(|effect| match &effect.op {
+                    SkillEffectDef::Sustained {
+                        definition: SustainedEffectDef::BasicAttackOverlay { profile, .. },
+                    } => profile.line.is_some(),
+                    SkillEffectDef::Sustained {
+                        definition: SustainedEffectDef::State { program, .. },
+                    } => program
+                        .basic_attack
+                        .as_ref()
+                        .is_some_and(|p| p.line.is_some()),
+                    _ => false,
+                })
     }
 
     pub(super) fn line_target_in_range(
@@ -123,7 +139,7 @@ impl BattleCore {
                 let bonus = (prior_contacts * u64::from(rule.increment_percent))
                     .min(rule.cap_percent.into());
                 snapshot.base_damage = u32::try_from(
-                    (u128::from(snapshot.base_damage) * u128::from(100 + bonus)).div_ceil(100),
+                    (u128::from(snapshot.base_damage) * u128::from(100 + bonus)) / 100,
                 )
                 .map_err(|_| {
                     crate::game::battle::runtime_control::invariant("basic_line_power_overflow")

@@ -1,0 +1,19 @@
+# E06 technical values, not release balance.
+version: 1
+id: basic-slow-fixture
+values:
+  - name: basic-slow
+    value:
+      AttackProgram:
+        reactions: []
+        on_hit_status:
+          duration_ms: 2000
+          profile:
+            definition: umbrella-basic-slow
+            kind:
+              BasicAttackSlow: { percent: 20 }
+equipment_attacks:
+  - equipment: black_swan_umbrella
+    program: { Shared: basic-slow }
+definitions: []
+skills: []

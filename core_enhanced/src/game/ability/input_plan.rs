@@ -2,6 +2,7 @@
 use super::{marks::MarkRatio, relation_action::PlanStatus, resonance::ResonanceAdmission};
 use crate::game::battle::{damage::DamageType, tile_range::TileRangePattern};
 use serde::{Deserialize, Serialize};
+pub use super::hostile_cohort::HostileCohortDef;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -9,25 +10,6 @@ pub struct ShotStockDef {
     pub definition: String,
     pub initial: u32,
     pub capacity: Option<u32>,
-}
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
-pub struct HostileCohortDef {
-    pub definition: String,
-    pub interval_ms: u32,
-    pub hp: u32,
-    pub power: u32,
-    pub speed: MarkRatio,
-    pub physical_defense: u32,
-    pub magic_defense: u32,
-    pub block: u32,
-    pub leak: u32,
-    pub damage_type: DamageType,
-    pub attack_range: TileRangePattern,
-    pub attack_interval_ms: u32,
-    pub weakness_family: String,
-    pub weakness_percent: MarkRatio,
-    pub kill_gain: u32,
 }
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -126,37 +108,7 @@ impl InputPlanDef {
                 return Err("invalid shot stock".into());
             }
         }
-        let h = &self.cohort;
-        if !identity(&h.definition)
-            || !identity(&h.weakness_family)
-            || h.hp == 0
-            || h.interval_ms == 0
-            || h.attack_interval_ms == 0
-            || h.block == 0
-            || h.leak == 0
-            || h.kill_gain == 0
-            || h.damage_type == DamageType::True
-        {
-            return Err("invalid hostile cohort".into());
-        }
-        h.speed.validate(false)?;
-        let native_speed = u128::from(h.speed.numerator) * 1000 / u128::from(h.speed.denominator);
-        if h.hp > i32::MAX as u32
-            || h.physical_defense > i32::MAX as u32
-            || h.magic_defense > i32::MAX as u32
-            || (u128::from(h.speed.numerator) * 1000) % u128::from(h.speed.denominator) != 0
-            || native_speed == 0
-            || native_speed > u128::from(u32::MAX)
-        {
-            return Err("hostile stats exceed native precision".into());
-        }
-        h.weakness_percent.validate(true)?;
-        if h.weakness_percent.numerator % h.weakness_percent.denominator != 0
-            || h.weakness_percent.numerator / h.weakness_percent.denominator > i32::MAX as u64
-        {
-            return Err("hostile weakness exceeds native precision".into());
-        }
-        h.attack_range.validate()?;
+        self.cohort.validate()?;
         let valid_status = |s: &PlanStatus| -> Result<(), String> {
             if !identity(&s.definition)
                 || s.duration_ms == 0
@@ -220,23 +172,7 @@ crate::authoring::clone_shape::struct_shape!(ShotStockDef {
     initial,
     capacity
 });
-crate::authoring::clone_shape::struct_shape!(HostileCohortDef {
-    definition,
-    interval_ms,
-    hp,
-    power,
-    speed,
-    physical_defense,
-    magic_defense,
-    block,
-    leak,
-    damage_type,
-    attack_range,
-    attack_interval_ms,
-    weakness_family,
-    weakness_percent,
-    kill_gain
-});
+
 crate::authoring::clone_shape::struct_shape!(ShotProjectileDef {
     definition,
     power,

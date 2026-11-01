@@ -29,6 +29,8 @@ use crate::game::{
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EquipmentItemDto {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub form: Option<crate::game::ability::equipment_forms::EquipmentFormView>,
     pub weapon_stage: crate::game::ability::weapon_marks::WeaponStage,
     pub investment: crate::game::material_economy::MaterialInvestment,
     pub uuid: Uuid,
@@ -62,6 +64,7 @@ impl EquipmentItemDto {
         enhancement_level: u8,
     ) -> Self {
         Self {
+            form: None,
             investment: Default::default(),
             weapon_stage: Default::default(),
             uuid: instance_uuid,

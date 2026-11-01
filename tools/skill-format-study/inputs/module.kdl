@@ -1,0 +1,647 @@
+// KEEP:module:header 비교 fixture, 출시값 아님
+- {
+  version 1
+  id woodsman-monk-composition-fixture
+  values {
+    - {
+      name weapon-power
+      value {
+        Amount {
+// KEEP:module:interior 원본 주석 보존
+          moment Snapshot
+          root {
+            Read {
+              Stat {
+                subject Source
+                stat Attack
+              }
+            }
+          }
+        }
+      }
+    }
+    - {
+      name burst-power
+      value {
+        Amount {
+          moment Snapshot
+          root {
+            Ratio {
+              numerator {
+                Mul {
+                  value {
+                    Read {
+                      Stat {
+                        subject Source
+                        stat Attack
+                      }
+                    }
+                  }
+                  scalar {
+                    Const {
+                      value 3
+                      unit Scalar
+                    }
+                  }
+                }
+              }
+              denominator {
+                Const {
+                  value 2
+                  unit Scalar
+                }
+              }
+              rounding Ceil
+            }
+          }
+        }
+      }
+    }
+    - {
+      name finisher-power
+      value {
+        Amount {
+          moment Live
+          root {
+            Ratio {
+              numerator {
+                Mul {
+                  value {
+                    Read {
+                      Stat {
+                        subject Source
+                        stat Attack
+                      }
+                    }
+                  }
+                  scalar {
+                    Add {
+                      - {
+                        Mul {
+                          value {
+                            Ratio {
+                              numerator {
+                                Read {
+                                  HitPoints {
+                                    subject Target
+                                    field Max
+                                  }
+                                }
+                              }
+                              denominator {
+                                Const {
+                                  value 1
+                                  unit Magnitude
+                                }
+                              }
+                              rounding Floor
+                            }
+                          }
+                          scalar {
+                            Const {
+                              value 100
+                              unit Scalar
+                            }
+                          }
+                        }
+                      }
+                      - {
+                        Clamp {
+                          value {
+                            Mul {
+                              value {
+                                Ratio {
+                                  numerator {
+                                    Read {
+                                      HitPoints {
+                                        subject Target
+                                        field Missing
+                                      }
+                                    }
+                                  }
+                                  denominator {
+                                    Const {
+                                      value 1
+                                      unit Magnitude
+                                    }
+                                  }
+                                  rounding Floor
+                                }
+                              }
+                              scalar {
+                                Const {
+                                  value 100
+                                  unit Scalar
+                                }
+                              }
+                            }
+                          }
+                          min {
+                            Const {
+                              value 0
+                              unit Scalar
+                            }
+                          }
+                          max {
+                            Mul {
+                              value {
+                                Ratio {
+                                  numerator {
+                                    Read {
+                                      HitPoints {
+                                        subject Target
+                                        field Max
+                                      }
+                                    }
+                                  }
+                                  denominator {
+                                    Const {
+                                      value 1
+                                      unit Magnitude
+                                    }
+                                  }
+                                  rounding Floor
+                                }
+                              }
+                              scalar {
+                                Const {
+                                  value 50
+                                  unit Scalar
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+              denominator {
+                Mul {
+                  value {
+                    Ratio {
+                      numerator {
+                        Read {
+                          HitPoints {
+                            subject Target
+                            field Max
+                          }
+                        }
+                      }
+                      denominator {
+                        Const {
+                          value 1
+                          unit Magnitude
+                        }
+                      }
+                      rounding Floor
+                    }
+                  }
+                  scalar {
+                    Const {
+                      value 100
+                      unit Scalar
+                    }
+                  }
+                }
+              }
+              rounding Ceil
+            }
+          }
+        }
+      }
+    }
+    - {
+      name current-front
+      value {
+        Delivery {
+          TileArea {
+            footprint {
+              rows {
+                - XXXXX
+                - XXXXX
+                - XX@XX
+                - XXXXX
+                - XXXXX
+              }
+              include_anchor_tile #true
+            }
+            area {
+              anchor Caster
+              tile_origin Caster
+              tracking GroundFixed
+              hit_targets Enemies
+            }
+          }
+        }
+      }
+    }
+    - {
+      name delayed-impact
+      value {
+        Delivery {
+          TileArea {
+            footprint {
+              rows {
+                - XXX
+                - X@X
+                - XXX
+              }
+              include_anchor_tile #true
+            }
+            area {
+              anchor AcceptedCastTarget
+              tile_origin Anchor
+              tracking GroundFixed
+              hit_targets Enemies
+              first_tick_delay_ms 200
+              on_hit_caster_heal_percent 20
+            }
+          }
+        }
+      }
+    }
+    - {
+      name pull
+      value {
+        Effects {
+          - {
+            id pull
+            attached_to damage
+            op {
+              Pull {
+                max_distance_tiles 1
+              }
+            }
+          }
+        }
+      }
+    }
+    - {
+      name stun
+      value {
+        Effects {
+          - {
+            id stun
+            attached_to damage
+            op {
+              Sustained {
+                definition {
+                  HitStatus {
+                    duration_ms 300
+                    profile {
+                      definition woodsman-stun
+                      kind Stun
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    - {
+      name none
+      value {
+        (array)Effects
+      }
+    }
+  }
+  definitions {
+    - {
+      name area-impact
+      parameters {
+        - {
+          name power
+          value_type Amount
+        }
+        - {
+          name delivery
+          value_type Delivery
+        }
+        - {
+          name after
+          value_type Effects
+        }
+      }
+      body {
+        Action {
+          id hit
+          target {
+            Literal {
+              Target CastTarget
+            }
+          }
+          delivery {
+            Parameter delivery
+          }
+          effects {
+            - {
+              Damage {
+                id damage
+                tags {
+                  - impact
+                }
+                amount {
+                  Parameter power
+                }
+                damage_type Physical
+              }
+            }
+            - {
+              Append {
+                effects {
+                  Parameter after
+                }
+              }
+            }
+          }
+          wait Released
+        }
+      }
+    }
+    - {
+      name timed-impact
+      parameters {
+        - {
+          name power
+          value_type Amount
+        }
+        - {
+          name delivery
+          value_type Delivery
+        }
+        - {
+          name after
+          value_type Effects
+        }
+        - {
+          name delay
+          value_type Milliseconds
+        }
+      }
+      body {
+        Sequence {
+          id timed
+          children {
+            - {
+              Wait {
+                id pause
+                duration {
+                  Parameter delay
+                }
+              }
+            }
+            - {
+              Call {
+                id perform
+                definition area-impact
+                arguments {
+                  - {
+                    name power
+                    value {
+                      Parameter power
+                    }
+                  }
+                  - {
+                    name delivery
+                    value {
+                      Parameter delivery
+                    }
+                  }
+                  - {
+                    name after
+                    value {
+                      Parameter after
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  skills {
+    - {
+      id woodsman-authored
+      name "나무꾼 검증 사본"
+      kind Targeted
+      cast_targeting {
+        Explicit {
+          selection automatic_unit
+          target {
+            EnemySingle {
+              rule RouteProgress
+            }
+          }
+          reach pattern
+          target_range {
+            rows {
+              - XXXXX
+              - XXXXX
+              - XX@XX
+              - XXXXX
+              - XXXXX
+            }
+            include_anchor_tile #true
+          }
+          air_capable #true
+        }
+      }
+      prepare_ms 0
+      focus_permissions {
+        allows_move #false
+        allows_basic_attack #false
+      }
+      admission {
+        capacity 100
+        requirement Full
+        cost All
+      }
+      body {
+        Sequence {
+          id three-strikes
+          children {
+            - {
+              Call {
+                id gather
+                definition timed-impact
+                arguments {
+                  - {
+                    name power
+                    value {
+                      Shared weapon-power
+                    }
+                  }
+                  - {
+                    name delivery
+                    value {
+                      Shared current-front
+                    }
+                  }
+                  - {
+                    name after
+                    value {
+                      Shared pull
+                    }
+                  }
+                  - {
+                    name delay
+                    value {
+                      Literal {
+                        Milliseconds 0
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            - {
+              Call {
+                id stagger
+                definition timed-impact
+                arguments {
+                  - {
+                    name power
+                    value {
+                      Shared weapon-power
+                    }
+                  }
+                  - {
+                    name delivery
+                    value {
+                      Shared current-front
+                    }
+                  }
+                  - {
+                    name after
+                    value {
+                      Shared stun
+                    }
+                  }
+                  - {
+                    name delay
+                    value {
+                      Literal {
+                        Milliseconds 100
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            - {
+              Call {
+                id split
+                definition timed-impact
+                arguments {
+                  - {
+                    name power
+                    value {
+                      Shared finisher-power
+                    }
+                  }
+                  - {
+                    name delivery
+                    value {
+                      Shared current-front
+                    }
+                  }
+                  - {
+                    name after
+                    value {
+                      Shared none
+                    }
+                  }
+                  - {
+                    name delay
+                    value {
+                      Literal {
+                        Milliseconds 100
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    - {
+      id monk-authored
+      name "풍운승려 검증 사본"
+      kind Targeted
+      cast_targeting {
+        Explicit {
+          selection automatic_unit
+          target {
+            EnemySingle {
+              rule RouteProgress
+            }
+          }
+          reach pattern
+          target_range {
+            rows {
+              - XXXXX
+              - XXXXX
+              - XX@XX
+              - XXXXX
+              - XXXXX
+            }
+            include_anchor_tile #true
+          }
+          air_capable #true
+        }
+      }
+      prepare_ms 100
+      focus_permissions {
+        allows_move #false
+        allows_basic_attack #false
+      }
+      admission {
+        capacity 100
+        requirement Full
+        cost All
+      }
+      body {
+        Call {
+          id bite
+          definition timed-impact
+          arguments {
+            - {
+              name power
+              value {
+                Shared burst-powre
+              }
+            }
+            - {
+              name delivery
+              value {
+                Shared delayed-impact
+              }
+            }
+            - {
+              name after
+              value {
+                Shared none
+              }
+            }
+            - {
+              name delay
+              value {
+                Literal {
+                  Milliseconds 0
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -25,6 +25,7 @@ use std::{collections::BTreeMap, sync::Arc};
 use uuid::Uuid;
 #[derive(Debug, Clone)]
 struct Active {
+    channel_started_at: u64,
     id: u64,
     caster: UnitInstanceId,
     source: RuntimeFactSource,
@@ -38,6 +39,7 @@ struct Active {
     hits: BTreeMap<UnitInstanceId, u32>,
 }
 crate::authoring::clone_shape::struct_shape!(Active {
+    channel_started_at,
     id,
     caster,
     source,
@@ -485,6 +487,10 @@ impl BattleCore {
             now < *expires && self.units.get(target).is_some_and(|u| u.is_active())
         });
         Ok(())
+    }
+    pub(super) fn prepared_volley_started_at(&self, caster: UnitInstanceId) -> Option<u64> {
+        let active = self.sustained.volleys.owners.get(&self.volley_key(caster)?)?.active.as_ref()?;
+        Some(active.channel_started_at)
     }
     pub(super) fn prepared_volley_active(&self, caster: UnitInstanceId) -> bool {
         self.volley_key(caster)

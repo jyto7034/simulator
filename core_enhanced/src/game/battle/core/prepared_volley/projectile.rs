@@ -339,7 +339,7 @@ impl BattleCore {
                     .area
                     .affected_tiles(center, FacingDirection::Up)
                     .map_err(GameError::InvalidStaticData)?;
-                let targets = self.collect_tile_area_targets_at(
+                let mut targets = self.collect_tile_area_targets_at(
                     hit.time_ms,
                     f.source.source_side,
                     f.caster,
@@ -348,11 +348,19 @@ impl BattleCore {
                     false,
                 );
                 let air = p.air;
+                targets.retain(|target| self.single_target_can_target_unit(*target, air));
+                let area_percent = self.area_damage_percent(
+                    f.caster,
+                    f.source.source_side,
+                    &f.source.fact_source,
+                    &targets,
+                    hit.time_ms,
+                )?;
                 for target in targets {
                     if !self.single_target_can_target_unit(target, air) {
                         continue;
                     }
-                    self.volley_hit(f, target, hit.time_ms)?;
+                    self.volley_hit(f, target, hit.time_ms, area_percent)?;
                 }
                 return Ok(Some(VolleyFlightEnd::Impact));
             }
@@ -375,6 +383,7 @@ impl BattleCore {
         f: &mut Flight,
         target: UnitInstanceId,
         now: u64,
+        area_percent: i32,
     ) -> Result<(), GameError> {
         let p = f.program.clone();
         let count = f
@@ -410,9 +419,13 @@ impl BattleCore {
         }
         let power = (u128::from(p.projectile.power)
             * (100 * u128::from(bonus.denominator) + u128::from(bonus.numerator)))
-        .div_ceil(100 * u128::from(bonus.denominator));
+            / (100 * u128::from(bonus.denominator));
         let mut source = controlled_clone(&f.source)?;
         source.base_damage = u32::try_from(power).map_err(|_| GameError::InvalidAction)?;
+        source.modifiers.damage_amp_percent = source
+            .modifiers
+            .damage_amp_percent
+            .saturating_add(area_percent);
         source.committed_at_ms = now;
         source.crit_roll_percent = None;
         let source = self.materialize_damage_source_snapshot_for_target_hit(source, target, count);
@@ -420,12 +433,16 @@ impl BattleCore {
             &mut self.runtime_fact_source,
             controlled_clone(&f.source.fact_source)?,
         );
-        let result = self.execute_committed_damage(CommittedDamageInput {
-            target_id: target,
-            source_snapshot: source,
-            committed_at_ms: now,
-            policy: CommittedDamagePolicy::GeneralCommand,
-        });
+        let result = self.execute_damage_with_observation_origin(
+            CommittedDamageInput {
+                target_id: target,
+                source_snapshot: source,
+                committed_at_ms: now,
+                policy: CommittedDamagePolicy::GeneralCommand,
+            },
+            false,
+            Some(&f.source.fact_source),
+        );
         self.runtime_fact_source = prior;
         control::poll("volley_damage_settled")?;
         if result.is_some_and(|r| r.accepted_hit_count > 0) {

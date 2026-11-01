@@ -23,7 +23,7 @@ pub(super) struct GuardCounterPermit {
 }
 crate::authoring::clone_shape::copy_shape!(GuardCounterPermit);
 fn scaled(value: u32, r: MarkRatio) -> Result<u32, GameError> {
-    u32::try_from((u128::from(value) * u128::from(r.numerator)).div_ceil(u128::from(r.denominator)))
+    u32::try_from((u128::from(value) * u128::from(r.numerator)) / u128::from(r.denominator))
         .map_err(|_| overflow("guard_counter_power"))
 }
 impl BattleCore {
@@ -276,6 +276,14 @@ impl BattleCore {
         };
         recipients.retain(|id| *id != primary);
         recipients.sort();
+        let source = crate::authoring::clone_shape::controlled_clone(&self.runtime_fact_source)?;
+        let area_percent = if splash > 0 {
+            let mut batch = recipients.clone();
+            batch.push(primary);
+            self.area_damage_percent(owner, side, &source, &batch, now)?
+        } else {
+            0
+        };
         for (target, power, extra, is_primary) in
             std::iter::once((primary, power, primary_extra, true))
                 .chain(recipients.into_iter().map(|t| (t, splash, splash, false)))
@@ -296,6 +304,10 @@ impl BattleCore {
                     false,
                 )
                 .ok_or(GameError::InvalidAction)?;
+            snapshot.modifiers.damage_amp_percent = snapshot
+                .modifiers
+                .damage_amp_percent
+                .saturating_add(area_percent);
             if let Some(receipt) = permit.charge {
                 snapshot.fact_source =
                     snapshot
@@ -309,12 +321,16 @@ impl BattleCore {
                             primary: is_primary,
                         })?;
             }
-            self.execute_committed_damage(super::super::damage_runtime::CommittedDamageInput {
-                target_id: target,
-                source_snapshot: snapshot,
-                committed_at_ms: now,
-                policy: super::super::damage_runtime::CommittedDamagePolicy::GeneralCommand,
-            })
+            self.execute_damage_with_observation_origin(
+                super::super::damage_runtime::CommittedDamageInput {
+                    target_id: target,
+                    source_snapshot: snapshot,
+                    committed_at_ms: now,
+                    policy: super::super::damage_runtime::CommittedDamagePolicy::GeneralCommand,
+                },
+                false,
+                Some(&source),
+            )
             .ok_or(GameError::InvalidAction)?;
             control::poll("guard_counter_damage")?;
         }

@@ -4,7 +4,7 @@ use crate::game::{
         damage::{DamageSource, DamageSourceSnapshot},
         ids::UnitInstanceId,
         runtime_facts::EquipmentSourceSnapshot,
-        types::{BattleUnitRole, BattleUnitSourceIdentity, BattleUnitThreatClass},
+        types::BattleUnitThreatClass,
     },
     behavior::GameError,
     resource::{ResourceMutation, ResourceOperation, ResourceOwnerSelector, WeaponKillGrowthDef},
@@ -178,33 +178,10 @@ impl BattleCore {
         {
             return Ok(());
         }
-        let Some(victim) = self.units.get(&target) else {
-            return Ok(());
-        };
-        // Scenario membership is the existing encounter spawn authority. An
-        // independent/summoned object cannot become eligible by sharing a base ID.
-        crate::authoring::control::charge(
-            self.scenario_runtime.spawned.unit_refs.len() as u64,
-            "weapon_growth_encounter_source",
-        )?;
-        if !victim.lifecycle.is_dead()
-            || victim.owner == snapshot.source_side
-            || victim.role != BattleUnitRole::Combatant
-            || matches!(
-                victim.source_identity,
-                BattleUnitSourceIdentity::IndependentObject { .. }
-                    | BattleUnitSourceIdentity::SummonedUnit { .. }
-                    | BattleUnitSourceIdentity::DefenseObject { .. }
-            )
-            || !self
-                .scenario_runtime
-                .spawned
-                .unit_refs
-                .values()
-                .any(|id| *id == target)
-        {
+        if !self.eligible_encounter_death(target, snapshot.source_side)? {
             return Ok(());
         }
+        let victim = &self.units[&target];
         let mut amount = match victim.threat_class {
             BattleUnitThreatClass::Boss => capture.definition.abnormality,
             BattleUnitThreatClass::Elite => capture.definition.elite,

@@ -7,6 +7,7 @@ use crate::game::{
 
 impl Record {
     pub(super) fn ends_on_source_exit(&self) -> bool {
+        if let Some(state) = &self.state { return state.program.end_on_source_exit; }
         !self.independent_shield && self.hit_status.is_none() && self.reactive_heal.is_none()
             && self
                 .target_state
@@ -31,6 +32,7 @@ impl SustainedState {
         &self,
         id: u64,
         record: &Record,
+        now: Option<u64>,
         value: impl Fn(&TargetStateProfile) -> u32,
     ) -> bool {
         let Some(profile) = record.target_state.as_ref() else {
@@ -38,8 +40,10 @@ impl SustainedState {
         };
         let amount = value(profile);
         amount > 0
+            && now.is_none_or(|now| now < record.expires_at)
             && !self.records.iter().any(|(other_id, other)| {
                 other.target == record.target
+                    && now.is_none_or(|now| now < other.expires_at)
                     && other.target_state.as_ref().is_some_and(|p| {
                         p.definition == profile.definition && (value(p), *other_id) > (amount, id)
                     })
@@ -53,8 +57,8 @@ impl SustainedState {
             .iter()
             .filter(move |(_, r)| r.target == target)
             .flat_map(move |(id, r)| {
-                let attack = self.state_winner(*id, r, |p| p.attack_percent);
-                let defense = self.state_winner(*id, r, |p| p.defense_percent);
+                let attack = self.state_winner(*id, r, None, |p| p.attack_percent);
+                let defense = self.state_winner(*id, r, None, |p| p.defense_percent);
                 [
                     attack.then(|| StatModifier {
                         stat: StatId::Attack,
@@ -75,7 +79,7 @@ impl SustainedState {
         self.records
             .iter()
             .filter(|(id, r)| {
-                r.target == target && self.state_winner(**id, r, |p| p.attack_speed_points)
+                r.target == target && self.state_winner(**id, r, None, |p| p.attack_speed_points)
             })
             .fold(0u32, |sum, (_, r)| {
                 sum.saturating_add(r.target_state.as_ref().unwrap().attack_speed_points)
@@ -85,3 +89,21 @@ impl SustainedState {
 
 #[cfg(test)]
 mod tests;
+
+impl super::BattleCore {
+    pub(in crate::game::battle::core) fn target_state_action_locked(
+        &self, target: UnitInstanceId, now: Option<u64>, basic: bool,
+    ) -> bool {
+        if crate::authoring::control::charge(self.sustained.records.len() as u64, "target_state_action_lock").is_err() { return true; }
+        self.sustained.records.values().any(|r| r.target == target && now.is_none_or(|n| n < r.expires_at)
+            && r.target_state.as_ref().is_some_and(|p| if basic { p.basic_attack_locked } else { p.active_skill_locked }))
+    }
+    // Healing may execute inside an Expired handler while that handler's source
+    // delivery is still live. Query deadlines without recursively reconciling
+    // lifecycle events, including the stronger contributions used for fallback.
+    pub(in crate::game::battle::core) fn target_state_received_heal_percent(&self, target: UnitInstanceId, now: u64) -> Result<u32, crate::game::behavior::GameError> {
+        crate::authoring::control::charge(self.sustained.composition_work(), "target_state_received_heal")?;
+        Ok(self.sustained.records.iter().filter(|(id, r)| r.target == target && self.sustained.state_winner(**id, r, Some(now), |p| p.received_heal_percent))
+            .fold(0u32, |sum, (_, r)| sum.saturating_add(r.target_state.as_ref().unwrap().received_heal_percent)))
+    }
+}

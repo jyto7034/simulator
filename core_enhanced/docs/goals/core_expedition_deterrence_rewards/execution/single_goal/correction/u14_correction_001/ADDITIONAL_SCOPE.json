@@ -1,9 +1,0 @@
-{
-  "finding": "C-U14-002",
-  "classification": "in scope; normal package/commands/actual victory/public checkpoint",
-  "failure": "public002 exit101 child Continue invalid_action; initial12 -> collected18 -> room movement16 > initial12",
-  "additional_source": "core_enhanced/src/game/world/node_flow.rs",
-  "preimage_sha256": "e6c8e607e8506a823502ddcb93ec93b45d8f1257f3628a5336c5316266fd80fb",
-  "preimage_matches_predecessor": true,
-  "resolution": "checkpoint upper bound includes already collected golden bough refill; no balance clamp, policy or codec change"
-}

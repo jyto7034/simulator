@@ -1,5 +1,0 @@
-Traceback (most recent call last):
-  File "/mnt/f/work/simulator/core_enhanced/docs/goals/core_copy_growth_material_vault/execution/single_goal/audit/independent001/recheck_evidence.py", line 26, in <module>
-    assert len(passed) == 2180, len(passed)
-           ^^^^^^^^^^^^^^^^^^^
-AssertionError: 2168

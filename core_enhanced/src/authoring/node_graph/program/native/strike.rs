@@ -21,7 +21,7 @@ fn times(value: ValueExpr, scalar: ValueExpr) -> ValueExpr {
     }
 }
 fn missing_amount(n: u64, d: u64, percent: u32, cap: u32) -> AmountExpr {
-    // Keep the HP ratio exact until the final ceiling, including fractional
+    // Keep the HP ratio exact until the final floor, including fractional
     // percentage points. Integer division of the ratio would lose authored power.
     let max = hp_scalar(HitPointField::Max);
     let bonus = ValueExpr::Clamp {
@@ -37,7 +37,7 @@ fn missing_amount(n: u64, d: u64, percent: u32, cap: u32) -> AmountExpr {
                 ValueExpr::Add(vec![times(max.clone(), scalar(100)), bonus]),
             )),
             denominator: Box::new(times(max, scalar(100))),
-            rounding: Rounding::Ceil,
+            rounding: Rounding::Floor,
         },
     )
 }

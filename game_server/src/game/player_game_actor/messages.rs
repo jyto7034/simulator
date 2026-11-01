@@ -297,6 +297,7 @@ mod tests {
                 counter_channels: Default::default(),
                 relation_actions: Default::default(),
                 input_plans: Default::default(),
+                shared_cohorts: Default::default(),
                 prepared_volleys: Default::default(),
                 mobile_effects: Default::default(),
                 paired_areas: Default::default(),
@@ -526,6 +527,7 @@ mod tests {
                 counter_channels: Default::default(),
                 relation_actions: Default::default(),
                 input_plans: Default::default(),
+                shared_cohorts: Default::default(),
                 prepared_volleys: Default::default(),
                 mobile_effects: Default::default(),
                 paired_areas: Default::default(),
@@ -809,6 +811,10 @@ mod tests {
             (
                 K::RecoverBattleSetupLoss,
                 serde_json::json!({"type":"recover_battle_setup_loss"}),
+            ),
+            (
+                K::SelectSkillRelation,
+                serde_json::json!({"type":"select_skill_relation","employee_uuid":employee,"entry":"blessing","target":unit}),
             ),
             (
                 K::ActivateSkill,

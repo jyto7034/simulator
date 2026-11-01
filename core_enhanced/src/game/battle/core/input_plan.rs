@@ -1,5 +1,4 @@
 //! Battle-copy resources and a paused, single-commit volley preparation.
-mod cohort;
 mod observation;
 mod projectile;
 #[cfg(test)]
@@ -34,8 +33,6 @@ struct Owner {
     normal: u32,
     enhanced: u32,
     next_stock: u64,
-    next_cohort: u64,
-    spawn_index: u64,
     memory: Vec<ShotPlacement>,
     applied: BTreeMap<String, Uuid>,
 }
@@ -47,8 +44,6 @@ crate::authoring::clone_shape::struct_shape!(Owner {
     normal,
     enhanced,
     next_stock,
-    next_cohort,
-    spawn_index,
     memory,
     applied
 });
@@ -143,7 +138,6 @@ pub(super) struct InputPlanState {
     next_flight_tick: Option<u64>,
     processing: Option<RuntimeFactSource>,
     settled: BTreeMap<u64, ShotFlightResult>,
-    cohorts: BTreeMap<UnitInstanceId, Uuid>,
     wounds: BTreeMap<(Uuid, String, UnitInstanceId), Wound>,
 }
 crate::authoring::clone_shape::struct_shape!(InputPlanState {
@@ -157,7 +151,6 @@ crate::authoring::clone_shape::struct_shape!(InputPlanState {
     next_flight_tick,
     processing,
     settled,
-    cohorts,
     wounds
 });
 impl InputPlanState {
@@ -166,7 +159,6 @@ impl InputPlanState {
             + self.settled.len()
             + self.receipts.len()
             + self.flights.len()
-            + self.cohorts.len()
             + self.wounds.len()
             + usize::from(self.preparation.is_some())
             + usize::from(self.pending.is_some())
@@ -376,7 +368,7 @@ impl BattleCore {
     pub fn input_plan_paused(&self) -> bool {
         self.sustained.input_plans.preparation.is_some() || self.sustained.input_plans.disconnected
     }
-    fn next_shot_id(&mut self) -> Result<u64, GameError> {
+    pub(super) fn next_shot_id(&mut self) -> Result<u64, GameError> {
         let n = self
             .sustained
             .input_plans
@@ -449,9 +441,7 @@ impl BattleCore {
         let next_stock = now
             .checked_add(u64::from(program.stock_interval_ms))
             .ok_or(GameError::InvalidAction)?;
-        let next_cohort = now
-            .checked_add(u64::from(program.cohort.interval_ms))
-            .ok_or(GameError::InvalidAction)?;
+        self.register_shared_cohort(employee, crate::game::ability::hostile_cohort::HostileCohortProvider::Fragment { copy }, &program.cohort, now)?;
         self.sustained.input_plans.owners.insert(
             copy,
             Owner {
@@ -462,8 +452,6 @@ impl BattleCore {
                 enhanced: program.enhanced.initial,
                 program: Arc::new(program),
                 next_stock,
-                next_cohort,
-                spawn_index: 0,
                 memory: Vec::new(),
                 applied,
             },
@@ -472,10 +460,15 @@ impl BattleCore {
             source: copy,
             time_ms: next_stock,
         });
-        self.event_queue.push(BattleEvent::HostileCohortTick {
-            source: copy,
-            time_ms: next_cohort,
-        });
+        Ok(())
+    }
+    pub(super) fn credit_input_plan_cohort_kill(&mut self, copy: Uuid) -> Result<(), GameError> {
+        let Some(o) = self.sustained.input_plans.owners.get_mut(&copy) else { return Ok(()); };
+        let mut gain = o.program.cohort.kill_gain;
+        for m in &o.program.modifiers {
+            if let ShotChange::KillGain { factor } = m.change { gain = scale_floor(gain, factor)?; }
+        }
+        o.enhanced = add_stock(o.enhanced, gain, o.program.enhanced.capacity)?;
         Ok(())
     }
     pub(super) fn reconcile_input_plans(&mut self, now: u64) -> Result<(), GameError> {

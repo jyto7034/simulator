@@ -1,8 +1,0 @@
-{
-  "path": "core_enhanced/src/game/employee.rs",
-  "pre_u164_baseline_member": "core_enhanced/src/game/employee.rs",
-  "current_sha256": "d565c8aef36daad3a8a203e908709ac7ebb0a06e71b8944b8612b8abccae6ff1",
-  "pre_u164_sha256": "d565c8aef36daad3a8a203e908709ac7ebb0a06e71b8944b8612b8abccae6ff1",
-  "entire_file_unchanged": true,
-  "preexisting_saturating_add": true
-}

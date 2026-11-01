@@ -48,7 +48,7 @@ mod compiled_parry {
             .replace("r08_strike", "r11_aura"),
         )
         .unwrap();
-        let (core, state, actor, _) = r12_fragment_equipped_effect_core(
+        let (core, state, actor, _) = r12_fragment_equipped_effect_core_with_data(
             &authored,
             |scenario| {
                 if accessory {
@@ -88,6 +88,12 @@ mod compiled_parry {
                 }
             },
             Some(fragments),
+            |builder| builder.with_relics(serde_json::from_value(serde_json::json!({"relics":[{
+                "id":"awakened-black-swan","uuid":Uuid::from_u128(0x126f0),
+                "name":"Declared guard companion","description":"Unequipped reference for parry fixture",
+                "rarity":"fixture","allow_duplicates":true,"provider_authored":true,
+                "effects":[],"rules":[],"dismantle_equipment_dust":1
+            }]})).unwrap()),
         );
         let enemy = core
             .units
@@ -376,10 +382,9 @@ mod compiled_parry {
         use crate::game::battle::buffs::{BuffDatabase, BuffId};
         let (mut core, mut state, actor, enemy) = fixture();
         let buffs:BuffDatabase=ron::de::from_str(r#"(buffs:[(name:"parry_dot",kind:PeriodicDamage(damage_per_tick:100,damage_type:True),tick_interval_ms:100,max_stacks:1,reapply_policy:RefreshDuration)])"#).unwrap();
-        core.game_data = GameDataBuilder::empty()
-            .with_skills((*core.game_data.skill_data).clone())
-            .with_skill_fragments((*core.game_data.skill_fragment_data).clone())
-            .with_equipment(core.game_data.equipment_data.items.clone())
+        core.game_data = GameDataBuilder::from_validated(
+            &crate::game::data::ValidatedGameData::from(Arc::clone(&core.game_data)),
+        )
             .with_buffs(buffs)
             .build_arc();
         cast(&mut core, actor);
@@ -419,6 +424,11 @@ mod compiled_parry {
             core.buffs.len(),
             1,
             "periodic debuff remains attached during immunity"
+        );
+        assert_eq!(
+            core.owned_dot_targets(enemy, 500, 5).unwrap(),
+            [actor].into_iter().collect(),
+            "damage immunity does not remove an active DOT recipient"
         );
         core.step_battle_execution_until(&mut state, 512).unwrap();
         assert_eq!(
@@ -577,4 +587,85 @@ mod compiled_parry {
             assert_eq!(core.runtime_fact_summary().deaths, 1);
         }
     }
+    #[test]
+    fn composition_dot_kill_actual_reflection_and_counter_keep_owner_credit() {
+        use crate::game::{
+            battle::buffs::{BuffKind, BuffMetadata, BuffReapplyPolicy},
+            data::GameDataBuilder,
+        };
+        for counter in [false, true] {
+            let (mut core, mut state, actor, enemy) = fixture_with_accessory(true);
+            let binding = crate::authoring::composition::compile_yaml(include_str!(concat!(
+                env!("CARGO_MANIFEST_DIR"),
+                "/tests/fixtures/skill_composition/equipment_dot_kill.skill.yaml"
+            )))
+            .unwrap();
+            let mut items = core.game_data.equipment_data.items.clone();
+            for item in &mut items {
+                item.ability_activations.clear();
+            }
+            let mut buffs = (*core.game_data.buff_data).clone();
+            buffs.buffs.push(BuffMetadata {
+                name: "owned_dot_kill".into(),
+                kind: BuffKind::PeriodicDamage {
+                    damage_per_tick: 1,
+                    damage_type: DamageType::True,
+                },
+                tick_interval_ms: 1000,
+                max_stacks: 1,
+                reapply_policy: BuffReapplyPolicy::RefreshDuration,
+            });
+            let mut skills = (*core.game_data.skill_data).clone();
+            let incoming = skills.skills.iter_mut().find(|s| s.id == "r08_strike").unwrap();
+            incoming.focus_time_ms = 0;
+            incoming.steps[0].delay_ms = 0;
+            core.game_data = GameDataBuilder::from_validated(
+                &crate::game::data::ValidatedGameData::from(Arc::clone(&core.game_data)),
+            )
+                .with_skills(SkillDatabase::new(skills.skills))
+                .with_equipment(items)
+                .with_equipment_states(binding.equipment_states().to_vec())
+                .with_buffs(crate::game::battle::buffs::BuffDatabase::new(buffs.buffs))
+                .build_arc();
+            core.units.get_mut(&enemy).unwrap().stats.current_health =
+                if counter { 200 } else { 20 };
+            if counter {
+                cast(&mut core, actor);
+                core.step_battle_execution_until(&mut state, 1).unwrap();
+            } else {
+                core.units.get_mut(&actor).unwrap().resonance_current = 0;
+            }
+            core.process_event_for_test(
+                BattleEvent::ApplyBuff {
+                    time_ms: 1,
+                    caster_instance_id: actor,
+                    target_instance_id: enemy,
+                    buff_id: crate::game::battle::buffs::BuffId::from_name("owned_dot_kill"),
+                    duration_ms: 5000,
+                    cause: Default::default(),
+                },
+                1,
+            )
+            .unwrap();
+            assert!(core.game_data.equipment_state_catalog().has_owner_kill);
+            assert!(core.target_has_owned_dot(actor, enemy, 10).unwrap());
+            core.invoke_ability(10, enemy, "r08_strike", Some(
+                crate::game::battle::event_log::SkillCastTarget::Unit { unit_instance_id: actor }
+            ), Default::default(), false);
+            core.step_battle_execution_until(&mut state, 11).unwrap();
+            assert!(core.units[&enemy].lifecycle.is_dead());
+            assert_eq!(
+                core.units[&actor].resonance_current,
+                if counter { 0 } else { 7 },
+                "counter={counter}"
+            );
+            core.step_battle_execution_until(&mut state, 600).unwrap();
+            assert_eq!(
+                core.units[&actor].resonance_current, 7,
+                "own counter reward settles after the skill use, not during its lock"
+            );
+            assert_eq!(core.runtime_fact_summary().deaths, 1);
+        }
+    }
+
 }

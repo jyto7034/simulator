@@ -594,15 +594,26 @@ impl PveTerminalOutcomeData {
     }
 }
 
+mod pve_fragment_reward;
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct PveEncounterRewardSource {
     pub reward_source_id: String,
     pub encounter_id: String,
-    pub fragment_id: SkillFragmentId,
+    /// A required declaration: a legacy ID grants that fragment; None grants no fragment.
+    #[serde(with = "pve_fragment_reward")]
+    pub fragment_id: Option<SkillFragmentId>,
     pub first_equipment_ids: Vec<String>,
     pub repeat_rewards: Vec<RewardEffect>,
     pub revival: Option<crate::game::revival::BossRevivalPolicy>,
+}
+
+impl PveEncounterRewardSource {
+    pub(crate) fn granted_fragment_ids(&self) -> impl Iterator<Item = &SkillFragmentId> {
+        self.fragment_id.iter().chain(self.revival.iter().flat_map(|policy|
+            policy.variant.iter().map(|variant| &variant.fragment_id)))
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -704,12 +715,17 @@ impl PveEncounterDatabase {
                     "an encounter may author exactly one reward source",
                 ));
             }
-            if !fragment_ids.insert(source.fragment_id.as_str()) {
-                return Err(crate::game::data::DataValidationError::at(
-                    &source.reward_source_id,
-                    format!("{source_path}.fragment_id"),
-                    "a fragment may belong to exactly one reward source",
-                ));
+            let declarations = source.fragment_id.iter().map(|id| ("fragment_id", id))
+                .chain(source.revival.iter().flat_map(|policy| policy.variant.iter())
+                    .map(|variant| ("revival.variant.fragment_id", &variant.fragment_id)));
+            for (field, id) in declarations {
+                if !fragment_ids.insert(id.as_str()) {
+                    return Err(crate::game::data::DataValidationError::at(
+                        &source.reward_source_id,
+                        format!("{source_path}.{field}"),
+                        "a fragment may belong to exactly one reward source",
+                    ));
+                }
             }
 
             let encounter = self

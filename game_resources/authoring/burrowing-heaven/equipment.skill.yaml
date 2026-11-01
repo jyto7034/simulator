@@ -1,0 +1,45 @@
+# 현행 의미의 작성 원본. Unresolved는 출시 미정이며 시험값과 분리합니다.
+version: 2
+id: burrowing-heaven-equipment
+values:
+- name: opening-protection
+  value:
+    DefenseProgram:
+      ChannelOpeningGuard:
+        duration_ms:
+          Unresolved: opening-duration-ms
+        reduction_percent:
+          Unresolved: opening-reduction-percent
+- name: lingering-gaze
+  value:
+    StateProgram:
+      id: lingering-gaze
+      owns_use: false
+      end_on_source_exit: true
+      replacement: ReplaceSameSource
+      fields: []
+      handlers:
+      - id: stun-ended
+        event: OwnerStunEnded
+        body:
+        - ApplyEventTargetStatus:
+            duration:
+              moment: Live
+              root:
+                Const:
+                  value:
+                    Unresolved: root-duration-ms
+                  unit: Milliseconds
+            profile:
+              definition: lingering-root
+              kind: Root
+definitions: []
+skills: []
+equipment_defenses:
+- equipment: placeholder_burrowing_heaven_armor
+  program:
+    Shared: opening-protection
+equipment_states:
+- equipment: placeholder_burrowing_heaven_accessory
+  program:
+    Shared: lingering-gaze

@@ -22,7 +22,7 @@ impl BattleCore {
                     normal: o.normal,
                     enhanced: o.enhanced,
                     next_stock_ms: o.next_stock,
-                    next_hostile_ms: o.next_cohort,
+                    next_hostile_ms: self.sustained.shared_cohorts.next_for_fragment(*copy),
                     memory: controlled_clone(&o.memory)?,
                     applied: controlled_clone(&o.applied)?.into_iter().collect(),
                 })
@@ -68,7 +68,7 @@ impl BattleCore {
                 .values()
                 .map(controlled_clone)
                 .collect::<Result<_, _>>()?,
-            cohort_units: state.cohorts.iter().map(|(a, b)| (*a, *b)).collect(),
+            cohort_units: self.sustained.shared_cohorts.members.iter().filter_map(|(id, m)| m.fragment.map(|copy| (*id, copy))).collect(),
             wounds: state
                 .wounds
                 .iter()

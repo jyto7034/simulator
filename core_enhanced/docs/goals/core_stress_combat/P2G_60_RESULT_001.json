@@ -1,9 +1,0 @@
-{
-  "stage": "P2G-60",
-  "status": "complete",
-  "handoff_ref": {
-    "Artifact Type": "Handoff Artifact",
-    "Artifact ID": "HA-CSCB-001",
-    "Content Digest": "sha256:45cf6c050391f73e28fcd0a55b31c99403dcbb8b13fa41205073527eb1cb6b52"
-  }
-}

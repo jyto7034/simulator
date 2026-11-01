@@ -1,8 +1,0 @@
-(skills: [
-    (id: "u08_trial_damage", name: "External trial damage", kind: Targeted,
-     focus_time_ms: 0, use_lifetime: Action,
-     cast_targeting: Explicit(selection: player_unit, target: EnemySingle(rule: Nearest), reach: global, air_capable: false),
-     steps: [(id: "hit", delay_ms: 0, target: CastTarget, delivery: Instant,
-       effects: [(id: "amount", tags: ["u08_trial"], op: DamageExpr(amount: (moment: Snapshot,
-         root: Const((value: 100, unit: Magnitude))), damage_type: True))])]),
-])

@@ -1,0 +1,163 @@
+# 현행 의미의 작성 원본. Unresolved는 출시 미정이며 시험값과 분리합니다.
+version: 2
+id: burrowing-heaven-channel
+values:
+- name: fixed-control-ground
+  value:
+    Delivery:
+      TileArea:
+        footprint:
+          Unresolved: ground-footprint
+        area:
+          mode:
+            ChannelGround:
+              pause_basic: true
+          anchor: AcceptedCastTarget
+          tile_origin: Anchor
+          duration_ms:
+            Unresolved: channel-duration-ms
+          hit_targets: Enemies
+          include_caster: false
+          ground_status:
+            statuses:
+            - definition: residence-slow
+              kind:
+                RampingSlow:
+                  duration_ms:
+                    Unresolved: residence-duration-ms
+                  max_percent:
+                    Unresolved: max-slow-percent
+                  rate_numerator: 1
+                  rate_denominator: 1
+              overlap: Strongest
+              lifetime: UntilExit
+            - definition: residence-stun
+              kind: Stun
+              overlap: Strongest
+              lifetime: UntilAreaEnd
+            - definition: entry-vulnerability
+              kind:
+                DamageTaken:
+                  percent: 20
+              overlap: Strongest
+              lifetime: UntilExit
+            rules:
+            - trigger: Enter
+              status: 0
+              action: Apply
+            - trigger: Enter
+              status: 2
+              action: Apply
+            - trigger:
+                Dwell:
+                  duration_ms:
+                    Unresolved: residence-duration-ms
+              status: 1
+              action: Apply
+- name: longer-ground
+  value:
+    Count: 25
+- name: enlarged-ground
+  value:
+    TilePattern:
+      Unresolved: enlarged-ground
+- name: progress-numerator
+  value:
+    Count:
+      Unresolved: progress-numerator
+- name: progress-denominator
+  value:
+    Count:
+      Unresolved: progress-denominator
+- name: vulnerability-percent
+  value:
+    Count:
+      Unresolved: vulnerability-percent
+- name: vulnerability-duration
+  value:
+    Milliseconds: 5000
+definitions:
+- name: maintain-ground
+  parameters:
+  - name: ground
+    value_type: Delivery
+  body:
+    Action:
+      id: occupy
+      target:
+        Literal:
+          Target: SelfUnit
+      delivery:
+        Parameter: ground
+      effects: []
+      modifiers:
+      - id: lifetime
+        relic_definition: long-breath
+        variant: Normal
+        change:
+          AreaDuration:
+            percent:
+              Shared: longer-ground
+      - id: footprint
+        relic_definition: widened-horizon
+        variant: Normal
+        change:
+          Range:
+            pattern:
+              Shared: enlarged-ground
+      - id: progress
+        relic_definition: tightening-shackles
+        variant: Normal
+        change:
+          AreaRampRate:
+            status: 0
+            reached_rules:
+            - 2
+            numerator:
+              Shared: progress-numerator
+            denominator:
+              Shared: progress-denominator
+      - id: broken-balance
+        relic_definition: broken-balance
+        variant: Normal
+        change:
+          AreaControlVulnerability:
+            status: 1
+            percent:
+              Shared: vulnerability-percent
+            duration:
+              Shared: vulnerability-duration
+      wait: EffectsSettled
+skills:
+- id: fragment_burrowing_heaven_red_eye
+  name: 빨간 눈의 집중 장판 (가칭)
+  kind: Untargeted
+  cast_targeting:
+    Explicit:
+      selection: self
+      target: SelfUnit
+      reach: pattern
+      air_capable: true
+  prepare_ms:
+    Unresolved: prepare-ms
+  focus_permissions:
+    allows_move: true
+    allows_basic_attack: true
+  admission:
+    capacity:
+      Unresolved: capacity
+    requirement: Full
+    cost: All
+  modifiers:
+  - id: concentration
+    relic_definition: unbroken-trance
+    variant: Normal
+    change: ProtectInterruption
+  body:
+    Call:
+      id: establish-ground
+      definition: maintain-ground
+      arguments:
+      - name: ground
+        value:
+          Shared: fixed-control-ground

@@ -2,9 +2,7 @@ use crate::{
     authoring::control,
     game::{
         battle::{
-            event_log::{
-                AttackDelivery, AttackKind, BattleEventCause, BattleLogEvent, HpChangeReason,
-            },
+            event_log::{AttackDelivery, AttackKind, BattleEventCause, BattleLogEvent},
             ids::UnitInstanceId,
             runtime_facts::{ActionFailureReason, ActionTerminalKind},
             tile_range::{TileRangePolicy, TileReachQuery},
@@ -16,13 +14,18 @@ use crate::{
 use super::{BattleCore, RuntimeUnit};
 
 fn effective_basic_heal_amount(unit: &RuntimeUnit) -> Option<i32> {
-    let BasicAttackAction::Heal {
-        flat,
-        spell_power_percent,
-        ..
-    } = &unit.basic_attack.action
-    else {
-        return None;
+    let (flat, spell_power_percent) = match &unit.basic_attack.action {
+        BasicAttackAction::Heal {
+            flat,
+            spell_power_percent,
+            ..
+        }
+        | BasicAttackAction::HealLowestHealth {
+            flat,
+            spell_power_percent,
+            ..
+        } => (flat, spell_power_percent),
+        _ => return None,
     };
     let amount = u64::from(*flat)
         .saturating_add(u64::from(unit.stats.spell_power) * u64::from(*spell_power_percent) / 100)
@@ -47,7 +50,27 @@ impl BattleCore {
                     && !self.stress_protected_target(target.instance_id)
                     && source.owner == target.owner
                     && target.stats.current_health < target.stats.max_health
-                    && self.is_basic_attack_target_in_range(actor, target.instance_id)
+                    && if matches!(
+                        source.basic_attack.action,
+                        BasicAttackAction::HealLowestHealth { .. }
+                    ) {
+                        let policy = self.basic_attack_range_policy_for_unit(source);
+                        target.is_combatant()
+                            && !target.corroded
+                            && target.stats.current_health > 0
+                            && self.single_target_can_target_unit(
+                                target.instance_id,
+                                policy.air_capable,
+                            )
+                            && self.is_target_in_tile_range_policy(
+                                actor,
+                                target.instance_id,
+                                policy.range_policy,
+                                policy.tile_range.as_deref(),
+                            )
+                    } else {
+                        self.is_basic_attack_target_in_range(actor, target.instance_id)
+                    }
             })
     }
 
@@ -56,23 +79,40 @@ impl BattleCore {
         self.authoring_target_candidates()
             .ok()?
             .filter(|target| self.is_basic_heal_target(actor, target.instance_id))
-            .min_by(|a, b| {
-                (u64::from(a.stats.current_health) * u64::from(b.stats.max_health.max(1)))
-                    .cmp(
-                        &(u64::from(b.stats.current_health) * u64::from(a.stats.max_health.max(1))),
-                    )
-                    .then_with(|| {
-                        self.basic_attack_target_distance_sq_world(actor, a.instance_id)
-                            .unwrap_or(f32::INFINITY)
-                            .total_cmp(
-                                &self
-                                    .basic_attack_target_distance_sq_world(actor, b.instance_id)
-                                    .unwrap_or(f32::INFINITY),
-                            )
-                    })
-                    .then_with(|| a.instance_id.cmp(&b.instance_id))
-            })
+            .min_by(|a, b| self.compare_basic_heal_targets(actor, a, b))
             .map(|target| target.instance_id)
+    }
+
+    fn compare_basic_heal_targets(
+        &self,
+        actor: UnitInstanceId,
+        a: &RuntimeUnit,
+        b: &RuntimeUnit,
+    ) -> std::cmp::Ordering {
+        (u64::from(a.stats.current_health) * u64::from(b.stats.max_health.max(1)))
+            .cmp(&(u64::from(b.stats.current_health) * u64::from(a.stats.max_health.max(1))))
+            .then_with(|| {
+                if self.units.get(&actor).is_some_and(|unit| {
+                    matches!(
+                        unit.basic_attack.action,
+                        BasicAttackAction::HealLowestHealth { .. }
+                    )
+                }) {
+                    b.stats
+                        .max_health
+                        .saturating_sub(b.stats.current_health)
+                        .cmp(&a.stats.max_health.saturating_sub(a.stats.current_health))
+                } else {
+                    self.basic_attack_target_distance_sq_world(actor, a.instance_id)
+                        .unwrap_or(f32::INFINITY)
+                        .total_cmp(
+                            &self
+                                .basic_attack_target_distance_sq_world(actor, b.instance_id)
+                                .unwrap_or(f32::INFINITY),
+                        )
+                }
+            })
+            .then_with(|| a.instance_id.cmp(&b.instance_id))
     }
 
     pub(super) fn handle_basic_heal_resolve_event(
@@ -117,7 +157,7 @@ impl BattleCore {
                     },
                 );
                 let released = core.with_recording_cause(seq, |core| {
-                    core.resolve_basic_heal(actor, target, time_ms)
+                    core.resolve_basic_heal_kind(actor, target, time_ms, kind == AttackKind::Auto)
                 });
                 if !released {
                     core.with_recording_cause(seq, |core| {
@@ -154,15 +194,23 @@ impl BattleCore {
         }
     }
 
+    #[cfg(test)]
     pub(super) fn resolve_basic_heal(
         &mut self,
         actor: UnitInstanceId,
         target: UnitInstanceId,
         time_ms: u64,
     ) -> bool {
-        if !self.is_basic_heal_target(actor, target) {
-            return false;
-        }
+        self.resolve_basic_heal_kind(actor, target, time_ms, false)
+    }
+
+    fn resolve_basic_heal_kind(
+        &mut self,
+        actor: UnitInstanceId,
+        target: UnitInstanceId,
+        time_ms: u64,
+        normal: bool,
+    ) -> bool {
         let Some(unit) = self.units.get(&actor) else {
             return false;
         };
@@ -174,15 +222,10 @@ impl BattleCore {
         {
             return false;
         }
-        let BasicAttackAction::Heal { footprint, .. } = unit.basic_attack.action.clone() else {
-            return false;
-        };
+        let action = unit.basic_attack.action.clone();
         let owner = unit.owner;
         let facing = unit.facing_direction;
         let air_capable = unit.basic_attack.air_capable;
-        let Some(anchor) = self.live_unit_projected_tile(target) else {
-            return false;
-        };
         if control::charge(self.units.len() as u64 + 1, "basic_heal_candidates").is_err()
             || crate::game::battle::runtime_control::admit_retained_growth(
                 0,
@@ -196,47 +239,115 @@ impl BattleCore {
         {
             return false;
         }
-        let targets = if let Some(footprint) = &footprint {
-            if Self::charge_authoring_tile_pattern(footprint, 2).is_err() {
+        let targets = if let BasicAttackAction::HealLowestHealth { max_targets, .. } = action {
+            let count = self.units.len();
+            if control::charge(
+                (count as u64).saturating_mul(u64::from(count.max(1).ilog2()) + 1),
+                "basic_heal_target_sort",
+            )
+            .is_err()
+            {
                 return false;
             }
-            let Ok(query) = TileReachQuery::try_new(
-                &self.battlefield,
-                TileRangePolicy::Pattern,
-                Some(footprint),
-                Some(anchor),
-                facing,
-            ) else {
-                return false;
-            };
             let Ok(candidates) = self.authoring_target_candidates() else {
                 return false;
             };
-            let mut targets: Vec<_> = candidates
-                .filter(|unit| {
-                    unit.owner == owner
-                        && unit.role != crate::game::battle::types::BattleUnitRole::IndependentWall
-                        && self.single_target_can_target_unit(unit.instance_id, air_capable)
-                        && unit.stats.current_health < unit.stats.max_health
-                        && self
-                            .unit_body_view(unit.instance_id)
-                            .is_some_and(|body| query.contains(body.position.project_to_tile()))
-                })
-                .map(|unit| unit.instance_id)
-                .collect();
-            targets.sort_unstable();
+            let mut targets = Vec::with_capacity(count);
+            targets.extend(
+                candidates
+                    .filter(|unit| self.is_basic_heal_target(actor, unit.instance_id))
+                    .map(|unit| unit.instance_id),
+            );
+            targets.sort_unstable_by(|a, b| {
+                self.compare_basic_heal_targets(actor, &self.units[a], &self.units[b])
+            });
+            targets.truncate(max_targets as usize);
             targets
         } else {
-            vec![target]
+            if !self.is_basic_heal_target(actor, target) {
+                return false;
+            }
+            let BasicAttackAction::Heal { footprint, .. } = action else {
+                return false;
+            };
+            let Some(anchor) = self.live_unit_projected_tile(target) else {
+                return false;
+            };
+            if let Some(footprint) = &footprint {
+                if Self::charge_authoring_tile_pattern(footprint, 2).is_err() {
+                    return false;
+                }
+                let Ok(query) = TileReachQuery::try_new(
+                    &self.battlefield,
+                    TileRangePolicy::Pattern,
+                    Some(footprint),
+                    Some(anchor),
+                    facing,
+                ) else {
+                    return false;
+                };
+                let Ok(candidates) = self.authoring_target_candidates() else {
+                    return false;
+                };
+                let mut targets = Vec::with_capacity(self.units.len());
+                targets.extend(
+                    candidates
+                        .filter(|unit| {
+                            unit.owner == owner
+                                && unit.role
+                                    != crate::game::battle::types::BattleUnitRole::IndependentWall
+                                && self.single_target_can_target_unit(unit.instance_id, air_capable)
+                                && unit.stats.current_health < unit.stats.max_health
+                                && self.unit_body_view(unit.instance_id).is_some_and(|body| {
+                                    query.contains(body.position.project_to_tile())
+                                })
+                        })
+                        .map(|unit| unit.instance_id),
+                );
+                targets.sort_unstable();
+                targets
+            } else {
+                vec![target]
+            }
         };
+        if targets.is_empty() {
+            return false;
+        }
+        let echo_eligible = normal && self.basic_heal_echo_action_eligible(actor);
+        let mut actual_other_heal = 0u64;
         for target in targets {
-            self.apply_hp_delta_and_record(
-                Some(actor),
-                target,
-                amount,
-                time_ms,
-                HpChangeReason::Command,
-            );
+            let before = if echo_eligible && self.equipment_support_pair_eligible(actor, target) {
+                self.units.get(&target).map(|u| u.stats.current_health)
+            } else {
+                None
+            };
+            if self
+                .apply_direct_heal_and_record(Some(actor), target, amount, time_ms)
+                .is_err()
+            {
+                return false;
+            }
+            if let Some(before) = before {
+                let actual = self
+                    .units
+                    .get(&target)
+                    .map_or(0, |u| u.stats.current_health.saturating_sub(before));
+                let Some(total) = actual_other_heal.checked_add(u64::from(actual)) else {
+                    let _ = crate::game::battle::runtime_control::invariant("basic_heal_echo_sum");
+                    return false;
+                };
+                actual_other_heal = total;
+            }
+            if control::poll("basic_heal_target_applied").is_err() {
+                return false;
+            }
+        }
+        if echo_eligible
+            && self
+                .basic_heal_echo_after_action(actor, actual_other_heal, time_ms)
+                .is_err()
+        {
+            return false;
         }
         self.consume_basic_overlay(actor, time_ms).is_ok()
     }

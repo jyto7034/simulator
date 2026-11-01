@@ -1,6 +1,8 @@
 //! Common content-authoring operations over the production loader and core.
 
 mod amount;
+mod provenance;
+pub mod composition;
 pub mod node_graph;
 mod amount_query;
 #[cfg(test)]
@@ -39,7 +41,7 @@ pub use trial::{
     TrialSession,
 };
 pub use view::{
-    ApplicationChange, ApplicationView, AuthoredEffectView, BattleKey, BattleLifecycleView,
+    ApplicationChange, ApplicationView, AreaChange, AreaMembership, AreaWitness, AuthoredEffectView, BattleKey, BattleLifecycleView,
     BattleObservationView, BattleTraceView, BuffApplicationState, EffectSourceView, LifecycleView,
     ObservationView, ProcOriginView, SessionTraceView, TerminalObservationView,
 };

@@ -19,6 +19,27 @@ use crate::game::{
     },
 };
 
+pub use crate::game::battle::core::area_observation::{AreaEffectSource, AreaWitness, AreaChange, AreaMembership};
+pub use crate::game::battle::core::equipment_magazine::MagazineWitness;
+pub use crate::game::battle::core::attack_continuity::AttackContinuityWitness;
+pub use crate::game::battle::core::release_gap::ReleaseGapWitness;
+pub use crate::game::battle::core::shared_cohort::SharedCohortWitness;
+pub use crate::game::battle::core::cohort_bounty::BountyWitness;
+pub use crate::game::battle::core::equipment_forms::FormWitness;
+pub use crate::game::battle::core::equipment_death_burst::DeathBurstWitness;
+pub use crate::game::battle::core::equipment_primary_damage::{PrimaryDamageContribution, PrimaryDamageWitness};
+pub use crate::game::battle::core::area_damage::{AreaDamageContribution, AreaDamageWitness};
+pub use crate::game::battle::core::nearby_ally_damage::NearbyAllyDamageWitness;
+pub use crate::game::battle::core::conditional_damage::ConditionalDamageWitness;
+pub use crate::game::battle::core::direct_penetration::DirectPenetrationWitness;
+pub use crate::game::battle::core::equipment_defense::IncomingConditionalWitness;
+pub use crate::game::battle::core::equipment_resonance_gain::ResonanceGainWitness;
+pub use crate::game::battle::core::equipment_attack::{EquipmentSpeedContribution, EquipmentSpeedWitness};
+pub use crate::game::battle::core::equipment_defense::{OverhealReserveWitness, DeferredDamageWitness, LastWillWitness, EmployeeTransformationWitness};
+pub use crate::game::battle::core::weapon_stages::WeaponStageWitness;
+pub use crate::game::battle::core::equipment_support::{ShieldBeneficiaryDamageWitness,ReceivedHealWitness,ControlDurationWitness,EquipmentSupportWitness, HealBarrierWitness, BasicHealEchoWitness, ActualHealReactionWitness};
+pub use crate::game::battle::core::equipment_defense::{WearerReductionWitness, IncomingFlatWitness, ReadyWaitWitness, NearbyDefenseWitness, ChannelOpeningWitness, IdleHpGuardWitness, SkillBarrierWitness, BasicEvasionWitness, AdaptiveShieldWitness};
+
 pub use crate::game::battle::core::authoring_observation::{
     AppliedChange as ApplicationChange, BuffApplicationState,
 };
@@ -108,7 +129,8 @@ impl<'a> ObservationView<'a> {
 }
 
 /// Counts describe HP/Stats assignments, actual ModifyResonance changes and Buff applications.
-/// Passive resource gain, cast reset and other effect kinds are not included.
+/// Also includes finite sustained activation/removal witnesses. Passive resource
+/// gain, cast reset and other effect stores are not included.
 #[derive(Debug, Clone, Copy, Serialize)]
 #[serde(transparent)]
 pub struct BattleObservationView<'a>(&'a MandatoryObservation);
@@ -128,11 +150,58 @@ impl<'a> BattleObservationView<'a> {
     pub fn latest(self) -> Option<ApplicationView<'a>> {
         self.0.latest.as_ref().map(ApplicationView)
     }
+    pub fn latest_sourced_resonance(self) -> Option<ApplicationView<'a>> {
+        self.0.latest_sourced_resonance.as_ref().map(ApplicationView)
+    }
     pub fn latest_nonzero_sourced_hp(self) -> Option<ApplicationView<'a>> {
         self.0
             .latest_nonzero_sourced_hp
             .as_ref()
             .map(ApplicationView)
+    }
+    pub fn latest_area(self) -> Option<&'a AreaWitness> { self.0.latest_area.as_ref() }
+    pub fn latest_ready_wait(self) -> Option<&'a ReadyWaitWitness> { self.0.latest_ready_wait.as_ref() }
+    pub fn latest_nearby_defense(self) -> Option<&'a NearbyDefenseWitness> { self.0.latest_nearby_defense.as_ref() }
+    pub fn latest_primary_damage(self) -> Option<&'a PrimaryDamageWitness> { self.0.latest_primary_damage.as_ref() }
+    pub fn latest_area_damage(self) -> Option<&'a AreaDamageWitness> { self.0.latest_area_damage.as_ref() }
+    pub fn latest_nearby_ally_damage(self) -> Option<&'a NearbyAllyDamageWitness> { self.0.latest_nearby_ally_damage.as_ref() }
+    pub fn latest_conditional_damage(self) -> Option<&'a ConditionalDamageWitness> { self.0.latest_conditional_damage.as_ref() }
+    pub fn latest_direct_penetration(self) -> Option<&'a DirectPenetrationWitness> { self.0.latest_direct_penetration.as_ref() }
+    pub fn latest_conditional_reduction(self) -> Option<&'a IncomingConditionalWitness> { self.0.latest_conditional_reduction.as_ref() }
+    pub fn latest_actual_heal_reaction(self) -> Option<&'a ActualHealReactionWitness> { self.0.latest_actual_heal_reaction.as_ref() }
+    pub fn latest_resonance_gain(self) -> Option<&'a ResonanceGainWitness> { self.0.latest_resonance_gain.as_ref() }
+    pub fn latest_equipment_speed(self) -> Option<&'a EquipmentSpeedWitness> { self.0.latest_equipment_speed.as_ref() }
+    pub fn latest_employee_transformation(self) -> Option<&'a EmployeeTransformationWitness> { self.0.latest_employee_transformation.as_ref() }
+    pub fn latest_last_will(self) -> Option<&'a LastWillWitness> { self.0.latest_last_will.as_ref() }
+    pub fn latest_weapon_stage(self) -> Option<&'a WeaponStageWitness> { self.0.latest_weapon_stage.as_ref() }
+    pub fn latest_adaptive_shield(self) -> Option<&'a AdaptiveShieldWitness> { self.0.latest_adaptive_shield.as_ref() }
+    pub fn latest_channel_opening(self) -> Option<&'a ChannelOpeningWitness> { self.0.latest_channel_opening.as_ref() }
+    pub fn latest_idle_hp_guard(self) -> Option<&'a IdleHpGuardWitness> { self.0.latest_idle_hp_guard.as_ref() }
+    pub fn latest_attack_continuity(self) -> Option<&'a AttackContinuityWitness> { self.0.latest_attack_continuity.as_ref() }
+    pub fn latest_release_gap(self) -> Option<&'a ReleaseGapWitness> { self.0.latest_release_gap.as_ref() }
+    pub fn latest_wearer_reduction(self) -> Option<&'a WearerReductionWitness> { self.0.latest_wearer_reduction.as_ref() }
+    pub fn latest_incoming_flat(self) -> Option<&'a IncomingFlatWitness> { self.0.latest_incoming_flat.as_ref() }
+    pub fn latest_shield_beneficiary_damage(self) -> Option<&'a ShieldBeneficiaryDamageWitness> { self.0.latest_shield_beneficiary_damage.as_ref() }
+    pub fn latest_received_heal(self) -> Option<&'a ReceivedHealWitness> { self.0.latest_received_heal.as_ref() }
+    pub fn latest_control_duration(self) -> Option<&'a ControlDurationWitness> { self.0.latest_control_duration.as_ref() }
+    pub fn latest_skill_barrier(self) -> Option<&'a SkillBarrierWitness> { self.0.latest_skill_barrier.as_ref() }
+    pub fn latest_equipment_support(self) -> Option<&'a EquipmentSupportWitness> { self.0.latest_equipment_support.as_ref() }
+    pub fn latest_heal_barrier(self) -> Option<&'a HealBarrierWitness> { self.0.latest_heal_barrier.as_ref() }
+    pub fn latest_shared_cohort(self) -> Option<&'a SharedCohortWitness> { self.0.latest_shared_cohort.as_ref() }
+    pub fn latest_equipment_death_burst(self) -> Option<&'a DeathBurstWitness> { self.0.latest_equipment_death_burst.as_ref() }
+    pub fn latest_equipment_form(self) -> Option<&'a FormWitness> { self.0.latest_equipment_form.as_ref() }
+    pub fn latest_bounty(self) -> Option<&'a BountyWitness> { self.0.latest_bounty.as_ref() }
+    pub fn latest_magazine(self) -> Option<&'a MagazineWitness> { self.0.latest_magazine.as_ref() }
+    pub fn latest_deferred_damage(self) -> Option<&'a DeferredDamageWitness> { self.0.latest_deferred_damage.as_ref() }
+    pub fn latest_overheal_reserve(self) -> Option<&'a OverhealReserveWitness> { self.0.latest_overheal_reserve.as_ref() }
+    pub fn latest_basic_heal_echo(self) -> Option<&'a BasicHealEchoWitness> { self.0.latest_basic_heal_echo.as_ref() }
+    pub fn latest_basic_evasion(self) -> Option<&'a BasicEvasionWitness> { self.0.latest_basic_evasion.as_ref() }
+    pub fn area_changes(self) -> u64 { self.0.area_changes }
+    pub fn latest_sourced_hit_counter(self) -> Option<ApplicationView<'a>> {
+        self.0.latest_sourced_hit_counter.as_ref().map(ApplicationView)
+    }
+    pub fn latest_sourced_sustained(self) -> Option<ApplicationView<'a>> {
+        self.0.latest_sourced_sustained.as_ref().map(ApplicationView)
     }
 }
 
@@ -182,6 +251,14 @@ impl<'a> ApplicationView<'a> {
     pub fn source(self) -> Option<EffectSourceView<'a>> {
         self.0.source.as_deref().map(EffectSourceView)
     }
+    pub fn authored_source(self) -> Option<AuthoredEffectView<'a>> {
+        self.0.source.as_ref().map(|s| s.authored.as_ref())
+            .or(self.0.authored.as_deref()).map(AuthoredEffectView)
+    }
+    pub fn area_source(self) -> Option<&'a AreaEffectSource> { self.0.area_source.as_deref() }
+    pub fn equipment_source(self) -> Option<crate::game::battle::runtime_facts::EquipmentSourceSnapshot> {
+        self.0.equipment
+    }
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -213,6 +290,9 @@ impl<'a> EffectSourceView<'a> {
 #[derive(Debug, Clone, Copy)]
 pub struct AuthoredEffectView<'a>(&'a EffectSource);
 impl<'a> AuthoredEffectView<'a> {
+    pub(crate) fn source(self) -> &'a EffectSource {
+        self.0
+    }
     pub fn source_file(self) -> &'a str {
         &self.0.source_file
     }

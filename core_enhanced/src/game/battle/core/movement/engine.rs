@@ -514,6 +514,7 @@ mod tests {
             resonance_lock_ms: 0,
             resonance_use: None,
             next_resonance_pulse_ms: None,
+            equipment_resonance_gain: None,
             next_action_time: 0,
             pending_cast: false,
             pending_cast_cause: None,

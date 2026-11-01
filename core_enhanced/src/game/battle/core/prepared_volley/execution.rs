@@ -55,6 +55,7 @@ impl BattleCore {
             "prepared_volley_activation_storage",
         )?;
         let a = Active {
+            channel_started_at: self.channel_started_at(caster, now)?.unwrap_or(now),
             id,
             caster,
             source,

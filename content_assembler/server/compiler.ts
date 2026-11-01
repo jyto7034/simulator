@@ -2,22 +2,47 @@ import { spawn } from "node:child_process";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import type { Plugin } from "vite";
 
+type CompilerLimits = Readonly<{
+  requestBytes: number;
+  responseBytes: number;
+  timeoutMs?: number;
+}>;
+const graphLimits: CompilerLimits = {
+  requestBytes: 7_000_000,
+  responseBytes: 7_000_000,
+};
+// JSON escaping can expand each source/artifact byte by up to six bytes.
+export const compositionCompilerLimits: CompilerLimits = {
+  requestBytes: 2_000_000 * 6 + 1024,
+  responseBytes: 8_000_000 * 6 + 4096,
+};
+export const compositionRunLimits: CompilerLimits = {
+  requestBytes: 64 * 1024 * 1024,
+  responseBytes: 8_000_000,
+  // Core's finite scenario and work budgets bound execution.
+  timeoutMs: 0,
+};
+
 // The executable is configured by the local developer, never by HTTP input.
 export function runCompiler(
   executable: string,
   input: string,
+  limits: CompilerLimits = graphLimits,
 ): Promise<unknown> {
-  if (Buffer.byteLength(input) > 7_000_000)
+  if (Buffer.byteLength(input) > limits.requestBytes)
     return Promise.reject(new Error("컴파일 요청이 너무 큽니다."));
   return new Promise((resolve, reject) => {
     const child = spawn(executable, [], { stdio: ["pipe", "pipe", "pipe"] });
     const chunks: Buffer[] = [];
     let size = 0;
     let errorText = "";
-    const timeout = setTimeout(() => {
-      child.kill();
-      reject(new Error("Core 컴파일 제한 시간을 초과했습니다."));
-    }, 30_000);
+    const timeout =
+      (limits.timeoutMs ?? 30_000) === 0
+        ? undefined
+        : setTimeout(() => {
+            child.kill();
+            reject(new Error("Core 컴파일 제한 시간을 초과했습니다."));
+          }, limits.timeoutMs ?? 30_000);
     child.on("error", (error) => {
       clearTimeout(timeout);
       reject(
@@ -26,7 +51,7 @@ export function runCompiler(
     });
     child.stdout.on("data", (chunk: Buffer) => {
       size += chunk.length;
-      if (size > 7_000_000) {
+      if (size > limits.responseBytes) {
         child.kill();
         reject(new Error("Core 응답 크기 제한을 초과했습니다."));
       } else chunks.push(chunk);
@@ -52,13 +77,17 @@ export function runCompiler(
     child.stdin.end(input);
   });
 }
-export function compilerPlugin(executable: string | undefined): Plugin {
+export function compilerPlugin(
+  executable: string | undefined,
+  endpoint = "/__content/compile",
+  limits: CompilerLimits = graphLimits,
+): Plugin {
   const middleware = (
     req: IncomingMessage,
     res: ServerResponse,
     next: () => void,
   ) => {
-    if (req.url?.split("?")[0] !== "/__content/compile") return next();
+    if (req.url?.split("?")[0] !== endpoint) return next();
     const host = req.headers.host ?? "";
     if (
       req.method !== "POST" ||
@@ -83,7 +112,8 @@ export function compilerPlugin(executable: string | undefined): Plugin {
         for await (const chunk of req) {
           const buffer = Buffer.from(chunk);
           size += buffer.length;
-          if (size > 7_000_000) throw new Error("컴파일 요청이 너무 큽니다.");
+          if (size > limits.requestBytes)
+            throw new Error("컴파일 요청이 너무 큽니다.");
           chunks.push(buffer);
         }
         res.end(
@@ -91,6 +121,7 @@ export function compilerPlugin(executable: string | undefined): Plugin {
             await runCompiler(
               executable,
               Buffer.concat(chunks).toString("utf8"),
+              limits,
             ),
           ),
         );
@@ -104,7 +135,7 @@ export function compilerPlugin(executable: string | undefined): Plugin {
     })();
   };
   return {
-    name: "core-graph-compiler",
+    name: `core-compiler:${endpoint}`,
     configureServer(server) {
       server.middlewares.use(middleware);
     },

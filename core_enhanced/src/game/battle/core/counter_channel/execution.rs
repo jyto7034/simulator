@@ -3,7 +3,6 @@ use crate::game::{
     ability::sustained::SustainedEffectDef,
     battle::{
         damage::{DamageModifiers, DamageSource, DamageType},
-        event_log::HpChangeReason,
         runtime_facts::{ActionCancelReason, ActionTerminalKind},
         types::BattleUnitSourceIdentity,
     },
@@ -64,6 +63,7 @@ impl BattleCore {
             "counter_channel_activation",
         )?;
         self.sustained.counters.owners.get_mut(&key).unwrap().active = Some(Active {
+            channel_started_at: self.channel_started_at(caster, now)?.unwrap_or(now),
             id,
             admitted,
             snapshot,
@@ -151,7 +151,7 @@ impl BattleCore {
                 if !self.counter_activation_exists(key, id) {
                     return Ok(());
                 }
-                let targets = self.collect_tile_area_targets_at(
+                let mut targets = self.collect_tile_area_targets_at(
                     now,
                     a.snapshot.source_side,
                     caster,
@@ -159,6 +159,12 @@ impl BattleCore {
                     query.targets,
                     query.include_caster,
                 );
+                targets.retain(|target| !query.corrupted_only || self.units.get(target).is_some_and(|u|
+                    matches!(u.source_identity, BattleUnitSourceIdentity::CorrodedEmployee { .. })));
+                let area_percent = if matches!(&query.effect, PhaseEffect::Damage { .. }) {
+                    self.area_damage_percent(caster, a.snapshot.source_side,
+                        &a.snapshot.fact_source, &targets, now)?
+                } else { 0 };
                 control::poll("counter_phase_query")?;
                 for target in targets {
                     if !self.counter_activation_exists(key, id) {
@@ -187,6 +193,7 @@ impl BattleCore {
                             damage_type,
                         } => {
                             let mut snapshot = controlled_clone(&a.snapshot)?;
+                            snapshot.modifiers.damage_amp_percent = snapshot.modifiers.damage_amp_percent.saturating_add(area_percent);
                             snapshot.base_damage =
                                 program::amount(&p, amount, a.admitted.consumed, false)?;
                             snapshot.damage_type = *damage_type;
@@ -194,10 +201,10 @@ impl BattleCore {
                             let snapshot = self.materialize_damage_source_snapshot_for_target_hit(
                                 snapshot, target, a.tick,
                             );
-                            if let Some(summary) = self.execute_committed_damage(super::super::damage_runtime::CommittedDamageInput {
+                            if let Some(summary) = self.execute_damage_with_observation_origin(super::super::damage_runtime::CommittedDamageInput {
                                 target_id: target, source_snapshot: snapshot, committed_at_ms: now,
                                 policy: super::super::damage_runtime::CommittedDamagePolicy::GeneralCommand,
-                            }) { a.damaged |= summary.actual_hp_loss > 0 && self.units.get(&target).is_some_and(|u| u.owner != a.snapshot.source_side); }
+                            }, false, Some(&a.snapshot.fact_source)) { a.damaged |= summary.actual_hp_loss > 0 && self.units.get(&target).is_some_and(|u| u.owner != a.snapshot.source_side); }
                             control::poll("counter_phase_damage")?;
                         }
                         PhaseEffect::Heal { amount } => {
@@ -209,13 +216,13 @@ impl BattleCore {
                                 .get(&target)
                                 .map_or(0, |u| u.stats.current_health);
                             let healing = program::amount(&p, amount, a.admitted.consumed, true)?;
-                            self.apply_hp_delta_and_record(
+                            self.apply_direct_heal_with_observation_origin(
                                 Some(caster),
                                 target,
                                 healing as i32,
                                 now,
-                                HpChangeReason::Command,
-                            );
+                                Some(&a.snapshot.fact_source),
+                            )?;
                             control::poll("counter_phase_heal")?;
                             if self
                                 .units

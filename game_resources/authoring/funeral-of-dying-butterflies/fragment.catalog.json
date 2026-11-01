@@ -1,0 +1,55 @@
+{
+  "id": "fragment_funeral_butterfly_eulogy",
+  "uuid": "710e8400-e29b-41d4-a716-446655441006",
+  "name": "죽을 나비의 장례",
+  "description": "경로 폭발·무기 스택 폭발과 검은 고치의 명시적 유물 전환. 아종 최초 부화 보상.",
+  "rarity": {
+    "Unresolved": "fragment-rarity"
+  },
+  "equip_limit": {
+    "Unresolved": "fragment-equip-limit"
+  },
+  "origin": {
+    "Abnormality": {
+      "abnormality_id": "t-02-99_funeral_dying_butterflies"
+    }
+  },
+  "sources": [
+    {
+      "AbnormalityContainment": {
+        "abnormality_id": "t-02-99_funeral_dying_butterflies"
+      }
+    }
+  ],
+  "dependencies": [
+    {
+      "SourceAbnormality": {
+        "abnormality_id": "t-02-99_funeral_dying_butterflies"
+      }
+    }
+  ],
+  "compatibility": {
+    "Unresolved": "fragment-compatibility"
+  },
+  "effect": {
+    "ActiveSkill": {
+      "forms": {
+        "base": {
+          "skill_id": "fragment_funeral_butterfly_base",
+          "resonance_max": {
+            "Unresolved": "capacity"
+          }
+        },
+        "bloom": {
+          "skill_id": "fragment_funeral_butterfly_bloom",
+          "resonance_max": {
+            "Unresolved": "capacity"
+          },
+          "bloom_recipe": {
+            "Unresolved": "bloom-recipe"
+          }
+        }
+      }
+    }
+  }
+}

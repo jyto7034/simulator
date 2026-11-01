@@ -1,3 +1,6 @@
+use crate::game::battle::core::boss_runtime::tests::compiled_action_fixture::{
+    primary_fragment_input, enable_complete_trace, hp_trace_rows, assert_fragment_trace_origin,
+};
 use super::*;
 use crate::game::battle::core::{
     boss_runtime::tests::compiled_action_fixture::{fixture_graph, place},
@@ -536,4 +539,39 @@ fn status_strike_runtime_mobile_descendant_and_reaction_lethals_do_not_seed() {
         let lethal = &fact.latest_damage.as_ref().unwrap().source;
         assert!(if reaction { lethal.reaction } else { lethal.mobile_effect().is_some() });
     }
+}
+
+#[test]
+fn integration_status_mobile_hp_keeps_original_cast_and_fragment() {
+    let (mut c, mut s, a, e, _) = fixture(&[]);
+    let mut off = controlled_clone(&c).unwrap();
+    let mut off_s = s.clone();
+    let (_trace, trace_from) = enable_complete_trace(&mut c);
+    let copy = primary_fragment_input(&c, a);
+    cast(&mut c, a, 0).unwrap();
+    step(&mut c, &mut s, 0);
+    assert_eq!(c.units[&e].stats.current_health, 900);
+    let direct_observation = c.authoring_observation().unwrap().unwrap();
+    let direct = direct_observation.latest_nonzero_sourced_hp.as_ref().unwrap();
+    assert_eq!(direct.source.as_ref().expect("direct strike retains cast").cast.cast_seq, 0);
+    assert_eq!(direct.fragment.as_ref().unwrap().copy_uuid, copy);
+    place(&mut c, e, 4, 2);
+    step(&mut c, &mut s, 200);
+    assert_eq!(c.units[&e].stats.current_health, 800);
+    let observations = c.authoring_observation().unwrap().unwrap();
+    let hp = observations.latest_nonzero_sourced_hp.as_ref().unwrap();
+    assert_eq!(hp.time_ms, 200);
+    assert_eq!(hp.target_unit, e);
+    assert_eq!(hp.fragment.as_ref().unwrap().copy_uuid, copy);
+    assert_eq!(hp.source.as_ref().expect("chase explosion retains original cast").cast.cast_seq, 0);
+    let rows = hp_trace_rows(&c, trace_from);
+    assert_eq!(rows.len(), 2);
+    for row in &rows { assert_fragment_trace_origin(row, a, Some(("r11_aura", 0))); }
+    cast(&mut off, a, 0).unwrap();
+    step(&mut off, &mut off_s, 0);
+    place(&mut off, e, 4, 2);
+    step(&mut off, &mut off_s, 200);
+    assert_eq!(c.units[&e].stats.current_health, off.units[&e].stats.current_health);
+    assert_eq!(serde_json::to_value(&c.event_log.entries).unwrap(), serde_json::to_value(&off.event_log.entries).unwrap());
+    assert_eq!(serde_json::to_value(c.runtime_fact_snapshot().unwrap()).unwrap(), serde_json::to_value(off.runtime_fact_snapshot().unwrap()).unwrap());
 }

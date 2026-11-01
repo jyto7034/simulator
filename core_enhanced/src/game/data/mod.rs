@@ -226,6 +226,10 @@ pub struct GameDataBase {
     /// Generation-local immutable amount plans. Authored expressions are checked
     /// for runtime support before content publication.
     value_expr_data: Arc<crate::game::value_expr::ValueExprCatalog>,
+    equipment_attack_data: Arc<crate::game::ability::equipment_attack::EquipmentAttackCatalog>,
+    equipment_state_data: Arc<crate::game::ability::equipment_state::EquipmentStateCatalog>,
+    equipment_defense_data: Arc<crate::game::ability::equipment_defense::EquipmentDefenseCatalog>,
+    equipment_support_data: Arc<crate::game::ability::equipment_support::EquipmentSupportCatalog>,
 
     /// UUID 기반 아이템 조회 레지스트리
     pub item_registry: ItemRegistry,
@@ -535,6 +539,23 @@ impl GameDataBuilder {
 
     pub fn with_equipment_data(mut self, data: Arc<EquipmentDatabase>) -> Self {
         self.equipment_data = data;
+        self
+    }
+
+    pub fn with_equipment_defenses(mut self, bindings: Vec<crate::game::ability::equipment_defense::EquipmentDefenseBinding>) -> Self {
+        Arc::make_mut(&mut self.equipment_data).equipment_defenses = bindings;
+        self
+    }
+    pub fn with_equipment_supports(mut self, bindings: Vec<crate::game::ability::equipment_support::EquipmentSupportBinding>) -> Self {
+        Arc::make_mut(&mut self.equipment_data).equipment_supports = bindings;
+        self
+    }
+    pub fn with_equipment_states(mut self, bindings: Vec<crate::game::ability::equipment_state::EquipmentStateBinding>) -> Self {
+        Arc::make_mut(&mut self.equipment_data).equipment_states = bindings;
+        self
+    }
+    pub fn with_equipment_attacks(mut self, bindings: Vec<crate::game::ability::equipment_attack::EquipmentAttackBinding>) -> Self {
+        Arc::make_mut(&mut self.equipment_data).equipment_attacks = bindings;
         self
     }
 
@@ -1130,6 +1151,15 @@ impl GameDataBase {
         skill_data
             .validate_resource_references(&resource_data)
             .map_err(|error| skill_data.live_error("data/skills/base.ron", error))?;
+        skill_data
+            .validate_effect_catalog_references(&equipment_data, &relic_data)
+            .map_err(|error| skill_data.live_error("data/skills/base.ron", error))?;
+        let equipment_state_data = Arc::new(crate::game::ability::equipment_state::EquipmentStateCatalog::compile(&equipment_data, &resource_data, &runtime_safety.expression())?);
+        let equipment_defense_data = Arc::new(crate::game::ability::equipment_defense::EquipmentDefenseCatalog::compile(&equipment_data, &resource_data, &abnormality_data, &runtime_safety.expression())?);
+        let equipment_support_data = Arc::new(crate::game::ability::equipment_support::EquipmentSupportCatalog::compile(&equipment_data, &runtime_safety.expression())?);
+        let equipment_attack_data = Arc::new(crate::game::ability::equipment_attack::EquipmentAttackCatalog::compile(
+            &equipment_data, &resource_data, &relic_data, &runtime_safety.expression(),
+        )?);
         let value_expr_data = Arc::new(crate::game::value_expr::ValueExprCatalog::compile_skills(
             &skill_data,
             &resource_data,
@@ -1187,6 +1217,10 @@ impl GameDataBase {
             relic_data,
             resource_data,
             value_expr_data,
+            equipment_attack_data,
+            equipment_defense_data,
+            equipment_support_data,
+            equipment_state_data,
             item_registry,
         };
         crate::game::relic::structural::validate_publication(&data)?;
@@ -1233,6 +1267,19 @@ impl GameDataBase {
 
     pub fn runtime_safety(&self) -> &Arc<crate::runtime_safety::RuntimeSafetySettings> {
         &self.runtime_safety
+    }
+
+    pub(crate) fn equipment_defense_catalog(&self) -> &crate::game::ability::equipment_defense::EquipmentDefenseCatalog {
+        &self.equipment_defense_data
+    }
+    pub(crate) fn equipment_support_catalog(&self) -> &crate::game::ability::equipment_support::EquipmentSupportCatalog {
+        &self.equipment_support_data
+    }
+    pub(crate) fn equipment_state_catalog(&self) -> &crate::game::ability::equipment_state::EquipmentStateCatalog {
+        &self.equipment_state_data
+    }
+    pub(crate) fn equipment_attack_catalog(&self) -> &crate::game::ability::equipment_attack::EquipmentAttackCatalog {
+        &self.equipment_attack_data
     }
 
     pub fn value_expr_catalog(&self) -> &crate::game::value_expr::ValueExprCatalog {

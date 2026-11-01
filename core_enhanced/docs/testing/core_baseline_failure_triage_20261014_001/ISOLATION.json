@@ -1,8 +1,0 @@
-{
-  "root": "/tmp/core-failure-triage-20261014-001",
-  "source_archive": "core_enhanced/docs/goals/core_expedition_deterrence_rewards/execution/single_goal/target/u14_current_002/SOURCE.tar.gz",
-  "archive_members": 713,
-  "current_input_members_checked": 414,
-  "method": "verified archived bytes, regular members only; no original target edits",
-  "purpose": "diagnostic test preparation changes only; not final corrected baseline"
-}

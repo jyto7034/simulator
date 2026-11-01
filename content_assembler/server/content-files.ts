@@ -13,7 +13,6 @@ import {
 export { contentName } from "../src/content/groups.ts";
 
 const limit = 5_000_000;
-const suffix = ".node-graph.json";
 const revision = (json: string) =>
   createHash("sha256").update(json).digest("hex");
 
@@ -76,16 +75,23 @@ export async function contentOperation(directory: string, input: unknown) {
   await ensureDirectory(directory);
   if (!input || typeof input !== "object" || !("operation" in input))
     throw new Error("잘못된 콘텐츠 요청입니다.");
+  const kind = "kind" in input ? input.kind : "node-graph";
+  if (kind !== "node-graph" && kind !== "composition")
+    throw new Error("지원하지 않는 콘텐츠 종류입니다.");
+  const composition = kind === "composition";
+  const suffix = composition ? ".skill.yaml" : ".node-graph.json";
   if (input.operation === "list") {
     const entries = await readdir(directory, { withFileTypes: true });
     return {
       directory,
-      organization: await readGroups(directory),
+      organization: composition
+        ? { document: emptyGroups(), revision: null }
+        : await readGroups(directory),
       files: entries
         .filter((entry) => {
           if (!entry.isFile() || !entry.name.endsWith(suffix)) return false;
           try {
-            contentName(entry.name);
+            contentName(entry.name, suffix);
             return true;
           } catch {
             return false;
@@ -96,9 +102,11 @@ export async function contentOperation(directory: string, input: unknown) {
     };
   }
   const grouping = input.operation === "save-groups";
+  if (grouping && composition)
+    throw new Error("조합 원본은 그래프 그룹 파일을 수정할 수 없습니다.");
   const name = grouping
     ? groupsFilename
-    : contentName("name" in input ? input.name : undefined);
+    : contentName("name" in input ? input.name : undefined, suffix);
   if (input.operation === "read") return read(directory, name);
   if (
     (input.operation !== "save" && !grouping) ||
@@ -111,15 +119,18 @@ export async function contentOperation(directory: string, input: unknown) {
   const json = input.json;
   if (Buffer.byteLength(json) > limit)
     throw new Error("파일 크기 제한은 5MB입니다.");
-  const document: unknown = JSON.parse(json);
+  if (composition && Buffer.byteLength(json) > 2_000_000)
+    throw new Error("원본 크기 제한은 2MB입니다.");
+  const document: unknown = composition ? null : JSON.parse(json);
   if (grouping) parseGroups(document);
   else if (
-    !document ||
-    typeof document !== "object" ||
-    !("format" in document) ||
-    document.format !== "node-graph" ||
-    !("version" in document) ||
-    document.version !== 1
+    !composition &&
+    (!document ||
+      typeof document !== "object" ||
+      !("format" in document) ||
+      document.format !== "node-graph" ||
+      !("version" in document) ||
+      document.version !== 1)
   )
     throw new Error("지원하는 노드 그래프 파일이 아닙니다.");
   const lockPath = join(directory, ".content-write.lock");

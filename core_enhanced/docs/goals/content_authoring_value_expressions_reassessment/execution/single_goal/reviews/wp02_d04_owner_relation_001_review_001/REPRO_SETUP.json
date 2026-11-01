@@ -1,9 +1,0 @@
-{
-  "isolate": "/tmp/d04-owner-independent-0f2libs_",
-  "source_archive_sha256": "8980c287d4d4b0415fcf896659d6598d701e0dc1616a651ea0d090354590d1b7",
-  "modified_path": "core_enhanced/src/game/battle/core/value_expr_runtime.rs",
-  "instrumentation": "AtomicUsize visit counter inside existing items.values().filter predicate; duplicate fixture with valid scenario employees/equipment; one appended test. No product fix.",
-  "unmodified_source_sha256": "76c9b80cc68da883ec2f00610d7dfa5325b6a097ce180ce23c42229ca01f853e",
-  "instrumented_source_sha256": "ee9ae20b0515c5249b3a4fa5794ca886c2c4317497128e78f336f2901f7d156a",
-  "initial_probe_note": "Initial max_work=64 refused at pre-existing retained admission with requested=149; kept initial log. Retried with max_work=256 to admit normal fixed preparation cost."
-}

@@ -294,6 +294,7 @@ pub enum StructuralRecipeDef {
         footprint: Arc<TileRangePattern>,
     },
     FixedRecipientSupport,
+    ChannelHealthUpkeep { policy: crate::game::ability::sustained::ChannelHealthUpkeep },
     RegularBasicSupport {
         damage_percent: u32,
         speed_points: u32,
@@ -471,6 +472,7 @@ crate::authoring::clone_shape::enum_shape!(StructuralRecipeDef {
     tuples: [],
     records: [
         SupportSelectionPattern { range, end_on_exit },
+        ChannelHealthUpkeep { policy },
         DamageFootprint { footprint },
         RegularBasicSupport {
             damage_percent,

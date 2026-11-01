@@ -1,0 +1,19 @@
+# N01 prototype test values, not final balance: 5 stacks, 3%, 5 seconds.
+version: 1
+id: source-direct-fixture
+values:
+  - name: insight
+    value:
+      AttackProgram:
+        reactions: []
+        on_hit_status:
+          duration_ms: 5000
+          profile:
+            definition: insight
+            kind:
+              SourceDirectDamageTaken: { per_stack_percent: 3, stacks: 1, max_stacks: 5 }
+equipment_attacks:
+  - equipment: r11_weapon
+    program: { Shared: insight }
+definitions: []
+skills: []

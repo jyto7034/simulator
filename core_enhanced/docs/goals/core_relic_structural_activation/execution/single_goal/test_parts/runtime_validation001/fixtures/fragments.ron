@@ -1,3 +1,0 @@
-(fragments: [
-(id: "u09_public_fragment", uuid: "a509e100-0000-0000-0000-000000000101", name: "U09 external structural provider", description: "Normal reward provider", rarity: Rare, equip_limit: OwnedCopies, sources: [RareReward], effect: ActiveSkill(forms: {"base": (skill_id: "u09_public_strike", resonance_max: 1)})),
-])

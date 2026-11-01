@@ -1,0 +1,181 @@
+# 현행 작성 원본. 미정 출시값은 별도 시험 입력과 구분합니다.
+version: 2
+id: mountain-equipment
+resources:
+- id: weapon_mass
+  owner: EquipmentCopy
+  lifetime: Run
+  initial: 0
+  cap: 4294967295
+values:
+- name: mass-growth
+  value:
+    AttackProgram:
+      reactions:
+      - id: ordinary-kill
+        event:
+          PrimaryBasicKill:
+            eligibility: EncounterCombatant
+            threat: normal
+        body:
+        - Resources:
+            operations:
+            - resource: weapon_mass
+              owner: SourceEquipment
+              operation:
+                Grant:
+                  Unresolved: mass-gain-normal
+      - id: elite-kill
+        event:
+          PrimaryBasicKill:
+            eligibility: EncounterCombatant
+            threat: elite
+        body:
+        - Resources:
+            operations:
+            - resource: weapon_mass
+              owner: SourceEquipment
+              operation:
+                Grant:
+                  Unresolved: mass-gain-elite
+      - id: boss-kill
+        event:
+          PrimaryBasicKill:
+            eligibility: EncounterCombatant
+            threat: boss
+        body:
+        - Resources:
+            operations:
+            - resource: weapon_mass
+              owner: SourceEquipment
+              operation:
+                Grant:
+                  Unresolved: mass-gain-boss
+      - id: harvest-ordinary-kill
+        event:
+          PrimaryBasicKill:
+            eligibility: EncounterCombatant
+            threat: normal
+        body:
+        - Resources:
+            operations:
+            - resource: weapon_mass
+              owner: SourceEquipment
+              operation:
+                Grant:
+                  Unresolved: mass-gain-normal
+        requires_relic: double-harvest
+      - id: harvest-elite-kill
+        event:
+          PrimaryBasicKill:
+            eligibility: EncounterCombatant
+            threat: elite
+        body:
+        - Resources:
+            operations:
+            - resource: weapon_mass
+              owner: SourceEquipment
+              operation:
+                Grant:
+                  Unresolved: mass-gain-elite
+        requires_relic: double-harvest
+      - id: harvest-boss-kill
+        event:
+          PrimaryBasicKill:
+            eligibility: EncounterCombatant
+            threat: boss
+        body:
+        - Resources:
+            operations:
+            - resource: weapon_mass
+              owner: SourceEquipment
+              operation:
+                Grant:
+                  Unresolved: mass-gain-boss
+        requires_relic: double-harvest
+      bonus:
+        amount:
+          moment: Snapshot
+          root:
+            Mul:
+              value:
+                Const:
+                  value:
+                    Unresolved: mass-damage
+                  unit: Magnitude
+              scalar:
+                Ratio:
+                  numerator:
+                    Read:
+                      Resource:
+                        resource: weapon_mass
+                        owner: SourceEquipment
+                        field: Balance
+                  denominator:
+                    Const:
+                      value: 1
+                      unit:
+                        Resource: weapon_mass
+                  rounding: Floor
+        secondary_percent:
+          Unresolved: shockwave-percent
+- name: nearby-defense
+  value:
+    DefenseProgram:
+      NearbyHostileDefense:
+        range:
+          Unresolved: armor-range
+        per_enemy:
+          Unresolved: armor-per_enemy
+        max_bonus:
+          Unresolved: armor-max_bonus
+- name: primary-hp
+  value:
+    AttackProgram:
+      reactions: []
+      primary_damage_percent:
+        moment: Live
+        root:
+          Clamp:
+            value:
+              Ratio:
+                numerator:
+                  Mul:
+                    value:
+                      Read:
+                        HitPoints:
+                          subject: Target
+                          field: Missing
+                    scalar:
+                      Const:
+                        value:
+                          Unresolved: missing-hp-coefficient
+                        unit: Scalar
+                denominator:
+                  Read:
+                    HitPoints:
+                      subject: Target
+                      field: Max
+                rounding: Floor
+            min:
+              Const:
+                value: 0
+                unit: Scalar
+            max:
+              Const:
+                value:
+                  Unresolved: missing-hp-cap
+                unit: Scalar
+definitions: []
+skills: []
+equipment_attacks:
+- equipment: placeholder_mountain_smiling_bodies_weapon
+  program:
+    Shared: mass-growth
+- equipment: placeholder_mountain_smiling_bodies_accessory
+  program:
+    Shared: primary-hp
+equipment_defenses:
+- equipment: placeholder_mountain_smiling_bodies_armor
+  program:
+    Shared: nearby-defense

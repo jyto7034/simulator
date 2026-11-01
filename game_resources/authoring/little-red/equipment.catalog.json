@@ -1,0 +1,155 @@
+[
+  {
+    "id": "placeholder_little_red_weapon",
+    "uuid": "e2000000-0000-0000-0000-000000000012",
+    "content_family": "f-01-57_little_red",
+    "name": {
+      "Unresolved": "weapon-name"
+    },
+    "equipment_type": "Weapon",
+    "rarity": {
+      "Unresolved": "weapon-rarity"
+    },
+    "price": {
+      "Unresolved": "weapon-price"
+    },
+    "allow_duplicate_equip": {
+      "Unresolved": "weapon-allow_duplicate_equip"
+    },
+    "bound": false,
+    "cannot_unequip_reason": "equipment_bound",
+    "triggered_effects": {},
+    "ability_activations": [],
+    "weapon_profile": {
+      "action": "Damage",
+      "attack": {
+        "Unresolved": "weapon-attack"
+      },
+      "spell_power": 0,
+      "range_role": "Ranged",
+      "weapon_archetype": "Gun",
+      "deployment_affinity": "platform_only",
+      "block_capacity": 0,
+      "ground_defense_focus": null,
+      "platform_rest": {
+        "hp_recovery_per_tick": {
+          "Unresolved": "weapon-rest_hp"
+        }
+      },
+      "damage_type": "Physical",
+      "targeting_profile": {
+        "Unresolved": "weapon-targeting"
+      },
+      "air_capable": true,
+      "defense_tile_range": {
+        "Unresolved": "weapon-range"
+      },
+      "interval_ms": {
+        "Unresolved": "weapon-interval_ms"
+      },
+      "windup_ms": {
+        "Unresolved": "weapon-windup_ms"
+      },
+      "ranged_reposition_ms": {
+        "Unresolved": "weapon-reposition_ms"
+      },
+      "delivery": {
+        "Projectile": {
+          "speed_units_per_ms": {
+            "Unresolved": "weapon-projectile_speed"
+          },
+          "hit_policy": "DirectionalCollision",
+          "max_range_tiles": {
+            "Unresolved": "weapon-projectile_range"
+          },
+          "max_lifetime_ms": {
+            "Unresolved": "weapon-projectile_lifetime"
+          },
+          "collision": {
+            "radius_units": {
+              "Unresolved": "weapon-projectile_radius"
+            },
+            "piercing": false
+          }
+        }
+      }
+    },
+    "event_check_modifiers": [],
+    "event_choice_keys": []
+  },
+  {
+    "id": "placeholder_little_red_armor",
+    "uuid": "e2000000-0000-0000-0000-000000000112",
+    "content_family": "f-01-57_little_red",
+    "name": "붉은 흉터 (가칭)",
+    "equipment_type": "Armor",
+    "rarity": {
+      "Unresolved": "armor-rarity"
+    },
+    "price": {
+      "Unresolved": "armor-price"
+    },
+    "allow_duplicate_equip": {
+      "Unresolved": "armor-allow_duplicate_equip"
+    },
+    "bound": false,
+    "cannot_unequip_reason": "equipment_bound",
+    "triggered_effects": {
+      "Permanent": [
+        {
+          "target": "SelfUnit",
+          "effect": {
+            "Modifier": {
+              "stat": "MaxHealth",
+              "kind": "Flat",
+              "value": {
+                "Unresolved": "armor-MaxHealth"
+              }
+            }
+          }
+        },
+        {
+          "target": "SelfUnit",
+          "effect": {
+            "Modifier": {
+              "stat": "Defense",
+              "kind": "Flat",
+              "value": {
+                "Unresolved": "armor-Defense"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ability_activations": [],
+    "weapon_profile": null,
+    "event_check_modifiers": [],
+    "event_choice_keys": []
+  },
+  {
+    "id": "placeholder_little_red_accessory",
+    "uuid": "e2000000-0000-0000-0000-000000000212",
+    "content_family": "f-01-57_little_red",
+    "name": {
+      "Unresolved": "accessory-name"
+    },
+    "equipment_type": "Accessory",
+    "rarity": {
+      "Unresolved": "accessory-rarity"
+    },
+    "price": {
+      "Unresolved": "accessory-price"
+    },
+    "allow_duplicate_equip": {
+      "Unresolved": "accessory-allow_duplicate_equip"
+    },
+    "bound": false,
+    "cannot_unequip_reason": "equipment_bound",
+    "triggered_effects": {},
+    "ability_activations": [],
+    "weapon_profile": null,
+    "event_check_modifiers": [],
+    "event_choice_keys": []
+  }
+]

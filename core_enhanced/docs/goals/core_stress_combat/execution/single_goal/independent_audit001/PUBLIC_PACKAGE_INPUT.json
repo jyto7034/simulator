@@ -1,6 +1,0 @@
-{
-  "source": "/mnt/f/work/simulator/core_enhanced/docs/goals/core_stress_combat/execution/single_goal/independent_audit001/cumulative_reward_source",
-  "binary": "/mnt/f/work/simulator/.cache/u164-review-dev-target/debug/package_official_content",
-  "binary_sha256": "a0d51889013ae90d17b8a057831c59c9b31ad84feece6088fc1239c21262f78a",
-  "changes": "only five fixed stress round enkephalin amounts 10/20/30/40/50 -> 1000000000 each; official authored source"
-}

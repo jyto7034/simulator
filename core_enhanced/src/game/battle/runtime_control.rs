@@ -176,7 +176,7 @@ struct Budget {
     retained_admission: Option<usize>,
     #[cfg(feature = "runtime-observation")]
     retained_observation: crate::runtime_observation::RetainedAccounting,
-    fault: Option<BattleRuntimeFault>,
+    fault: Option<GameError>,
 }
 
 #[cfg(test)]
@@ -415,22 +415,32 @@ fn run_initialized<T>(
 
 pub(crate) fn poll() -> Result<(), GameError> {
     ACTIVE.with(
-        |slot| match slot.borrow().as_ref().and_then(|budget| budget.fault) {
-            Some(fault) => Err(GameError::BattleRuntimeFault(fault)),
+        |slot| match slot.borrow().as_ref().and_then(|budget| budget.fault.clone()) {
+            Some(fault) => Err(fault),
             None => Ok(()),
         },
     )
 }
 
 pub(crate) fn reject(fault: BattleRuntimeFault) -> GameError {
-    let fault = ACTIVE.with(|slot| {
+    latch_failure(GameError::BattleRuntimeFault(fault))
+}
+
+/// Event adapters returning Option must still stop the owning operation when a
+/// validated expression fails. Preserve the first typed diagnostic, including
+/// its authored site, just as native work/retained failures are preserved.
+pub(crate) fn reject_expression(fault: crate::game::value_expr::ValueExprFault) -> GameError {
+    latch_failure(GameError::ValueExpressionFault(fault))
+}
+
+fn latch_failure(fault: GameError) -> GameError {
+    ACTIVE.with(|slot| {
         let mut slot = slot.borrow_mut();
         match slot.as_mut() {
-            Some(budget) => *budget.fault.get_or_insert(fault),
+            Some(budget) => budget.fault.get_or_insert(fault).clone(),
             None => fault,
         }
-    });
-    GameError::BattleRuntimeFault(fault)
+    })
 }
 
 /// Trusted producer failure, distinct from a caller's ordinary invalid input.
@@ -481,12 +491,10 @@ pub(crate) fn limit(
 }
 
 pub(crate) fn charge(units: u64, site: &'static str) -> Result<(), GameError> {
+    poll()?;
     let failure = ACTIVE.with(|slot| {
         let mut slot = slot.borrow_mut();
         let budget = slot.as_mut()?;
-        if let Some(fault) = budget.fault {
-            return Some(fault);
-        }
         let requested = budget.work.checked_add(units);
         match requested {
             Some(value) if value <= budget.limits.max_work => {
@@ -508,12 +516,10 @@ pub(crate) fn charge(units: u64, site: &'static str) -> Result<(), GameError> {
 }
 
 pub(crate) fn charge_clone(slots: usize, site: &'static str) -> Result<(), GameError> {
+    poll()?;
     let failure = ACTIVE.with(|slot| {
         let mut slot = slot.borrow_mut();
         let budget = slot.as_mut()?;
-        if let Some(fault) = budget.fault {
-            return Some(fault);
-        }
         let requested = budget.clone_slots.checked_add(slots);
         match requested {
             Some(value) if value <= budget.limits.max_clone_slots => {
@@ -749,7 +755,7 @@ mod tests {
 
     #[test]
     fn cmrp_native_actual_cap_seed_growth_exact_and_one_over() {
-        for cap in [8 * 1024 * 1024, 16 * 1024 * 1024, 32 * 1024 * 1024] {
+        for cap in [8 * 1024 * 1024, 16 * 1024 * 1024, 32 * 1024 * 1024, 64 * 1024 * 1024] {
             let settings = if cap == 8 * 1024 * 1024 {
                 let legacy =
                     std::str::from_utf8(crate::runtime_safety::EMBEDDED_RUNTIME_SAFETY_RON)
@@ -780,8 +786,8 @@ mod tests {
                         code: RuntimeFaultCode::InvalidLimits,
                         site: "max_retained_bytes",
                         limit: Some(16777216),
-                        requested: Some(33554432)
-                    })
+                        requested: Some(requested)
+                    }) if requested == cap as u64
                 ));
             }
             run_with_profile(limits, &settings, || seed_retained_extent(cap)).unwrap();

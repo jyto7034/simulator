@@ -492,6 +492,10 @@ impl GameCore {
                 operation,
                 effects: crate::authoring::clone_shape::controlled_clone(effects)?,
                 penalties: crate::authoring::clone_shape::controlled_clone(penalties)?,
+                support_conversions: crate::game::relic::structural::support::preview_conversions(
+                    &self.game_data, &definition.id,
+                    if matches!(operation, RelicOperationKind::Corrupt) { crate::game::relic::RelicVariant::Corrupt } else { item.variant },
+                )?,
                 catalyst_cost,
                 equipment_dust_gained: dust,
                 irreversible: true,

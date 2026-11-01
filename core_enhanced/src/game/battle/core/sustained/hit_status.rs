@@ -1,6 +1,179 @@
 use super::*;
 use crate::game::ability::sustained::HitStatusKind;
 impl BattleCore {
+    /// A reapplication replaces only this source copy's finite contribution.
+    pub(super) fn replace_refreshing_hit_status(
+        &mut self,
+        caster: UnitInstanceId,
+        target: UnitInstanceId,
+        profile: &crate::game::ability::sustained::HitStatusProfile,
+        source: &RuntimeFactSource,
+        now: u64,
+    ) -> Result<(), GameError> {
+        loop {
+            control::charge(self.sustained.records.len() as u64, "refreshing_hit_status_replace")?;
+            let prior = self
+                .sustained
+                .records
+                .iter()
+                .find(|(_, record)| {
+                    record.caster == caster
+                        && record.target == target
+                        && record.hit_status.as_ref().is_some_and(|p| {
+                            p.definition == profile.definition && matches!((p.kind, profile.kind),
+                                (HitStatusKind::BasicAttackSlow { .. }, HitStatusKind::BasicAttackSlow { .. })
+                                | (HitStatusKind::Slow { .. }, HitStatusKind::Slow { .. })
+                                | (HitStatusKind::DamageTaken { .. }, HitStatusKind::DamageTaken { .. }))
+                        })
+                        && record.source.equipment == source.equipment
+                        && record.source.fragment.as_ref().map(|f| f.copy_uuid)
+                            == source.fragment.as_ref().map(|f| f.copy_uuid)
+                })
+                .map(|(id, _)| *id);
+            let Some(id) = prior else { return Ok(()) };
+            self.end_sustained(id, now, SustainedEndReason::Replaced)?;
+        }
+    }
+
+
+    pub(in crate::game::battle::core) fn target_movement_impaired(
+        &self, target: UnitInstanceId, now: u64,
+    ) -> Result<bool, GameError> {
+        use crate::game::ability::sustained::ControlKind;
+        use crate::game::battle::buffs::BuffKind;
+        control::charge(self.sustained.records.len() as u64 + self.buffs.len() as u64, "movement_impairment_query")?;
+        let sustained = self.sustained.records.values().any(|r| r.target == target && now < r.expires_at
+            && (matches!(r.control, Some(ControlKind::Slow { percent }) if percent > 0)
+                || matches!(r.control, Some(ControlKind::Root))
+                || r.hit_status.as_ref().is_some_and(|p| matches!(p.kind, HitStatusKind::Slow { percent } if percent > 0)
+                    || matches!(p.kind, HitStatusKind::Stun | HitStatusKind::Freeze | HitStatusKind::Root))));
+        let buff = self.buffs.iter().any(|(key, active)| key.target_instance_id == target && now <= active.expires_at_ms
+            && self.game_data.buff_data.get(key.buff_id).is_some_and(|d| matches!(d.kind, BuffKind::Stun | BuffKind::Freeze)));
+        if sustained || buff { return Ok(true); }
+        self.ground_target_movement_impaired(target, now)
+    }
+
+
+    /// Landed source-specific contributions are read at target-strike admission.
+    /// The caller freezes the value across every component of that strike.
+    pub(in crate::game::battle::core) fn source_direct_hit_percent(
+        &self,
+        target: UnitInstanceId,
+        snapshot: &crate::game::battle::damage::DamageSourceSnapshot,
+        now: u64,
+    ) -> Result<i32, GameError> {
+        use crate::game::battle::damage::DamageSource;
+        let source = &snapshot.fact_source;
+        if source.reaction
+            || source.guard_release().is_some()
+            || source
+                .cast
+                .as_ref()
+                .is_some_and(|c| c.proc_origin.is_some())
+            || snapshot.source_id == target
+            || self
+                .units
+                .get(&snapshot.source_id)
+                .is_some_and(|u| u.corroded)
+            || !self
+                .units
+                .get(&target)
+                .is_some_and(|u| u.is_active() && u.owner != snapshot.source_side)
+            || !(snapshot.source == DamageSource::BasicAttack
+                || (snapshot.source == DamageSource::Ability && source.fragment.is_some()))
+        {
+            return Ok(0);
+        }
+        control::charge(
+            self.sustained.records.len() as u64,
+            "source_direct_hit_read",
+        )?;
+        let mut total = 0i32;
+        for record in self.sustained.records.values() {
+            if record.target != target
+                || record.caster != snapshot.source_id
+                || record.expires_at <= now
+            {
+                continue;
+            }
+            if let Some(profile) = &record.hit_status {
+                if let HitStatusKind::SourceDirectDamageTaken {
+                    per_stack_percent,
+                    stacks,
+                    ..
+                } = profile.kind
+                {
+                    total = total.saturating_add((per_stack_percent * stacks) as i32);
+                }
+            }
+        }
+        Ok(total)
+    }
+
+    pub(super) fn merge_source_direct_hit_status(
+        &mut self,
+        caster: UnitInstanceId,
+        target: UnitInstanceId,
+        profile: &mut crate::game::ability::sustained::HitStatusProfile,
+        now: u64,
+    ) -> Result<(), GameError> {
+        let HitStatusKind::SourceDirectDamageTaken {
+            per_stack_percent,
+            mut stacks,
+            max_stacks,
+        } = profile.kind
+        else {
+            return Ok(());
+        };
+        control::charge(
+            self.sustained.records.len() as u64,
+            "source_direct_hit_merge",
+        )?;
+        // Normally one record matches. Admit the bounded collection before any
+        // replacement, so rejection leaves all old stacks/deadlines intact.
+        crate::game::battle::runtime_control::admit_retained_growth(
+            0,
+            self.sustained
+                .records
+                .len()
+                .checked_mul(std::mem::size_of::<u64>()),
+            "source_direct_hit_replacements",
+        )?;
+        let mut prior = Vec::with_capacity(self.sustained.records.len());
+        for (id, record) in &self.sustained.records {
+            if record.target != target || record.caster != caster || record.expires_at <= now {
+                continue;
+            }
+            let Some(old) = &record.hit_status else {
+                continue;
+            };
+            if old.definition != profile.definition {
+                continue;
+            }
+            if let HitStatusKind::SourceDirectDamageTaken {
+                per_stack_percent: old_percent,
+                stacks: old_stacks,
+                max_stacks: old_cap,
+            } = old.kind
+            {
+                if old_percent != per_stack_percent || old_cap != max_stacks {
+                    return Err(GameError::InvalidAction);
+                }
+                stacks = stacks.saturating_add(old_stacks).min(max_stacks);
+                prior.push(*id);
+            }
+        }
+        for id in prior {
+            self.end_sustained(id, now, SustainedEndReason::Replaced)?;
+        }
+        profile.kind = HitStatusKind::SourceDirectDamageTaken {
+            per_stack_percent,
+            stacks,
+            max_stacks,
+        };
+        Ok(())
+    }
+
     pub(in crate::game::battle::core) fn hit_stun_until(
         &self,
         target: UnitInstanceId,

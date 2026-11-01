@@ -1,0 +1,61 @@
+{
+  "id": "fragment_knight_of_despair_trace",
+  "uuid": "730e8400-e29b-41d4-a716-446655440010",
+  "name": "절망의 기사",
+  "description": "가호·검 축적·일반/절망 상태와 기본/개화 공격. 미정 등록 값은 실행용 별도 사본에서만 명시한다.",
+  "rarity": {
+    "Unresolved": "rarity"
+  },
+  "equip_limit": {
+    "Unresolved": "equip_limit"
+  },
+  "origin": {
+    "Abnormality": {
+      "abnormality_id": "o-01-73_knight_of_despair"
+    }
+  },
+  "sources": [
+    {
+      "AbnormalityContainment": {
+        "abnormality_id": "o-01-73_knight_of_despair"
+      }
+    }
+  ],
+  "dependencies": [
+    {
+      "SourceAbnormality": {
+        "abnormality_id": "o-01-73_knight_of_despair"
+      }
+    }
+  ],
+  "compatibility": {
+    "allowed_range_roles": [
+      "Melee"
+    ],
+    "allowed_weapon_archetypes": [
+      "Sword"
+    ],
+    "block_capacity_min": 1
+  },
+  "effect": {
+    "ActiveSkill": {
+      "forms": {
+        "base": {
+          "skill_id": "fragment_knight_blessing_base",
+          "resonance_max": {
+            "Unresolved": "capacity"
+          }
+        },
+        "bloom": {
+          "skill_id": "fragment_knight_blessing_bloom",
+          "resonance_max": {
+            "Unresolved": "capacity"
+          },
+          "bloom_recipe": {
+            "Unresolved": "bloom-recipe"
+          }
+        }
+      }
+    }
+  }
+}

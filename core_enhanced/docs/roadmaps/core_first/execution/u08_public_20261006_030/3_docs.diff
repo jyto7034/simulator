@@ -1,9 +1,0 @@
---- core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md before030
-+++ core_enhanced/docs/roadmaps/core_first/ROADMAP.ko.md after030
-@@ -1,4 +1,6 @@
- # Core 우선 게임 로직·공개 콘텐츠 제작·모드 지원 통합 개발 로드맵
-+
-+**2026-10-06 U08 R06 교정 검증·통합 인수030:** 한 파일 제품 교정과9개 추가시험의 집중 검증 및 동일CLI7/7을 확인했다. [통합 인수030](execution/u08_public_20261006_030/RECORD.ko.md)은 최종source438/4c7bbd31·harness1322입력에서 새007의49기능+8성능 실행을 승인한다. 실제 시작은 runner before기록 이후이며 전체U08·독립감사·U09는 아직 미완료다. 아래029는 이전 집중시험 인수 이력이다.
- 
- **2026-10-06 U08 제품 교정 인수·시험 이관029:** 한 파일 compiler 교정의 작은 검사가 통과했다. [시험 이관](execution/u08_public_20261006_029/RECORD.ko.md)에 따라 main Astra가 5파일/9selector를 보강한다. 새 통합007·전체U08 독립감사·U09는 아직 미완료다. 아래028은 교정 전 이력이다.
- 

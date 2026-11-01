@@ -1,8 +1,0 @@
-{
-  "passed": true,
-  "before_members": 704,
-  "after_members": 713,
-  "delta_members": 21,
-  "method": "Independent archive membership/hash and exact forward/reverse bytes verification in memory; existing isolated filesystem restoration reused",
-  "working_tree_mutations": 0
-}

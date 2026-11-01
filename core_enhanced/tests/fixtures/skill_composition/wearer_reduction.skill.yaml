@@ -1,0 +1,28 @@
+# E08 technical curve only: floor(100 * missing HP / max HP), capped at50%.
+# Current HP and the cap are not release balance.
+version: 2
+id: wearer-reduction-fixture
+values:
+  - name: current-hp-reduction
+    value:
+      DefenseProgram:
+        WearerReduction:
+          percent:
+            moment: Live
+            root:
+              Clamp:
+                value:
+                  Ratio:
+                    numerator:
+                      Mul:
+                        value: { Read: { HitPoints: { subject: Source, field: Missing } } }
+                        scalar: { Const: { value: 100, unit: Scalar } }
+                    denominator: { Read: { HitPoints: { subject: Source, field: Max } } }
+                    rounding: Floor
+                min: { Const: { value: 0, unit: Scalar } }
+                max: { Const: { value: 50, unit: Scalar } }
+equipment_defenses:
+  - equipment: placeholder_schadenfreude_armor
+    program: { Shared: current-hp-reduction }
+definitions: []
+skills: []

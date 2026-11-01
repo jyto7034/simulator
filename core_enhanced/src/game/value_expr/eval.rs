@@ -586,6 +586,13 @@ fn members<'a>(
 ) -> Result<Vec<MemberRef<'a>>, ValueExprFault> {
     let selected = match source {
         FiniteSource::AuthoredMembers(members) => MemberSlice::Authored(members),
+        FiniteSource::StateOwnerDotTargets => MemberSlice::Resolved(
+            frame.state_owner_dot_targets().ok_or_else(|| fault(
+                plan, ValueExprFaultCode::MissingContext, node_index, None, None,
+                "State owner DOT membership was not provided for this evaluation moment",
+                ValueExprPhase::Evaluate,
+            ))?
+        ),
         FiniteSource::ResolvedTargets | FiniteSource::ResolvedTargetsWhere(_) => {
             if frame.has_resolved_target_views() {
                 let members = frame.resolved_target_view(node_index).ok_or_else(|| {

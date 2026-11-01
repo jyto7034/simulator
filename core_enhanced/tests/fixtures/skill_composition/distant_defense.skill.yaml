@@ -1,0 +1,15 @@
+# Technical values for verification; release balance remains open.
+version: 2
+id: distant-defense-fixture
+values:
+  - name: distant-defense
+    value:
+      DefenseProgram:
+        ConditionalReduction:
+          condition: { Distance: { comparison: Greater, units: 2000000 } }
+          percent: { moment: Live, root: { Const: { value: 20, unit: Scalar } } }
+equipment_defenses:
+  - equipment: porccubus_ecstasy_coat
+    program: { Shared: distant-defense }
+definitions: []
+skills: []

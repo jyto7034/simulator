@@ -1741,6 +1741,7 @@ impl ActiveBattleSession {
             counter_channels: self.battle.counter_channels_snapshot()?,
             relation_actions: self.battle.relation_actions_snapshot()?,
             input_plans: self.battle.input_plans_snapshot()?,
+            shared_cohorts: self.battle.shared_cohorts_snapshot()?,
             prepared_volleys: self.battle.prepared_volleys_snapshot()?,
             mobile_effects: self.battle.mobile_effects_snapshot()?,
             paired_areas: self.battle.paired_areas_snapshot()?,

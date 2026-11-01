@@ -1,6 +1,0 @@
-(fragments: [
-(id: "u09_family_closure_fragment", uuid: "a509e200-0000-0000-0000-000000000001", name: "External closure provider", description: "Representative test values, not official balance", rarity: Rare, equip_limit: OwnedCopies, sources: [RareReward], effect: ActiveSkill(forms: {"base": (skill_id: "u09_family_closure", resonance_max: 1)})),
-(id: "u09_family_personal_fragment", uuid: "a509e200-0000-0000-0000-000000000002", name: "External personal provider", description: "Representative test values, not official balance", rarity: Rare, equip_limit: OwnedCopies, sources: [RareReward], effect: ActiveSkill(forms: {"base": (skill_id: "u09_family_personal", resonance_max: 1)})),
-(id: "u09_family_support_fragment", uuid: "a509e200-0000-0000-0000-000000000003", name: "External support provider", description: "Representative test values, not official balance", rarity: Rare, equip_limit: OwnedCopies, sources: [RareReward], effect: ActiveSkill(forms: {"base": (skill_id: "u09_family_support", resonance_max: 1)})),
-(id: "u09_family_monk_fragment", uuid: "a509e200-0000-0000-0000-000000000004", name: "External monk provider", description: "Representative test values, not official balance", rarity: Rare, equip_limit: OwnedCopies, sources: [RareReward], effect: ActiveSkill(forms: {"base": (skill_id: "u09_family_monk", resonance_max: 1)})),
-])

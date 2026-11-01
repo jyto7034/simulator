@@ -1,4 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
+import { installSocketFreeTransport } from "./socket-free-transport";
 import {
   test as base,
   expect,
@@ -15,6 +16,7 @@ type BrowserIssue = {
 export const test = base.extend<{ browserDiagnostics: void }>({
   browserDiagnostics: [
     async ({ page }, runTest, testInfo) => {
+      await installSocketFreeTransport(page);
       const errors: BrowserIssue[] = [];
       const warnings: string[] = [];
       page.on("console", (message) => {
@@ -94,7 +96,7 @@ export async function inspectLayout(
   page: Page,
   testInfo: TestInfo,
   name: string,
-  options: { modal?: boolean } = {},
+  options: { modal?: boolean; landmarks?: boolean } = {},
 ) {
   const layout = await page.evaluate(() => {
     const root = document.documentElement;
@@ -125,6 +127,8 @@ export async function inspectLayout(
     await expect.soft(page.getByRole("dialog")).toBeInViewport({ ratio: 1 });
     return;
   }
+  // Composition uses panel groups instead of the map shell landmarks.
+  if (options.landmarks === false) return;
   for (const role of ["banner", "main", "contentinfo"] as const) {
     await expect.soft(page.getByRole(role)).toBeInViewport({ ratio: 1 });
   }

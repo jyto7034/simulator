@@ -12,15 +12,33 @@ const NodeEditor = lazy(() =>
   })),
 );
 import "./skill/skill.css";
+const CompositionEditor = lazy(() =>
+  import("./composition/CompositionEditor").then((module) => ({
+    default: module.CompositionEditor,
+  })),
+);
 export default function App() {
-  const [workspace, setWorkspace] = useState<"map" | "skill" | "nodes">("map");
+  const [workspace, setWorkspace] = useState<
+    "map" | "skill" | "nodes" | "composition"
+  >("map");
   const [skillOpened, setSkillOpened] = useState(false);
   const [nodesOpened, setNodesOpened] = useState(false);
+  const [compositionOpened, setCompositionOpened] = useState(false);
   return (
     <div className="workspace-root">
       <div className="workspace-switch">
         <span className="workspace-name">콘텐츠 조립기</span>
         <nav aria-label="작업 공간">
+          <button
+            aria-pressed={workspace === "composition"}
+            onClick={() => {
+              window.dispatchEvent(new Event("editor-cancel"));
+              setCompositionOpened(true);
+              setWorkspace("composition");
+            }}
+          >
+            조합
+          </button>
           <button
             aria-pressed={workspace === "map"}
             onClick={() => {
@@ -56,6 +74,15 @@ export default function App() {
         <span className="workspace-hint">
           작업 공간을 바꿔도 편집 내용은 유지됩니다
         </span>
+      </div>
+      <div className="workspace-panel" hidden={workspace !== "composition"}>
+        {compositionOpened && (
+          <Suspense
+            fallback={<div role="status">조합 화면을 불러오는 중…</div>}
+          >
+            <CompositionEditor active={workspace === "composition"} />
+          </Suspense>
+        )}
       </div>
       <div className="workspace-panel" hidden={workspace !== "nodes"}>
         {nodesOpened && (

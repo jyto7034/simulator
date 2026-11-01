@@ -1,6 +1,12 @@
+use crate::game::battle::core::boss_runtime::tests::compiled_action_fixture::{
+    primary_fragment_input, enable_complete_trace, hp_trace_rows, assert_fragment_trace_origin,
+};
 use super::*;
+use crate::authoring::composition::{
+    canonical_input_plan_tests as canonical, compile_json, Artifact,
+};
 use crate::game::battle::core::{
-    boss_runtime::tests::compiled_action_fixture::{fixture_graph_with_weapon, hit, place},
+    boss_runtime::tests::compiled_action_fixture::{fixture_content_with_data, hit, place},
     sim::{BattleExecutionState, BattleLiveCommand, BattleLiveCommandOutcome},
 };
 const RELICS: [&str; 6] = [
@@ -45,11 +51,7 @@ fn fixture_custom_weapon(
     UnitInstanceId,
     UnitInstanceId,
 ) {
-    let mut doc = crate::authoring::node_graph::tests::input_plan_fixture();
-    edit(&mut doc);
-    let (mut c, s, a, e, b) = fixture_graph_with_weapon(&RELICS, equipped, doc, |w| {
-        w.content_family = family.map(str::to_owned)
-    });
+    let (mut c, s, a, e, b) = canonical_fixture(equipped, edit, family);
     c.units.get_mut(&b).unwrap().fragment_source = None;
     c.units.get_mut(&b).unwrap().skill_id = None;
     Arc::make_mut(&mut c.scenario).terminal_outcomes =
@@ -62,6 +64,7 @@ fn fixture_custom_weapon(
     }
     c.runtime_transaction(|c| {
         c.clear_input_plans(0)?;
+        c.clear_shared_cohorts()?;
         c.sustained.input_plans = Default::default();
         c.reconcile_input_plans(0)
     })
@@ -70,6 +73,94 @@ fn fixture_custom_weapon(
     place(&mut c, e, 4, 1);
     place(&mut c, b, 7, 3);
     (c, s, a, e, b)
+}
+// Use the current source and actual provider registrations. Callers change only
+// explicitly technical values for independent boundary cases.
+fn canonical_fixture(
+    equipped: &[usize],
+    edit: impl FnOnce(&mut serde_json::Value),
+    family: Option<&str>,
+) -> (
+    BattleCore,
+    BattleExecutionState,
+    UnitInstanceId,
+    UnitInstanceId,
+    UnitInstanceId,
+) {
+    let mut document = canonical::resolved();
+    document["skills"][0]["id"] = serde_json::json!("r11_aura");
+    edit(canonical::program(&mut document));
+    let artifact = compile_json(&document.to_string()).unwrap();
+    let native = crate::authoring::node_graph::NativeGraphContent {
+        skills: Artifact::from_ron(&artifact.to_ron().unwrap())
+            .unwrap()
+            .load_native()
+            .unwrap(),
+        equipment: vec![],
+        mark_weapons: vec![],
+    };
+    let relics = canonical::relics();
+    let indices: Vec<_> = equipped
+        .iter()
+        .map(|index| {
+            relics
+                .relics
+                .iter()
+                .position(|r| r.id == RELICS[*index])
+                .unwrap()
+        })
+        .collect();
+    // Use the catalog origin, independent of the program's expected family.
+    // The shared legacy graph helper's Concept slug must not mask registration.
+    let mut fragments: crate::game::data::skill_fragment_data::SkillFragmentDatabase =
+        ron::de::from_str(
+            &include_str!(concat!(
+                env!("CARGO_MANIFEST_DIR"),
+                "/tests/fixtures/r09/fragments.ron"
+            ))
+            .replace("r08_strike", "r11_aura"),
+        )
+        .unwrap();
+    fragments.fragments[0].origin = canonical::catalog().origin;
+    let mut unrelated = fragments.fragments[0].clone();
+    unrelated.id = "unrelated_fragment".into();
+    unrelated.uuid = Uuid::from_u128(0xf116);
+    unrelated.origin = Some(
+        crate::game::data::skill_fragment_data::SkillFragmentOrigin::Concept {
+            concept_id: "unrelated_family".into(),
+        },
+    );
+    fragments.fragments.push(unrelated);
+    let abnormalities: crate::game::data::abnormality_data::AbnormalityDatabase =
+        ron::de::from_str(include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/../game_resources/data/abnormalities/base.ron"
+        )))
+        .unwrap();
+    let mut origin = abnormalities
+        .get_by_id("f-01-57_little_red")
+        .unwrap()
+        .clone();
+    // This isolated combat fixture loads the real origin identity, without the
+    // encounter's reward/boss-skill dependencies. World tests load the full pack.
+    origin.response_complete_skill_fragment_id = None;
+    origin.omen_chain_id = None;
+    origin.skill_id = None;
+
+    fixture_content_with_data(
+        &RELICS,
+        &indices,
+        native,
+        |weapon| weapon.content_family = family.map(str::to_owned),
+        crate::game::resource::ResourceCatalog { resources: vec![] },
+        |builder| {
+            builder
+                .with_relics(relics)
+                .with_skill_fragments(fragments)
+                .with_abnormalities(vec![origin])
+        },
+        |_| {},
+    )
 }
 fn key(c: &BattleCore, a: UnitInstanceId) -> Uuid {
     c.units[&a].fragment_source.as_ref().unwrap().copy_uuid
@@ -235,17 +326,9 @@ fn input_plan_runtime_invalid_whole_plan_preserves_stock_resonance_memory_and_pa
     assert_eq!(c.sustained.input_plans.owners[&copy].normal, 3);
 }
 
-fn initial(doc: &mut serde_json::Value, normal: u32, enhanced: u32) {
-    for n in doc["nodes"].as_array_mut().unwrap() {
-        if n["kind"] == "skill-stock" {
-            n["values"]["initial"] =
-                serde_json::json!(if n["title"].as_str().unwrap().contains("강화") {
-                    enhanced
-                } else {
-                    normal
-                });
-        }
-    }
+fn initial(program: &mut serde_json::Value, normal: u32, enhanced: u32) {
+    program["normal"]["initial"] = serde_json::json!(normal);
+    program["enhanced"]["initial"] = serde_json::json!(enhanced);
 }
 fn commit(c: &mut BattleCore, a: UnitInstanceId, now: u64, tiles: &[(ShotKind, i32, i32)]) {
     let id = prepare(c, a, now);
@@ -410,7 +493,7 @@ fn input_plan_runtime_cohort_is_hostile_and_kill_credit_belongs_to_original_copy
         .unwrap();
         c.step_battle_execution_until(&mut s, 5000).unwrap();
         assert_eq!(c.sustained.input_plans.owners[&copy].normal, 5);
-        let wolf = *c.sustained.input_plans.cohorts.keys().next().unwrap();
+        let wolf = *c.sustained.shared_cohorts.members.keys().next().unwrap();
         assert_eq!(c.units[&wolf].owner, Side::Opponent);
         assert_eq!(c.units[&wolf].stats.current_health, 300);
         place(&mut c, b, 1, 1);
@@ -423,7 +506,7 @@ fn input_plan_runtime_cohort_is_hostile_and_kill_credit_belongs_to_original_copy
             c.sustained.input_plans.owners[&copy].enhanced,
             if equipped.is_empty() { 1 } else { 2 }
         );
-        assert!(!c.sustained.input_plans.cohorts.contains_key(&wolf));
+        assert!(!c.sustained.shared_cohorts.members.contains_key(&wolf));
     }
 }
 #[test]
@@ -431,11 +514,11 @@ fn input_plan_runtime_cohort_escape_and_nonallied_death_do_not_grant_stock() {
     let (mut c, mut s, a, e, _) = fixture(&[]);
     let copy = key(&c, a);
     c.step_battle_execution_until(&mut s, 5000).unwrap();
-    let first = *c.sustained.input_plans.cohorts.keys().next().unwrap();
+    let first = *c.sustained.shared_cohorts.members.keys().next().unwrap();
     hit(&mut c, e, first, 1000, 5000);
     assert_eq!(c.sustained.input_plans.owners[&copy].enhanced, 0);
     c.step_battle_execution_until(&mut s, 10000).unwrap();
-    let second = *c.sustained.input_plans.cohorts.keys().next().unwrap();
+    let second = *c.sustained.shared_cohorts.members.keys().next().unwrap();
     let route = c.units[&second].enemy_movement_plan.clone();
     place(&mut c, second, 7, 1);
     c.units.get_mut(&second).unwrap().enemy_movement_plan = route;
@@ -443,7 +526,7 @@ fn input_plan_runtime_cohort_escape_and_nonallied_death_do_not_grant_stock() {
         .unwrap();
     assert!(!c.units[&second].is_active());
     assert!(!c.units[&second].lifecycle.is_dead());
-    assert!(c.sustained.input_plans.cohorts.is_empty());
+    assert!(c.sustained.shared_cohorts.members.is_empty());
     assert_eq!(c.sustained.input_plans.owners[&copy].enhanced, 0);
 }
 #[test]
@@ -451,10 +534,8 @@ fn input_plan_runtime_explosion_has_separate_relic_source_and_last_hit_does_not_
     for hits in [1, 3] {
         let (mut c, mut s, a, e, _) = fixture_custom(&[5], |d| {
             initial(d, 1, 0);
-            for n in d["nodes"].as_array_mut().unwrap() {
-                if n["kind"] == "skill-projectile-profile" {
-                    n["values"]["hits"] = serde_json::json!(hits);
-                }
+            for kind in ["normal_projectile", "enhanced_projectile"] {
+                d[kind]["max_hits"] = serde_json::json!(hits);
             }
         });
         commit(&mut c, a, 0, &[(ShotKind::Normal, 1, 1)]);
@@ -613,10 +694,10 @@ fn input_plan_runtime_obstacle_air_and_battle_end_have_independent_finite_result
 fn input_plan_runtime_family_weakness_uses_actual_fragment_or_weapon_source_and_not_wearer() {
     use super::super::damage_runtime::{CommittedDamageInput, CommittedDamagePolicy};
     use crate::game::battle::damage::{DamageSource, DamageType};
-    for family in [None, Some("little-red")] {
+    for family in [None, Some("little-red"), Some("f-01-57_little_red")] {
         let (mut c, mut s, a, _, _) = fixture_custom_weapon(&[], |_| {}, family);
         c.step_battle_execution_until(&mut s, 5000).unwrap();
-        let wolf = *c.sustained.input_plans.cohorts.keys().next().unwrap();
+        let wolf = *c.sustained.shared_cohorts.members.keys().next().unwrap();
         let equipment = c
             .items
             .values()
@@ -624,7 +705,7 @@ fn input_plan_runtime_family_weakness_uses_actual_fragment_or_weapon_source_and_
             .unwrap()
             .source_snapshot();
         let fragment = c.units[&a].fragment_source.clone();
-        for mode in 0..3 {
+        for mode in 0..4 {
             let before = c.units[&wolf].stats.current_health;
             c.runtime_transaction(|c| {
                 let mut source = c
@@ -648,6 +729,11 @@ fn input_plan_runtime_family_weakness_uses_actual_fragment_or_weapon_source_and_
                 if mode == 2 {
                     source.fact_source.equipment = Some(equipment);
                 }
+                if mode == 3 {
+                    let mut unrelated = fragment.as_ref().unwrap().as_ref().clone();
+                    unrelated.definition_id = "unrelated_fragment".into();
+                    source.fact_source.fragment = Some(Arc::new(unrelated));
+                }
                 c.execute_committed_damage(CommittedDamageInput {
                     target_id: wolf,
                     source_snapshot: source,
@@ -659,7 +745,7 @@ fn input_plan_runtime_family_weakness_uses_actual_fragment_or_weapon_source_and_
             .unwrap();
             assert_eq!(
                 before - c.units[&wolf].stats.current_health,
-                if mode == 1 || mode == 2 && family.is_some() {
+                if mode == 1 || mode == 2 && family == Some("f-01-57_little_red") {
                     30
                 } else {
                     20
@@ -701,7 +787,7 @@ fn input_plan_runtime_current_cohort_blocks_victory_but_equal_future_spawn_canno
     Arc::make_mut(&mut c.scenario).terminal_outcomes =
         crate::game::battle::scenario::BattleScenario::fixture_required_group_outcomes();
     c.step_battle_execution_until(&mut s, 5000).unwrap();
-    let wolf = *c.sustained.input_plans.cohorts.keys().next().unwrap();
+    let wolf = *c.sustained.shared_cohorts.members.keys().next().unwrap();
     hit(&mut c, a, e, 20000, 5000);
     c.step_battle_execution_until(&mut s, 5001).unwrap();
     assert!(!s.is_finished());
@@ -710,11 +796,7 @@ fn input_plan_runtime_current_cohort_blocks_victory_but_equal_future_spawn_canno
     assert!(s.is_finished());
     let (mut c, mut s, a, e, _) = fixture_custom(&[], |d| {
         initial(d, 1, 0);
-        for n in d["nodes"].as_array_mut().unwrap() {
-            if n["kind"] == "skill-seconds" && n["title"].as_str().unwrap().contains("출현") {
-                n["values"]["value"] = serde_json::json!(0.48);
-            }
-        }
+        d["cohort"]["interval_ms"] = serde_json::json!(480);
     });
     Arc::make_mut(&mut c.scenario).terminal_outcomes =
         crate::game::battle::scenario::BattleScenario::fixture_required_group_outcomes();
@@ -722,20 +804,16 @@ fn input_plan_runtime_current_cohort_blocks_victory_but_equal_future_spawn_canno
     commit(&mut c, a, 0, &[(ShotKind::Normal, 1, 1)]);
     c.step_battle_execution_until(&mut s, 480).unwrap();
     assert!(s.is_finished());
-    assert!(c.sustained.input_plans.cohorts.is_empty());
+    assert!(c.sustained.shared_cohorts.members.is_empty());
 }
 #[test]
 fn input_plan_runtime_authored_block_demand_and_escape_damage_are_real_combat_effects() {
     let (mut c, mut s, a, _, b) = fixture_custom(&[], |d| {
-        for n in d["nodes"].as_array_mut().unwrap() {
-            if n["kind"] == "skill-hostile-profile" {
-                n["values"]["block"] = serde_json::json!(2);
-                n["values"]["leak"] = serde_json::json!(7);
-            }
-        }
+        d["cohort"]["block"] = serde_json::json!(2);
+        d["cohort"]["leak"] = serde_json::json!(7);
     });
     c.step_battle_execution_until(&mut s, 5000).unwrap();
-    let wolf = *c.sustained.input_plans.cohorts.keys().next().unwrap();
+    let wolf = *c.sustained.shared_cohorts.members.keys().next().unwrap();
     let route = c.units[&wolf].enemy_movement_plan.clone();
     place(&mut c, wolf, 1, 1);
     c.units.get_mut(&wolf).unwrap().enemy_movement_plan = route.clone();
@@ -761,10 +839,8 @@ fn input_plan_runtime_authored_block_demand_and_escape_damage_are_real_combat_ef
 fn input_plan_runtime_successful_memory_reuses_origins_with_new_aim() {
     let (mut c, mut s, a, _, _) = fixture_custom(&[], |d| {
         initial(d, 1, 0);
-        for n in d["nodes"].as_array_mut().unwrap() {
-            if n["kind"] == "skill-projectile-profile" {
-                n["values"]["range"] = serde_json::json!(2);
-            }
+        for kind in ["normal_projectile", "enhanced_projectile"] {
+            d[kind]["range"] = serde_json::json!({"numerator":2,"denominator":1});
         }
     });
     let copy = key(&c, a);
@@ -799,13 +875,13 @@ fn input_plan_runtime_successful_memory_reuses_origins_with_new_aim() {
 fn input_plan_runtime_bounded_stock_caps_and_unbounded_overflow_rolls_back() {
     for bounded in [true, false] {
         let (mut c, _, a, _, _) = fixture_custom(&[], |d| {
-            for n in d["nodes"].as_array_mut().unwrap() {
-                if n["kind"] == "skill-stock" {
-                    n["values"]["initial"] = serde_json::json!(u32::MAX);
-                    n["values"]["capacity"] = serde_json::json!(u32::MAX);
-                    n["values"]["limit"] =
-                        serde_json::json!(if bounded { "bounded" } else { "unbounded" });
-                }
+            for kind in ["normal", "enhanced"] {
+                d[kind]["initial"] = serde_json::json!(u32::MAX);
+                d[kind]["capacity"] = if bounded {
+                    serde_json::json!(u32::MAX)
+                } else {
+                    serde_json::Value::Null
+                };
             }
         });
         let copy = key(&c, a);
@@ -823,9 +899,7 @@ fn input_plan_runtime_bounded_stock_caps_and_unbounded_overflow_rolls_back() {
 
 #[test]
 fn input_plan_runtime_two_equipped_copies_keep_stock_memory_and_hostile_reward_separate() {
-    let mut doc = crate::authoring::node_graph::tests::input_plan_fixture();
-    initial(&mut doc, 1, 0);
-    let (mut c, mut s, a, e, b) = fixture_graph_with_weapon(&RELICS, &[0], doc, |_| {});
+    let (mut c, mut s, a, e, b) = canonical_fixture(&[0], |p| initial(p, 1, 0), None);
     Arc::make_mut(&mut c.scenario).terminal_outcomes =
         crate::game::battle::scenario::BattleScenario::fixture_survival_outcomes(120000);
     for id in [a, e, b] {
@@ -835,6 +909,7 @@ fn input_plan_runtime_two_equipped_copies_keep_stock_memory_and_hostile_reward_s
     }
     c.runtime_transaction(|c| {
         c.clear_input_plans(0)?;
+        c.clear_shared_cohorts()?;
         c.sustained.input_plans = Default::default();
         c.reconcile_input_plans(0)
     })
@@ -850,18 +925,18 @@ fn input_plan_runtime_two_equipped_copies_keep_stock_memory_and_hostile_reward_s
     c.step_battle_execution_until(&mut s, 5000).unwrap();
     let ca = *c
         .sustained
-        .input_plans
-        .cohorts
+        .shared_cohorts
+        .members
         .iter()
-        .find(|(_, copy)| **copy == ka)
+        .find(|(_, copy)| copy.fragment == Some(ka))
         .unwrap()
         .0;
     let cb = *c
         .sustained
-        .input_plans
-        .cohorts
+        .shared_cohorts
+        .members
         .iter()
-        .find(|(_, copy)| **copy == kb)
+        .find(|(_, copy)| copy.fragment == Some(kb))
         .unwrap()
         .0;
     hit(&mut c, b, ca, 1000, 5000);
@@ -876,10 +951,8 @@ fn input_plan_runtime_two_equipped_copies_keep_stock_memory_and_hostile_reward_s
 fn input_plan_runtime_ground_only_projectile_passes_airborne_without_damage() {
     let (mut c, mut s, a, e, _) = fixture_custom(&[], |d| {
         initial(d, 1, 0);
-        for n in d["nodes"].as_array_mut().unwrap() {
-            if n["kind"] == "skill-projectile-profile" {
-                n["values"]["air"] = serde_json::json!("exclude");
-            }
+        for kind in ["normal_projectile", "enhanced_projectile"] {
+            d[kind]["air"] = serde_json::json!(false);
         }
     });
     c.units.get_mut(&e).unwrap().mobility_kind = crate::game::battle::types::MobilityKind::Airborne;
@@ -893,3 +966,155 @@ fn input_plan_runtime_ground_only_projectile_passes_airborne_without_damage() {
         .iter()
         .all(|f| f.hits.is_empty()));
 }
+
+#[test]
+fn canonical_input_plan_direct_hit_origin_preserves_observer_parity_after_withdrawal() {
+    for enhanced in [false, true] {
+        for withdrawn in [false, true] {
+            let (mut plain, mut plain_state, a, e, _) = fixture_custom(&[], |p| {
+                initial(p, u32::from(!enhanced), u32::from(enhanced));
+            });
+            let copy = primary_fragment_input(&plain, a);
+            let mut observed = plain.clone();
+            let mut observed_state = plain_state.clone();
+            let (_trace, trace_from) = enable_complete_trace(&mut observed);
+            for (core, state) in [
+                (&mut plain, &mut plain_state),
+                (&mut observed, &mut observed_state),
+            ] {
+                commit(
+                    core,
+                    a,
+                    0,
+                    &[(
+                        if enhanced {
+                            ShotKind::Enhanced
+                        } else {
+                            ShotKind::Normal
+                        },
+                        1,
+                        1,
+                    )],
+                );
+                if withdrawn {
+                    core.apply_live_command(BattleLiveCommand::WithdrawUnit {
+                        unit_id: a,
+                        time_ms: 0,
+                    })
+                    .unwrap();
+                }
+                core.step_battle_execution_until(state, 700).unwrap();
+                assert_eq!(
+                    core.units[&e].stats.current_health,
+                    if enhanced { 9850 } else { 9900 }
+                );
+            }
+            assert_eq!(
+                plain.units[&e].stats.current_health,
+                observed.units[&e].stats.current_health
+            );
+            assert_eq!(
+                plain.input_plans_snapshot().unwrap(),
+                observed.input_plans_snapshot().unwrap()
+            );
+            assert_eq!(
+                plain.event_queue_debug_snapshot(),
+                observed.event_queue_debug_snapshot()
+            );
+            assert_eq!(
+                plain.event_log.to_json_string().unwrap(),
+                observed.event_log.to_json_string().unwrap()
+            );
+            assert_eq!(
+                serde_json::to_value(plain.runtime_fact_summary()).unwrap(),
+                serde_json::to_value(observed.runtime_fact_summary()).unwrap()
+            );
+            let observation = observed.authoring_observation().unwrap().unwrap();
+            let hp = observation.latest_nonzero_sourced_hp.as_ref().unwrap();
+            assert_eq!(hp.fragment.as_ref().unwrap().copy_uuid, copy);
+            assert_eq!(hp.source.as_ref().unwrap().cast.skill_id, "r11_aura");
+            assert!(!hp.source.as_ref().unwrap().authored.source_file.is_empty());
+            let rows = hp_trace_rows(&observed, trace_from);
+            assert_eq!(rows.len(), 1);
+            assert_fragment_trace_origin(&rows[0], a, Some(("r11_aura", 0)));
+            assert_eq!(observation.nonzero_hp_applications, observed.event_log.entries.iter().filter(|entry| matches!(entry.event, crate::game::battle::event_log::BattleLogEvent::HpChanged{delta,..} if delta != 0)).count() as u64);
+        }
+    }
+}
+
+#[test]
+fn canonical_input_plan_hit_observation_cancellation_restores_and_retries() {
+    use crate::authoring::{CancellationToken, ExecutionLimits, ExecutionPhase};
+    for site in ["sustained_observation_source", "shot_direct_damage"] {
+        let (mut core, mut state, a, e, _) = fixture_custom(&[], |p| initial(p, 1, 0));
+        let copy = key(&core, a);
+        core.enable_authoring_observation();
+        commit(&mut core, a, 0, &[(ShotKind::Normal, 1, 1)]);
+        core.step_battle_execution_until(&mut state, 479).unwrap();
+        let before = (
+            core.transaction_debug_snapshot(),
+            core.event_queue_debug_snapshot(),
+            serde_json::to_value(core.authoring_observation().unwrap()).unwrap(),
+            format!("{state:?}"),
+        );
+        let token = CancellationToken::default();
+        let result = control::with_test_cancellation(site, 1, || {
+            control::run(
+                &ExecutionLimits::default(),
+                &token,
+                ExecutionPhase::TrialExecution,
+                || core.step_battle_execution_until(&mut state, 480),
+            )
+        });
+        assert!(token.is_cancelled(), "{site}: {result:?}");
+        assert!(result.is_err());
+        assert_eq!(
+            before,
+            (
+                core.transaction_debug_snapshot(),
+                core.event_queue_debug_snapshot(),
+                serde_json::to_value(core.authoring_observation().unwrap()).unwrap(),
+                format!("{state:?}")
+            )
+        );
+        core.step_battle_execution_until(&mut state, 700).unwrap();
+        assert_eq!(core.units[&e].stats.current_health, 9900);
+        assert_eq!(
+            core.authoring_observation()
+                .unwrap()
+                .unwrap()
+                .latest_nonzero_sourced_hp
+                .as_ref()
+                .unwrap()
+                .fragment
+                .as_ref()
+                .unwrap()
+                .copy_uuid,
+            copy
+        );
+    }
+}
+
+#[test]
+fn canonical_input_plan_registered_fragment_shot_hits_real_cohort_with_family_bonus() {
+    let (mut core, mut state, actor, enemy, _) = fixture_custom(&[], |p| {
+        p["normal"]["capacity"] = serde_json::json!(1);
+    });
+    place(&mut core, enemy, 7, 3);
+    core.step_battle_execution_until(&mut state, 5000).unwrap();
+    let wolf = *core.sustained.shared_cohorts.members.keys().next().unwrap();
+    assert_eq!(core.units[&wolf].owner, Side::Opponent);
+    assert_eq!(core.units[&wolf].stats.current_health, 300);
+    place(&mut core, wolf, 4, 1);
+    core.enable_authoring_observation();
+    commit(&mut core, actor, 5000, &[(ShotKind::Normal, 1, 1)]);
+    core.step_battle_execution_until(&mut state, 6000).unwrap();
+    assert_eq!(core.units[&wolf].stats.current_health, 150);
+    let observation = core.authoring_observation().unwrap().unwrap();
+    let hp = observation.latest_nonzero_sourced_hp.as_ref().unwrap();
+    assert_eq!(hp.fragment.as_ref().unwrap().copy_uuid, key(&core, actor));
+    assert_eq!(hp.source.as_ref().unwrap().cast.skill_id, "r11_aura");
+}
+
+#[path = "canonical_equipment_tests.rs"]
+mod canonical_equipment;

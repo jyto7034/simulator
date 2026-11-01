@@ -101,7 +101,7 @@ impl PowerClock {
         d /= g;
         let numerator = n.checked_mul(cn).ok_or(GameError::InvalidAction)?;
         let denominator = d.checked_mul(cd).ok_or(GameError::InvalidAction)?;
-        u32::try_from(numerator.div_ceil(denominator))
+        u32::try_from(numerator / denominator)
             .ok()
             .filter(|v| *v <= i32::MAX as u32)
             .ok_or(GameError::InvalidAction)

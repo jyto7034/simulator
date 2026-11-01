@@ -77,34 +77,32 @@ pub(super) fn validate_pve_reward_source_references(
                 format!("references missing primary abnormality '{abnormality_id}'"),
             )
         })?;
-        let expected_fragment = abnormality
-            .response_complete_skill_fragment_id
-            .as_ref()
-            .ok_or_else(|| {
-                crate::game::data::DataValidationError::at(
-                    &source.reward_source_id,
-                    format!("{source_path}.fragment_id"),
-                    format!(
-                        "primary abnormality '{abnormality_id}' has no authored source fragment"
-                    ),
-                )
-            })?;
-        if expected_fragment != &source.fragment_id {
+        if abnormality.response_complete_skill_fragment_id != source.fragment_id {
             return Err(crate::game::data::DataValidationError::at(
                 &source.reward_source_id,
                 format!("{source_path}.fragment_id"),
-                format!(
-                    "must equal primary abnormality '{}' source fragment '{}'",
-                    abnormality_id, expected_fragment
-                ),
+                format!("must equal primary abnormality '{}' source fragment {:?}",
+                    abnormality_id, abnormality.response_complete_skill_fragment_id),
             ));
         }
-        if skill_fragment_data.get_by_id(&source.fragment_id).is_none() {
-            return Err(crate::game::data::DataValidationError::at(
-                &source.reward_source_id,
-                format!("{source_path}.fragment_id"),
-                format!("references missing Skill Fragment '{}'", source.fragment_id),
-            ));
+        if let Some(variant) = source.revival.as_ref().and_then(|policy| policy.variant.as_ref()) {
+            let target = abnormality_data.get_by_id(&variant.abnormality_id).ok_or_else(||
+                crate::game::data::DataValidationError::at(&source.reward_source_id,
+                    format!("{source_path}.revival.variant.abnormality_id"), "missing variant abnormality"))?;
+            if target.response_complete_skill_fragment_id.as_ref() != Some(&variant.fragment_id)
+                || skill_fragment_data.get_by_id(&variant.fragment_id).is_none() {
+                return Err(crate::game::data::DataValidationError::at(&source.reward_source_id,
+                    format!("{source_path}.revival.variant.fragment_id"), "variant fragment must exist and match its abnormality declaration"));
+            }
+        }
+        if let Some(fragment_id) = &source.fragment_id {
+            if skill_fragment_data.get_by_id(fragment_id).is_none() {
+                return Err(crate::game::data::DataValidationError::at(
+                    &source.reward_source_id,
+                    format!("{source_path}.fragment_id"),
+                    format!("references missing Skill Fragment '{fragment_id}'"),
+                ));
+            }
         }
     }
     Ok(())
@@ -167,6 +165,18 @@ pub(super) fn validate_revival_rewards(
         if encounter.encounter_class != PveEncounterClass::NormalBoss {
             return Err(fail("revival", "only normal bosses leave eggs".into()));
         }
+        if let Some(variant) = &policy.variant {
+            if source.fragment_id.is_some() || !source.first_equipment_ids.is_empty() || !source.repeat_rewards.is_empty() {
+                return Err(fail("revival.variant", "variant source must leave only its egg before hatching".into()));
+            }
+            if variant.abnormality_id.trim().is_empty() || Some(variant.abnormality_id.as_str()) == encounter.primary_abnormality_id() {
+                return Err(fail("revival.variant.abnormality_id", "variant must explicitly name a different abnormality kind".into()));
+            }
+            if variant.equipment_ids.len() > 128 {
+                return Err(fail("revival.variant.equipment_ids", "too many guaranteed variant equipment rewards".into()));
+            }
+            validate_items("revival.variant.equipment_ids", &variant.equipment_ids)?;
+        }
         if policy.catalyst_amount == 0 || !equipment.get_material_by_id(&policy.catalyst_material_id)
             .is_some_and(|m| m.material_type == EquipmentMaterialType::RevivalCatalyst) {
             return Err(fail("revival.catalyst_material_id", "requires a positive common revival catalyst recipe".into()));
@@ -181,8 +191,8 @@ pub(super) fn validate_revival_rewards(
         }
         for (field, stage) in [("stage_2", &policy.stage_2), ("stage_3", &policy.stage_3)] {
             if !pve.get_by_id(&stage.encounter_id).is_some_and(|e|
-                e.encounter_class == PveEncounterClass::NormalBoss && e.primary_abnormality_id() == encounter.primary_abnormality_id()) {
-                return Err(fail(&format!("revival.{field}.encounter_id"), "revival must target the same normal boss kind".into()));
+                e.encounter_class == PveEncounterClass::NormalBoss && e.primary_abnormality_id() == policy.variant.as_ref().map(|v| v.abnormality_id.as_str()).or_else(|| encounter.primary_abnormality_id())) {
+                return Err(fail(&format!("revival.{field}.encounter_id"), "revival must target its declared normal boss kind".into()));
             }
             validate_items(&format!("revival.{field}.equipment_choices"), &stage.equipment_choices)?;
             validate_effects(&format!("revival.{field}.rewards"), &stage.rewards)?;
@@ -202,7 +212,7 @@ pub(super) fn validate_ordinary_reward_source_exclusion(
     let source_fragment_ids = pve_data
         .reward_sources
         .iter()
-        .map(|source| &source.fragment_id)
+        .flat_map(|source| source.granted_fragment_ids())
         .collect::<HashSet<_>>();
     for (reward_index, reward) in reward_data.rewards.iter().enumerate() {
         for (effect_index, effect) in reward.effects.iter().enumerate() {
@@ -765,16 +775,7 @@ pub(super) fn validate_abnormality_unit_skill_references(
                 "must use Elite or Boss threat_class".to_string(),
             ));
         }
-        if !skill_fragment_data.fragments.is_empty() {
-            let response_fragment_id = abnormality
-                .response_complete_skill_fragment_id
-                .as_ref()
-                .ok_or_else(|| {
-                    error(
-                        format!("{abnormality_path}.response_complete_skill_fragment_id"),
-                        "must declare response_complete_skill_fragment_id".to_string(),
-                    )
-                })?;
+        if let Some(response_fragment_id) = &abnormality.response_complete_skill_fragment_id {
             if skill_fragment_data
                 .get_by_id(response_fragment_id)
                 .is_none()
@@ -1279,7 +1280,7 @@ pub(super) fn validate_boss_omen_references(
             let source = pve_data
                 .reward_sources
                 .iter()
-                .find(|source| source.fragment_id == required.fragment_id)
+                .find(|source| source.granted_fragment_ids().any(|id| id == &required.fragment_id))
                 .ok_or_else(|| {
                     crate::game::data::DataValidationError::at(
                         chain.id.as_str(),
@@ -1958,7 +1959,7 @@ mod tests {
             vec![PveEncounterRewardSource {
                 reward_source_id: "source".to_string(),
                 encounter_id: "encounter".to_string(),
-                fragment_id,
+                fragment_id: Some(fragment_id),
                 first_equipment_ids: vec!["standard_armor".to_owned()],
                     repeat_rewards: vec![RewardEffect::GrantEquipmentDust { amount: 5 }],
                     revival: None,

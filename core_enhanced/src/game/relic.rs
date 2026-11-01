@@ -501,10 +501,19 @@ pub struct RelicOperationPreviewDto {
     pub operation: RelicOperationKind,
     pub effects: Vec<crate::game::data::relic_data::RelicDamageEffect>,
     pub penalties: Vec<crate::game::data::relic_data::RelicPenalty>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub support_conversions: Vec<SupportConversionPreviewDto>,
     pub catalyst_cost: u32,
     pub equipment_dust_gained: u32,
     pub irreversible: bool,
     pub equipped_to: Option<(Uuid, usize)>,
+}
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SupportConversionPreviewDto {
+    pub skill_id: crate::game::ability::SkillId,
+    pub step_id: String,
+    pub effect_id: String,
+    pub conversion: structural::support::SupportConversionDef,
 }
 impl RelicInventory {
     pub(crate) fn snapshot(

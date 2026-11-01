@@ -60,6 +60,7 @@ pub enum WeaponArchetype {
 pub enum TargetingProfile {
     #[default]
     DefaultForward,
+    HighestRouteProgress,
     AirFirst,
     LowDefenseFirst,
     LowMagicResistFirst,
@@ -74,7 +75,7 @@ pub struct WeaponCombatProfile {
     pub kill_growth: Option<crate::game::resource::WeaponKillGrowthDef>,
     #[serde(
         default,
-        skip_serializing_if = "super::abnormality_data::BasicAttackAction::is_damage"
+        skip_serializing_if = "super::abnormality_data::BasicAttackAction::is_default_damage"
     )]
     pub action: super::abnormality_data::BasicAttackAction,
     #[serde(default, skip_serializing_if = "crate::game::stats::is_zero_u32")]
@@ -287,6 +288,14 @@ impl EquipmentEnhancementRecipeMetadata {
 #[serde(deny_unknown_fields)]
 pub struct EquipmentDatabase {
     pub items: Vec<EquipmentMetadata>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub equipment_attacks: Vec<crate::game::ability::equipment_attack::EquipmentAttackBinding>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub equipment_defenses: Vec<crate::game::ability::equipment_defense::EquipmentDefenseBinding>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub equipment_supports: Vec<crate::game::ability::equipment_support::EquipmentSupportBinding>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub equipment_states: Vec<crate::game::ability::equipment_state::EquipmentStateBinding>,
     #[serde(default)]
     pub materials: Vec<EquipmentMaterialMetadata>,
     #[serde(default)]
@@ -333,6 +342,10 @@ impl EquipmentDatabase {
     ) -> Self {
         Self {
             items,
+            equipment_attacks: Vec::new(),
+            equipment_defenses: Vec::new(),
+            equipment_supports: Vec::new(),
+            equipment_states: Vec::new(),
             materials,
             dismantle_recipes,
             enhancement_recipes,
@@ -831,8 +844,10 @@ impl WeaponCombatProfile {
                 ),
             )
         })?;
-        self.delivery
-            .try_validate_basic_attack_consumer_contract()
+        (if matches!(self.delivery, crate::game::ability::DeliveryDef::Projectile {
+            hit_policy: crate::game::ability::ProjectileHitPolicy::DirectionalCollision, .. }) {
+            self.delivery.try_validate_directional_basic_attack_contract()
+        } else { self.delivery.try_validate_basic_attack_consumer_contract() })
             .map_err(|error| {
                 WeaponProfileValidationError::new(
                     format!("delivery.{}", error.field_suffix),

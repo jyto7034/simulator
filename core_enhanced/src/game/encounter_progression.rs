@@ -135,7 +135,7 @@ pub struct EncounterProgressionState {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct EncounterRewardPlan {
     pub reward_source_id: String,
-    pub fragment_id: SkillFragmentId,
+    pub fragment_id: Option<SkillFragmentId>,
     pub first_completion: bool,
     pub effects: Vec<RewardEffect>,
 }
@@ -175,8 +175,8 @@ impl EncounterProgressionState {
             .ok_or_else(|| format!("encounter '{encounter_id}' has no authored reward source"))?;
         let first_completion = self.is_first_kind_completion(data, source)?;
         let effects = if first_completion {
-            std::iter::once(RewardEffect::GrantSkillFragment {
-                fragment_id: source.fragment_id.clone(),
+            source.fragment_id.iter().cloned().map(|fragment_id| RewardEffect::GrantSkillFragment {
+                fragment_id,
             })
             .chain(
                 source
@@ -372,5 +372,50 @@ mod tests {
         assert_eq!(seen.len(), 3);
         cycle.prepare_if_exhausted(members(), 17, 8);
         assert_eq!(cycle.cycle_index, 2);
+    }
+}
+
+#[cfg(test)]
+mod optional_fragment_tests {
+    use super::*;
+
+    #[test]
+    fn optional_fragment_empty_first_commits_once_and_repeat_survives_restore() {
+        let data = crate::game::data::ValidatedGameData::load_live_embedded().unwrap();
+        let source = data.pve_data.get_reward_source_by_encounter_id("suppress_big_bad_wolf").unwrap();
+        assert_eq!(source.fragment_id, None);
+        let mut ledger = EncounterProgressionState::default();
+        let before = ledger.clone();
+        let first = ledger.plan_encounter_reward(&data.pve_data, &source.encounter_id).unwrap();
+        assert_eq!(ledger, before, "planning cannot consume the first completion");
+        assert!(first.first_completion);
+        assert!(first.effects.is_empty(), "no substitute fragment or compensation");
+        ledger.commit_reward_plan(&data.pve_data, &first).unwrap();
+        let committed = ledger.clone();
+        assert!(ledger.commit_reward_plan(&data.pve_data, &first).is_err());
+        assert_eq!(ledger, committed, "duplicate commit is unchanged");
+        let mut restored: EncounterProgressionState = serde_json::from_slice(&serde_json::to_vec(&ledger).unwrap()).unwrap();
+        restored.validate_checkpoint_state(&data.pve_data).unwrap();
+        let repeat = restored.plan_encounter_reward(&data.pve_data, &source.encounter_id).unwrap();
+        assert!(!repeat.first_completion);
+        assert_eq!(repeat.effects, vec![RewardEffect::GrantEquipmentDust { amount: 10 }]);
+        restored.commit_reward_plan(&data.pve_data, &repeat).unwrap();
+        assert_eq!(restored, committed);
+        assert!(EncounterProgressionState::default().plan_encounter_reward(&data.pve_data, &source.encounter_id).unwrap().first_completion);
+    }
+}
+
+#[cfg(test)]
+mod optional_fragment_equipment_tests {
+    use super::*;
+    #[test]
+    fn optional_fragment_absence_preserves_authored_first_equipment() {
+        let data = crate::game::data::ValidatedGameData::load_live_embedded().unwrap();
+        let mut pve = (*data.pve_data).clone();
+        let source = pve.reward_sources.iter_mut().find(|s| s.reward_source_id == "normal_boss_big_bad_wolf").unwrap();
+        source.first_equipment_ids = vec!["placeholder_big_bad_wolf_accessory".into()];
+        let encounter = source.encounter_id.clone();
+        let first = EncounterProgressionState::default().plan_encounter_reward(&pve, &encounter).unwrap();
+        assert_eq!(first.effects, vec![RewardEffect::GrantEquipment { equipment_id: "placeholder_big_bad_wolf_accessory".into() }]);
     }
 }

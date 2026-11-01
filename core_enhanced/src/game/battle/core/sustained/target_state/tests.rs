@@ -53,7 +53,7 @@ fn target_state_graph_runtime_locks_use_preserves_cc_and_expires_without_healing
         ),
         (150, 150)
     );
-    assert_eq!(core.sustained_basic_interval(actor, 1000), 666);
+    assert_eq!(core.sustained_basic_interval(actor, 1000), 667);
     assert!(!core.channel_active(actor));
     assert!(core.resonance_use_has_obligations(actor));
     assert_eq!(
@@ -100,6 +100,10 @@ fn target_state_graph_runtime_locks_use_preserves_cc_and_expires_without_healing
 
 fn profile(amount: u32, end: bool) -> TargetStateProfile {
     TargetStateProfile {
+        damage_invulnerable: false,
+        basic_attack_locked: false,
+        active_skill_locked: false,
+        received_heal_percent: 0,
         definition: "shared".into(),
         attack_percent: amount,
         defense_percent: amount,
@@ -155,10 +159,10 @@ fn target_state_copies_keep_strongest_properties_and_restore_surviving_contribut
         .unwrap();
     }
     assert_eq!(core.units[&actor].stats.attack, 150);
-    assert_eq!(core.sustained_basic_interval(actor, 1000), 666);
+    assert_eq!(core.sustained_basic_interval(actor, 1000), 667);
     core.step_battle_execution_until(&mut state, 1000).unwrap();
     assert_eq!(core.units[&actor].stats.attack, 120);
-    assert_eq!(core.sustained_basic_interval(actor, 1000), 833);
+    assert_eq!(core.sustained_basic_interval(actor, 1000), 834);
     core.step_battle_execution_until(&mut state, 2000).unwrap();
     assert_eq!(core.units[&actor].stats.attack, 100);
 }

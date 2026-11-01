@@ -1,0 +1,67 @@
+{
+  "relics": [
+    {
+      "id": "little-red-puncture-wound",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a115",
+      "name": "관통상",
+      "description": "작성된 두건 파편의 modifier가 효과와 적용 출처를 소유한다.",
+      "rarity": {
+        "Unresolved": "relic-rarity"
+      },
+      "allow_duplicates": {
+        "Unresolved": "relic-allow-duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": {
+        "Unresolved": "relic-incompatible-with"
+      },
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "relic-dismantle-dust"
+      }
+    },
+    {
+      "id": "little-red-slug-round",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a116",
+      "name": "슬러그탄",
+      "description": "작성된 두건 파편의 modifier가 효과와 적용 출처를 소유한다.",
+      "rarity": {
+        "Unresolved": "relic-rarity"
+      },
+      "allow_duplicates": {
+        "Unresolved": "relic-allow-duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": {
+        "Unresolved": "relic-incompatible-with"
+      },
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "relic-dismantle-dust"
+      }
+    },
+    {
+      "id": "little-red-incendiary-round",
+      "uuid": "730e8400-e29b-41d4-a716-44665544a117",
+      "name": "소이탄",
+      "description": "작성된 두건 파편의 modifier가 효과와 적용 출처를 소유한다.",
+      "rarity": {
+        "Unresolved": "relic-rarity"
+      },
+      "allow_duplicates": {
+        "Unresolved": "relic-allow-duplicates"
+      },
+      "provider_authored": true,
+      "incompatible_with": {
+        "Unresolved": "relic-incompatible-with"
+      },
+      "effects": [],
+      "rules": [],
+      "dismantle_equipment_dust": {
+        "Unresolved": "relic-dismantle-dust"
+      }
+    }
+  ]
+}

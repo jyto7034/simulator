@@ -25,17 +25,7 @@ fn fixture(
     UnitInstanceId,
     UnitInstanceId,
 ) {
-    let mut doc = crate::authoring::node_graph::tests::counter_channel_fixture(bloom);
-    if let Some(seconds) = period {
-        let timer = doc["nodes"]
-            .as_array_mut()
-            .unwrap()
-            .iter_mut()
-            .find(|n| n["kind"] == "skill-seconds" && n["values"]["value"] == 15)
-            .unwrap();
-        timer["values"]["value"] = serde_json::json!(seconds);
-    }
-    graph_fixture(doc, equipped)
+    canonical::canonical_fixture(bloom, equipped, period)
 }
 fn graph_fixture(
     doc: serde_json::Value,
@@ -47,7 +37,14 @@ fn graph_fixture(
     UnitInstanceId,
     UnitInstanceId,
 ) {
-    let (mut c, s, a, e, b) = fixture_graph(&RELICS, equipped, doc);
+    let (c, s, a, e, b) = fixture_graph(&RELICS, equipped, doc);
+    configure_counter_fixture(c, s, a, e, b)
+}
+
+fn configure_counter_fixture(
+    mut c: BattleCore, s: BattleExecutionState, a: UnitInstanceId,
+    e: UnitInstanceId, b: UnitInstanceId,
+) -> (BattleCore, BattleExecutionState, UnitInstanceId, UnitInstanceId, UnitInstanceId) {
     c.units.get_mut(&b).unwrap().fragment_source = None;
     c.units.get_mut(&b).unwrap().skill_id = None;
     Arc::make_mut(&mut c.scenario).terminal_outcomes =
@@ -787,3 +784,40 @@ fn counter_channel_runtime_real_redeployment_resets_same_copy_and_rejects_old_cl
     c.step_battle_execution_until(&mut s, 4000).unwrap();
     assert_eq!(owner(&c, new).count, 1);
 }
+
+#[test]
+fn composition_equipment_support_counter_channel_amplifies_allied_ray_but_not_self() {
+    use crate::game::{
+        ability::equipment_support::{EquipmentSupportBinding, EquipmentSupportProgram},
+        data::{GameDataBuilder, ValidatedGameData},
+    };
+    let (mut c, mut s, a, _, b) = fixture(false, &[], None);
+    // Complete fixture catalog preparation before the actual channel action.
+    let data: ValidatedGameData = c.game_data.clone().into();
+    c.game_data = GameDataBuilder::from_validated(&data)
+        .with_equipment_supports(vec![EquipmentSupportBinding {
+            equipment: "r11_weapon".into(),
+            program: EquipmentSupportProgram { shield_beneficiary_damage_percent: None, received_heal_percent: None, control_duration: None, basic_heal_echo: None, resonance_gain: None, actual_heal_reaction: None, heal_percent: 25, shield_percent: 25, direct_heal_barrier: None },
+            source: None,
+        }]).build_arc();
+    c.enable_authoring_observation();
+    for id in [a,b] { c.units.get_mut(&id).unwrap().stats.current_health = 9000; }
+    cast(&mut c, a, false, 0, Position::new(3,1));
+    c.step_battle_execution_until(&mut s, 1).unwrap();
+    assert_eq!(c.units[&a].stats.current_health,9008);
+    assert_eq!(c.units[&b].stats.current_health,9010);
+    let witness=c.authoring_observation.as_ref().unwrap().latest_equipment_support.as_ref().unwrap();
+    assert_eq!((witness.actor,witness.target),(a,b));
+    assert_eq!((witness.base_amount,witness.increased_amount,witness.percent),(8,10,25));
+    assert!(witness.source.action.is_some() && witness.source.cast.is_some());
+    let action=witness.source.action.clone();
+    c.step_battle_execution_until(&mut s,2000).unwrap();
+    assert_eq!(c.units[&a].stats.current_health,9032);
+    assert_eq!(c.units[&b].stats.current_health,9040);
+    assert_eq!(owner(&c,a).count,2);
+    assert!(!c.channel_active(a));
+    assert_eq!(c.authoring_observation.as_ref().unwrap().latest_equipment_support.as_ref().unwrap().source.action,action);
+}
+
+#[path = "canonical_tests.rs"]
+mod canonical;

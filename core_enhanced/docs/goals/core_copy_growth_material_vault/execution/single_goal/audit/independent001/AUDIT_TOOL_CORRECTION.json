@@ -1,9 +1,0 @@
-{
-  "first_recheck_exit_code": 1,
-  "failure": "AssertionError:2168 instead of2180",
-  "original_script": "recheck_evidence001.before.py",
-  "cause": "Audit parser omitted12 libtest lines with the - should panic suffix. Raw summaries and outcomes unchanged.",
-  "correction": "Optional should-panic label accepted in regex; target-qualified names inspected and no duplicate successful names in core002.",
-  "next_recheck_exit_code": 0,
-  "runtime_test_reruns_for_parser_change": 0
-}

@@ -1,5 +1,5 @@
 mod compiled_overlay {
-    use super::compiled_action_fixture::{cast, fixture_graph_with_weapon, place};
+    use super::compiled_action_fixture::{cast, fixture_content_with_resources, place};
     use super::*;
     use crate::game::battle::core::sim::{BattleExecutionState, BattleLiveCommand};
     use crate::game::battle::event_log::BattleEventRootCause;
@@ -13,11 +13,15 @@ mod compiled_overlay {
         UnitInstanceId,
         UnitInstanceId,
     ) {
-        let (mut c, s, a, e, b) = fixture_graph_with_weapon(
+        let native = crate::authoring::composition::canonical_overlay_tests::fixture();
+        let (mut c, s, a, e, b) = fixture_content_with_resources(
             &["piercing-damage-increase"],
             if equipped { &[0] } else { &[] },
-            crate::authoring::node_graph::tests::attack_overlay_fixture(),
+            native,
             |w| r12_lifesteal_weapon(w, cap),
+            serde_json::from_value(serde_json::json!({"resources":[{
+                "id":"overlay_resource_probe","owner":"Employee","lifetime":"Attempt","initial":0,"cap":1
+            }]})).unwrap(),
         );
         c.units.get_mut(&b).unwrap().owner = Side::Opponent;
         c.units.get_mut(&b).unwrap().fragment_source = None;
@@ -155,6 +159,16 @@ mod compiled_overlay {
             assert_eq!(c.units[&a].resonance_current, 0);
             assert!(!c.resonance_use_has_obligations(a));
             assert!(c.basic_line_profile(a).is_none());
+            assert!(c
+                .typed_resources()
+                .unwrap()
+                .scopes()
+                .all(|(_, lifetime, _, _)| !matches!(
+                    lifetime,
+                    crate::game::resource::ResourceLifetime::Activation
+                        | crate::game::resource::ResourceLifetime::Chain
+                        | crate::game::resource::ResourceLifetime::Delivery
+                )));
             assert!(c
                 .apply_live_command(BattleLiveCommand::ReinputSustainedSkill {
                     unit_id: a,
@@ -358,5 +372,53 @@ mod compiled_overlay {
         assert_eq!(c.units[&e].stats.current_health, 1000);
         c.step_battle_execution_until(&mut s, 2001).unwrap();
         assert_eq!(c.units[&e].stats.current_health, 1000);
+    }
+    #[test]
+    fn compiled_overlay_resource_handoff_cancel_restores_and_retry_releases_scopes() {
+        use crate::authoring::{control, CancellationToken, ExecutionLimits, ExecutionPhase};
+        for site in [
+            "reinput_after_consume",
+            "reinput_after_invoke",
+            "reinput_after_execution",
+        ] {
+            let (mut c, mut state, actor, _, _) = fixture(false, 17);
+            cast(&mut c, actor, 0);
+            c.step_battle_execution_until(&mut state, 501).unwrap();
+            let before = (
+                c.transaction_debug_snapshot(),
+                c.event_queue_debug_snapshot(),
+                c.typed_resources().unwrap().scopes().collect::<Vec<_>>(),
+            );
+            let token = CancellationToken::default();
+            let result = control::with_test_cancellation(site, 1, || {
+                control::run(
+                    &ExecutionLimits::default(),
+                    &token,
+                    ExecutionPhase::TrialExecution,
+                    || reinput(&mut c, actor, 501),
+                )
+            });
+            assert!(result.is_err() && token.is_cancelled(), "{site}");
+            assert_eq!(
+                (
+                    c.transaction_debug_snapshot(),
+                    c.event_queue_debug_snapshot(),
+                    c.typed_resources().unwrap().scopes().collect::<Vec<_>>()
+                ),
+                before
+            );
+            reinput(&mut c, actor, 501).unwrap();
+            assert!(c.sustained_effect_snapshot().unwrap().active.is_empty());
+            assert!(c
+                .typed_resources()
+                .unwrap()
+                .scopes()
+                .all(|(_, lifetime, _, _)| !matches!(
+                    lifetime,
+                    crate::game::resource::ResourceLifetime::Activation
+                        | crate::game::resource::ResourceLifetime::Chain
+                        | crate::game::resource::ResourceLifetime::Delivery
+                )));
+        }
     }
 }

@@ -1,9 +1,0 @@
-First freeze candidate: target/f02_r01_correction_001/MANIFEST.json
-Verification command: python3 verification/verify_target.py
-Result: exit 1 while reading the new before archive.
-Cause: the baseline file list and archive contained the same unchanged
-WP02_CORRECTION_PLAN_20260926.ko.md bytes twice (338 entries, 337 unique paths),
-because that input was already in the prior target's source file list.
-The first verifier rejected duplicate tar paths even when their bytes matched.
-The candidate is retained for audit and is not the final review target.
-The final verifier accepts only byte-identical duplicates in this before archive.

@@ -136,13 +136,13 @@ impl BattleCore {
             )));
         }
 
-        let group = self.scenario.group(&group_id).cloned().ok_or_else(|| {
+        let group = self.scenario.group(&group_id).ok_or_else(|| {
             GameError::InvalidStaticData(format!(
                 "Wave trigger '{}' references missing scenario group '{}'",
                 activation.trigger_id, group_id.0
             ))
         })?;
-        let request = self.wave_spawn_request(&activation.trigger_id, &group);
+        let request = self.wave_spawn_request(&activation.trigger_id, group);
         let trigger_id = wave_spawn_trigger_id(&activation.trigger_id);
         self.register_spawn_trigger(trigger_id.clone())
             .map_err(|error| wave_kernel_error(&activation.trigger_id, error))?;
@@ -559,19 +559,14 @@ impl BattleCore {
     pub(in crate::game::battle::core) fn enqueue_wave_wakes(
         &mut self,
         activation: &ScenarioWaveActivation,
-    ) {
+    ) -> Result<(), GameError> {
         if let ScenarioWavePrimaryTrigger::AtTimeMs { time_ms } = activation.primary {
-            self.event_queue.push(BattleEvent::WaveTriggerWake {
-                time_ms,
-                trigger_id: activation.trigger_id.clone(),
-            });
+            self.event_queue.push(BattleEvent::wave_trigger_wake(time_ms, &activation.trigger_id)?);
         }
         if let Some(time_ms) = activation.deadline_ms {
-            self.event_queue.push(BattleEvent::WaveTriggerWake {
-                time_ms,
-                trigger_id: activation.trigger_id.clone(),
-            });
+            self.event_queue.push(BattleEvent::wave_trigger_wake(time_ms, &activation.trigger_id)?);
         }
+        Ok(())
     }
 }
 

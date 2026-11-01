@@ -200,6 +200,7 @@ struct Compiler<'a> {
     values: Vec<CompileValue>,
     requirements: BTreeSet<ValueRef>,
     resolved_targets: bool,
+    state_owner_dot_targets: bool,
     owner_grouping: bool,
     projected_tile_grouping: bool,
     resolved_owner_relations: BTreeSet<ResolvedOwnerRelation>,
@@ -239,6 +240,7 @@ pub fn compile(
         values: Vec::new(),
         requirements: BTreeSet::new(),
         resolved_targets: false,
+        state_owner_dot_targets: false,
         owner_grouping: false,
         projected_tile_grouping: false,
         resolved_owner_relations: BTreeSet::new(),
@@ -506,6 +508,7 @@ impl<'a> Compiler<'a> {
             requirements: ContextRequirements {
                 references: self.requirements.into_iter().collect(),
                 resolved_targets: self.resolved_targets,
+                state_owner_dot_targets: self.state_owner_dot_targets,
                 owner_grouping: self.owner_grouping,
                 projected_tile_grouping: self.projected_tile_grouping,
                 resolved_owner_relations: self.resolved_owner_relations.into_iter().collect(),
@@ -1003,6 +1006,9 @@ impl<'a> Compiler<'a> {
             } => {
                 let static_preprocessing_work =
                     self.admit_finite_source(source, *grouping, depth + 1, node_index)?;
+                if matches!(source, FiniteSource::StateOwnerDotTargets) {
+                    self.runtime_dynamic_work = true;
+                }
                 if is_resolved_source(source) {
                     self.runtime_dynamic_work = true;
                     self.resolved_aggregate_count = self
@@ -1291,7 +1297,7 @@ impl<'a> Compiler<'a> {
             .unwrap_or_else(|| inner_unit.clone());
         let member_count_bound = match &source {
             FiniteSource::AuthoredMembers(members) => members.len(),
-            FiniteSource::ResolvedTargets | FiniteSource::ResolvedTargetsWhere(_) => {
+            FiniteSource::ResolvedTargets | FiniteSource::ResolvedTargetsWhere(_) | FiniteSource::StateOwnerDotTargets => {
                 self.limits.max_dynamic_members
             }
         };
@@ -1556,6 +1562,17 @@ impl<'a> Compiler<'a> {
         inside_aggregate: bool,
         node_index: usize,
     ) -> Result<(), ExprDiagnostic> {
+        if matches!(reference, ValueRef::StateField { .. } | ValueRef::EventHpLost)
+            && !self.capabilities.state_context
+        {
+            return Err(self.error(
+                ValueExprFaultCode::MissingContext, node_index, None,
+                Some(reference.unit()), "state-program context is unavailable",
+            ));
+        }
+        if matches!(reference, ValueRef::RelationCount { subject: ValueSubject::AggregateMember, .. }) {
+            return Err(self.error(ValueExprFaultCode::MissingContext, node_index, None, Some(reference.unit()), "relation counts require Source or Target, not aggregate members"));
+        }
         if reference.is_member_scoped() && !inside_aggregate {
             return Err(self.error(
                 ValueExprFaultCode::MissingContext,
@@ -1576,6 +1593,7 @@ impl<'a> Compiler<'a> {
         }
         let requires_target = matches!(
             reference,
+            ValueRef::RelationCount { subject: ValueSubject::Target, .. } |
             ValueRef::Stat {
                 subject: ValueSubject::Target,
                 ..
@@ -1632,6 +1650,17 @@ impl<'a> Compiler<'a> {
         grouping: Grouping,
         node_index: usize,
     ) -> Result<(), ExprDiagnostic> {
+        if matches!(source, FiniteSource::StateOwnerDotTargets) {
+            if !self.capabilities.state_context || self.expression.moment != EvalMoment::Live {
+                return Err(self.error(ValueExprFaultCode::UnsupportedMoment, node_index, None, None,
+                    "StateOwnerDotTargets requires a Live State context"));
+            }
+            if grouping != Grouping::WholeSet {
+                return Err(self.error(ValueExprFaultCode::MissingContext, node_index, None, None,
+                    "StateOwnerDotTargets supports WholeSet membership only"));
+            }
+            self.state_owner_dot_targets = true;
+        }
         if is_resolved_source(source) {
             let supported = match self.expression.moment {
                 EvalMoment::Snapshot => self.capabilities.resolved_targets_at_release,
@@ -2057,6 +2086,7 @@ impl<'a> Compiler<'a> {
         node_index: usize,
     ) -> Result<FiniteSource, ExprDiagnostic> {
         match source {
+            FiniteSource::StateOwnerDotTargets => Ok(FiniteSource::StateOwnerDotTargets),
             FiniteSource::ResolvedTargets => Ok(FiniteSource::ResolvedTargets),
             FiniteSource::ResolvedTargetsWhere(predicates) => {
                 let mut normalized = predicates.clone();
@@ -2505,6 +2535,7 @@ fn put_source(output: &mut Sha256, source: &FiniteSource) {
             }
         }
         FiniteSource::ResolvedTargets => put_u8(output, 1),
+        FiniteSource::StateOwnerDotTargets => put_u8(output, 3),
         FiniteSource::ResolvedTargetsWhere(predicates) => {
             put_u8(output, 2);
             put_u64(output, predicates.len() as u64);
@@ -2606,7 +2637,7 @@ fn is_resolved_source(source: &FiniteSource) -> bool {
 fn source_predicate_count(source: &FiniteSource) -> usize {
     match source {
         FiniteSource::ResolvedTargetsWhere(predicates) => predicates.len(),
-        FiniteSource::AuthoredMembers(_) | FiniteSource::ResolvedTargets => 0,
+        FiniteSource::AuthoredMembers(_) | FiniteSource::ResolvedTargets | FiniteSource::StateOwnerDotTargets => 0,
     }
 }
 
@@ -2657,6 +2688,17 @@ fn put_unit(output: &mut Sha256, unit: &ValueUnit) {
 
 fn put_reference(output: &mut Sha256, reference: &ValueRef) {
     match reference {
+        ValueRef::StateField { name, unit } => {
+            put_u8(output, 7);
+            put_str(output, name);
+            put_unit(output, unit);
+        }
+        ValueRef::EventHpLost => put_u8(output, 8),
+        ValueRef::RelationCount { subject, relation } => {
+            put_u8(output, 9);
+            put_subject(output, *subject);
+            match relation { super::RelationCountKind::BlockingHostiles => put_u8(output, 0) }
+        }
         ValueRef::Stat { subject, stat } => {
             put_u8(output, 0);
             put_subject(output, *subject);
@@ -2666,6 +2708,7 @@ fn put_reference(output: &mut Sha256, reference: &ValueRef) {
                     StatSelector::Attack => 0,
                     StatSelector::SpellPower => 1,
                     StatSelector::AttackSpeedPoints => 2,
+                    StatSelector::Defense => 3,
                 },
             );
         }

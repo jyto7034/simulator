@@ -110,10 +110,10 @@ pub(crate) fn explain(
             })?,
         "relic_structural_explain",
     )?;
-    super::compiler::admit_serialized_copy(plan.generation.identity(), &mut work)?;
-    super::compiler::admit_serialized_copy(&plan.fingerprint, &mut work)?;
-    super::compiler::admit_serialized_copy(&plan.providers, &mut work)?;
-    super::compiler::admit_serialized_copy(&plan.rules, &mut work)?;
+    super::compiler::admit_owned_copy(plan.generation.identity(), &mut work)?;
+    super::compiler::admit_owned_copy(&plan.fingerprint, &mut work)?;
+    super::compiler::admit_owned_copy(plan.providers.as_ref(), &mut work)?;
+    super::compiler::admit_owned_copy(&plan.rules, &mut work)?;
     let mut dto = RelicEffectivePlanDto {
         schema_version: 1,
         scope: "prospective_loadout",
@@ -121,7 +121,7 @@ pub(crate) fn explain(
         generation: plan.generation.identity().clone(),
         employee_uuid: plan.employee_uuid,
         fingerprint: plan.fingerprint.clone(),
-        providers: plan.providers.clone(),
+        providers: plan.providers.as_ref().clone(),
         rules: plan.rules.clone(),
         effects: Vec::new(),
         action_modifiers: Vec::new(),
@@ -132,12 +132,12 @@ pub(crate) fn explain(
         compile_usage: plan.usage.clone(),
     };
     for modifier in &plan.action_modifiers {
-        super::compiler::admit_serialized_copy(modifier, &mut work)?;
+        super::compiler::admit_owned_copy(modifier, &mut work)?;
         work.reserve(Some(std::mem::size_of::<ActionModifierDto>()), "action_modifier_dto")?;
         dto.action_modifiers.push(ActionModifierDto {provider_index:modifier.provider, contribution:modifier.contribution.clone(), change:modifier.change.clone()});
     }
     for rule in &plan.causal_rules {
-        super::compiler::admit_serialized_copy(rule, &mut work)?;
+        super::compiler::admit_owned_copy(rule, &mut work)?;
         work.reserve(
             Some(std::mem::size_of::<CausalRuleDto>()),
             "causal_dto_entry",
@@ -154,7 +154,7 @@ pub(crate) fn explain(
         dto.causal_rules.push(entry);
     }
     for rule in &plan.wedge_rules {
-        super::compiler::admit_serialized_copy(rule, &mut work)?;
+        super::compiler::admit_owned_copy(rule, &mut work)?;
         work.reserve(Some(std::mem::size_of::<WedgeRuleDto>()), "wedge_dto_entry")?;
         dto.wedge_rules.push(WedgeRuleDto {
             contribution: rule.contribution.clone(),
@@ -171,14 +171,14 @@ pub(crate) fn explain(
         "relic_structural_explain_storage",
     )?;
     for e in plan.effects.iter().filter(|e| e.present) {
-        super::compiler::admit_serialized_copy(e, &mut work)?;
+        super::compiler::admit_owned_copy(e, &mut work)?;
         let amount = e
             .amount
             .as_deref()
             .or_else(|| super::compiler::original_expression(e, plan.generation.database()));
         let creation = super::compiler::personal_creation(e, plan.generation.database());
-        super::compiler::admit_serialized_copy(&amount, &mut work)?;
-        super::compiler::admit_serialized_copy(&creation, &mut work)?;
+        super::compiler::admit_owned_copy(&amount, &mut work)?;
+        super::compiler::admit_owned_copy(&creation, &mut work)?;
         dto.effects.push(EffectiveEffectDto {
             key: e.key.clone(),
             provider_index: e.provider,

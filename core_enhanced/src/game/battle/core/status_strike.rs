@@ -316,6 +316,7 @@ impl BattleCore {
             .power
             .resolve(attack, 1)
             .map_err(GameError::InvalidStaticData)?;
+        let area_percent = self.area_damage_percent(owner, c.side, &source, &targets, now)?;
         let mut primary = None;
         for target in targets {
             let position = self
@@ -334,6 +335,7 @@ impl BattleCore {
                     false,
                 )
                 .ok_or(GameError::InvalidAction)?;
+            snapshot.modifiers.damage_amp_percent = snapshot.modifiers.damage_amp_percent.saturating_add(area_percent);
             let capture = ReactiveHitCapture {
                 context: c.clone(),
                 before: self.status_predecessors(target, owner, &p.from.definition, now)?,
@@ -345,12 +347,12 @@ impl BattleCore {
             )?;
             snapshot.reactive_capture = Some(Arc::new(capture));
             let result =
-                self.execute_committed_damage(super::damage_runtime::CommittedDamageInput {
+                self.execute_damage_with_observation_origin(super::damage_runtime::CommittedDamageInput {
                     target_id: target,
                     source_snapshot: snapshot,
                     committed_at_ms: now,
                     policy: super::damage_runtime::CommittedDamagePolicy::GeneralCommand,
-                });
+                }, false, Some(&source));
             control::poll("status_strike_damage")?;
             if result.is_some_and(|r| r.accepted_hit_count > 0) && primary.is_none() {
                 primary = Some(position);

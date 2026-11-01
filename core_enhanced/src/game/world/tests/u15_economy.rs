@@ -9,6 +9,9 @@ use std::collections::BTreeMap;
 fn fixture() -> (GameCore, Uuid, Uuid, Uuid) { fixture_with_costs(7,5) }
 fn fixture_with_costs(enkephalin:u32, part_a:u32) -> (GameCore, Uuid, Uuid, Uuid) { fixture_with_options(enkephalin, part_a, false) }
 fn fixture_with_options(enkephalin:u32, part_a:u32, evolution: bool) -> (GameCore, Uuid, Uuid, Uuid) {
+    fixture_with_weapon_stages(enkephalin, part_a, evolution, false)
+}
+fn fixture_with_weapon_stages(enkephalin:u32, part_a:u32, evolution: bool, staged_shots: bool) -> (GameCore, Uuid, Uuid, Uuid) {
     let mut fragment = active_skill_fragment("u15_fragment", 1501, "u15_skill");
     let skills = game_data_with_skill_fragments(vec![fragment.clone()]).skill_data.clone();
     if let SkillFragmentEffectDef::ActiveSkill { forms, dismantle_recipe, .. } = &mut fragment.effect {
@@ -19,6 +22,9 @@ fn fixture_with_options(enkephalin:u32, part_a:u32, evolution: bool) -> (GameCor
         *dismantle_recipe = Some(SkillFragmentRecipe { enkephalin: 0, materials: vec![cost("equipment_dust", 1)] });
     }
     let mut weapon = weapon_equipment(1502, "u15_weapon", WeaponArchetype::Sword);
+    if staged_shots {
+        weapon.weapon_profile = Some(ron::de::from_str(include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/skill_composition/butterfly.weapon.ron"))).unwrap());
+    }
     if evolution {
         use crate::game::ability::{marks::{MarkRatio, MarkFilter}, weapon_marks::*};
         let ratio = |numerator| MarkRatio { numerator, denominator: 1 };
@@ -37,9 +43,14 @@ fn fixture_with_options(enkephalin:u32, part_a:u32, evolution: bool) -> (GameCor
     let equipment = EquipmentDatabase::with_all(equipment_with_starter_assets(vec![weapon]), materials,
         vec![EquipmentDismantleRecipeMetadata { equipment_id: "u15_weapon".into(), yields: vec![cost("equipment_dust", 1)] }],
         vec![EquipmentEnhancementRecipeMetadata { equipment_id: "u15_weapon".into(), max_level: 5, costs_per_level: vec![cost("equipment_dust", 1), cost("equipment_dust", 2)], modifiers_per_level: vec![StatModifier { stat: StatId::Attack, kind: StatModifierKind::Flat, value: 2 }] }]);
-    let data = test_game_data_builder().with_skill_data(skills)
+    let mut builder = test_game_data_builder().with_skill_data(skills)
         .with_skill_fragments(SkillFragmentDatabase::with_builtin_starter(vec![fragment]))
-        .with_equipment_data(Arc::new(equipment)).build_arc();
+        .with_equipment_data(Arc::new(equipment));
+    if staged_shots {
+        let source = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/skill_composition/weapon_stages.skill.yaml")).replace("r11_weapon", "u15_weapon");
+        builder = builder.with_equipment_attacks(crate::authoring::composition::compile_yaml(&source).unwrap().equipment_attacks().to_vec());
+    }
+    let data = builder.build_arc();
     let mut core = GameCore::new(data, 1515);
     core.state.player_profile.lifecycle.vault.materials = BTreeMap::from([("part_a".into(), 4), ("part_b".into(), 2), ("unused_part".into(), 9)]);
     let player = Uuid::from_u128(1515);
@@ -371,3 +382,5 @@ fn weapon_evolution_failed_payment_and_post_evolution_cancel_restore_all_assets(
         copy_uuid: fragment, form_id: "bloom".into(), weapon_copy_uuid: weapon, materials: Some(payment()),
     }).unwrap();
 }
+
+include!("u15_weapon_stages.rs");

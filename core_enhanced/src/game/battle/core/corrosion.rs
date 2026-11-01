@@ -21,10 +21,18 @@ crate::authoring::clone_shape::copy_shape!(CorrosionFreeze);
 
 impl BattleCore {
     pub fn forced_pause_remaining_ms(&self) -> Option<u64> {
-        self.corrosion_freeze.map(|freeze| freeze.remaining_ms).into_iter().chain(self.sustained.tile_bursts.forced_pause_remaining()).max()
+        self.corrosion_freeze
+            .map(|freeze| freeze.remaining_ms)
+            .into_iter()
+            .chain(self.sustained.tile_bursts.forced_pause_remaining())
+            .max()
     }
     pub fn forced_pause_reason(&self) -> ActionDisabledReasonCode {
-        if self.corrosion_freeze.is_some() {ActionDisabledReasonCode::CorrosionForcedPause} else {ActionDisabledReasonCode::SkillPresentationPause}
+        if self.corrosion_freeze.is_some() {
+            ActionDisabledReasonCode::CorrosionForcedPause
+        } else {
+            ActionDisabledReasonCode::SkillPresentationPause
+        }
     }
     pub(super) fn ensure_not_forced_paused(&self) -> Result<(), GameError> {
         if self.forced_pause_remaining_ms().is_some() {
@@ -118,33 +126,87 @@ impl BattleCore {
                 else { self.skill_start_disabled_reason(actor, time_ms).is_none() })
             && self.game_data.skill_fragment_data.get_by_id(&source.definition_id).is_some_and(|fragment| !self.corrosion_fragment_is_excluded(fragment) && matches!(&fragment.effect, crate::game::data::skill_fragment_data::SkillFragmentEffectDef::ActiveSkill { forms, .. } if forms.get(&source.form_id).is_some_and(|form| form.skill_id == source.skill_id)))
     }
-    pub(super) fn apply_corrosion_percent_damage(&mut self, actor: UnitInstanceId, target: UnitInstanceId, now: u64) -> Result<(), GameError> {
+    pub(super) fn apply_corrosion_percent_damage(
+        &mut self,
+        actor: UnitInstanceId,
+        target: UnitInstanceId,
+        now: u64,
+    ) -> Result<(), GameError> {
         use crate::game::battle::event_log::{BattleLogEvent, HpChangeReason};
-        if !self.single_target_can_target_unit(target, true) || self.sustained_invulnerable(target, now)? {
+        if !self.single_target_can_target_unit(target, true)
+            || self.sustained_invulnerable(target, now)?
+        {
             return Ok(());
         }
         let before = self.units[&target].stats.current_health;
         let maximum = self.units[&target].stats.max_health;
         // Round upward once, independently of armor and ordinary amplification.
-        let damage = (u64::from(maximum) * u64::from(self.game_data.run_policy.corrosion.boss_max_health_damage_percent)).div_ceil(100) as u32;
+        let damage = (u64::from(maximum)
+            * u64::from(
+                self.game_data
+                    .run_policy
+                    .corrosion
+                    .boss_max_health_damage_percent,
+            )
+            / 100) as u32;
         let protection = self.absorb_sustained_shields(target, damage, now)?;
-        let floor = self.boss_runtime.as_ref().map_or(0, |runtime| runtime.corrosion_health_floor(target, before, maximum));
-        let after = before.saturating_sub(damage.saturating_sub(protection.absorbed).saturating_sub(protection.prevented)).max(floor);
-        let prepared = if after == 0 { self.prepare_death_fact(Some(actor), target, now)? } else { None };
+        let floor = self.boss_runtime.as_ref().map_or(0, |runtime| {
+            runtime.corrosion_health_floor(target, before, maximum)
+        });
+        let after = before
+            .saturating_sub(
+                damage
+                    .saturating_sub(protection.absorbed)
+                    .saturating_sub(protection.prevented),
+            )
+            .max(floor);
+        let prepared = if after == 0 {
+            self.prepare_death_fact(Some(actor), target, now)?
+        } else {
+            None
+        };
         let reservation = self.reserve_authoring_observation()?;
         self.units.get_mut(&target).unwrap().stats.current_health = after;
-        self.commit_authoring_observation(reservation, now, Some(actor), target,
-            super::authoring_observation::AppliedChange::Hp { before, after, reason: HpChangeReason::Corrosion });
-        self.record_event_log(now, BattleLogEvent::HpChanged {
-            source_instance_id: Some(actor), target_instance_id: target,
-            delta: -(before.saturating_sub(after).min(i32::MAX as u32) as i32), hp_before: before, hp_after: after,
-            reason: HpChangeReason::Corrosion, damage_source: None, damage_type: None,
-            raw_damage: Some(damage), final_damage: Some(before - after), damage_breakdown: None,
-            critical: Some(false), feedback_tags: vec![],
-        });
+        self.commit_authoring_observation(
+            reservation,
+            now,
+            Some(actor),
+            target,
+            super::authoring_observation::AppliedChange::Hp {
+                before,
+                after,
+                reason: HpChangeReason::Corrosion,
+            },
+        );
+        self.record_event_log(
+            now,
+            BattleLogEvent::HpChanged {
+                source_instance_id: Some(actor),
+                target_instance_id: target,
+                delta: -(before.saturating_sub(after).min(i32::MAX as u32) as i32),
+                hp_before: before,
+                hp_after: after,
+                reason: HpChangeReason::Corrosion,
+                damage_source: None,
+                damage_type: None,
+                raw_damage: Some(damage),
+                final_damage: Some(before - after),
+                damage_breakdown: None,
+                critical: Some(false),
+                feedback_tags: vec![],
+            },
+        );
         if let Some(mut prepared) = prepared {
             prepared.cause = DeathCause::Corrosion;
-            self.finalize_prepared_death_with_dispatch(Some(actor), target, Side::Opponent, now, prepared, None, false);
+            self.finalize_prepared_death_with_dispatch(
+                Some(actor),
+                target,
+                Side::Opponent,
+                now,
+                prepared,
+                None,
+                false,
+            );
         }
         crate::authoring::control::poll("corrosion_percent_damage_complete")?;
         crate::game::battle::runtime_control::poll()
@@ -158,7 +220,11 @@ impl BattleCore {
         time_ms: u64,
     ) -> Result<bool, GameError> {
         if !self.has_resonance_use_credential(actor, skill, action)
-            || !self.units.get(&actor).and_then(|unit| unit.resonance_use.as_ref()).is_some_and(|use_state| use_state.full_payment)
+            || !self
+                .units
+                .get(&actor)
+                .and_then(|unit| unit.resonance_use.as_ref())
+                .is_some_and(|use_state| use_state.full_payment)
             || !self.corrosion_eligible(actor, skill, time_ms, true)
         {
             return Ok(false);
@@ -207,10 +273,18 @@ impl BattleCore {
             use crate::game::battle::types::BattleUnitThreatClass;
             let unit = &self.units[&enemy];
             let ordinary = unit.threat_class == BattleUnitThreatClass::Normal
-                && matches!(unit.source_identity, BattleUnitSourceIdentity::CorrodedEmployee { .. } | BattleUnitSourceIdentity::SummonedUnit { .. });
+                && matches!(
+                    unit.source_identity,
+                    BattleUnitSourceIdentity::CorrodedEmployee { .. }
+                        | BattleUnitSourceIdentity::SummonedUnit { .. }
+                );
             if !ordinary {
                 if unit.threat_class != BattleUnitThreatClass::Normal
-                    || matches!(unit.source_identity, BattleUnitSourceIdentity::Abnormality { .. }) {
+                    || matches!(
+                        unit.source_identity,
+                        BattleUnitSourceIdentity::Abnormality { .. }
+                    )
+                {
                     self.apply_corrosion_percent_damage(actor, enemy, time_ms)?;
                 }
                 continue;
@@ -320,7 +394,10 @@ mod tests {
             .unwrap(),
         );
         let target = core.units.get_mut(&enemy).unwrap();
-        target.source_identity = BattleUnitSourceIdentity::CorrodedEmployee { profile_id: "r09_ordinary".into(), base_uuid: target.base_uuid };
+        target.source_identity = BattleUnitSourceIdentity::CorrodedEmployee {
+            profile_id: "r09_ordinary".into(),
+            base_uuid: target.base_uuid,
+        };
         target.threat_class = crate::game::battle::types::BattleUnitThreatClass::Normal;
         (core, state, actor, enemy)
     }
@@ -338,7 +415,8 @@ mod tests {
             target.threat_class = threat;
             target.stats.max_health = maximum;
             target.stats.current_health = current;
-            core.request_skill_action(0, actor, "r08_strike".into(), None).unwrap();
+            core.request_skill_action(0, actor, "r08_strike".into(), None)
+                .unwrap();
             let target = core.units.get_mut(&enemy).unwrap();
             target.stats.defense = 10000;
             target.incoming_damage_modifiers.damage_reduction_percent = 100;
@@ -346,25 +424,72 @@ mod tests {
             assert_eq!(core.units[&enemy].stats.current_health, expected);
             assert_eq!(core.units[&actor].employee_trauma, Some(100));
             assert_eq!(core.runtime_fact_summary().resource_spent, 100);
-            assert_eq!(core.runtime_fact_summary().damage_hp_lost, 0, "special corrosion cannot become an ordinary damage-chain trigger");
-            if expected == 0 { assert_eq!(core.runtime_fact_summary().latest_death.as_ref().unwrap().cause, DeathCause::Corrosion); }
+            assert_eq!(
+                core.runtime_fact_summary().damage_hp_lost,
+                0,
+                "special corrosion cannot become an ordinary damage-chain trigger"
+            );
+            if expected == 0 {
+                assert_eq!(
+                    core.runtime_fact_summary()
+                        .latest_death
+                        .as_ref()
+                        .unwrap()
+                        .cause,
+                    DeathCause::Corrosion
+                );
+            }
         }
     }
 
     #[test]
     fn corrosion_percent_respects_shield_survival_and_existing_invulnerability() {
-        use crate::game::ability::sustained::{SustainedEffectDef, SurvivalPolicy};
+        use crate::game::ability::sustained::{SurvivalPolicy, SustainedEffectDef};
         use crate::game::battle::types::BattleUnitThreatClass;
-        for (shield, survival, invulnerable, expected) in [(100, false, false, 849), (2000, false, false, 1000), (0, true, false, 1), (0, false, true, 1000)] {
+        for (shield, survival, invulnerable, expected) in [
+            (100, false, false, 849),
+            (2000, false, false, 1000),
+            (0, true, false, 1),
+            (0, false, true, 1000),
+        ] {
             let (mut core, mut state, actor, enemy) = fixture(80, false);
             let target = core.units.get_mut(&enemy).unwrap();
             target.threat_class = BattleUnitThreatClass::Boss;
             target.stats.max_health = 1001;
             target.stats.current_health = if survival { 100 } else { 1000 };
-            if shield > 0 { core.begin_sustained(enemy, enemy, SustainedEffectDef::Shield { duration_ms: 1000, amount: shield, priority: 0, shared_radius_units: None }, 0).unwrap(); }
-            if survival { core.begin_sustained(enemy, enemy, SustainedEffectDef::Survival { duration_ms: 1000, policy: SurvivalPolicy::FloorOne }, 0).unwrap(); }
-            if invulnerable { super::super::relic_causal_tests::prepare_existing_invulnerability(&mut core, actor, enemy); }
-            core.request_skill_action(0, actor, "r08_strike".into(), None).unwrap();
+            if shield > 0 {
+                core.begin_sustained(
+                    enemy,
+                    enemy,
+                    SustainedEffectDef::Shield {
+                        duration_ms: 1000,
+                        amount: shield,
+                        priority: 0,
+                        shared_radius_units: None,
+                    },
+                    0,
+                )
+                .unwrap();
+            }
+            if survival {
+                core.begin_sustained(
+                    enemy,
+                    enemy,
+                    SustainedEffectDef::Survival {
+                        duration_ms: 1000,
+                        policy: SurvivalPolicy::FloorOne,
+                    },
+                    0,
+                )
+                .unwrap();
+            }
+            if invulnerable {
+                super::super::relic_causal_tests::prepare_existing_invulnerability(
+                    &mut core, actor, enemy,
+                );
+            }
+            core.request_skill_action(0, actor, "r08_strike".into(), None)
+                .unwrap();
             core.step_battle_execution_until(&mut state, 0).unwrap();
             assert_eq!(core.units[&enemy].stats.current_health, expected);
             assert!(core.runtime_fact_summary().latest_death.is_none());
@@ -478,8 +603,20 @@ mod tests {
         ] {
             let (mut core, mut state, actor, enemy) = fixture(80, false);
             if site == "corrosion_percent_damage_complete" {
-                core.units.get_mut(&enemy).unwrap().threat_class = crate::game::battle::types::BattleUnitThreatClass::Boss;
-                core.begin_sustained(enemy, enemy, crate::game::ability::sustained::SustainedEffectDef::Shield { duration_ms: 1000, amount: 10, priority: 0, shared_radius_units: None }, 0).unwrap();
+                core.units.get_mut(&enemy).unwrap().threat_class =
+                    crate::game::battle::types::BattleUnitThreatClass::Boss;
+                core.begin_sustained(
+                    enemy,
+                    enemy,
+                    crate::game::ability::sustained::SustainedEffectDef::Shield {
+                        duration_ms: 1000,
+                        amount: 10,
+                        priority: 0,
+                        shared_radius_units: None,
+                    },
+                    0,
+                )
+                .unwrap();
             }
             core.request_skill_action(0, actor, "r08_strike".into(), None)
                 .unwrap();
@@ -572,7 +709,7 @@ mod tests {
                 core.items.insert(
                     id,
                     RuntimeItem {
-            weapon_stage: Default::default(),
+                        weapon_stage: Default::default(),
                         instance_id: id,
                         owner: core.units[&owner].owner,
                         owner_unit_instance: owner,
@@ -610,13 +747,25 @@ mod tests {
     fn graph_partial_payment_is_normal_use_even_above_corrosion_threshold() {
         use crate::game::ability::resonance::*;
         let (mut core, mut state, actor, enemy) = fixture(80, false);
-        let mut skill = core.game_data.skill_data.get_by_id("r08_strike").unwrap().clone();
-        skill.resonance_admission = Some(ResonanceAdmission { capacity: 100,
-            requirement: ResonanceRequirement::Payable, cost: ResonanceCost::Fixed(25) });
-        core.game_data = GameDataBuilder::empty().with_skills(SkillDatabase::new(vec![skill]))
-            .with_skill_fragments((*core.game_data.skill_fragment_data).clone()).build_arc();
+        let mut skill = core
+            .game_data
+            .skill_data
+            .get_by_id("r08_strike")
+            .unwrap()
+            .clone();
+        skill.resonance_admission = Some(ResonanceAdmission {
+            capacity: 100,
+            requirement: ResonanceRequirement::Payable,
+            cost: ResonanceCost::Fixed(25),
+        });
+        core.game_data = GameDataBuilder::empty()
+            .with_skills(SkillDatabase::new(vec![skill]))
+            .with_skill_fragments((*core.game_data.skill_fragment_data).clone())
+            .build_arc();
         assert!(!core.live_skill_readiness(0, actor).unwrap().corrosion_ready);
-        let action = core.request_skill_action(0, actor, "r08_strike".into(), None).unwrap();
+        let action = core
+            .request_skill_action(0, actor, "r08_strike".into(), None)
+            .unwrap();
         assert_eq!(core.units[&actor].resonance_current, 75);
         core.step_battle_execution_until(&mut state, 300).unwrap();
         assert!(core.units[&actor].is_active());
@@ -626,5 +775,4 @@ mod tests {
         assert_eq!(core.units[&enemy].stats.current_health, 0);
         assert_eq!(core.query_action(&action).unwrap().facts.resource_spent, 25);
     }
-
 }

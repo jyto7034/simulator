@@ -1,0 +1,21 @@
+# Trial values; actual weapon copy owns ammo, each projectile captures its round.
+version: 1
+id: magazine-fixture
+values:
+  - name: handcannon
+    value:
+      AttackProgram:
+        reactions: []
+        magazine:
+          capacity: 6
+          reload_ms: 3000
+          normal_percent: 100
+          enhanced_primary_percent: 150
+          enhanced_secondary_percent: 100
+          enhanced_max_hits: 8
+          reward_family: little-red
+equipment_attacks:
+  - equipment: r11_weapon
+    program: { Shared: handcannon }
+definitions: []
+skills: []

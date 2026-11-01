@@ -1,0 +1,128 @@
+# Current paired healing/transfer/intersection and separate coincident dragon policy.
+# Unknowns stay explicit. Runtime test values live in canonical_pair.values.json.
+definitions: []
+id: yin-yang-cycle
+skills:
+- admission:
+    capacity:
+      Unresolved: capacity
+    cost: All
+    requirement: Full
+  body:
+    Action:
+      delivery:
+        Literal:
+          Delivery: Instant
+      effects:
+      - Append:
+          effects:
+            Shared: paired-cycle
+      id: entry
+      target:
+        Literal:
+          Target: SelfUnit
+      wait: Released
+  cast_targeting:
+    Explicit:
+      air_capable: true
+      reach: pattern
+      selection: player_tile_pair
+      target: CastTarget
+      target_range:
+        Unresolved: selection-range
+  focus_permissions:
+    allows_basic_attack: false
+    allows_move: false
+  id: fragment_yin_yang_cycle
+  kind: Targeted
+  name: 음양의 순환
+  prepare_ms: 0
+values:
+- name: paired-cycle
+  value:
+    Effects:
+    - id: pair
+      op:
+        PairedAreas:
+          program:
+            admission:
+              capacity:
+                Unresolved: capacity
+              cost: All
+              requirement: Full
+            definition: f737765d-dc26-4782-a08b-9c8a41ee939b:9c4b6591-c981-416a-ae78-d3793fc2984b
+            duration_ms:
+              Unresolved: duration_ms
+            first:
+              Unresolved: first
+            healing:
+              Unresolved: healing
+            intersection:
+              active_skill_locked: false
+              attack_percent: 0
+              attack_speed_points:
+                Unresolved: intersection-speed
+              basic_attack_locked: false
+              damage_invulnerable: false
+              defense_percent: 0
+              definition: f737765d-dc26-4782-a08b-9c8a41ee939b:7ba5a543-ec07-411e-b3c4-8390de0c2026
+              end_on_source_exit: true
+              hp_floor_one: false
+              received_heal_percent: 0
+            interval_ms:
+              Unresolved: interval_ms
+            modifiers:
+            - change:
+                HealBuff:
+                  duration_ms:
+                    Unresolved: heal-buff-duration
+                  profile:
+                    Unresolved: heal-buff-profile
+              id: 46a737a1-98b8-4398-bb4d-6138304edc83
+              relic_definition: lingering-warmth
+            - change:
+                CoincidentBurst:
+                  delay_ms:
+                    Unresolved: dragon-delay
+                  max_hp_percent: 25
+                  pattern:
+                    Unresolved: dragon-pattern
+              id: 623f132f-51c5-4599-ae4a-6b596bcfdcf5
+              relic_definition: yin-yang-dragon
+            - change:
+                Buff:
+                  percent:
+                    Unresolved: buff-percent
+              id: 83af9075-b655-44bf-8508-6deb590eb8bc
+              relic_definition: vivid-blessing
+            - change:
+                Duration:
+                  negative: false
+                  percent:
+                    denominator: 1
+                    numerator: 25
+              id: 8d55db2d-8b8e-4d21-8210-c3427b576c93
+              relic_definition: long-breath
+            - change:
+                Range:
+                  first: true
+                  pattern:
+                    Unresolved: expanded-area-pattern
+                  second: true
+              id: 94d0e115-a4eb-4a68-9a3e-8af2e00161a5
+              relic_definition: widened-horizon
+            - change:
+                Healing:
+                  percent:
+                    Unresolved: healing-percent
+              id: 9623fbfb-cffd-4109-b0db-44c61c1ae9c2
+              relic_definition: healing-increase
+            second:
+              Unresolved: second
+            selection_range:
+              Unresolved: selection-range
+            transfer_percent:
+              Unresolved: transfer_percent
+      origin: Original
+      tags: []
+version: 1

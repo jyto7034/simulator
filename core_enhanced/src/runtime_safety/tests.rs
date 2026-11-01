@@ -49,8 +49,8 @@ fn cmrp_default_and_legacy_eight_mib_canonical_identities_are_distinct() {
 }
 
 #[test]
-fn cmrp_trusted_profile_selects_actual_sixteen_and_thirty_two_mib() {
-    for cap in [16 * 1024 * 1024, 32 * 1024 * 1024] {
+fn cmrp_trusted_profile_selects_supported_measurement_caps() {
+    for cap in [16 * 1024 * 1024, 32 * 1024 * 1024, 64 * 1024 * 1024] {
         let settings = parse(&cmrp_profile_text(cap)).unwrap();
         assert_eq!(
             settings.nominal_native_runtime(),
@@ -115,7 +115,7 @@ fn cmrp_profile_rejects_revision_unknown_duplicate_negative_overflow_and_cap() {
         ),
         valid.replace(
             "emergency_retained_bytes: 16777216",
-            "emergency_retained_bytes: 33554433",
+            "emergency_retained_bytes: 67108865",
         ),
         valid.replace(
             "max_retained_bytes: 8388608",

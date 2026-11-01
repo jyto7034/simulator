@@ -356,3 +356,17 @@ fn tc001_effect_gate_uses_actual_hp_loss_after_legacy_shield_absorption() {
         println!("TC001 shield={shield} bite_hp_loss={} sibling_hp_loss=13 caster_hp={expected_hp} steps={steps}", 100-shield);
     }
 }
+
+#[test]
+fn tc001_predicates_boolean_effect_gate_survives_structural_namespace_lowering() {
+    let condition = format!("Logic(All([{EFFECT_GATE}, Logic(Not(Always(false)))]))");
+    for (bite, expected_hp, steps) in [(0, 500, 1), (100, 537, 2)] {
+        let (mut core, player, employee, actor, targets) =
+            prepare(&skill_text(bite), &relic_text(Some(&condition)));
+        let before = hp(&core, &targets);
+        cast(&mut core, player, employee);
+        assert_eq!(before - hp(&core, &targets), bite + 13);
+        assert_eq!(hp(&core, &[actor]), expected_hp);
+        assert_eq!(step_count(&core), steps);
+    }
+}

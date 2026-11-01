@@ -199,6 +199,7 @@ impl BattleCore {
             .and_then(|unit| {
                 unit.resonance_use = None;
                 unit.next_resonance_pulse_ms = None;
+            unit.equipment_resonance_gain = None;
                 unit.pending_cast = false;
                 unit.pending_cast_cause = None;
                 unit.pending_skill_cast.take()
@@ -214,6 +215,9 @@ impl BattleCore {
             return;
         }
         self.note_wave_actor_death(target_instance_id);
+        if prepared.cause == crate::game::battle::runtime_facts::DeathCause::Ordinary {
+            if self.clear_deferred_on_kill(source_instance_id, target_instance_id, target_owner, time_ms).is_err() { return; }
+        }
         if self
             .record_death_fact(prepared, lethal_damage, time_ms)
             .is_err()

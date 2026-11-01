@@ -1,0 +1,16 @@
+# Current living hostile center tiles; prototype coefficients, not release balance.
+version: 1
+id: nearby-defense-fixture
+values:
+  - name: nearby-defense
+    value:
+      DefenseProgram:
+        NearbyHostileDefense:
+          range: { include_anchor_tile: true, rows: [XXX, X@X, XXX] }
+          per_enemy: 10
+          max_bonus: 25
+equipment_defenses:
+  - equipment: r11_weapon
+    program: { Shared: nearby-defense }
+definitions: []
+skills: []

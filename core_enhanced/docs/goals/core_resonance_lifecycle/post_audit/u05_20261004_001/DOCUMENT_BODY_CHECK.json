@@ -1,8 +1,0 @@
-{
-  "time": "2026-10-04T13:52:09.752863+00:00",
-  "historical_body_equal_u04_before": true,
-  "next_body_equal_before_cf_d08": true,
-  "cf_d09_before_historical_sha256": "033dc5f4be0fd98759f3d92b44f56afe23485323c1b3a378ddf54dbdb8f421b4",
-  "cf_d09_before_next_sha256": "a5b97a3c6d3e5774298aede8e211051c5fa758c2145ce71d346240cdaf5d9576",
-  "note": "This checks CF-D08 preserved historical/current bodies through the bytes saved immediately before CF-D09. It does not rebind the U05 frozen target to CF-D09 current paths."
-}

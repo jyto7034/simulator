@@ -1,7 +1,0 @@
-{
-  "workspace": "/tmp/u164-independent-audit003",
-  "copy_mismatches": [],
-  "support_archive_sha256": "e1c3cd4e891c4d128c429041f360e9309c3a9812dbf96757dc8998bc25fe47eb",
-  "isolated_stress_test_sha256": "ce6e76c7051f35809e2d43ff92d5d43d92a45309a14acf11decd4b1493ea2ce6",
-  "correction_stress_test_match": true
-}

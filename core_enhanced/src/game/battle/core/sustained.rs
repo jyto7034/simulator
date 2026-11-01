@@ -5,11 +5,21 @@ mod segmented;
 mod structural;
 mod target_state;
 mod reactive_heal;
+mod heal_barrier;
+mod actual_heal_reaction;
+mod adaptive_shield;
+mod shield_beneficiary;
+mod state_program;
+mod equipment_state;
+mod stun_end;
 mod prepared_basic;
 mod hit_status;
+mod basic_slow;
+mod hit_counter;
 mod status_strike;
 mod guard_charge;
 mod taunt;
+mod channel_upkeep;
 pub(super) use segmented::WallCostPlan;
 
 use super::BattleCore;
@@ -56,6 +66,7 @@ crate::authoring::clone_shape::struct_shape!(ShieldRechargeRecord {
 
 #[derive(Debug, Clone)]
 struct Record {
+    channel_started_at: Option<u64>,
     caster: UnitInstanceId,
     target: UnitInstanceId,
     expires_at: u64,
@@ -63,9 +74,12 @@ struct Record {
     combat_modifiers: Option<crate::game::ability::sustained::CombatModifierProfile>,
     hit_status: Option<crate::game::ability::sustained::HitStatusProfile>,
     independent_shield:bool,
+    heal_barrier: bool,
     target_state: Option<crate::game::ability::sustained::TargetStateProfile>,
     reactive_heal: Option<reactive_heal::ReactiveHealRecord>,
+    state: Option<state_program::StateRecord>,
     aura: Option<Arc<ChannelAuraDef>>,
+    next_upkeep_at: Option<u64>,
     shield: Option<ShieldPoolView>,
     segmented: Option<crate::game::ability::sustained::SegmentedShieldDef>,
     survival: Option<SurvivalPolicy>,
@@ -76,9 +90,11 @@ struct Record {
     goodbye_skill: Option<crate::game::ability::SkillId>,
     members: Vec<UnitInstanceId>,
     source: RuntimeFactSource,
+    area_source: Option<Arc<super::area_observation::AreaEffectSource>>,
     structural: Option<Box<structural::StructuralRecord>>,
 }
 crate::authoring::clone_shape::struct_shape!(Record {
+    channel_started_at,
     caster,
     target,
     expires_at,
@@ -87,8 +103,11 @@ crate::authoring::clone_shape::struct_shape!(Record {
     target_state,
     hit_status,
     independent_shield,
+    heal_barrier,
     reactive_heal,
+    state,
     aura,
+    next_upkeep_at,
     shield,
     segmented,
     survival,
@@ -99,10 +118,13 @@ crate::authoring::clone_shape::struct_shape!(Record {
     goodbye_skill,
     members,
     source,
+    area_source,
     structural
 });
 #[derive(Debug, Clone, Default)]
 pub(super) struct SustainedState {
+    heal_barriers: heal_barrier::HealBarrierState,
+    heal_shields: BTreeMap<uuid::Uuid, actual_heal_reaction::HealShieldState>,
     guard_counter_permit: Option<guard_charge::GuardCounterPermit>,
     guard_charges: BTreeMap<UnitInstanceId, guard_charge::GuardChargeRecord>,
     pub(super) chases: super::status_strike::ChaseState,
@@ -113,6 +135,9 @@ pub(super) struct SustainedState {
     pub(super) weapon_marks: super::weapon_marks::WeaponMarkState,
     pub(super) counters: super::counter_channel::CounterChannelState,
     pub(super) volleys: super::prepared_volley::PreparedVolleyState,
+    pub(super) death_bursts: super::equipment_death_burst::DeathBurstState,
+    pub(super) forms: super::equipment_forms::FormRegistrations,
+    pub(super) shared_cohorts: super::shared_cohort::SharedCohortState,
     pub(super) input_plans: super::input_plan::InputPlanState,
     pub(super) relations: super::relation_action::RelationActionState,
     pub(super) tile_bursts: super::tile_burst::TileBurstState,
@@ -126,10 +151,13 @@ pub(super) struct SustainedState {
     regular_aura_count: usize,
     records: BTreeMap<u64, Record>,
     prepared: BTreeMap<u64, prepared_basic::PreparedRecord>,
+    equipped: BTreeMap<u64, equipment_state::EquipmentRecord>,
     bases: BTreeMap<UnitInstanceId, UnitStats>,
     basic_bases: BTreeMap<UnitInstanceId, crate::game::data::abnormality_data::BasicAttackDef>,
 }
 crate::authoring::clone_shape::struct_shape!(SustainedState {
+    heal_barriers,
+    heal_shields,
     guard_charges,
     guard_counter_permit,
     chases,
@@ -142,6 +170,9 @@ crate::authoring::clone_shape::struct_shape!(SustainedState {
     counters,
     relations,
     input_plans,
+    shared_cohorts,
+    forms,
+    death_bursts,
     volleys,
     closed,
     next,
@@ -153,6 +184,7 @@ crate::authoring::clone_shape::struct_shape!(SustainedState {
     regular_aura_count,
     records,
     prepared,
+    equipped,
     bases,
     basic_bases
 });
@@ -171,6 +203,8 @@ impl SustainedState {
             .bases
             .len()
             .checked_mul(std::mem::size_of::<UnitStats>() + 80)?;
+        size = size.checked_add(self.heal_barriers.retained_extent()?)?;
+        size = size.checked_add(self.heal_shields.len().checked_mul(std::mem::size_of::<uuid::Uuid>() + std::mem::size_of::<actual_heal_reaction::HealShieldState>() + 96)?)?;
         size=size.checked_add(self.guard_charges.len().checked_mul(std::mem::size_of::<guard_charge::GuardChargeRecord>()+80)?)?;
         if let Some(receipt) = &self.latest_recharge {
             size = size
@@ -186,8 +220,10 @@ impl SustainedState {
                 .checked_add(receipt.pool_id.capacity())?;
         }
         for record in self.records.values() {
+            if let Some(origin) = &record.area_source { size = size.checked_add(origin.retained_extent()?)?; }
             if let Some(profile)=&record.hit_status { size=size.checked_add(profile.retained_extent()?)?; }
             if let Some(heal) = &record.reactive_heal { size = size.checked_add(heal.retained_extent()?)?; }
+            if let Some(state) = &record.state { size = size.checked_add(state.retained_extent()?)?; }
             if let Some(profile) = &record.target_state { size = size.checked_add(profile.definition.capacity())?; }
             if let Some(policy) = &record.structural {
                 size = size.checked_add(policy.extent()?)?;
@@ -224,29 +260,36 @@ impl SustainedState {
                 )?
                 .checked_add(if let Some(a) = &record.aura {
                     let mut bytes = std::mem::size_of::<ChannelAuraDef>() + a.family.capacity() + 64;
-                    if let Some(support) = &a.support {
-                        bytes = bytes.checked_add(crate::game::relic::structural::support::pattern_extent(&support.range)?)?;
+                    if let Some(range) = a.support.as_ref().and_then(|s| s.range.as_ref()) {
+                        bytes = bytes.checked_add(crate::game::relic::structural::support::pattern_extent(range)?)?;
                     }
                     bytes
                 } else { 0 })?;
         }
         for record in self.prepared.values() { size = size.checked_add(record.retained_extent()?)?; }
+        for record in self.equipped.values() { size = size.checked_add(record.retained_extent()?)?; }
         size = size.checked_add(self.chases.retained_extent()?)?.checked_add(self.mobile.retained_extent()?)?.checked_add(self.pairs.retained_extent()?)?.checked_add(self.presence.retained_extent()?)?;
         size = size.checked_add(self.weapon_marks.retained_extent()?)?;
         size = size.checked_add(self.tile_bursts.retained_extent()?)?;
         size = size.checked_add(self.counters.retained_extent()?)?;
-        size = size.checked_add(self.relations.retained_extent()?)?.checked_add(self.input_plans.retained_extent()?)?.checked_add(self.volleys.retained_extent()?)?;
+        size = size.checked_add(self.relations.retained_extent()?)?.checked_add(self.input_plans.retained_extent()?)?.checked_add(self.shared_cohorts.retained_extent()?)?.checked_add(self.volleys.retained_extent()?)?;
+        size = size.checked_add(self.forms.retained_extent()?)?.checked_add(self.death_bursts.retained_extent()?)?;
         Some(size)
     }
     pub(super) fn entity_count(&self) -> usize {
         self.records
             .len()
+            .saturating_add(self.heal_barriers.entity_count())
+            .saturating_add(self.heal_shields.len())
             .saturating_add(self.guard_charges.len())
             .saturating_add(self.presence.entity_count())
             .saturating_add(self.weapon_marks.entity_count())
             .saturating_add(self.tile_bursts.entity_count())
-            .saturating_add(self.counters.entity_count()).saturating_add(self.relations.entity_count()).saturating_add(self.input_plans.entity_count()).saturating_add(self.volleys.entity_count()).saturating_add(self.pairs.entity_count()).saturating_add(self.mobile.entity_count()).saturating_add(self.chases.entity_count())
+            .saturating_add(self.counters.entity_count()).saturating_add(self.relations.entity_count()).saturating_add(self.input_plans.entity_count()).saturating_add(self.shared_cohorts.entity_count()).saturating_add(self.volleys.entity_count()).saturating_add(self.pairs.entity_count()).saturating_add(self.mobile.entity_count()).saturating_add(self.chases.entity_count())
+            .saturating_add(self.equipped.len()).saturating_add(self.forms.len()).saturating_add(self.death_bursts.entity_count())
+            .saturating_add(self.equipped.values().fold(0usize, |n, r| n.saturating_add(r.state.seen.len()).saturating_add(r.pending_resonance.len())))
             .saturating_add(self.prepared.len())
+            .saturating_add(self.prepared.values().fold(0usize, |n, r| n.saturating_add(r.state.as_ref().map_or(0, |s| s.seen.len()))))
             .saturating_add(self.bases.len())
             .saturating_add(usize::from(self.latest_recharge.is_some()))
             .saturating_add(usize::from(self.latest_detachment.is_some()))
@@ -254,21 +297,21 @@ impl SustainedState {
             .saturating_add(
                 self.records
                     .values()
-                    .map(|r| r.modifiers.len() + r.members.len() + r.reactive_heal.as_ref().map_or(0, |h| h.seen_actions.len()))
+                    .map(|r| r.modifiers.len() + r.members.len() + r.reactive_heal.as_ref().map_or(0, |h| h.seen_actions.len()) + r.state.as_ref().map_or(0, |s| s.seen.len()))
                     .sum::<usize>(),
             )
     }
     pub(super) fn len(&self) -> usize {
-        self.records.len().saturating_add(self.prepared.len()).saturating_add(self.counters.entity_count()).saturating_add(self.relations.entity_count()).saturating_add(self.input_plans.entity_count()).saturating_add(self.volleys.entity_count()).saturating_add(self.pairs.entity_count()).saturating_add(self.mobile.entity_count()).saturating_add(self.chases.entity_count())
+        self.records.len().saturating_add(self.equipped.len()).saturating_add(self.forms.len()).saturating_add(self.death_bursts.entity_count()).saturating_add(self.prepared.len()).saturating_add(self.counters.entity_count()).saturating_add(self.relations.entity_count()).saturating_add(self.input_plans.entity_count()).saturating_add(self.shared_cohorts.entity_count()).saturating_add(self.volleys.entity_count()).saturating_add(self.pairs.entity_count()).saturating_add(self.mobile.entity_count()).saturating_add(self.chases.entity_count())
     }
-    fn effective(&self, target: UnitInstanceId, base: UnitStats, ground: StatModifier) -> UnitStats {
+    fn effective(&self, target: UnitInstanceId, base: UnitStats, passive: impl IntoIterator<Item = StatModifier>) -> UnitStats {
         compose(
             base,
             self.records
                 .values()
                 .filter(|r| r.target == target)
                 .flat_map(|r| r.modifiers.iter().copied())
-                .chain(self.target_state_modifiers(target)).chain(self.hit_slow_modifier(target)).chain(std::iter::once(ground)),
+                .chain(self.target_state_modifiers(target)).chain(self.hit_slow_modifier(target)).chain(passive),
         )
     }
 }
@@ -362,12 +405,22 @@ impl BattleCore {
         now: u64,
     ) -> Result<(), GameError> {
         let structural = self.fixed_connection_for_source(&self.runtime_fact_source)?;
-        self.begin_sustained_owned(caster, target, definition, now, structural, None)
+        self.begin_sustained_owned(caster, target, definition, now, structural, None, None)
     }
     pub(super) fn begin_committed_hit_status(&mut self, caster: UnitInstanceId, target: UnitInstanceId, side: crate::game::enums::Side, duration_ms: u32, profile: crate::game::ability::sustained::HitStatusProfile, now: u64) -> Result<bool, GameError> {
+        self.begin_committed_hit_status_with_refresh(caster, target, side, duration_ms, profile, now, false)
+    }
+    pub(super) fn begin_committed_hit_status_with_refresh(&mut self, caster: UnitInstanceId, target: UnitInstanceId, side: crate::game::enums::Side, duration_ms: u32, profile: crate::game::ability::sustained::HitStatusProfile, now: u64, refresh_movement_slow: bool) -> Result<bool, GameError> {
         let before=self.sustained.next;
-        self.begin_sustained_owned(caster, target, SustainedEffectDef::HitStatus {duration_ms, profile}, now, None, Some(side))?;
+        self.begin_sustained_admitted(caster, target, SustainedEffectDef::HitStatus {duration_ms, profile}, now, None, Some(side), None, None, false, refresh_movement_slow)?;
         Ok(self.sustained.next!=before)
+    }
+    pub(super) fn begin_sustained_from_area(
+        &mut self, caster: UnitInstanceId, target: UnitInstanceId, definition: SustainedEffectDef, now: u64,
+        source: Arc<super::area_observation::AreaEffectSource>,
+    ) -> Result<(), GameError> {
+        let structural = self.fixed_connection_for_source(&self.runtime_fact_source)?;
+        self.begin_sustained_owned(caster, target, definition, now, structural, None, Some(source))
     }
     fn begin_sustained_owned(
         &mut self,
@@ -376,12 +429,48 @@ impl BattleCore {
         definition: SustainedEffectDef,
         now: u64,
         structural: Option<Box<structural::StructuralRecord>>,
-        committed_hit_side: Option<crate::game::enums::Side>,
+        // A released hit or an admitted state event owns its source even after exit.
+        committed_source_side: Option<crate::game::enums::Side>,
+        area_source: Option<Arc<super::area_observation::AreaEffectSource>>,
     ) -> Result<(), GameError> {
-        definition
-            .validate()
-            .map_err(GameError::InvalidStaticData)?;
-        if (committed_hit_side.is_none() && !self.units.get(&caster).is_some_and(|u| u.is_active()))
+        self.begin_sustained_owned_with_shield(caster, target, definition, now, structural, committed_source_side, area_source, None)
+    }
+    fn begin_sustained_owned_with_shield(
+        &mut self,
+        caster: UnitInstanceId,
+        target: UnitInstanceId,
+        definition: SustainedEffectDef,
+        now: u64,
+        structural: Option<Box<structural::StructuralRecord>>,
+        // A released hit or an admitted state event owns its source even after exit.
+        committed_source_side: Option<crate::game::enums::Side>,
+        area_source: Option<Arc<super::area_observation::AreaEffectSource>>,
+        adjusted_shield: Option<u32>,
+    ) -> Result<(), GameError> {
+        self.begin_sustained_admitted(caster, target, definition, now, structural,
+            committed_source_side, area_source, adjusted_shield, false, false)
+    }
+    /// A derived threshold control has already passed the parent hit's skill
+    /// interception. It still undergoes its own target and control immunity.
+    fn begin_sustained_admitted(
+        &mut self,
+        caster: UnitInstanceId,
+        target: UnitInstanceId,
+        definition: SustainedEffectDef,
+        now: u64,
+        structural: Option<Box<structural::StructuralRecord>>,
+        committed_source_side: Option<crate::game::enums::Side>,
+        area_source: Option<Arc<super::area_observation::AreaEffectSource>>,
+        adjusted_shield: Option<u32>,
+        hit_already_admitted: bool,
+        refresh_movement_slow: bool,
+    ) -> Result<(), GameError> {
+        // State programs are compiled and validated with the owning content
+        // generation. Activations must not recompile under default limits.
+        if !matches!(&definition, SustainedEffectDef::State { .. } | SustainedEffectDef::PreparedState { .. }) {
+            definition.validate().map_err(GameError::InvalidStaticData)?;
+        }
+        if (committed_source_side.is_none() && !self.units.get(&caster).is_some_and(|u| u.is_active()))
             || !self.units.get(&target).is_some_and(|u| u.is_active())
             || !self.stress_allied_effect_allowed(Some(caster), target)
         {
@@ -389,16 +478,41 @@ impl BattleCore {
         }
         if let SustainedEffectDef::PreparedBasic { profile } = definition {
             if caster != target || structural.is_some() { return Err(GameError::InvalidAction); }
-            return self.begin_prepared_basic(caster, profile, now);
+            return self.begin_prepared_basic(caster, profile, None, now);
         }
+        if let SustainedEffectDef::PreparedState { numerator, denominator, .. } = &definition {
+            if caster != target || structural.is_some() { return Err(GameError::InvalidAction); }
+            let compiled = self.state_program_for_source(&self.runtime_fact_source)
+                .ok_or_else(|| crate::game::battle::runtime_control::invariant("prepared_state_not_published"))?;
+            let state = state_program::StateRecord::new(Arc::clone(compiled))?;
+            let profile = crate::game::ability::sustained::PreparedBasicProfile {
+                definition: state.program.id.clone(), numerator: *numerator, denominator: *denominator, kill_reward: None,
+            };
+            return self.begin_prepared_basic(caster, profile, Some(state), now);
+        }
+        let state = if let SustainedEffectDef::State { .. } = &definition {
+            let compiled = self.state_program_for_source(&self.runtime_fact_source)
+                .ok_or_else(|| crate::game::battle::runtime_control::invariant("state_program_not_published"))?;
+            Some(state_program::StateRecord::new(Arc::clone(compiled))?)
+        } else { None };
+        let independent_state = matches!(&definition, SustainedEffectDef::State { program, .. } if !program.owns_use);
         let independent_shield=matches!(&definition,SustainedEffectDef::IndependentShield{..});
-        let hit_status=if let SustainedEffectDef::HitStatus{profile,..}=&definition {
-            if committed_hit_side.or_else(||self.units.get(&caster).map(|u|u.owner))==Some(self.units[&target].owner) || !self.units[&target].is_combatant() {return Err(GameError::InvalidAction);}
+        let mut pending_hit_counter = None;
+        let hit_status=if let SustainedEffectDef::HitStatus{profile,duration_ms}=&definition {
+            if committed_source_side.or_else(||self.units.get(&caster).map(|u|u.owner))==Some(self.units[&target].owner) || !self.units[&target].is_combatant() {return Err(GameError::InvalidAction);}
             if profile.kind.is_hard_control() && (self.sustained_invulnerable(target,now)? || self.units[&target].target_traits.contains(&crate::game::battle::types::UnitTargetTrait::StunImmune)) {return Ok(());}
             if matches!(profile.kind,crate::game::ability::sustained::HitStatusKind::Slow{..}) && (self.sustained_invulnerable(target,now)? || self.units[&target].target_traits.contains(&crate::game::battle::types::UnitTargetTrait::SlowImmune)) { return Ok(()); }
+            if profile.kind.basic_speed_reduction().is_some() && self.sustained_invulnerable(target, now)? { return Ok(()); }
+            if matches!(profile.kind,crate::game::ability::sustained::HitStatusKind::ThresholdControl{..}) && self.sustained_invulnerable(target,now)? { return Ok(()); }
+            if !hit_already_admitted && area_source.is_none() && self.block_equipment_skill(target, caster, committed_source_side, now)? { return Ok(()); }
             crate::game::battle::runtime_control::admit_retained_growth(0,profile.retained_extent(),"hit_status_profile")?;
             let mut profile=crate::authoring::clone_shape::controlled_clone(profile)?;
             self.merge_stacked_hit_status(target,&mut profile,now)?;
+            self.merge_source_direct_hit_status(caster,target,&mut profile,now)?;
+            pending_hit_counter = self.merge_threshold_hit_status(caster, target, &mut profile, *duration_ms, now)?;
+            if pending_hit_counter.as_ref().is_some_and(|p| p.outcome.after == 0) {
+                return self.finish_hit_counter(caster, target, pending_hit_counter.unwrap(), now, committed_source_side, area_source);
+            }
             Some(profile)
         } else {None};
         let vulnerability=hit_status.as_ref().and_then(|p|p.vulnerability.clone());
@@ -474,6 +588,13 @@ impl BattleCore {
         // Rejected control must leave the old owner and all its effects intact.
         if active_control.is_some() && self.sustained_invulnerable(target, now)? { return Ok(()); }
         if active_control.is_some_and(ControlKind::is_taunt) && self.units[&target].target_traits.contains(&crate::game::battle::types::UnitTargetTrait::TauntImmune) { return Ok(()); }
+        if active_control == Some(ControlKind::Root) && self.units[&target].target_traits.contains(&crate::game::battle::types::UnitTargetTrait::RootImmune) { return Ok(()); }
+        if matches!(active_control, Some(ControlKind::Slow { .. })) && self.units[&target].target_traits.contains(&crate::game::battle::types::UnitTargetTrait::SlowImmune) { return Ok(()); }
+        if area_source.is_none() && matches!(&definition, SustainedEffectDef::Modifiers { modifiers, .. }
+            if modifiers.iter().any(super::equipment_defense::harmful_stat_modifier))
+            && self.block_equipment_skill(target, caster, committed_source_side, now)? { return Ok(()); }
+        if active_control.is_some() && hit_status.is_none() && area_source.is_none()
+            && self.block_equipment_skill(target, caster, committed_source_side, now)? { return Ok(()); }
         if active_control.is_some_and(ControlKind::is_taunt) {
             self.replace_approach_taunt(target, active_control.unwrap(), now)?;
         }
@@ -508,9 +629,9 @@ impl BattleCore {
             None
         };
         let has_segments = segmented.is_some();
-        let shield = match &definition {
+        let mut shield = match &definition {
             SustainedEffectDef::SegmentedShield { pool, .. } => Some(ShieldPoolView {
-                capacity: pool
+                damage_type: None,                capacity: pool
                     .segment_health
                     .checked_mul(pool.max_segments)
                     .ok_or(GameError::InvalidAction)?,
@@ -518,7 +639,7 @@ impl BattleCore {
                 priority: pool.priority,
                 shared_radius_units: None,
             }),
-            SustainedEffectDef::IndependentShield{amount,priority,..} => Some(ShieldPoolView{capacity:*amount,remaining:*amount,priority:*priority,shared_radius_units:None}),
+            SustainedEffectDef::IndependentShield{amount,priority,..} => Some(ShieldPoolView{damage_type:None,capacity:*amount,remaining:*amount,priority:*priority,shared_radius_units:None}),
             SustainedEffectDef::Shield {
                 amount,
                 priority,
@@ -529,7 +650,7 @@ impl BattleCore {
                     return Err(GameError::InvalidAction);
                 }
                 Some(ShieldPoolView {
-                    capacity: *amount,
+                damage_type: None,                    capacity: *amount,
                     remaining: *amount,
                     priority: *priority,
                     shared_radius_units: *shared_radius_units,
@@ -537,9 +658,21 @@ impl BattleCore {
             }
             _ => None,
         };
+        if let Some(pool) = &mut shield {
+            if !has_segments {
+                let amount = match adjusted_shield {
+                    Some(amount) => amount,
+                    None => self.equipment_support_amount(caster, target, pool.capacity,
+                        super::equipment_support::SupportChannel::Shield, now)?,
+                };
+                pool.capacity = amount;
+                pool.remaining = amount;
+            }
+        }
+        let received_control = super::equipment_support::sustained_control_kind(&definition);
         let (duration_ms, modifiers, aura, overlay, next_attack_only, goodbye_skill) =
             match definition {
-                SustainedEffectDef::PreparedBasic { .. } => unreachable!("handled before timed effects"),
+                SustainedEffectDef::PreparedBasic { .. } | SustainedEffectDef::PreparedState { .. } => unreachable!("handled before timed effects"),
                 SustainedEffectDef::Control { duration_ms, kind } => {
                     let speed = match kind {
                         ControlKind::Slow { percent } => Some(-(percent as i32)),
@@ -582,6 +715,15 @@ impl BattleCore {
                 | SustainedEffectDef::CombatModifiers { duration_ms, .. } => {
                     (duration_ms, Vec::new(), None, None, false, None)
                 }
+                SustainedEffectDef::State { duration_ms, program } => {
+                    if let Some(profile) = &program.basic_attack {
+                        if caster != target || !profile.supports_action(&self.units[&target].basic_attack.action) {
+                            return Err(GameError::InvalidAction);
+                        }
+                        crate::game::battle::runtime_control::admit_retained_growth(0, profile_extent(profile), "state_overlay_storage")?;
+                    }
+                    (duration_ms, Vec::new(), None, program.basic_attack.clone(), false, None)
+                }
                 SustainedEffectDef::BasicAttackOverlay {
                     duration_ms,
                     profile,
@@ -619,13 +761,13 @@ impl BattleCore {
                     {
                         return Err(GameError::InvalidAction);
                     }
-                    if let Some(support) = &mut aura.support { support.conversion = None; }
+                    if let Some(support) = &mut aura.support { support.conversion = None; support.conversions = Vec::new(); }
                     control::charge_serialized(&aura, "aura_definition_owner")?;
                     crate::game::battle::runtime_control::admit_retained_growth(
                         0,
                         std::mem::size_of::<ChannelAuraDef>()
                             .checked_add(aura.family.capacity())
-                            .and_then(|n| n.checked_add(aura.support.as_ref().map_or(Some(0), |s| crate::game::relic::structural::support::pattern_extent(&s.range))?))
+                            .and_then(|n| n.checked_add(aura.support.as_ref().and_then(|s| s.range.as_ref()).map_or(Some(0), |range| crate::game::relic::structural::support::pattern_extent(range))?))
                             .and_then(|n| n.checked_add(64)),
                         "aura_definition_storage",
                     )?;
@@ -639,6 +781,9 @@ impl BattleCore {
                     )
                 }
             };
+        let duration_ms = if let Some(kind) = received_control {
+            self.received_control_duration(caster, target, committed_source_side, kind, u64::from(duration_ms), now)? as u32
+        } else { duration_ms };
         let expires_at = if let Some(p) = parry.as_ref().filter(|p| p.end_on_resolution) {
             p.miss_recovery_at_ms
         } else {
@@ -665,7 +810,7 @@ impl BattleCore {
         self.admit_authoring_runtime_growth(modifiers.len() + 2, "sustained_entities")?;
         let mut effect_source =
             crate::authoring::clone_shape::controlled_clone(&self.runtime_fact_source)?;
-        if has_segments {
+        if has_segments || independent_state {
             // A stored pool survives its producer's action and can be consumed
             // by a later cast. It owns a private finite lifetime, not a use lease.
             effect_source = effect_source.independent_origin()?;
@@ -710,9 +855,31 @@ impl BattleCore {
         if let Some(heal) = &reactive_heal {
             self.replace_reactive_heal(caster, target, &heal.profile.definition, &source, now)?;
         }
+        if let Some(state) = &state {
+            self.replace_authored_state(caster, target, &state.program, &source, now)?;
+        }
+        let basic_speed_reduction_percent = hit_status.as_ref().and_then(|p| p.kind.basic_speed_reduction());
+        let damage_taken_increase_percent = hit_status.as_ref().and_then(|p| p.kind.damage_taken_increase());
+        // Only explicitly refreshing movement slows replace their source copy.
+        // Existing equipment and fragment slows keep independent lifetimes.
+        if let Some(profile) = hit_status.as_ref().filter(|p| p.kind.basic_speed_reduction().is_some()
+            || p.kind.damage_taken_increase().is_some()
+            || (refresh_movement_slow && matches!(p.kind, crate::game::ability::sustained::HitStatusKind::Slow { .. }))) {
+            // Ending the last old contribution can retire its stat baseline.
+            // Carry that baseline across this replacement before recomposition.
+            let stat_base = self.sustained.bases.get(&target).copied();
+            self.replace_refreshing_hit_status(caster, target, profile, &source, now)?;
+            if let Some(base) = stat_base {
+                self.sustained.bases.entry(target).or_insert(base);
+            }
+        }
+        let state_properties = target_state.as_ref().map(crate::game::ability::sustained::TargetStateProperties::from);
+        let observation_before = self.units.get(&target).map(|u| u.stats);
+        let channel_started_at = if is_channel { Some(self.channel_started_at(caster, now)?.unwrap_or(now)) } else { None };
         self.sustained.records.insert(
             activation,
             Record {
+                channel_started_at,
                 caster,
                 target,
                 expires_at,
@@ -721,8 +888,11 @@ impl BattleCore {
                 target_state,
                 hit_status,
                 independent_shield,
+                heal_barrier: false,
                 reactive_heal,
+                state,
                 aura,
+                next_upkeep_at: None,
                 shield,
                 segmented,
                 survival,
@@ -733,6 +903,7 @@ impl BattleCore {
                 goodbye_skill,
                 members: Vec::new(),
                 source,
+                area_source: area_source.clone(),
                 structural,
             },
         );
@@ -742,7 +913,20 @@ impl BattleCore {
         });
         self.refresh_sustained_target(target)?;
         self.refresh_basic_overlay(target)?;
+        let observation_source = self.sustained.records[&activation].source.observation();
+        self.observe_sustained_change(&observation_source, area_source.as_ref(), caster, target, now,
+            super::authoring_observation::AppliedChange::Sustained {
+                activation, ended: None, expires_at_ms: expires_at, target_state: state_properties, basic_speed_reduction_percent, damage_taken_increase_percent,
+                before: observation_before, after: self.units.get(&target).map(|u| u.stats),
+            })?;
         self.refresh_aura_members(now)?;
+        if let Some(p) = state_properties.filter(|p| p.basic_attack_locked || p.active_skill_locked) {
+            if p.basic_attack_locked { self.pause_channel_basic_attack(target)?; }
+            self.cancel_unreleased_actions_for_lock(now, caster, target,
+                crate::game::battle::runtime_facts::ActionCancelReason::Interrupted,
+                p.basic_attack_locked, p.active_skill_locked, false);
+            crate::game::battle::runtime_control::poll()?;
+        }
         if hit_status_is_basic_lock { self.pause_channel_basic_attack(target)?; }
         if is_stun {
             self.cancel_unreleased_actions_for_hard_cc(now,caster,target);
@@ -754,7 +938,7 @@ impl BattleCore {
                 duration_ms:v.duration_ms, profile:crate::game::ability::sustained::HitStatusProfile {
                     definition:v.definition,kind:crate::game::ability::sustained::HitStatusKind::DamageTaken{percent:v.percent},modifier_source:v.modifier_source,vulnerability:None,
                 },
-            },now,None,committed_hit_side)?;
+            },now,None,committed_source_side,area_source.clone())?;
         }
         if active_control == Some(ControlKind::Root) {
             self.active_movement_segments.remove(&target);
@@ -776,13 +960,22 @@ impl BattleCore {
             self.refresh_block_state();
             self.schedule_continuous_movement_tick(now);
         }
-        if is_channel { self.pause_channel_basic_attack(caster)?; }
+        if is_channel {
+            self.pause_channel_basic_attack(caster)?;
+            self.schedule_channel_upkeep(activation, now)?;
+        }
         if has_segments {
             self.refresh_segmented_block_state()?;
         }
+        if let Some(pending) = pending_hit_counter {
+            self.finish_hit_counter(caster, target, pending, now, committed_source_side, area_source)?;
+        }
         control::poll("sustained_started")
     }
-    pub(super) fn ensure_ground_stat_base(&mut self, target: UnitInstanceId) -> Result<(), GameError> {
+    pub(super) fn has_sustained_stat_base(&self, target: UnitInstanceId) -> bool {
+        self.sustained.bases.contains_key(&target)
+    }
+    pub(super) fn ensure_passive_stat_base(&mut self, target: UnitInstanceId) -> Result<(), GameError> {
         if self.sustained.bases.contains_key(&target) { return Ok(()); }
         self.admit_authoring_runtime_growth(1, "ground_stat_base")?;
         if let Some(unit) = self.units.get(&target) { self.sustained.bases.insert(target, unit.stats); }
@@ -798,16 +991,19 @@ impl BattleCore {
         };
         if let Some(unit) = self.units.get(&target) {
             base.current_health = unit.stats.current_health;
-            // MaxHealth remains owned by permanent stats, damage and healing.
-            base.max_health = unit.stats.max_health;
+            // Keep the permanent maximum in the shared baseline; form HP is
+            // recomposed without healing or inverse subtraction.
         }
-        let effective = self.sustained.effective(target, base, self.ground_stat_modifier(target)?);
+        let nearby = self.nearby_defense_modifier(target)?;
+        let bounty = self.bounty_attack_modifier(target)?;
+        let forms = self.equipment_form_modifiers(target)?;
+        let effective = self.sustained.effective(target, base, [self.ground_stat_modifier(target)?, bounty, nearby].into_iter().chain(forms));
         if let Some(unit) = self.units.get_mut(&target) {
             unit.stats = effective;
             unit.body.move_speed = effective.move_speed_units_per_ms as f32 * 1000.0
                 / super::movement::types::DATA_UNITS_PER_WORLD;
         }
-        if !self.sustained.records.values().any(|r| r.target == target) && !self.has_ground_contribution(target) {
+        if !self.sustained.records.values().any(|r| r.target == target) && !self.has_ground_contribution(target) && bounty.value == 0 && nearby.value == 0 && forms.iter().all(|m| m.value == 0) {
             self.sustained.bases.remove(&target);
         }
         Ok(())
@@ -827,16 +1023,20 @@ impl BattleCore {
             return current;
         }
         let Ok(ground) = self.ground_stat_modifier(target) else { return current; };
+        let Ok(bounty) = self.bounty_attack_modifier(target) else { return current; };
+        let Ok(nearby) = self.nearby_defense_modifier(target) else { return current; };
+        let Ok(forms) = self.equipment_form_modifiers(target) else { return current; };
         let Some(base) = self.sustained.bases.get_mut(&target) else {
             let mut result = current;
             result.apply_modifier(modifier);
             return result;
         };
         base.current_health = current.current_health;
-        base.max_health = current.max_health;
         base.apply_modifier(modifier);
+        // Clamp HP once against the composed maximum, not the unmodified one.
+        base.current_health = current.current_health;
         self.sustained
-            .effective(target, *self.sustained.bases.get(&target).unwrap(), ground)
+            .effective(target, *self.sustained.bases.get(&target).unwrap(), [ground, bounty, nearby].into_iter().chain(forms))
     }
     fn end_sustained(
         &mut self,
@@ -844,9 +1044,24 @@ impl BattleCore {
         now: u64,
         reason: SustainedEndReason,
     ) -> Result<(), GameError> {
+        if reason == SustainedEndReason::Expired {
+            self.run_state_event(activation, state_program::StateEventInput::Expired, now)?;
+        }
         let Some(record) = self.sustained.records.remove(&activation) else {
             return Ok(());
         };
+        // A channel ending by cancellation settles its delivery but must not
+        // advance the owning sequence as if the authored duration elapsed.
+        if record.aura.is_some() && reason != SustainedEndReason::Expired {
+            if let Some(cast) = &record.source.cast {
+                let reason = match reason {
+                    SustainedEndReason::HardCrowdControl => crate::game::battle::runtime_facts::ActionCancelReason::HardCrowdControl,
+                    _ => crate::game::battle::runtime_facts::ActionCancelReason::Interrupted,
+                };
+                self.cancel_structured_flow(cast.cast_seq, now, reason)?;
+            }
+        }
+        let observation_before = self.units.get(&record.target).map(|u| u.stats);
         if record.aura.as_ref().is_some_and(|aura| {
             aura.basic_scope
                 == crate::game::ability::sustained::SupportCoefficientScope::RegularOnly
@@ -871,6 +1086,14 @@ impl BattleCore {
         }
         self.refresh_sustained_target(record.target)?;
         self.refresh_basic_overlay(record.target)?;
+        self.observe_sustained_change(&record.source, record.area_source.as_ref(), record.caster, record.target, now,
+            super::authoring_observation::AppliedChange::Sustained {
+                activation, ended: Some(reason), expires_at_ms: record.expires_at,
+                target_state: record.target_state.as_ref().map(crate::game::ability::sustained::TargetStateProperties::from),
+                basic_speed_reduction_percent: record.hit_status.as_ref().and_then(|p| p.kind.basic_speed_reduction()),
+                damage_taken_increase_percent: record.hit_status.as_ref().and_then(|p| p.kind.damage_taken_increase()),
+                before: observation_before, after: self.units.get(&record.target).map(|u| u.stats),
+            })?;
         if record.control.is_some_and(ControlKind::is_taunt)
             && reason != SustainedEndReason::Terminal
         {
@@ -915,13 +1138,38 @@ impl BattleCore {
             self.refresh_block_state();
             self.schedule_continuous_movement_tick(now);
         }
+        if reason != SustainedEndReason::Terminal && self.units.get(&record.target).is_some_and(|u| u.is_active() && u.stats.current_health > 0) {
+            if let Some(p) = record.target_state.as_ref() {
+                if p.basic_attack_locked && !self.target_state_action_locked(record.target, Some(now), true) {
+                    self.event_queue.push(BattleEvent::AttackStart { time_ms: now, attacker_instance_id: record.target,
+                        target_instance_id: None, schedule_next: true, cause: Default::default() });
+                }
+                if p.active_skill_locked && !self.target_state_action_locked(record.target, Some(now), false) {
+                    self.schedule_pending_autocast_for(record.target, now);
+                }
+            }
+        }
         if record.hit_status.as_ref().is_some_and(|p|p.kind==crate::game::ability::sustained::HitStatusKind::BasicLock) && reason!=SustainedEndReason::Terminal {
             self.event_queue.push(BattleEvent::AttackStart{time_ms:now,attacker_instance_id:record.target,target_instance_id:None,schedule_next:true,cause:Default::default()});
+        }
+        if record.hit_status.as_ref().is_some_and(|p| p.kind == crate::game::ability::sustained::HitStatusKind::Stun)
+            && !matches!(reason, SustainedEndReason::Terminal | SustainedEndReason::SourceUnavailable | SustainedEndReason::TargetUnavailable) {
+            self.dispatch_equipment_stun_end(record.caster, record.target, now)?;
         }
         control::poll("sustained_ended")
     }
     pub(super) fn clear_sustained(&mut self, now: u64) -> Result<(), GameError> {
         self.sustained.closed = true;
+        crate::authoring::control::charge(self.units.len() as u64, "resonance_gain_terminal_cleanup")?;
+        crate::game::battle::runtime_control::charge(self.units.len() as u64, "resonance_gain_terminal_cleanup")?;
+        for unit in self.units.values_mut() { unit.equipment_resonance_gain = None; }
+        self.reconcile_bounty_stats()?;
+        self.reconcile_equipment_forms()?;
+        self.reconcile_nearby_defense()?;
+        self.sustained.heal_barriers = Default::default();
+        self.sustained.heal_shields.clear();
+        self.equipment_defense = Default::default();
+        self.equipment_attack_state = Default::default();
         self.sustained.guard_charges.clear();
         self.sustained.guard_counter_permit=None;
         self.clear_status_mobile()?;
@@ -931,10 +1179,14 @@ impl BattleCore {
         self.clear_counter_channels(now)?;
         self.clear_prepared_volleys(now)?;
         self.clear_input_plans(now)?;
+        self.clear_shared_cohorts()?;
+        self.clear_equipment_death_bursts()?;
+        self.sustained.forms = Default::default();
         self.clear_relation_actions(now)?;
         self.sustained.presence = Default::default();
         self.sustained.weapon_marks = Default::default();
         self.event_queue.discard_presence_ticks(None,None)?;
+        while let Some(id) = self.sustained.equipped.keys().next().copied() { self.end_equipment_state(id, now, SustainedEndReason::Terminal)?; }
         while let Some(id) = self.sustained.prepared.keys().next().copied() { self.end_prepared_basic(id, now, SustainedEndReason::Terminal)?; }
         while let Some(id) = self.sustained.records.keys().next().copied() {
             self.end_sustained(id, now, SustainedEndReason::Terminal)?;
@@ -954,6 +1206,15 @@ impl BattleCore {
     }
     pub(super) fn reconcile_sustained(&mut self, now: u64) -> Result<(), GameError> {
         self.sustained.observed_at_ms = self.sustained.observed_at_ms.max(now);
+        self.reconcile_equipment_defenses()?;
+        self.reconcile_idle_hp_guards(now)?;
+        self.reconcile_equipment_magazines()?;
+        self.reconcile_attack_continuity(now)?;
+        self.reconcile_release_gaps(now)?;
+        self.reconcile_equipment_death_bursts()?;
+        self.reconcile_heal_barriers(now)?;
+        self.reconcile_actual_heal_shields(now)?;
+        self.reconcile_equipment_states(now)?;
         self.reconcile_guard_charges()?;
         self.reconcile_paired_areas(now)?;
         self.reconcile_presence(now)?;
@@ -961,6 +1222,10 @@ impl BattleCore {
         self.reconcile_tile_bursts()?;
         self.reconcile_counter_channels(now)?;
         self.reconcile_input_plans(now)?;
+        self.reconcile_equipment_cohorts(now)?;
+        self.reconcile_bounty_stats()?;
+        self.reconcile_equipment_forms()?;
+        self.reconcile_nearby_defense()?;
         self.reconcile_prepared_volleys(now)?;
         self.reconcile_relation_actions(now)?;
         self.reconcile_area_emitters(now)?;
@@ -975,6 +1240,7 @@ impl BattleCore {
                 .iter()
                 .find(|(_, r)| {
                     r.expires_at <= now
+                        || !r.adaptive_source_valid(self)
                         || (r.ends_on_source_exit() && !self.units.get(&r.caster).is_some_and(|u| u.is_active()))
                         || !self.units.get(&r.target).is_some_and(|u| u.is_active())
                         || (r
@@ -991,7 +1257,7 @@ impl BattleCore {
             let record = &self.sustained.records[&id];
             let reason = if record.expires_at <= now {
                 SustainedEndReason::Expired
-            } else if (record.ends_on_source_exit() && !self
+            } else if !record.adaptive_source_valid(self) || (record.ends_on_source_exit() && !self
                 .units
                 .get(&record.caster)
                 .is_some_and(|u| u.is_active()))
@@ -1008,6 +1274,7 @@ impl BattleCore {
             self.end_sustained(id, now, reason)?;
         }
         self.refresh_aura_members(now)?;
+        self.reconcile_ready_wait(now)?;
         Ok(())
     }
 }
@@ -1044,8 +1311,20 @@ impl BattleCore {
     }
     pub(super) fn channel_pauses_basic(&self, caster: UnitInstanceId) -> bool {
         if control::charge((self.sustained.records.len() + self.active_areas.len()) as u64, "channel_basic_lookup").is_err() { return true; }
-        self.hit_basic_locked(caster) || self.prepared_volley_active(caster) || self.relation_action_active(caster) || self.counter_channel_active(caster, true) || self.sustained.records.values().any(|r| r.caster == caster && r.aura.is_some())
+        self.target_state_action_locked(caster, None, true) || self.hit_basic_locked(caster) || self.prepared_volley_active(caster) || self.relation_action_active(caster) || self.counter_channel_active(caster, true) || self.sustained.records.values().any(|r| r.caster == caster && r.aura.is_some())
             || self.active_areas.values().any(|r| r.caster_instance_id == caster && matches!(r.mode, crate::game::ability::SkillTileAreaMode::ChannelGround { pause_basic: true }))
+    }
+    /// The beginning of the current uninterrupted channel interval. Overlapping
+    /// leases inherit it; removal of any earlier lease cannot refresh the window.
+    pub(super) fn channel_started_at(&self, caster: UnitInstanceId, now: u64) -> Result<Option<u64>, GameError> {
+        control::charge((self.sustained.records.len() + self.active_areas.len()) as u64, "channel_start_lookup")?;
+        let starts = [self.prepared_volley_started_at(caster), self.relation_action_started_at(caster), self.counter_channel_started_at(caster)];
+        let result = starts.into_iter().flatten()
+            .chain(self.sustained.records.values().filter(|r| r.caster == caster && now < r.expires_at).filter_map(|r| r.channel_started_at))
+            .chain(self.active_areas.values().filter(|r| r.caster_instance_id == caster && now < r.expires_at_ms).filter_map(|r| r.channel_started_at))
+            .min();
+        control::poll("channel_start_lookup")?;
+        Ok(result)
     }
     pub(super) fn channel_active(&self, caster: UnitInstanceId) -> bool {
         if control::charge((self.sustained.records.len() + self.active_areas.len()) as u64, "channel_lease_lookup").is_err() {
@@ -1120,7 +1399,7 @@ impl BattleCore {
         loop {
             control::charge(self.active_areas.len() as u64, "channel_area_stop")?;
             let Some(id) = self.active_areas.values().filter(|r| r.caster_instance_id == caster && matches!(r.mode, crate::game::ability::SkillTileAreaMode::ChannelGround { .. })).map(|r| r.area_id).min() else { break; };
-            self.stop_skill_area(id, now)?;
+            self.stop_skill_area_with_reason(id, now, reason)?;
         }
         Ok(())
     }
@@ -1129,8 +1408,8 @@ impl BattleCore {
         caster: UnitInstanceId,
         aura: &ChannelAuraDef,
     ) -> Result<Vec<UnitInstanceId>, GameError> {
-        if let Some(support) = &aura.support {
-            self.support_pattern_members(caster, &support.range, false)
+        if let Some(range) = aura.support.as_ref().and_then(|s| s.range.as_ref()) {
+            self.support_pattern_members(caster, range, false)
         } else {
             self.employee_members(caster, aura.radius_units, false)
         }
@@ -1413,7 +1692,12 @@ impl BattleCore {
     pub(super) fn has_regular_support(&self) -> bool {
         self.sustained.regular_aura_count != 0
     }
+    #[cfg(test)]
     pub(super) fn sustained_basic_interval(&self, unit: UnitInstanceId, interval: u64) -> u64 {
+        let Ok(equipment) = self.equipment_basic_speed(unit, 0, false) else { return interval };
+        self.basic_interval_with_equipment(unit, interval, equipment.points, 0)
+    }
+    pub(super) fn basic_interval_with_equipment(&self, unit: UnitInstanceId, interval: u64, equipment_points: u32, now: u64) -> u64 {
         let speed = self
             .units
             .get(&unit)
@@ -1424,8 +1708,16 @@ impl BattleCore {
             Ok(value) => value.1.saturating_add(self.sustained.target_state_speed(unit)),
             Err(_) => return interval,
         };
-        (u128::from(interval) * u128::from(speed)
-            / u128::from(if self.sustained.regular_aura_count == 0 {
+        let Some(points) = points.checked_add(equipment_points) else {
+            let _ = overflow("equipment_basic_speed_sum");
+            return interval;
+        };
+        let reduction = match self.basic_speed_reduction(unit, now) {
+            Ok(value) => value,
+            Err(_) => return interval,
+        };
+        (u128::from(interval) * u128::from(speed) * 100)
+            .div_ceil(u128::from(if self.sustained.regular_aura_count == 0 && equipment_points == 0 {
                 speed.saturating_add(points)
             } else {
                 match speed.checked_add(points) {
@@ -1435,7 +1727,7 @@ impl BattleCore {
                         return interval;
                     }
                 }
-            }))
+            }) * u128::from(100 - reduction))
         .clamp(1, u128::from(u64::MAX)) as u64
     }
     pub(super) fn validate_sustained_start(
@@ -1449,7 +1741,7 @@ impl BattleCore {
         control::charge(self.sustained.records.len() as u64, "hello_active_guard")?;
         if self.sustained.records.values().any(|r| {
             r.caster == caster
-                && r.goodbye_skill.is_some()
+                && (r.goodbye_skill.is_some() || r.state.as_ref().is_some_and(|s| s.program.handlers.iter().any(|h| h.event == crate::game::ability::state_program::StateEvent::ManualInput)))
                 && r.source
                     .cast
                     .as_ref()
@@ -1490,10 +1782,12 @@ impl BattleCore {
                         0,
                     )?;
                 }
-                if let crate::game::ability::SkillEffectDef::Sustained {
-                    definition: SustainedEffectDef::BasicAttackOverlay { profile, .. },
-                } = &effect.op
-                {
+                let overlay = match &effect.op {
+                    crate::game::ability::SkillEffectDef::Sustained { definition: SustainedEffectDef::BasicAttackOverlay { profile, .. } } => Some(profile),
+                    crate::game::ability::SkillEffectDef::Sustained { definition: SustainedEffectDef::State { program, .. } } => program.basic_attack.as_deref(),
+                    _ => None,
+                };
+                if let Some(profile) = overlay {
                     if self
                         .units
                         .get(&caster)
@@ -1595,6 +1889,7 @@ impl BattleCore {
                 combat_modifiers: record.combat_modifiers,
                 target_state: record.target_state.clone(),
                 reactive_heal: record.reactive_heal.as_ref().map(|heal| heal.view()),
+                state: record.state.as_ref().map(|state| state.view()),
                 members: record.members.clone(),
                 authored_site: source.authored.as_ref().map(|a| a.site.clone()),
                 skill_id: source.cast.as_ref().map(|c| c.skill_id.clone()),
@@ -1658,6 +1953,7 @@ impl BattleCore {
         passive_guards.sort_by_key(|v| v.unit);
         Ok(SustainedEffectsSnapshot {
             prepared_basics: self.prepared_basic_views()?,
+            equipment_states: self.equipment_state_views()?,
             passive_guards,
             started: self.sustained.next,
             ended: self.sustained.ended,
@@ -1728,7 +2024,7 @@ pub(super) fn basic_extent(
             crate::game::data::abnormality_data::BasicAttackAction::Heal {
                 footprint: Some(footprint),
                 ..
-            } => pattern_extent(footprint)?,
+            } | crate::game::data::abnormality_data::BasicAttackAction::DamageArea { footprint, .. } => pattern_extent(footprint)?,
             _ => 0,
         })
 }
@@ -1760,10 +2056,14 @@ mod basic_heal_extent_tests {
         };
         assert_eq!(basic_extent(&basic), Some(empty + dynamic));
         let mut state = SustainedState::default();
+        // Shared cohorts conservatively retain their two empty map headers.
+        // Keep this unrelated fixed storage separate from the heal allocation.
+        let shared_headers = std::mem::size_of::<super::super::shared_cohort::SharedCohortState>();
+        assert_eq!(state.retained_extent(), Some(shared_headers));
         state
             .basic_bases
             .insert(uuid::Uuid::from_u128(1).into(), basic);
-        assert_eq!(state.retained_extent(), Some(empty + dynamic + 80));
+        assert_eq!(state.retained_extent(), Some(shared_headers + empty + dynamic + 80));
         let limits = runtime_control::RuntimeFactLimits {
             max_retained_bytes: empty + dynamic - 1,
             ..Default::default()
@@ -1779,6 +2079,28 @@ mod basic_heal_extent_tests {
             if f.code == runtime_control::RuntimeFaultCode::RetainedByteLimit));
         assert_eq!(state.basic_bases.len(), 1);
     }
+}
+
+/// Non-serializable, single-use authority constructed only after a validated
+/// activation is consumed. Observation context alone cannot authorize a cast.
+pub(super) struct ReinputChildPermit {
+    caster: UnitInstanceId,
+    skill: crate::game::ability::SkillId,
+    at_ms: u64,
+}
+impl ReinputChildPermit {
+    pub(super) fn permits(&self, caster: UnitInstanceId, skill: &crate::game::ability::SkillDef, now: u64) -> bool {
+        self.caster == caster && self.skill == skill.id && self.at_ms == now
+            && crate::game::ability::state_program::immediate_child(skill)
+    }
+}
+
+struct PreparedReinputChild {
+    caster: UnitInstanceId,
+    skill: crate::game::ability::SkillId,
+    cast_target: Option<crate::game::battle::event_log::SkillCastTarget>,
+    source: RuntimeFactSource,
+    authored: bool,
 }
 
 impl BattleCore {
@@ -1825,10 +2147,11 @@ impl BattleCore {
         self.refresh_basic_overlay(target)
     }
 
-    pub(super) fn overlay_followup_on_input(&self, caster: UnitInstanceId, skill: &crate::game::ability::SkillId) -> Result<Option<u64>, GameError> {
+    pub(super) fn sustained_followup_on_input(&self, caster: UnitInstanceId, skill: &crate::game::ability::SkillId) -> Result<Option<u64>, GameError> {
         control::charge(self.sustained.records.len() as u64,"overlay_input_lookup")?;
         Ok(self.sustained.records.iter().find_map(|(id,r)| {
-            (r.caster==caster && r.overlay.as_ref().is_some_and(|p|p.followup_on_input)
+            (r.caster==caster && (r.overlay.as_ref().is_some_and(|p|p.followup_on_input)
+                || r.state.as_ref().is_some_and(|s| s.program.handlers.iter().any(|h| h.event == crate::game::ability::state_program::StateEvent::ManualInput)))
                 && r.source.cast.as_ref().is_some_and(|s|&s.skill_id==skill)).then_some(*id)
         }))
     }
@@ -1934,30 +2257,52 @@ impl BattleCore {
             }
             return self.end_sustained(activation, now, SustainedEndReason::Stopped);
         }
-        // Stopping a maintained aura above is a cancellation. An offensive
-        // followup below must pass normal action gates except its own use lease.
-        if !unit.is_combatant()
+        self.validate_action_reinput(caster, skill, activation, now)?;
+        if record.state.is_some() {
+            if target.is_some() { return Err(GameError::InvalidAction); }
+            return self.run_state_event(activation, state_program::StateEventInput::ManualInput, now);
+        }
+        let goodbye = record.goodbye_skill.as_ref().ok_or(GameError::InvalidAction)?.clone();
+        let prepared = self.prepare_sustained_child(activation, &goodbye, target, now)?;
+        self.commit_sustained_child(activation, prepared, now)
+    }
+
+    /// Shared by the command and public readiness check. Expired/foreign
+    /// activations and action locks never consume a manual event.
+    pub(super) fn validate_action_reinput(&self, caster: UnitInstanceId, skill: &crate::game::ability::SkillId, activation: u64, now: u64) -> Result<(), GameError> {
+        let unit = self.units.get(&caster).ok_or(GameError::UnitNotFound)?;
+        let record = self.sustained.records.get(&activation).ok_or(GameError::InvalidAction)?;
+        let manual = record.state.as_ref().is_some_and(|s| s.program.handlers.iter().any(|h| h.event == crate::game::ability::state_program::StateEvent::ManualInput));
+        if now < self.sustained.observed_at_ms || now >= record.expires_at
+            || !unit.is_active() || unit.owner != crate::game::enums::Side::Player
+            || record.caster != caster || record.target != caster
+            || !record.source.cast.as_ref().is_some_and(|c| &c.skill_id == skill)
+            || (!manual && record.goodbye_skill.is_none())
+            || !unit.is_combatant()
             || unit.skill_activation_mode != crate::game::ability::SkillActivationMode::Manual
             || unit.skill_id.as_ref() != Some(skill)
             || record.source.fragment.as_ref().is_some_and(|source| unit.fragment_source.as_ref().is_none_or(|live| source.copy_uuid != live.copy_uuid || source.skill_id != live.skill_id || source.form_id != live.form_id))
             || self.skill_start_disabled_reason(caster,now).is_some()
             || now < unit.next_action_time
-            || unit.resonance_use.as_ref().is_some_and(|u| &u.skill_id != skill) {
+            || unit.resonance_use.as_ref().is_some_and(|u| &u.skill_id != skill)
+            || unit.pending_skill_cast.is_some() {
             return Err(GameError::InvalidAction);
         }
-        let goodbye = record
-            .goodbye_skill
-            .as_ref()
-            .ok_or(GameError::InvalidAction)?
-            .clone();
-        if unit.pending_skill_cast.is_some() {
-            return Err(GameError::InvalidAction);
-        }
+        Ok(())
+    }
+
+    fn prepare_sustained_child(&self, activation: u64, goodbye: &crate::game::ability::SkillId, target: Option<crate::game::battle::event_log::SkillCastTarget>, now: u64) -> Result<PreparedReinputChild, GameError> {
+        let record = self.sustained.records.get(&activation).ok_or(GameError::InvalidAction)?;
+        let caster = record.caster;
         let child = self
-            .cloned_skill_definition(goodbye.as_str())?
+            .cloned_current_skill(goodbye, caster, &record.source)?
             .ok_or_else(|| {
                 crate::game::battle::runtime_control::invariant("reinput_goodbye_definition")
             })?;
+        let authored = record.state.is_some();
+        if authored && !crate::game::ability::state_program::immediate_child(&child) {
+            return Err(GameError::InvalidStaticData("state child no longer supports immediate handoff".into()));
+        }
         let cast_target = self.reinput_cast_target(now, caster, &child, target)?;
         crate::game::battle::runtime_control::admit_retained_growth(
             0,
@@ -1986,34 +2331,58 @@ impl BattleCore {
             )?,
             ..Default::default()
         };
+        let source = source.with_cast_damage(record.source.cast_damage().cloned())?;
         source.admit_owner("reinput_source_owner")?;
-        self.end_sustained(activation, now, SustainedEndReason::Reinput)?;
-        control::poll("reinput_after_consume")?;
-        let cast_seq = self.skill_cast_seq;
-        let prior = std::mem::replace(&mut self.runtime_fact_source, source);
-        self.invoke_ability(
-            now,
-            caster,
-            goodbye.as_str(),
-            cast_target,
-            Default::default(),
-            false,
-        );
-        self.runtime_fact_source = prior;
-        control::poll("reinput_after_invoke")?;
-        if self.skill_cast_seq == cast_seq {
-            return Err(crate::game::battle::runtime_control::invariant(
-                "reinput_committed_child",
-            ));
+        Ok(PreparedReinputChild { caster, skill: goodbye.clone(), cast_target, source, authored })
+    }
+
+    pub(super) fn validate_sustained_input_target(&self, activation: u64, target: Option<crate::game::battle::event_log::SkillCastTarget>, now: u64) -> Result<(), GameError> {
+        let record = self.sustained.records.get(&activation).ok_or(GameError::InvalidAction)?;
+        if record.state.is_some() {
+            return if target.is_none() { Ok(()) } else { Err(GameError::InvalidAction) };
         }
-        let event = self
-            .event_queue
-            .take_reinput_step(cast_seq, now)?
-            .ok_or_else(|| {
-                crate::game::battle::runtime_control::invariant("reinput_committed_child")
-            })?;
-        self.process_event(event, now)?;
-        control::poll("reinput_after_execution")?;
+        let child = record.goodbye_skill.as_ref().ok_or(GameError::InvalidAction)?;
+        self.prepare_sustained_child(activation, child, target, now).map(|_| ())
+    }
+
+    fn commit_sustained_child(&mut self, activation: u64, prepared: PreparedReinputChild, now: u64) -> Result<(), GameError> {
+        let PreparedReinputChild { caster, skill: goodbye, cast_target, source, authored } = prepared;
+        // The parent may own the last Chain hold. Reserve the synchronous
+        // handoff before ending it so child admission can retain that chain.
+        // Its own Activation stays distinct; the bridge ends after execution.
+        let source = self.reserve_finite_source(source)?;
+        let handoff = source.resource_delivery().cloned();
+        let result = (|| {
+            self.end_sustained(activation, now, SustainedEndReason::Reinput)?;
+            control::poll("reinput_after_consume")?;
+            let cast_seq = self.skill_cast_seq;
+            let prior = std::mem::replace(&mut self.runtime_fact_source, source);
+            if authored {
+                let permit = ReinputChildPermit { caster, skill: goodbye.clone(), at_ms: now };
+                self.invoke_reinput_child(now, caster, goodbye.as_str(), cast_target, permit);
+            } else {
+                self.invoke_ability(now, caster, goodbye.as_str(), cast_target, Default::default(), false);
+            }
+            self.runtime_fact_source = prior;
+            control::poll("reinput_after_invoke")?;
+            if self.skill_cast_seq == cast_seq {
+                return Err(crate::game::battle::runtime_control::invariant(
+                    "reinput_committed_child",
+                ));
+            }
+            let event = self
+                .event_queue
+                .take_reinput_step(cast_seq, now)?
+                .ok_or_else(|| {
+                    crate::game::battle::runtime_control::invariant("reinput_committed_child")
+                })?;
+            self.process_event(event, now)?;
+            control::poll("reinput_after_execution")?;
+            Ok(())
+        })();
+        let close = self.close_source_resource_delivery(handoff.as_deref());
+        result?;
+        close?;
         Ok(())
     }
 }
@@ -2031,18 +2400,36 @@ impl BattleCore {
         now: u64,
         bypass: bool,
     ) -> Result<crate::game::battle::runtime_facts::ProtectionReceipt, GameError> {
+        self.absorb_sustained_shields_inner(target, damage, None, now, bypass, true)
+    }
+    pub(super) fn absorb_sustained_shields_components(
+        &mut self, target: UnitInstanceId, damage: u32,
+        components: &[crate::game::battle::damage::DamageBreakdown], now: u64, bypass: bool,
+    ) -> Result<crate::game::battle::runtime_facts::ProtectionReceipt, GameError> {
+        self.absorb_sustained_shields_inner(target, damage, Some(components), now, bypass, true)
+    }
+    pub(super) fn absorb_shields_before_deferral(
+        &mut self, target: UnitInstanceId, damage: u32,
+        components: &[crate::game::battle::damage::DamageBreakdown], now: u64, bypass: bool,
+    ) -> Result<crate::game::battle::runtime_facts::ProtectionReceipt, GameError> {
+        self.absorb_sustained_shields_inner(target, damage, Some(components), now, bypass, false)
+    }
+    fn absorb_sustained_shields_inner(
+        &mut self, target: UnitInstanceId, damage: u32,
+        components: Option<&[crate::game::battle::damage::DamageBreakdown]>, now: u64, bypass: bool, survival: bool,
+    ) -> Result<crate::game::battle::runtime_facts::ProtectionReceipt, GameError> {
         use crate::game::battle::runtime_facts::{ProtectionReceipt, ShieldAbsorptionFact};
         self.reconcile_sustained(now)?;
         control::charge(self.sustained.records.len() as u64, "shield_receipt_bound")?;
-        let count = self
-            .sustained
-            .records
-            .values()
-            .filter(|r| !bypass && r.shield.is_some() && r.members.binary_search(&target).is_ok())
-            .count();
+        let (count, typed) = self.sustained.records.values()
+            .filter_map(|r| (!bypass && r.members.binary_search(&target).is_ok()).then_some(r.shield).flatten())
+            .fold((0usize, false), |(count, typed), shield| (count + 1, typed || shield.damage_type.is_some()));
+        let component_count = if typed { components.map_or(1, |c| c.len()) } else { 1 };
+        control::charge(component_count as u64, "shield_damage_components")?;
+        let receipt_bound = count.checked_mul(component_count);
         crate::game::battle::runtime_control::admit_retained_growth(
             0,
-            count.checked_mul(std::mem::size_of::<ShieldAbsorptionFact>()),
+            receipt_bound.and_then(|n| n.checked_mul(std::mem::size_of::<ShieldAbsorptionFact>())),
             "shield_receipt_vector",
         )?;
         let mut receipt = ProtectionReceipt {
@@ -2050,11 +2437,16 @@ impl BattleCore {
             ..Default::default()
         };
         if count > 0 {
-            receipt.details_mut()?.shields = Vec::with_capacity(count);
+            receipt.details_mut()?.shields = Vec::with_capacity(receipt_bound.unwrap());
         }
-        let mut pending = damage;
+        let mut component_budget = damage;
         let mut segmented_changed = false;
-        while pending > 0 && !bypass {
+        for index in 0..component_count {
+            let component = if typed { components.and_then(|c| c.get(index)) } else { None };
+            let amount = component.map_or(component_budget, |c| c.final_damage.min(component_budget));
+            component_budget -= amount;
+            let mut pending = amount;
+            while pending > 0 && !bypass {
             control::charge(self.sustained.records.len() as u64, "shield_selection")?;
             let next = self
                 .sustained
@@ -2062,7 +2454,8 @@ impl BattleCore {
                 .iter()
                 .filter_map(|(id, record)| {
                     let shield = record.shield?;
-                    (shield.remaining > 0 && record.members.binary_search(&target).is_ok())
+                    (shield.remaining > 0 && record.members.binary_search(&target).is_ok()
+                        && shield.damage_type.is_none_or(|kind| component.is_some_and(|c| c.damage_type == kind)))
                         .then_some((
                             (
                                 shield.shared_radius_units.is_some(),
@@ -2095,6 +2488,7 @@ impl BattleCore {
             )?;
             let source = Arc::new(source.observation());
             receipt.details_mut()?.shields.push(ShieldAbsorptionFact {
+                component_index: component.map(|_| index as u32),
                 activation: id,
                 absorbed,
                 remaining: remaining - absorbed,
@@ -2115,52 +2509,9 @@ impl BattleCore {
                 self.end_sustained(id, now, SustainedEndReason::Depleted)?;
             }
         }
-        let hp = self
-            .units
-            .get(&target)
-            .map_or(0, |u| u.stats.current_health);
-        if hp > 0 && pending >= hp {
-            control::charge(self.sustained.records.len() as u64, "survival_selection")?;
-            let selected = self
-                .sustained
-                .records
-                .iter()
-                .filter_map(|(id, r)| {
-                    let policy = r.survival?;
-                    (r.target == target).then_some((
-                        policy != SurvivalPolicy::FloorOne,
-                        *id,
-                        policy,
-                    ))
-                })
-                .min_by_key(|v| (v.0, v.1));
-            if let Some((_, id, policy)) = selected {
-                let source = &self.sustained.records[&id].source;
-                source.admit_owner("survival_receipt_source")?;
-                crate::game::battle::runtime_control::admit_retained_growth(
-                    0,
-                    source.retained_extent().and_then(|n| {
-                        n.checked_add(
-                            std::mem::size_of::<
-                                crate::game::battle::runtime_facts::SurvivalPreventionFact,
-                            >() + 64,
-                        )
-                    }),
-                    "survival_receipt_storage",
-                )?;
-                receipt.details_mut()?.survival = Some(Box::new(
-                    crate::game::battle::runtime_facts::SurvivalPreventionFact {
-                        activation: id,
-                        policy,
-                        source: Arc::new(source.observation()),
-                    },
-                ));
-                receipt.prevented = pending - (hp - 1);
-                if policy == SurvivalPolicy::PreventDeathOnce {
-                    self.end_sustained(id, now, SustainedEndReason::Triggered)?;
-                }
-                control::poll("survival_after_prevention")?;
-            }
+        }
+        if survival {
+            self.prevent_sustained_death(target, damage - receipt.absorbed, now, &mut receipt)?;
         }
         if segmented_changed {
             self.refresh_segmented_block_state()?;
@@ -2385,6 +2736,7 @@ impl BattleCore {
         if world == from {
             return Ok(());
         }
+        if self.block_equipment_skill(target, caster, None, now)? { return Ok(()); }
         crate::game::battle::runtime_control::admit_retained_growth(
             0,
             Some(std::mem::size_of::<BattleCommand>()),
@@ -2481,6 +2833,9 @@ impl BattleCore {
             .iter()
             .filter(|(_, r)| r.target == target)
             .find_map(|(id, r)| {
+                if r.expires_at > now && r.target_state.as_ref().is_some_and(|p| p.damage_invulnerable) {
+                    return Some((*id, DeflectionKind::Invulnerability));
+                }
                 let p = r.parry.as_ref()?;
                 if p.invulnerable_until_ms.is_some_and(|until| now < until) {
                     Some((*id, DeflectionKind::Invulnerability))
@@ -2708,6 +3063,62 @@ impl BattleCore {
             "u03_missing_trusted_goodbye",
         ));
     }
+}
+
+impl BattleCore {
+    pub(super) fn prevent_sustained_death(&mut self, target: UnitInstanceId, pending: u32, now: u64,
+        receipt: &mut crate::game::battle::runtime_facts::ProtectionReceipt) -> Result<(), GameError> {
+        let hp = self
+            .units
+            .get(&target)
+            .map_or(0, |u| u.stats.current_health);
+        if hp > 0 && pending >= hp {
+            control::charge(self.sustained.records.len() as u64, "survival_selection")?;
+            let selected = self
+                .sustained
+                .records
+                .iter()
+                .filter_map(|(id, r)| {
+                    let policy = r.survival?;
+                    (r.target == target).then_some((
+                        policy != SurvivalPolicy::FloorOne,
+                        *id,
+                        policy,
+                    ))
+                })
+                .min_by_key(|v| (v.0, v.1));
+            if let Some((_, id, policy)) = selected {
+                let source = &self.sustained.records[&id].source;
+                source.admit_owner("survival_receipt_source")?;
+                crate::game::battle::runtime_control::admit_retained_growth(
+                    0,
+                    source.retained_extent().and_then(|n| {
+                        n.checked_add(
+                            std::mem::size_of::<
+                                crate::game::battle::runtime_facts::SurvivalPreventionFact,
+                            >() + 64,
+                        )
+                    }),
+                    "survival_receipt_storage",
+                )?;
+                receipt.details_mut()?.survival = Some(Box::new(
+                    crate::game::battle::runtime_facts::SurvivalPreventionFact {
+                        activation: id,
+                        policy,
+                        source: Arc::new(source.observation()),
+                    },
+                ));
+                receipt.prevented = receipt.prevented.checked_add(pending - (hp - 1))
+                    .ok_or_else(|| reaction_invariant("survival_prevented_total"))?;
+                if policy == SurvivalPolicy::PreventDeathOnce {
+                    self.end_sustained(id, now, SustainedEndReason::Triggered)?;
+                }
+                control::poll("survival_after_prevention")?;
+            }
+        }
+        Ok(())
+    }
+
 }
 
 #[cfg(test)]

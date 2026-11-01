@@ -1,7 +1,0 @@
-{
-  "path": "core_enhanced/docs/roadmaps/content_authoring/ROADMAP_STATUS.md",
-  "before_sha256": "60e342bfd0a0cc90df31511e9c15ffe1d35802cb58a9cdbfcefc98d01d94759d",
-  "after_sha256": "74fa88971b087039ab2b6fe25f980e38b96347f02b7cf420b96ff713c2a3bb7a",
-  "preserved_before": "baseline/ROADMAP_STATUS_V1130.md",
-  "scope": "current U03 self-verification and audit-pending summary only; prior target/audit unchanged"
-}

@@ -1,0 +1,48 @@
+{
+  "id": "fragment_mountain_smiling_bodies_trace",
+  "uuid": "730e8400-e29b-41d4-a716-446655440011",
+  "name": "시체들의 합창 (가칭)",
+  "description": "적에게 일회 도발·접근 속도 증가·1타일 공격 상한을 함께 부여한다. 직접 피해와 성장은 제공하지 않는다.",
+  "rarity": {
+    "Unresolved": "fragment-rarity"
+  },
+  "equip_limit": {
+    "Unresolved": "fragment-equip-limit"
+  },
+  "origin": {
+    "Abnormality": {
+      "abnormality_id": "t-01-75_mountain"
+    }
+  },
+  "sources": [
+    {
+      "AbnormalityContainment": {
+        "abnormality_id": "t-01-75_mountain"
+      }
+    }
+  ],
+  "dependencies": [
+    {
+      "SourceAbnormality": {
+        "abnormality_id": "t-01-75_mountain"
+      }
+    }
+  ],
+  "compatibility": {
+    "allowed_weapon_archetypes": {
+      "Unresolved": "fragment-compatible-weapons"
+    }
+  },
+  "effect": {
+    "ActiveSkill": {
+      "forms": {
+        "base": {
+          "skill_id": "fragment_mountain_smiling_bodies_chorus",
+          "resonance_max": {
+            "Unresolved": "capacity"
+          }
+        }
+      }
+    }
+  }
+}

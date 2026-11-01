@@ -268,8 +268,8 @@ impl BattleCore {
         });
         let members = match definition.recipients {
             PersonalShieldRecipientsDef::PlayerEmployeesAtRelease { radius_units } => {
-                let members = if let Some(support) = &definition.support {
-                    self.support_pattern_members(caster, &support.range, true)?
+                let members = if let Some(range) = definition.support.as_ref().and_then(|s| s.range.as_ref()) {
+                    self.support_pattern_members(caster, range, true)?
                 } else {
                     self.employee_members(caster, radius_units, true)?
                 };
@@ -402,6 +402,7 @@ impl BattleCore {
                         personal_group: Some(Arc::clone(&group)),
                         fixed: None,
                     })),
+                    None,
                     None,
                 )?;
             }

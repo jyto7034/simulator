@@ -866,6 +866,8 @@ impl GameCore {
                 source_command_id,
                 battle_event_after_seq,
             ),
+            PlayerBehavior::SelectSkillRelation { employee_uuid, entry, target } =>
+                self.handle_select_skill_relation(employee_uuid, entry, target, source_command_id, battle_event_after_seq),
             PlayerBehavior::CommitInputPlan{battle_uuid,revision,employee_uuid,input}=>self.handle_input_plan_command(battle_uuid,revision,employee_uuid,Some(input),None,source_command_id,battle_event_after_seq),
             PlayerBehavior::CancelInputPlan{battle_uuid,revision,employee_uuid,preparation}=>self.handle_input_plan_command(battle_uuid,revision,employee_uuid,None,Some(preparation),source_command_id,battle_event_after_seq),
             PlayerBehavior::ActivateSkill {

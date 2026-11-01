@@ -81,7 +81,7 @@ impl GameCore {
                 let abnormality_id = self
                     .game_data
                     .pve_data
-                    .get_by_id(&source.encounter_id)?
+                    .get_by_id(&definition.encounter_id)?
                     .primary_abnormality_id()?;
                 let metadata = self.game_data.abnormality_data.get_by_id(abnormality_id)?;
                 let carried = self
@@ -109,7 +109,7 @@ impl GameCore {
                     catalyst_required: policy.catalyst_amount,
                     catalyst_carried: carried,
                     catalyst_warehouse: warehouse,
-                    rewards: definition.rewards.clone(),
+                    rewards: policy.victory_rewards(*stage),
                     equipment_choices: definition.equipment_choices.clone(),
                     next_egg: stage.next(),
                     can_hatch: selected_node_id.is_some()
@@ -129,14 +129,15 @@ impl GameCore {
                     .reward_sources
                     .iter()
                     .find(|s| s.reward_source_id == encounter.reward_source_id)?;
-                let stage = source.revival.as_ref()?.stage(encounter.stage);
+                let policy = source.revival.as_ref()?;
+                let stage = policy.stage(encounter.stage);
                 Some((
                     *node_id,
                     HatchedEncounterView {
                         encounter: encounter.clone(),
                         encounter_id: stage.encounter_id.clone(),
                         stat_multiplier_percent: stage.stat_multiplier_percent,
-                        rewards: stage.rewards.clone(),
+                        rewards: policy.victory_rewards(encounter.stage),
                         equipment_choices: stage.equipment_choices.clone(),
                         next_egg_on_victory: encounter.stage.next(),
                     },

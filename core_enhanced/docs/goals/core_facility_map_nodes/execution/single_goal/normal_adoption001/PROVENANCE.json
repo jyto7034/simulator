@@ -1,6 +1,0 @@
-{
-  "raw_calibration": "../normal_calibration001.stdout.log",
-  "actual_root_review": "../NORMAL_LIMIT_REVIEW_001.json",
-  "raw_adoption": "../normal_adoption002.stdout.log",
-  "note": "calibration outcomes remain Incomplete only because their diagnostic profile has no criterion; authenticated adoption is separate. Current approval is claimed only by later normal AdmissionSession open/Passed. Private issuer keys are not copied."
-}

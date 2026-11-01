@@ -1,7 +1,0 @@
-(fragments:[(
- id:"u11_recipe_fragment",uuid:"c0de1100-0000-0000-0000-000000006202",
- name:"Independent selected recipe provider",description:"Ordinary active fragment; explicit player selection required by personal-single recipes",
- rarity:Rare,equip_limit:OwnedCopies,sources:[RareReward],
- effect:ActiveSkill(forms:{"base":(skill_id:"u11_recipe_strike",resonance_max:10)},
-  dismantle_recipe:Some((enkephalin:2,materials:[])))
-)])

@@ -1,7 +1,0 @@
-(rewards: [
-    (id: "u08_trial_supply", uuid: "a508e100-0000-0000-0000-000000000301",
-     name: "External trial supply", description: "Authored normal battle reward",
-     icon: "u08_trial", effects: [GrantRelic(relic_id: "u08_trial_blend"),
-       GrantSkillFragment(fragment_id: "u08_trial_fragment"),
-       GrantRelicCorruptionCatalyst(amount: 3)]),
-], pools: [], equipment_pools: [])

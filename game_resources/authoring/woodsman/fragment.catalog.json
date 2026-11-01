@@ -1,0 +1,48 @@
+{
+  "id": "fragment_warm_hearted_woodsman_trace",
+  "uuid": "730e8400-e29b-41d4-a716-446655440031",
+  "name": "나무꾼 범위 3연타",
+  "description": "현행 합의의 작성 원본. 미정 값은 실행용 별도 사본에서만 명시한다.",
+  "rarity": {
+    "Unresolved": "rarity"
+  },
+  "equip_limit": {
+    "Unresolved": "equip_limit"
+  },
+  "origin": {
+    "Abnormality": {
+      "abnormality_id": "f-05-32_warm_hearted_woodsman"
+    }
+  },
+  "sources": [
+    {
+      "AbnormalityContainment": {
+        "abnormality_id": "f-05-32_warm_hearted_woodsman"
+      }
+    }
+  ],
+  "dependencies": [
+    {
+      "SourceAbnormality": {
+        "abnormality_id": "f-05-32_warm_hearted_woodsman"
+      }
+    }
+  ],
+  "compatibility": {
+    "allowed_weapon_archetypes": [
+      "Sword"
+    ]
+  },
+  "effect": {
+    "ActiveSkill": {
+      "forms": {
+        "base": {
+          "skill_id": "fragment_woodsman_three_strikes",
+          "resonance_max": {
+            "Unresolved": "capacity"
+          }
+        }
+      }
+    }
+  }
+}

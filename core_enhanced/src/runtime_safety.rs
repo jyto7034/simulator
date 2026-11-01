@@ -85,7 +85,9 @@ impl DevelopmentMeasurementProfile {
     }
 }
 
-pub const DEVELOPMENT_RETAINED_CEILING: usize = 32 * 1024 * 1024;
+// Trusted diagnostics may observe the 64 MiB synthetic-roster storage window.
+// This does not change the native public/default 16 MiB deployment ceiling.
+pub const DEVELOPMENT_RETAINED_CEILING: usize = 64 * 1024 * 1024;
 
 impl RuntimeSafetySettings {
     /// The same validated RON backs no-file embedding and each engine's Default.

@@ -427,7 +427,7 @@ fn profile_bytes(weapon: &WeaponCombatProfile) -> Result<Option<usize>, RelicPla
     if let BasicAttackAction::Heal {
         footprint: Some(pattern),
         ..
-    } = &weapon.action
+    } | BasicAttackAction::DamageArea { footprint: pattern, .. } = &weapon.action
     {
         owned = owned
             .checked_add(pattern_bytes(pattern)?)
@@ -447,7 +447,7 @@ fn profile_bytes(weapon: &WeaponCombatProfile) -> Result<Option<usize>, RelicPla
 
 struct Context {
     equipment: Vec<BindingCopy>,
-    weapons: Vec<usize>,
+    weapons: Vec<bool>,
     // Alternatives, NEVER a union: each token becomes one separate full vector.
     fragments: Vec<usize>,
 }
@@ -474,6 +474,84 @@ fn insert_id(
         }
     }
 }
+// Enumerate every sorted three-slot witness through real ItemSlot admission.
+// The already-admitted prefix stays live while its possible suffixes are tried.
+// An invalid prefix cannot be repaired by appending equipment; no valid whole
+// vector is omitted. Symbolic copy IDs remain the original occupied-slot IDs.
+fn visit_equipment_witnesses(
+    items: &[EquipmentMetadata],
+    work: &mut PublicationWork,
+    mut visit: impl FnMut([usize; 3], &ItemSlot, &mut PublicationWork) -> Result<(), RelicPlanError>,
+) -> Result<(), RelicPlanError> {
+    fn walk(
+        items: &[EquipmentMetadata],
+        choices: &mut [usize; 3],
+        depth: usize,
+        minimum: usize,
+        slots: &mut ItemSlot,
+        work: &mut PublicationWork,
+        visit: &mut impl FnMut(
+            [usize; 3],
+            &ItemSlot,
+            &mut PublicationWork,
+        ) -> Result<(), RelicPlanError>,
+    ) -> Result<(), RelicPlanError> {
+        if depth == 3 {
+            charge(1, "publication_equipment_witness")?;
+            return visit(*choices, slots, work);
+        }
+        for choice in minimum..=items.len() {
+            charge(1, "publication_equipment_prefix")?;
+            choices[depth] = choice;
+            let copy = Uuid::from_u128(slots.len() as u128 + 0x10);
+            if choice != 0 {
+                let definition = &items[choice - 1];
+                charge(3, "publication_equipment_admission")?;
+                if !definition.allow_duplicate_equip {
+                    work.temporary(
+                        size_of::<std::slice::Iter<'_, EquippedRef>>(),
+                        "publication_equipment_duplicate_scan",
+                    )?;
+                }
+                if slots
+                    .equip(
+                        EquippedRef {
+                            instance_uuid: copy,
+                            base_uuid: definition.uuid,
+                            equipment_type: definition.equipment_type,
+                        },
+                        definition.allow_duplicate_equip,
+                    )
+                    .is_err()
+                {
+                    continue;
+                }
+            }
+            walk(items, choices, depth + 1, choice, slots, work, visit)?;
+            if choice != 0 {
+                charge(1, "publication_equipment_reset")?;
+                slots.remove_last_any3(copy).ok_or_else(|| {
+                    RelicPlanError::new(FaultCode::InvalidReference, "publication slot reset")
+                })?;
+            }
+        }
+        Ok(())
+    }
+    work.reserve(
+        Some(size_of::<ItemSlot>() + 4 * size_of::<EquippedRef>()),
+        "publication_equipment_slots",
+    )?;
+    walk(
+        items,
+        &mut [0; 3],
+        0,
+        0,
+        &mut ItemSlot::new(SlotLayoutKind::Any3),
+        work,
+        &mut visit,
+    )
+}
+
 fn discover(
     data: &GameDataBase,
     catalog: &mut Catalog<'_>,
@@ -484,11 +562,6 @@ fn discover(
         multisets(items.len().checked_add(1).ok_or_else(overflow)?)?,
         "publication_equipment_discovery_bound",
     )?;
-    work.reserve(
-        Some(size_of::<ItemSlot>() + 4 * size_of::<EquippedRef>()),
-        "publication_equipment_slots",
-    )?;
-    let mut slots = ItemSlot::new(SlotLayoutKind::Any3);
     let key_capacity = catalog
         .max_equipment_bindings
         .checked_mul(3)
@@ -499,134 +572,110 @@ fn discover(
     )?;
     let mut key = Vec::with_capacity(key_capacity);
     let mut contexts: Vec<Context> = Vec::new();
-    for a in 0..=items.len() {
-        for b in a..=items.len() {
-            for c in b..=items.len() {
-                charge(1, "publication_equipment_witness")?;
-                while !slots.is_empty() {
-                    charge(slots.len(), "publication_equipment_reset")?;
-                    let copy = Uuid::from_u128(slots.len() as u128 - 1 + 0x10);
-                    slots.remove_by_instance(copy).ok_or_else(|| {
-                        RelicPlanError::new(FaultCode::InvalidReference, "publication slot reset")
-                    })?;
-                }
-                key.clear();
-                let mut count = 0usize;
-                let mut weapon_count = 0usize;
-                let mut weapon_index = 0usize;
-                let mut valid = true;
-                for choice in [a, b, c] {
-                    if choice == 0 {
-                        continue;
-                    }
-                    let index = choice - 1;
-                    let definition = &items[index];
-                    let copy_uuid = Uuid::from_u128(count as u128 + 0x10);
-                    charge(3, "publication_equipment_admission")?;
-                    if !definition.allow_duplicate_equip {
-                        work.temporary(
-                            size_of::<std::slice::Iter<'_, EquippedRef>>(),
-                            "publication_equipment_duplicate_scan",
-                        )?;
-                    }
-                    if slots
-                        .equip(
-                            EquippedRef {
-                                instance_uuid: copy_uuid,
-                                base_uuid: definition.uuid,
-                                equipment_type: definition.equipment_type,
-                            },
-                            definition.allow_duplicate_equip,
-                        )
-                        .is_err()
-                    {
-                        valid = false;
-                        break;
-                    }
-                    charge(
-                        catalog.equipment[index].len(),
-                        "publication_equipment_key_fill",
-                    )?;
-                    key.extend(
-                        catalog.equipment[index]
-                            .iter()
-                            .map(|&token| (token, copy_uuid)),
-                    );
-                    count += 1;
-                    if definition.equipment_type == EquipmentType::Weapon {
-                        weapon_count += 1;
-                        weapon_index = index;
-                    }
-                }
-                if !valid {
-                    continue;
-                }
-                // Numeric comparisons still compare every full binding and UUID
-                // through the immutable exact token table. No source text clones.
-                charge(
-                    search_work(contexts.len(), key.len())?,
-                    "publication_context_lookup",
-                )?;
-                let context_index =
-                    match contexts.binary_search_by(|context| context.equipment.cmp(&key)) {
-                        Ok(index) => index,
-                        Err(index) => {
-                            charge(
-                                contexts.len().checked_add(key.len()).ok_or_else(overflow)?,
-                                "publication_context_insert",
-                            )?;
-                            work.grow(&mut contexts, "publication_context_table")?;
-                            work.reserve(
-                                key.len().checked_mul(size_of::<BindingCopy>()),
-                                "publication_context_key",
-                            )?;
-                            clone_charge(
-                                key.len()
-                                    .checked_mul(3)
-                                    .and_then(|n| n.checked_add(1))
-                                    .ok_or_else(overflow)?,
-                                "publication_context_key_copy",
-                            )?;
-                            contexts.insert(
-                                index,
-                                Context {
-                                    equipment: key.clone(),
-                                    weapons: Vec::new(),
-                                    fragments: Vec::new(),
-                                },
-                            );
-                            index
-                        }
-                    };
-                if weapon_count != 1 || items[weapon_index].weapon_profile.is_none() {
-                    continue;
-                }
-                // Visit each legal weapon witness; reuse only an identical static
-                // profile/form predicate, and exact equipment vector expansion.
-                let context = &mut contexts[context_index];
-                if !insert_id(
-                    &mut context.weapons,
-                    weapon_index,
-                    work,
-                    "publication_weapon_witness_lookup",
-                )? {
-                    continue;
-                }
-                catalog.compatibility(weapon_index, data, work)?;
-                for &token in catalog.compatible[weapon_index]
-                    .as_ref()
-                    .expect("profile checked")
-                {
-                    insert_id(
-                        &mut context.fragments,
-                        token,
-                        work,
-                        "publication_fragment_context_lookup",
-                    )?;
-                }
+    let mut last_context: Option<usize> = None;
+    visit_equipment_witnesses(items, work, |[a, b, c], _slots, work| {
+        key.clear();
+        let mut count = 0usize;
+        let mut weapon_count = 0usize;
+        let mut weapon_index = 0usize;
+        for choice in [a, b, c] {
+            if choice == 0 {
+                continue;
+            }
+            let index = choice - 1;
+            let definition = &items[index];
+            let copy_uuid = Uuid::from_u128(count as u128 + 0x10);
+            charge(
+                catalog.equipment[index].len(),
+                "publication_equipment_key_fill",
+            )?;
+            key.extend(
+                catalog.equipment[index]
+                    .iter()
+                    .map(|&token| (token, copy_uuid)),
+            );
+            count += 1;
+            if definition.equipment_type == EquipmentType::Weapon {
+                weapon_count += 1;
+                weapon_index = index;
             }
         }
-    }
+        // Consecutive witnesses often have the same complete provider
+        // vector. Compare the exact tokens/copy UUIDs before reusing it.
+        charge(
+            key.len().checked_add(1).ok_or_else(overflow)?,
+            "publication_context_last_lookup",
+        )?;
+        let previous = last_context.filter(|&index| contexts[index].equipment == key);
+        let context_index = if let Some(index) = previous {
+            index
+        } else {
+            charge(
+                search_work(contexts.len(), key.len())?,
+                "publication_context_lookup",
+            )?;
+            match contexts.binary_search_by(|context| context.equipment.cmp(&key)) {
+                Ok(index) => index,
+                Err(index) => {
+                    charge(
+                        contexts.len().checked_add(key.len()).ok_or_else(overflow)?,
+                        "publication_context_insert",
+                    )?;
+                    work.grow(&mut contexts, "publication_context_table")?;
+                    work.reserve(
+                        key.len().checked_mul(size_of::<BindingCopy>()),
+                        "publication_context_key",
+                    )?;
+                    clone_charge(
+                        key.len()
+                            .checked_mul(3)
+                            .and_then(|n| n.checked_add(1))
+                            .ok_or_else(overflow)?,
+                        "publication_context_key_copy",
+                    )?;
+                    work.reserve(
+                        items.len().checked_mul(size_of::<bool>()),
+                        "publication_weapon_witness_table",
+                    )?;
+                    charge(items.len(), "publication_weapon_witness_table")?;
+                    contexts.insert(
+                        index,
+                        Context {
+                            equipment: key.clone(),
+                            weapons: vec![false; items.len()],
+                            fragments: Vec::new(),
+                        },
+                    );
+                    index
+                }
+            }
+        };
+        last_context = Some(context_index);
+        if weapon_count != 1 || items[weapon_index].weapon_profile.is_none() {
+            return Ok(());
+        }
+        // Visit each legal weapon witness; reuse only an identical static
+        // profile/form predicate, and exact equipment vector expansion.
+        let context = &mut contexts[context_index];
+        charge(1, "publication_weapon_witness_lookup")?;
+        if context.weapons[weapon_index] {
+            return Ok(());
+        }
+        context.weapons[weapon_index] = true;
+        catalog.compatibility(weapon_index, data, work)?;
+        for &token in catalog.compatible[weapon_index]
+            .as_ref()
+            .expect("profile checked")
+        {
+            insert_id(
+                &mut context.fragments,
+                token,
+                work,
+                "publication_fragment_context_lookup",
+            )?;
+        }
+        Ok(())
+    })?;
     Ok(contexts)
 }
 
@@ -694,6 +743,29 @@ pub(super) fn validate(data: &GameDataBase) -> Result<(), RelicPlanError> {
         contract: ContentContract::current(),
         semantic_sha256: "0".repeat(64),
     };
+    // Canonical provider validation and original effect/amount capabilities
+    // are identical across relic loadouts. Prepare each complete vector once;
+    // every loadout still resolves and validates all rules and lowered effects.
+    work.reserve(context_count.checked_mul(size_of::<compiler::PreparedProviders<'_>>()), "publication_prepared_contexts")?;
+    let mut prepared = Vec::with_capacity(context_count);
+    for context in &contexts {
+        charge(context.equipment.len().checked_add(context.fragments.len()).ok_or_else(overflow)?, "publication_context_expand")?;
+        work.reserve(context.equipment.len().checked_add(1).and_then(|n| n.checked_mul(size_of::<ProspectiveProvider>())), "publication_provider_table")?;
+        let mut providers = Vec::with_capacity(context.equipment.len() + 1);
+        for &key in &context.equipment { providers.push(catalog.provider(key, &mut work)?); }
+        let (entry, reserved) = compiler::PreparedProviders::new(data, &providers, work.held)?;
+        // Transfer already admitted owners into the outer lifetime. Do not bill
+        // another allocation or forget these owners at the next compiler call.
+        work.held = work.held.checked_add(reserved).ok_or_else(overflow)?;
+        prepared.push(entry);
+        for &token in &context.fragments {
+            providers.push(catalog.provider((token, Uuid::from_u128(0x20)), &mut work)?);
+            let (entry, reserved) = compiler::PreparedProviders::new(data, &providers, work.held)?;
+            work.held = work.held.checked_add(reserved).ok_or_else(overflow)?;
+            prepared.push(entry);
+            providers.pop();
+        }
+    }
     let employee = Uuid::from_u128(0x435253415f50524f4f46);
     for a in 0..=variants.len() {
         for b in a..=variants.len() {
@@ -751,34 +823,10 @@ pub(super) fn validate(data: &GameDataBase) -> Result<(), RelicPlanError> {
                 else {
                     continue;
                 };
-                for context in &contexts {
-                    charge(
-                        context
-                            .equipment
-                            .len()
-                            .checked_add(context.fragments.len())
-                            .ok_or_else(overflow)?,
-                        "publication_context_expand",
-                    )?;
-                    work.reserve(
-                        context
-                            .equipment
-                            .len()
-                            .checked_add(1)
-                            .and_then(|n| n.checked_mul(size_of::<ProspectiveProvider>())),
-                        "publication_provider_table",
-                    )?;
-                    let mut providers = Vec::with_capacity(context.equipment.len() + 1);
-                    for &key in &context.equipment {
-                        providers.push(catalog.provider(key, &mut work)?);
-                    }
-                    compile(data, &identity, employee, &inventory, &providers, work.held)?;
-                    for &token in &context.fragments {
-                        providers
-                            .push(catalog.provider((token, Uuid::from_u128(0x20)), &mut work)?);
-                        compile(data, &identity, employee, &inventory, &providers, work.held)?;
-                        providers.pop();
-                    }
+                let (loadout, reserved) = compiler::PreparedLoadout::new(data, &inventory, employee, work.held)?;
+                work.held = work.held.checked_add(reserved).ok_or_else(overflow)?;
+                for context in &prepared {
+                    compile(data, &identity, employee, &inventory, context, &loadout, work.held)?;
                 }
             }
         }
@@ -790,7 +838,8 @@ fn compile(
     identity: &ContentIdentity,
     employee: Uuid,
     inventory: &RelicInventory,
-    providers: &[ProspectiveProvider],
+    prepared: &compiler::PreparedProviders<'_>,
+    loadout: &compiler::PreparedLoadout<'_>,
     retained_basis: usize,
 ) -> Result<(), RelicPlanError> {
     charge(1, "publication_plan")?;
@@ -800,8 +849,54 @@ fn compile(
             generation: identity,
             employee_uuid: employee,
             inventory,
-            providers,
+            providers: prepared.providers(),
         },
         retained_basis,
+        prepared,
+        loadout,
     )
+}
+
+#[cfg(test)]
+mod witness_tests {
+    use super::*;
+    #[test]
+    fn equipment_witness_walk_matches_fresh_admission_in_both_catalog_orders() {
+        let (data, _) = crate::game::battle::core::relic_structural_tests::prepared_plan();
+        let base = &data.database().equipment_data.items[0];
+        let mut items: Vec<_> = (0..4).map(|i| {
+            let mut item = base.clone();
+            item.uuid = Uuid::from_u128(900 + i / 2);
+            item.allow_duplicate_equip = i % 2 == 0;
+            item.equipment_type = if i < 2 { EquipmentType::Weapon } else { EquipmentType::Armor };
+            item
+        }).collect();
+        items[3].equipment_type = EquipmentType::Accessory;
+        for _ in 0..2 {
+            let mut actual = std::collections::BTreeMap::new();
+            visit_equipment_witnesses(&items, &mut PublicationWork::default(), |choices, slots, _| {
+                assert!(actual.insert(choices, serde_json::to_value(slots).unwrap()).is_none());
+                Ok(())
+            }).unwrap();
+            for a in 0..=items.len() { for b in a..=items.len() { for c in b..=items.len() {
+                let choices = [a,b,c];
+                let mut fresh = ItemSlot::new(SlotLayoutKind::Any3);
+                let mut count = 0;
+                let valid = choices.into_iter().filter(|c| *c != 0).all(|choice| {
+                    let d = &items[choice - 1];
+                    let accepted = fresh.equip(EquippedRef {
+                        instance_uuid: Uuid::from_u128(count + 0x10), base_uuid: d.uuid,
+                        equipment_type: d.equipment_type,
+                    }, d.allow_duplicate_equip).is_ok();
+                    count += 1;
+                    accepted
+                });
+                let found = actual.remove(&choices);
+                assert_eq!(found.is_some(), valid, "{choices:?}");
+                if let Some(slots) = found { assert_eq!(slots, serde_json::to_value(&fresh).unwrap(), "{choices:?}"); }
+            } } }
+            assert!(actual.is_empty());
+            items.reverse();
+        }
+    }
 }

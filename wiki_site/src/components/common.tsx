@@ -55,7 +55,7 @@ export function SceneCard({ scene, actions = scene.actions }: { scene: Scene; ac
   const { meta } = useData();
   return <article className="scene-card group flex h-[28rem] min-w-0 flex-col overflow-hidden rounded-xl border border-line bg-surface shadow-(--shadow-card) transition-[border-color,box-shadow] hover:border-line-strong hover:shadow-(--shadow-lift)">
     <Link to={'/scenes/' + scene.id + '/'} tabIndex={-1} aria-hidden="true" className="relative block overflow-hidden bg-night">
-      <img src={scene.images[0].url} alt="" loading="lazy" className="aspect-[2.1] w-full object-cover transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transition-none" />
+      {scene.images[0] ? <img src={scene.images[0].url} alt="" loading="lazy" className="aspect-[2.1] w-full object-cover transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transition-none" /> : <span className="grid aspect-[2.1] place-items-center text-sm text-white/70">대표 시안 미등록</span>}
       <span className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
       <span className="absolute bottom-3 left-4 rounded-full bg-black/40 px-2.5 py-0.5 text-[11px] text-white/90 backdrop-blur-sm">{meta.groups.find(g => g.id === scene.group)?.title} · {scene.kind}</span>
     </Link>

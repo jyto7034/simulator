@@ -224,15 +224,26 @@ impl BattleCore {
                 expanded.push((lease, operation.operation));
             }
         }
+        self.apply_typed_resource_batch(&expanded, &source, time_ms)
+    }
+
+    /// Both authored actions and terminal settlement use the same atomic store
+    /// mutation and fact receipts. The caller supplies already-bound authority.
+    pub(super) fn apply_typed_resource_batch(
+        &mut self,
+        expanded: &[(ResourceLease, ResourceMutation)],
+        source: &crate::game::battle::runtime_facts::RuntimeFactSource,
+        time_ms: u64,
+    ) -> Result<(), GameError> {
         let receipts = self
             .runtime_facts
             .resources
             .as_mut()
             .expect("prepared resources")
             .store
-            .apply_leased_operations(&expanded)
+            .apply_leased_operations(expanded)
             .map_err(ResourceError::into_game_error)?;
-        for (receipt, (lease, _)) in receipts.into_iter().zip(&expanded) {
+        for (receipt, (lease, _)) in receipts.into_iter().zip(expanded) {
             let owner = match receipt.key.owner {
                 ResourceOwner::Employee(id) => FactOwner::Employee(id),
                 ResourceOwner::EquipmentCopy(id) => FactOwner::EquipmentCopy(id),

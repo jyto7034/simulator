@@ -532,6 +532,17 @@ impl SpawnKernelState {
     fn identity_request(request: SpawnRequest) -> Result<SpawnRequest, SpawnKernelError> {
         // Only a domain rejection preserves the original (unnormalized) identity.
         // The outer error must never fall back to a successful request.
+        // Already ordered placements have the same identity on BOTH paths:
+        // successful normalization and every domain rejection return this exact
+        // value. Move that owner instead of cloning/sorting/validating a value
+        // whose validation result this identity-only operation discards.
+        crate::authoring::control::charge(
+            request.placements.len() as u64,
+            "spawn_identity_order_scan",
+        ).map_err(|_| SpawnKernelError::ExecutionInterrupted)?;
+        if request.placements.is_sorted_by_key(|placement| placement.order) {
+            return Ok(request);
+        }
         Ok(Self::normalize_request(&request)?.unwrap_or(request))
     }
 
@@ -1073,6 +1084,52 @@ mod tests {
                 },
             ],
         }
+    }
+
+    #[test]
+    fn ordered_spawn_identity_moves_owner_and_matches_full_normalization() {
+        use crate::authoring::control::{self, CancellationToken, ExecutionLimits, ExecutionPhase};
+        for sorted in [false, true] {
+            for case in 0..8 {
+                let mut input = request(SpawnOccupancyPolicy::RequireUnoccupied);
+                match case {
+                    1 => input.id.0.clear(),
+                    2 => input.occupancy = SpawnOccupancyPolicy::AllowOccupied(Vec::new()),
+                    3 => input.placements.clear(),
+                    4 => input.placements[1].order = input.placements[0].order,
+                    5 => input.placements[1].position = input.placements[0].position,
+                    6 => input.placements[0].terrain_walkable = false,
+                    7 => input.placements[0].occupants.push(SpawnOccupantKind::OpposingCombatant),
+                    _ => (),
+                }
+                if sorted { input.placements.sort_by_key(|p| p.order); }
+                let expected = SpawnKernelState::normalize_request(&input).unwrap().unwrap_or_else(|_| input.clone());
+                let was_sorted = input.placements.is_sorted_by_key(|p| p.order);
+                let owner = input.placements.as_ptr();
+                let actual = SpawnKernelState::identity_request(input).unwrap();
+                assert_eq!(actual, expected, "case {case}, sorted {sorted}");
+                if was_sorted { assert_eq!(owner, actual.placements.as_ptr(), "retain the existing allocation"); }
+            }
+        }
+        let mut input = request(SpawnOccupancyPolicy::RequireUnoccupied);
+        input.placements.sort_by_key(|p| p.order);
+        let limits = ExecutionLimits::default();
+        let (_, moved) = control::run(&limits, &CancellationToken::default(), ExecutionPhase::TrialPreparation,
+            || SpawnKernelState::identity_request(input.clone())).unwrap();
+        let (_, copied) = control::run(&limits, &CancellationToken::default(), ExecutionPhase::TrialPreparation,
+            || SpawnKernelState::normalize_request(&input)).unwrap();
+        assert!(moved.work < copied.work);
+        let mut state = SpawnKernelState::default();
+        let trigger = SpawnTriggerId::from("ordered-fixture");
+        state.register_trigger(trigger.clone()).unwrap();
+        let before = format!("{state:?}");
+        let failure = control::with_test_cancellation("spawn_identity_order_scan", 1, || control::run(
+            &limits, &CancellationToken::default(), ExecutionPhase::TrialPreparation,
+            || state.bind_trigger(&trigger, input.clone()),
+        ));
+        assert_eq!(failure.err().unwrap().code, "authoring_cancelled");
+        assert_eq!(format!("{state:?}"), before);
+        state.bind_trigger(&trigger, input).unwrap();
     }
 
     #[test]

@@ -1,7 +1,0 @@
-SkillDatabase(skills:[SkillDef(
- id:"u11_object_create",name:"Independent finite object",kind:Targeted,
- focus_time_ms:0,use_lifetime:Action,
- cast_targeting:Explicit(selection:self,target:SelfUnit,reach:pattern,target_range:Some((include_anchor_tile:true,rows:[".X.","X@X",".X."])),air_capable:false),
- steps:[(id:"place",delay_ms:0,target:SelfUnit,delivery:Instant,
-  effects:[(id:"create",op:CreateObject(definition:(definition_id:"u11_finite_actor",anchor:SourceTile,offsets:[(x:1,y:0)])))])]
-)])
